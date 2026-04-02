@@ -1,0 +1,14 @@
+node_modules
+.pnpm-store
+.turbo
+
+.env
+.env.local
+.env.*.local
+
+apps/web/.next
+apps/api/dist
+coverage
+
+*.log
+.DS_Store

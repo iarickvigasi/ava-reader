@@ -1,0 +1,101 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ava_reader
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "${POSTGRES_HOST_PORT:-15432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ava_reader"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      WEB_ORIGIN: http://localhost:${WEB_HOST_PORT:-3000}
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/ava_reader?schema=public
+      CLERK_SECRET_KEY: ${CLERK_SECRET_KEY:-}
+      CLERK_PUBLISHABLE_KEY: ${CLERK_PUBLISHABLE_KEY:-}
+      CLERK_JWT_KEY: ${CLERK_JWT_KEY:-}
+      CLERK_AUTHORIZED_PARTIES: http://localhost:${WEB_HOST_PORT:-3000}
+    ports:
+      - "${API_HOST_PORT:-4000}:4000"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:4000/api/health').then(async (response) => { if (!response.ok) process.exit(1); const payload = await response.json(); process.exit(payload.service === 'api' ? 0 : 1); }).catch(() => process.exit(1))"
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:4000}
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:-}
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      API_BASE_URL: http://api:4000
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:4000}
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:-}
+      CLERK_SECRET_KEY: ${CLERK_SECRET_KEY:-}
+    ports:
+      - "${WEB_HOST_PORT:-3000}:3000"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000').then(async (response) => { const html = await response.text(); process.exit(response.ok && html.includes('Ava Reader') ? 0 : 1); }).catch(() => process.exit(1))"
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  verify:
+    image: node:22-bookworm-slim
+    profiles: ["verify"]
+    depends_on:
+      api:
+        condition: service_healthy
+      web:
+        condition: service_healthy
+    command:
+      [
+        "node",
+        "-e",
+        "const verify = async () => { const apiResponse = await fetch('http://api:4000/api/health'); if (!apiResponse.ok) throw new Error('API returned ' + apiResponse.status); const apiPayload = await apiResponse.json(); if (apiPayload.status !== 'ok' || apiPayload.database !== 'up') throw new Error('Unexpected API payload: ' + JSON.stringify(apiPayload)); const webResponse = await fetch('http://web:3000'); if (!webResponse.ok) throw new Error('Web returned ' + webResponse.status); const html = await webResponse.text(); if (!html.includes('Ava Reader') || !html.includes('Investigate deeper') || !html.includes('Create account')) throw new Error('Web page did not render the expected landing state.'); const signInResponse = await fetch('http://web:3000/sign-in'); if (!signInResponse.ok) throw new Error('Sign-in page returned ' + signInResponse.status); const signInHtml = await signInResponse.text(); if (!signInHtml.includes('Continue with Google') || !signInHtml.includes('Continue with Email')) throw new Error('Sign-in page did not render the expected auth controls.'); console.log('Verified Docker stack.'); console.log(JSON.stringify(apiPayload, null, 2)); }; verify().catch((error) => { console.error(error); process.exit(1); });"
+      ]
+
+volumes:
+  postgres_data:
