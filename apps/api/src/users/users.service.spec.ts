@@ -44,6 +44,7 @@ describe('UsersService', () => {
       primaryEmail: 'ava@example.com',
       displayName: 'Ava Reader',
       avatarUrl: 'https://images.example.com/avatar.png',
+      role: 'USER',
     });
 
     await expect(
@@ -54,6 +55,7 @@ describe('UsersService', () => {
       email: 'ava@example.com',
       displayName: 'Ava Reader',
       avatarUrl: 'https://images.example.com/avatar.png',
+      role: 'USER',
     });
 
     expect(upsert).toHaveBeenCalledWith({
@@ -91,6 +93,7 @@ describe('UsersService', () => {
       primaryEmail: 'reader@example.com',
       displayName: 'reader',
       avatarUrl: null,
+      role: 'USER',
     });
 
     await expect(
@@ -101,6 +104,7 @@ describe('UsersService', () => {
       email: 'reader@example.com',
       displayName: 'reader',
       avatarUrl: null,
+      role: 'USER',
     });
   });
 

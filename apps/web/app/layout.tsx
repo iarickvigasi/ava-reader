@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Abhaya_Libre, Afacad } from "next/font/google";
-import { ClerkNav } from "@/components/auth/clerk-nav";
+import { SiteFrame } from "@/components/layout/site-frame";
 import "./globals.css";
 
 const display = Abhaya_Libre({
@@ -32,10 +32,7 @@ export default function RootLayout({
     >
       <body className="min-h-full">
         <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">
-          <div className="flex min-h-full flex-col">
-            <ClerkNav />
-            <main className="flex-1">{children}</main>
-          </div>
+          <SiteFrame>{children}</SiteFrame>
         </ClerkProvider>
       </body>
     </html>

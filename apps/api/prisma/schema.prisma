@@ -7,12 +7,276 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum BlobPurpose {
+  BOOK_SOURCE
+  BOOK_COVER
+  FEEDBACK_ATTACHMENT
+  DERIVED_READER
+}
+
+enum BookFileFormat {
+  EPUB
+  PDF
+  READER_PACKAGE
+  UNKNOWN
+}
+
+enum BookFileKind {
+  SOURCE
+  DERIVED_READER
+}
+
+enum ProcessingStatus {
+  PENDING
+  READY
+  FAILED
+}
+
+enum LibrarySource {
+  IMPORTED
+  CATALOG
+}
+
+enum CatalogStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum CollectionKind {
+  SMART
+  CUSTOM
+}
+
 model User {
-  id           String   @id @default(cuid())
-  clerkUserId  String   @unique
-  primaryEmail String
-  displayName  String?
-  avatarUrl    String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                   String               @id @default(cuid())
+  clerkUserId          String               @unique
+  primaryEmail         String
+  displayName          String?
+  avatarUrl            String?
+  role                 UserRole             @default(USER)
+  libraryItems         LibraryItem[]
+  readingProgress      ReadingProgress[]
+  readingSessions      ReadingSession[]
+  annotations          Annotation[]
+  collections          Collection[]
+  feedbackSubmissions  FeedbackSubmission[]
+  catalogEntriesCreated CatalogEntry[]      @relation("CatalogEntryCreatedBy")
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+}
+
+model StoredBlob {
+  id                 String               @id @default(cuid())
+  purpose            BlobPurpose
+  mimeType           String
+  sizeBytes          Int
+  originalFilename   String
+  checksum           String
+  bytes              Bytes
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  bookCoverFor       Book[]               @relation("BookCover")
+  bookFiles          BookFile[]
+  feedbackAttachments FeedbackSubmission[] @relation("FeedbackAttachment")
+
+  @@index([purpose])
+  @@index([checksum])
+}
+
+model Book {
+  id            String             @id @default(cuid())
+  title         String
+  subtitle      String?
+  author        String?
+  description   String?
+  language      String?
+  publishedYear Int?
+  coverBlobId   String?
+  coverBlob     StoredBlob?        @relation("BookCover", fields: [coverBlobId], references: [id], onDelete: SetNull)
+  files         BookFile[]
+  processingRuns BookProcessingRun[]
+  libraryItems  LibraryItem[]
+  catalogEntry  CatalogEntry?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  @@index([title])
+}
+
+model BookFile {
+  id                  String               @id @default(cuid())
+  bookId              String
+  blobId              String
+  kind                BookFileKind
+  format              BookFileFormat
+  processingStatus    ProcessingStatus     @default(READY)
+  isPrimary           Boolean              @default(false)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  book                Book                 @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  blob                StoredBlob           @relation(fields: [blobId], references: [id], onDelete: Cascade)
+  sourceProcessingRuns BookProcessingRun[] @relation("ProcessingSourceFile")
+  outputProcessingRuns BookProcessingRun[] @relation("ProcessingOutputFile")
+
+  @@index([bookId, kind])
+  @@index([blobId])
+}
+
+model BookProcessingRun {
+  id           String           @id @default(cuid())
+  bookId       String
+  sourceFileId String?
+  outputFileId String?
+  pipeline     String
+  status       ProcessingStatus @default(PENDING)
+  errorMessage String?
+  startedAt    DateTime         @default(now())
+  completedAt  DateTime?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  book         Book             @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  sourceFile   BookFile?        @relation("ProcessingSourceFile", fields: [sourceFileId], references: [id], onDelete: SetNull)
+  outputFile   BookFile?        @relation("ProcessingOutputFile", fields: [outputFileId], references: [id], onDelete: SetNull)
+
+  @@index([bookId, status])
+}
+
+model CatalogEntry {
+  id                   String        @id @default(cuid())
+  bookId               String        @unique
+  status               CatalogStatus @default(DRAFT)
+  editorialTitle       String?
+  editorialDescription String?
+  curatorNote          String?
+  isFeatured           Boolean       @default(false)
+  featuredRank         Int?
+  sortOrder            Int           @default(0)
+  createdByUserId      String?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  book                 Book          @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  createdByUser        User?         @relation("CatalogEntryCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  libraryItems         LibraryItem[]
+
+  @@index([status, isFeatured, sortOrder])
+}
+
+model LibraryItem {
+  id                 String         @id @default(cuid())
+  userId             String
+  bookId             String
+  source             LibrarySource
+  originCatalogEntryId String?
+  addedAt            DateTime       @default(now())
+  lastOpenedAt       DateTime?
+  isArchived         Boolean        @default(false)
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  user               User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book               Book           @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  originCatalogEntry CatalogEntry?  @relation(fields: [originCatalogEntryId], references: [id], onDelete: SetNull)
+  progress           ReadingProgress?
+  readingSessions    ReadingSession[]
+  annotations        Annotation[]
+  collectionItems    CollectionItem[]
+
+  @@unique([userId, bookId])
+  @@index([userId, addedAt])
+}
+
+model ReadingProgress {
+  id                String      @id @default(cuid())
+  userId            String
+  libraryItemId     String      @unique
+  currentLocator    String?
+  completionPercent Int         @default(0)
+  chapterLabel      String?
+  minutesRead       Int         @default(0)
+  lastReadAt        DateTime?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  libraryItem       LibraryItem @relation(fields: [libraryItemId], references: [id], onDelete: Cascade)
+
+  @@index([userId, lastReadAt])
+}
+
+model ReadingSession {
+  id              String      @id @default(cuid())
+  userId          String
+  libraryItemId   String
+  trackedDay      DateTime
+  durationMinutes Int
+  startedAt       DateTime
+  endedAt         DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  libraryItem     LibraryItem @relation(fields: [libraryItemId], references: [id], onDelete: Cascade)
+
+  @@index([userId, trackedDay])
+}
+
+model Annotation {
+  id             String      @id @default(cuid())
+  userId         String
+  libraryItemId  String
+  excerpt        String
+  note           String?
+  highlightColor String?
+  locator        String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  libraryItem    LibraryItem @relation(fields: [libraryItemId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model Collection {
+  id          String         @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  kind        CollectionKind @default(CUSTOM)
+  smartKey    String?
+  sortOrder   Int            @default(0)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       CollectionItem[]
+
+  @@unique([userId, name])
+  @@unique([userId, smartKey])
+  @@index([userId, sortOrder])
+}
+
+model CollectionItem {
+  id           String      @id @default(cuid())
+  collectionId String
+  libraryItemId String
+  addedAt      DateTime    @default(now())
+  collection   Collection  @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  libraryItem  LibraryItem @relation(fields: [libraryItemId], references: [id], onDelete: Cascade)
+
+  @@unique([collectionId, libraryItemId])
+}
+
+model FeedbackSubmission {
+  id               String      @id @default(cuid())
+  userId           String
+  message          String
+  attachmentBlobId String?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  attachmentBlob   StoredBlob? @relation("FeedbackAttachment", fields: [attachmentBlobId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
 }

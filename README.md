@@ -36,8 +36,10 @@ Monorepo scaffold for a web-first AI book reader.
    - Web landing: `http://localhost:3000`
    - Sign in: `http://localhost:3000/sign-in`
    - Protected shell: `http://localhost:3000/app`
+   - Internal admin catalog: `http://localhost:3000/app/admin/catalog`
    - API health: `http://localhost:4000/api/health`
    - API current user: `GET http://localhost:4000/api/me` with a Clerk bearer token
+   - API home payload: `GET http://localhost:4000/api/home` with a Clerk bearer token
    - PostgreSQL: `postgresql://postgres:postgres@localhost:15432/ava_reader?schema=public`
 
 5. Stop the stack when you are done:
@@ -98,6 +100,82 @@ Monorepo scaffold for a web-first AI book reader.
 - The Nest app owns database access. Web and mobile should talk to the API, not directly to Postgres.
 - Auth is Clerk-backed with custom Next.js sign-in and sign-up flows on `/sign-in` and `/sign-up`.
 - `GET /api/me` verifies a Clerk bearer token, fetches the Clerk user, and lazily upserts the local `User` row in Postgres.
+- `GET /api/home` aggregates the signed-in dashboard state from real library, catalog, reading, collection, annotation, and feedback records.
+- `POST /api/library/import` accepts authenticated EPUB/PDF uploads and stores the original source file in Postgres-backed blobs.
+- `POST /api/catalog/:entryId/add-to-library` links a published catalog book into the signed-in user library without duplicating the source book record.
+- `POST /api/feedback` persists feedback plus an optional screenshot attachment in Postgres.
+- `/app/admin/catalog` is an internal admin route for managing the public-domain catalog from the web app.
 - `apps/mobile` is intentionally just a placeholder for now.
 - Docker verification runs from a dedicated `verify` container on the same Compose network, so the smoke test checks real in-network connectivity rather than only host access.
 - If `3000`, `4000`, or `15432` are already taken on your machine, override them in `.env` or inline when starting Compose, for example `WEB_HOST_PORT=3001 API_HOST_PORT=4001 POSTGRES_HOST_PORT=15433 NEXT_PUBLIC_API_BASE_URL=http://localhost:4001 pnpm docker:up`.
+
+## Admin and Demo Data
+
+- Promote the first local app user to admin after they sign in once:
+
+  ```bash
+  pnpm --filter api admin:grant you@example.com
+  ```
+
+- Seed a realistic populated home dashboard for an existing local user:
+
+  ```bash
+  pnpm --filter api db:seed:home-demo you@example.com
+  ```
+
+- Both scripts accept either a local `primaryEmail` or a `clerkUserId`.
+
+## Manual Test Flow
+
+Use this flow when you come back later and want to verify the app quickly end to end.
+
+1. Start the full stack:
+
+   ```bash
+   pnpm docker:up
+   ```
+
+2. Open `http://localhost:3000/sign-up` and create or sign in to a real Clerk user.
+
+3. Verify the empty signed-in dashboard at `http://localhost:3000/app`.
+
+4. Promote that user to admin from a terminal:
+
+   ```bash
+   pnpm --filter api admin:grant you@example.com
+   ```
+
+5. Refresh and open the internal catalog route:
+
+   - `http://localhost:3000/app/admin/catalog`
+
+6. Choose one of two paths:
+
+   - Manual catalog path: create public-domain titles in the admin UI, publish them, then add them from the home screen.
+   - Demo-data path: seed a realistic populated dashboard immediately:
+
+     ```bash
+     pnpm --filter api db:seed:home-demo you@example.com
+     ```
+
+7. Refresh `http://localhost:3000/app` and verify the populated dashboard state.
+
+8. Re-run the smoke check when needed:
+
+   ```bash
+   pnpm docker:verify
+   ```
+
+## Useful Commands
+
+```bash
+pnpm docker:up
+pnpm docker:down
+pnpm docker:verify
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+pnpm --filter api admin:grant you@example.com
+pnpm --filter api db:seed:home-demo you@example.com
+```

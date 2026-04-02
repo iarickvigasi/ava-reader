@@ -10,6 +10,9 @@
   --copy: #635e57;
   --copy-strong: #292929;
   --muted: #8d837b;
+  --plum: #6e5678;
+  --olive: #655f37;
+  --sand: #f0e6e1;
   --line: rgba(38, 75, 95, 0.16);
   --line-strong: rgba(38, 75, 95, 0.28);
   --brand-fill: #3f6378;
@@ -21,6 +24,7 @@
   --danger: #a64949;
   --shadow-soft: 0 30px 80px -46px rgba(38, 43, 58, 0.28);
   --shadow-card: 0 28px 60px -38px rgba(72, 43, 21, 0.24);
+  --shadow-nav: 0 12px 30px -20px rgba(38, 43, 58, 0.22);
   --radius-shell: 32px;
   --radius-card: 18px;
 }
@@ -35,6 +39,9 @@
   --color-copy: var(--copy);
   --color-copy-strong: var(--copy-strong);
   --color-muted: var(--muted);
+  --color-plum: var(--plum);
+  --color-olive: var(--olive);
+  --color-sand: var(--sand);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
   --color-brand-fill: var(--brand-fill);
@@ -72,7 +79,8 @@ a {
 }
 
 button,
-input {
+input,
+textarea {
   font: inherit;
 }
 

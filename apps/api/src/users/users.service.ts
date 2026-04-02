@@ -1,5 +1,10 @@
 import type { User as ClerkUser } from '@clerk/backend';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { UserRole, type User as AppUser } from '@prisma/client';
+import {
+  ForbiddenException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ClerkAuthService } from '../auth/clerk-auth.service';
 
@@ -9,6 +14,7 @@ export type CurrentUserPayload = {
   email: string;
   displayName: string | null;
   avatarUrl: string | null;
+  role: UserRole;
 };
 
 @Injectable()
@@ -19,6 +25,12 @@ export class UsersService {
   ) {}
 
   async getCurrentUser(clerkUserId: string): Promise<CurrentUserPayload> {
+    const user = await this.getCurrentUserRecord(clerkUserId);
+
+    return this.serializeCurrentUser(user);
+  }
+
+  async getCurrentUserRecord(clerkUserId: string): Promise<AppUser> {
     const clerkUser = await this.clerkAuthService.getUser(clerkUserId);
     const primaryEmail = this.getPrimaryEmail(clerkUser);
 
@@ -31,7 +43,7 @@ export class UsersService {
     const displayName = clerkUser.fullName ?? clerkUser.username ?? null;
     const avatarUrl = clerkUser.hasImage ? clerkUser.imageUrl : null;
 
-    const user = await this.prisma.user.upsert({
+    return this.prisma.user.upsert({
       where: { clerkUserId },
       update: {
         primaryEmail,
@@ -45,14 +57,16 @@ export class UsersService {
         avatarUrl,
       },
     });
+  }
 
-    return {
-      id: user.id,
-      clerkUserId: user.clerkUserId,
-      email: user.primaryEmail,
-      displayName: user.displayName,
-      avatarUrl: user.avatarUrl,
-    };
+  async assertAdmin(clerkUserId: string) {
+    const user = await this.getCurrentUserRecord(clerkUserId);
+
+    if (user.role !== UserRole.ADMIN) {
+      throw new ForbiddenException('Admin access is required.');
+    }
+
+    return user;
   }
 
   private getPrimaryEmail(clerkUser: ClerkUser) {
@@ -61,5 +75,16 @@ export class UsersService {
       clerkUser.emailAddresses[0]?.emailAddress ??
       null
     );
+  }
+
+  private serializeCurrentUser(user: AppUser): CurrentUserPayload {
+    return {
+      id: user.id,
+      clerkUserId: user.clerkUserId,
+      email: user.primaryEmail,
+      displayName: user.displayName,
+      avatarUrl: user.avatarUrl,
+      role: user.role,
+    };
   }
 }
