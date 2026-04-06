@@ -5,7 +5,7 @@ import {
   SignUpButton,
   UserButton,
 } from "@clerk/nextjs";
-import { BrandWordmark } from "@/components/brand/brand-wordmark";
+import { HeaderBrandWordmark } from "@/components/brand/header-brand-wordmark";
 
 function navButtonClassName(tone: "primary" | "soft") {
   if (tone === "primary") {
@@ -20,10 +20,7 @@ export function ClerkNav() {
     <header className="sticky top-0 z-30 border-b border-line/70 bg-paper/88 backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
         <Link href="/" className="flex items-end gap-3">
-          <BrandWordmark
-            variant="compact"
-            className="text-[2.3rem] sm:text-[2.7rem]"
-          />
+          <HeaderBrandWordmark />
           <span className="pb-[0.35rem] font-display text-lg tracking-[-0.03em] text-title">
             Reader
           </span>

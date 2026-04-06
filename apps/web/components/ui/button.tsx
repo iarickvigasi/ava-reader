@@ -6,9 +6,9 @@ type ButtonVariant = "primary" | "soft" | "ghost";
 
 const styles: Record<ButtonVariant, string> = {
   primary:
-    "border border-brand-fill bg-brand-fill text-brand-foreground shadow-[var(--shadow-card)] hover:bg-brand-fill-strong",
+    "border border-brand-fill bg-brand-fill !text-white shadow-[var(--shadow-card)] hover:bg-brand-fill-strong",
   soft:
-    "border border-transparent bg-soft-fill text-soft-foreground hover:border-line hover:bg-white",
+    "border border-transparent bg-soft-fill text-soft-foreground  hover:bg-white",
   ghost:
     "border border-line bg-transparent text-ink hover:bg-white/55",
 };
