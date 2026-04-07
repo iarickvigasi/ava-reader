@@ -13,7 +13,7 @@ type HomeScreenProps = {
 
 export function HomeScreen({ home }: HomeScreenProps) {
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-20 px-4 py-8 sm:px-6 sm:py-10 lg:gap-28 lg:px-10 lg:py-12">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-8 py-8 sm:gap-20 sm:px-6 sm:py-10 lg:gap-28 lg:px-10 lg:py-12">
       {home.state === "EMPTY" ? (
         <EmptyHomeState home={home} />
       ) : (
@@ -45,7 +45,7 @@ function EmptyHomeState({ home }: HomeScreenProps) {
           Welcome to AVA Reader
         </h1>
         <p className="max-w-md text-xl leading-8 text-title">
-          Let’s start your exploration. Choose a book to dive into and we’ll
+          Let&apos;s start your exploration. Choose a book to dive into and we&apos;ll
           shape the rest of the reader around it.
         </p>
       </div>
@@ -71,9 +71,7 @@ function EmptyHomeState({ home }: HomeScreenProps) {
               : "Your public catalog is still empty. Add the first public-domain title from the internal admin route."
           }
           tone="soft"
-          action={
-            <LinkAction href="/app/explore" label="Browse Catalog" />
-          }
+          action={<LinkAction href="/app/explore" label="Browse Catalog" />}
         />
       </div>
     </section>
@@ -87,27 +85,67 @@ function PopulatedHomeState({ home }: HomeScreenProps) {
 
   return (
     <>
-      <section className="grid gap-10 lg:grid-cols-[0.4fr_0.6fr] lg:items-start">
-        <BookCover
-          alt={`${home.currentEngagement.title} cover`}
-          className="mx-auto aspect-[0.72] w-full max-w-68 shadow-(--shadow-card) lg:mx-0 lg:max-w-84"
-          src={home.currentEngagement.coverImageDataUrl}
-          title={home.currentEngagement.title}
-        />
+      <section className="grid gap-8 md:grid-cols-[0.32fr_0.58fr] md:items-start md:gap-8 lg:gap-10">
+        <div className="relative hidden md:block">
+          <div className="absolute bottom-0 left-full top-0 ml-4 w-0.5 bg-soft-fill">
+            <div
+              className="w-full bg-brand-fill"
+              style={{
+                height: `${Math.min(Math.max(home.currentEngagement.completionPercent, 18), 100)}%`,
+              }}
+            />
+          </div>
+          <BookCover
+            alt={`${home.currentEngagement.title} cover`}
+            className="mx-auto aspect-[0.72] w-full max-w-72 rounded-xs shadow-(--shadow-card) md:mx-0 md:max-w-80"
+            src={home.currentEngagement.coverImageDataUrl}
+            title={home.currentEngagement.title}
+          />
+        </div>
 
-        <div className="space-y-7 lg:pt-12">
-          <div className="space-y-4">
+        <div className="space-y-6 md:space-y-8 md:pt-16">
+          <div className="space-y-5 md:space-y-4">
             <SectionEyebrow>Currently Engaged</SectionEyebrow>
-            <h1 className="max-w-2xl font-display text-5xl leading-[1.04] tracking-[-0.04em] text-ink sm:text-6xl">
+            <h1 className="max-w-2xl font-display text-[3rem] leading-[1.05] tracking-[-0.05em] text-ink sm:text-6xl sm:leading-[1.04] md:max-w-none md:text-[3.5rem] md:leading-[1.1] md:tracking-[-0.02em]">
               {home.currentEngagement.title}
             </h1>
-            <p className="text-2xl italic text-plum">
-              {home.currentEngagement.author ?? "Unknown author"}
-            </p>
+            <div className="flex items-center gap-4 text-sm uppercase tracking-[0.08em] text-muted sm:flex-col sm:items-start sm:gap-2 sm:text-base sm:normal-case sm:tracking-normal md:block">
+              <p className="text-lg italic normal-case tracking-normal text-plum sm:text-2xl">
+                {home.currentEngagement.author ?? "Unknown author"}
+              </p>
+              <span className="h-px w-12 bg-line sm:hidden" />
+              <p className="font-semibold text-copy sm:text-xs sm:uppercase sm:tracking-[0.18em] md:hidden">
+                {home.currentEngagement.completionPercent}% Completed
+              </p>
+            </div>
           </div>
 
-          <div className="grid gap-5 rounded-[22px] border border-line/50 bg-white/45 p-6 shadow-(--shadow-soft) sm:grid-cols-[auto_1px_1fr] sm:items-center">
+          <div className="relative overflow-hidden rounded-md border border-line/20 bg-soft-fill px-5 py-6 shadow-(--shadow-soft) sm:grid sm:gap-5 sm:rounded-[22px] sm:border-line/50 sm:bg-white/45 sm:p-6 sm:grid-cols-[auto_1px_1fr] sm:items-center md:hidden">
+            <div className="absolute inset-y-0 left-0 w-0.5 bg-[#eae1db]">
+              <div
+                className="w-full bg-ink"
+                style={{
+                  height: `${Math.min(Math.max(home.currentEngagement.completionPercent, 18), 100)}%`,
+                }}
+              />
+            </div>
             <div>
+              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-olive">
+                Next milestone
+              </p>
+              <p className="mt-3 font-display text-[1.35rem] leading-[1.35] text-title sm:text-2xl">
+                {home.currentEngagement.chapterLabel}
+              </p>
+              <Link
+                href="/app"
+                className="mt-4 inline-flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-ink"
+              >
+                Resume Reading
+                <ArrowRightIcon className="size-3.5" />
+              </Link>
+            </div>
+            <div className="hidden h-14 w-px bg-line sm:block" />
+            <div className="hidden sm:block">
               <p className="text-4xl text-ink">
                 {home.currentEngagement.completionPercent}%
               </p>
@@ -115,18 +153,45 @@ function PopulatedHomeState({ home }: HomeScreenProps) {
                 Completed
               </p>
             </div>
-            <div className="hidden h-14 w-px bg-line sm:block" />
-            <div>
-              <p className="font-display text-2xl text-title">
-                {home.currentEngagement.chapterLabel}
-              </p>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-olive">
-                Next milestone
-              </p>
+          </div>
+
+          <div className="hidden md:block">
+            <div className="flex items-center gap-12 py-4">
+              <div className="space-y-0.5">
+                <p className="text-[2.25rem] leading-none text-ink">
+                  {home.currentEngagement.completionPercent}%
+                </p>
+                <p className="text-[0.85rem] uppercase tracking-[0.08em] text-olive">
+                  Completed
+                </p>
+              </div>
+
+              <div className="h-12 w-px bg-black/10" />
+
+              <div className="space-y-1">
+                <p className="font-display text-2xl leading-[1.05] text-title">
+                  {home.currentEngagement.chapterLabel}
+                </p>
+                <p className="text-[0.75rem] uppercase tracking-widest text-olive">
+                  Next Milestone
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="sm:hidden">
+            <LibraryImportButton
+              variant="ghost"
+              label="Import another book"
+              className="w-full justify-center"
+            />
+          </div>
+
+          <div className="hidden sm:flex sm:flex-row sm:items-center sm:gap-3 md:hidden">
+            <LibraryImportButton variant="soft" label="Import another book" />
+          </div>
+
+          <div className="hidden md:flex md:items-center md:gap-3">
             <LinkAction href="/app" label="Resume Reading" emphasis />
             <LibraryImportButton variant="soft" label="Import another book" />
           </div>
@@ -134,33 +199,52 @@ function PopulatedHomeState({ home }: HomeScreenProps) {
       </section>
 
       {home.listening ? (
-        <section className="rounded-3xl border border-line/50 bg-soft-fill px-6 py-6 shadow-(--shadow-soft) sm:px-8">
-          <div className="grid gap-6 md:grid-cols-[192px_1fr] md:items-center">
-            <BookCover
-              alt={`${home.listening.title} listening placeholder`}
-              className="aspect-square w-40"
-              src={home.currentEngagement.coverImageDataUrl}
-              title={home.listening.title}
-            />
-            <div className="space-y-4">
-              <SectionEyebrow>Now Listening</SectionEyebrow>
-              <div>
-                <h2 className="font-display text-4xl text-ink">
-                  {home.listening.title}
-                </h2>
-                <p className="text-xl italic text-plum">{home.listening.authorLine}</p>
-              </div>
-              <div className="space-y-2">
-                <div className="h-2 overflow-hidden rounded-full bg-line/40">
-                  <div
-                    className="h-full rounded-full bg-ink"
-                    style={{ width: `${Math.max(home.listening.progressPercent, 8)}%` }}
-                  />
+        <section className="space-y-8">
+          <SectionHeader label="Now Listening" action={<SparkIconLink href="/app/ai" />} />
+          <div className="rounded-lg border border-line/15 bg-soft-fill px-6 py-6 shadow-(--shadow-soft) sm:rounded-3xl sm:border-line/50 sm:px-8">
+            <div className="grid gap-6 md:grid-cols-[192px_1fr] md:items-center">
+              <BookCover
+                alt={`${home.listening.title} listening placeholder`}
+                className="aspect-square w-32 rounded-xs shadow-(--shadow-card) sm:w-40"
+                src={home.currentEngagement.coverImageDataUrl}
+                title={home.listening.title}
+              />
+              <div className="space-y-4">
+                <div>
+                  <h2 className="max-w-52 font-display text-[2rem] leading-[1.1] text-ink sm:max-w-none sm:text-4xl">
+                    {home.listening.title}
+                  </h2>
+                  <p className="mt-1 text-sm italic tracking-[0.02em] text-plum sm:text-xl">
+                    {home.listening.authorLine}
+                  </p>
                 </div>
-                <p className="text-sm text-muted">
-                  Visual placeholder only. Audio playback arrives in a later
-                  phase.
-                </p>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-copy">
+                    <span>15:20</span>
+                    <span>42:10</span>
+                  </div>
+                  <div className="h-1.5 overflow-hidden rounded-full bg-line/20 sm:h-2">
+                    <div
+                      className="h-full rounded-full bg-ink"
+                      style={{ width: `${Math.max(home.listening.progressPercent, 8)}%` }}
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center justify-center gap-10 pt-2 text-copy">
+                  <span aria-hidden="true" className="text-lg">
+                    ↺
+                  </span>
+                  <button
+                    type="button"
+                    className="inline-flex size-14 items-center justify-center rounded-lg bg-brand-fill text-brand-foreground shadow-(--shadow-card)"
+                    aria-label="Play audio preview"
+                  >
+                    <span className="translate-x-px text-sm">▶</span>
+                  </button>
+                  <span aria-hidden="true" className="text-lg">
+                    ↻
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -183,54 +267,91 @@ function MasteryPanel({ mastery }: { mastery: HomePayload["mastery"] }) {
   );
 
   return (
-    <Panel className="p-6 sm:p-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div className="space-y-2">
-          <h2 className="text-[1.9rem] uppercase tracking-[0.04em] text-copy">
-            Daily Mastery
-          </h2>
-          <p className="text-xl italic text-title">
+    <>
+      <section className="space-y-6 sm:hidden">
+        <SectionHeader
+          label="Daily Mastery"
+          action={
+            <span className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-ink">
+              {mastery.todayMinutes} / {mastery.dailyGoalMinutes} MIN
+            </span>
+          }
+        />
+        <div className="space-y-5">
+          <div className="flex h-20 items-end gap-1">
+            {mastery.days.map((day) => (
+              <div key={day.key} className="flex min-w-0 flex-1 flex-col items-center">
+                <div className="flex h-18 w-full items-end rounded-sm bg-transparent">
+                  <div
+                    className={cn(
+                      "w-full rounded-t-xs transition",
+                      day.goalMet ? "bg-ink" : "bg-sand",
+                    )}
+                    style={{
+                      height: `${Math.max((day.minutes / maxMinutes) * 100, 10)}%`,
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="text-center font-display text-xl italic text-title">
             {mastery.remainingMinutes > 0
               ? `${mastery.remainingMinutes} minutes to reach your daily goal`
               : "Daily goal met. Keep the momentum going."}
           </p>
         </div>
-        <div className="text-right">
-          <p className="text-4xl text-ink">
-            {mastery.todayMinutes}/{mastery.dailyGoalMinutes}
-          </p>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-            Min today
-          </p>
-        </div>
-      </div>
+      </section>
 
-      <div className="mt-8">
-        <div className="flex h-52 items-end gap-2">
-          {mastery.days.map((day) => (
-            <div key={day.key} className="flex min-w-0 flex-1 flex-col items-center gap-3">
-              <div className="flex h-44 w-full items-end rounded-sm bg-transparent">
-                <div
-                  className={cn(
-                    "w-full rounded-t-sm transition",
-                    day.goalMet ? "bg-ink" : "bg-sand",
-                  )}
-                  style={{
-                    height: `${Math.max((day.minutes / maxMinutes) * 100, 10)}%`,
-                  }}
-                />
-              </div>
-              <div className="space-y-1 text-center">
-                <p className="text-xs uppercase tracking-[0.14em] text-muted">
-                  {day.dayLabel}
-                </p>
-                <p className="text-sm text-copy">{day.minutes}m</p>
-              </div>
-            </div>
-          ))}
+      <Panel className="hidden p-8 sm:block">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="space-y-2">
+            <h2 className="text-[1.9rem] uppercase tracking-[0.04em] text-copy">
+              Daily Mastery
+            </h2>
+            <p className="text-xl italic text-title">
+              {mastery.remainingMinutes > 0
+                ? `${mastery.remainingMinutes} minutes to reach your daily goal`
+                : "Daily goal met. Keep the momentum going."}
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="text-4xl text-ink">
+              {mastery.todayMinutes}/{mastery.dailyGoalMinutes}
+            </p>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
+              Min today
+            </p>
+          </div>
         </div>
-      </div>
-    </Panel>
+
+        <div className="mt-8">
+          <div className="flex h-52 items-end gap-2">
+            {mastery.days.map((day) => (
+              <div key={day.key} className="flex min-w-0 flex-1 flex-col items-center gap-3">
+                <div className="flex h-44 w-full items-end rounded-sm bg-transparent">
+                  <div
+                    className={cn(
+                      "w-full rounded-t-sm transition",
+                      day.goalMet ? "bg-ink" : "bg-sand",
+                    )}
+                    style={{
+                      height: `${Math.max((day.minutes / maxMinutes) * 100, 10)}%`,
+                    }}
+                  />
+                </div>
+                <div className="space-y-1 text-center">
+                  <p className="text-xs uppercase tracking-[0.14em] text-muted">
+                    {day.dayLabel}
+                  </p>
+                  <p className="text-sm text-copy">{day.minutes}m</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Panel>
+    </>
   );
 }
 
@@ -242,31 +363,49 @@ function StatsPanel({ stats }: { stats: HomePayload["stats"] }) {
   ];
 
   return (
-    <div className="grid gap-4">
-      {items.map((item) => (
-        <Panel key={item.label} className="flex items-center justify-between gap-4 p-6">
-          <div>
-            <p className="text-4xl text-ink">{item.value}</p>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-olive">
-              {item.label}
-            </p>
+    <>
+      <section className="space-y-4 sm:hidden">
+        <div className="space-y-4 border-y border-line/30 py-8">
+          <SectionEyebrow>Library Metrics</SectionEyebrow>
+          <div className="grid grid-cols-3 gap-4">
+            {items.map((item) => (
+              <div key={item.label} className="space-y-2 text-center">
+                <p className="text-[1.75rem] text-ink">{item.value}</p>
+                <p className="text-[0.55rem] font-semibold uppercase tracking-[0.14em] text-olive">
+                  {item.label}
+                </p>
+              </div>
+            ))}
           </div>
-          <div className="flex size-10 items-center justify-center rounded-full border border-line/60 bg-white/60">
-            <BookmarkIcon className="size-4 text-plum" />
-          </div>
-        </Panel>
-      ))}
-    </div>
+        </div>
+      </section>
+
+      <div className="hidden gap-4 sm:grid">
+        {items.map((item) => (
+          <Panel key={item.label} className="flex items-center justify-between gap-4 p-6">
+            <div>
+              <p className="text-4xl text-ink">{item.value}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-olive">
+                {item.label}
+              </p>
+            </div>
+            <div className="flex size-10 items-center justify-center rounded-full border border-line/60 bg-white/60">
+              <BookmarkIcon className="size-4 text-plum" />
+            </div>
+          </Panel>
+        ))}
+      </div>
+    </>
   );
 }
 
 function QuoteSection() {
   return (
-    <section className="flex flex-col items-center gap-6 px-2 text-center">
-      <QuoteMarkIcon className="size-6 text-plum" />
-      <blockquote className="max-w-3xl font-display text-[2rem] leading-[1.35] text-title sm:text-[2.5rem]">
-        &quot;Reading is a conversation. All books talk. But a good book
-        listens as well.&quot;
+    <section className="flex flex-col items-center gap-5 px-2 text-center sm:gap-6">
+      <QuoteMarkIcon className="size-4 text-plum sm:size-6" />
+      <blockquote className="max-w-[18rem] font-display text-[1.8rem] leading-[1.35] text-title sm:max-w-3xl sm:text-[2.5rem]">
+        &quot;Reading is a conversation. All books talk. But a good book listens as
+        well.&quot;
       </blockquote>
       <p className="text-xs font-semibold uppercase tracking-[0.28em] text-plum">
         Mark Haddon
@@ -281,16 +420,18 @@ function FeaturedBooksSection({
   entries: HomePayload["featuredCatalog"]["entries"];
 }) {
   return (
-    <section className="space-y-8">
-      <div className="flex items-end justify-between gap-4">
-        <SectionEyebrow>Explore</SectionEyebrow>
-        <Link
-          href="/app/explore"
-          className="text-sm font-bold uppercase tracking-[0.12em] text-ink underline decoration-line-strong underline-offset-6"
-        >
-          Browse all
-        </Link>
-      </div>
+    <section className="space-y-6">
+      <SectionHeader
+        label="Explore"
+        action={
+          <Link
+            href="/app/explore"
+            className="text-[0.65rem] font-bold uppercase tracking-[0.12em] text-ink underline decoration-line-strong underline-offset-6 sm:text-sm"
+          >
+            Browse all
+          </Link>
+        }
+      />
 
       {entries.length === 0 ? (
         <Panel className="p-6 sm:p-8">
@@ -301,40 +442,64 @@ function FeaturedBooksSection({
           </p>
         </Panel>
       ) : (
-        <div className="grid gap-5 md:grid-cols-2">
-          {entries.map((entry) => (
-            <Panel
-              key={entry.id}
-              className="grid gap-5 p-5 sm:grid-cols-[120px_1fr] sm:items-start sm:p-6"
-            >
-              <BookCover
-                alt={`${entry.title} cover`}
-                className="aspect-[0.76] w-28"
-                src={entry.coverImageDataUrl}
-                title={entry.title}
-              />
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <h3 className="font-display text-3xl leading-none text-title">
+        <>
+          <div className="grid grid-cols-2 gap-4 md:hidden">
+            {entries.slice(0, 2).map((entry) => (
+              <div key={entry.id} className="space-y-3">
+                <BookCover
+                  alt={`${entry.title} cover`}
+                  className="aspect-[0.72] w-full rounded-xs"
+                  src={entry.coverImageDataUrl}
+                  title={entry.title}
+                />
+                <div className="space-y-1">
+                  <h3 className="font-display text-lg leading-none text-title">
                     {entry.title}
                   </h3>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-plum">
+                  <p className="text-[0.6rem] font-semibold uppercase tracking-[0.14em] text-plum">
                     {entry.author ?? "Unknown author"}
                   </p>
                 </div>
-                <p className="text-base leading-7 text-copy">
-                  {entry.description ?? "A curated public-domain title ready to add to your library."}
-                </p>
-                <div className="flex flex-wrap items-center gap-3">
-                  <span className="rounded-full border border-line/60 bg-white/55 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-olive">
-                    {entry.primaryFormat}
-                  </span>
-                  <CatalogAddButton entryId={entry.id} />
-                </div>
               </div>
-            </Panel>
-          ))}
-        </div>
+            ))}
+          </div>
+
+          <div className="hidden gap-5 md:grid md:grid-cols-2">
+            {entries.map((entry) => (
+              <Panel
+                key={entry.id}
+                className="grid gap-5 p-5 sm:grid-cols-[120px_1fr] sm:items-start sm:p-6"
+              >
+                <BookCover
+                  alt={`${entry.title} cover`}
+                  className="aspect-[0.76] w-28"
+                  src={entry.coverImageDataUrl}
+                  title={entry.title}
+                />
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <h3 className="font-display text-3xl leading-none text-title">
+                      {entry.title}
+                    </h3>
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-plum">
+                      {entry.author ?? "Unknown author"}
+                    </p>
+                  </div>
+                  <p className="text-base leading-7 text-copy">
+                    {entry.description ??
+                      "A curated public-domain title ready to add to your library."}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="rounded-full border border-line/60 bg-white/55 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-olive">
+                      {entry.primaryFormat}
+                    </span>
+                    <CatalogAddButton entryId={entry.id} />
+                  </div>
+                </div>
+              </Panel>
+            ))}
+          </div>
+        </>
       )}
     </section>
   );
@@ -347,15 +512,17 @@ function CollectionsPanel({
 }) {
   return (
     <section className="space-y-6">
-      <div className="flex items-end justify-between gap-4">
-        <SectionEyebrow>Collections</SectionEyebrow>
-        <Link
-          href="/app/explore"
-          className="text-sm font-bold uppercase tracking-[0.12em] text-ink underline decoration-line-strong underline-offset-6"
-        >
-          Browse all
-        </Link>
-      </div>
+      <SectionHeader
+        label="Collections"
+        action={
+          <Link
+            href="/app/explore"
+            className="text-[0.65rem] font-bold uppercase tracking-[0.12em] text-ink underline decoration-line-strong underline-offset-6 sm:text-sm"
+          >
+            Browse all
+          </Link>
+        }
+      />
 
       <div className="space-y-2">
         {collections.length === 0 ? (
@@ -370,17 +537,17 @@ function CollectionsPanel({
             <Link
               key={collection.id}
               href="/app/explore"
-              className="flex items-center justify-between border-b border-line/50 py-5 transition hover:text-ink"
+              className="flex items-center justify-between border-b border-line/40 py-4 transition hover:text-ink sm:py-5"
             >
               <div className="space-y-1">
-                <p className="font-display text-[1.7rem] text-title">
+                <p className="font-display text-[1.28rem] text-title sm:text-[1.7rem]">
                   {collection.name}
                 </p>
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-olive">
+                <p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-olive sm:text-xs">
                   {collection.itemCount} items • {collection.unreadCount} unread
                 </p>
               </div>
-              <ArrowRightIcon className="size-5 text-muted" />
+              <ArrowRightIcon className="size-4 text-muted sm:size-5" />
             </Link>
           ))
         )}
@@ -398,17 +565,15 @@ function RecentAnnotationsPanel({
 
   return (
     <section className="space-y-6">
-      <div className="flex items-end justify-between gap-4">
-        <SectionEyebrow>Recent Annotations</SectionEyebrow>
-      </div>
+      <SectionHeader label="Recent Annotations" />
 
-      <Panel className="p-6 sm:p-8">
+      <Panel className="rounded-sm border-l-2 border-l-brand-fill p-5 sm:rounded-3xl sm:border sm:border-line/50 sm:p-8">
         {annotation ? (
           <div className="space-y-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-ink">
+            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-ink sm:text-xs">
               From: {annotation.bookTitle}
             </p>
-            <blockquote className="text-lg leading-9 text-title sm:text-[1.35rem]">
+            <blockquote className="text-base leading-7 text-title sm:text-[1.35rem] sm:leading-9">
               “{annotation.excerpt}”
             </blockquote>
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -436,13 +601,13 @@ function RecentAnnotationsPanel({
 
 function FeedbackSection() {
   return (
-    <section className="mx-auto flex w-full max-w-3xl flex-col gap-10">
+    <section className="mx-auto flex w-full max-w-3xl flex-col gap-8 sm:gap-10">
       <div className="space-y-3 text-center">
-        <p className="text-xs font-bold uppercase tracking-[0.28em] text-olive">
+        <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-olive sm:text-xs">
           Continuous Evolution
         </p>
-        <h2 className="font-display text-4xl leading-tight tracking-[-0.03em] text-ink sm:text-5xl">
-          Tell what you’d like us to improve or fix
+        <h2 className="font-display text-[2rem] leading-[1.15] tracking-[-0.03em] text-ink sm:text-5xl">
+          Tell what you&apos;d like us to improve or fix
         </h2>
       </div>
       <FeedbackForm />
@@ -452,8 +617,8 @@ function FeedbackSection() {
 
 function DashboardFooter() {
   return (
-    <footer className="border-t border-line/40 pt-8 text-xs uppercase tracking-[0.22em] text-muted">
-      <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+    <footer className="border-t border-line/40 pt-8 text-[0.62rem] uppercase tracking-[0.22em] text-muted sm:text-xs">
+      <div className="flex flex-col items-center gap-5 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
         <p>© AVA Reader • Designed for immersive reading • 2026</p>
         <div className="flex gap-6">
           <Link href="/">Privacy</Link>
@@ -479,15 +644,13 @@ function ActionCard({
   return (
     <div
       className={cn(
-        "flex h-full flex-col rounded-[22px]  p-6 shadow-(--shadow-soft)",
+        "flex h-full flex-col rounded-[22px] p-6 shadow-(--shadow-soft)",
         tone === "primary" ? "bg-soft-fill" : "bg-soft-tone-fill",
       )}
     >
       <div className="flex h-full flex-col gap-5">
         <div className="space-y-3">
-          <h2 className="font-display text-4xl leading-tight text-ink">
-            {title}
-          </h2>
+          <h2 className="font-display text-4xl leading-tight text-ink">{title}</h2>
           <p className="text-lg leading-8 text-title">{description}</p>
         </div>
         <div className="mt-auto">{action}</div>
@@ -512,7 +675,7 @@ function LinkAction({
         "inline-flex min-h-12 items-center justify-center gap-2 rounded-[14px] px-5 text-sm font-semibold uppercase tracking-[0.14em] transition",
         emphasis
           ? "border border-brand-fill bg-brand-fill text-brand-foreground shadow-(--shadow-card) hover:bg-brand-fill-strong"
-          : " bg-white/40 text-ink hover:bg-white/50",
+          : "bg-white/40 text-ink hover:bg-white/50",
       )}
     >
       {label}
@@ -541,9 +704,36 @@ function Panel({
 
 function SectionEyebrow({ children }: { children: ReactNode }) {
   return (
-    <p className="text-xs font-bold uppercase tracking-[0.24em] text-muted">
+    <p className="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-muted sm:text-xs sm:tracking-[0.24em]">
       {children}
     </p>
+  );
+}
+
+function SectionHeader({
+  action,
+  label,
+}: {
+  action?: ReactNode;
+  label: string;
+}) {
+  return (
+    <div className="flex items-end justify-between gap-4 border-b border-line/10 pb-4 sm:border-0 sm:pb-0">
+      <SectionEyebrow>{label}</SectionEyebrow>
+      {action ?? null}
+    </div>
+  );
+}
+
+function SparkIconLink({ href }: { href: string }) {
+  return (
+    <Link
+      href={href}
+      className="text-sm text-muted transition hover:text-ink"
+      aria-label="Open AVA AI"
+    >
+      ✦
+    </Link>
   );
 }
 
