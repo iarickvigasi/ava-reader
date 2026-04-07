@@ -49,6 +49,35 @@ export function ChartIcon(props: IconProps) {
   );
 }
 
+export function SunIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
+      <circle cx="12" cy="12" r="4" strokeWidth="1.8" />
+      <path d="M12 2.75v2.5" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M12 18.75v2.5" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M21.25 12h-2.5" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M5.25 12h-2.5" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="m18.54 5.46-1.77 1.77" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="m7.23 16.77-1.77 1.77" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="m18.54 18.54-1.77-1.77" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="m7.23 7.23-1.77-1.77" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function MoonIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
+      <path
+        d="M18.2 14.8A7.75 7.75 0 0 1 9.2 5.8a8.25 8.25 0 1 0 9 9Z"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function UploadIcon(props: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
