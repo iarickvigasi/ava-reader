@@ -1,9 +1,17 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ArrowRightIcon, QuoteMarkIcon } from "@/components/app/app-icons";
+import {
+  ArrowRightIcon,
+  HighlighterIcon,
+  NowListeningHeaderIcon,
+  QuoteMarkIcon,
+  ReadingTimeIcon,
+  StackBooksIcon,
+} from "@/components/app/app-icons";
 import { CatalogAddButton } from "@/components/app/catalog-add-button";
 import { FeedbackForm } from "@/components/app/feedback-form";
 import { LibraryImportButton } from "@/components/app/library-import-button";
+import { ListeningControls } from "@/components/app/listening-controls";
 import type { HomePayload } from "@/lib/api-types";
 import { cn } from "@/lib/cn";
 
@@ -228,21 +236,7 @@ function PopulatedHomeState({ home }: HomeScreenProps) {
                     />
                   </div>
                 </div>
-                <div className="flex items-center justify-center gap-10 pt-2 text-copy">
-                  <span aria-hidden="true" className="text-lg">
-                    ↺
-                  </span>
-                  <button
-                    type="button"
-                    className="inline-flex size-14 items-center justify-center rounded-lg bg-brand-fill text-brand-foreground shadow-(--shadow-card)"
-                    aria-label="Play audio preview"
-                  >
-                    <span className="translate-x-px text-sm">▶</span>
-                  </button>
-                  <span aria-hidden="true" className="text-lg">
-                    ↻
-                  </span>
-                </div>
+                <ListeningControls />
               </div>
             </div>
           </div>
@@ -355,9 +349,9 @@ function MasteryPanel({ mastery }: { mastery: HomePayload["mastery"] }) {
 
 function StatsPanel({ stats }: { stats: HomePayload["stats"] }) {
   const items = [
-    { label: "Volumes Read", value: stats.volumesRead },
-    { label: "Highlights", value: stats.highlights },
-    { label: "Hours Reading", value: stats.hoursReading },
+    { label: "Volumes Read", value: stats.volumesRead, icon: StackBooksIcon },
+    { label: "Highlights", value: stats.highlights, icon: HighlighterIcon },
+    { label: "Hours Reading", value: stats.hoursReading, icon: ReadingTimeIcon },
   ];
 
   return (
@@ -381,11 +375,14 @@ function StatsPanel({ stats }: { stats: HomePayload["stats"] }) {
       <div className="hidden gap-4 sm:grid">
         {items.map((item) => (
           <Panel key={item.label} className="p-6">
-            <div>
-              <p className="text-4xl text-ink">{item.value}</p>
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-olive">
-                {item.label}
-              </p>
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-4xl text-ink">{item.value}</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-olive">
+                  {item.label}
+                </p>
+              </div>
+              <item.icon className="h-5 w-auto shrink-0 text-title" />
             </div>
           </Panel>
         ))}
@@ -397,7 +394,7 @@ function StatsPanel({ stats }: { stats: HomePayload["stats"] }) {
 function QuoteSection() {
   return (
     <section className="flex flex-col items-center gap-5 px-2 text-center sm:gap-6">
-      <QuoteMarkIcon className="size-4 text-plum sm:size-6" />
+      <QuoteMarkIcon className="h-4 w-auto text-plum sm:h-4.5" />
       <blockquote className="max-w-[18rem] font-display text-[1.8rem] leading-[1.35] text-title sm:max-w-3xl sm:text-[2.5rem]">
         &quot;Reading is a conversation. All books talk. But a good book listens as
         well.&quot;
@@ -421,9 +418,9 @@ function FeaturedBooksSection({
         action={
           <Link
             href="/app/explore"
-            className="text-[0.65rem] font-bold uppercase tracking-[0.12em] text-ink underline decoration-line-strong underline-offset-6 sm:text-sm"
+            className="text-[0.8rem] font-bold uppercase tracking-[0.12em] text-ink underline decoration-line-strong underline-offset-6 sm:text-sm"
           >
-            Browse all
+            Open all
           </Link>
         }
       />
@@ -512,9 +509,9 @@ function CollectionsPanel({
         action={
           <Link
             href="/app/explore"
-            className="text-[0.65rem] font-bold uppercase tracking-[0.12em] text-ink underline decoration-line-strong underline-offset-6 sm:text-sm"
+            className="text-[0.8rem] font-bold uppercase tracking-[0.12em] text-ink underline decoration-line-strong underline-offset-6 sm:text-sm"
           >
-            Browse all
+            Open all
           </Link>
         }
       />
@@ -598,7 +595,7 @@ function FeedbackSection() {
   return (
     <section className="mx-auto flex w-full max-w-3xl flex-col gap-8 sm:gap-10">
       <div className="space-y-3 text-center">
-        <p className="text-[0.65rem] font-bold uppercase tracking-[0.28em] text-olive sm:text-xs">
+        <p className="text-[0.8rem] font-bold uppercase tracking-[0.2em] text-muted sm:text-xs sm:tracking-[0.24em]">
           Continuous Evolution
         </p>
         <h2 className="font-display text-[2rem] leading-[1.15] tracking-[-0.03em] text-ink sm:text-5xl">
@@ -697,7 +694,7 @@ function Panel({
 
 function SectionEyebrow({ children }: { children: ReactNode }) {
   return (
-    <p className="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-muted sm:text-xs sm:tracking-[0.24em]">
+    <p className="text-[0.8rem] font-bold uppercase tracking-[0.2em] text-muted sm:text-xs sm:tracking-[0.24em]">
       {children}
     </p>
   );
@@ -722,10 +719,10 @@ function SparkIconLink({ href }: { href: string }) {
   return (
     <Link
       href={href}
-      className="text-sm text-muted transition hover:text-ink"
+      className="text-[#264B5F] transition hover:opacity-80"
       aria-label="Open AVA AI"
     >
-      ✦
+      <NowListeningHeaderIcon className="h-[11.667px] w-auto" />
     </Link>
   );
 }
