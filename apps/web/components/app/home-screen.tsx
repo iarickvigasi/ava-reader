@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ArrowRightIcon, BookmarkIcon, QuoteMarkIcon } from "@/components/app/app-icons";
+import { ArrowRightIcon, QuoteMarkIcon } from "@/components/app/app-icons";
 import { CatalogAddButton } from "@/components/app/catalog-add-button";
 import { FeedbackForm } from "@/components/app/feedback-form";
 import { LibraryImportButton } from "@/components/app/library-import-button";
@@ -54,7 +54,6 @@ function EmptyHomeState({ home }: HomeScreenProps) {
         <ActionCard
           title="Import Your First Book"
           description="Bring your EPUB or PDF into a private library that follows you across devices."
-          tone="primary"
           action={
             <LibraryImportButton
               variant="primary"
@@ -70,7 +69,6 @@ function EmptyHomeState({ home }: HomeScreenProps) {
               ? "Start with a curated public-domain title and add it to your shelf in one tap."
               : "Your public catalog is still empty. Add the first public-domain title from the internal admin route."
           }
-          tone="soft"
           action={<LinkAction href="/app/explore" label="Browse Catalog" />}
         />
       </div>
@@ -91,7 +89,7 @@ function PopulatedHomeState({ home }: HomeScreenProps) {
             <div
               className="w-full bg-brand-fill"
               style={{
-                height: `${Math.min(Math.max(home.currentEngagement.completionPercent, 18), 100)}%`,
+                height: `${Math.min(Math.max(home.currentEngagement.completionPercent, 2), 100)}%`,
               }}
             />
           </div>
@@ -120,7 +118,7 @@ function PopulatedHomeState({ home }: HomeScreenProps) {
             </div>
           </div>
 
-          <div className="relative overflow-hidden rounded-md border border-line/20 bg-soft-fill px-5 py-6 shadow-(--shadow-soft) sm:grid sm:gap-5 sm:rounded-[22px] sm:border-line/50 sm:bg-white/45 sm:p-6 sm:grid-cols-[auto_1px_1fr] sm:items-center md:hidden">
+          <div className="relative overflow-hidden rounded-md bg-soft-fill px-5 py-6 sm:grid sm:gap-5 sm:rounded-[22px] sm:p-6 sm:grid-cols-[auto_1px_1fr] sm:items-center md:hidden">
             <div className="absolute inset-y-0 left-0 w-0.5 bg-[#eae1db]">
               <div
                 className="w-full bg-ink"
@@ -201,7 +199,7 @@ function PopulatedHomeState({ home }: HomeScreenProps) {
       {home.listening ? (
         <section className="space-y-8">
           <SectionHeader label="Now Listening" action={<SparkIconLink href="/app/ai" />} />
-          <div className="rounded-lg border border-line/15 bg-soft-fill px-6 py-6 shadow-(--shadow-soft) sm:rounded-3xl sm:border-line/50 sm:px-8">
+          <div className="rounded-lg bg-soft-fill px-6 py-6 sm:rounded-3xl sm:px-8">
             <div className="grid gap-6 md:grid-cols-[192px_1fr] md:items-center">
               <BookCover
                 alt={`${home.listening.title} listening placeholder`}
@@ -382,15 +380,12 @@ function StatsPanel({ stats }: { stats: HomePayload["stats"] }) {
 
       <div className="hidden gap-4 sm:grid">
         {items.map((item) => (
-          <Panel key={item.label} className="flex items-center justify-between gap-4 p-6">
+          <Panel key={item.label} className="p-6">
             <div>
               <p className="text-4xl text-ink">{item.value}</p>
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-olive">
                 {item.label}
               </p>
-            </div>
-            <div className="flex size-10 items-center justify-center rounded-full border border-line/60 bg-white/60">
-              <BookmarkIcon className="size-4 text-plum" />
             </div>
           </Panel>
         ))}
@@ -567,7 +562,7 @@ function RecentAnnotationsPanel({
     <section className="space-y-6">
       <SectionHeader label="Recent Annotations" />
 
-      <Panel className="rounded-sm border-l-2 border-l-brand-fill p-5 sm:rounded-3xl sm:border sm:border-line/50 sm:p-8">
+      <Panel className="rounded-sm p-5 sm:rounded-3xl sm:p-8">
         {annotation ? (
           <div className="space-y-6">
             <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-ink sm:text-xs">
@@ -634,18 +629,16 @@ function ActionCard({
   action,
   description,
   title,
-  tone,
 }: {
   action: ReactNode;
   description: string;
   title: string;
-  tone: "primary" | "soft";
 }) {
   return (
     <div
       className={cn(
-        "flex h-full flex-col rounded-[22px] p-6 shadow-(--shadow-soft)",
-        tone === "primary" ? "bg-soft-fill" : "bg-soft-tone-fill",
+        "flex h-full flex-col rounded-[22px] p-6",
+        "bg-soft-fill",
       )}
     >
       <div className="flex h-full flex-col gap-5">
@@ -693,7 +686,7 @@ function Panel({
   return (
     <div
       className={cn(
-        "rounded-3xl border border-line/50 bg-white/40 shadow-(--shadow-soft)",
+        "rounded-3xl bg-soft-fill",
         className,
       )}
     >

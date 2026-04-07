@@ -8,7 +8,7 @@ export function MissingAuthConfiguration() {
       subtitle="Add your Clerk environment variables to turn on the custom sign-in and sign-up flows."
       footer={<ButtonLink href="/">Return to splash</ButtonLink>}
     >
-      <div className="rounded-[var(--radius-card)] border border-line bg-white/68 p-5 text-left shadow-[var(--shadow-card)]">
+      <div className="rounded-[var(--radius-card)] bg-white/68 p-5 text-left">
         <p className="text-sm uppercase tracking-[0.22em] text-muted">
           Required web variables
         </p>

@@ -68,7 +68,7 @@ export function FeedbackForm({ className }: FeedbackFormProps) {
 
   return (
     <div className={cn("flex flex-col gap-6", className)}>
-      <div className="rounded-[18px] border border-line/50 bg-soft-fill px-5 py-5 shadow-[var(--shadow-soft)]">
+      <div className="rounded-[18px] bg-soft-fill px-5 py-5">
         <textarea
           className="min-h-40 w-full resize-none bg-transparent text-base text-copy-strong outline-none placeholder:text-copy/50"
           placeholder="Type your feedback here..."

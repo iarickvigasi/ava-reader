@@ -38,7 +38,7 @@ export function EmailCodePanel({
   const isSignUp = mode === "sign-up";
 
   return (
-    <div className="space-y-4 rounded-[var(--radius-card)] border border-line bg-white/68 p-5 text-left shadow-[var(--shadow-card)]">
+    <div className="space-y-4 rounded-[var(--radius-card)] bg-white/68 p-5 text-left">
       <div className="space-y-1">
         <p className="text-sm uppercase tracking-[0.22em] text-muted">
           {stage === "identifier" ? "Email access" : "Verify your code"}
@@ -53,7 +53,7 @@ export function EmailCodePanel({
       </div>
 
       {notice ? (
-        <div className="rounded-2xl border border-line bg-paper px-4 py-3 text-sm text-copy">
+        <div className="rounded-2xl bg-paper px-4 py-3 text-sm text-copy">
           {notice}
         </div>
       ) : null}

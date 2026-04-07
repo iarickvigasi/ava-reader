@@ -152,7 +152,7 @@ export function SignUpFlow({ initialNotice }: SignUpFlowProps) {
           onResendCode={() => void resendCode()}
         />
       ) : initialNotice ? (
-        <div className="rounded-[var(--radius-card)] border border-line bg-white/68 px-5 py-4 text-left text-sm text-copy shadow-[var(--shadow-card)]">
+        <div className="rounded-[var(--radius-card)] bg-white/68 px-5 py-4 text-left text-sm text-copy">
           {initialNotice}
         </div>
       ) : null}

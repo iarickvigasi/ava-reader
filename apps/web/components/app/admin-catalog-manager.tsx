@@ -93,7 +93,7 @@ export function AdminCatalogManager({
 
   return (
     <div className="space-y-10">
-      <section className="rounded-[28px] border border-line/60 bg-surface px-6 py-6 shadow-[var(--shadow-soft)] sm:px-8">
+      <section className="rounded-[28px] bg-surface px-6 py-6 sm:px-8">
         <div className="space-y-6">
           <div className="space-y-2">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted">
@@ -174,14 +174,14 @@ export function AdminCatalogManager({
 
         <div className="space-y-4">
           {entries.length === 0 ? (
-            <div className="rounded-[24px] border border-line/60 bg-white/45 px-6 py-6 text-copy shadow-[var(--shadow-soft)]">
+            <div className="rounded-[24px] bg-white/45 px-6 py-6 text-copy">
               The catalog is empty. Create the first title above.
             </div>
           ) : (
             entries.map((entry) => (
               <details
                 key={entry.id}
-                className="rounded-[24px] border border-line/60 bg-white/45 px-6 py-5 shadow-[var(--shadow-soft)]"
+                className="rounded-[24px] bg-white/45 px-6 py-5"
               >
                 <summary className="cursor-pointer list-none">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

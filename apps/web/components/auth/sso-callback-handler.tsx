@@ -51,7 +51,7 @@ export function SsoCallbackHandler() {
 
   return (
     <AuthShell title="Just a moment" subtitle={message}>
-      <div className="rounded-[var(--radius-card)] border border-line bg-white/68 px-5 py-8 text-center shadow-[var(--shadow-card)]">
+      <div className="rounded-[var(--radius-card)] bg-white/68 px-5 py-8 text-center">
         <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-line border-t-ink" />
       </div>
     </AuthShell>
