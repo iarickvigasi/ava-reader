@@ -90,7 +90,7 @@ function PopulatedHomeState({ home }: HomeScreenProps) {
       <section className="grid gap-10 lg:grid-cols-[0.4fr_0.6fr] lg:items-start">
         <BookCover
           alt={`${home.currentEngagement.title} cover`}
-          className="mx-auto aspect-[0.72] w-full max-w-[17rem] shadow-[var(--shadow-card)] lg:mx-0 lg:max-w-[21rem]"
+          className="mx-auto aspect-[0.72] w-full max-w-68 shadow-(--shadow-card) lg:mx-0 lg:max-w-84"
           src={home.currentEngagement.coverImageDataUrl}
           title={home.currentEngagement.title}
         />
@@ -106,7 +106,7 @@ function PopulatedHomeState({ home }: HomeScreenProps) {
             </p>
           </div>
 
-          <div className="grid gap-5 rounded-[22px] border border-line/50 bg-white/45 p-6 shadow-[var(--shadow-soft)] sm:grid-cols-[auto_1px_1fr] sm:items-center">
+          <div className="grid gap-5 rounded-[22px] border border-line/50 bg-white/45 p-6 shadow-(--shadow-soft) sm:grid-cols-[auto_1px_1fr] sm:items-center">
             <div>
               <p className="text-4xl text-ink">
                 {home.currentEngagement.completionPercent}%
@@ -134,7 +134,7 @@ function PopulatedHomeState({ home }: HomeScreenProps) {
       </section>
 
       {home.listening ? (
-        <section className="rounded-[24px] border border-line/50 bg-soft-fill px-6 py-6 shadow-[var(--shadow-soft)] sm:px-8">
+        <section className="rounded-3xl border border-line/50 bg-soft-fill px-6 py-6 shadow-(--shadow-soft) sm:px-8">
           <div className="grid gap-6 md:grid-cols-[192px_1fr] md:items-center">
             <BookCover
               alt={`${home.listening.title} listening placeholder`}
@@ -209,10 +209,10 @@ function MasteryPanel({ mastery }: { mastery: HomePayload["mastery"] }) {
         <div className="flex h-52 items-end gap-2">
           {mastery.days.map((day) => (
             <div key={day.key} className="flex min-w-0 flex-1 flex-col items-center gap-3">
-              <div className="flex h-44 w-full items-end rounded-[4px] bg-transparent">
+              <div className="flex h-44 w-full items-end rounded-sm bg-transparent">
                 <div
                   className={cn(
-                    "w-full rounded-t-[4px] transition",
+                    "w-full rounded-t-sm transition",
                     day.goalMet ? "bg-ink" : "bg-sand",
                   )}
                   style={{
@@ -479,7 +479,7 @@ function ActionCard({
   return (
     <div
       className={cn(
-        "flex h-full flex-col rounded-[22px] border border-line/40 p-6 shadow-[var(--shadow-soft)]",
+        "flex h-full flex-col rounded-[22px] border border-line/40 p-6 shadow-(--shadow-soft)",
         tone === "primary" ? "bg-soft-fill" : "bg-white/45",
       )}
     >
@@ -511,7 +511,7 @@ function LinkAction({
       className={cn(
         "inline-flex min-h-12 items-center justify-center gap-2 rounded-[14px] px-5 text-sm font-semibold uppercase tracking-[0.14em] transition",
         emphasis
-          ? "border border-brand-fill bg-brand-fill text-brand-foreground shadow-[var(--shadow-card)] hover:bg-brand-fill-strong"
+          ? "border border-brand-fill bg-brand-fill text-brand-foreground shadow-(--shadow-card) hover:bg-brand-fill-strong"
           : "border border-line bg-white/40 text-ink hover:bg-white/70",
       )}
     >
@@ -530,7 +530,7 @@ function Panel({
   return (
     <div
       className={cn(
-        "rounded-[24px] border border-line/50 bg-white/40 shadow-[var(--shadow-soft)]",
+        "rounded-3xl border border-line/50 bg-white/40 shadow-(--shadow-soft)",
         className,
       )}
     >
@@ -562,7 +562,7 @@ function BookCover({
     return (
       <div
         className={cn(
-          "overflow-hidden rounded-[6px] border border-line/40 bg-white/60",
+          "overflow-hidden rounded-md border border-line/40 bg-white/60",
           className,
         )}
       >
@@ -575,11 +575,11 @@ function BookCover({
   return (
     <div
       className={cn(
-        "flex items-end overflow-hidden rounded-[6px] border border-line/40 bg-[linear-gradient(180deg,#efe1d5_0%,#d9cabc_100%)] p-4 shadow-[var(--shadow-soft)]",
+        "flex items-end overflow-hidden rounded-md border border-line/40 bg-[linear-gradient(180deg,#efe1d5_0%,#d9cabc_100%)] p-4 shadow-(--shadow-soft)",
         className,
       )}
     >
-      <div className="max-w-[11rem]">
+      <div className="max-w-44">
         <p className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-olive">
           AVA Reader
         </p>

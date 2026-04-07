@@ -41,7 +41,7 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
               {currentUser.role === "ADMIN" ? (
                 <Link
                   href="/app/admin/catalog"
-                  className="inline-flex min-h-10 items-center rounded-[12px] border border-line px-3 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-ink"
+                  className="inline-flex min-h-10 items-center rounded-pl border border-line px-3 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-ink"
                 >
                   Admin
                 </Link>
@@ -87,7 +87,7 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
                 </Link>
               ) : null}
               <ThemeToggle />
-              <div className="flex items-center gap-3 rounded-[16px] border border-line/60 bg-white/55 px-4 py-2">
+              <div className="flex items-center gap-3 rounded-2xl border border-line/60 bg-white/55 px-4 py-2">
                 <div className="hidden text-right lg:block">
                   <p className="text-sm font-semibold text-copy-strong">
                     {currentUser.displayName ?? "Reader"}
