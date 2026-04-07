@@ -3,6 +3,8 @@
 :root {
   --font-afacad: "Afacad", sans-serif;
   --font-abhaya: "Abhaya Libre", serif;
+  --font-inter: "Inter", sans-serif;
+  --font-reader-serif: "Noto Serif", serif;
   --paper: #fff8f5;
   --paper-strong: #fbf2ec;
   --surface: rgba(255, 248, 245, 0.88);
@@ -85,6 +87,8 @@
   --color-danger: var(--danger);
   --font-sans: var(--font-afacad);
   --font-display: var(--font-abhaya);
+  --font-ui: var(--font-inter);
+  --font-reader: var(--font-reader-serif);
 }
 
 @layer base {

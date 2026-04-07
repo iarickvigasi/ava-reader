@@ -14,6 +14,64 @@ import { ThemeToggle } from "@/components/theme/theme-toggle";
 import type { CurrentUserPayload } from "@/lib/api-types";
 import { cn } from "@/lib/cn";
 
+const readerNavItems = [
+  {
+    href: "",
+    iconAlt: "Reader layout",
+    iconSrc: "/icons/reader-nav/reader-layout.svg",
+    isActive: true,
+    label: "Reader",
+  },
+  {
+    href: "",
+    iconAlt: "Font controls",
+    iconSrc: "/icons/reader-nav/font-controls.svg",
+    label: "Type",
+  },
+  {
+    href: "",
+    iconAlt: "Annotations",
+    iconSrc: "/icons/reader-nav/annotations.svg",
+    label: "Notes",
+  },
+  {
+    href: "/app/explore",
+    iconAlt: "Favorites",
+    iconSrc: "/icons/reader-nav/favorites.svg",
+    label: "Saved",
+  },
+  {
+    href: "/app",
+    iconAlt: "Library",
+    iconSrc: "/icons/reader-nav/library.svg",
+    label: "Library",
+  },
+  {
+    href: "/app/insights",
+    iconAlt: "Bookmarks",
+    iconSrc: "/icons/reader-nav/bookmarks.svg",
+    label: "Bookmarks",
+  },
+  {
+    href: "/app/explore",
+    iconAlt: "Search",
+    iconSrc: "/icons/reader-nav/search.svg",
+    label: "Search",
+  },
+  {
+    href: "/app/ai",
+    iconAlt: "Listening",
+    iconSrc: "/icons/reader-nav/listening.svg",
+    label: "Listen",
+  },
+  {
+    href: "",
+    iconAlt: "Translation",
+    iconSrc: "/icons/reader-nav/translation.svg",
+    label: "Translate",
+  },
+] as const;
+
 const items = [
   { href: "/app", label: "Home", icon: HomeIcon },
   { href: "/app/explore", label: "Explore", icon: ExploreIcon },
@@ -27,6 +85,12 @@ type AppNavigationProps = {
 
 export function AppNavigation({ currentUser }: AppNavigationProps) {
   const pathname = usePathname();
+  const isReaderRoute = pathname.startsWith("/app/read/");
+  void currentUser;
+
+  if (isReaderRoute) {
+    return <ReaderNavigation />;
+  }
 
   return (
     <>
@@ -126,5 +190,78 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
         </div>
       </nav>
     </>
+  );
+}
+
+function ReaderNavigation() {
+  return (
+    <>
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-22 border-r border-[#efe4dd] bg-[#fbf2ec] shadow-[10px_0_40px_rgba(31,27,24,0.05)] md:flex md:flex-col md:items-center md:py-8">
+        <Link
+          href="/app"
+          className="font-(--font-display) text-[1.25rem] leading-8 text-ink"
+        >
+          AVA
+        </Link>
+
+        <nav className="mt-8 flex flex-col items-center gap-2">
+          {readerNavItems.map((item) => (
+            <ReaderNavItem key={item.label} item={item} />
+          ))}
+        </nav>
+      </aside>
+
+      <div className="sticky top-0 z-40 border-b border-line/40 bg-paper/95 px-4 py-3 backdrop-blur md:hidden">
+        <div className="flex items-center justify-between gap-4">
+          <Link
+            href="/app"
+            className="font-(--font-display) text-xl leading-none text-ink"
+          >
+            AVA
+          </Link>
+          <div className="flex items-center gap-2 overflow-x-auto">
+            {readerNavItems.slice(0, 5).map((item) => (
+              <ReaderNavItem key={item.label} compact item={item} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function ReaderNavItem({
+  compact = false,
+  item,
+}: {
+  compact?: boolean;
+  item: (typeof readerNavItems)[number];
+}) {
+  const content = (
+    <>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        alt={item.iconAlt}
+        className="h-auto w-auto max-h-5 max-w-5.25 opacity-95"
+        src={item.iconSrc}
+      />
+      <span className="sr-only">{item.label}</span>
+    </>
+  );
+
+  const className = cn(
+    "flex items-center justify-center rounded-[8px] transition hover:bg-white/45",
+    compact ? "size-10 shrink-0" : "size-11",
+    "isActive" in item && item.isActive && "bg-[#f6ebe5]",
+  );
+
+  if (!item.href) {
+    return <div className={className}>{content}</div>;
+  }
+
+  return (
+    <Link aria-label={item.label} className={className} href={item.href}>
+      {content}
+    </Link>
   );
 }

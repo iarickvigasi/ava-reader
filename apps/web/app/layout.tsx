@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Abhaya_Libre, Afacad } from "next/font/google";
+import { Abhaya_Libre, Afacad, Inter, Noto_Serif } from "next/font/google";
 import { SiteFrame } from "@/components/layout/site-frame";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import "./globals.css";
@@ -15,6 +15,17 @@ const display = Abhaya_Libre({
 const body = Afacad({
   variable: "--font-afacad",
   subsets: ["latin"],
+});
+
+const ui = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+const readerSerif = Noto_Serif({
+  variable: "--font-reader-serif",
+  subsets: ["latin"],
+  weight: ["400", "700"],
 });
 
 const themeInitScript = `
@@ -40,7 +51,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${display.variable} ${body.variable} h-full antialiased`}
+      className={`${display.variable} ${body.variable} ${ui.variable} ${readerSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full">
         <Script id="theme-init" strategy="beforeInteractive">

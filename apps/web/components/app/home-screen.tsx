@@ -89,6 +89,8 @@ function PopulatedHomeState({ home }: HomeScreenProps) {
     return <EmptyHomeState home={home} />;
   }
 
+  const readerHref = getReaderHref(home.currentEngagement.id);
+
   return (
     <>
       <section className="grid gap-8 md:grid-cols-[0.32fr_0.58fr] md:items-start md:gap-8 lg:gap-10">
@@ -101,20 +103,28 @@ function PopulatedHomeState({ home }: HomeScreenProps) {
               }}
             />
           </div>
-          <BookCover
-            alt={`${home.currentEngagement.title} cover`}
-            className="mx-auto aspect-[0.72] w-full max-w-72 rounded-xs shadow-(--shadow-card) md:mx-0 md:max-w-80"
-            src={home.currentEngagement.coverImageDataUrl}
-            title={home.currentEngagement.title}
-          />
+          <Link
+            href={readerHref}
+            aria-label={`Open ${home.currentEngagement.title}`}
+            className="block"
+          >
+            <BookCover
+              alt={`${home.currentEngagement.title} cover`}
+              className="mx-auto aspect-[0.72] w-full max-w-72 rounded-xs shadow-(--shadow-card) md:mx-0 md:max-w-80"
+              src={home.currentEngagement.coverImageDataUrl}
+              title={home.currentEngagement.title}
+            />
+          </Link>
         </div>
 
         <div className="space-y-6 md:space-y-8 md:pt-16">
           <div className="space-y-5 md:space-y-4">
             <SectionEyebrow>Currently Engaged</SectionEyebrow>
-            <h1 className="max-w-2xl font-display text-[3rem] leading-[1.05] tracking-[-0.05em] text-ink sm:text-6xl sm:leading-[1.04] md:max-w-none md:text-[3.5rem] md:leading-[1.1] md:tracking-[-0.02em]">
-              {home.currentEngagement.title}
-            </h1>
+            <Link href={readerHref} className="block w-fit">
+              <h1 className="max-w-2xl font-display text-[3rem] leading-[1.05] tracking-[-0.05em] text-ink transition hover:opacity-80 sm:text-6xl sm:leading-[1.04] md:max-w-none md:text-[3.5rem] md:leading-[1.1] md:tracking-[-0.02em]">
+                {home.currentEngagement.title}
+              </h1>
+            </Link>
             <div className="flex items-center gap-4 text-sm uppercase tracking-[0.08em] text-muted sm:flex-col sm:items-start sm:gap-2 sm:text-base sm:normal-case sm:tracking-normal md:block">
               <p className="text-lg italic normal-case tracking-normal text-plum sm:text-2xl">
                 {home.currentEngagement.author ?? "Unknown author"}
@@ -143,7 +153,7 @@ function PopulatedHomeState({ home }: HomeScreenProps) {
                 {home.currentEngagement.chapterLabel}
               </p>
               <Link
-                href="/app"
+                href={readerHref}
                 className="mt-4 inline-flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-ink"
               >
                 Resume Reading
@@ -198,7 +208,7 @@ function PopulatedHomeState({ home }: HomeScreenProps) {
           </div>
 
           <div className="hidden md:flex md:items-center md:gap-3">
-            <LinkAction href="/app" label="Resume Reading" emphasis />
+            <LinkAction href={readerHref} label="Resume Reading" emphasis />
             <LibraryImportButton variant="soft" label="Import another book" />
           </div>
         </div>
@@ -249,6 +259,10 @@ function PopulatedHomeState({ home }: HomeScreenProps) {
       </section>
     </>
   );
+}
+
+function getReaderHref(libraryItemId: string) {
+  return `/app/read/${libraryItemId}`;
 }
 
 function MasteryPanel({ mastery }: { mastery: HomePayload["mastery"] }) {
