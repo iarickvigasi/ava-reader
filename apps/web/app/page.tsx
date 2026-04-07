@@ -24,7 +24,11 @@ export default function Home() {
           <ButtonLink href="/sign-in" className="flex-1">
             Sign in
           </ButtonLink>
-          <ButtonLink href="/sign-up" variant="soft" className="flex-1">
+          <ButtonLink
+            href="/sign-up"
+            variant="soft"
+            className="flex-1 hover:border-transparent! hover:bg-brand-fill/12!"
+          >
             Create account
           </ButtonLink>
         </div>
