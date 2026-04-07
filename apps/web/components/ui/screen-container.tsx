@@ -11,7 +11,7 @@ export function ScreenContainer({
   className,
 }: ScreenContainerProps) {
   return (
-    <main className="app-shell-line flex min-h-screen flex-col">
+    <main className=" flex min-h-screen flex-col">
       <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6 sm:px-8 lg:px-10">
         <div className={cn("flex flex-1 flex-col", className)}>{children}</div>
       </div>
