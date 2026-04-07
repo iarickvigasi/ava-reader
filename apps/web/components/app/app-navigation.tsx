@@ -87,7 +87,7 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
                 </Link>
               ) : null}
               <ThemeToggle />
-              <div className="flex items-center gap-3 rounded-2xl border border-line/60 bg-white/55 px-4 py-2">
+              <div className="flex items-center gap-3 rounded-2xl bg-soft-fill px-4 py-2">
                 <div className="hidden text-right lg:block">
                   <p className="text-sm font-semibold text-copy-strong">
                     {currentUser.displayName ?? "Reader"}

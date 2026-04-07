@@ -21,6 +21,7 @@
   --brand-fill-strong: #2f5167;
   --brand-foreground: #ffffff;
   --soft-fill: #fbf2ec;
+  --soft-tone-fill: #f8ebe3;
   --soft-foreground: #292929;
   --success: #2f7d54;
   --danger: #a64949;
@@ -50,6 +51,7 @@
   --brand-fill-strong: #e7c2a7;
   --brand-foreground: #1b1713;
   --soft-fill: #232c36;
+  --soft-tone-fill: #282c32;
   --soft-foreground: #f5eee7;
   --success: #74c393;
   --danger: #df8c8c;
@@ -77,6 +79,7 @@
   --color-brand-fill-strong: var(--brand-fill-strong);
   --color-brand-foreground: var(--brand-foreground);
   --color-soft-fill: var(--soft-fill);
+  --color-soft-tone-fill: var(--soft-tone-fill);
   --color-soft-foreground: var(--soft-foreground);
   --color-success: var(--success);
   --color-danger: var(--danger);

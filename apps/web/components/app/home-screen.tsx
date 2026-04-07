@@ -479,8 +479,8 @@ function ActionCard({
   return (
     <div
       className={cn(
-        "flex h-full flex-col rounded-[22px] border border-line/40 p-6 shadow-(--shadow-soft)",
-        tone === "primary" ? "bg-soft-fill" : "bg-white/45",
+        "flex h-full flex-col rounded-[22px]  p-6 shadow-(--shadow-soft)",
+        tone === "primary" ? "bg-soft-fill" : "bg-soft-tone-fill",
       )}
     >
       <div className="flex h-full flex-col gap-5">
