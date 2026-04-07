@@ -38,7 +38,7 @@ export function HomeScreen({ home }: HomeScreenProps) {
 
 function EmptyHomeState({ home }: HomeScreenProps) {
   return (
-    <section className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
+    <section className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
       <div className="space-y-6 pt-4">
         <SectionEyebrow>Welcome</SectionEyebrow>
         <h1 className="max-w-md font-display text-5xl leading-[1.05] tracking-[-0.04em] text-ink sm:text-6xl">
@@ -58,7 +58,7 @@ function EmptyHomeState({ home }: HomeScreenProps) {
           action={
             <LibraryImportButton
               variant="primary"
-              label="Upload EPUB or PDF"
+              label="Upload book"
               className="w-full"
             />
           }
@@ -479,18 +479,18 @@ function ActionCard({
   return (
     <div
       className={cn(
-        "rounded-[22px] border border-line/40 p-6 shadow-[var(--shadow-soft)]",
+        "flex h-full flex-col rounded-[22px] border border-line/40 p-6 shadow-[var(--shadow-soft)]",
         tone === "primary" ? "bg-soft-fill" : "bg-white/45",
       )}
     >
-      <div className="space-y-5">
+      <div className="flex h-full flex-col gap-5">
         <div className="space-y-3">
           <h2 className="font-display text-4xl leading-tight text-ink">
             {title}
           </h2>
           <p className="text-lg leading-8 text-title">{description}</p>
         </div>
-        {action}
+        <div className="mt-auto">{action}</div>
       </div>
     </div>
   );

@@ -30,7 +30,7 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-line/60 bg-paper/92 backdrop-blur md:shadow-[var(--shadow-nav)]">
+      <header className="sticky top-0 z-40 bg-paper/92 backdrop-blur">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10">
           <div className="flex h-16 items-center justify-between gap-3 md:hidden">
             <ThemeToggle />
@@ -91,9 +91,6 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
                 <div className="hidden text-right lg:block">
                   <p className="text-sm font-semibold text-copy-strong">
                     {currentUser.displayName ?? "Reader"}
-                  </p>
-                  <p className="text-xs uppercase tracking-[0.12em] text-muted">
-                    {currentUser.role.toLowerCase()}
                   </p>
                 </div>
                 <UserButton />
