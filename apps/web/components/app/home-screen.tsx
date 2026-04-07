@@ -512,7 +512,7 @@ function LinkAction({
         "inline-flex min-h-12 items-center justify-center gap-2 rounded-[14px] px-5 text-sm font-semibold uppercase tracking-[0.14em] transition",
         emphasis
           ? "border border-brand-fill bg-brand-fill text-brand-foreground shadow-(--shadow-card) hover:bg-brand-fill-strong"
-          : "border border-line bg-white/40 text-ink hover:bg-white/70",
+          : " bg-white/40 text-ink hover:bg-white/50",
       )}
     >
       {label}

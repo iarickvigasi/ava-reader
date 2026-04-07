@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Abhaya_Libre, Afacad } from "next/font/google";
 import { SiteFrame } from "@/components/layout/site-frame";
@@ -42,7 +43,9 @@ export default function RootLayout({
       className={`${display.variable} ${body.variable} h-full antialiased`}
     >
       <body className="min-h-full">
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <Script id="theme-init" strategy="beforeInteractive">
+          {themeInitScript}
+        </Script>
         <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">
           <ThemeProvider>
             <SiteFrame>{children}</SiteFrame>
