@@ -69,6 +69,19 @@ export class LibraryService {
         },
       });
 
+      const coverBlob = metadata.coverImage
+        ? await tx.storedBlob.create({
+            data: {
+              purpose: BlobPurpose.BOOK_COVER,
+              mimeType: metadata.coverImage.mimeType,
+              sizeBytes: metadata.coverImage.bytes.byteLength,
+              originalFilename: metadata.coverImage.originalFilename,
+              checksum: checksumBuffer(metadata.coverImage.bytes),
+              bytes: toPrismaBytes(metadata.coverImage.bytes),
+            },
+          })
+        : null;
+
       const book = await tx.book.create({
         data: {
           title: metadata.title,
@@ -76,6 +89,7 @@ export class LibraryService {
           description: metadata.description,
           language: metadata.language,
           publishedYear: metadata.publishedYear,
+          coverBlobId: coverBlob?.id,
           files: {
             create: {
               blobId: blob.id,

@@ -13,6 +13,11 @@ type UploadedFileLike = {
 
 export type ExtractedBookMetadata = {
   author: string | null;
+  coverImage: {
+    bytes: Buffer;
+    mimeType: string;
+    originalFilename: string;
+  } | null;
   description: string | null;
   format: BookFileFormat;
   language: string | null;
@@ -37,6 +42,7 @@ export async function extractBookMetadata(
 
     return {
       author: epubMetadata.author ?? null,
+      coverImage: epubMetadata.coverImage ?? null,
       description: epubMetadata.description ?? null,
       format,
       language: epubMetadata.language ?? null,
@@ -47,6 +53,7 @@ export async function extractBookMetadata(
 
   return {
     author: null,
+    coverImage: null,
     description: null,
     format,
     language: null,
@@ -111,13 +118,22 @@ async function tryExtractEpubMetadata(buffer: Buffer) {
     const packageXml = await packageFile.async('text');
     const packageDocument = xmlParser.parse(packageXml) as {
       package?: {
+        manifest?: {
+          item?: Record<string, string> | Array<Record<string, string>>;
+        };
         metadata?: Record<string, unknown>;
       };
     };
     const metadata = packageDocument.package?.metadata;
+    const manifestItems = firstAsArray(packageDocument.package?.manifest?.item);
+    const coverImagePath = readEpubCoverPath(metadata, manifestItems);
+    const coverImage = coverImagePath
+      ? await readZipBinaryAsset(zip, packagePath, coverImagePath)
+      : null;
 
     return {
       author: readMetadataText(metadata, ['dc:creator', 'creator']),
+      coverImage,
       description: readMetadataText(metadata, [
         'dc:description',
         'description',
@@ -131,6 +147,100 @@ async function tryExtractEpubMetadata(buffer: Buffer) {
   } catch {
     return {};
   }
+}
+
+function readEpubCoverPath(
+  metadata: Record<string, unknown> | undefined,
+  manifestItems: Array<Record<string, string>>,
+) {
+  const manifestCoverId = readCoverIdFromMeta(metadata);
+
+  if (manifestCoverId) {
+    const manifestCover = manifestItems.find(
+      (item) => item['@_id'] === manifestCoverId,
+    );
+
+    if (manifestCover?.['@_href']) {
+      return manifestCover['@_href'];
+    }
+  }
+
+  const propertiesCover = manifestItems.find((item) =>
+    item['@_properties']?.split(/\s+/).includes('cover-image'),
+  );
+
+  if (propertiesCover?.['@_href']) {
+    return propertiesCover['@_href'];
+  }
+
+  return null;
+}
+
+function readCoverIdFromMeta(metadata: Record<string, unknown> | undefined) {
+  if (!metadata) {
+    return null;
+  }
+
+  const metaEntries = firstAsArray(metadata.meta);
+
+  for (const entry of metaEntries) {
+    if (
+      entry &&
+      typeof entry === 'object' &&
+      (entry as Record<string, string>)['@_name'] === 'cover'
+    ) {
+      const content = (entry as Record<string, string>)['@_content'];
+
+      if (content.trim().length > 0) {
+        return content.trim();
+      }
+    }
+  }
+
+  return null;
+}
+
+async function readZipBinaryAsset(
+  zip: JSZip,
+  packagePath: string,
+  relativeAssetPath: string,
+) {
+  const assetPath = resolveZipPath(packagePath, relativeAssetPath);
+  const assetFile = zip.file(assetPath);
+
+  if (!assetFile) {
+    return null;
+  }
+
+  const bytes = await assetFile.async('nodebuffer');
+  const mimeType = mime.lookup(assetPath) || 'application/octet-stream';
+
+  return {
+    bytes,
+    mimeType,
+    originalFilename: assetPath.split('/').at(-1) ?? 'cover',
+  };
+}
+
+function resolveZipPath(baseFilePath: string, relativeAssetPath: string) {
+  const baseSegments = baseFilePath.split('/').slice(0, -1);
+  const assetSegments = relativeAssetPath.split('/');
+  const resolved = [...baseSegments];
+
+  for (const segment of assetSegments) {
+    if (!segment || segment === '.') {
+      continue;
+    }
+
+    if (segment === '..') {
+      resolved.pop();
+      continue;
+    }
+
+    resolved.push(segment);
+  }
+
+  return resolved.join('/');
 }
 
 function readPublishedYear(value: string | null) {
