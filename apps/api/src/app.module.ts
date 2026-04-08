@@ -13,6 +13,9 @@ import { HomeService } from './home/home.service';
 import { LibraryController } from './library/library.controller';
 import { LibraryService } from './library/library.service';
 import { PrismaService } from './prisma/prisma.service';
+import { ReaderController } from './reader/reader.controller';
+import { ReaderProcessingService } from './reader/reader-processing.service';
+import { ReaderService } from './reader/reader.service';
 import { UsersController } from './users/users.controller';
 import { UsersService } from './users/users.service';
 
@@ -23,6 +26,7 @@ import { UsersService } from './users/users.service';
     UsersController,
     HomeController,
     LibraryController,
+    ReaderController,
     CatalogController,
     FeedbackController,
   ],
@@ -34,6 +38,8 @@ import { UsersService } from './users/users.service';
     UsersService,
     HomeService,
     LibraryService,
+    ReaderService,
+    ReaderProcessingService,
     CatalogService,
     FeedbackService,
   ],

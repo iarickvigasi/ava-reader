@@ -17,15 +17,27 @@ type ThemeContextValue = {
 
 const STORAGE_KEY = "ava-theme";
 const THEME_EVENT = "ava-theme-change";
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-function getStoredTheme(): Theme {
+function persistTheme(theme: Theme) {
+  window.localStorage.setItem(STORAGE_KEY, theme);
+  document.cookie = `${STORAGE_KEY}=${theme}; path=/; max-age=${COOKIE_MAX_AGE}; samesite=lax`;
+}
+
+function getStoredTheme(initialTheme: Theme): Theme {
   if (typeof window === "undefined") {
-    return "light";
+    return initialTheme;
   }
 
-  return window.localStorage.getItem(STORAGE_KEY) === "dark" ? "dark" : "light";
+  const storedTheme = window.localStorage.getItem(STORAGE_KEY);
+
+  if (storedTheme === "dark" || storedTheme === "light") {
+    return storedTheme;
+  }
+
+  return initialTheme;
 }
 
 function applyTheme(theme: Theme) {
@@ -50,24 +62,30 @@ function subscribe(onStoreChange: () => void) {
   };
 }
 
-function getThemeSnapshot(): Theme {
-  return getStoredTheme();
+function getThemeSnapshot(initialTheme: Theme): Theme {
+  return getStoredTheme(initialTheme);
 }
 
-function getServerThemeSnapshot(): Theme {
-  return "light";
+function getServerThemeSnapshot(initialTheme: Theme): Theme {
+  return initialTheme;
 }
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
+export function ThemeProvider({
+  children,
+  initialTheme,
+}: {
+  children: ReactNode;
+  initialTheme: Theme;
+}) {
   const theme = useSyncExternalStore(
     subscribe,
-    getThemeSnapshot,
-    getServerThemeSnapshot,
+    () => getThemeSnapshot(initialTheme),
+    () => getServerThemeSnapshot(initialTheme),
   );
 
   useEffect(() => {
     applyTheme(theme);
-    window.localStorage.setItem(STORAGE_KEY, theme);
+    persistTheme(theme);
   }, [theme]);
 
   return (
@@ -78,7 +96,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
           const nextTheme = theme === "light" ? "dark" : "light";
 
           applyTheme(nextTheme);
-          window.localStorage.setItem(STORAGE_KEY, nextTheme);
+          persistTheme(nextTheme);
           window.dispatchEvent(new Event(THEME_EVENT));
         },
       }}

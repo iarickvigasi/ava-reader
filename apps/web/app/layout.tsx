@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { ClerkProvider } from "@clerk/nextjs";
+import { cookies } from "next/headers";
 import { Abhaya_Libre, Afacad, Inter, Noto_Serif } from "next/font/google";
 import { SiteFrame } from "@/components/layout/site-frame";
 import { ThemeProvider } from "@/components/theme/theme-provider";
@@ -28,37 +28,30 @@ const readerSerif = Noto_Serif({
   weight: ["400", "700"],
 });
 
-const themeInitScript = `
-  try {
-    const theme = localStorage.getItem("ava-theme");
-    document.documentElement.dataset.theme = theme === "dark" ? "dark" : "light";
-  } catch (error) {
-    document.documentElement.dataset.theme = "light";
-  }
-`;
-
 export const metadata: Metadata = {
   title: "Ava Reader",
   description: "Investigate deeper meaning of books without breaking focus.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const initialTheme =
+    cookieStore.get("ava-theme")?.value === "dark" ? "dark" : "light";
+
   return (
     <html
       lang="en"
+      data-theme={initialTheme}
       suppressHydrationWarning
       className={`${display.variable} ${body.variable} ${ui.variable} ${readerSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full">
-        <Script id="theme-init" strategy="beforeInteractive">
-          {themeInitScript}
-        </Script>
         <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">
-          <ThemeProvider>
+          <ThemeProvider initialTheme={initialTheme}>
             <SiteFrame>{children}</SiteFrame>
           </ThemeProvider>
         </ClerkProvider>

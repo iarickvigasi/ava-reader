@@ -3,9 +3,9 @@ import {
   Show,
   SignInButton,
   SignUpButton,
-  UserButton,
 } from "@clerk/nextjs";
 import { HeaderBrandWordmark } from "@/components/brand/header-brand-wordmark";
+import { UserMenuButton } from "@/components/auth/clerk-user-button";
 
 function navButtonClassName(tone: "primary" | "soft") {
   if (tone === "primary") {
@@ -48,7 +48,7 @@ export function ClerkNav() {
               >
                 Open app
               </Link>
-              <UserButton />
+              <UserMenuButton />
             </div>
           </Show>
         </div>

@@ -1,27 +1,30 @@
-import { redirect } from "next/navigation";
 import { ReaderScreen } from "@/components/app/reader-screen";
-import type { HomePayload } from "@/lib/api-types";
+import type { ReaderStatusPayload } from "@/lib/api-types";
 import { fetchServerApi } from "@/lib/server-api";
 
 export const dynamic = "force-dynamic";
 
 export default async function ReaderPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ libraryItemId: string }>;
+  searchParams: Promise<{ chapter?: string }>;
 }) {
-  const home = await fetchServerApi<HomePayload>("/api/home", {
-    returnBackUrl: "/app",
-  });
   const { libraryItemId } = await params;
+  const { chapter } = await searchParams;
+  const reader = await fetchServerApi<ReaderStatusPayload>(
+    `/api/library/${libraryItemId}/reader${chapter ? `?chapter=${encodeURIComponent(chapter)}` : ""}`,
+    {
+      returnBackUrl: `/app/read/${libraryItemId}`,
+    },
+  );
 
-  if (!home.currentEngagement) {
-    redirect("/app");
-  }
-
-  if (home.currentEngagement.id !== libraryItemId) {
-    redirect(`/app/read/${home.currentEngagement.id}`);
-  }
-
-  return <ReaderScreen currentEngagement={home.currentEngagement} />;
+  return (
+    <ReaderScreen
+      initialChapterParam={chapter ?? null}
+      initialPayload={reader}
+      libraryItemId={libraryItemId}
+    />
+  );
 }

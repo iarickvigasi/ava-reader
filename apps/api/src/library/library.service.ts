@@ -99,12 +99,15 @@ export class LibraryService {
               isPrimary: true,
             },
           },
-          processingRuns: {
-            create: {
-              pipeline: 'normalize-reader-package-v1',
-              status: ProcessingStatus.PENDING,
-            },
-          },
+          processingRuns:
+            format === BookFileFormat.EPUB
+              ? {
+                  create: {
+                    pipeline: 'normalize-reader-package-v1',
+                    status: ProcessingStatus.PENDING,
+                  },
+                }
+              : undefined,
         },
       });
 

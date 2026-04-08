@@ -161,12 +161,15 @@ export class CatalogService {
                   isPrimary: true,
                 },
               },
-              processingRuns: {
-                create: {
-                  pipeline: 'normalize-reader-package-v1',
-                  status: ProcessingStatus.PENDING,
-                },
-              },
+              processingRuns:
+                format === BookFileFormat.EPUB
+                  ? {
+                      create: {
+                        pipeline: 'normalize-reader-package-v1',
+                        status: ProcessingStatus.PENDING,
+                      },
+                    }
+                  : undefined,
             },
           },
         },
@@ -273,13 +276,15 @@ export class CatalogService {
           },
         });
 
-        await tx.bookProcessingRun.create({
-          data: {
-            bookId: currentEntry.bookId,
-            pipeline: 'normalize-reader-package-v1',
-            status: ProcessingStatus.PENDING,
-          },
-        });
+        if (format === BookFileFormat.EPUB) {
+          await tx.bookProcessingRun.create({
+            data: {
+              bookId: currentEntry.bookId,
+              pipeline: 'normalize-reader-package-v1',
+              status: ProcessingStatus.PENDING,
+            },
+          });
+        }
       }
 
       const status =

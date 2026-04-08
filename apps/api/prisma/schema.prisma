@@ -33,6 +33,7 @@ enum BookFileKind {
 
 enum ProcessingStatus {
   PENDING
+  PROCESSING
   READY
   FAILED
 }

@@ -88,6 +88,50 @@ Monorepo scaffold for a web-first AI book reader.
    pnpm dev
    ```
 
+## Split Dev Workflow
+
+Use this when you want frontend changes to appear immediately while still
+keeping the backend database and API inside Docker.
+
+1. Start PostgreSQL and a hot-reloading Nest API in Docker:
+
+   ```bash
+   corepack pnpm dev:split
+   ```
+
+2. Start the Next.js frontend locally:
+
+   ```bash
+   corepack pnpm --filter web dev
+   ```
+
+3. Open the apps:
+
+   - Web: `http://localhost:3000`
+   - API health: `http://localhost:4000/api/health`
+
+4. Follow logs when needed:
+
+   ```bash
+   corepack pnpm dev:split:logs
+   ```
+
+5. Stop the split setup:
+
+   ```bash
+   corepack pnpm dev:split:down
+   ```
+
+Notes:
+
+- The split workflow uses `compose.dev.yaml`, which mounts the repo into the API
+  container and runs `pnpm --filter api start:dev` so backend code changes are
+  picked up without rebuilding the image.
+- Frontend changes still come from the local Next dev server, so UI edits update
+  immediately.
+- You still need to restart or rebuild when you change Docker-specific things
+  like the API Dockerfile, OS packages, or container-only environment setup.
+
 ## Docker Services
 
 - Web: `http://localhost:3000`
