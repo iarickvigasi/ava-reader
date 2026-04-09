@@ -70,6 +70,12 @@ describe('ReaderService', () => {
       chapterId: 'chapter-2',
       textOffset: 0,
     });
+    expect(payload.toc[0]).toMatchObject({
+      chapterId: 'chapter-1',
+      children: [],
+      id: 'toc:0',
+      label: 'Chapter One',
+    });
   });
 
   it('returns a centered three-chapter window for a middle chapter query', async () => {
@@ -204,6 +210,34 @@ describe('ReaderService', () => {
     });
   });
 
+  it('prefers the deepest nested toc label for exact subsection locators', async () => {
+    findFirst.mockResolvedValue(
+      createLibraryItemRecord({
+        tocMode: 'nested',
+        version: 2,
+      }),
+    );
+    update.mockResolvedValue({
+      chapterLabel: 'Section Two',
+      completionPercent: 50,
+      currentLocator: JSON.stringify({
+        blockId: 'chapter-2::b2',
+        chapterId: 'chapter-2',
+        textOffset: 12,
+      }),
+      lastReadAt: new Date('2026-04-07T12:00:00.000Z'),
+    });
+    updateLibraryItem.mockResolvedValue({});
+
+    await readerService.updateProgress('clerk_1', 'library-1', {
+      blockId: 'chapter-2::b2',
+      chapterId: 'chapter-2',
+      textOffset: 12,
+    });
+
+    expect(update.mock.calls[0]?.[0].data.chapterLabel).toBe('Section Two');
+  });
+
   it('returns stable progress when the same locator is saved repeatedly', async () => {
     findFirst.mockResolvedValue(createLibraryItemRecord());
     update.mockResolvedValue({
@@ -322,43 +356,103 @@ describe('ReaderService', () => {
   });
 });
 
-function createLibraryItemRecord() {
+function createLibraryItemRecord(input?: {
+  tocMode?: 'flat' | 'nested';
+  version?: 1 | 2;
+}) {
+  const tocMode = input?.tocMode ?? 'flat';
+  const version = input?.version ?? 1;
   const readerPackage = {
-    version: 1 as const,
+    version,
     manifest: {
       author: 'Example Author',
       language: 'en',
       sourceChecksum: 'checksum',
       title: 'Example Title',
-      totalBlocks: 4,
+      totalBlocks: tocMode === 'nested' && version === 2 ? 5 : 4,
       totalChapters: 4,
     },
-    toc: [
-      {
-        chapterId: 'chapter-1',
-        href: 'text/chapter-1.xhtml',
-        label: 'Chapter One',
-        spineIndex: 0,
-      },
-      {
-        chapterId: 'chapter-2',
-        href: 'text/chapter-2.xhtml',
-        label: 'Chapter Two',
-        spineIndex: 1,
-      },
-      {
-        chapterId: 'chapter-3',
-        href: 'text/chapter-3.xhtml',
-        label: 'Chapter Three',
-        spineIndex: 2,
-      },
-      {
-        chapterId: 'chapter-4',
-        href: 'text/chapter-4.xhtml',
-        label: 'Chapter Four',
-        spineIndex: 3,
-      },
-    ],
+    toc:
+      tocMode === 'nested' && version === 2
+        ? [
+            {
+              anchorId: null,
+              blockId: null,
+              chapterId: 'chapter-1',
+              children: [],
+              href: 'text/chapter-1.xhtml',
+              id: 'toc:0',
+              label: 'Chapter One',
+              spineIndex: 0,
+            },
+            {
+              anchorId: null,
+              blockId: null,
+              chapterId: 'chapter-2',
+              children: [
+                {
+                  anchorId: 'section-two',
+                  blockId: 'chapter-2::b2',
+                  chapterId: 'chapter-2',
+                  children: [],
+                  href: 'text/chapter-2.xhtml#section-two',
+                  id: 'toc:1.0',
+                  label: 'Section Two',
+                  spineIndex: 1,
+                },
+              ],
+              href: 'text/chapter-2.xhtml',
+              id: 'toc:1',
+              label: 'Chapter Two',
+              spineIndex: 1,
+            },
+            {
+              anchorId: null,
+              blockId: null,
+              chapterId: 'chapter-3',
+              children: [],
+              href: 'text/chapter-3.xhtml',
+              id: 'toc:2',
+              label: 'Chapter Three',
+              spineIndex: 2,
+            },
+            {
+              anchorId: null,
+              blockId: null,
+              chapterId: 'chapter-4',
+              children: [],
+              href: 'text/chapter-4.xhtml',
+              id: 'toc:3',
+              label: 'Chapter Four',
+              spineIndex: 3,
+            },
+          ]
+        : [
+            {
+              chapterId: 'chapter-1',
+              href: 'text/chapter-1.xhtml',
+              label: 'Chapter One',
+              spineIndex: 0,
+            },
+            {
+              chapterId: 'chapter-2',
+              href: 'text/chapter-2.xhtml',
+              label: 'Chapter Two',
+              spineIndex: 1,
+            },
+            {
+              chapterId: 'chapter-3',
+              href: 'text/chapter-3.xhtml',
+              label: 'Chapter Three',
+              spineIndex: 2,
+            },
+            {
+              chapterId: 'chapter-4',
+              href: 'text/chapter-4.xhtml',
+              label: 'Chapter Four',
+              spineIndex: 3,
+            },
+          ],
     chapters: [
       {
         blocks: [
@@ -384,6 +478,14 @@ function createLibraryItemRecord() {
             inlines: [{ kind: 'text' as const, text: 'Two' }],
             kind: 'paragraph' as const,
             text: 'Two',
+          },
+          {
+            anchorId: 'section-two',
+            id: 'chapter-2::b2',
+            inlines: [{ kind: 'text' as const, text: 'Section Two' }],
+            kind: 'heading' as const,
+            level: 2,
+            text: 'Section Two',
           },
         ],
         chapterId: 'chapter-2',

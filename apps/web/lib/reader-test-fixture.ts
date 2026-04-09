@@ -30,12 +30,49 @@ export function createReaderResumeFixturePayload(): ReaderStatusPayload {
       locator: null,
     },
     status: "READY",
-    toc: chapterIds.map((chapterId, index) => ({
-      chapterId,
-      href: `#${chapterId}`,
-      label: `Fixture Chapter ${index + 1}`,
-      spineIndex: index,
-    })),
+    toc: [
+      {
+        anchorId: null,
+        blockId: null,
+        chapterId: "chapter-1",
+        children: [
+          {
+            anchorId: "chapter-1-heading",
+            blockId: "chapter-1::heading",
+            chapterId: "chapter-1",
+            children: [],
+            href: "#chapter-1-heading",
+            id: "toc:0.0",
+            label: "Fixture Chapter 1 Opening",
+            spineIndex: 0,
+          },
+        ],
+        href: "#chapter-1",
+        id: "toc:0",
+        label: "Fixture Chapter 1",
+        spineIndex: 0,
+      },
+      {
+        anchorId: null,
+        blockId: null,
+        chapterId: "chapter-2",
+        children: [],
+        href: "#chapter-2",
+        id: "toc:1",
+        label: "Fixture Chapter 2",
+        spineIndex: 1,
+      },
+      {
+        anchorId: null,
+        blockId: null,
+        chapterId: "chapter-3",
+        children: [],
+        href: "#chapter-3",
+        id: "toc:2",
+        label: "Fixture Chapter 3",
+        spineIndex: 2,
+      },
+    ],
   };
 }
 
@@ -48,6 +85,7 @@ function createFixtureChapter(input: {
   const chapterNumber = input.spineIndex + 1;
   const blocks: ReaderBlock[] = [
     {
+      anchorId: `${input.chapterId}-heading`,
       id: `${input.chapterId}::heading`,
       inlines: [
         {

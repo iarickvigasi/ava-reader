@@ -8,15 +8,21 @@ import type {
   ReaderInline,
   ReaderListItem,
   ReaderPackage,
-  ReaderTocEntry,
+  ReaderTocNode,
 } from './reader-types';
 
 type OrderedNode = Record<string, unknown>;
 type ManifestItem = {
   href: string;
-  id: string;
+  id: string | null;
   mediaType?: string;
   properties?: string;
+};
+type ParsedTocNode = {
+  children: ParsedTocNode[];
+  href: string | null;
+  id: string;
+  label: string;
 };
 
 const xmlParser = new XMLParser({
@@ -54,6 +60,11 @@ const inlineContainerTags = new Set([
   'sub',
   'sup',
 ]);
+const readableDocumentMediaTypes = new Set([
+  'application/xhtml+xml',
+  'application/xml',
+  'text/html',
+]);
 
 export async function buildReaderPackageFromEpub(input: {
   author: string | null;
@@ -82,30 +93,35 @@ export async function buildReaderPackageFromEpub(input: {
       (item) =>
         ({
           href: item['@_href'] ?? '',
-          id: item['@_id'] ?? '',
+          id: item['@_id'] ?? null,
           mediaType: item['@_media-type'],
           properties: item['@_properties'],
         }) satisfies ManifestItem,
     )
-    .filter((item) => item.id && item.href);
+    .filter((item) => item.href);
   const manifestById = new Map<string, ManifestItem>(
-    manifestItems.map((item) => [item.id, item]),
+    manifestItems.flatMap((item) =>
+      item.id ? [[item.id, item] as const] : [],
+    ),
   );
-  const spineItems = firstAsArray(packageDocument.package?.spine?.itemref)
-    .map((item) => manifestById.get(item['@_idref'] ?? ''))
-    .filter((item): item is ManifestItem => item !== undefined);
-
-  if (spineItems.length === 0) {
-    throw new Error('The EPUB does not contain a readable spine.');
-  }
-
-  const tocEntries = await readTocEntries(zip, packagePath, {
+  const parsedToc = await readTocEntries(zip, packagePath, {
     manifestItems,
     ncxId: packageDocument.package?.spine?.['@_toc'] ?? null,
   });
-  const tocByHref = new Map(
-    tocEntries.map((entry) => [normalizeHrefForLookup(entry.href), entry]),
-  );
+  const spineItems = resolveReadingOrderItems({
+    packagePath,
+    manifestItems,
+    manifestById,
+    parsedToc,
+    spineItemRefs: firstAsArray(packageDocument.package?.spine?.itemref).map(
+      (item) => item['@_idref'] ?? '',
+    ),
+    zip,
+  });
+
+  if (spineItems.length === 0) {
+    throw new Error('The EPUB does not contain readable chapter documents.');
+  }
 
   let totalBlocks = 0;
   const chapters = await Promise.all(
@@ -122,12 +138,17 @@ export async function buildReaderPackageFromEpub(input: {
       const bodyNode = findFirstNodeByTag(parsedChapter, 'body');
 
       if (!bodyNode) {
+        const fallbackLabel = resolveChapterFallbackLabel({
+          bookTitle: input.title,
+          candidateLabel: findFirstTocLabelForHref(parsedToc, href),
+          chapterTitle: null,
+          spineIndex,
+        });
+
         return createEmptyChapter({
           chapterId,
           href,
-          label:
-            tocByHref.get(normalizeHrefForLookup(href))?.label ??
-            `Chapter ${spineIndex + 1}`,
+          label: fallbackLabel,
           spineIndex,
         });
       }
@@ -140,10 +161,13 @@ export async function buildReaderPackageFromEpub(input: {
       );
 
       totalBlocks += blocks.length;
-      const fallbackLabel =
-        tocByHref.get(normalizeHrefForLookup(href))?.label ??
-        getChapterTitleFromBlocks(blocks) ??
-        `Chapter ${spineIndex + 1}`;
+      const chapterTitle = getChapterTitleFromBlocks(blocks);
+      const fallbackLabel = resolveChapterFallbackLabel({
+        bookTitle: input.title,
+        candidateLabel: findFirstTocLabelForHref(parsedToc, href),
+        chapterTitle,
+        spineIndex,
+      });
 
       return {
         blocks,
@@ -153,7 +177,7 @@ export async function buildReaderPackageFromEpub(input: {
         nextChapterId: null,
         previousChapterId: null,
         spineIndex,
-        title: getChapterTitleFromBlocks(blocks) ?? fallbackLabel,
+        title: chapterTitle ?? fallbackLabel,
       } satisfies ReaderChapter;
     }),
   );
@@ -166,28 +190,9 @@ export async function buildReaderPackageFromEpub(input: {
     };
   }
 
-  const resolvedToc =
-    tocEntries.length > 0
-      ? chapters.map((chapter) => ({
-          chapterId: chapter.chapterId,
-          href: chapter.href,
-          label:
-            tocByHref.get(normalizeHrefForLookup(chapter.href))?.label ??
-            chapter.label,
-          spineIndex: chapter.spineIndex,
-        }))
-      : chapters.map((chapter) => ({
-          chapterId: chapter.chapterId,
-          href: chapter.href,
-          label: chapter.label,
-          spineIndex: chapter.spineIndex,
-        }));
-
-  const chapterIdByHref = new Map(
-    chapters.map((chapter) => [
-      normalizeHrefForLookup(chapter.href),
-      chapter.chapterId,
-    ]),
+  const resolvedToc = resolveTocNodes(
+    parsedToc.length > 0 ? parsedToc : createFallbackToc(chapters),
+    chapters,
   );
 
   return {
@@ -200,14 +205,318 @@ export async function buildReaderPackageFromEpub(input: {
       totalBlocks,
       totalChapters: chapters.length,
     },
-    toc: resolvedToc.map((entry) => ({
-      ...entry,
-      chapterId:
-        chapterIdByHref.get(normalizeHrefForLookup(entry.href)) ??
-        entry.chapterId,
-    })),
-    version: 1,
+    toc: resolvedToc,
+    version: 2,
   };
+}
+
+function createFallbackToc(chapters: ReaderChapter[]): ParsedTocNode[] {
+  return chapters.map((chapter, index) => ({
+    children: [],
+    href: chapter.href,
+    id: createTocNodeId([index]),
+    label: chapter.label,
+  }));
+}
+
+function resolveChapterFallbackLabel(input: {
+  bookTitle: string;
+  candidateLabel: string | null;
+  chapterTitle: string | null;
+  spineIndex: number;
+}) {
+  const normalizedBookTitle = normalizeTitleForComparison(input.bookTitle);
+  const candidateLabels = [input.candidateLabel, input.chapterTitle];
+
+  for (const candidate of candidateLabels) {
+    if (!candidate) {
+      continue;
+    }
+
+    if (normalizeTitleForComparison(candidate) === normalizedBookTitle) {
+      continue;
+    }
+
+    return candidate;
+  }
+
+  return `Chapter ${input.spineIndex + 1}`;
+}
+
+function normalizeTitleForComparison(value: string) {
+  return value.replace(/\s+/g, ' ').trim().toLowerCase();
+}
+
+function resolveReadingOrderItems(input: {
+  packagePath: string;
+  manifestById: Map<string, ManifestItem>;
+  manifestItems: ManifestItem[];
+  parsedToc: ParsedTocNode[];
+  spineItemRefs: string[];
+  zip: JSZip;
+}) {
+  const spineItems = input.spineItemRefs
+    .map((idref) => input.manifestById.get(idref))
+    .filter((item): item is ManifestItem => item !== undefined);
+
+  if (spineItems.length > 0) {
+    return spineItems;
+  }
+
+  const tocItems = resolveReadingOrderItemsFromToc(
+    input.parsedToc,
+    input.manifestItems,
+  );
+  if (tocItems.length > 0) {
+    return tocItems;
+  }
+
+  const manifestFallbackItems = input.manifestItems.filter(
+    isReadableContentManifestItem,
+  );
+  if (manifestFallbackItems.length > 0) {
+    return manifestFallbackItems;
+  }
+
+  return discoverReadableArchiveItems(input.zip, input.packagePath);
+}
+
+function resolveReadingOrderItemsFromToc(
+  toc: ParsedTocNode[],
+  manifestItems: ManifestItem[],
+) {
+  const manifestItemByHref = new Map(
+    manifestItems.map((item) => [normalizeHrefForLookup(item.href), item]),
+  );
+  const seen = new Set<string>();
+  const orderedItems: ManifestItem[] = [];
+
+  for (const href of flattenTocHrefs(toc)) {
+    const normalizedHref = normalizeHrefForLookup(href);
+
+    if (seen.has(normalizedHref)) {
+      continue;
+    }
+
+    const manifestItem = manifestItemByHref.get(normalizedHref);
+    if (!manifestItem || !isReadableContentManifestItem(manifestItem)) {
+      continue;
+    }
+
+    seen.add(normalizedHref);
+    orderedItems.push(manifestItem);
+  }
+
+  return orderedItems;
+}
+
+function flattenTocHrefs(toc: ParsedTocNode[]): string[] {
+  const hrefs: string[] = [];
+
+  for (const node of toc) {
+    if (node.href) {
+      hrefs.push(node.href);
+    }
+
+    hrefs.push(...flattenTocHrefs(node.children));
+  }
+
+  return hrefs;
+}
+
+function isReadableContentManifestItem(item: ManifestItem) {
+  if (!item.href || item.properties?.split(/\s+/).includes('nav')) {
+    return false;
+  }
+
+  if (item.mediaType === 'application/x-dtbncx+xml') {
+    return false;
+  }
+
+  return (
+    readableDocumentMediaTypes.has(item.mediaType ?? '') ||
+    hasReadableDocumentExtension(item.href)
+  );
+}
+
+function discoverReadableArchiveItems(zip: JSZip, packagePath: string) {
+  const packageDirectory = normalizeArchivePath(dirnameOfZipPath(packagePath));
+
+  return Object.values(zip.files)
+    .filter((file) => !file.dir)
+    .map((file, index) => ({
+      href: toPackageRelativeHref(file.name, packageDirectory),
+      id: `archive-${index}`,
+      mediaType: mime.lookup(file.name) || undefined,
+      properties: undefined,
+    }))
+    .filter((item) => isReadableArchiveItem(item, packageDirectory));
+}
+
+function isReadableArchiveItem(item: ManifestItem, packageDirectory: string) {
+  if (!item.href || !hasReadableDocumentExtension(item.href)) {
+    return false;
+  }
+
+  const normalizedHref = normalizeArchiveLookupPath(item.href);
+  const normalizedPackageDirectory =
+    normalizeArchiveLookupPath(packageDirectory);
+
+  if (
+    normalizedHref.startsWith('meta-inf/') ||
+    normalizedHref.endsWith('.opf') ||
+    normalizedHref.endsWith('.ncx') ||
+    normalizedHref.includes('/toc.') ||
+    normalizedHref.includes('/nav.')
+  ) {
+    return false;
+  }
+
+  if (!normalizedPackageDirectory) {
+    return true;
+  }
+
+  return (
+    normalizedHref.startsWith(`${normalizedPackageDirectory}/`) ||
+    !normalizedHref.includes('/')
+  );
+}
+
+function toPackageRelativeHref(archivePath: string, packageDirectory: string) {
+  const normalizedPath = normalizeArchivePath(archivePath);
+
+  if (packageDirectory && normalizedPath.startsWith(`${packageDirectory}/`)) {
+    return normalizedPath.slice(packageDirectory.length + 1);
+  }
+
+  return normalizedPath;
+}
+
+function dirnameOfZipPath(path: string) {
+  const normalizedPath = normalizeArchivePath(path);
+  const lastSlashIndex = normalizedPath.lastIndexOf('/');
+  return lastSlashIndex === -1 ? '' : normalizedPath.slice(0, lastSlashIndex);
+}
+
+function normalizeArchivePath(path: string) {
+  return path.replace(/\\/g, '/').replace(/^\.?\//, '');
+}
+
+function normalizeArchiveLookupPath(path: string) {
+  return normalizeArchivePath(path).toLowerCase();
+}
+
+function hasReadableDocumentExtension(path: string) {
+  const extension = extname(path).toLowerCase();
+  return (
+    extension === '.xhtml' ||
+    extension === '.html' ||
+    extension === '.htm' ||
+    extension === '.xml'
+  );
+}
+
+function findFirstTocLabelForHref(
+  nodes: ParsedTocNode[],
+  href: string,
+): string | null {
+  const targetHref = normalizeHrefForLookup(href);
+
+  for (const node of nodes) {
+    if (node.href && normalizeHrefForLookup(node.href) === targetHref) {
+      return node.label;
+    }
+
+    const nestedMatch = findFirstTocLabelForHref(node.children, href);
+    if (nestedMatch) {
+      return nestedMatch;
+    }
+  }
+
+  return null;
+}
+
+function resolveTocNodes(
+  nodes: ParsedTocNode[],
+  chapters: ReaderChapter[],
+): ReaderTocNode[] {
+  const chapterByHref = new Map(
+    chapters.map((chapter) => [normalizeHrefForLookup(chapter.href), chapter]),
+  );
+  const anchorBlockIdByChapterId = new Map(
+    chapters.map((chapter) => [
+      chapter.chapterId,
+      createAnchorBlockIdLookup(chapter.blocks),
+    ]),
+  );
+
+  return nodes.flatMap((node) => {
+    const resolved = resolveTocNode(
+      node,
+      chapterByHref,
+      anchorBlockIdByChapterId,
+    );
+    return resolved ? [resolved] : [];
+  });
+}
+
+function resolveTocNode(
+  node: ParsedTocNode,
+  chapterByHref: Map<string, ReaderChapter>,
+  anchorBlockIdByChapterId: Map<string, Map<string, string>>,
+): ReaderTocNode | null {
+  const resolvedChildren = node.children.flatMap((child) => {
+    const resolved = resolveTocNode(
+      child,
+      chapterByHref,
+      anchorBlockIdByChapterId,
+    );
+    return resolved ? [resolved] : [];
+  });
+
+  const href = node.href;
+  const chapter = href
+    ? (chapterByHref.get(normalizeHrefForLookup(href)) ?? null)
+    : null;
+  const anchorId = href ? extractAnchorIdFromHref(href) : null;
+  const blockId =
+    chapter?.chapterId && anchorId
+      ? (anchorBlockIdByChapterId
+          .get(chapter.chapterId)
+          ?.get(normalizeAnchorForLookup(anchorId)) ?? null)
+      : null;
+
+  if (!chapter && resolvedChildren.length === 0) {
+    return null;
+  }
+
+  return {
+    anchorId,
+    blockId,
+    chapterId: chapter?.chapterId ?? null,
+    children: resolvedChildren,
+    href,
+    id: node.id,
+    label: node.label,
+    spineIndex: chapter?.spineIndex ?? null,
+  };
+}
+
+function createAnchorBlockIdLookup(blocks: ReaderBlock[]) {
+  const anchorBlockIdByAnchor = new Map<string, string>();
+
+  for (const block of blocks) {
+    if (!block.anchorId) {
+      continue;
+    }
+
+    anchorBlockIdByAnchor.set(
+      normalizeAnchorForLookup(block.anchorId),
+      block.id,
+    );
+  }
+
+  return anchorBlockIdByAnchor;
 }
 
 async function readPackagePath(zip: JSZip) {
@@ -238,7 +547,7 @@ async function readTocEntries(
     manifestItems: ManifestItem[];
     ncxId: string | null;
   },
-): Promise<ReaderTocEntry[]> {
+): Promise<ParsedTocNode[]> {
   const navItem = input.manifestItems.find((item) =>
     item.properties?.split(/\s+/).includes('nav'),
   );
@@ -254,12 +563,7 @@ async function readTocEntries(
     if (navNode) {
       const entries = readNavEntries(getNodeChildren(navNode));
       if (entries.length > 0) {
-        return entries.map((entry, index) => ({
-          chapterId: '',
-          href: entry.href,
-          label: entry.label,
-          spineIndex: index,
-        }));
+        return entries;
       }
     }
   }
@@ -288,14 +592,7 @@ async function readTocEntries(
     };
   };
 
-  return flattenNcxEntries(firstAsArray(ncxDocument.ncx?.navMap?.navPoint)).map(
-    (entry, index) => ({
-      chapterId: '',
-      href: entry.href,
-      label: entry.label,
-      spineIndex: index,
-    }),
-  );
+  return readNcxEntries(firstAsArray(ncxDocument.ncx?.navMap?.navPoint));
 }
 
 type NcxNode = {
@@ -304,22 +601,32 @@ type NcxNode = {
   navPoint?: NcxNode | NcxNode[];
 };
 
-function flattenNcxEntries(nodes: NcxNode[]) {
-  const entries: Array<{ href: string; label: string }> = [];
-
-  for (const node of nodes) {
-    const href = node.content?.['@_src'] ?? '';
+function readNcxEntries(
+  nodes: NcxNode[],
+  path: number[] = [],
+): ParsedTocNode[] {
+  return nodes.flatMap((node, index) => {
+    const href = node.content?.['@_src'] ?? null;
     const label =
-      typeof node.navLabel?.text === 'string' ? node.navLabel.text : '';
+      typeof node.navLabel?.text === 'string' ? node.navLabel.text.trim() : '';
+    const children = readNcxEntries(firstAsArray(node.navPoint), [
+      ...path,
+      index,
+    ]);
 
-    if (href && label) {
-      entries.push({ href, label });
+    if (!label && !href && children.length === 0) {
+      return [];
     }
 
-    entries.push(...flattenNcxEntries(firstAsArray(node.navPoint)));
-  }
-
-  return entries;
+    return [
+      {
+        children,
+        href,
+        id: createTocNodeId([...path, index]),
+        label: label || href || 'Untitled section',
+      },
+    ];
+  });
 }
 
 function findTocNavNode(nodes: OrderedNode[]): OrderedNode | null {
@@ -354,38 +661,59 @@ function findTocNavNode(nodes: OrderedNode[]): OrderedNode | null {
 
 function readNavEntries(
   nodes: OrderedNode[],
-): Array<{ href: string; label: string }> {
-  const entries: Array<{ href: string; label: string }> = [];
+  path: number[] = [],
+): ParsedTocNode[] {
+  const listItems = nodes.filter((node) => getNodeTagName(node) === 'li');
 
-  for (const node of nodes) {
-    const tagName = getNodeTagName(node);
-
-    if (tagName === 'a') {
-      const href = getNodeAttributes(node)['@_href'];
-      const label = inlineNodesToText(getNodeChildren(node));
-      if (href && label) {
-        entries.push({ href, label });
-      }
-    }
-
-    if (tagName === 'li' || tagName === 'ol' || tagName === 'nav') {
-      entries.push(...readNavEntries(getNodeChildren(node)));
-    }
+  if (listItems.length > 0) {
+    return listItems.flatMap((node, index) => {
+      const entry = readNavListItem(node, [...path, index]);
+      return entry ? [entry] : [];
+    });
   }
 
-  return dedupeNavEntries(entries);
+  const nestedLists = nodes.filter((node) => {
+    const tagName = getNodeTagName(node);
+    return tagName === 'ol' || tagName === 'ul';
+  });
+
+  if (nestedLists.length > 0) {
+    return nestedLists.flatMap((node) =>
+      readNavEntries(getNodeChildren(node), path),
+    );
+  }
+
+  return [];
 }
 
-function dedupeNavEntries(entries: Array<{ href: string; label: string }>) {
-  const seen = new Set<string>();
-  return entries.filter((entry) => {
-    const key = normalizeHrefForLookup(entry.href);
-    if (seen.has(key)) {
-      return false;
+function readNavListItem(
+  node: OrderedNode,
+  path: number[],
+): ParsedTocNode | null {
+  const children = getNodeChildren(node);
+  const linkNode = children.find((child) => getNodeTagName(child) === 'a');
+  const href = linkNode
+    ? (getNodeAttributes(linkNode)['@_href'] ?? null)
+    : null;
+  const label = inlineNodesToText(flattenInlineContent(node));
+  const nestedEntries = children.flatMap((child) => {
+    const tagName = getNodeTagName(child);
+    if (tagName !== 'ol' && tagName !== 'ul') {
+      return [];
     }
-    seen.add(key);
-    return true;
+    return readNavEntries(getNodeChildren(child), path);
   });
+
+  if (!label && !href && nestedEntries.length === 0) {
+    return null;
+  }
+
+  return {
+    children: nestedEntries,
+    href,
+    id: createTocNodeId(path),
+    label: label || href || 'Untitled section',
+  };
 }
 
 function normalizeBlocksFromNodes(
@@ -885,6 +1213,19 @@ function createChapterId(spineIndex: number, href: string) {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
   return `chapter-${spineIndex + 1}${slug ? `-${slug}` : ''}`;
+}
+
+function createTocNodeId(path: number[]) {
+  return `toc:${path.join('.')}`;
+}
+
+function extractAnchorIdFromHref(href: string) {
+  const fragment = href.split('#').slice(1).join('#').trim();
+  return fragment.length > 0 ? decodeURIComponent(fragment) : null;
+}
+
+function normalizeAnchorForLookup(anchorId: string) {
+  return decodeURIComponent(anchorId).trim().toLowerCase();
 }
 
 function normalizeHrefForLookup(href: string) {

@@ -15,6 +15,7 @@ import { checksumBuffer, toPrismaBytes } from '../shared/blob-utils';
 import { buildReaderPackageFromEpub } from './epub-reader-package';
 
 const READER_PACKAGE_MIME_TYPE = 'application/vnd.ava.reader-package+json';
+const READER_PROCESSING_TRANSACTION_TIMEOUT_MS = 30_000;
 
 @Injectable()
 export class ReaderProcessingService implements OnModuleInit, OnModuleDestroy {
@@ -131,51 +132,56 @@ export class ReaderProcessingService implements OnModuleInit, OnModuleDestroy {
       const packageBytes = Buffer.from(JSON.stringify(readerPackage), 'utf8');
       const checksum = checksumBuffer(packageBytes);
 
-      await this.prisma.$transaction(async (tx) => {
-        await tx.bookFile.updateMany({
-          where: {
-            bookId: run.bookId,
-            isPrimary: true,
-            kind: BookFileKind.DERIVED_READER,
-          },
-          data: {
-            isPrimary: false,
-          },
-        });
+      await this.prisma.$transaction(
+        async (tx) => {
+          await tx.bookFile.updateMany({
+            where: {
+              bookId: run.bookId,
+              isPrimary: true,
+              kind: BookFileKind.DERIVED_READER,
+            },
+            data: {
+              isPrimary: false,
+            },
+          });
 
-        const blob = await tx.storedBlob.create({
-          data: {
-            bytes: toPrismaBytes(packageBytes),
-            checksum,
-            mimeType: READER_PACKAGE_MIME_TYPE,
-            originalFilename: `${run.bookId}-reader-package.json`,
-            purpose: BlobPurpose.DERIVED_READER,
-            sizeBytes: packageBytes.byteLength,
-          },
-        });
+          const blob = await tx.storedBlob.create({
+            data: {
+              bytes: toPrismaBytes(packageBytes),
+              checksum,
+              mimeType: READER_PACKAGE_MIME_TYPE,
+              originalFilename: `${run.bookId}-reader-package.json`,
+              purpose: BlobPurpose.DERIVED_READER,
+              sizeBytes: packageBytes.byteLength,
+            },
+          });
 
-        const outputFile = await tx.bookFile.create({
-          data: {
-            blobId: blob.id,
-            bookId: run.bookId,
-            format: BookFileFormat.READER_PACKAGE,
-            isPrimary: true,
-            kind: BookFileKind.DERIVED_READER,
-            processingStatus: ProcessingStatus.READY,
-          },
-        });
+          const outputFile = await tx.bookFile.create({
+            data: {
+              blobId: blob.id,
+              bookId: run.bookId,
+              format: BookFileFormat.READER_PACKAGE,
+              isPrimary: true,
+              kind: BookFileKind.DERIVED_READER,
+              processingStatus: ProcessingStatus.READY,
+            },
+          });
 
-        await tx.bookProcessingRun.update({
-          where: { id: runId },
-          data: {
-            completedAt: new Date(),
-            errorMessage: null,
-            outputFileId: outputFile.id,
-            sourceFileId: sourceFile.id,
-            status: ProcessingStatus.READY,
-          },
-        });
-      });
+          await tx.bookProcessingRun.update({
+            where: { id: runId },
+            data: {
+              completedAt: new Date(),
+              errorMessage: null,
+              outputFileId: outputFile.id,
+              sourceFileId: sourceFile.id,
+              status: ProcessingStatus.READY,
+            },
+          });
+        },
+        {
+          timeout: READER_PROCESSING_TRANSACTION_TIMEOUT_MS,
+        },
+      );
     } catch (error) {
       const message =
         error instanceof Error

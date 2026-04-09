@@ -61,11 +61,15 @@ export type ReaderManifest = {
   totalChapters: number;
 };
 
-export type ReaderTocEntry = {
-  chapterId: string;
-  href: string;
+export type ReaderTocNode = {
+  anchorId: string | null;
+  blockId: string | null;
+  chapterId: string | null;
+  children: ReaderTocNode[];
+  href: string | null;
+  id: string;
   label: string;
-  spineIndex: number;
+  spineIndex: number | null;
 };
 
 export type ReaderChapter = {
@@ -82,8 +86,8 @@ export type ReaderChapter = {
 export type ReaderPackage = {
   chapters: ReaderChapter[];
   manifest: ReaderManifest;
-  toc: ReaderTocEntry[];
-  version: 1;
+  toc: ReaderTocNode[];
+  version: 1 | 2;
 };
 
 export type ReaderLocator = {

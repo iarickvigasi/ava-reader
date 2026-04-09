@@ -171,8 +171,12 @@ function createReadyPayload(input: {
     },
     status: "READY",
     toc: input.chapterIds.map((chapterId, index) => ({
+      anchorId: null,
+      blockId: null,
       chapterId,
+      children: [],
       href: `#${chapterId}`,
+      id: `toc:${index}`,
       label: chapterId,
       spineIndex: index,
     })),

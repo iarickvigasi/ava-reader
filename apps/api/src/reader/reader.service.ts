@@ -10,7 +10,7 @@ import type {
   ReaderChapter,
   ReaderLocator,
   ReaderPackage,
-  ReaderTocEntry,
+  ReaderTocNode,
 } from './reader-types';
 
 type ReaderProgressSummary = {
@@ -31,7 +31,7 @@ type ReaderReadyPayload = {
   chapters: ReaderChapter[];
   progress: ReaderProgressSummary;
   status: 'READY';
-  toc: ReaderTocEntry[];
+  toc: ReaderTocNode[];
 };
 
 type ReaderStatusPayload =
@@ -152,12 +152,7 @@ export class ReaderService {
       chapters: chapterWindow,
       progress,
       status: 'READY',
-      toc: readerPackage.toc.map((entry) => ({
-        ...entry,
-        chapterId:
-          readerPackage.chapters.find((chapter) => chapter.href === entry.href)
-            ?.chapterId ?? entry.chapterId,
-      })),
+      toc: readerPackage.toc,
     };
   }
 
@@ -254,13 +249,25 @@ export class ReaderService {
 }
 
 function parseReaderPackage(buffer: Buffer): ReaderPackage {
-  const raw = JSON.parse(buffer.toString('utf8')) as ReaderPackage;
+  const raw = JSON.parse(buffer.toString('utf8')) as unknown;
+  const candidate =
+    raw && typeof raw === 'object'
+      ? (raw as { chapters?: unknown; version?: unknown })
+      : null;
 
-  if (!raw || raw.version !== 1 || !Array.isArray(raw.chapters)) {
+  if (
+    !candidate ||
+    (candidate.version !== 1 && candidate.version !== 2) ||
+    !Array.isArray(candidate.chapters)
+  ) {
     throw new BadRequestException('The stored reader package is invalid.');
   }
 
-  return raw;
+  if (candidate.version === 1) {
+    return normalizeLegacyReaderPackage(raw as LegacyReaderPackage);
+  }
+
+  return raw as ReaderPackage;
 }
 
 function selectChapter(
@@ -383,10 +390,103 @@ function computeProgressMetrics(
 
   return {
     chapterLabel:
-      readerPackage.toc.find((entry) => entry.chapterId === chapter.chapterId)
-        ?.label ??
+      findBestTocLabel(readerPackage.toc, locator) ??
       chapter.title ??
       chapter.label,
     completionPercent,
   };
+}
+
+type LegacyReaderTocEntry = {
+  chapterId: string;
+  href: string;
+  label: string;
+  spineIndex: number;
+};
+
+type LegacyReaderPackage = Omit<ReaderPackage, 'toc' | 'version'> & {
+  toc: LegacyReaderTocEntry[];
+  version: 1;
+};
+
+function normalizeLegacyReaderPackage(
+  readerPackage: LegacyReaderPackage,
+): ReaderPackage {
+  return {
+    ...readerPackage,
+    toc: readerPackage.toc.map((entry, index) => ({
+      anchorId: null,
+      blockId: null,
+      chapterId: entry.chapterId,
+      children: [],
+      href: entry.href,
+      id: `toc:${index}`,
+      label: entry.label,
+      spineIndex: entry.spineIndex,
+    })),
+    version: 2,
+  };
+}
+
+function findBestTocLabel(
+  toc: ReaderTocNode[],
+  locator: ReaderLocator,
+): string | null {
+  const exactMatch = findDeepestTocMatch(
+    toc,
+    (node) =>
+      node.chapterId === locator.chapterId && node.blockId === locator.blockId,
+  );
+
+  if (exactMatch?.label) {
+    return exactMatch.label;
+  }
+
+  return (
+    findFirstTocMatch(toc, (node) => node.chapterId === locator.chapterId)
+      ?.label ?? null
+  );
+}
+
+function findDeepestTocMatch(
+  toc: ReaderTocNode[],
+  predicate: (node: ReaderTocNode) => boolean,
+  depth = 0,
+): { depth: number; label: string } | null {
+  let bestMatch: { depth: number; label: string } | null = null;
+
+  for (const node of toc) {
+    if (predicate(node) && node.label) {
+      bestMatch = { depth, label: node.label };
+    }
+
+    const nestedMatch = findDeepestTocMatch(
+      node.children,
+      predicate,
+      depth + 1,
+    );
+    if (nestedMatch && (!bestMatch || nestedMatch.depth >= bestMatch.depth)) {
+      bestMatch = nestedMatch;
+    }
+  }
+
+  return bestMatch;
+}
+
+function findFirstTocMatch(
+  toc: ReaderTocNode[],
+  predicate: (node: ReaderTocNode) => boolean,
+): ReaderTocNode | null {
+  for (const node of toc) {
+    if (predicate(node)) {
+      return node;
+    }
+
+    const nestedMatch = findFirstTocMatch(node.children, predicate);
+    if (nestedMatch) {
+      return nestedMatch;
+    }
+  }
+
+  return null;
 }

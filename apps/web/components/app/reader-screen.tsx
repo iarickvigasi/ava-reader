@@ -33,6 +33,11 @@ import {
   createPaginationLayoutKey,
 } from "@/lib/reader-pagination";
 import {
+  countUniqueTocChapters,
+  findActiveTocPathIds,
+  resolveTocNavigationTarget,
+} from "@/lib/reader-toc";
+import {
   createInitialTraversalState,
   hasPendingRestoreIntent,
   isStickyRestoreIntent,
@@ -679,6 +684,7 @@ export function ReaderScreen({
 
 function ReadyReader({
   activeChapter,
+  displayLocator,
   fontScale,
   isBootstrapping,
   isLoadingChapter,
@@ -1275,10 +1281,11 @@ function ReadyReader({
       {isContentsOpen ? (
         <ReaderContentsOverlay
           activeChapterId={activeChapter.chapterId}
+          activeLocator={displayLocator}
           onClose={closePanel}
-          onSelectChapter={(chapterId) => {
+          onSelectChapter={(chapterId, target) => {
             closePanel();
-            onSelectChapter(chapterId, { edge: "start" });
+            onSelectChapter(chapterId, target);
           }}
           payload={payload}
           pendingChapterId={pendingChapterId}
@@ -1417,17 +1424,37 @@ function ReaderSidebarOverlay({
 
 function ReaderContentsOverlay({
   activeChapterId,
+  activeLocator,
   onClose,
   onSelectChapter,
   payload,
   pendingChapterId,
 }: {
   activeChapterId: string;
+  activeLocator: ReaderLocator | null;
   onClose: () => void;
-  onSelectChapter: (chapterId: string) => void;
+  onSelectChapter: (
+    chapterId: string,
+    target: ReaderNavigationTarget,
+  ) => void;
   payload: Extract<ReaderStatusPayload, { status: "READY" }>;
   pendingChapterId: string | null;
 }) {
+  const activePathIds = useMemo(
+    () =>
+      new Set(
+        findActiveTocPathIds(payload.toc, {
+          activeBlockId: activeLocator?.blockId ?? null,
+          activeChapterId,
+        }),
+      ),
+    [activeChapterId, activeLocator?.blockId, payload.toc],
+  );
+  const chapterCount = useMemo(
+    () => countUniqueTocChapters(payload.toc),
+    [payload.toc],
+  );
+
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -1456,87 +1483,165 @@ function ReaderContentsOverlay({
           <div className="absolute inset-0 border-r border-line/35 bg-linear-to-r from-paper-strong/88 via-paper/78 to-paper/50 shadow-[10px_0_40px_rgba(31,27,24,0.05)] backdrop-blur-[7px] md:hidden" />
           <div className="relative z-10 flex h-full flex-col md:pt-24">
             <div className="pointer-events-auto flex min-h-0 flex-1 flex-col px-6 py-8 sm:px-8 md:animate-[reader-contents-enter_320ms_cubic-bezier(0.22,1,0.36,1)_140ms_both] md:px-8 md:py-0">
-            <div className="flex items-start justify-between gap-4">
-              <div className="min-w-0">
-                <SectionLabel>Contents</SectionLabel>
-                <h2 className="mt-4 font-(--font-reader) text-[2rem] leading-[0.95] tracking-[-0.04em] text-title">
-                  {payload.book.title}
-                </h2>
-                {payload.book.author ? (
-                  <p className="mt-4 font-(--font-ui) text-[0.82rem] uppercase tracking-[0.18em] text-title/70">
-                    {payload.book.author}
-                  </p>
-                ) : null}
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <SectionLabel>Contents</SectionLabel>
+                  <h2 className="mt-4 font-(--font-reader) text-[2rem] leading-[0.95] tracking-[-0.04em] text-title">
+                    {payload.book.title}
+                  </h2>
+                  {payload.book.author ? (
+                    <p className="mt-4 font-(--font-ui) text-[0.82rem] uppercase tracking-[0.18em] text-title/70">
+                      {payload.book.author}
+                    </p>
+                  ) : null}
+                </div>
+                <button
+                  type="button"
+                  className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-line/45 bg-white/55 text-ink transition hover:bg-white md:hidden"
+                  onClick={onClose}
+                >
+                  <span className="font-(--font-ui) text-lg leading-none">×</span>
+                </button>
               </div>
-              <button
-                type="button"
-                className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-line/45 bg-white/55 text-ink transition hover:bg-white md:hidden"
-                onClick={onClose}
-              >
-                <span className="font-(--font-ui) text-lg leading-none">×</span>
-              </button>
-            </div>
 
-            <div className="mt-8">
-              <div className="flex items-center justify-between gap-3">
-                <span className="font-(--font-ui) text-[0.62rem] uppercase tracking-[0.16em] text-ink/55">
-                  {payload.progress.completionPercent}% completed
-                </span>
-                <span className="font-(--font-ui) text-[0.62rem] uppercase tracking-[0.16em] text-ink/35">
-                  {payload.toc.length} chapters
-                </span>
-              </div>
-              <div className="mt-3 h-1.5 rounded-full bg-line/20">
-                <div
-                  className="h-full rounded-full bg-title transition-[width]"
-                  style={{
-                    width: `${clamp(payload.progress.completionPercent, 0, 100)}%`,
-                  }}
-                />
-              </div>
-            </div>
-
-            <nav className="mt-8 min-h-0 flex-1 space-y-6 overflow-auto pb-8 pr-3">
-              {payload.toc.map((entry, index) => {
-                const isActive = entry.chapterId === activeChapterId;
-                const isPending = pendingChapterId === entry.chapterId;
-
-                return (
+              <div className="mt-8">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="font-(--font-ui) text-[0.62rem] uppercase tracking-[0.16em] text-ink/55">
+                    {payload.progress.completionPercent}% completed
+                  </span>
+                  <span className="font-(--font-ui) text-[0.62rem] uppercase tracking-[0.16em] text-ink/35">
+                    {chapterCount} chapters
+                  </span>
+                </div>
+                <div className="mt-3 h-1.5 rounded-full bg-line/20">
                   <div
-                    key={entry.chapterId}
-                    className="border-l border-title/10 pl-4"
-                  >
-                    <button
-                      type="button"
-                      className="flex w-full items-start justify-between gap-3 text-left"
-                      onClick={() => onSelectChapter(entry.chapterId)}
-                    >
-                      <span
-                        className={cn(
-                          "min-w-0 font-(--font-reader) text-[0.98rem] leading-6 transition",
-                          isActive
-                            ? "font-semibold text-title"
-                            : "text-title/78 hover:text-title",
-                        )}
-                      >
-                        {entry.label}
-                      </span>
-                      <span className="shrink-0 font-(--font-ui) text-[0.62rem] uppercase tracking-[0.16em] text-ink/35">
-                        {isPending
-                          ? "Loading"
-                          : isActive
-                            ? "Current"
-                            : `${index + 1}`}
-                      </span>
-                    </button>
-                  </div>
-                );
-              })}
-            </nav>
+                    className="h-full rounded-full bg-title transition-[width]"
+                    style={{
+                      width: `${clamp(payload.progress.completionPercent, 0, 100)}%`,
+                    }}
+                  />
+                </div>
+              </div>
+
+              <nav className="mt-8 min-h-0 flex-1 overflow-auto pb-8 pr-3">
+                <div className="space-y-3">
+                  {payload.toc.map((entry) => (
+                    <ReaderContentsTreeNode
+                      key={entry.id}
+                      activeChapterId={activeChapterId}
+                      activePathIds={activePathIds}
+                      depth={0}
+                      entry={entry}
+                      onSelectChapter={onSelectChapter}
+                      pendingChapterId={pendingChapterId}
+                    />
+                  ))}
+                </div>
+              </nav>
             </div>
           </div>
         </div>
       </aside>
+    </div>
+  );
+}
+
+function ReaderContentsTreeNode({
+  activeChapterId,
+  activePathIds,
+  depth,
+  entry,
+  onSelectChapter,
+  pendingChapterId,
+}: {
+  activeChapterId: string;
+  activePathIds: Set<string>;
+  depth: number;
+  entry: Extract<ReaderStatusPayload, { status: "READY" }>["toc"][number];
+  onSelectChapter: (
+    chapterId: string,
+    target: ReaderNavigationTarget,
+  ) => void;
+  pendingChapterId: string | null;
+}) {
+  const isActivePath = activePathIds.has(entry.id);
+  const isPending = Boolean(entry.chapterId && pendingChapterId === entry.chapterId);
+  const navigationTarget = resolveTocNavigationTarget(entry);
+  const chapterId = entry.chapterId;
+  const isClickable = Boolean(chapterId && navigationTarget);
+  const isCurrentSection = Boolean(
+    entry.blockId && isActivePath && entry.chapterId === activeChapterId,
+  );
+  const isCurrentChapter = !isCurrentSection && entry.chapterId === activeChapterId;
+
+  return (
+    <div className="space-y-3">
+      <div
+        className="border-l border-title/10 pl-4"
+        style={{ marginLeft: `${depth * 14}px` }}
+      >
+        {isClickable && chapterId && navigationTarget ? (
+          <button
+            type="button"
+            className="flex w-full items-start justify-between gap-3 text-left"
+            onClick={() => onSelectChapter(chapterId, navigationTarget)}
+          >
+            <span
+              className={cn(
+                "min-w-0 font-(--font-reader) leading-6 transition",
+                depth === 0 ? "text-[0.98rem]" : "text-[0.92rem]",
+                isCurrentSection
+                  ? "font-semibold text-title"
+                  : isCurrentChapter || isActivePath
+                    ? "text-title"
+                    : depth > 0
+                      ? "text-title/62 hover:text-title"
+                      : "text-title/78 hover:text-title",
+              )}
+            >
+              {entry.label}
+            </span>
+            <span className="shrink-0 pt-1 font-(--font-ui) text-[0.62rem] uppercase tracking-[0.16em] text-ink/35">
+              {isPending
+                ? "Loading"
+                : isCurrentSection
+                  ? "Current"
+                  : entry.blockId
+                    ? "Section"
+                    : isCurrentChapter
+                      ? "Chapter"
+                      : ""}
+            </span>
+          </button>
+        ) : (
+          <div className="flex items-start justify-between gap-3">
+            <span
+              className={cn(
+                "min-w-0 font-(--font-ui) text-[0.72rem] uppercase tracking-[0.14em]",
+                isActivePath ? "text-title/72" : "text-ink/42",
+              )}
+            >
+              {entry.label}
+            </span>
+          </div>
+        )}
+      </div>
+
+      {entry.children.length > 0 ? (
+        <div className="space-y-3">
+          {entry.children.map((child) => (
+            <ReaderContentsTreeNode
+              key={child.id}
+              activeChapterId={activeChapterId}
+              activePathIds={activePathIds}
+              depth={depth + 1}
+              entry={child}
+              onSelectChapter={onSelectChapter}
+              pendingChapterId={pendingChapterId}
+            />
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -1984,24 +2089,33 @@ function ReaderStatusState({
 }) {
   return (
     <div className="mx-auto flex min-h-screen max-w-3xl items-center px-5 py-16 sm:px-8">
-      <div className="w-full rounded-4xl border border-line/40 bg-[#fcf5f0] p-8 shadow-[0_18px_50px_rgba(31,27,24,0.06)] sm:p-10">
-        <p className="font-(--font-ui) text-[0.72rem] uppercase tracking-[0.18em] text-ink/45">
+      <div className="w-full rounded-[2rem] border border-line/60 bg-surface/95 p-8 shadow-(--shadow-card) backdrop-blur xl:p-12 sm:p-10">
+        <p className="font-(--font-ui) text-[1rem] font-semibold uppercase tracking-[0.24em] text-title/88 sm:text-[1.12rem]">
           Reader
         </p>
-        <h1 className="mt-4 font-(--font-reader) text-4xl leading-none text-title sm:text-5xl">
+        <h1 className="mt-5 font-(--font-reader) text-[2.8rem] leading-[0.94] tracking-[-0.04em] text-title sm:text-[4rem]">
           {payload.book.title}
         </h1>
-        <p className="mt-6 max-w-2xl font-(--font-reader) text-xl leading-9 text-ink/85 sm:text-2xl">
+        <p className="mt-6 max-w-2xl font-(--font-reader) text-[1.18rem] leading-8 text-ink/88 sm:text-[1.45rem] sm:leading-10">
           {payload.message}
         </p>
-        <div className="mt-8 flex flex-wrap items-center gap-3">
+        <div className="mt-10 flex flex-wrap items-end justify-between gap-5 border-t border-line/45 pt-6">
           <Link
             href="/app"
             className="inline-flex min-h-11 items-center rounded-[14px] border border-brand-fill bg-brand-fill px-5 font-ui text-sm font-semibold uppercase tracking-[0.14em] text-brand-foreground shadow-(--shadow-card) transition hover:bg-brand-fill-strong"
           >
             Back to home
           </Link>
-          <span className="font-(--font-ui) text-xs uppercase tracking-[0.14em] text-ink/45">
+          <span
+            className={cn(
+              "font-(--font-ui) text-[1.1rem] font-semibold uppercase tracking-[0.24em] sm:text-[1.35rem]",
+              payload.status === "FAILED"
+                ? "text-danger"
+                : payload.status === "UNSUPPORTED"
+                  ? "text-title/82"
+                  : "text-ink/60",
+            )}
+          >
             {payload.status}
           </span>
         </div>

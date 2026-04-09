@@ -164,11 +164,15 @@ export type ReaderManifest = {
   totalChapters: number;
 };
 
-export type ReaderTocEntry = {
-  chapterId: string;
-  href: string;
+export type ReaderTocNode = {
+  anchorId: string | null;
+  blockId: string | null;
+  chapterId: string | null;
+  children: ReaderTocNode[];
+  href: string | null;
+  id: string;
   label: string;
-  spineIndex: number;
+  spineIndex: number | null;
 };
 
 export type ReaderChapterPayload = {
@@ -207,7 +211,7 @@ export type ReaderStatusPayload =
       chapters: ReaderChapterPayload[];
       progress: ReaderProgressPayload;
       status: "READY";
-      toc: ReaderTocEntry[];
+      toc: ReaderTocNode[];
     }
   | {
       book: {
