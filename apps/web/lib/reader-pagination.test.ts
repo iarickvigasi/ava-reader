@@ -21,10 +21,15 @@ describe("reader pagination", () => {
         consumedRestoreIntentKey: null,
         currentPageIndex: 9,
         keepRestorePinned: true,
+        locatorPageIndex: null,
+        restorePageIndex: null,
         restoreIntent,
         snapshot: createSnapshot(),
       }),
-    ).toBe(0);
+    ).toEqual({
+      nextPageIndex: 0,
+      restoreState: "resolved",
+    });
   });
 
   it("resolves cached edge-end restores to the last page", () => {
@@ -41,10 +46,15 @@ describe("reader pagination", () => {
         consumedRestoreIntentKey: null,
         currentPageIndex: 0,
         keepRestorePinned: true,
+        locatorPageIndex: null,
+        restorePageIndex: null,
         restoreIntent,
         snapshot: createSnapshot(),
       }),
-    ).toBe(21);
+    ).toEqual({
+      nextPageIndex: 21,
+      restoreState: "resolved",
+    });
   });
 
   it("resolves cached block restores from the snapshot map", () => {
@@ -61,10 +71,15 @@ describe("reader pagination", () => {
         consumedRestoreIntentKey: null,
         currentPageIndex: 0,
         keepRestorePinned: false,
+        locatorPageIndex: null,
+        restorePageIndex: 7,
         restoreIntent,
         snapshot: createSnapshot(),
       }),
-    ).toBe(7);
+    ).toEqual({
+      nextPageIndex: 7,
+      restoreState: "resolved",
+    });
   });
 
   it("keeps sticky end restores pinned after cached page counts grow", () => {
@@ -85,13 +100,18 @@ describe("reader pagination", () => {
         consumedRestoreIntentKey: restoreIntent.key,
         currentPageIndex: 21,
         keepRestorePinned: true,
+        locatorPageIndex: 21,
+        restorePageIndex: null,
         restoreIntent,
         snapshot: {
           ...createSnapshot(),
           pageCount: 24,
         },
       }),
-    ).toBe(23);
+    ).toEqual({
+      nextPageIndex: 23,
+      restoreState: "idle",
+    });
   });
 
   it("uses the cached locator page once restore intent is already consumed", () => {
@@ -112,10 +132,43 @@ describe("reader pagination", () => {
         consumedRestoreIntentKey: restoreIntent.key,
         currentPageIndex: 0,
         keepRestorePinned: false,
+        locatorPageIndex: 7,
+        restorePageIndex: null,
         restoreIntent,
         snapshot: createSnapshot(),
       }),
-    ).toBe(7);
+    ).toEqual({
+      nextPageIndex: 7,
+      restoreState: "idle",
+    });
+  });
+
+  it("keeps restore pending when an exact block restore is still unresolved", () => {
+    const restoreIntent = createRestoreIntent(
+      "chapter-a",
+      {
+        blockId: "chapter-a::missing",
+        textOffset: 214,
+      },
+      "restore:chapter-a:block:pending",
+    );
+
+    expect(
+      resolvePageIndexFromPaginationSnapshot({
+        activeChapterId: "chapter-a",
+        activeLocator: null,
+        consumedRestoreIntentKey: null,
+        currentPageIndex: 4,
+        keepRestorePinned: false,
+        locatorPageIndex: null,
+        restorePageIndex: null,
+        restoreIntent,
+        snapshot: createSnapshot(),
+      }),
+    ).toEqual({
+      nextPageIndex: 4,
+      restoreState: "pending",
+    });
   });
 
   it("changes the layout key when width, height, or font scale changes", () => {

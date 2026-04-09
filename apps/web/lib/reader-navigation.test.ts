@@ -16,7 +16,6 @@ describe("reader navigation", () => {
         activeChapterId: "chapter-a",
         chapterIds: ["chapter-a", "chapter-b"],
       }),
-      null,
     );
 
     const pendingState = readerTraversalReducer(initialState, {
@@ -53,9 +52,9 @@ describe("reader navigation", () => {
         consumedRestoreIntentKey: null,
         currentPageIndex: 0,
         keepRestorePinned: true,
-        locatorBlockPageIndex: null,
+        locatorPageIndex: null,
         measuredPageCount: 22,
-        restoreBlockPageIndex: null,
+        restorePageIndex: null,
         restoreIntent,
       }),
     ).toBe(21);
@@ -66,9 +65,9 @@ describe("reader navigation", () => {
         consumedRestoreIntentKey: restoreIntent.key,
         currentPageIndex: 21,
         keepRestorePinned: true,
-        locatorBlockPageIndex: null,
+        locatorPageIndex: null,
         measuredPageCount: 24,
-        restoreBlockPageIndex: null,
+        restorePageIndex: null,
         restoreIntent,
       }),
     ).toBe(23);
@@ -80,7 +79,6 @@ describe("reader navigation", () => {
         activeChapterId: "chapter-a",
         chapterIds: ["chapter-a", "chapter-b", "chapter-c"],
       }),
-      null,
     );
 
     const nextState = readerTraversalReducer(initialState, {
@@ -104,7 +102,6 @@ describe("reader navigation", () => {
         activeChapterId: "chapter-a",
         chapterIds: ["chapter-a", "chapter-b"],
       }),
-      null,
     );
 
     const pendingState = readerTraversalReducer(initialState, {
@@ -116,28 +113,26 @@ describe("reader navigation", () => {
     expect(pendingState.pendingChapterId).toBe("chapter-d");
   });
 
-  it("preserves the requested chapter while processing and commits it once ready", () => {
-    const initialState = createInitialTraversalState(createProcessingPayload(), "chapter-b");
+  it("restores the saved block on normal reader open", () => {
+    const initialState = createInitialTraversalState(
+      createReadyPayload({
+        activeChapterId: "chapter-b",
+        chapterIds: ["chapter-a", "chapter-b", "chapter-c"],
+      }),
+    );
 
     expect(
       resolveRequestedChapterId({
-        initialChapterParam: "chapter-b",
         pendingChapterId: initialState.pendingChapterId,
         visibleChapterId: initialState.visibleChapterId,
       }),
     ).toBe("chapter-b");
 
-    const readyState = readerTraversalReducer(initialState, {
+    expect(initialState.restoreIntent).toMatchObject({
       chapterId: "chapter-b",
-      key: "commit:chapter-b",
-      target: { edge: "start" },
-      type: "commit-chapter",
-    });
-
-    expect(readyState.visibleChapterId).toBe("chapter-b");
-    expect(readyState.restoreIntent).toMatchObject({
-      chapterId: "chapter-b",
-      kind: "edge-start",
+      kind: "block",
+      blockId: "chapter-b::block-1",
+      textOffset: 38,
     });
   });
 });
@@ -171,7 +166,7 @@ function createReadyPayload(input: {
       locator: {
         blockId: `${input.activeChapterId}::block-1`,
         chapterId: input.activeChapterId,
-        textOffset: 0,
+        textOffset: 38,
       },
     },
     status: "READY",
@@ -181,24 +176,5 @@ function createReadyPayload(input: {
       label: chapterId,
       spineIndex: index,
     })),
-  };
-}
-
-function createProcessingPayload(): Exclude<ReaderStatusPayload, { status: "READY" }> {
-  return {
-    book: {
-      author: "Author",
-      libraryItemId: "library-item",
-      primaryFormat: "EPUB",
-      title: "Book",
-    },
-    message: "Preparing this EPUB for the reader.",
-    progress: {
-      chapterLabel: null,
-      completionPercent: 0,
-      lastReadAt: null,
-      locator: null,
-    },
-    status: "PROCESSING",
   };
 }

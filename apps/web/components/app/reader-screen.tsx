@@ -31,9 +31,6 @@ import { cn } from "@/lib/cn";
 import { getPublicApiBaseUrl } from "@/lib/api";
 import {
   createPaginationLayoutKey,
-  measurePaginationSnapshot,
-  resolvePageIndexFromPaginationSnapshot,
-  type PaginationSnapshot,
 } from "@/lib/reader-pagination";
 import {
   createInitialTraversalState,
@@ -48,15 +45,28 @@ import type {
   ReaderNavigationTarget,
   RestoreIntent,
 } from "@/lib/reader-navigation";
+import {
+  createFailedReaderMeasurementEntry,
+  createPendingReaderMeasurementEntry,
+  createReadyReaderMeasurementEntry,
+  type ReaderMeasurementEntry,
+} from "@/lib/reader-measurement";
+import {
+  createServerResumeSnapshot,
+  readLocalReaderResumeSnapshot,
+  selectPreferredReaderResumeSnapshot,
+  writeLocalReaderResumeSnapshot,
+} from "@/lib/reader-resume";
+import type { ReaderResumeSnapshot } from "@/lib/reader-resume";
 
 const PAGE_GAP = 48;
 const SWIPE_THRESHOLD = 56;
 const SWIPE_MAX_OFF_AXIS = 72;
 
 type ReaderScreenProps = {
-  initialChapterParam?: string | null;
   initialPayload: ReaderStatusPayload;
   libraryItemId: string;
+  persistenceMode?: "local-only" | "remote";
 };
 
 type PageBoxSize = {
@@ -66,10 +76,15 @@ type PageBoxSize = {
 
 type ReadyReaderPayload = Extract<ReaderStatusPayload, { status: "READY" }>;
 
+type InitialResumeBootstrapState = {
+  phase: "selecting" | "applying" | "applied";
+  snapshot: ReaderResumeSnapshot | null;
+};
+
 export function ReaderScreen({
-  initialChapterParam,
   initialPayload,
   libraryItemId,
+  persistenceMode = "remote",
 }: ReaderScreenProps) {
   const { getToken, isLoaded, isSignedIn } = useAuth();
   const [fontScale, setFontScale] = useState(1);
@@ -79,29 +94,30 @@ export function ReaderScreen({
   const [backgroundChapterId, setBackgroundChapterId] = useState<string | null>(
     null,
   );
-  const [activeLocator, setActiveLocator] = useState<ReaderLocator | null>(
-    initialPayload.progress.locator,
+  const [visibleLocator, setVisibleLocator] = useState<ReaderLocator | null>(null);
+  const [initialResume, setInitialResume] = useState<InitialResumeBootstrapState>(
+    {
+      phase: "selecting",
+      snapshot: null,
+    },
   );
   const [traversal, dispatchTraversal] = useReducer(
     readerTraversalReducer,
-    {
-      initialChapterParam,
-      initialPayload,
-    },
-    ({
-      initialChapterParam: nextInitialChapterParam,
-      initialPayload: nextInitialPayload,
-    }) =>
-      createInitialTraversalState(nextInitialPayload, nextInitialChapterParam),
+    initialPayload,
+    createInitialTraversalState,
   );
-  const lastPersistedKeyRef = useRef<string | null>(
+  const lastServerAckKeyRef = useRef<string | null>(
     createLocatorKey(initialPayload.progress.locator),
   );
+  const pendingServerLocatorRef = useRef<ReaderLocator | null>(null);
+  const pendingServerLocatorKeyRef = useRef<string | null>(null);
+  const scheduledPersistTimeoutRef = useRef<number | null>(null);
   const restoreIntentSequenceRef = useRef(0);
   const blockingRequestIdRef = useRef(0);
   const backgroundRequestIdRef = useRef(0);
   const blockingAbortRef = useRef<AbortController | null>(null);
   const backgroundAbortRef = useRef<AbortController | null>(null);
+  const initialResumeApplyStartedRef = useRef(false);
   const readyPayload = isReadyReaderPayload(payload) ? payload : null;
   const loadedChaptersById = useMemo(
     () =>
@@ -120,13 +136,21 @@ export function ReaderScreen({
     : null;
   const currentReadyChapterId = activeChapterId;
   const requestedChapterId = resolveRequestedChapterId({
-    initialChapterParam,
     pendingChapterId: traversal.pendingChapterId,
     visibleChapterId: traversal.visibleChapterId,
   });
   const activeReadyChapterIdRef = useRef<string | null>(currentReadyChapterId);
+  const remotePersistenceEnabled = persistenceMode === "remote";
   const isLoadingChapter = traversal.pendingChapterId !== null;
   const isRefreshingWindow = backgroundChapterId !== null;
+  const displayLocator = useMemo(() => {
+    if (visibleLocator) {
+      return visibleLocator;
+    }
+
+    const restoreLocator = createLocatorFromRestoreIntent(traversal.restoreIntent);
+    return restoreLocator ?? initialResume.snapshot?.locator ?? payload.progress.locator;
+  }, [initialResume.snapshot, payload.progress.locator, traversal.restoreIntent, visibleLocator]);
 
   useEffect(() => {
     activeReadyChapterIdRef.current = currentReadyChapterId;
@@ -134,36 +158,28 @@ export function ReaderScreen({
 
   useEffect(() => {
     return () => {
+      if (scheduledPersistTimeoutRef.current !== null) {
+        window.clearTimeout(scheduledPersistTimeoutRef.current);
+      }
       blockingAbortRef.current?.abort();
       backgroundAbortRef.current?.abort();
     };
   }, []);
 
-  const replaceChapterUrl = useCallback((nextChapterId: string) => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    const nextUrl = new URL(window.location.href);
-    if (nextUrl.searchParams.get("chapter") === nextChapterId) {
-      return;
-    }
-
-    nextUrl.searchParams.set("chapter", nextChapterId);
-    window.history.replaceState(
-      window.history.state,
-      "",
-      `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`,
-    );
-  }, []);
-
   useEffect(() => {
-    if (payload.status !== "READY" || !currentReadyChapterId) {
-      return;
-    }
+    initialResumeApplyStartedRef.current = false;
+    setVisibleLocator(null);
 
-    replaceChapterUrl(currentReadyChapterId);
-  }, [currentReadyChapterId, payload.status, replaceChapterUrl]);
+    const selection = selectPreferredReaderResumeSnapshot({
+      localSnapshot: readLocalReaderResumeSnapshot(libraryItemId),
+      serverSnapshot: createServerResumeSnapshot(initialPayload.progress),
+    });
+
+    setInitialResume({
+      phase: "applying",
+      snapshot: selection.snapshot,
+    });
+  }, [initialPayload.progress, libraryItemId]);
 
   const nextRestoreIntentKey = useCallback(
     (nextChapterId: string, target: ReaderNavigationTarget) => {
@@ -176,6 +192,7 @@ export function ReaderScreen({
 
   const commitVisibleChapter = useCallback(
     (nextChapterId: string, target: ReaderNavigationTarget) => {
+      setVisibleLocator(null);
       activeReadyChapterIdRef.current = nextChapterId;
       dispatchTraversal({
         chapterId: nextChapterId,
@@ -233,7 +250,6 @@ export function ReaderScreen({
           }
 
           setPayload(normalizedPayload);
-          setActiveLocator(normalizedPayload.progress.locator);
         })
         .catch((error: unknown) => {
           if (!isAbortError(error)) {
@@ -262,15 +278,7 @@ export function ReaderScreen({
   );
 
   const loadChapterWindow = useCallback(
-    (
-      nextChapterId: string,
-      target:
-        | {
-            blockId?: string | null;
-            edge?: "end" | "start";
-          }
-        | undefined,
-    ) => {
+    async (nextChapterId: string, target: ReaderNavigationTarget) => {
       const requestId = blockingRequestIdRef.current + 1;
       blockingRequestIdRef.current = requestId;
       blockingAbortRef.current?.abort();
@@ -285,50 +293,48 @@ export function ReaderScreen({
         type: "start-pending",
       });
 
-      void fetchReaderPayload({
-        chapterId: nextChapterId,
-        getToken,
-        isLoaded,
-        isSignedIn,
-        libraryItemId,
-        signal: controller.signal,
-      })
-        .then((nextPayload) => {
-          if (
-            controller.signal.aborted ||
-            blockingRequestIdRef.current !== requestId
-          ) {
-            return;
-          }
-
-          const normalizedPayload = normalizeReaderStatusPayload(nextPayload);
-
-          if (isReadyReaderPayload(normalizedPayload)) {
-            mergeReadyPayload(normalizedPayload);
-            commitVisibleChapter(normalizedPayload.activeChapterId, target);
-            return;
-          }
-
-          setPayload(normalizedPayload);
-          setActiveLocator(normalizedPayload.progress.locator);
-        })
-        .catch((error: unknown) => {
-          if (!isAbortError(error)) {
-            throw error;
-          }
-        })
-        .finally(() => {
-          if (
-            blockingRequestIdRef.current === requestId &&
-            blockingAbortRef.current === controller
-          ) {
-            blockingAbortRef.current = null;
-            dispatchTraversal({
-              chapterId: nextChapterId,
-              type: "clear-pending",
-            });
-          }
+      try {
+        const nextPayload = await fetchReaderPayload({
+          chapterId: nextChapterId,
+          getToken,
+          isLoaded,
+          isSignedIn,
+          libraryItemId,
+          signal: controller.signal,
         });
+
+        if (
+          controller.signal.aborted ||
+          blockingRequestIdRef.current !== requestId
+        ) {
+          return;
+        }
+
+        const normalizedPayload = normalizeReaderStatusPayload(nextPayload);
+
+        if (isReadyReaderPayload(normalizedPayload)) {
+          mergeReadyPayload(normalizedPayload);
+          commitVisibleChapter(normalizedPayload.activeChapterId, target);
+          return;
+        }
+
+        setPayload(normalizedPayload);
+      } catch (error: unknown) {
+        if (!isAbortError(error)) {
+          throw error;
+        }
+      } finally {
+        if (
+          blockingRequestIdRef.current === requestId &&
+          blockingAbortRef.current === controller
+        ) {
+          blockingAbortRef.current = null;
+          dispatchTraversal({
+            chapterId: nextChapterId,
+            type: "clear-pending",
+          });
+        }
+      }
     },
     [
       commitVisibleChapter,
@@ -341,15 +347,7 @@ export function ReaderScreen({
   );
 
   const switchToLoadedChapter = useCallback(
-    (
-      nextChapterId: string,
-      target:
-        | {
-            blockId?: string | null;
-            edge?: "end" | "start";
-          }
-        | undefined,
-    ) => {
+    (nextChapterId: string, target: ReaderNavigationTarget) => {
       if (!readyPayload) {
         return;
       }
@@ -364,15 +362,7 @@ export function ReaderScreen({
   );
 
   const navigateToChapter = useCallback(
-    (
-      nextChapterId: string,
-      target:
-        | {
-            blockId?: string | null;
-            edge?: "end" | "start";
-          }
-        | undefined = undefined,
-    ) => {
+    (nextChapterId: string, target: ReaderNavigationTarget = undefined) => {
       if (loadedChaptersById.has(nextChapterId)) {
         switchToLoadedChapter(nextChapterId, target);
         return;
@@ -382,6 +372,68 @@ export function ReaderScreen({
     },
     [loadChapterWindow, loadedChaptersById, switchToLoadedChapter],
   );
+
+  useEffect(() => {
+    if (
+      initialResume.phase !== "applying" ||
+      payload.status !== "READY" ||
+      initialResumeApplyStartedRef.current
+    ) {
+      return;
+    }
+
+    initialResumeApplyStartedRef.current = true;
+
+    let isCancelled = false;
+
+    const applyInitialResume = async () => {
+      const targetChapterId =
+        initialResume.snapshot?.locator.chapterId ?? payload.activeChapterId;
+      const target =
+        initialResume.snapshot?.locator
+          ? {
+              blockId: initialResume.snapshot.locator.blockId,
+              textOffset: initialResume.snapshot.locator.textOffset,
+            }
+          : resolveInitialNavigationTarget(payload);
+      const needsFetch =
+        !loadedChaptersById.has(targetChapterId) ||
+        currentReadyChapterId !== targetChapterId;
+
+      try {
+        if (needsFetch) {
+          await loadChapterWindow(targetChapterId, target);
+        } else {
+          commitVisibleChapter(targetChapterId, target);
+        }
+      } finally {
+        if (!isCancelled) {
+          setInitialResume((current) =>
+            current.phase === "applying"
+              ? {
+                  ...current,
+                  phase: "applied",
+                }
+              : current,
+          );
+        }
+      }
+    };
+
+    void applyInitialResume();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [
+    commitVisibleChapter,
+    currentReadyChapterId,
+    initialResume.phase,
+    initialResume.snapshot,
+    loadChapterWindow,
+    loadedChaptersById,
+    payload,
+  ]);
 
   useEffect(() => {
     if (payload.status !== "PROCESSING") {
@@ -399,16 +451,6 @@ export function ReaderScreen({
         const normalizedPayload = normalizeReaderStatusPayload(nextPayload);
 
         setPayload(normalizedPayload);
-        if (isReadyReaderPayload(normalizedPayload)) {
-          setActiveLocator(normalizedPayload.progress.locator);
-          commitVisibleChapter(
-            normalizedPayload.activeChapterId,
-            resolveInitialNavigationTarget(
-              normalizedPayload,
-              initialChapterParam,
-            ),
-          );
-        }
       });
     }, 3_000);
 
@@ -416,9 +458,7 @@ export function ReaderScreen({
       window.clearInterval(interval);
     };
   }, [
-    commitVisibleChapter,
     getToken,
-    initialChapterParam,
     isLoaded,
     isSignedIn,
     libraryItemId,
@@ -426,25 +466,40 @@ export function ReaderScreen({
     requestedChapterId,
   ]);
 
-  useEffect(() => {
-    if (payload.status !== "READY" || !activeLocator) {
-      return;
-    }
+  const persistPendingProgress = useCallback(
+    async (locator: ReaderLocator, keepalive = false) => {
+      if (!remotePersistenceEnabled) {
+        return null;
+      }
 
-    const locatorKey = createLocatorKey(activeLocator);
-    if (!locatorKey || locatorKey === lastPersistedKeyRef.current) {
-      return;
-    }
+      const locatorKey = createLocatorKey(locator);
 
-    const timeout = window.setTimeout(() => {
-      void persistReaderProgress({
-        getToken,
-        isLoaded,
-        isSignedIn,
-        libraryItemId,
-        locator: activeLocator,
-      }).then((nextProgress) => {
-        lastPersistedKeyRef.current = createLocatorKey(nextProgress.locator);
+      if (!locatorKey || locatorKey === lastServerAckKeyRef.current) {
+        if (pendingServerLocatorKeyRef.current === locatorKey) {
+          pendingServerLocatorRef.current = null;
+          pendingServerLocatorKeyRef.current = null;
+        }
+
+        return null;
+      }
+
+      try {
+        const nextProgress = await persistReaderProgress({
+          getToken,
+          isLoaded,
+          isSignedIn,
+          keepalive,
+          libraryItemId,
+          locator,
+        });
+        const ackKey = createLocatorKey(nextProgress.locator);
+        lastServerAckKeyRef.current = ackKey;
+
+        if (pendingServerLocatorKeyRef.current === ackKey) {
+          pendingServerLocatorRef.current = null;
+          pendingServerLocatorKeyRef.current = null;
+        }
+
         setPayload((current) =>
           current.status === "READY"
             ? {
@@ -453,19 +508,128 @@ export function ReaderScreen({
               }
             : current,
         );
-      });
+
+        return nextProgress;
+      } catch (error) {
+        if (!keepalive) {
+          throw error;
+        }
+
+        return null;
+      }
+    },
+    [getToken, isLoaded, isSignedIn, libraryItemId, remotePersistenceEnabled],
+  );
+
+  useEffect(() => {
+    if (
+      payload.status !== "READY" ||
+      initialResume.phase !== "applied" ||
+      !visibleLocator
+    ) {
+      return;
+    }
+
+    const nextSnapshot = {
+      locator: visibleLocator,
+      savedAt: new Date().toISOString(),
+      version: 2,
+    } satisfies ReaderResumeSnapshot;
+    writeLocalReaderResumeSnapshot(libraryItemId, nextSnapshot);
+
+    if (!remotePersistenceEnabled) {
+      return;
+    }
+
+    const locatorKey = createLocatorKey(visibleLocator);
+    pendingServerLocatorRef.current = visibleLocator;
+    pendingServerLocatorKeyRef.current = locatorKey;
+
+    if (!locatorKey || locatorKey === lastServerAckKeyRef.current) {
+      pendingServerLocatorRef.current = null;
+      pendingServerLocatorKeyRef.current = null;
+      return;
+    }
+
+    if (scheduledPersistTimeoutRef.current !== null) {
+      window.clearTimeout(scheduledPersistTimeoutRef.current);
+    }
+
+    scheduledPersistTimeoutRef.current = window.setTimeout(() => {
+      scheduledPersistTimeoutRef.current = null;
+      const locatorToPersist = pendingServerLocatorRef.current;
+
+      if (!locatorToPersist) {
+        return;
+      }
+
+      void persistPendingProgress(locatorToPersist);
     }, 900);
 
     return () => {
-      window.clearTimeout(timeout);
+      if (scheduledPersistTimeoutRef.current !== null) {
+        window.clearTimeout(scheduledPersistTimeoutRef.current);
+      }
     };
   }, [
-    activeLocator,
     getToken,
+    initialResume.phase,
     isLoaded,
     isSignedIn,
     libraryItemId,
     payload.status,
+    persistPendingProgress,
+    remotePersistenceEnabled,
+    visibleLocator,
+  ]);
+
+  useEffect(() => {
+    if (
+      !remotePersistenceEnabled ||
+      payload.status !== "READY" ||
+      initialResume.phase !== "applied"
+    ) {
+      return;
+    }
+
+    const flushPendingProgress = () => {
+      const locatorToPersist = pendingServerLocatorRef.current;
+      const pendingLocatorKey = pendingServerLocatorKeyRef.current;
+
+      if (
+        !locatorToPersist ||
+        !pendingLocatorKey ||
+        pendingLocatorKey === lastServerAckKeyRef.current
+      ) {
+        return;
+      }
+
+      if (scheduledPersistTimeoutRef.current !== null) {
+        window.clearTimeout(scheduledPersistTimeoutRef.current);
+        scheduledPersistTimeoutRef.current = null;
+      }
+
+      void persistPendingProgress(locatorToPersist, true);
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        flushPendingProgress();
+      }
+    };
+
+    window.addEventListener("pagehide", flushPendingProgress);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener("pagehide", flushPendingProgress);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [
+    initialResume.phase,
+    payload.status,
+    persistPendingProgress,
+    remotePersistenceEnabled,
   ]);
 
   const readerStyle = useMemo(
@@ -484,12 +648,12 @@ export function ReaderScreen({
         ) : activeChapter ? (
           <ReadyReader
             activeChapter={activeChapter}
-            activeLocator={activeLocator}
+            displayLocator={displayLocator}
             fontScale={fontScale}
+            isBootstrapping={initialResume.phase !== "applied"}
             isLoadingChapter={isLoadingChapter}
             isRefreshingWindow={isRefreshingWindow}
             libraryItemId={libraryItemId}
-            onActiveLocatorChange={setActiveLocator}
             onDecreaseFont={() =>
               setFontScale((current) =>
                 Math.max(0.85, roundFontScale(current - 0.1)),
@@ -501,9 +665,11 @@ export function ReaderScreen({
               )
             }
             onSelectChapter={navigateToChapter}
+            onVisibleLocatorChange={setVisibleLocator}
             payload={payload}
             pendingChapterId={traversal.pendingChapterId}
             restoreIntent={traversal.restoreIntent}
+            visibleLocator={visibleLocator}
           />
         ) : null}
       </div>
@@ -513,75 +679,84 @@ export function ReaderScreen({
 
 function ReadyReader({
   activeChapter,
-  activeLocator,
+  displayLocator,
   fontScale,
+  isBootstrapping,
   isLoadingChapter,
   isRefreshingWindow,
   libraryItemId,
-  onActiveLocatorChange,
   onDecreaseFont,
   onIncreaseFont,
   onSelectChapter,
+  onVisibleLocatorChange,
   payload,
   pendingChapterId,
   restoreIntent,
+  visibleLocator,
 }: {
   activeChapter: ReaderChapterPayload;
-  activeLocator: ReaderLocator | null;
+  displayLocator: ReaderLocator | null;
   fontScale: number;
+  isBootstrapping: boolean;
   isLoadingChapter: boolean;
   isRefreshingWindow: boolean;
   libraryItemId: string;
-  onActiveLocatorChange: (locator: ReaderLocator | null) => void;
   onDecreaseFont: () => void;
   onIncreaseFont: () => void;
-  onSelectChapter: (
-    chapterId: string,
-    target?:
-      | {
-          blockId?: string | null;
-          edge?: "end" | "start";
-        }
-      | undefined,
-  ) => void;
+  onSelectChapter: (chapterId: string, target?: ReaderNavigationTarget) => void;
+  onVisibleLocatorChange: (locator: ReaderLocator | null) => void;
   payload: Extract<ReaderStatusPayload, { status: "READY" }>;
   pendingChapterId: string | null;
   restoreIntent: RestoreIntent | null;
+  visibleLocator: ReaderLocator | null;
 }) {
   const { activePanel, closePanel } = useReaderUi();
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
-  const [pageCount, setPageCount] = useState(1);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [measurementEntries, setMeasurementEntries] = useState(
+    () => new Map<string, ReaderMeasurementEntry>(),
+  );
+  const [settledRestoreCycleKey, setSettledRestoreCycleKey] = useState<
+    string | null
+  >(null);
   const [availableHeight, setAvailableHeight] = useState(0);
   const [pageBoxSize, setPageBoxSize] = useState<PageBoxSize>({
     height: 0,
     width: 0,
   });
   const rootRef = useRef<HTMLDivElement | null>(null);
-  const viewportRef = useRef<HTMLDivElement | null>(null);
   const pageBoxRef = useRef<HTMLDivElement | null>(null);
-  const articleRef = useRef<HTMLElement | null>(null);
   const consumedRestoreIntentKeyRef = useRef<string | null>(null);
   const currentPageIndexRef = useRef(0);
-  const activeLocatorRef = useRef<ReaderLocator | null>(activeLocator);
+  const visibleLocatorRef = useRef<ReaderLocator | null>(visibleLocator);
   const restoreIntentRef = useRef<RestoreIntent | null>(restoreIntent);
-  const paginationSnapshotsRef = useRef(new Map<string, PaginationSnapshot>());
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const keepCommittedRestorePinnedRef = useRef(false);
+  const settleRestoreFrameRef = useRef<number | null>(null);
+  const warnedFailedMeasurementKeysRef = useRef(new Set<string>());
   const isContentsOpen = activePanel === "contents";
   const isPanelOpen = isSidebarOpen || isContentsOpen;
+  const activeRestoreCycleKey = restoreIntent?.key ?? activeChapter.chapterId;
 
   useEffect(() => {
     currentPageIndexRef.current = currentPageIndex;
   }, [currentPageIndex]);
 
   useEffect(() => {
-    activeLocatorRef.current = activeLocator;
-  }, [activeLocator]);
+    visibleLocatorRef.current = visibleLocator;
+  }, [visibleLocator]);
 
   useEffect(() => {
     restoreIntentRef.current = restoreIntent;
   }, [restoreIntent]);
+
+  useEffect(() => {
+    return () => {
+      if (settleRestoreFrameRef.current !== null) {
+        window.cancelAnimationFrame(settleRestoreFrameRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (!isPanelOpen) {
@@ -688,225 +863,192 @@ function ReadyReader({
     pageBoxSize.width,
   ]);
 
-  const cachePaginationSnapshot = useCallback((snapshot: PaginationSnapshot) => {
-    paginationSnapshotsRef.current.set(snapshot.layoutKey, snapshot);
+  const activeMeasurementEntry = activePaginationLayoutKey
+    ? measurementEntries.get(activePaginationLayoutKey) ?? null
+    : null;
+
+  const activeReadyMeasurementEntry =
+    activeMeasurementEntry?.status === "ready" ? activeMeasurementEntry : null;
+  const activeMeasurementStatus =
+    activeMeasurementEntry?.status ??
+    (activePaginationLayoutKey ? "pending" : "pending");
+  const pageCount = activeReadyMeasurementEntry?.pageCount ?? 1;
+  const restorePhase =
+    settledRestoreCycleKey === activeRestoreCycleKey &&
+    activeMeasurementStatus !== "pending"
+      ? "settled"
+      : "restoring";
+
+  const storeMeasurementEntry = useCallback((entry: ReaderMeasurementEntry) => {
+    setMeasurementEntries((current) => {
+      const next = new Map(current);
+      next.set(entry.layoutKey, entry);
+      return next;
+    });
   }, []);
 
-  const applyPaginationSnapshot = useCallback(
-    (snapshot: PaginationSnapshot) => {
-      const currentRestoreIntent = restoreIntentRef.current;
-      const nextPageIndex = resolvePageIndexFromPaginationSnapshot({
-        activeChapterId: activeChapter.chapterId,
-        activeLocator: activeLocatorRef.current,
-        consumedRestoreIntentKey: consumedRestoreIntentKeyRef.current,
-        currentPageIndex: currentPageIndexRef.current,
-        keepRestorePinned: keepCommittedRestorePinnedRef.current,
-        restoreIntent: currentRestoreIntent,
-        snapshot,
-      });
+  const warnFailedMeasurement = useCallback(
+    (layoutKey: string) => {
+      if (warnedFailedMeasurementKeysRef.current.has(layoutKey)) {
+        return;
+      }
 
-      setPageCount((current) =>
-        current === snapshot.pageCount ? current : snapshot.pageCount,
+      warnedFailedMeasurementKeysRef.current.add(layoutKey);
+      console.warn(
+        `Reader measurement failed for ${layoutKey}. Falling back to chapter-level restore.`,
       );
-      setCurrentPageIndex((current) =>
-        current === nextPageIndex ? current : nextPageIndex,
+    },
+    [],
+  );
+
+  useLayoutEffect(() => {
+    if (settleRestoreFrameRef.current !== null) {
+      window.cancelAnimationFrame(settleRestoreFrameRef.current);
+      settleRestoreFrameRef.current = null;
+    }
+
+    consumedRestoreIntentKeyRef.current = null;
+    keepCommittedRestorePinnedRef.current = isStickyRestoreIntent(restoreIntent);
+  }, [activeChapter.chapterId, restoreIntent]);
+
+  useLayoutEffect(() => {
+    if (!activePaginationLayoutKey || !activeMeasurementEntry) {
+      return;
+    }
+
+    if (activeMeasurementEntry.status === "pending") {
+      return;
+    }
+
+    const currentRestoreIntent = restoreIntentRef.current;
+    const readyMeasurementEntry =
+      activeMeasurementEntry.status === "ready" ? activeMeasurementEntry : null;
+    const maximumPageIndex = Math.max(0, pageCount - 1);
+    let nextPageIndex = clamp(currentPageIndexRef.current, 0, maximumPageIndex);
+    let shouldConsumeRestoreIntent = false;
+
+    if (
+      currentRestoreIntent &&
+      hasPendingRestoreIntent(
+        currentRestoreIntent,
+        activeChapter.chapterId,
+        consumedRestoreIntentKeyRef.current,
+      )
+    ) {
+      if (activeMeasurementEntry.status === "failed") {
+        warnFailedMeasurement(activeMeasurementEntry.layoutKey);
+        nextPageIndex =
+          currentRestoreIntent.kind === "edge-end" ? maximumPageIndex : 0;
+        shouldConsumeRestoreIntent = true;
+      } else if (currentRestoreIntent.kind === "block") {
+        const restoreLocator = createLocatorFromRestoreIntent(currentRestoreIntent);
+        const pageResolution = restoreLocator
+          ? readyMeasurementEntry?.resolvePageIndex(restoreLocator) ?? {
+              status: "missing-block" as const,
+            }
+          : {
+              status: "missing-block" as const,
+            };
+
+        if (
+          pageResolution.status === "block-start" ||
+          pageResolution.status === "exact"
+        ) {
+          nextPageIndex = clamp(pageResolution.pageIndex, 0, maximumPageIndex);
+        } else {
+          nextPageIndex = 0;
+        }
+
+        shouldConsumeRestoreIntent = true;
+      } else {
+        nextPageIndex =
+          currentRestoreIntent.kind === "edge-end" ? maximumPageIndex : 0;
+        shouldConsumeRestoreIntent = true;
+      }
+    } else if (
+      keepCommittedRestorePinnedRef.current &&
+      currentRestoreIntent?.chapterId === activeChapter.chapterId &&
+      isStickyRestoreIntent(currentRestoreIntent)
+    ) {
+      nextPageIndex =
+        currentRestoreIntent.kind === "edge-end" ? maximumPageIndex : 0;
+    } else if (
+      readyMeasurementEntry &&
+      visibleLocatorRef.current?.chapterId === activeChapter.chapterId
+    ) {
+      const pageResolution = readyMeasurementEntry.resolvePageIndex(
+        visibleLocatorRef.current,
       );
 
       if (
-        currentRestoreIntent &&
-        hasPendingRestoreIntent(
-          currentRestoreIntent,
-          activeChapter.chapterId,
-          consumedRestoreIntentKeyRef.current,
-        )
+        pageResolution.status === "block-start" ||
+        pageResolution.status === "exact"
       ) {
-        consumedRestoreIntentKeyRef.current = currentRestoreIntent.key;
+        nextPageIndex = clamp(pageResolution.pageIndex, 0, maximumPageIndex);
       }
-    },
-    [activeChapter.chapterId],
-  );
-
-  const measureLivePaginationSnapshot = useCallback(() => {
-    if (!activePaginationLayoutKey) {
-      return null;
+    } else if (activeMeasurementEntry.status === "failed") {
+      warnFailedMeasurement(activeMeasurementEntry.layoutKey);
     }
 
-    const snapshot = measurePaginationSnapshot({
-      article: articleRef.current,
-      currentPageIndex: currentPageIndexRef.current,
-      layoutKey: activePaginationLayoutKey,
-      pageBox: pageBoxRef.current,
-      pageGap: PAGE_GAP,
-    });
-
-    if (snapshot) {
-      cachePaginationSnapshot(snapshot);
-    }
-
-    return snapshot;
-  }, [activePaginationLayoutKey, cachePaginationSnapshot]);
-
-  const reconcilePagination = useCallback(() => {
-    const snapshot = measureLivePaginationSnapshot();
-    if (!snapshot) {
-      return;
-    }
-
-    applyPaginationSnapshot(snapshot);
-  }, [applyPaginationSnapshot, measureLivePaginationSnapshot]);
-
-  useLayoutEffect(() => {
-    consumedRestoreIntentKeyRef.current = null;
-    keepCommittedRestorePinnedRef.current = isStickyRestoreIntent(restoreIntent);
-  }, [restoreIntent]);
-
-  useLayoutEffect(() => {
-    if (!activePaginationLayoutKey) {
-      return;
-    }
-
-    const snapshot =
-      paginationSnapshotsRef.current.get(activePaginationLayoutKey) ??
-      measureLivePaginationSnapshot();
-
-    if (!snapshot) {
-      return;
-    }
-
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- This pre-paint seed prevents the old chapter page from flashing before pagination is restored.
-    applyPaginationSnapshot(snapshot);
-  }, [
-    activeChapter.blocks,
-    activePaginationLayoutKey,
-    applyPaginationSnapshot,
-    measureLivePaginationSnapshot,
-  ]);
-
-  useEffect(() => {
-    let frameId = window.requestAnimationFrame(() => {
-      reconcilePagination();
-    });
-
-    const article = articleRef.current;
-    const pageBox = pageBoxRef.current;
-
-    if (!article || !pageBox) {
-      return () => {
-        window.cancelAnimationFrame(frameId);
-      };
-    }
-
-    const resizeObserver = new ResizeObserver(() => {
-      window.cancelAnimationFrame(frameId);
-      frameId = window.requestAnimationFrame(() => {
-        reconcilePagination();
-      });
-    });
-
-    resizeObserver.observe(article);
-    resizeObserver.observe(pageBox);
-
-    const images = Array.from(article.querySelectorAll("img"));
-    const onImageLoad = () => {
-      reconcilePagination();
-    };
-
-    for (const image of images) {
-      image.addEventListener("load", onImageLoad);
-    }
-
-    return () => {
-      window.cancelAnimationFrame(frameId);
-      resizeObserver.disconnect();
-      for (const image of images) {
-        image.removeEventListener("load", onImageLoad);
-      }
-    };
-  }, [
-    activeChapter.blocks,
-    activeChapter.chapterId,
-    activeLocator,
-    fontScale,
-    restoreIntent?.key,
-    pageBoxSize.height,
-    pageBoxSize.width,
-    reconcilePagination,
-  ]);
-
-  useEffect(() => {
-    const pageBox = pageBoxRef.current;
-    const article = articleRef.current;
-
-    if (!pageBox || !article) {
-      return;
-    }
-
-    const blockElements = Array.from(
-      article.querySelectorAll<HTMLElement>("[data-reader-block='true']"),
+    setCurrentPageIndex((current) =>
+      current === nextPageIndex ? current : nextPageIndex,
     );
 
-    if (blockElements.length === 0) {
-      return;
+    if (currentRestoreIntent && shouldConsumeRestoreIntent) {
+      consumedRestoreIntentKeyRef.current = currentRestoreIntent.key;
     }
 
-    const pageBoxWidth = Math.floor(pageBox.clientWidth);
-    if (pageBoxWidth <= 0) {
-      return;
+    if (settleRestoreFrameRef.current !== null) {
+      window.cancelAnimationFrame(settleRestoreFrameRef.current);
     }
 
-    const pageSpan = pageBoxWidth + PAGE_GAP;
-    const pageBoxRect = pageBox.getBoundingClientRect();
-    const pageStart = currentPageIndex * pageSpan;
-    const visibleThreshold = pageStart + 12;
+    settleRestoreFrameRef.current = window.requestAnimationFrame(() => {
+      settleRestoreFrameRef.current = null;
+      setSettledRestoreCycleKey(activeRestoreCycleKey);
+    });
+  }, [
+    activeChapter.chapterId,
+    activeMeasurementEntry,
+    activePaginationLayoutKey,
+    activeRestoreCycleKey,
+    pageCount,
+    warnFailedMeasurement,
+  ]);
 
-    let selected = blockElements[0];
-
-    for (const element of blockElements) {
-      const elementPageOffset = getAbsoluteLeft(
-        element,
-        pageBoxRect.left,
-        pageSpan,
-        currentPageIndex,
-      );
-
-      if (elementPageOffset <= visibleThreshold) {
-        selected = element;
-        continue;
-      }
-
-      break;
-    }
-
-    const blockId = selected.dataset.blockId;
-    if (!blockId) {
-      return;
-    }
-
-    const nextLocator = {
-      blockId,
-      chapterId: activeChapter.chapterId,
-      textOffset: 0,
-    };
-
+  useEffect(() => {
     if (
-      activeLocatorRef.current?.chapterId === nextLocator.chapterId &&
-      activeLocatorRef.current?.blockId === nextLocator.blockId &&
-      activeLocatorRef.current?.textOffset === nextLocator.textOffset
+      isBootstrapping ||
+      restorePhase !== "settled" ||
+      !activeReadyMeasurementEntry
     ) {
       return;
     }
 
-    onActiveLocatorChange({
+    const nextLocator = activeReadyMeasurementEntry.resolveLocator(currentPageIndex);
+
+    if (!nextLocator) {
+      return;
+    }
+
+    if (
+      visibleLocatorRef.current?.chapterId === nextLocator.chapterId &&
+      visibleLocatorRef.current?.blockId === nextLocator.blockId &&
+      visibleLocatorRef.current?.textOffset === nextLocator.textOffset
+    ) {
+      return;
+    }
+
+    onVisibleLocatorChange({
       blockId: nextLocator.blockId,
       chapterId: nextLocator.chapterId,
       textOffset: nextLocator.textOffset,
     });
   }, [
-    activeChapter.chapterId,
+    activeReadyMeasurementEntry,
     currentPageIndex,
-    onActiveLocatorChange,
-    pageCount,
-    pageBoxSize.width,
+    isBootstrapping,
+    onVisibleLocatorChange,
+    restorePhase,
   ]);
 
   const hasPreviousPage = currentPageIndex > 0;
@@ -1049,6 +1191,8 @@ function ReadyReader({
     !activeChapter.nextChapterId && currentPageIndex === pageCount - 1;
   const atBookStart =
     !activeChapter.previousChapterId && currentPageIndex === 0;
+  const shouldMaskArticle =
+    isBootstrapping || isLoadingChapter || restorePhase !== "settled";
 
   return (
     <>
@@ -1073,7 +1217,11 @@ function ReadyReader({
           </div>
 
           <div className="mt-6 flex min-h-0 flex-1 flex-col gap-4 sm:mt-8">
-            {isLoadingChapter ? (
+            {isBootstrapping ? (
+              <p className="font-(--font-ui) text-xs uppercase tracking-[0.16em] text-ink/45">
+                Restoring your last page...
+              </p>
+            ) : isLoadingChapter ? (
               <p className="font-(--font-ui) text-xs uppercase tracking-[0.16em] text-ink/45">
                 Loading chapter...
               </p>
@@ -1094,7 +1242,6 @@ function ReadyReader({
             </div>
 
             <div
-              ref={viewportRef}
               className="relative min-h-0 flex-1 overflow-hidden px-3 py-5 sm:px-5 sm:py-6 md:px-6"
               style={{
                 touchAction: "pan-y",
@@ -1104,21 +1251,20 @@ function ReadyReader({
             >
               <div ref={pageBoxRef} className="h-full w-full overflow-hidden">
                 <ReaderArticle
-                  articleRef={articleRef}
                   blocks={activeChapter.blocks}
                   pageHeight={pageBoxSize.height}
                   style={articleStyle}
                 />
               </div>
-              {isLoadingChapter ? (
+              {shouldMaskArticle ? (
                 <div className="pointer-events-none absolute inset-0 bg-paper/55 backdrop-blur-[2px]" />
               ) : null}
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="font-(--font-ui) text-[0.72rem] uppercase tracking-[0.16em] text-ink/40">
-                {activeLocator
-                  ? `Tracking block ${activeLocator.blockId.split("::").at(-1)}`
+                {displayLocator
+                  ? `Tracking block ${displayLocator.blockId.split("::").at(-1)}`
                   : "Tracking current page"}
               </p>
               <div className="flex flex-wrap items-center gap-4 font-(--font-ui) text-[0.72rem] uppercase tracking-[0.16em] text-ink/40">
@@ -1133,7 +1279,7 @@ function ReadyReader({
       {isSidebarOpen ? (
         <ReaderSidebarOverlay
           activeChapter={activeChapter}
-          activeLocator={activeLocator}
+          activeLocator={displayLocator}
           fontScale={fontScale}
           isLoadingChapter={isLoadingChapter}
           onClose={() => setIsSidebarOpen(false)}
@@ -1161,7 +1307,7 @@ function ReadyReader({
           chapters={payload.chapters}
           fontScale={fontScale}
           libraryItemId={libraryItemId}
-          onSnapshot={cachePaginationSnapshot}
+          onMeasurement={storeMeasurementEntry}
           pageBoxHeight={pageBoxSize.height}
           pageBoxWidth={pageBoxSize.width}
         />
@@ -1439,7 +1585,7 @@ function ReaderArticle({
   pageHeight,
   style,
 }: {
-  articleRef: Ref<HTMLElement>;
+  articleRef?: Ref<HTMLElement>;
   blocks: ReaderBlock[];
   pageHeight: number;
   style?: CSSProperties;
@@ -1465,14 +1611,14 @@ function ReaderPaginationPreloader({
   chapters,
   fontScale,
   libraryItemId,
-  onSnapshot,
+  onMeasurement,
   pageBoxHeight,
   pageBoxWidth,
 }: {
   chapters: ReaderChapterPayload[];
   fontScale: number;
   libraryItemId: string;
-  onSnapshot: (snapshot: PaginationSnapshot) => void;
+  onMeasurement: (entry: ReaderMeasurementEntry) => void;
   pageBoxHeight: number;
   pageBoxWidth: number;
 }) {
@@ -1513,36 +1659,76 @@ function ReaderPaginationPreloader({
     [pageBoxHeight, pageBoxWidth],
   );
 
+  const createLayoutKey = useCallback(
+    (chapterId: string) =>
+      createPaginationLayoutKey({
+        chapterId,
+        fontScale,
+        libraryItemId,
+        viewportHeight: pageBoxHeight,
+        viewportWidth: pageBoxWidth,
+      }),
+    [fontScale, libraryItemId, pageBoxHeight, pageBoxWidth],
+  );
+
+  const publishPendingMeasurements = useCallback(() => {
+    for (const chapter of chapters) {
+      onMeasurement(
+        createPendingReaderMeasurementEntry({
+          chapterId: chapter.chapterId,
+          layoutKey: createLayoutKey(chapter.chapterId),
+        }),
+      );
+    }
+  }, [
+    chapters,
+    createLayoutKey,
+    onMeasurement,
+  ]);
+
   const measurePreloadedChapters = useCallback(() => {
     for (const chapter of chapters) {
-      const snapshot = measurePaginationSnapshot({
-        article: articleRefs.current.get(chapter.chapterId) ?? null,
-        currentPageIndex: 0,
-        layoutKey: createPaginationLayoutKey({
-          chapterId: chapter.chapterId,
-          fontScale,
-          libraryItemId,
-          viewportHeight: pageBoxHeight,
-          viewportWidth: pageBoxWidth,
-        }),
-        pageBox: pageBoxRefs.current.get(chapter.chapterId) ?? null,
-        pageGap: PAGE_GAP,
-      });
+      const article = articleRefs.current.get(chapter.chapterId) ?? null;
+      const pageBox = pageBoxRefs.current.get(chapter.chapterId) ?? null;
+      const layoutKey = createLayoutKey(chapter.chapterId);
 
-      if (snapshot) {
-        onSnapshot(snapshot);
+      if (!article || !pageBox) {
+        onMeasurement(
+          createPendingReaderMeasurementEntry({
+            chapterId: chapter.chapterId,
+            layoutKey,
+          }),
+        );
+        continue;
+      }
+
+      try {
+        onMeasurement(
+          createReadyReaderMeasurementEntry({
+            article,
+            chapterId: chapter.chapterId,
+            layoutKey,
+            pageBox,
+            pageGap: PAGE_GAP,
+          }),
+        );
+      } catch {
+        onMeasurement(
+          createFailedReaderMeasurementEntry({
+            chapterId: chapter.chapterId,
+            layoutKey,
+          }),
+        );
       }
     }
   }, [
     chapters,
-    fontScale,
-    libraryItemId,
-    onSnapshot,
-    pageBoxHeight,
-    pageBoxWidth,
+    createLayoutKey,
+    onMeasurement,
   ]);
 
   useLayoutEffect(() => {
+    publishPendingMeasurements();
     measurePreloadedChapters();
 
     const resizeObserver = new ResizeObserver(() => {
@@ -1578,7 +1764,7 @@ function ReaderPaginationPreloader({
         image.removeEventListener("load", onImageLoad);
       }
     };
-  }, [chapters, measurePreloadedChapters]);
+  }, [chapters, measurePreloadedChapters, publishPendingMeasurements]);
 
   return (
     <div
@@ -1625,6 +1811,7 @@ function ReaderBlockView({
 }) {
   const sharedProps = {
     "data-block-id": block.id,
+    "data-reader-block-kind": block.kind,
     "data-reader-block": "true",
     id: block.anchorId ?? undefined,
   } as const;
@@ -1937,6 +2124,7 @@ async function persistReaderProgress(input: {
   getToken: () => Promise<string | null>;
   isLoaded: boolean;
   isSignedIn: boolean | undefined;
+  keepalive?: boolean;
   libraryItemId: string;
   locator: ReaderLocator;
 }) {
@@ -1960,6 +2148,7 @@ async function persistReaderProgress(input: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
+      keepalive: input.keepalive,
       body: JSON.stringify({
         locator: input.locator,
       }),
@@ -1979,6 +2168,18 @@ function createLocatorKey(locator: ReaderLocator | null) {
   }
 
   return `${locator.chapterId}:${locator.blockId}:${locator.textOffset}`;
+}
+
+function createLocatorFromRestoreIntent(restoreIntent: RestoreIntent | null) {
+  if (!restoreIntent || restoreIntent.kind !== "block") {
+    return null;
+  }
+
+  return {
+    blockId: restoreIntent.blockId,
+    chapterId: restoreIntent.chapterId,
+    textOffset: restoreIntent.textOffset,
+  } satisfies ReaderLocator;
 }
 
 function roundFontScale(value: number) {
@@ -2026,19 +2227,6 @@ function normalizeReaderStatusPayload(
     progress: candidate.progress,
     status: "FAILED",
   };
-}
-
-function getAbsoluteLeft(
-  element: HTMLElement,
-  viewportLeft: number,
-  pageSpan: number,
-  currentPageIndex: number,
-) {
-  return (
-    element.getBoundingClientRect().left -
-    viewportLeft +
-    currentPageIndex * pageSpan
-  );
 }
 
 function isInteractiveTarget(target: EventTarget | null) {

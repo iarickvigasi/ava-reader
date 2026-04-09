@@ -11,6 +11,11 @@ export type PaginationSnapshot = {
   pageCount: number;
 };
 
+export type ResolvedPaginationSnapshot = {
+  nextPageIndex: number;
+  restoreState: "idle" | "pending" | "resolved";
+};
+
 export function createPaginationLayoutKey(input: {
   chapterId: string;
   fontScale: number;
@@ -86,6 +91,8 @@ export function resolvePageIndexFromPaginationSnapshot(input: {
   consumedRestoreIntentKey: string | null;
   currentPageIndex: number;
   keepRestorePinned: boolean;
+  locatorPageIndex: number | null;
+  restorePageIndex: number | null;
   restoreIntent: RestoreIntent | null;
   snapshot: PaginationSnapshot;
 }) {
@@ -94,36 +101,23 @@ export function resolvePageIndexFromPaginationSnapshot(input: {
     input.activeChapterId,
     input.consumedRestoreIntentKey,
   );
-  const restoreBlockPageIndex =
-    hasPendingChapterRestoreIntent && input.restoreIntent?.kind === "block"
-      ? resolveBlockPageIndex(input.snapshot, input.restoreIntent.blockId)
-      : null;
-  const locatorBlockPageIndex =
-    !hasPendingChapterRestoreIntent &&
-    input.activeLocator?.chapterId === input.activeChapterId
-      ? resolveBlockPageIndex(input.snapshot, input.activeLocator.blockId)
-      : null;
-
-  return resolveNextPageIndex({
+  const nextPageIndex = resolveNextPageIndex({
     activeChapterId: input.activeChapterId,
     consumedRestoreIntentKey: input.consumedRestoreIntentKey,
     currentPageIndex: input.currentPageIndex,
     keepRestorePinned: input.keepRestorePinned,
-    locatorBlockPageIndex,
+    locatorPageIndex: input.locatorPageIndex,
     measuredPageCount: input.snapshot.pageCount,
-    restoreBlockPageIndex,
+    restorePageIndex: input.restorePageIndex,
     restoreIntent: input.restoreIntent,
   });
-}
 
-function resolveBlockPageIndex(
-  snapshot: PaginationSnapshot,
-  blockId: string | null,
-) {
-  if (!blockId) {
-    return null;
-  }
-
-  const blockPageIndex = snapshot.blockPageIndexById[blockId];
-  return Number.isInteger(blockPageIndex) ? blockPageIndex : null;
+  return {
+    nextPageIndex,
+    restoreState: hasPendingChapterRestoreIntent
+      ? input.restoreIntent?.kind === "block" && input.restorePageIndex === null
+        ? "pending"
+        : "resolved"
+      : "idle",
+  } satisfies ResolvedPaginationSnapshot;
 }

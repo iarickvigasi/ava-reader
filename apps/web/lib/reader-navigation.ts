@@ -4,6 +4,7 @@ export type ReaderNavigationTarget =
   | {
       blockId?: string | null;
       edge?: "end" | "start";
+      textOffset?: number;
     }
   | undefined;
 
@@ -25,6 +26,7 @@ export type RestoreIntent =
       chapterId: string;
       key: string;
       kind: "block";
+      textOffset: number;
     };
 
 export type ReaderTraversalState = {
@@ -60,6 +62,10 @@ export function createRestoreIntent(
       chapterId,
       key,
       kind: "block",
+      textOffset:
+        Number.isFinite(target.textOffset) && (target.textOffset ?? 0) > 0
+          ? Math.floor(target.textOffset ?? 0)
+          : 0,
     };
   }
 
@@ -82,7 +88,6 @@ export function createRestoreIntent(
 
 export function createInitialTraversalState(
   initialPayload: ReaderStatusPayload,
-  initialChapterParam?: string | null,
 ): ReaderTraversalState {
   if (initialPayload.status !== "READY") {
     return {
@@ -93,10 +98,7 @@ export function createInitialTraversalState(
   }
 
   const visibleChapterId = initialPayload.activeChapterId;
-  const initialTarget = resolveInitialNavigationTarget(
-    initialPayload,
-    initialChapterParam,
-  );
+  const initialTarget = resolveInitialNavigationTarget(initialPayload);
   const restoreIntent = createRestoreIntent(
     visibleChapterId,
     initialTarget,
@@ -112,15 +114,13 @@ export function createInitialTraversalState(
 
 export function resolveInitialNavigationTarget(
   payload: Extract<ReaderStatusPayload, { status: "READY" }>,
-  initialChapterParam?: string | null,
 ): ReaderNavigationTarget {
-  if (initialChapterParam) {
-    return { edge: "start" };
-  }
-
   const initialLocator = payload.progress.locator;
   if (initialLocator?.chapterId === payload.activeChapterId) {
-    return { blockId: initialLocator.blockId };
+    return {
+      blockId: initialLocator.blockId,
+      textOffset: initialLocator.textOffset,
+    };
   }
 
   return { edge: "start" };
@@ -159,13 +159,10 @@ export function readerTraversalReducer(
 }
 
 export function resolveRequestedChapterId(input: {
-  initialChapterParam?: string | null;
   pendingChapterId: string | null;
   visibleChapterId: string | null;
 }) {
-  return (
-    input.pendingChapterId ?? input.visibleChapterId ?? input.initialChapterParam ?? null
-  );
+  return input.pendingChapterId ?? input.visibleChapterId ?? null;
 }
 
 export function resolveVisibleChapterId(
@@ -213,9 +210,9 @@ export function resolveNextPageIndex(input: {
   consumedRestoreIntentKey: string | null;
   currentPageIndex: number;
   keepRestorePinned: boolean;
-  locatorBlockPageIndex: number | null;
+  locatorPageIndex: number | null;
   measuredPageCount: number;
-  restoreBlockPageIndex: number | null;
+  restorePageIndex: number | null;
   restoreIntent: RestoreIntent | null;
 }) {
   const maximumPageIndex = Math.max(0, input.measuredPageCount - 1);
@@ -232,7 +229,7 @@ export function resolveNextPageIndex(input: {
   if (pendingRestoreIntent) {
     return resolveRestoreIntentPageIndex(
       restoreIntent,
-      input.restoreBlockPageIndex,
+      input.restorePageIndex,
       maximumPageIndex,
       nextPageIndex,
     );
@@ -246,8 +243,8 @@ export function resolveNextPageIndex(input: {
     return input.restoreIntent.kind === "edge-end" ? maximumPageIndex : 0;
   }
 
-  if (input.locatorBlockPageIndex !== null) {
-    nextPageIndex = clamp(input.locatorBlockPageIndex, 0, maximumPageIndex);
+  if (input.locatorPageIndex !== null) {
+    nextPageIndex = clamp(input.locatorPageIndex, 0, maximumPageIndex);
   }
 
   return nextPageIndex;
@@ -255,15 +252,15 @@ export function resolveNextPageIndex(input: {
 
 function resolveRestoreIntentPageIndex(
   restoreIntent: RestoreIntent,
-  restoreBlockPageIndex: number | null,
+  restorePageIndex: number | null,
   maximumPageIndex: number,
   currentPageIndex: number,
 ) {
   switch (restoreIntent.kind) {
     case "block":
-      return restoreBlockPageIndex === null
+      return restorePageIndex === null
         ? currentPageIndex
-        : clamp(restoreBlockPageIndex, 0, maximumPageIndex);
+        : clamp(restorePageIndex, 0, maximumPageIndex);
     case "edge-end":
       return maximumPageIndex;
     case "edge-start":

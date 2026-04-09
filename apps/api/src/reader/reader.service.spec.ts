@@ -171,7 +171,7 @@ describe('ReaderService', () => {
       currentLocator: JSON.stringify({
         blockId: 'chapter-2::b1',
         chapterId: 'chapter-2',
-        textOffset: 0,
+        textOffset: 214,
       }),
       lastReadAt: new Date('2026-04-07T12:00:00.000Z'),
     });
@@ -183,7 +183,7 @@ describe('ReaderService', () => {
       {
         blockId: 'chapter-2::b1',
         chapterId: 'chapter-2',
-        textOffset: 0,
+        textOffset: 214,
       },
     );
 
@@ -199,9 +199,126 @@ describe('ReaderService', () => {
       locator: {
         blockId: 'chapter-2::b1',
         chapterId: 'chapter-2',
-        textOffset: 0,
+        textOffset: 214,
       },
     });
+  });
+
+  it('returns stable progress when the same locator is saved repeatedly', async () => {
+    findFirst.mockResolvedValue(createLibraryItemRecord());
+    update.mockResolvedValue({
+      chapterLabel: 'Chapter Two',
+      completionPercent: 50,
+      currentLocator: JSON.stringify({
+        blockId: 'chapter-2::b1',
+        chapterId: 'chapter-2',
+        textOffset: 214,
+      }),
+      lastReadAt: new Date('2026-04-07T12:00:00.000Z'),
+    });
+    updateLibraryItem.mockResolvedValue({});
+
+    const firstProgress = await readerService.updateProgress(
+      'clerk_1',
+      'library-1',
+      {
+        blockId: 'chapter-2::b1',
+        chapterId: 'chapter-2',
+        textOffset: 214,
+      },
+    );
+    const secondProgress = await readerService.updateProgress(
+      'clerk_1',
+      'library-1',
+      {
+        blockId: 'chapter-2::b1',
+        chapterId: 'chapter-2',
+        textOffset: 214,
+      },
+    );
+
+    expect(firstProgress).toEqual(secondProgress);
+    expect(update).toHaveBeenCalledTimes(2);
+    expect(update.mock.calls[0]?.[0].data).toMatchObject({
+      chapterLabel: 'Chapter Two',
+      completionPercent: 50,
+      currentLocator: JSON.stringify({
+        blockId: 'chapter-2::b1',
+        chapterId: 'chapter-2',
+        textOffset: 214,
+      }),
+    });
+    expect(update.mock.calls[1]?.[0].data).toMatchObject({
+      chapterLabel: 'Chapter Two',
+      completionPercent: 50,
+      currentLocator: JSON.stringify({
+        blockId: 'chapter-2::b1',
+        chapterId: 'chapter-2',
+        textOffset: 214,
+      }),
+    });
+  });
+
+  it('persists successive locators with different text offsets', async () => {
+    findFirst.mockResolvedValue(createLibraryItemRecord());
+    update
+      .mockResolvedValueOnce({
+        chapterLabel: 'Chapter Two',
+        completionPercent: 50,
+        currentLocator: JSON.stringify({
+          blockId: 'chapter-2::b1',
+          chapterId: 'chapter-2',
+          textOffset: 214,
+        }),
+        lastReadAt: new Date('2026-04-07T12:00:00.000Z'),
+      })
+      .mockResolvedValueOnce({
+        chapterLabel: 'Chapter Two',
+        completionPercent: 50,
+        currentLocator: JSON.stringify({
+          blockId: 'chapter-2::b1',
+          chapterId: 'chapter-2',
+          textOffset: 338,
+        }),
+        lastReadAt: new Date('2026-04-07T12:01:00.000Z'),
+      });
+    updateLibraryItem.mockResolvedValue({});
+
+    const firstProgress = await readerService.updateProgress(
+      'clerk_1',
+      'library-1',
+      {
+        blockId: 'chapter-2::b1',
+        chapterId: 'chapter-2',
+        textOffset: 214,
+      },
+    );
+    const secondProgress = await readerService.updateProgress(
+      'clerk_1',
+      'library-1',
+      {
+        blockId: 'chapter-2::b1',
+        chapterId: 'chapter-2',
+        textOffset: 338,
+      },
+    );
+
+    expect(firstProgress.locator?.textOffset).toBe(214);
+    expect(secondProgress.locator?.textOffset).toBe(338);
+    expect(update.mock.calls[0]?.[0].data.currentLocator).toBe(
+      JSON.stringify({
+        blockId: 'chapter-2::b1',
+        chapterId: 'chapter-2',
+        textOffset: 214,
+      }),
+    );
+    expect(update.mock.calls[1]?.[0].data.currentLocator).toBe(
+      JSON.stringify({
+        blockId: 'chapter-2::b1',
+        chapterId: 'chapter-2',
+        textOffset: 338,
+      }),
+    );
   });
 });
 

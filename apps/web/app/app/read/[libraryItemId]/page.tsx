@@ -6,15 +6,12 @@ export const dynamic = "force-dynamic";
 
 export default async function ReaderPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ libraryItemId: string }>;
-  searchParams: Promise<{ chapter?: string }>;
 }) {
   const { libraryItemId } = await params;
-  const { chapter } = await searchParams;
   const reader = await fetchServerApi<ReaderStatusPayload>(
-    `/api/library/${libraryItemId}/reader${chapter ? `?chapter=${encodeURIComponent(chapter)}` : ""}`,
+    `/api/library/${libraryItemId}/reader`,
     {
       returnBackUrl: `/app/read/${libraryItemId}`,
     },
@@ -22,7 +19,6 @@ export default async function ReaderPage({
 
   return (
     <ReaderScreen
-      initialChapterParam={chapter ?? null}
       initialPayload={reader}
       libraryItemId={libraryItemId}
     />
