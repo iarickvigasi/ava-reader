@@ -679,7 +679,6 @@ export function ReaderScreen({
 
 function ReadyReader({
   activeChapter,
-  displayLocator,
   fontScale,
   isBootstrapping,
   isLoadingChapter,
@@ -1187,10 +1186,6 @@ function ReadyReader({
     [pageBoxSize.height, pageBoxSize.width, pageTranslate],
   );
 
-  const atBookEnd =
-    !activeChapter.nextChapterId && currentPageIndex === pageCount - 1;
-  const atBookStart =
-    !activeChapter.previousChapterId && currentPageIndex === 0;
   const shouldMaskArticle =
     isBootstrapping || isLoadingChapter || restorePhase !== "settled";
 
@@ -1261,17 +1256,6 @@ function ReadyReader({
               ) : null}
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="font-(--font-ui) text-[0.72rem] uppercase tracking-[0.16em] text-ink/40">
-                {displayLocator
-                  ? `Tracking block ${displayLocator.blockId.split("::").at(-1)}`
-                  : "Tracking current page"}
-              </p>
-              <div className="flex flex-wrap items-center gap-4 font-(--font-ui) text-[0.72rem] uppercase tracking-[0.16em] text-ink/40">
-                <span>{atBookStart ? "At book start" : "Previous crosses chapters"}</span>
-                <span>{atBookEnd ? "At book end" : "Next crosses chapters"}</span>
-              </div>
-            </div>
           </div>
         </section>
       </div>
@@ -1279,7 +1263,6 @@ function ReadyReader({
       {isSidebarOpen ? (
         <ReaderSidebarOverlay
           activeChapter={activeChapter}
-          activeLocator={displayLocator}
           fontScale={fontScale}
           isLoadingChapter={isLoadingChapter}
           onClose={() => setIsSidebarOpen(false)}
@@ -1326,7 +1309,6 @@ function getBrowserViewportHeight() {
 
 function ReaderSidebarOverlay({
   activeChapter,
-  activeLocator,
   fontScale,
   isLoadingChapter,
   onClose,
@@ -1335,7 +1317,6 @@ function ReaderSidebarOverlay({
   payload,
 }: {
   activeChapter: ReaderChapterPayload;
-  activeLocator: ReaderLocator | null;
   fontScale: number;
   isLoadingChapter: boolean;
   onClose: () => void;
@@ -1421,18 +1402,13 @@ function ReaderSidebarOverlay({
             </div>
           </div>
 
-          <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-line/40 pt-5">
-            <p className="font-(--font-ui) text-[0.72rem] uppercase tracking-[0.16em] text-ink/40">
-              {activeLocator
-                ? `Tracking block ${activeLocator.blockId.split("::").at(-1)}`
-                : "Tracking current page"}
-            </p>
-            {isLoadingChapter ? (
+          {isLoadingChapter ? (
+            <div className="mt-6 border-t border-line/40 pt-5">
               <p className="font-(--font-ui) text-[0.72rem] uppercase tracking-[0.16em] text-ink/40">
                 Switching chapters...
               </p>
-            ) : null}
-          </div>
+            </div>
+          ) : null}
         </div>
       </aside>
     </div>
