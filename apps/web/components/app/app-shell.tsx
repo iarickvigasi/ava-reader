@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { AppNavigation } from "@/components/app/app-navigation";
+import { ReaderUiProvider } from "@/components/app/reader-ui-context";
 import type { CurrentUserPayload } from "@/lib/api-types";
 import { cn } from "@/lib/cn";
 
@@ -14,6 +15,17 @@ type AppShellProps = {
 export function AppShell({ children, currentUser }: AppShellProps) {
   const pathname = usePathname();
   const isReaderRoute = pathname.startsWith("/app/read/");
+
+  if (isReaderRoute) {
+    return (
+      <ReaderUiProvider>
+        <div className="min-h-screen">
+          <AppNavigation currentUser={currentUser} />
+          <div>{children}</div>
+        </div>
+      </ReaderUiProvider>
+    );
+  }
 
   return (
     <div className="min-h-screen">

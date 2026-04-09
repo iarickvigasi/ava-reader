@@ -17,9 +17,8 @@ import {
   useState,
 } from "react";
 import { useAuth } from "@clerk/nextjs";
-import {
-  ChartIcon,
-} from "@/components/app/app-icons";
+import { ChartIcon } from "@/components/app/app-icons";
+import { useReaderUi } from "@/components/app/reader-ui-context";
 import type {
   ReaderBlock,
   ReaderChapterPayload,
@@ -549,6 +548,7 @@ function ReadyReader({
   pendingChapterId: string | null;
   restoreIntent: RestoreIntent | null;
 }) {
+  const { activePanel, closePanel } = useReaderUi();
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [pageCount, setPageCount] = useState(1);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -568,6 +568,8 @@ function ReadyReader({
   const paginationSnapshotsRef = useRef(new Map<string, PaginationSnapshot>());
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const keepCommittedRestorePinnedRef = useRef(false);
+  const isContentsOpen = activePanel === "contents";
+  const isPanelOpen = isSidebarOpen || isContentsOpen;
 
   useEffect(() => {
     currentPageIndexRef.current = currentPageIndex;
@@ -582,7 +584,7 @@ function ReadyReader({
   }, [restoreIntent]);
 
   useEffect(() => {
-    if (!isSidebarOpen) {
+    if (!isPanelOpen) {
       return;
     }
 
@@ -592,7 +594,7 @@ function ReadyReader({
     return () => {
       document.body.style.overflow = previousOverflow;
     };
-  }, [isSidebarOpen]);
+  }, [isPanelOpen]);
 
   const syncAvailableHeight = useCallback(() => {
     const root = rootRef.current;
@@ -960,7 +962,7 @@ function ReadyReader({
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (isSidebarOpen || isInteractiveTarget(event.target)) {
+      if (isPanelOpen || isInteractiveTarget(event.target)) {
         return;
       }
 
@@ -980,12 +982,12 @@ function ReadyReader({
     return () => {
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [goToNextPage, goToPreviousPage, isSidebarOpen]);
+  }, [goToNextPage, goToPreviousPage, isPanelOpen]);
 
   const handleTouchStart = (event: ReactTouchEvent<HTMLDivElement>) => {
     const touch = event.touches[0];
 
-    if (!touch || isLoadingChapter || isSidebarOpen) {
+    if (!touch || isLoadingChapter || isPanelOpen) {
       touchStartRef.current = null;
       return;
     }
@@ -1000,7 +1002,7 @@ function ReadyReader({
     const start = touchStartRef.current;
     touchStartRef.current = null;
 
-    if (!start || isLoadingChapter || isSidebarOpen) {
+    if (!start || isLoadingChapter || isPanelOpen) {
       return;
     }
 
@@ -1131,15 +1133,22 @@ function ReadyReader({
       {isSidebarOpen ? (
         <ReaderSidebarOverlay
           activeChapter={activeChapter}
-          activeChapterId={activeChapter.chapterId}
           activeLocator={activeLocator}
           fontScale={fontScale}
           isLoadingChapter={isLoadingChapter}
           onClose={() => setIsSidebarOpen(false)}
           onDecreaseFont={onDecreaseFont}
           onIncreaseFont={onIncreaseFont}
+          payload={payload}
+        />
+      ) : null}
+
+      {isContentsOpen ? (
+        <ReaderContentsOverlay
+          activeChapterId={activeChapter.chapterId}
+          onClose={closePanel}
           onSelectChapter={(chapterId) => {
-            setIsSidebarOpen(false);
+            closePanel();
             onSelectChapter(chapterId, { edge: "start" });
           }}
           payload={payload}
@@ -1171,28 +1180,22 @@ function getBrowserViewportHeight() {
 
 function ReaderSidebarOverlay({
   activeChapter,
-  activeChapterId,
   activeLocator,
   fontScale,
   isLoadingChapter,
   onClose,
   onDecreaseFont,
   onIncreaseFont,
-  onSelectChapter,
   payload,
-  pendingChapterId,
 }: {
   activeChapter: ReaderChapterPayload;
-  activeChapterId: string;
   activeLocator: ReaderLocator | null;
   fontScale: number;
   isLoadingChapter: boolean;
   onClose: () => void;
   onDecreaseFont: () => void;
   onIncreaseFont: () => void;
-  onSelectChapter: (chapterId: string) => void;
   payload: Extract<ReaderStatusPayload, { status: "READY" }>;
-  pendingChapterId: string | null;
 }) {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -1263,36 +1266,13 @@ function ReaderSidebarOverlay({
           </div>
 
           <div className="mt-8 min-h-0 flex-1 space-y-3">
-            <SectionLabel>Contents</SectionLabel>
-            <nav className="h-full max-h-full space-y-1 overflow-auto pr-1">
-              {payload.toc.map((entry) => {
-                const isActive = entry.chapterId === activeChapterId;
-                const isPending = pendingChapterId === entry.chapterId;
-
-                return (
-                  <button
-                    key={entry.chapterId}
-                    type="button"
-                    className={cn(
-                      "flex w-full items-center justify-between rounded-2xl px-3 py-3 text-left transition",
-                      isActive
-                        ? "bg-soft-tone-fill text-ink"
-                        : "text-ink/70 hover:bg-soft-fill/75 hover:text-ink",
-                    )}
-                    onClick={() => onSelectChapter(entry.chapterId)}
-                  >
-                    <span className="min-w-0 font-(--font-ui) text-sm leading-5">
-                      {entry.label}
-                    </span>
-                    {isPending ? (
-                      <span className="ml-3 shrink-0 font-(--font-ui) text-[0.65rem] uppercase tracking-[0.14em] text-ink/45">
-                        ...
-                      </span>
-                    ) : null}
-                  </button>
-                );
-              })}
-            </nav>
+            <SectionLabel>Reader controls</SectionLabel>
+            <div className="rounded-3xl border border-line/45 bg-white/45 p-4">
+              <p className="font-(--font-reader) text-lg leading-7 text-ink">
+                Open `Contents` from the left rail to jump between chapters
+                while keeping this panel focused on reading controls.
+              </p>
+            </div>
           </div>
 
           <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-line/40 pt-5">
@@ -1307,6 +1287,130 @@ function ReaderSidebarOverlay({
               </p>
             ) : null}
           </div>
+        </div>
+      </aside>
+    </div>
+  );
+}
+
+function ReaderContentsOverlay({
+  activeChapterId,
+  onClose,
+  onSelectChapter,
+  payload,
+  pendingChapterId,
+}: {
+  activeChapterId: string;
+  onClose: () => void;
+  onSelectChapter: (chapterId: string) => void;
+  payload: Extract<ReaderStatusPayload, { status: "READY" }>;
+  pendingChapterId: string | null;
+}) {
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 z-50">
+      <button
+        type="button"
+        aria-label="Close contents panel"
+        className="absolute inset-0 bg-[linear-gradient(90deg,rgba(252,245,240,0.2)_0%,rgba(252,245,240,0.1)_18%,rgba(252,245,240,0)_34%)]"
+        onClick={onClose}
+      />
+      <aside className="absolute inset-y-0 left-0 flex w-full justify-start">
+        <div className="relative h-full w-full max-w-[24rem]">
+          <div className="absolute inset-0 border-r border-line/35 bg-linear-to-r from-paper-strong/88 via-paper/78 to-paper/50 shadow-[10px_0_40px_rgba(31,27,24,0.05)] backdrop-blur-[7px]" />
+          <div className="relative z-10 flex h-full flex-col px-6 py-8 sm:px-8">
+            <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <SectionLabel>Contents</SectionLabel>
+              <h2 className="mt-4 font-(--font-reader) text-[2rem] leading-[0.95] tracking-[-0.04em] text-title">
+                {payload.book.title}
+              </h2>
+              {payload.book.author ? (
+                <p className="mt-4 font-(--font-ui) text-[0.82rem] uppercase tracking-[0.18em] text-title/70">
+                  {payload.book.author}
+                </p>
+              ) : null}
+            </div>
+            <button
+              type="button"
+              className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-line/45 bg-white/55 text-ink transition hover:bg-white"
+              onClick={onClose}
+            >
+              <span className="font-(--font-ui) text-lg leading-none">×</span>
+            </button>
+          </div>
+
+          <div className="mt-8">
+            <div className="flex items-center justify-between gap-3">
+              <span className="font-(--font-ui) text-[0.62rem] uppercase tracking-[0.16em] text-ink/55">
+                {payload.progress.completionPercent}% completed
+              </span>
+              <span className="font-(--font-ui) text-[0.62rem] uppercase tracking-[0.16em] text-ink/35">
+                {payload.toc.length} chapters
+              </span>
+            </div>
+            <div className="mt-3 h-1.5 rounded-full bg-line/20">
+              <div
+                className="h-full rounded-full bg-title transition-[width]"
+                style={{
+                  width: `${clamp(payload.progress.completionPercent, 0, 100)}%`,
+                }}
+              />
+            </div>
+          </div>
+
+          <nav className="mt-8 min-h-0 flex-1 space-y-6 overflow-auto pr-3">
+            {payload.toc.map((entry, index) => {
+              const isActive = entry.chapterId === activeChapterId;
+              const isPending = pendingChapterId === entry.chapterId;
+
+              return (
+                <div
+                  key={entry.chapterId}
+                  className="border-l border-title/10 pl-4"
+                >
+                  <button
+                    type="button"
+                    className="flex w-full items-start justify-between gap-3 text-left"
+                    onClick={() => onSelectChapter(entry.chapterId)}
+                  >
+                    <span
+                      className={cn(
+                        "min-w-0 font-(--font-reader) text-[0.98rem] leading-6 transition",
+                        isActive
+                          ? "font-semibold text-title"
+                          : "text-title/78 hover:text-title",
+                      )}
+                    >
+                      {entry.label}
+                    </span>
+                    <span className="shrink-0 font-(--font-ui) text-[0.62rem] uppercase tracking-[0.16em] text-ink/35">
+                      {isPending
+                        ? "Loading"
+                        : isActive
+                          ? "Current"
+                          : `${index + 1}`}
+                    </span>
+                  </button>
+                </div>
+              );
+            })}
+          </nav>
+        </div>
         </div>
       </aside>
     </div>

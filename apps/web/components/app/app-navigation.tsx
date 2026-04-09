@@ -4,6 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AppHeaderBrand } from "@/components/brand/app-header-brand";
 import {
+  useReaderUi,
+  type ReaderPanel,
+} from "@/components/app/reader-ui-context";
+import {
   ChartIcon,
   ExploreIcon,
   FontControlsIcon,
@@ -30,6 +34,7 @@ const readerNavItems = [
     href: "",
     icon: ReaderLayoutIcon,
     label: "Contents",
+    panel: "contents",
   },
   {
     href: "",
@@ -211,6 +216,8 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
 }
 
 function ReaderNavigation() {
+  const { activePanel, togglePanel } = useReaderUi();
+
   return (
     <>
       <aside className="group/reader-nav fixed inset-y-0 left-0 z-40 hidden w-20 overflow-hidden transition-[width] duration-300 ease-out hover:w-56 focus-within:w-56 md:flex">
@@ -226,7 +233,12 @@ function ReaderNavigation() {
 
           <nav className="mt-10 flex flex-col gap-3">
             {readerNavItems.map((item) => (
-              <ReaderNavItem key={item.label} item={item} />
+              <ReaderNavItem
+                key={item.label}
+                activePanel={activePanel}
+                item={item}
+                onTogglePanel={togglePanel}
+              />
             ))}
           </nav>
 
@@ -248,7 +260,13 @@ function ReaderNavigation() {
           </Link>
           <div className="flex items-center gap-2 overflow-x-auto">
             {readerNavItems.slice(0, 5).map((item) => (
-              <ReaderNavItem key={item.label} compact item={item} />
+              <ReaderNavItem
+                key={item.label}
+                activePanel={activePanel}
+                compact
+                item={item}
+                onTogglePanel={togglePanel}
+              />
             ))}
           </div>
         </div>
@@ -258,13 +276,21 @@ function ReaderNavigation() {
 }
 
 function ReaderNavItem({
+  activePanel,
   compact = false,
   item,
+  onTogglePanel,
 }: {
+  activePanel: ReaderPanel | null;
   compact?: boolean;
   item: (typeof readerNavItems)[number];
+  onTogglePanel: (panel: ReaderPanel) => void;
 }) {
   const Icon = item.icon;
+  const isPanelItem = "panel" in item;
+  const isActive = ("isActive" in item && item.isActive) || (
+    isPanelItem && activePanel === item.panel
+  );
   const content = (
     <>
       <span
@@ -294,8 +320,22 @@ function ReaderNavItem({
       ? "size-9 shrink-0 justify-center"
       : "w-full justify-start py-0",
     "hover:bg-soft-tone-fill/75",
-    "isActive" in item && item.isActive && "bg-soft-tone-fill",
+    isActive && "bg-soft-tone-fill",
   );
+
+  if (isPanelItem) {
+    return (
+      <button
+        type="button"
+        aria-label={item.label}
+        aria-pressed={isActive}
+        className={className}
+        onClick={() => onTogglePanel(item.panel)}
+      >
+        {content}
+      </button>
+    );
+  }
 
   if (!item.href) {
     return <div className={className}>{content}</div>;
