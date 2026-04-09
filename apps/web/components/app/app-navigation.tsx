@@ -217,35 +217,82 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
 
 function ReaderNavigation() {
   const { activePanel, togglePanel } = useReaderUi();
+  const isContentsOpen = activePanel === "contents";
 
   return (
     <>
-      <aside className="group/reader-nav fixed inset-y-0 left-0 z-40 hidden w-20 overflow-hidden transition-[width] duration-300 ease-out hover:w-56 focus-within:w-56 md:flex">
-        <div className="absolute inset-y-0 left-0 w-56 bg-linear-to-r from-paper-strong/84 via-paper/72 to-paper/0 opacity-0 shadow-[10px_0_40px_0_rgba(31,27,24,0.05)] backdrop-blur-[7px] transition-opacity duration-300 group-hover/reader-nav:opacity-100 group-focus-within/reader-nav:opacity-100" />
+      <aside
+        className={cn(
+          "group/reader-nav fixed inset-y-0 left-0 z-40 hidden overflow-hidden transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:flex",
+          isContentsOpen
+            ? "w-94"
+            : "w-20 hover:w-56 focus-within:w-56",
+        )}
+      >
+        <div
+          className={cn(
+            "absolute inset-y-0 left-0 w-full bg-linear-to-r from-paper-strong/88 via-paper/76 to-paper/0 backdrop-blur-[7px] transition-opacity duration-400 ease-out",
+            isContentsOpen
+              ? "opacity-100 shadow-none"
+              : "opacity-0 shadow-[10px_0_40px_0_rgba(31,27,24,0.05)] group-hover/reader-nav:opacity-100 group-focus-within/reader-nav:opacity-100",
+          )}
+        />
 
         <div className="relative z-10 flex h-full w-full flex-col px-4 py-8">
-          <Link
-            href="/app"
-            className="flex h-8 w-full items-center justify-center overflow-hidden font-(--font-display) text-[1.25rem] leading-8 text-ink"
+          <div className="relative h-11">
+            <Link
+              href="/app"
+              className={cn(
+                "absolute inset-x-0 top-0 flex h-8 w-full items-center justify-center overflow-hidden font-(--font-display) text-[1.25rem] leading-8 text-ink transition-opacity duration-300 ease-out",
+                isContentsOpen
+                  ? "pointer-events-none opacity-0"
+                  : "opacity-100",
+              )}
+            >
+              <span className="min-w-max">AVA</span>
+            </Link>
+
+            <div
+              className={cn(
+                "absolute inset-x-0 top-0 flex h-11 items-center justify-center px-1 transition-opacity duration-300 ease-out",
+                isContentsOpen
+                  ? "opacity-100"
+                  : "pointer-events-none opacity-0",
+              )}
+            >
+              <Link
+                href="/app"
+                className="truncate text-center font-(--font-display) text-[1.25rem] leading-none text-ink"
+              >
+                AVA
+              </Link>
+            </div>
+          </div>
+
+          <div
+            className={cn(
+              "mt-7 flex min-h-0 flex-1 flex-col transition-[opacity,transform] duration-300 ease-out",
+              isContentsOpen
+                ? "pointer-events-none -translate-x-3 opacity-0"
+                : "translate-x-0 opacity-100",
+            )}
           >
-            <span className="min-w-max">AVA</span>
-          </Link>
+            <nav className="flex flex-col gap-3">
+              {readerNavItems.map((item) => (
+                <ReaderNavItem
+                  key={item.label}
+                  activePanel={activePanel}
+                  item={item}
+                  onTogglePanel={togglePanel}
+                />
+              ))}
+            </nav>
 
-          <nav className="mt-10 flex flex-col gap-3">
-            {readerNavItems.map((item) => (
-              <ReaderNavItem
-                key={item.label}
-                activePanel={activePanel}
-                item={item}
-                onTogglePanel={togglePanel}
-              />
-            ))}
-          </nav>
-
-          <div className="mt-auto flex translate-y-2 items-center justify-start gap-3 px-2 py-3 opacity-0 transition-all duration-300 group-hover/reader-nav:translate-y-0 group-hover/reader-nav:opacity-100 group-focus-within/reader-nav:translate-y-0 group-focus-within/reader-nav:opacity-100">
-            {readerUtilityItems.map((item) => (
-              <ReaderUtilityItem key={item.label} item={item} />
-            ))}
+            <div className="mt-auto flex translate-y-2 items-center justify-start gap-3 px-2 py-3 opacity-0 transition-all duration-300 group-hover/reader-nav:translate-y-0 group-hover/reader-nav:opacity-100 group-focus-within/reader-nav:translate-y-0 group-focus-within/reader-nav:opacity-100">
+              {readerUtilityItems.map((item) => (
+                <ReaderUtilityItem key={item.label} item={item} />
+              ))}
+            </div>
           </div>
         </div>
       </aside>

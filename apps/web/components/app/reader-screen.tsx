@@ -1468,95 +1468,97 @@ function ReaderContentsOverlay({
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-50">
+    <div className="pointer-events-none fixed inset-0 z-50">
       <button
         type="button"
         aria-label="Close contents panel"
-        className="absolute inset-0 bg-[linear-gradient(90deg,rgba(252,245,240,0.2)_0%,rgba(252,245,240,0.1)_18%,rgba(252,245,240,0)_34%)]"
+        className="pointer-events-auto absolute inset-0 bg-transparent md:left-94"
         onClick={onClose}
       />
-      <aside className="absolute inset-y-0 left-0 flex w-full justify-start">
-        <div className="relative h-full w-full max-w-[24rem]">
-          <div className="absolute inset-0 border-r border-line/35 bg-linear-to-r from-paper-strong/88 via-paper/78 to-paper/50 shadow-[10px_0_40px_rgba(31,27,24,0.05)] backdrop-blur-[7px]" />
-          <div className="relative z-10 flex h-full flex-col px-6 py-8 sm:px-8">
+      <aside className="absolute inset-y-0 left-0 flex w-full justify-start md:w-94">
+        <div className="relative h-full w-full max-w-[24rem] md:w-94 md:max-w-94">
+          <div className="absolute inset-0 border-r border-line/35 bg-linear-to-r from-paper-strong/88 via-paper/78 to-paper/50 shadow-[10px_0_40px_rgba(31,27,24,0.05)] backdrop-blur-[7px] md:hidden" />
+          <div className="relative z-10 flex h-full flex-col md:pt-24">
+            <div className="pointer-events-auto flex min-h-0 flex-1 flex-col px-6 py-8 sm:px-8 md:animate-[reader-contents-enter_320ms_cubic-bezier(0.22,1,0.36,1)_140ms_both] md:px-8 md:py-0">
             <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0">
-              <SectionLabel>Contents</SectionLabel>
-              <h2 className="mt-4 font-(--font-reader) text-[2rem] leading-[0.95] tracking-[-0.04em] text-title">
-                {payload.book.title}
-              </h2>
-              {payload.book.author ? (
-                <p className="mt-4 font-(--font-ui) text-[0.82rem] uppercase tracking-[0.18em] text-title/70">
-                  {payload.book.author}
-                </p>
-              ) : null}
+              <div className="min-w-0">
+                <SectionLabel>Contents</SectionLabel>
+                <h2 className="mt-4 font-(--font-reader) text-[2rem] leading-[0.95] tracking-[-0.04em] text-title">
+                  {payload.book.title}
+                </h2>
+                {payload.book.author ? (
+                  <p className="mt-4 font-(--font-ui) text-[0.82rem] uppercase tracking-[0.18em] text-title/70">
+                    {payload.book.author}
+                  </p>
+                ) : null}
+              </div>
+              <button
+                type="button"
+                className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-line/45 bg-white/55 text-ink transition hover:bg-white md:hidden"
+                onClick={onClose}
+              >
+                <span className="font-(--font-ui) text-lg leading-none">×</span>
+              </button>
             </div>
-            <button
-              type="button"
-              className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-line/45 bg-white/55 text-ink transition hover:bg-white"
-              onClick={onClose}
-            >
-              <span className="font-(--font-ui) text-lg leading-none">×</span>
-            </button>
-          </div>
 
-          <div className="mt-8">
-            <div className="flex items-center justify-between gap-3">
-              <span className="font-(--font-ui) text-[0.62rem] uppercase tracking-[0.16em] text-ink/55">
-                {payload.progress.completionPercent}% completed
-              </span>
-              <span className="font-(--font-ui) text-[0.62rem] uppercase tracking-[0.16em] text-ink/35">
-                {payload.toc.length} chapters
-              </span>
-            </div>
-            <div className="mt-3 h-1.5 rounded-full bg-line/20">
-              <div
-                className="h-full rounded-full bg-title transition-[width]"
-                style={{
-                  width: `${clamp(payload.progress.completionPercent, 0, 100)}%`,
-                }}
-              />
-            </div>
-          </div>
-
-          <nav className="mt-8 min-h-0 flex-1 space-y-6 overflow-auto pr-3">
-            {payload.toc.map((entry, index) => {
-              const isActive = entry.chapterId === activeChapterId;
-              const isPending = pendingChapterId === entry.chapterId;
-
-              return (
+            <div className="mt-8">
+              <div className="flex items-center justify-between gap-3">
+                <span className="font-(--font-ui) text-[0.62rem] uppercase tracking-[0.16em] text-ink/55">
+                  {payload.progress.completionPercent}% completed
+                </span>
+                <span className="font-(--font-ui) text-[0.62rem] uppercase tracking-[0.16em] text-ink/35">
+                  {payload.toc.length} chapters
+                </span>
+              </div>
+              <div className="mt-3 h-1.5 rounded-full bg-line/20">
                 <div
-                  key={entry.chapterId}
-                  className="border-l border-title/10 pl-4"
-                >
-                  <button
-                    type="button"
-                    className="flex w-full items-start justify-between gap-3 text-left"
-                    onClick={() => onSelectChapter(entry.chapterId)}
+                  className="h-full rounded-full bg-title transition-[width]"
+                  style={{
+                    width: `${clamp(payload.progress.completionPercent, 0, 100)}%`,
+                  }}
+                />
+              </div>
+            </div>
+
+            <nav className="mt-8 min-h-0 flex-1 space-y-6 overflow-auto pb-8 pr-3">
+              {payload.toc.map((entry, index) => {
+                const isActive = entry.chapterId === activeChapterId;
+                const isPending = pendingChapterId === entry.chapterId;
+
+                return (
+                  <div
+                    key={entry.chapterId}
+                    className="border-l border-title/10 pl-4"
                   >
-                    <span
-                      className={cn(
-                        "min-w-0 font-(--font-reader) text-[0.98rem] leading-6 transition",
-                        isActive
-                          ? "font-semibold text-title"
-                          : "text-title/78 hover:text-title",
-                      )}
+                    <button
+                      type="button"
+                      className="flex w-full items-start justify-between gap-3 text-left"
+                      onClick={() => onSelectChapter(entry.chapterId)}
                     >
-                      {entry.label}
-                    </span>
-                    <span className="shrink-0 font-(--font-ui) text-[0.62rem] uppercase tracking-[0.16em] text-ink/35">
-                      {isPending
-                        ? "Loading"
-                        : isActive
-                          ? "Current"
-                          : `${index + 1}`}
-                    </span>
-                  </button>
-                </div>
-              );
-            })}
-          </nav>
-        </div>
+                      <span
+                        className={cn(
+                          "min-w-0 font-(--font-reader) text-[0.98rem] leading-6 transition",
+                          isActive
+                            ? "font-semibold text-title"
+                            : "text-title/78 hover:text-title",
+                        )}
+                      >
+                        {entry.label}
+                      </span>
+                      <span className="shrink-0 font-(--font-ui) text-[0.62rem] uppercase tracking-[0.16em] text-ink/35">
+                        {isPending
+                          ? "Loading"
+                          : isActive
+                            ? "Current"
+                            : `${index + 1}`}
+                      </span>
+                    </button>
+                  </div>
+                );
+              })}
+            </nav>
+            </div>
+          </div>
         </div>
       </aside>
     </div>
