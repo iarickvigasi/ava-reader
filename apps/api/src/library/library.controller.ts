@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   Post,
   Req,
   UploadedFile,
@@ -14,6 +15,12 @@ import { LibraryService } from './library.service';
 @Controller('library')
 export class LibraryController {
   constructor(private readonly libraryService: LibraryService) {}
+
+  @Get()
+  @UseGuards(ClerkAuthGuard)
+  getLibrary(@Req() request: AuthenticatedRequest) {
+    return this.libraryService.getLibrary(request.auth.clerkUserId);
+  }
 
   @Post('import')
   @UseGuards(ClerkAuthGuard)

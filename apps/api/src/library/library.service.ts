@@ -9,6 +9,7 @@ import {
 } from '@prisma/client';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { bufferToDataUrl } from '../shared/blob-utils';
 import { UsersService } from '../users/users.service';
 import { checksumBuffer, toPrismaBytes } from '../shared/blob-utils';
 import {
@@ -35,6 +36,26 @@ export type LibraryMutationPayload = {
   source: LibrarySource;
   state: 'added' | 'existing';
 };
+
+type LibraryCollectionRecord = Prisma.CollectionGetPayload<{
+  include: {
+    items: {
+      include: {
+        libraryItem: {
+          include: {
+            book: {
+              include: {
+                coverBlob: true;
+                files: true;
+              };
+            };
+            progress: true;
+          };
+        };
+      };
+    };
+  };
+}>;
 
 @Injectable()
 export class LibraryService {
@@ -146,6 +167,47 @@ export class LibraryService {
         userId: user.id,
       });
     });
+  }
+
+  async getLibrary(clerkUserId: string) {
+    const user = await this.usersService.getCurrentUserRecord(clerkUserId);
+
+    const collections = await this.prisma.collection.findMany({
+      where: {
+        userId: user.id,
+      },
+      include: {
+        items: {
+          include: {
+            libraryItem: {
+              include: {
+                book: {
+                  include: {
+                    coverBlob: true,
+                    files: true,
+                  },
+                },
+                progress: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
+    });
+
+    return {
+      collections: collections.map(serializeCollection),
+      summary: {
+        booksCount: collections.reduce(
+          (sum, collection) =>
+            sum +
+            collection.items.filter((item) => !item.libraryItem.isArchived).length,
+          0,
+        ),
+        collectionsCount: collections.length,
+      },
+    };
   }
 
   private async addBookToUserLibraryTx(
@@ -311,6 +373,67 @@ export class LibraryService {
       },
     });
   }
+}
+
+function serializeCollection(collection: LibraryCollectionRecord) {
+  const activeItems = collection.items
+    .map((item) => item.libraryItem)
+    .filter((item) => !item.isArchived)
+    .sort(compareLibraryItemsByEngagement);
+
+  return {
+    books: activeItems.map((item) => {
+      const primarySource =
+        item.book.files.find(
+          (file) => file.kind === BookFileKind.SOURCE && file.isPrimary,
+        ) ??
+        item.book.files.find((file) => file.isPrimary) ??
+        null;
+
+      return {
+        author: item.book.author,
+        completionPercent: item.progress?.completionPercent ?? 0,
+        coverImageDataUrl: item.book.coverBlob
+          ? bufferToDataUrl(
+              item.book.coverBlob.bytes,
+              item.book.coverBlob.mimeType,
+            )
+          : null,
+        lastReadAt:
+          item.progress?.lastReadAt?.toISOString() ??
+          item.lastOpenedAt?.toISOString() ??
+          item.addedAt.toISOString(),
+        libraryItemId: item.id,
+        primaryFormat: primarySource?.format ?? BookFileFormat.UNKNOWN,
+        title: item.book.title,
+      };
+    }),
+    description: collection.description,
+    id: collection.id,
+    itemCount: activeItems.length,
+    kind: collection.kind,
+    name: collection.name,
+    unreadCount: activeItems.filter(
+      (item) => (item.progress?.completionPercent ?? 0) < 100,
+    ).length,
+  };
+}
+
+function compareLibraryItemsByEngagement(
+  left: LibraryCollectionRecord['items'][number]['libraryItem'],
+  right: LibraryCollectionRecord['items'][number]['libraryItem'],
+) {
+  return getLibraryItemTimestamp(right) - getLibraryItemTimestamp(left);
+}
+
+function getLibraryItemTimestamp(
+  item: LibraryCollectionRecord['items'][number]['libraryItem'],
+) {
+  return (
+    item.progress?.lastReadAt?.getTime() ??
+    item.lastOpenedAt?.getTime() ??
+    item.addedAt.getTime()
+  );
 }
 
 function inferMimeType(format: BookFileFormat) {

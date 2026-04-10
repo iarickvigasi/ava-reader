@@ -88,6 +88,30 @@ export type HomePayload = {
   };
 };
 
+export type LibraryPayload = {
+  collections: Array<{
+    books: Array<{
+      author: string | null;
+      completionPercent: number;
+      coverImageDataUrl: string | null;
+      lastReadAt: string;
+      libraryItemId: string;
+      primaryFormat: BookFileFormat;
+      title: string;
+    }>;
+    description: string | null;
+    id: string;
+    itemCount: number;
+    kind: "SMART" | "CUSTOM";
+    name: string;
+    unreadCount: number;
+  }>;
+  summary: {
+    booksCount: number;
+    collectionsCount: number;
+  };
+};
+
 export type LibraryMutationPayload = {
   addedAt: string;
   book: {

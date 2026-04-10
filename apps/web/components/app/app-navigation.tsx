@@ -15,6 +15,7 @@ import {
   ReaderDownloadIcon,
   ReaderBookmarksIcon,
   ReaderFavoritesIcon,
+  ReaderLibraryIcon,
   ReaderLayoutIcon,
   ReaderListeningIcon,
   ReaderNotesIcon,
@@ -27,6 +28,7 @@ import {
 import { UserMenuButton } from "@/components/auth/clerk-user-button";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import type { CurrentUserPayload } from "@/lib/api-types";
+import { isAppNavigationItemActive } from "@/lib/app-navigation";
 import { cn } from "@/lib/cn";
 
 const readerNavItems = [
@@ -96,7 +98,7 @@ const readerUtilityItems = [
 
 const items = [
   { href: "/app", label: "Home", icon: HomeIcon },
-  { href: "/app/library", label: "Library", icon: SparkIcon },
+  { href: "/app/library", label: "Library", icon: ReaderLibraryIcon },
   { href: "/app/explore", label: "Explore", icon: ExploreIcon },
   { href: "/app/insights", label: "Insights", icon: ChartIcon },
 ] as const;
@@ -141,20 +143,18 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
               <AppHeaderBrand />
             </Link>
 
-            <nav className="flex items-center gap-10">
-              {items.map((item) => {
-                const isActive =
-                  item.href === "/app"
-                    ? pathname === "/app"
-                    : pathname.startsWith(item.href);
+          <nav className="flex items-center gap-10">
+            {items.map((item) => {
+                const isActive = isAppNavigationItemActive(pathname, item.href);
 
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
+                    aria-current={isActive ? "page" : undefined}
                     className={cn(
-                      "border-b-2 border-transparent pb-1 text-xl uppercase tracking-[0.08em] text-plum transition hover:text-ink",
-                      isActive && "border-brand-fill text-ink",
+                      "border-b-2 border-transparent pb-1 text-xl uppercase tracking-[0.08em] text-plum/75 transition hover:text-title",
+                      isActive && "border-title font-medium text-title",
                     )}
                   >
                     {item.label}
@@ -189,19 +189,19 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-line/60 bg-paper/96 backdrop-blur md:hidden">
         <div className="mx-auto grid max-w-xl grid-cols-4 px-3">
           {items.map((item) => {
-            const isActive =
-              item.href === "/app"
-                ? pathname === "/app"
-                : pathname.startsWith(item.href);
+            const isActive = isAppNavigationItemActive(pathname, item.href);
             const Icon = item.icon;
 
             return (
               <Link
                 key={item.href}
                 href={item.href}
+                aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "flex min-h-18 flex-col items-center justify-center gap-1 border-t-2 border-transparent text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-plum/70 transition",
-                  isActive && "border-brand-fill text-ink",
+                  "relative flex min-h-18 flex-col items-center justify-center gap-1 px-2 pb-3 pt-2 text-[0.62rem] uppercase tracking-[0.14em] text-plum/70 transition",
+                  "after:absolute after:left-1/2 after:top-0 after:h-0.5 after:w-8 after:-translate-x-1/2 after:rounded-full after:bg-transparent after:content-['']",
+                  isActive && "font-bold text-title after:bg-title",
+                  !isActive && "font-medium",
                 )}
               >
                 <Icon className="size-5" />

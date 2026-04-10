@@ -8,11 +8,13 @@ import {
   ReadingTimeIcon,
   StackBooksIcon,
 } from "@/components/app/app-icons";
+import { BookCover } from "@/components/app/book-cover";
 import { CatalogAddButton } from "@/components/app/catalog-add-button";
 import { FeedbackForm } from "@/components/app/feedback-form";
 import { LibraryImportButton } from "@/components/app/library-import-button";
 import { ListeningControls } from "@/components/app/listening-controls";
 import type { HomePayload } from "@/lib/api-types";
+import { APP_LIBRARY_HREF } from "@/lib/app-routes";
 import { cn } from "@/lib/cn";
 
 type HomeScreenProps = {
@@ -522,7 +524,7 @@ function CollectionsPanel({
         label="Collections"
         action={
           <Link
-            href="/app/explore"
+            href={APP_LIBRARY_HREF}
             className="text-[0.8rem] font-bold uppercase tracking-[0.12em] text-ink underline decoration-line-strong underline-offset-6 sm:text-sm"
           >
             Open all
@@ -542,7 +544,7 @@ function CollectionsPanel({
           collections.map((collection) => (
             <Link
               key={collection.id}
-              href="/app/explore"
+              href={APP_LIBRARY_HREF}
               className="flex items-center justify-between border-b border-line/40 py-4 transition hover:text-ink sm:py-5"
             >
               <div className="space-y-1">
@@ -738,49 +740,5 @@ function SparkIconLink({ href }: { href: string }) {
     >
       <NowListeningHeaderIcon className="h-[11.667px] w-auto" />
     </Link>
-  );
-}
-
-function BookCover({
-  alt,
-  className,
-  src,
-  title,
-}: {
-  alt: string;
-  className?: string;
-  src: string | null;
-  title: string;
-}) {
-  if (src) {
-    return (
-      <div
-        className={cn(
-          "overflow-hidden rounded-md border border-line/40 bg-white/60",
-          className,
-        )}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img alt={alt} className="size-full object-cover" src={src} />
-      </div>
-    );
-  }
-
-  return (
-    <div
-      className={cn(
-        "flex items-end overflow-hidden rounded-md border border-line/40 bg-[linear-gradient(180deg,#efe1d5_0%,#d9cabc_100%)] p-4 shadow-(--shadow-soft)",
-        className,
-      )}
-    >
-      <div className="max-w-44">
-        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-olive">
-          AVA Reader
-        </p>
-        <p className="mt-2 font-display text-2xl leading-tight text-title">
-          {title}
-        </p>
-      </div>
-    </div>
   );
 }
