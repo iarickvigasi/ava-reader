@@ -1232,16 +1232,6 @@ function ReadyReader({
               </p>
             ) : null}
 
-            <div className="flex flex-wrap items-center justify-end gap-3">
-              <div className="flex flex-wrap items-center gap-3 font-(--font-ui) text-[0.7rem] uppercase tracking-[0.16em] text-ink/45">
-                <span>
-                  Page {Math.min(currentPageIndex + 1, pageCount)} of {pageCount}
-                </span>
-                <span>{payload.progress.completionPercent}% complete</span>
-                <span>Use keyboard arrows or swipe</span>
-              </div>
-            </div>
-
             <div
               className="relative min-h-0 flex-1 overflow-hidden px-3 py-5 sm:px-5 sm:py-6 md:px-6"
               style={{
@@ -1262,6 +1252,14 @@ function ReadyReader({
               ) : null}
             </div>
 
+            <div className="flex flex-wrap items-center justify-end gap-3 pt-4 pb-4">
+              <div className="flex flex-wrap items-center gap-3 font-(--font-ui) text-[0.7rem] uppercase tracking-[0.16em] text-ink/45">
+                <span>{payload.progress.completionPercent}% complete</span>
+                <span>
+                  Page {Math.min(currentPageIndex + 1, pageCount)} of {pageCount} in chapter
+                </span>
+              </div>
+            </div>
           </div>
         </section>
       </div>
