@@ -1,6 +1,4 @@
 "use client";
-
-import Link from "next/link";
 import type {
   CSSProperties,
   ReactNode,
@@ -123,6 +121,7 @@ export function ReaderScreen({
   const blockingAbortRef = useRef<AbortController | null>(null);
   const backgroundAbortRef = useRef<AbortController | null>(null);
   const initialResumeApplyStartedRef = useRef(false);
+  const openEventSentLibraryItemIdRef = useRef<string | null>(null);
   const readyPayload = isReadyReaderPayload(payload) ? payload : null;
   const loadedChaptersById = useMemo(
     () =>
@@ -170,6 +169,27 @@ export function ReaderScreen({
       backgroundAbortRef.current?.abort();
     };
   }, []);
+
+  useEffect(() => {
+    if (!isLoaded || !isSignedIn) {
+      return;
+    }
+
+    if (openEventSentLibraryItemIdRef.current === libraryItemId) {
+      return;
+    }
+
+    openEventSentLibraryItemIdRef.current = libraryItemId;
+
+    void markReaderOpened({
+      getToken,
+      isLoaded,
+      isSignedIn,
+      libraryItemId,
+    }).catch(() => {
+      // Ignore transient failures; reader access and local progress should continue.
+    });
+  }, [getToken, isLoaded, isSignedIn, libraryItemId]);
 
   useEffect(() => {
     initialResumeApplyStartedRef.current = false;
@@ -2098,12 +2118,12 @@ function ReaderStatusState({
           {payload.message}
         </p>
         <div className="mt-10 flex flex-wrap items-end justify-between gap-5 border-t border-line/45 pt-6">
-          <Link
+          <a
             href="/app"
             className="inline-flex min-h-11 items-center rounded-[14px] border border-brand-fill bg-brand-fill px-5 font-ui text-sm font-semibold uppercase tracking-[0.14em] text-brand-foreground shadow-(--shadow-card) transition hover:bg-brand-fill-strong"
           >
             Back to home
-          </Link>
+          </a>
           <span
             className={cn(
               "font-(--font-ui) text-[1.1rem] uppercase tracking-[0.24em] sm:text-[1.35rem]",
@@ -2208,6 +2228,40 @@ async function fetchReaderPayload(input: {
   }
 
   return (await response.json()) as ReaderStatusPayload;
+}
+
+async function markReaderOpened(input: {
+  getToken: () => Promise<string | null>;
+  isLoaded: boolean;
+  isSignedIn: boolean | undefined;
+  libraryItemId: string;
+}) {
+  if (!input.isLoaded || !input.isSignedIn) {
+    return Promise.reject(
+      new Error("Reader access requires an authenticated session."),
+    );
+  }
+
+  const token = await input.getToken();
+
+  if (!token) {
+    return Promise.reject(new Error("No session token was available."));
+  }
+
+  const response = await fetch(
+    `${getPublicApiBaseUrl()}/api/library/${input.libraryItemId}/reader/open`,
+    {
+      method: "POST",
+      keepalive: true,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("The reader open event could not be persisted.");
+  }
 }
 
 async function persistReaderProgress(input: {

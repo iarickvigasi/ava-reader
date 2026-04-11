@@ -64,6 +64,7 @@ export class ReaderService {
       clerkUserId,
       libraryItemId,
     );
+
     const sourceFile = libraryItem.book.files.find(
       (file) => file.kind === BookFileKind.SOURCE && file.isPrimary,
     );
@@ -205,6 +206,22 @@ export class ReaderService {
     });
 
     return createProgressSummary(progress);
+  }
+
+  async markReaderOpened(clerkUserId: string, libraryItemId: string) {
+    const libraryItem = await this.getOwnedLibraryItem(
+      clerkUserId,
+      libraryItemId,
+    );
+
+    await this.prisma.libraryItem.update({
+      where: {
+        id: libraryItem.id,
+      },
+      data: {
+        lastOpenedAt: new Date(),
+      },
+    });
   }
 
   private async getOwnedLibraryItem(

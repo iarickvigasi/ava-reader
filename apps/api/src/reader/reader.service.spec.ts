@@ -22,7 +22,16 @@ describe('ReaderService', () => {
       lastReadAt: Date;
     }>
   > = jest.fn();
-  const updateLibraryItem = jest.fn();
+  const updateLibraryItem: jest.MockedFunction<
+    (args: {
+      data: {
+        lastOpenedAt: Date;
+      };
+      where: {
+        id: string;
+      };
+    }) => Promise<unknown>
+  > = jest.fn();
   const prisma = {
     libraryItem: {
       findFirst,
@@ -76,6 +85,21 @@ describe('ReaderService', () => {
       id: 'toc:0',
       label: 'Chapter One',
     });
+    expect(updateLibraryItem).not.toHaveBeenCalled();
+  });
+
+  it('marks a reader as opened by updating lastOpenedAt', async () => {
+    findFirst.mockResolvedValue(createLibraryItemRecord());
+    updateLibraryItem.mockResolvedValue({});
+
+    await readerService.markReaderOpened('clerk_1', 'library-1');
+
+    const openUpdateCall = updateLibraryItem.mock.calls[0]?.[0];
+
+    expect(openUpdateCall?.where).toEqual({
+      id: 'library-1',
+    });
+    expect(openUpdateCall?.data.lastOpenedAt).toBeInstanceOf(Date);
   });
 
   it('returns a centered three-chapter window for a middle chapter query', async () => {

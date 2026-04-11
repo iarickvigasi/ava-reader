@@ -202,7 +202,8 @@ export class LibraryService {
         booksCount: collections.reduce(
           (sum, collection) =>
             sum +
-            collection.items.filter((item) => !item.libraryItem.isArchived).length,
+            collection.items.filter((item) => !item.libraryItem.isArchived)
+              .length,
           0,
         ),
         collectionsCount: collections.length,
@@ -399,10 +400,7 @@ function serializeCollection(collection: LibraryCollectionRecord) {
               item.book.coverBlob.mimeType,
             )
           : null,
-        lastReadAt:
-          item.progress?.lastReadAt?.toISOString() ??
-          item.lastOpenedAt?.toISOString() ??
-          item.addedAt.toISOString(),
+        lastReadAt: getMostRecentLibraryItemEngagementDate(item).toISOString(),
         libraryItemId: item.id,
         primaryFormat: primarySource?.format ?? BookFileFormat.UNKNOWN,
         title: item.book.title,
@@ -429,11 +427,17 @@ function compareLibraryItemsByEngagement(
 function getLibraryItemTimestamp(
   item: LibraryCollectionRecord['items'][number]['libraryItem'],
 ) {
-  return (
-    item.progress?.lastReadAt?.getTime() ??
-    item.lastOpenedAt?.getTime() ??
-    item.addedAt.getTime()
-  );
+  return getMostRecentLibraryItemEngagementDate(item).getTime();
+}
+
+function getMostRecentLibraryItemEngagementDate(
+  item: LibraryCollectionRecord['items'][number]['libraryItem'],
+) {
+  const lastReadAtMs = item.progress?.lastReadAt?.getTime() ?? 0;
+  const lastOpenedAtMs = item.lastOpenedAt?.getTime() ?? 0;
+  const addedAtMs = item.addedAt.getTime();
+
+  return new Date(Math.max(lastReadAtMs, lastOpenedAtMs, addedAtMs));
 }
 
 function inferMimeType(format: BookFileFormat) {

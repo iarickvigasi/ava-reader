@@ -2,8 +2,10 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   Param,
   Patch,
+  Post,
   Query,
   Req,
   UseGuards,
@@ -28,6 +30,19 @@ export class ReaderController {
       request.auth.clerkUserId,
       libraryItemId,
       chapter,
+    );
+  }
+
+  @Post('open')
+  @HttpCode(204)
+  @UseGuards(ClerkAuthGuard)
+  async markReaderOpened(
+    @Req() request: AuthenticatedRequest,
+    @Param('libraryItemId') libraryItemId: string,
+  ) {
+    await this.readerService.markReaderOpened(
+      request.auth.clerkUserId,
+      libraryItemId,
     );
   }
 

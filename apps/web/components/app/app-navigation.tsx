@@ -240,7 +240,7 @@ function ReaderNavigation() {
 
         <div className="relative z-10 flex h-full w-full flex-col px-4 py-8">
           <div className="relative h-11">
-            <Link
+            <a
               href="/app"
               className={cn(
                 "absolute inset-x-0 top-0 flex h-8 w-full items-center justify-center overflow-hidden font-(--font-display) text-[1.25rem] leading-8 text-ink transition-opacity duration-300 ease-out",
@@ -250,7 +250,7 @@ function ReaderNavigation() {
               )}
             >
               <span className="min-w-max">AVA</span>
-            </Link>
+            </a>
 
             <div
               className={cn(
@@ -260,12 +260,12 @@ function ReaderNavigation() {
                   : "pointer-events-none opacity-0",
               )}
             >
-              <Link
+              <a
                 href="/app"
                 className="truncate text-center font-(--font-display) text-[1.25rem] leading-none text-ink"
               >
                 AVA
-              </Link>
+              </a>
             </div>
           </div>
 
@@ -299,12 +299,12 @@ function ReaderNavigation() {
 
       <div className="sticky top-0 z-40 border-b border-line/40 bg-paper/95 px-4 py-3 backdrop-blur md:hidden">
         <div className="flex items-center justify-between gap-4">
-          <Link
+          <a
             href="/app"
             className="font-(--font-display) text-xl leading-none text-ink"
           >
             AVA
-          </Link>
+          </a>
           <div className="flex items-center gap-2 overflow-x-auto">
             {readerNavItems.slice(0, 5).map((item) => (
               <ReaderNavItem

@@ -209,11 +209,7 @@ function selectCurrentEngagement(libraryItems: LibraryItemRecord[]) {
 }
 
 function getEngagementTimestamp(item: LibraryItemRecord) {
-  return (
-    item.progress?.lastReadAt?.getTime() ??
-    item.lastOpenedAt?.getTime() ??
-    item.addedAt.getTime()
-  );
+  return getMostRecentEngagementDate(item).getTime();
 }
 
 function serializeCurrentEngagement(item: LibraryItemRecord) {
@@ -229,14 +225,19 @@ function serializeCurrentEngagement(item: LibraryItemRecord) {
       ? bufferToDataUrl(item.book.coverBlob.bytes, item.book.coverBlob.mimeType)
       : null,
     id: item.id,
-    lastReadAt:
-      item.progress?.lastReadAt?.toISOString() ??
-      item.lastOpenedAt?.toISOString() ??
-      item.addedAt.toISOString(),
+    lastReadAt: getMostRecentEngagementDate(item).toISOString(),
     nextMilestone: item.progress?.chapterLabel ?? 'Continue where you left off',
     primaryFormat: primarySource?.format ?? 'UNKNOWN',
     title: item.book.title,
   };
+}
+
+function getMostRecentEngagementDate(item: LibraryItemRecord) {
+  const lastReadAtMs = item.progress?.lastReadAt?.getTime() ?? 0;
+  const lastOpenedAtMs = item.lastOpenedAt?.getTime() ?? 0;
+  const addedAtMs = item.addedAt.getTime();
+
+  return new Date(Math.max(lastReadAtMs, lastOpenedAtMs, addedAtMs));
 }
 
 function serializeCatalogEntry(entry: CatalogEntryRecord) {

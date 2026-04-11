@@ -145,6 +145,38 @@ describe('LibraryService', () => {
       title: 'Untitled Notes',
     });
   });
+
+  it('treats a newer open as fresher engagement than an older lastReadAt', async () => {
+    findMany.mockResolvedValue([
+      createCollectionRecord({
+        id: 'collection-engagement',
+        items: [
+          createCollectionItem({
+            addedAt: '2026-04-01T10:00:00.000Z',
+            id: 'library-reopened',
+            lastOpenedAt: '2026-04-10T09:00:00.000Z',
+            lastReadAt: '2026-04-02T08:00:00.000Z',
+            title: 'Reopened Book',
+          }),
+          createCollectionItem({
+            addedAt: '2026-04-03T10:00:00.000Z',
+            id: 'library-recent-read',
+            lastReadAt: '2026-04-09T09:00:00.000Z',
+            title: 'Recently Read Book',
+          }),
+        ],
+      }),
+    ]);
+
+    const payload = await libraryService.getLibrary('clerk_123');
+
+    expect(
+      payload.collections[0].books.map((book) => book.libraryItemId),
+    ).toEqual(['library-reopened', 'library-recent-read']);
+    expect(payload.collections[0].books[0]?.lastReadAt).toBe(
+      '2026-04-10T09:00:00.000Z',
+    );
+  });
 });
 
 function createCollectionRecord(
