@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BackwardIcon, ForwardIcon, PauseIcon, PlayIcon } from "@/components/app/app-icons";
+import { BackwardIcon, ForwardIcon, PauseIcon, PlayIcon } from "@/components/app/shared/app-icons";
 
 export function ListeningControls() {
   const [isPlaying, setIsPlaying] = useState(false);

@@ -1,4 +1,4 @@
-import { PlaceholderPage } from "@/components/app/placeholder-page";
+import { PlaceholderPage } from "@/components/app/placeholder/placeholder-page";
 
 export const dynamic = "force-dynamic";
 

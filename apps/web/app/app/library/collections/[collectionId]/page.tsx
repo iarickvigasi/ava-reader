@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { LibraryCollectionScreen } from "@/components/app/library-collection-screen";
+import { LibraryCollectionScreen } from "@/components/app/library/library-collection-screen";
 import type { LibraryCollectionPayload } from "@/lib/api-types";
 import { ServerApiError, fetchServerApi } from "@/lib/server-api";
 

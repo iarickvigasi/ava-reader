@@ -8,13 +8,13 @@ import {
   ReadingTimeIcon,
   SparkIcon,
   StackBooksIcon,
-} from "@/components/app/app-icons";
-import { BookCover } from "@/components/app/book-cover";
-import { CatalogAddButton } from "@/components/app/catalog-add-button";
-import { FeedbackForm } from "@/components/app/feedback-form";
-import { LibraryImportButton } from "@/components/app/library-import-button";
-import { ListeningControls } from "@/components/app/listening-controls";
-import { HomeResumeActions } from "@/components/app/home-resume-actions";
+} from "@/components/app/shared/app-icons";
+import { BookCover } from "@/components/app/shared/book-cover";
+import { CatalogAddButton } from "@/components/app/home/catalog-add-button";
+import { FeedbackForm } from "@/components/app/home/feedback-form";
+import { LibraryImportButton } from "@/components/app/library/library-import-button";
+import { ListeningControls } from "@/components/app/home/listening-controls";
+import { HomeResumeActions } from "@/components/app/home/home-resume-actions";
 import type { HomePayload } from "@/lib/api-types";
 import { APP_LIBRARY_HREF } from "@/lib/app-routes";
 import { cn } from "@/lib/cn";

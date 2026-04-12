@@ -1,4 +1,4 @@
-import { LibraryScreen } from "@/components/app/library-screen";
+import { LibraryScreen } from "@/components/app/library/library-screen";
 import type { LibraryPayload } from "@/lib/api-types";
 import { fetchServerApi } from "@/lib/server-api";
 

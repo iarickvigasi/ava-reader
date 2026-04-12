@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { AdminCatalogManager } from "@/components/app/admin-catalog-manager";
+import { AdminCatalogManager } from "@/components/app/admin/admin-catalog-manager";
 import type { AdminCatalogEntry } from "@/lib/api-types";
 import { ServerApiError, fetchServerApi } from "@/lib/server-api";
 

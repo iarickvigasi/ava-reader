@@ -1,4 +1,4 @@
-import { ReaderScreen } from "@/components/app/reader-screen";
+import { ReaderScreen } from "@/components/app/reader/reader-screen";
 import { createReaderResumeFixturePayload } from "@/lib/reader-test-fixture";
 
 export default function ReaderResumeFixturePage() {

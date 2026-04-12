@@ -3,7 +3,7 @@
 import { useRef, useState, useTransition } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { UploadIcon } from "@/components/app/app-icons";
+import { UploadIcon } from "@/components/app/shared/app-icons";
 import { cn } from "@/lib/cn";
 import { getPublicApiBaseUrl } from "@/lib/api";
 

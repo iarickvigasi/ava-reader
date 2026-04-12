@@ -1,4 +1,4 @@
-import { ReaderScreen } from "@/components/app/reader-screen";
+import { ReaderScreen } from "@/components/app/reader/reader-screen";
 import type { ReaderStatusPayload } from "@/lib/api-types";
 import { fetchServerApi } from "@/lib/server-api";
 

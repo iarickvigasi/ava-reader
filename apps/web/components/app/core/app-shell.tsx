@@ -2,8 +2,8 @@
 
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { AppNavigation } from "@/components/app/app-navigation";
-import { ReaderUiProvider } from "@/components/app/reader-ui-context";
+import { AppNavigation } from "@/components/app/core/app-navigation";
+import { ReaderUiProvider } from "@/components/app/core/reader-ui-context";
 import type { CurrentUserPayload } from "@/lib/api-types";
 import { cn } from "@/lib/cn";
 

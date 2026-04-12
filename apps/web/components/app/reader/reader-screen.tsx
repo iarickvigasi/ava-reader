@@ -15,8 +15,8 @@ import {
   useState,
 } from "react";
 import { useAuth } from "@clerk/nextjs";
-import { ChartIcon } from "@/components/app/app-icons";
-import { useReaderUi } from "@/components/app/reader-ui-context";
+import { ChartIcon } from "@/components/app/shared/app-icons";
+import { useReaderUi } from "@/components/app/core/reader-ui-context";
 import type {
   ReaderBlock,
   ReaderChapterPayload,

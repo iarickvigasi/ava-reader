@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { LibraryImportButton } from "@/components/app/library-import-button";
+import { LibraryImportButton } from "@/components/app/library/library-import-button";
 
 type HomeResumeActionsProps = {
   readerHref: string;

@@ -1,6 +1,6 @@
 "use client";
 
-import { MoonIcon, SunIcon } from "@/components/app/app-icons";
+import { MoonIcon, SunIcon } from "@/components/app/shared/app-icons";
 import { useTheme } from "@/components/theme/theme-provider";
 
 export function ThemeToggle() {

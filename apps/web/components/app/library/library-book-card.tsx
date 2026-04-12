@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { LibraryPayload } from "@/lib/api-types";
 import { cn } from "@/lib/cn";
-import { BookCover } from "./book-cover";
+import { BookCover } from "@/components/app/shared/book-cover";
 
 type LibraryBookCardProps = {
   book: LibraryPayload["collections"][number]["books"][number];
@@ -14,7 +14,7 @@ export function LibraryBookCard({ book, mobile = false }: LibraryBookCardProps) 
       href={`/app/read/${book.libraryItemId}`}
       className={cn(
         "group block shrink-0 transition hover:-translate-y-0.5",
-        mobile ? "w-[174px]" : "w-full",
+        mobile ? "w-43.5" : "w-full",
       )}
     >
       <div className="space-y-3">
@@ -23,7 +23,7 @@ export function LibraryBookCard({ book, mobile = false }: LibraryBookCardProps) 
           className={cn(
             "aspect-[0.666] w-full rounded-[3px] border-0 bg-paper-strong",
             book.coverImageDataUrl ? "shadow-(--shadow-card)" : "",
-            mobile ? "max-w-[174px]" : "max-w-[246px]",
+            mobile ? "max-w-43.5" : "max-w-61.5",
           )}
           src={book.coverImageDataUrl}
           title={book.title}

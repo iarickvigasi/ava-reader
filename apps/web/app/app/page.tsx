@@ -1,4 +1,4 @@
-import { HomeScreen } from "@/components/app/home-screen";
+import { HomeScreen } from "@/components/app/home/home-screen";
 import type { HomePayload } from "@/lib/api-types";
 import { fetchServerApi } from "@/lib/server-api";
 

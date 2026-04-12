@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { AppShell } from "@/components/app/app-shell";
+import { AppShell } from "@/components/app/core/app-shell";
 import { MissingAuthConfiguration } from "@/components/auth/missing-auth-configuration";
 import type { CurrentUserPayload } from "@/lib/api-types";
 import { fetchServerApi } from "@/lib/server-api";

@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { CheckIcon } from "@/components/app/app-icons";
+import { CheckIcon } from "@/components/app/shared/app-icons";
 import { cn } from "@/lib/cn";
 import { getPublicApiBaseUrl } from "@/lib/api";
 

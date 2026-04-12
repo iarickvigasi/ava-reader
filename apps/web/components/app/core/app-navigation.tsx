@@ -6,7 +6,7 @@ import { AppHeaderBrand } from "@/components/brand/app-header-brand";
 import {
   useReaderUi,
   type ReaderPanel,
-} from "@/components/app/reader-ui-context";
+} from "@/components/app/core/reader-ui-context";
 import {
   ChartIcon,
   ExploreIcon,
@@ -24,7 +24,7 @@ import {
   ReaderShareIcon,
   ReaderTranslationIcon,
   SparkIcon,
-} from "@/components/app/app-icons";
+} from "@/components/app/shared/app-icons";
 import { UserMenuButton } from "@/components/auth/clerk-user-button";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import type { CurrentUserPayload } from "@/lib/api-types";
