@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Param,
   Post,
   Req,
   UploadedFile,
@@ -20,6 +21,18 @@ export class LibraryController {
   @UseGuards(ClerkAuthGuard)
   getLibrary(@Req() request: AuthenticatedRequest) {
     return this.libraryService.getLibrary(request.auth.clerkUserId);
+  }
+
+  @Get('collections/:collectionId')
+  @UseGuards(ClerkAuthGuard)
+  getCollection(
+    @Req() request: AuthenticatedRequest,
+    @Param('collectionId') collectionId: string,
+  ) {
+    return this.libraryService.getCollection(
+      request.auth.clerkUserId,
+      collectionId,
+    );
   }
 
   @Post('import')

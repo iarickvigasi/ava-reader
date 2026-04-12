@@ -89,28 +89,36 @@ export type HomePayload = {
   };
 };
 
+export type LibraryCollectionBook = {
+  author: string | null;
+  completionPercent: number;
+  coverImageDataUrl: string | null;
+  lastReadAt: string;
+  libraryItemId: string;
+  primaryFormat: BookFileFormat;
+  title: string;
+};
+
+export type LibraryCollection = {
+  books: LibraryCollectionBook[];
+  description: string | null;
+  id: string;
+  itemCount: number;
+  kind: "SMART" | "CUSTOM";
+  name: string;
+  unreadCount: number;
+};
+
 export type LibraryPayload = {
-  collections: Array<{
-    books: Array<{
-      author: string | null;
-      completionPercent: number;
-      coverImageDataUrl: string | null;
-      lastReadAt: string;
-      libraryItemId: string;
-      primaryFormat: BookFileFormat;
-      title: string;
-    }>;
-    description: string | null;
-    id: string;
-    itemCount: number;
-    kind: "SMART" | "CUSTOM";
-    name: string;
-    unreadCount: number;
-  }>;
+  collections: LibraryCollection[];
   summary: {
     booksCount: number;
     collectionsCount: number;
   };
+};
+
+export type LibraryCollectionPayload = {
+  collection: LibraryCollection;
 };
 
 export type LibraryMutationPayload = {

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { BookCover } from "./book-cover";
+import { LibraryBookCard } from "./library-book-card";
 import type { LibraryPayload } from "@/lib/api-types";
 import { cn } from "@/lib/cn";
 
@@ -111,10 +111,13 @@ function CollectionSection({
             </p>
           ) : null}
         </div>
-        <div className="hidden text-right md:block">
-          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-brand-fill">
+        <div className="text-right">
+          <Link
+            href={`/app/library/collections/${collection.id}`}
+            className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-brand-fill"
+          >
             View all
-          </p>
+          </Link>
         </div>
       </div>
 
@@ -126,64 +129,18 @@ function CollectionSection({
         <>
           <div className="flex gap-4 overflow-x-auto pb-2 md:hidden">
             {collection.books.map((book) => (
-              <BookCard key={book.libraryItemId} book={book} mobile />
+              <LibraryBookCard key={book.libraryItemId} book={book} mobile />
             ))}
           </div>
 
           <div className="hidden gap-x-8 gap-y-6 md:grid md:grid-cols-3 xl:grid-cols-4">
             {collection.books.map((book) => (
-              <BookCard key={book.libraryItemId} book={book} />
+              <LibraryBookCard key={book.libraryItemId} book={book} />
             ))}
           </div>
         </>
       )}
     </section>
-  );
-}
-
-function BookCard({
-  book,
-  mobile = false,
-}: {
-  book: LibraryPayload["collections"][number]["books"][number];
-  mobile?: boolean;
-}) {
-  return (
-    <Link
-      href={`/app/read/${book.libraryItemId}`}
-      className={cn(
-        "group block shrink-0 transition hover:-translate-y-0.5",
-        mobile ? "w-[174px]" : "w-full",
-      )}
-    >
-      <div className="space-y-3">
-        <BookCover
-          alt={`${book.title} cover`}
-          className={cn(
-            "aspect-[0.666] w-full rounded-[3px] border-0 bg-paper-strong",
-            book.coverImageDataUrl ? "shadow-(--shadow-card)" : "",
-            mobile ? "max-w-[174px]" : "max-w-[246px]",
-          )}
-          src={book.coverImageDataUrl}
-          title={book.title}
-        />
-        <div className="space-y-1">
-          <h3
-            className="overflow-hidden font-display text-[1.9rem] leading-[1.02] tracking-[-0.03em] text-title group-hover:text-ink md:text-[2rem]"
-            style={{
-              WebkitBoxOrient: "vertical",
-              WebkitLineClamp: 2,
-              display: "-webkit-box",
-            }}
-          >
-            {book.title}
-          </h3>
-          <p className="text-[0.95rem] leading-5 text-plum md:text-base">
-            {book.author ?? "Unknown author"}
-          </p>
-        </div>
-      </div>
-    </Link>
   );
 }
 

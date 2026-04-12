@@ -7,7 +7,7 @@ import {
   Prisma,
   ProcessingStatus,
 } from '@prisma/client';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { bufferToDataUrl } from '../shared/blob-utils';
 import { UsersService } from '../users/users.service';
@@ -23,6 +23,7 @@ import {
 } from '../shared/metadata-extractor';
 
 type TransactionClient = Prisma.TransactionClient;
+const LIBRARY_COLLECTION_PREVIEW_LIMIT = 4;
 
 export type LibraryMutationPayload = {
   addedAt: string;
@@ -197,7 +198,11 @@ export class LibraryService {
     });
 
     return {
-      collections: collections.map(serializeCollection),
+      collections: collections.map((collection) =>
+        serializeCollection(collection, {
+          previewBooksLimit: LIBRARY_COLLECTION_PREVIEW_LIMIT,
+        }),
+      ),
       summary: {
         booksCount: collections.reduce(
           (sum, collection) =>
@@ -208,6 +213,42 @@ export class LibraryService {
         ),
         collectionsCount: collections.length,
       },
+    };
+  }
+
+  async getCollection(clerkUserId: string, collectionId: string) {
+    const user = await this.usersService.getCurrentUserRecord(clerkUserId);
+
+    const collection = await this.prisma.collection.findFirst({
+      where: {
+        id: collectionId,
+        userId: user.id,
+      },
+      include: {
+        items: {
+          include: {
+            libraryItem: {
+              include: {
+                book: {
+                  include: {
+                    coverBlob: true,
+                    files: true,
+                  },
+                },
+                progress: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!collection) {
+      throw new NotFoundException('Collection not found.');
+    }
+
+    return {
+      collection: serializeCollection(collection),
     };
   }
 
@@ -376,36 +417,44 @@ export class LibraryService {
   }
 }
 
-function serializeCollection(collection: LibraryCollectionRecord) {
+function serializeCollection(
+  collection: LibraryCollectionRecord,
+  input?: {
+    previewBooksLimit?: number;
+  },
+) {
   const activeItems = collection.items
     .map((item) => item.libraryItem)
     .filter((item) => !item.isArchived)
     .sort(compareLibraryItemsByEngagement);
+  const serializedBooks = activeItems.map((item) => {
+    const primarySource =
+      item.book.files.find(
+        (file) => file.kind === BookFileKind.SOURCE && file.isPrimary,
+      ) ??
+      item.book.files.find((file) => file.isPrimary) ??
+      null;
+
+    return {
+      author: item.book.author,
+      completionPercent: item.progress?.completionPercent ?? 0,
+      coverImageDataUrl: item.book.coverBlob
+        ? bufferToDataUrl(item.book.coverBlob.bytes, item.book.coverBlob.mimeType)
+        : null,
+      lastReadAt: getMostRecentLibraryItemEngagementDate(item).toISOString(),
+      libraryItemId: item.id,
+      primaryFormat: primarySource?.format ?? BookFileFormat.UNKNOWN,
+      title: item.book.title,
+    };
+  });
+
+  const books =
+    typeof input?.previewBooksLimit === 'number'
+      ? serializedBooks.slice(0, input.previewBooksLimit)
+      : serializedBooks;
 
   return {
-    books: activeItems.map((item) => {
-      const primarySource =
-        item.book.files.find(
-          (file) => file.kind === BookFileKind.SOURCE && file.isPrimary,
-        ) ??
-        item.book.files.find((file) => file.isPrimary) ??
-        null;
-
-      return {
-        author: item.book.author,
-        completionPercent: item.progress?.completionPercent ?? 0,
-        coverImageDataUrl: item.book.coverBlob
-          ? bufferToDataUrl(
-              item.book.coverBlob.bytes,
-              item.book.coverBlob.mimeType,
-            )
-          : null,
-        lastReadAt: getMostRecentLibraryItemEngagementDate(item).toISOString(),
-        libraryItemId: item.id,
-        primaryFormat: primarySource?.format ?? BookFileFormat.UNKNOWN,
-        title: item.book.title,
-      };
-    }),
+    books,
     description: collection.description,
     id: collection.id,
     itemCount: activeItems.length,

@@ -2,7 +2,6 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import { LibraryScreen } from "./library-screen";
 import { isAppNavigationItemActive } from "@/lib/app-navigation";
-import { APP_LIBRARY_HREF } from "@/lib/app-routes";
 import type { LibraryPayload } from "@/lib/api-types";
 
 vi.mock("next/link", () => ({
@@ -21,17 +20,25 @@ vi.mock("next/link", () => ({
 }));
 
 describe("library and navigation UI", () => {
-  it("keeps the collections open-all destination pointed at the library page", () => {
-    expect(APP_LIBRARY_HREF).toBe("/app/library");
+  it("renders per-collection view-all links to collection detail screens", () => {
+    const markup = renderToStaticMarkup(
+      <LibraryScreen library={createLibraryPayload()} />,
+    );
+
+    expect(markup).toContain('href="/app/library/collections/collection-1"');
+    expect(markup).toContain('href="/app/library/collections/collection-2"');
   });
 
-  it("renders collection book links and empty collection messaging on the library screen", () => {
+  it("renders collection preview books and empty collection messaging on the library screen", () => {
     const markup = renderToStaticMarkup(
       <LibraryScreen library={createLibraryPayload()} />,
     );
 
     expect(markup).toContain('href="/app/read/library-1"');
     expect(markup).toContain('href="/app/read/library-2"');
+    expect(markup).toContain('href="/app/read/library-3"');
+    expect(markup).toContain('href="/app/read/library-4"');
+    expect(markup).not.toContain('href="/app/read/library-5"');
     expect(markup).toContain("Imported Books");
     expect(markup).toContain("No books are in this collection yet.");
   });
@@ -66,13 +73,31 @@ function createLibraryPayload(): LibraryPayload {
             primaryFormat: "EPUB",
             title: "The Republic",
           },
+          {
+            author: "Epictetus",
+            completionPercent: 8,
+            coverImageDataUrl: null,
+            lastReadAt: "2026-04-05T10:00:00.000Z",
+            libraryItemId: "library-3",
+            primaryFormat: "EPUB",
+            title: "Discourses",
+          },
+          {
+            author: "Aristotle",
+            completionPercent: 13,
+            coverImageDataUrl: null,
+            lastReadAt: "2026-04-04T10:00:00.000Z",
+            libraryItemId: "library-4",
+            primaryFormat: "EPUB",
+            title: "Nicomachean Ethics",
+          },
         ],
         description: "Your personal uploads.",
         id: "collection-1",
-        itemCount: 2,
+        itemCount: 5,
         kind: "SMART",
         name: "Imported Books",
-        unreadCount: 1,
+        unreadCount: 4,
       },
       {
         books: [],

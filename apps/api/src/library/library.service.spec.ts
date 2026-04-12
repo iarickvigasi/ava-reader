@@ -1,11 +1,14 @@
+import { NotFoundException } from '@nestjs/common';
 import { BookFileFormat, BookFileKind } from '@prisma/client';
 import { LibraryService } from './library.service';
 
 describe('LibraryService', () => {
   const getCurrentUserRecord = jest.fn();
   const findMany = jest.fn();
+  const findFirst = jest.fn();
   const prisma = {
     collection: {
+      findFirst,
       findMany,
     },
   };
@@ -16,6 +19,7 @@ describe('LibraryService', () => {
 
   beforeEach(() => {
     getCurrentUserRecord.mockReset();
+    findFirst.mockReset();
     findMany.mockReset();
     libraryService = new LibraryService(prisma as never, usersService as never);
     getCurrentUserRecord.mockResolvedValue({ id: 'user-1' });
@@ -105,6 +109,53 @@ describe('LibraryService', () => {
     expect(payload.collections[0].books[1].coverImageDataUrl).toBeNull();
   });
 
+  it('limits library collection previews to the 4 most recent books', async () => {
+    findMany.mockResolvedValue([
+      createCollectionRecord({
+        id: 'collection-preview',
+        items: [
+          createCollectionItem({
+            id: 'library-1',
+            lastOpenedAt: '2026-04-10T10:00:00.000Z',
+            title: 'Book 1',
+          }),
+          createCollectionItem({
+            id: 'library-2',
+            lastOpenedAt: '2026-04-09T10:00:00.000Z',
+            title: 'Book 2',
+          }),
+          createCollectionItem({
+            id: 'library-3',
+            lastOpenedAt: '2026-04-08T10:00:00.000Z',
+            title: 'Book 3',
+          }),
+          createCollectionItem({
+            id: 'library-4',
+            lastOpenedAt: '2026-04-07T10:00:00.000Z',
+            title: 'Book 4',
+          }),
+          createCollectionItem({
+            id: 'library-5',
+            lastOpenedAt: '2026-04-06T10:00:00.000Z',
+            title: 'Book 5',
+          }),
+        ],
+        name: 'Preview Shelf',
+      }),
+    ]);
+
+    const payload = await libraryService.getLibrary('clerk_123');
+
+    expect(payload.collections[0]).toMatchObject({
+      id: 'collection-preview',
+      itemCount: 5,
+      unreadCount: 5,
+    });
+    expect(
+      payload.collections[0].books.map((book) => book.libraryItemId),
+    ).toEqual(['library-1', 'library-2', 'library-3', 'library-4']);
+  });
+
   it('keeps empty collections and serializes fallback timestamps safely', async () => {
     findMany.mockResolvedValue([
       createCollectionRecord({
@@ -176,6 +227,73 @@ describe('LibraryService', () => {
     expect(payload.collections[0].books[0]?.lastReadAt).toBe(
       '2026-04-10T09:00:00.000Z',
     );
+  });
+
+  it('returns the full collection payload for one owned collection', async () => {
+    findFirst.mockResolvedValue(
+      createCollectionRecord({
+        id: 'collection-1',
+        name: 'Imported Books',
+        items: [
+          createCollectionItem({
+            id: 'library-3',
+            lastOpenedAt: '2026-04-10T10:00:00.000Z',
+            title: 'Newest',
+          }),
+          createCollectionItem({
+            id: 'library-2',
+            lastOpenedAt: '2026-04-09T10:00:00.000Z',
+            title: 'Middle',
+          }),
+          createCollectionItem({
+            id: 'library-1',
+            lastOpenedAt: '2026-04-08T10:00:00.000Z',
+            title: 'Oldest',
+          }),
+        ],
+      }),
+    );
+
+    const payload = await libraryService.getCollection('clerk_123', 'collection-1');
+
+    expect(findFirst).toHaveBeenCalledWith({
+      where: {
+        id: 'collection-1',
+        userId: 'user-1',
+      },
+      include: {
+        items: {
+          include: {
+            libraryItem: {
+              include: {
+                book: {
+                  include: {
+                    coverBlob: true,
+                    files: true,
+                  },
+                },
+                progress: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    expect(
+      payload.collection.books.map((book) => book.libraryItemId),
+    ).toEqual(['library-3', 'library-2', 'library-1']);
+    expect(payload.collection.itemCount).toBe(3);
+  });
+
+  it('throws not found when requesting a missing collection', async () => {
+    findFirst.mockResolvedValue(null);
+
+    await expect(
+      libraryService.getCollection('clerk_123', 'missing-collection'),
+    ).rejects.toBeInstanceOf(NotFoundException);
+    await expect(
+      libraryService.getCollection('clerk_123', 'missing-collection'),
+    ).rejects.toThrow('Collection not found.');
   });
 });
 
