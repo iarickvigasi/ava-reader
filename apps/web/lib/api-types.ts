@@ -75,6 +75,7 @@ export type HomePayload = {
   };
   state: "EMPTY" | "POPULATED";
   stats: {
+    aiComments: number;
     highlights: number;
     hoursReading: number;
     volumesRead: number;
@@ -221,6 +222,14 @@ export type ReaderProgressPayload = {
   completionPercent: number;
   lastReadAt: string | null;
   locator: ReaderLocator | null;
+};
+
+export type ReaderSessionPayload = {
+  durationSeconds: number;
+  endedAt: string | null;
+  lastTrackedAt: string | null;
+  sessionId: string;
+  startedAt: string;
 };
 
 export type ReaderStatusPayload =

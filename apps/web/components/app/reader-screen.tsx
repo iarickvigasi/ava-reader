@@ -23,6 +23,7 @@ import type {
   ReaderInline,
   ReaderLocator,
   ReaderProgressPayload,
+  ReaderSessionPayload,
   ReaderStatusPayload,
 } from "@/lib/api-types";
 import { cn } from "@/lib/cn";
@@ -115,6 +116,11 @@ export function ReaderScreen({
   const pendingServerLocatorRef = useRef<ReaderLocator | null>(null);
   const pendingServerLocatorKeyRef = useRef<string | null>(null);
   const scheduledPersistTimeoutRef = useRef<number | null>(null);
+  const activeSessionIdRef = useRef<string | null>(null);
+  const sessionClientInstanceIdRef = useRef<string | null>(null);
+  const sessionHeartbeatIntervalRef = useRef<number | null>(null);
+  const sessionStartAbortRef = useRef<AbortController | null>(null);
+  const restartSessionTrackingRef = useRef<(() => Promise<ReaderSessionPayload | null>) | null>(null);
   const restoreIntentSequenceRef = useRef(0);
   const blockingRequestIdRef = useRef(0);
   const backgroundRequestIdRef = useRef(0);
@@ -155,6 +161,23 @@ export function ReaderScreen({
     const restoreLocator = createLocatorFromRestoreIntent(traversal.restoreIntent);
     return restoreLocator ?? initialResume.snapshot?.locator ?? payload.progress.locator;
   }, [initialResume.snapshot, payload.progress.locator, traversal.restoreIntent, visibleLocator]);
+  const getSessionClientInstanceId = useCallback(() => {
+    if (sessionClientInstanceIdRef.current) {
+      return sessionClientInstanceIdRef.current;
+    }
+
+    const clientInstanceId = getOrCreateReaderClientInstanceId();
+    sessionClientInstanceIdRef.current = clientInstanceId;
+    return clientInstanceId;
+  }, []);
+
+  useEffect(() => {
+    if (sessionClientInstanceIdRef.current) {
+      return;
+    }
+
+    sessionClientInstanceIdRef.current = getOrCreateReaderClientInstanceId();
+  }, []);
 
   useEffect(() => {
     activeReadyChapterIdRef.current = currentReadyChapterId;
@@ -165,6 +188,10 @@ export function ReaderScreen({
       if (scheduledPersistTimeoutRef.current !== null) {
         window.clearTimeout(scheduledPersistTimeoutRef.current);
       }
+      if (sessionHeartbeatIntervalRef.current !== null) {
+        window.clearInterval(sessionHeartbeatIntervalRef.current);
+      }
+      sessionStartAbortRef.current?.abort();
       blockingAbortRef.current?.abort();
       backgroundAbortRef.current?.abort();
     };
@@ -546,6 +573,162 @@ export function ReaderScreen({
     [getToken, isLoaded, isSignedIn, libraryItemId, remotePersistenceEnabled],
   );
 
+  const sendReaderSessionHeartbeat = useCallback(async () => {
+    const sessionId = activeSessionIdRef.current;
+
+    if (!remotePersistenceEnabled || !sessionId) {
+      return null;
+    }
+
+    try {
+      const session = await heartbeatReaderSession({
+        clientInstanceId: getSessionClientInstanceId(),
+        getToken,
+        isLoaded,
+        isSignedIn,
+        libraryItemId,
+        sessionId,
+      });
+
+      if (
+        session.endedAt &&
+        payload.status === "READY" &&
+        typeof document !== "undefined" &&
+        document.visibilityState !== "hidden"
+      ) {
+        activeSessionIdRef.current = null;
+        void restartSessionTrackingRef.current?.();
+      }
+
+      return session;
+    } catch {
+      return null;
+    }
+  }, [
+    getSessionClientInstanceId,
+    getToken,
+    isLoaded,
+    isSignedIn,
+    libraryItemId,
+    payload.status,
+    remotePersistenceEnabled,
+  ]);
+
+  const stopReaderSessionTracking = useCallback(
+    async (keepalive = false) => {
+      if (sessionHeartbeatIntervalRef.current !== null) {
+        window.clearInterval(sessionHeartbeatIntervalRef.current);
+        sessionHeartbeatIntervalRef.current = null;
+      }
+
+      sessionStartAbortRef.current?.abort();
+      sessionStartAbortRef.current = null;
+
+      const sessionId = activeSessionIdRef.current;
+      activeSessionIdRef.current = null;
+
+      if (!remotePersistenceEnabled || !sessionId) {
+        return null;
+      }
+
+      try {
+        return await stopReaderSession({
+          clientInstanceId: getSessionClientInstanceId(),
+          getToken,
+          isLoaded,
+          isSignedIn,
+          keepalive,
+          libraryItemId,
+          sessionId,
+        });
+      } catch {
+        return null;
+      }
+    },
+    [
+      getSessionClientInstanceId,
+      getToken,
+      isLoaded,
+      isSignedIn,
+      libraryItemId,
+      remotePersistenceEnabled,
+    ],
+  );
+
+  const startReaderSessionTracking = useCallback(async () => {
+    if (
+      !remotePersistenceEnabled ||
+      payload.status !== "READY" ||
+      typeof document === "undefined" ||
+      document.visibilityState === "hidden" ||
+      activeSessionIdRef.current ||
+      sessionStartAbortRef.current
+    ) {
+      return null;
+    }
+
+    const controller = new AbortController();
+    sessionStartAbortRef.current = controller;
+
+    try {
+      const session = await startReaderSession({
+        clientInstanceId: getSessionClientInstanceId(),
+        getToken,
+        isLoaded,
+        isSignedIn,
+        libraryItemId,
+        signal: controller.signal,
+      });
+
+      if (controller.signal.aborted) {
+        return null;
+      }
+
+      sessionStartAbortRef.current = null;
+
+      if (document.hidden) {
+        activeSessionIdRef.current = session.sessionId;
+        await stopReaderSessionTracking(true);
+        return null;
+      }
+
+      activeSessionIdRef.current = session.sessionId;
+
+      if (sessionHeartbeatIntervalRef.current !== null) {
+        window.clearInterval(sessionHeartbeatIntervalRef.current);
+      }
+
+      sessionHeartbeatIntervalRef.current = window.setInterval(() => {
+        void sendReaderSessionHeartbeat();
+      }, 30_000);
+
+      return session;
+    } catch {
+      sessionStartAbortRef.current = null;
+      return null;
+    }
+  }, [
+    getSessionClientInstanceId,
+    getToken,
+    isLoaded,
+    isSignedIn,
+    libraryItemId,
+    payload.status,
+    remotePersistenceEnabled,
+    sendReaderSessionHeartbeat,
+    stopReaderSessionTracking,
+  ]);
+
+  useEffect(() => {
+    restartSessionTrackingRef.current = startReaderSessionTracking;
+
+    return () => {
+      if (restartSessionTrackingRef.current === startReaderSessionTracking) {
+        restartSessionTrackingRef.current = null;
+      }
+    };
+  }, [startReaderSessionTracking]);
+
   useEffect(() => {
     if (
       payload.status !== "READY" ||
@@ -656,6 +839,54 @@ export function ReaderScreen({
     persistPendingProgress,
     remotePersistenceEnabled,
   ]);
+
+  useEffect(() => {
+    if (!remotePersistenceEnabled || payload.status !== "READY") {
+      return;
+    }
+
+    void startReaderSessionTracking();
+  }, [payload.status, remotePersistenceEnabled, startReaderSessionTracking]);
+
+  useEffect(() => {
+    if (!remotePersistenceEnabled) {
+      return;
+    }
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        void stopReaderSessionTracking(true);
+        return;
+      }
+
+      if (payload.status === "READY") {
+        void startReaderSessionTracking();
+      }
+    };
+
+    const handlePageHide = () => {
+      void stopReaderSessionTracking(true);
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("pagehide", handlePageHide);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("pagehide", handlePageHide);
+    };
+  }, [
+    payload.status,
+    remotePersistenceEnabled,
+    startReaderSessionTracking,
+    stopReaderSessionTracking,
+  ]);
+
+  useEffect(() => {
+    return () => {
+      void stopReaderSessionTracking(true);
+    };
+  }, [stopReaderSessionTracking]);
 
   const readerStyle = useMemo(
     () =>
@@ -2304,6 +2535,154 @@ async function persistReaderProgress(input: {
   }
 
   return (await response.json()) as ReaderProgressPayload;
+}
+
+async function startReaderSession(input: {
+  clientInstanceId: string;
+  getToken: () => Promise<string | null>;
+  isLoaded: boolean;
+  isSignedIn: boolean | undefined;
+  libraryItemId: string;
+  signal?: AbortSignal;
+}) {
+  return performReaderSessionRequest({
+    body: {
+      clientInstanceId: input.clientInstanceId,
+    },
+    getToken: input.getToken,
+    isLoaded: input.isLoaded,
+    isSignedIn: input.isSignedIn,
+    libraryItemId: input.libraryItemId,
+    method: "POST",
+    path: "session",
+    signal: input.signal,
+  });
+}
+
+async function heartbeatReaderSession(input: {
+  clientInstanceId: string;
+  getToken: () => Promise<string | null>;
+  isLoaded: boolean;
+  isSignedIn: boolean | undefined;
+  libraryItemId: string;
+  sessionId: string;
+}) {
+  return performReaderSessionRequest({
+    body: {
+      clientInstanceId: input.clientInstanceId,
+      sessionId: input.sessionId,
+    },
+    getToken: input.getToken,
+    isLoaded: input.isLoaded,
+    isSignedIn: input.isSignedIn,
+    libraryItemId: input.libraryItemId,
+    method: "PATCH",
+    path: "session",
+  });
+}
+
+async function stopReaderSession(input: {
+  clientInstanceId: string;
+  getToken: () => Promise<string | null>;
+  isLoaded: boolean;
+  isSignedIn: boolean | undefined;
+  keepalive?: boolean;
+  libraryItemId: string;
+  sessionId: string;
+}) {
+  return performReaderSessionRequest({
+    body: {
+      clientInstanceId: input.clientInstanceId,
+      sessionId: input.sessionId,
+    },
+    getToken: input.getToken,
+    isLoaded: input.isLoaded,
+    isSignedIn: input.isSignedIn,
+    keepalive: input.keepalive,
+    libraryItemId: input.libraryItemId,
+    method: "POST",
+    path: "session/stop",
+  });
+}
+
+async function performReaderSessionRequest(input: {
+  body?: Record<string, unknown>;
+  getToken: () => Promise<string | null>;
+  isLoaded: boolean;
+  isSignedIn: boolean | undefined;
+  keepalive?: boolean;
+  libraryItemId: string;
+  method: "PATCH" | "POST";
+  path: "session" | "session/stop";
+  signal?: AbortSignal;
+}) {
+  if (!input.isLoaded || !input.isSignedIn) {
+    return Promise.reject(
+      new Error("Reader access requires an authenticated session."),
+    );
+  }
+
+  const token = await input.getToken();
+
+  if (!token) {
+    return Promise.reject(new Error("No session token was available."));
+  }
+
+  const response = await fetch(
+    `${getPublicApiBaseUrl()}/api/library/${input.libraryItemId}/reader/${input.path}`,
+    {
+      method: input.method,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(input.body ?? {}),
+      keepalive: input.keepalive,
+      signal: input.signal,
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Reader session tracking could not be saved.");
+  }
+
+  return (await response.json()) as ReaderSessionPayload;
+}
+
+const READER_SESSION_CLIENT_INSTANCE_ID_STORAGE_KEY =
+  "ava-reader:reader-session-client-instance-id";
+
+function getOrCreateReaderClientInstanceId() {
+  if (typeof window === "undefined") {
+    return createReaderClientInstanceId();
+  }
+
+  try {
+    const existingClientInstanceId = window.sessionStorage.getItem(
+      READER_SESSION_CLIENT_INSTANCE_ID_STORAGE_KEY,
+    );
+
+    if (existingClientInstanceId) {
+      return existingClientInstanceId;
+    }
+
+    const nextClientInstanceId = createReaderClientInstanceId();
+    window.sessionStorage.setItem(
+      READER_SESSION_CLIENT_INSTANCE_ID_STORAGE_KEY,
+      nextClientInstanceId,
+    );
+    return nextClientInstanceId;
+  } catch {
+    return createReaderClientInstanceId();
+  }
+}
+
+function createReaderClientInstanceId() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+
+  return `reader-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 }
 
 function createLocatorKey(locator: ReaderLocator | null) {

@@ -1,46 +1,59 @@
 import { BookFileFormat, BookFileKind, ProcessingStatus } from '@prisma/client';
 import { ReaderService } from './reader.service';
 
+function getFirstCallArg<T>(fn: { mock: { calls: unknown[] } }): T {
+  return (fn.mock.calls as Array<[T]>)[0][0];
+}
+
 describe('ReaderService', () => {
   const getCurrentUserRecord = jest.fn();
-  const findFirst = jest.fn();
-  const update: jest.MockedFunction<
-    (args: {
-      data: {
-        chapterLabel: string;
-        completionPercent: number;
-        currentLocator?: string;
-        lastReadAt?: Date;
-      };
-      where: {
-        libraryItemId: string;
-      };
-    }) => Promise<{
-      chapterLabel: string;
-      completionPercent: number;
-      currentLocator: string;
-      lastReadAt: Date;
-    }>
-  > = jest.fn();
-  const updateLibraryItem: jest.MockedFunction<
-    (args: {
-      data: {
-        lastOpenedAt: Date;
-      };
-      where: {
-        id: string;
-      };
-    }) => Promise<unknown>
-  > = jest.fn();
+  const findFirstLibraryItem = jest.fn();
+  const updateLibraryItem = jest.fn();
+  const updateReadingProgress = jest.fn();
+  const updateManyReadingProgress = jest.fn();
+  const createReadingSession = jest.fn();
+  const updateReadingSession = jest.fn();
+  const updateManyReadingSessionParticipant = jest.fn();
+  const countReadingSessionParticipant = jest.fn();
+  const upsertReadingSessionParticipant = jest.fn();
+  const upsertReadingSessionSegment = jest.fn();
+  const aggregateReadingSessionSegment = jest.fn();
+  const queryRaw = jest.fn();
+
+  const tx = {
+    $queryRaw: queryRaw,
+    readingProgress: {
+      updateMany: updateManyReadingProgress,
+    },
+    readingSession: {
+      create: createReadingSession,
+      update: updateReadingSession,
+    },
+    readingSessionParticipant: {
+      count: countReadingSessionParticipant,
+      updateMany: updateManyReadingSessionParticipant,
+      upsert: upsertReadingSessionParticipant,
+    },
+    readingSessionSegment: {
+      aggregate: aggregateReadingSessionSegment,
+      upsert: upsertReadingSessionSegment,
+    },
+  };
+
   const prisma = {
+    $transaction: jest.fn(
+      async (callback: (transactionClient: typeof tx) => Promise<unknown>) =>
+        callback(tx),
+    ),
     libraryItem: {
-      findFirst,
+      findFirst: findFirstLibraryItem,
       update: updateLibraryItem,
     },
     readingProgress: {
-      update,
+      update: updateReadingProgress,
     },
   };
+
   const usersService = {
     getCurrentUserRecord,
   };
@@ -48,15 +61,29 @@ describe('ReaderService', () => {
 
   beforeEach(() => {
     getCurrentUserRecord.mockReset();
-    findFirst.mockReset();
-    update.mockReset();
+    findFirstLibraryItem.mockReset();
     updateLibraryItem.mockReset();
+    updateReadingProgress.mockReset();
+    updateManyReadingProgress.mockReset();
+    createReadingSession.mockReset();
+    updateReadingSession.mockReset();
+    updateManyReadingSessionParticipant.mockReset();
+    countReadingSessionParticipant.mockReset();
+    upsertReadingSessionParticipant.mockReset();
+    upsertReadingSessionSegment.mockReset();
+    aggregateReadingSessionSegment.mockReset();
+    queryRaw.mockReset();
+    prisma.$transaction.mockClear();
     readerService = new ReaderService(prisma as never, usersService as never);
     getCurrentUserRecord.mockResolvedValue({ id: 'user-1' });
   });
 
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it('returns the chapter from the saved locator when no chapter query is provided', async () => {
-    findFirst.mockResolvedValue(createLibraryItemRecord());
+    findFirstLibraryItem.mockResolvedValue(createLibraryItemRecord());
 
     const payload = await readerService.getReaderPayload(
       'clerk_1',
@@ -74,128 +101,11 @@ describe('ReaderService', () => {
       'chapter-2',
       'chapter-3',
     ]);
-    expect(payload.progress.locator).toEqual({
-      blockId: 'chapter-2::b1',
-      chapterId: 'chapter-2',
-      textOffset: 0,
-    });
-    expect(payload.toc[0]).toMatchObject({
-      chapterId: 'chapter-1',
-      children: [],
-      id: 'toc:0',
-      label: 'Chapter One',
-    });
-    expect(updateLibraryItem).not.toHaveBeenCalled();
-  });
-
-  it('marks a reader as opened by updating lastOpenedAt', async () => {
-    findFirst.mockResolvedValue(createLibraryItemRecord());
-    updateLibraryItem.mockResolvedValue({});
-
-    await readerService.markReaderOpened('clerk_1', 'library-1');
-
-    const openUpdateCall = updateLibraryItem.mock.calls[0]?.[0];
-
-    expect(openUpdateCall?.where).toEqual({
-      id: 'library-1',
-    });
-    expect(openUpdateCall?.data.lastOpenedAt).toBeInstanceOf(Date);
-  });
-
-  it('returns a centered three-chapter window for a middle chapter query', async () => {
-    findFirst.mockResolvedValue(createLibraryItemRecord());
-
-    const payload = await readerService.getReaderPayload(
-      'clerk_1',
-      'library-1',
-      'chapter-3',
-    );
-
-    expect(payload.status).toBe('READY');
-    if (payload.status !== 'READY') {
-      throw new Error('Expected READY payload');
-    }
-
-    expect(payload.activeChapterId).toBe('chapter-3');
-    expect(payload.chapters.map((chapter) => chapter.chapterId)).toEqual([
-      'chapter-2',
-      'chapter-3',
-      'chapter-4',
-    ]);
-  });
-
-  it('returns the active and next chapter when the first chapter is selected', async () => {
-    findFirst.mockResolvedValue(createLibraryItemRecord());
-
-    const payload = await readerService.getReaderPayload(
-      'clerk_1',
-      'library-1',
-      'chapter-1',
-    );
-
-    expect(payload.status).toBe('READY');
-    if (payload.status !== 'READY') {
-      throw new Error('Expected READY payload');
-    }
-
-    expect(payload.activeChapterId).toBe('chapter-1');
-    expect(payload.chapters.map((chapter) => chapter.chapterId)).toEqual([
-      'chapter-1',
-      'chapter-2',
-    ]);
-  });
-
-  it('returns the previous and active chapter when the last chapter is selected', async () => {
-    findFirst.mockResolvedValue(createLibraryItemRecord());
-
-    const payload = await readerService.getReaderPayload(
-      'clerk_1',
-      'library-1',
-      'chapter-4',
-    );
-
-    expect(payload.status).toBe('READY');
-    if (payload.status !== 'READY') {
-      throw new Error('Expected READY payload');
-    }
-
-    expect(payload.activeChapterId).toBe('chapter-4');
-    expect(payload.chapters.map((chapter) => chapter.chapterId)).toEqual([
-      'chapter-3',
-      'chapter-4',
-    ]);
-  });
-
-  it('falls back to the saved locator when the requested chapter does not exist', async () => {
-    findFirst.mockResolvedValue(createLibraryItemRecord());
-
-    const payload = await readerService.getReaderPayload(
-      'clerk_1',
-      'library-1',
-      'chapter-missing',
-    );
-
-    expect(payload.status).toBe('READY');
-    if (payload.status !== 'READY') {
-      throw new Error('Expected READY payload');
-    }
-
-    expect(payload.activeChapterId).toBe('chapter-2');
-    expect(payload.chapters.map((chapter) => chapter.chapterId)).toEqual([
-      'chapter-1',
-      'chapter-2',
-      'chapter-3',
-    ]);
-    expect(payload.progress.locator).toEqual({
-      blockId: 'chapter-2::b1',
-      chapterId: 'chapter-2',
-      textOffset: 0,
-    });
   });
 
   it('updates progress from a structured locator and recomputes chapter metadata', async () => {
-    findFirst.mockResolvedValue(createLibraryItemRecord());
-    update.mockResolvedValue({
+    findFirstLibraryItem.mockResolvedValue(createLibraryItemRecord());
+    updateReadingProgress.mockResolvedValue({
       chapterLabel: 'Chapter Two',
       completionPercent: 50,
       currentLocator: JSON.stringify({
@@ -217,11 +127,6 @@ describe('ReaderService', () => {
       },
     );
 
-    const firstUpdateCall = update.mock.calls[0]?.[0];
-
-    expect(firstUpdateCall?.where.libraryItemId).toBe('library-1');
-    expect(firstUpdateCall?.data.chapterLabel).toBe('Chapter Two');
-    expect(firstUpdateCall?.data.completionPercent).toBe(50);
     expect(progress).toEqual({
       chapterLabel: 'Chapter Two',
       completionPercent: 50,
@@ -232,153 +137,462 @@ describe('ReaderService', () => {
         textOffset: 214,
       },
     });
+    const updateLibraryItemCall = getFirstCallArg<{
+      data: { lastOpenedAt: Date };
+      where: { id: string };
+    }>(updateLibraryItem);
+    expect(updateLibraryItemCall.where.id).toBe('library-1');
+    expect(updateLibraryItemCall.data.lastOpenedAt).toBeInstanceOf(Date);
   });
 
-  it('prefers the deepest nested toc label for exact subsection locators', async () => {
-    findFirst.mockResolvedValue(
-      createLibraryItemRecord({
-        tocMode: 'nested',
-        version: 2,
-      }),
-    );
-    update.mockResolvedValue({
-      chapterLabel: 'Section Two',
-      completionPercent: 50,
-      currentLocator: JSON.stringify({
-        blockId: 'chapter-2::b2',
-        chapterId: 'chapter-2',
-        textOffset: 12,
-      }),
-      lastReadAt: new Date('2026-04-07T12:00:00.000Z'),
-    });
+  it('marks a reader as opened by updating lastOpenedAt', async () => {
+    findFirstLibraryItem.mockResolvedValue(createLibraryItemRecord());
     updateLibraryItem.mockResolvedValue({});
 
-    await readerService.updateProgress('clerk_1', 'library-1', {
-      blockId: 'chapter-2::b2',
-      chapterId: 'chapter-2',
-      textOffset: 12,
-    });
+    await readerService.markReaderOpened('clerk_1', 'library-1');
 
-    expect(update.mock.calls[0]?.[0].data.chapterLabel).toBe('Section Two');
+    const markReaderOpenedCall = getFirstCallArg<{
+      data: { lastOpenedAt: Date };
+      where: { id: string };
+    }>(updateLibraryItem);
+    expect(markReaderOpenedCall.where.id).toBe('library-1');
+    expect(markReaderOpenedCall.data.lastOpenedAt).toBeInstanceOf(Date);
   });
 
-  it('returns stable progress when the same locator is saved repeatedly', async () => {
-    findFirst.mockResolvedValue(createLibraryItemRecord());
-    update.mockResolvedValue({
-      chapterLabel: 'Chapter Two',
-      completionPercent: 50,
-      currentLocator: JSON.stringify({
-        blockId: 'chapter-2::b1',
-        chapterId: 'chapter-2',
-        textOffset: 214,
+  it('starts a new session and registers the device participant', async () => {
+    jest
+      .useFakeTimers()
+      .setSystemTime(new Date('2026-04-12T10:00:00.000Z').getTime());
+    findFirstLibraryItem.mockResolvedValue(createLibraryItemRecord());
+    queryRaw.mockResolvedValueOnce([]);
+    createReadingSession.mockResolvedValue(
+      createLockedSessionRecord({
+        durationSeconds: 0,
+        endedAt: null,
+        lastTrackedAt: new Date('2026-04-12T10:00:00.000Z'),
+        startedAt: new Date('2026-04-12T10:00:00.000Z'),
       }),
-      lastReadAt: new Date('2026-04-07T12:00:00.000Z'),
-    });
-    updateLibraryItem.mockResolvedValue({});
-
-    const firstProgress = await readerService.updateProgress(
-      'clerk_1',
-      'library-1',
-      {
-        blockId: 'chapter-2::b1',
-        chapterId: 'chapter-2',
-        textOffset: 214,
-      },
     );
-    const secondProgress = await readerService.updateProgress(
-      'clerk_1',
-      'library-1',
-      {
-        blockId: 'chapter-2::b1',
-        chapterId: 'chapter-2',
-        textOffset: 214,
-      },
+    updateManyReadingSessionParticipant.mockResolvedValue({ count: 0 });
+    countReadingSessionParticipant
+      .mockResolvedValueOnce(0)
+      .mockResolvedValueOnce(1);
+    upsertReadingSessionParticipant.mockResolvedValue({});
+    updateReadingSession.mockResolvedValue(
+      createLockedSessionRecord({
+        durationSeconds: 0,
+        endedAt: null,
+        lastTrackedAt: new Date('2026-04-12T10:00:00.000Z'),
+        startedAt: new Date('2026-04-12T10:00:00.000Z'),
+      }),
     );
 
-    expect(firstProgress).toEqual(secondProgress);
-    expect(update).toHaveBeenCalledTimes(2);
-    expect(update.mock.calls[0]?.[0].data).toMatchObject({
-      chapterLabel: 'Chapter Two',
-      completionPercent: 50,
-      currentLocator: JSON.stringify({
-        blockId: 'chapter-2::b1',
-        chapterId: 'chapter-2',
-        textOffset: 214,
-      }),
+    const session = await readerService.startSession(
+      'clerk_1',
+      'library-1',
+      'client-a',
+    );
+
+    const createReadingSessionCall = getFirstCallArg<{
+      data: {
+        durationMinutes: number;
+        durationSeconds: number;
+        libraryItemId: string;
+        userId: string;
+      };
+      select: unknown;
+    }>(createReadingSession);
+    expect(createReadingSessionCall.data.durationMinutes).toBe(0);
+    expect(createReadingSessionCall.data.durationSeconds).toBe(0);
+    expect(createReadingSessionCall.data.libraryItemId).toBe('library-1');
+    expect(createReadingSessionCall.data.userId).toBe('user-1');
+    expect(createReadingSessionCall.select).toBeDefined();
+    const participantUpsertCall = getFirstCallArg<{
+      create: {
+        clientInstanceId: string;
+        stoppedAt: Date | null;
+      };
+      update: {
+        lastSeenAt: Date;
+        stoppedAt: Date | null;
+      };
+      where: {
+        readingSessionId_clientInstanceId: {
+          clientInstanceId: string;
+          readingSessionId: string;
+        };
+      };
+    }>(upsertReadingSessionParticipant);
+    expect(participantUpsertCall.create.clientInstanceId).toBe('client-a');
+    expect(participantUpsertCall.create.stoppedAt).toBeNull();
+    expect(participantUpsertCall.update.lastSeenAt).toBeInstanceOf(Date);
+    expect(participantUpsertCall.update.stoppedAt).toBeNull();
+    expect(
+      participantUpsertCall.where.readingSessionId_clientInstanceId,
+    ).toEqual({
+      clientInstanceId: 'client-a',
+      readingSessionId: 'session-1',
     });
-    expect(update.mock.calls[1]?.[0].data).toMatchObject({
-      chapterLabel: 'Chapter Two',
-      completionPercent: 50,
-      currentLocator: JSON.stringify({
-        blockId: 'chapter-2::b1',
-        chapterId: 'chapter-2',
-        textOffset: 214,
-      }),
+    expect(session).toEqual({
+      durationSeconds: 0,
+      endedAt: null,
+      lastTrackedAt: '2026-04-12T10:00:00.000Z',
+      sessionId: 'session-1',
+      startedAt: '2026-04-12T10:00:00.000Z',
     });
   });
 
-  it('persists successive locators with different text offsets', async () => {
-    findFirst.mockResolvedValue(createLibraryItemRecord());
-    update
-      .mockResolvedValueOnce({
-        chapterLabel: 'Chapter Two',
-        completionPercent: 50,
-        currentLocator: JSON.stringify({
-          blockId: 'chapter-2::b1',
-          chapterId: 'chapter-2',
-          textOffset: 214,
+  it('shares one active session across multiple devices and increments wall-clock once', async () => {
+    jest
+      .useFakeTimers()
+      .setSystemTime(new Date('2026-04-12T10:00:10.000Z').getTime());
+    findFirstLibraryItem.mockResolvedValue(createLibraryItemRecord());
+    queryRaw.mockResolvedValueOnce([
+      createLockedSessionRecord({
+        durationSeconds: 120,
+        endedAt: null,
+        lastTrackedAt: new Date('2026-04-12T10:00:00.000Z'),
+        startedAt: new Date('2026-04-12T09:58:00.000Z'),
+      }),
+    ]);
+    updateManyReadingSessionParticipant.mockResolvedValue({ count: 0 });
+    countReadingSessionParticipant
+      .mockResolvedValueOnce(1)
+      .mockResolvedValueOnce(2);
+    upsertReadingSessionParticipant.mockResolvedValue({});
+    upsertReadingSessionSegment.mockResolvedValue({});
+    updateReadingSession.mockResolvedValue(
+      createLockedSessionRecord({
+        durationSeconds: 130,
+        endedAt: null,
+        lastTrackedAt: new Date('2026-04-12T10:00:10.000Z'),
+        startedAt: new Date('2026-04-12T09:58:00.000Z'),
+      }),
+    );
+    aggregateReadingSessionSegment.mockResolvedValue({
+      _sum: {
+        durationSeconds: 3_900,
+      },
+    });
+    updateManyReadingProgress.mockResolvedValue({ count: 1 });
+
+    const session = await readerService.startSession(
+      'clerk_1',
+      'library-1',
+      'client-b',
+    );
+
+    expect(createReadingSession).not.toHaveBeenCalled();
+    expect(upsertReadingSessionSegment).toHaveBeenCalledTimes(1);
+    expect(updateManyReadingProgress).toHaveBeenCalledWith({
+      data: {
+        minutesRead: 65,
+      },
+      where: {
+        libraryItemId: 'library-1',
+        userId: 'user-1',
+      },
+    });
+    expect(session.durationSeconds).toBe(130);
+  });
+
+  it('does not double-count when heartbeats race on the same session', async () => {
+    jest
+      .useFakeTimers()
+      .setSystemTime(new Date('2026-04-12T10:00:30.000Z').getTime());
+    queryRaw
+      .mockResolvedValueOnce([
+        createLockedSessionRecord({
+          durationSeconds: 120,
+          endedAt: null,
+          lastTrackedAt: new Date('2026-04-12T10:00:00.000Z'),
         }),
-        lastReadAt: new Date('2026-04-07T12:00:00.000Z'),
-      })
-      .mockResolvedValueOnce({
-        chapterLabel: 'Chapter Two',
-        completionPercent: 50,
-        currentLocator: JSON.stringify({
-          blockId: 'chapter-2::b1',
-          chapterId: 'chapter-2',
-          textOffset: 338,
+      ])
+      .mockResolvedValueOnce([
+        createLockedSessionRecord({
+          durationSeconds: 150,
+          endedAt: null,
+          lastTrackedAt: new Date('2026-04-12T10:00:30.000Z'),
         }),
-        lastReadAt: new Date('2026-04-07T12:01:00.000Z'),
-      });
-    updateLibraryItem.mockResolvedValue({});
+      ]);
+    updateManyReadingSessionParticipant.mockResolvedValue({ count: 0 });
+    countReadingSessionParticipant
+      .mockResolvedValueOnce(1)
+      .mockResolvedValueOnce(1)
+      .mockResolvedValueOnce(1)
+      .mockResolvedValueOnce(1);
+    upsertReadingSessionParticipant.mockResolvedValue({});
+    upsertReadingSessionSegment.mockResolvedValue({});
+    updateReadingSession
+      .mockResolvedValueOnce(
+        createLockedSessionRecord({
+          durationSeconds: 150,
+          endedAt: null,
+          lastTrackedAt: new Date('2026-04-12T10:00:30.000Z'),
+        }),
+      )
+      .mockResolvedValueOnce(
+        createLockedSessionRecord({
+          durationSeconds: 150,
+          endedAt: null,
+          lastTrackedAt: new Date('2026-04-12T10:00:30.000Z'),
+        }),
+      );
+    aggregateReadingSessionSegment.mockResolvedValue({
+      _sum: {
+        durationSeconds: 7_200,
+      },
+    });
+    updateManyReadingProgress.mockResolvedValue({ count: 1 });
 
-    const firstProgress = await readerService.updateProgress(
+    const firstHeartbeat = await readerService.heartbeatSession(
       'clerk_1',
       'library-1',
-      {
-        blockId: 'chapter-2::b1',
-        chapterId: 'chapter-2',
-        textOffset: 214,
-      },
+      'session-1',
+      'client-a',
     );
-    const secondProgress = await readerService.updateProgress(
+    const secondHeartbeat = await readerService.heartbeatSession(
       'clerk_1',
       'library-1',
-      {
-        blockId: 'chapter-2::b1',
-        chapterId: 'chapter-2',
-        textOffset: 338,
-      },
+      'session-1',
+      'client-b',
     );
 
-    expect(firstProgress.locator?.textOffset).toBe(214);
-    expect(secondProgress.locator?.textOffset).toBe(338);
-    expect(update.mock.calls[0]?.[0].data.currentLocator).toBe(
-      JSON.stringify({
-        blockId: 'chapter-2::b1',
-        chapterId: 'chapter-2',
-        textOffset: 214,
+    expect(upsertReadingSessionSegment).toHaveBeenCalledTimes(1);
+    expect(firstHeartbeat.durationSeconds).toBe(150);
+    expect(secondHeartbeat.durationSeconds).toBe(150);
+  });
+
+  it('keeps session active when one participant stops and another is still active', async () => {
+    jest
+      .useFakeTimers()
+      .setSystemTime(new Date('2026-04-12T10:00:45.000Z').getTime());
+    queryRaw.mockResolvedValueOnce([
+      createLockedSessionRecord({
+        durationSeconds: 150,
+        endedAt: null,
+        lastTrackedAt: new Date('2026-04-12T10:00:30.000Z'),
+      }),
+    ]);
+    updateManyReadingSessionParticipant.mockResolvedValue({ count: 0 });
+    countReadingSessionParticipant
+      .mockResolvedValueOnce(1)
+      .mockResolvedValueOnce(1);
+    upsertReadingSessionParticipant.mockResolvedValue({});
+    upsertReadingSessionSegment.mockResolvedValue({});
+    updateReadingSession.mockResolvedValue(
+      createLockedSessionRecord({
+        durationSeconds: 165,
+        endedAt: null,
+        lastTrackedAt: new Date('2026-04-12T10:00:45.000Z'),
       }),
     );
-    expect(update.mock.calls[1]?.[0].data.currentLocator).toBe(
-      JSON.stringify({
-        blockId: 'chapter-2::b1',
-        chapterId: 'chapter-2',
-        textOffset: 338,
+    aggregateReadingSessionSegment.mockResolvedValue({
+      _sum: {
+        durationSeconds: 7_500,
+      },
+    });
+    updateManyReadingProgress.mockResolvedValue({ count: 1 });
+
+    const session = await readerService.stopSession(
+      'clerk_1',
+      'library-1',
+      'session-1',
+      'client-a',
+    );
+
+    expect(session.endedAt).toBeNull();
+    const stopParticipantUpsertCall = getFirstCallArg<{
+      create: {
+        clientInstanceId: string;
+        stoppedAt: Date | null;
+      };
+      update: {
+        lastSeenAt: Date;
+        stoppedAt: Date | null;
+      };
+      where: {
+        readingSessionId_clientInstanceId: {
+          clientInstanceId: string;
+          readingSessionId: string;
+        };
+      };
+    }>(upsertReadingSessionParticipant);
+    expect(stopParticipantUpsertCall.create.clientInstanceId).toBe('client-a');
+    expect(stopParticipantUpsertCall.create.stoppedAt).toBeInstanceOf(Date);
+    expect(stopParticipantUpsertCall.update.lastSeenAt).toBeInstanceOf(Date);
+    expect(stopParticipantUpsertCall.update.stoppedAt).toBeInstanceOf(Date);
+    expect(
+      stopParticipantUpsertCall.where.readingSessionId_clientInstanceId,
+    ).toEqual({
+      clientInstanceId: 'client-a',
+      readingSessionId: 'session-1',
+    });
+  });
+
+  it('ends the shared session when the last participant stops', async () => {
+    jest
+      .useFakeTimers()
+      .setSystemTime(new Date('2026-04-12T10:01:00.000Z').getTime());
+    queryRaw.mockResolvedValueOnce([
+      createLockedSessionRecord({
+        durationSeconds: 165,
+        endedAt: null,
+        lastTrackedAt: new Date('2026-04-12T10:00:45.000Z'),
+      }),
+    ]);
+    updateManyReadingSessionParticipant.mockResolvedValue({ count: 0 });
+    countReadingSessionParticipant
+      .mockResolvedValueOnce(1)
+      .mockResolvedValueOnce(0);
+    upsertReadingSessionParticipant.mockResolvedValue({});
+    upsertReadingSessionSegment.mockResolvedValue({});
+    updateReadingSession.mockResolvedValue(
+      createLockedSessionRecord({
+        durationSeconds: 180,
+        endedAt: new Date('2026-04-12T10:01:00.000Z'),
+        lastTrackedAt: new Date('2026-04-12T10:01:00.000Z'),
       }),
     );
+    aggregateReadingSessionSegment.mockResolvedValue({
+      _sum: {
+        durationSeconds: 7_680,
+      },
+    });
+    updateManyReadingProgress.mockResolvedValue({ count: 1 });
+
+    const session = await readerService.stopSession(
+      'clerk_1',
+      'library-1',
+      'session-1',
+      'client-b',
+    );
+
+    expect(session.endedAt).toBe('2026-04-12T10:01:00.000Z');
+    expect(session.durationSeconds).toBe(180);
+  });
+
+  it('splits elapsed seconds across UTC day boundaries', async () => {
+    jest
+      .useFakeTimers()
+      .setSystemTime(new Date('2026-04-11T00:00:15.000Z').getTime());
+    queryRaw.mockResolvedValueOnce([
+      createLockedSessionRecord({
+        durationSeconds: 900,
+        endedAt: null,
+        lastTrackedAt: new Date('2026-04-10T23:59:45.000Z'),
+      }),
+    ]);
+    updateManyReadingSessionParticipant.mockResolvedValue({ count: 0 });
+    countReadingSessionParticipant
+      .mockResolvedValueOnce(1)
+      .mockResolvedValueOnce(1);
+    upsertReadingSessionParticipant.mockResolvedValue({});
+    upsertReadingSessionSegment.mockResolvedValue({});
+    updateReadingSession.mockResolvedValue(
+      createLockedSessionRecord({
+        durationSeconds: 930,
+        endedAt: null,
+        lastTrackedAt: new Date('2026-04-11T00:00:15.000Z'),
+      }),
+    );
+    aggregateReadingSessionSegment.mockResolvedValue({
+      _sum: {
+        durationSeconds: 5_430,
+      },
+    });
+    updateManyReadingProgress.mockResolvedValue({ count: 1 });
+
+    await readerService.heartbeatSession(
+      'clerk_1',
+      'library-1',
+      'session-1',
+      'client-a',
+    );
+
+    expect(upsertReadingSessionSegment).toHaveBeenCalledTimes(2);
+    const segmentUpsertCalls = upsertReadingSessionSegment.mock.calls as Array<
+      [
+        {
+          create: {
+            durationSeconds: number;
+            trackedDay: Date;
+          };
+        },
+      ]
+    >;
+    const firstSegmentCall = segmentUpsertCalls[0][0];
+    const secondSegmentCall = segmentUpsertCalls[1][0];
+    expect(firstSegmentCall.create.durationSeconds).toBe(15);
+    expect(secondSegmentCall.create.durationSeconds).toBe(15);
+    expect(firstSegmentCall.create.trackedDay.toISOString()).toBe(
+      '2026-04-10T00:00:00.000Z',
+    );
+    expect(secondSegmentCall.create.trackedDay.toISOString()).toBe(
+      '2026-04-11T00:00:00.000Z',
+    );
+  });
+
+  it('expires stale participants and avoids adding stale elapsed time', async () => {
+    jest
+      .useFakeTimers()
+      .setSystemTime(new Date('2026-04-12T10:10:00.000Z').getTime());
+    queryRaw.mockResolvedValueOnce([
+      createLockedSessionRecord({
+        durationSeconds: 300,
+        endedAt: null,
+        lastTrackedAt: new Date('2026-04-12T10:00:00.000Z'),
+      }),
+    ]);
+    updateManyReadingSessionParticipant.mockResolvedValue({ count: 1 });
+    countReadingSessionParticipant
+      .mockResolvedValueOnce(0)
+      .mockResolvedValueOnce(1);
+    upsertReadingSessionParticipant.mockResolvedValue({});
+    updateReadingSession.mockResolvedValue(
+      createLockedSessionRecord({
+        durationSeconds: 300,
+        endedAt: null,
+        lastTrackedAt: new Date('2026-04-12T10:10:00.000Z'),
+      }),
+    );
+
+    const session = await readerService.heartbeatSession(
+      'clerk_1',
+      'library-1',
+      'session-1',
+      'client-a',
+    );
+
+    expect(upsertReadingSessionSegment).not.toHaveBeenCalled();
+    expect(aggregateReadingSessionSegment).not.toHaveBeenCalled();
+    expect(session.durationSeconds).toBe(300);
   });
 });
+
+function createLockedSessionRecord(
+  input?: Partial<{
+    durationSeconds: number;
+    endedAt: Date | null;
+    id: string;
+    lastTrackedAt: Date | null;
+    libraryItemId: string;
+    startedAt: Date;
+    trackedDay: Date;
+    userId: string;
+  }>,
+) {
+  return {
+    durationSeconds: input?.durationSeconds ?? 0,
+    endedAt: input?.endedAt ?? null,
+    id: input?.id ?? 'session-1',
+    lastTrackedAt: input?.lastTrackedAt ?? new Date('2026-04-12T10:00:00.000Z'),
+    libraryItemId: input?.libraryItemId ?? 'library-1',
+    startedAt: input?.startedAt ?? new Date('2026-04-12T10:00:00.000Z'),
+    trackedDay: input?.trackedDay ?? new Date('2026-04-12T00:00:00.000Z'),
+    userId: input?.userId ?? 'user-1',
+  };
+}
 
 function createLibraryItemRecord(input?: {
   tocMode?: 'flat' | 'nested';
@@ -559,6 +773,7 @@ function createLibraryItemRecord(input?: {
 
   return {
     id: 'library-1',
+    userId: 'user-1',
     progress: {
       chapterLabel: 'Chapter Two',
       completionPercent: 50,

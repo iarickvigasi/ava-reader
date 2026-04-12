@@ -186,18 +186,33 @@ async function main() {
   });
 
   const dailyMinutes = [30, 20, 40, 28, 36, 15, 45];
-  await prisma.readingSession.createMany({
-    data: dailyMinutes.map((durationMinutes, index) => {
+  const seededSessions = await Promise.all(
+    dailyMinutes.map((durationMinutes, index) => {
       const trackedDay = startOfDay(daysAgo(6 - index));
-      return {
-        userId: user.id,
-        libraryItemId: index % 2 === 0 ? currentItem.id : stoicItem.id,
-        trackedDay,
-        durationMinutes,
-        startedAt: trackedDay,
-        endedAt: new Date(trackedDay.getTime() + durationMinutes * 60_000),
-      };
+      return prisma.readingSession.create({
+        data: {
+          userId: user.id,
+          libraryItemId: index % 2 === 0 ? currentItem.id : stoicItem.id,
+          trackedDay,
+          durationMinutes,
+          durationSeconds: durationMinutes * 60,
+          lastTrackedAt: new Date(
+            trackedDay.getTime() + durationMinutes * 60_000,
+          ),
+          startedAt: trackedDay,
+          endedAt: new Date(trackedDay.getTime() + durationMinutes * 60_000),
+        },
+      });
     }),
+  );
+  await prisma.readingSessionSegment.createMany({
+    data: seededSessions.map((session) => ({
+      readingSessionId: session.id,
+      userId: session.userId,
+      libraryItemId: session.libraryItemId,
+      trackedDay: session.trackedDay,
+      durationSeconds: session.durationSeconds,
+    })),
   });
 
   await prisma.annotation.deleteMany({

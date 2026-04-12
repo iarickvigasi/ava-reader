@@ -6,6 +6,7 @@ import {
   NowListeningHeaderIcon,
   QuoteMarkIcon,
   ReadingTimeIcon,
+  SparkIcon,
   StackBooksIcon,
 } from "@/components/app/app-icons";
 import { BookCover } from "@/components/app/book-cover";
@@ -266,11 +267,24 @@ function getReaderHref(libraryItemId: string) {
 }
 
 function MasteryPanel({ mastery }: { mastery: HomePayload["mastery"] }) {
-  const maxMinutes = Math.max(
-    mastery.dailyGoalMinutes,
-    ...mastery.days.map((day) => day.minutes),
-    1,
-  );
+  const goalMinutes = Math.max(mastery.dailyGoalMinutes, 1);
+  const maxMinutes = Math.max(...mastery.days.map((day) => day.minutes), goalMinutes);
+  const goalBarHeightPercent = 72;
+  const todayKey = mastery.days.at(-1)?.key;
+  const getBarHeightPercent = (minutes: number) => {
+    const safeMinutes = Math.max(minutes, 0);
+
+    if (safeMinutes <= goalMinutes) {
+      return (safeMinutes / goalMinutes) * goalBarHeightPercent;
+    }
+
+    if (maxMinutes <= goalMinutes) {
+      return goalBarHeightPercent;
+    }
+
+    const overflowRatio = (safeMinutes - goalMinutes) / (maxMinutes - goalMinutes);
+    return goalBarHeightPercent + overflowRatio * (100 - goalBarHeightPercent);
+  };
 
   return (
     <>
@@ -284,19 +298,36 @@ function MasteryPanel({ mastery }: { mastery: HomePayload["mastery"] }) {
           }
         />
         <div className="space-y-5">
-          <div className="flex h-20 items-end gap-1">
+          <div className="flex h-28 items-end gap-1">
             {mastery.days.map((day) => (
-              <div key={day.key} className="flex min-w-0 flex-1 flex-col items-center">
-                <div className="flex h-18 w-full items-end rounded-sm bg-transparent">
+              <div
+                key={day.key}
+                className="grid h-full min-w-0 flex-1 grid-rows-[1fr_auto] items-end gap-1"
+              >
+                <div className="relative flex h-full w-full items-end rounded-sm bg-transparent">
+                  <div
+                    className="pointer-events-none absolute inset-x-0 border-t border-dashed border-line/45"
+                    style={{ bottom: `${goalBarHeightPercent}%` }}
+                  />
                   <div
                     className={cn(
-                      "w-full rounded-t-xs transition",
-                      day.goalMet ? "bg-ink" : "bg-sand",
+                      "relative z-10 w-full rounded-t-xs transition",
+                      day.key === todayKey
+                        ? "bg-brand-fill"
+                        : day.goalMet
+                          ? "bg-ink"
+                          : "bg-sand",
                     )}
                     style={{
-                      height: `${Math.max((day.minutes / maxMinutes) * 100, 10)}%`,
+                      height: `${getBarHeightPercent(day.minutes)}%`,
                     }}
                   />
+                </div>
+                <div className="space-y-0.5 text-center">
+                  <p className="text-[0.58rem] uppercase tracking-[0.12em] text-muted">
+                    {day.dayLabel}
+                  </p>
+                  <p className="text-[0.7rem] text-copy">{day.minutes}m</p>
                 </div>
               </div>
             ))}
@@ -310,50 +341,63 @@ function MasteryPanel({ mastery }: { mastery: HomePayload["mastery"] }) {
       </section>
 
       <Panel className="hidden p-8 sm:block">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div className="space-y-2">
-            <h2 className="text-[1.9rem] uppercase tracking-[0.04em] text-copy">
-              Daily Mastery
-            </h2>
-            <p className="text-xl italic text-title">
-              {mastery.remainingMinutes > 0
-                ? `${mastery.remainingMinutes} minutes to reach your daily goal`
-                : "Daily goal met. Keep the momentum going."}
-            </p>
+        <div className="flex h-full min-h-80 flex-col">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div className="space-y-2">
+              <h2 className="text-[1.9rem] uppercase tracking-[0.04em] text-copy">
+                Daily Mastery
+              </h2>
+              <p className="text-xl italic text-title">
+                {mastery.remainingMinutes > 0
+                  ? `${mastery.remainingMinutes} minutes to reach your daily goal`
+                  : "Daily goal met. Keep the momentum going."}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-4xl text-ink">
+                {mastery.todayMinutes}/{mastery.dailyGoalMinutes}
+              </p>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
+                Min today
+              </p>
+            </div>
           </div>
-          <div className="text-right">
-            <p className="text-4xl text-ink">
-              {mastery.todayMinutes}/{mastery.dailyGoalMinutes}
-            </p>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-              Min today
-            </p>
-          </div>
-        </div>
 
-        <div className="mt-8">
-          <div className="flex h-52 items-end gap-2">
-            {mastery.days.map((day) => (
-              <div key={day.key} className="flex min-w-0 flex-1 flex-col items-center gap-3">
-                <div className="flex h-44 w-full items-end rounded-sm bg-transparent">
-                  <div
-                    className={cn(
-                      "w-full rounded-t-sm transition",
-                      day.goalMet ? "bg-ink" : "bg-sand",
-                    )}
-                    style={{
-                      height: `${Math.max((day.minutes / maxMinutes) * 100, 10)}%`,
-                    }}
-                  />
+          <div className="mt-8 min-h-0 flex-1">
+            <div className="flex h-full items-end gap-2">
+              {mastery.days.map((day) => (
+                <div
+                  key={day.key}
+                  className="grid h-full min-w-0 flex-1 grid-rows-[1fr_auto] items-end gap-3"
+                >
+                  <div className="relative flex h-full w-full items-end rounded-sm bg-transparent">
+                    <div
+                      className="pointer-events-none absolute inset-x-0 border-t border-dashed border-line/45"
+                      style={{ bottom: `${goalBarHeightPercent}%` }}
+                    />
+                    <div
+                      className={cn(
+                        "relative z-10 w-full rounded-t-sm transition",
+                        day.key === todayKey
+                          ? "bg-brand-fill"
+                          : day.goalMet
+                            ? "bg-ink"
+                            : "bg-sand",
+                      )}
+                      style={{
+                        height: `${getBarHeightPercent(day.minutes)}%`,
+                      }}
+                    />
+                  </div>
+                  <div className="space-y-1 text-center">
+                    <p className="text-xs uppercase tracking-[0.14em] text-muted">
+                      {day.dayLabel}
+                    </p>
+                    <p className="text-sm text-copy">{day.minutes}m</p>
+                  </div>
                 </div>
-                <div className="space-y-1 text-center">
-                  <p className="text-xs uppercase tracking-[0.14em] text-muted">
-                    {day.dayLabel}
-                  </p>
-                  <p className="text-sm text-copy">{day.minutes}m</p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </Panel>
@@ -363,21 +407,22 @@ function MasteryPanel({ mastery }: { mastery: HomePayload["mastery"] }) {
 
 function StatsPanel({ stats }: { stats: HomePayload["stats"] }) {
   const items = [
-    { label: "Volumes Read", value: stats.volumesRead, icon: StackBooksIcon },
+    { label: "Books Read", value: stats.volumesRead, icon: StackBooksIcon },
     { label: "Highlights", value: stats.highlights, icon: HighlighterIcon },
     { label: "Hours Reading", value: stats.hoursReading, icon: ReadingTimeIcon },
+    { label: "AI Comments", value: stats.aiComments, icon: SparkIcon },
   ];
 
   return (
     <>
       <section className="space-y-4 sm:hidden">
-        <div className="space-y-4 border-y border-line/30 py-8">
+        <div className="space-y-4 border-y border-line/30 py-10">
           <SectionEyebrow>Library Metrics</SectionEyebrow>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-4 gap-2">
             {items.map((item) => (
-              <div key={item.label} className="space-y-2 text-center">
-                <p className="text-[1.75rem] text-ink">{item.value}</p>
-                <p className="text-[0.55rem] font-semibold uppercase tracking-[0.14em] text-olive">
+              <div key={item.label} className="min-w-0 space-y-1 text-center">
+                <p className="text-[1.35rem] leading-none text-ink">{item.value}</p>
+                <p className="text-[0.5rem] leading-tight font-semibold uppercase tracking-widest text-olive">
                   {item.label}
                 </p>
               </div>
@@ -596,8 +641,7 @@ function RecentAnnotationsPanel({
           </div>
         ) : (
           <p className="text-base leading-7 text-copy">
-            Annotations will begin appearing here once the reader and
-            highlighting flows land in the next phase.
+            Annotations will begin appearing here once you create highlights.
           </p>
         )}
       </Panel>

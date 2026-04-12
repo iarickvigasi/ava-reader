@@ -1,0 +1,14 @@
+services:
+  api:
+    environment:
+      NODE_ENV: development
+      CHOKIDAR_USEPOLLING: "true"
+      WATCHPACK_POLLING: "true"
+    command:
+      [
+        "sh",
+        "-c",
+        "cd /app/apps/api && /app/node_modules/.pnpm/node_modules/.bin/prisma generate && /app/node_modules/.pnpm/node_modules/.bin/prisma db push --skip-generate && /app/node_modules/.pnpm/node_modules/.bin/nest start --watch"
+      ]
+    volumes:
+      - ./apps/api:/app/apps/api

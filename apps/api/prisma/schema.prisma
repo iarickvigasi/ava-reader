@@ -64,7 +64,10 @@ model User {
   libraryItems         LibraryItem[]
   readingProgress      ReadingProgress[]
   readingSessions      ReadingSession[]
+  readingSessionParticipants ReadingSessionParticipant[]
+  readingSessionSegments ReadingSessionSegment[]
   annotations          Annotation[]
+  aiComments           AiComment[]
   collections          Collection[]
   feedbackSubmissions  FeedbackSubmission[]
   catalogEntriesCreated CatalogEntry[]      @relation("CatalogEntryCreatedBy")
@@ -184,7 +187,10 @@ model LibraryItem {
   originCatalogEntry CatalogEntry?  @relation(fields: [originCatalogEntryId], references: [id], onDelete: SetNull)
   progress           ReadingProgress?
   readingSessions    ReadingSession[]
+  readingSessionParticipants ReadingSessionParticipant[]
+  readingSessionSegments ReadingSessionSegment[]
   annotations        Annotation[]
+  aiComments         AiComment[]
   collectionItems    CollectionItem[]
 
   @@unique([userId, bookId])
@@ -213,15 +219,57 @@ model ReadingSession {
   userId          String
   libraryItemId   String
   trackedDay      DateTime
-  durationMinutes Int
+  durationMinutes Int         @default(0)
+  durationSeconds Int         @default(0)
   startedAt       DateTime
+  lastTrackedAt   DateTime?
   endedAt         DateTime?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
   user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   libraryItem     LibraryItem @relation(fields: [libraryItemId], references: [id], onDelete: Cascade)
+  participants    ReadingSessionParticipant[]
+  segments        ReadingSessionSegment[]
 
   @@index([userId, trackedDay])
+  @@index([userId, libraryItemId, endedAt])
+}
+
+model ReadingSessionParticipant {
+  id               String         @id @default(cuid())
+  readingSessionId String
+  userId           String
+  libraryItemId    String
+  clientInstanceId String
+  lastSeenAt       DateTime
+  stoppedAt        DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  readingSession   ReadingSession @relation(fields: [readingSessionId], references: [id], onDelete: Cascade)
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  libraryItem      LibraryItem    @relation(fields: [libraryItemId], references: [id], onDelete: Cascade)
+
+  @@unique([readingSessionId, clientInstanceId])
+  @@index([readingSessionId, stoppedAt, lastSeenAt])
+  @@index([userId, libraryItemId, lastSeenAt])
+}
+
+model ReadingSessionSegment {
+  id               String         @id @default(cuid())
+  readingSessionId String
+  userId           String
+  libraryItemId    String
+  trackedDay       DateTime
+  durationSeconds  Int            @default(0)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  readingSession   ReadingSession @relation(fields: [readingSessionId], references: [id], onDelete: Cascade)
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  libraryItem      LibraryItem    @relation(fields: [libraryItemId], references: [id], onDelete: Cascade)
+
+  @@unique([readingSessionId, trackedDay])
+  @@index([userId, trackedDay])
+  @@index([userId, libraryItemId, trackedDay])
 }
 
 model Annotation {
@@ -236,6 +284,19 @@ model Annotation {
   updatedAt      DateTime    @updatedAt
   user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   libraryItem    LibraryItem @relation(fields: [libraryItemId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model AiComment {
+  id            String      @id @default(cuid())
+  userId        String
+  libraryItemId String
+  locator       String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  libraryItem   LibraryItem @relation(fields: [libraryItemId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
 }

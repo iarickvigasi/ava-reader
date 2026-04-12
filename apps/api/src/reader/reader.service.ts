@@ -1,4 +1,9 @@
-import { BookFileFormat, BookFileKind, ProcessingStatus } from '@prisma/client';
+import {
+  BookFileFormat,
+  BookFileKind,
+  Prisma,
+  ProcessingStatus,
+} from '@prisma/client';
 import {
   BadRequestException,
   Injectable,
@@ -47,6 +52,32 @@ type ReaderStatusPayload =
       progress: ReaderProgressSummary;
       status: 'FAILED' | 'PROCESSING' | 'UNSUPPORTED';
     };
+
+type ReaderSessionPayload = {
+  durationSeconds: number;
+  endedAt: string | null;
+  lastTrackedAt: string | null;
+  sessionId: string;
+  startedAt: string;
+};
+
+const SESSION_PARTICIPANT_IDLE_TIMEOUT_MS = 90_000;
+const SESSION_SECONDS_PER_DAY = 86_400;
+
+const lockedSessionSelect = {
+  durationSeconds: true,
+  endedAt: true,
+  id: true,
+  lastTrackedAt: true,
+  libraryItemId: true,
+  startedAt: true,
+  trackedDay: true,
+  userId: true,
+} satisfies Prisma.ReadingSessionSelect;
+
+type LockedSessionRecord = Prisma.ReadingSessionGetPayload<{
+  select: typeof lockedSessionSelect;
+}>;
 
 @Injectable()
 export class ReaderService {
@@ -224,6 +255,143 @@ export class ReaderService {
     });
   }
 
+  async startSession(
+    clerkUserId: string,
+    libraryItemId: string,
+    clientInstanceId: string,
+  ) {
+    validateClientInstanceId(clientInstanceId);
+    const libraryItem = await this.getOwnedLibraryItem(
+      clerkUserId,
+      libraryItemId,
+    );
+    const now = new Date();
+    const session = await this.prisma.$transaction(async (tx) => {
+      let activeSession = await this.lockActiveSessionTx(
+        tx,
+        libraryItem.userId,
+        libraryItemId,
+      );
+
+      if (!activeSession) {
+        try {
+          activeSession = await tx.readingSession.create({
+            data: {
+              durationMinutes: 0,
+              durationSeconds: 0,
+              lastTrackedAt: now,
+              libraryItemId,
+              startedAt: now,
+              trackedDay: startOfUtcDay(now),
+              userId: libraryItem.userId,
+            },
+            select: lockedSessionSelect,
+          });
+        } catch (error) {
+          const recoveredSession = await this.lockActiveSessionTx(
+            tx,
+            libraryItem.userId,
+            libraryItemId,
+          );
+          if (!recoveredSession) {
+            throw error;
+          }
+          activeSession = recoveredSession;
+        }
+      }
+
+      if (!activeSession) {
+        throw new NotFoundException('The reading session was not found.');
+      }
+
+      return this.applySessionActionTx(
+        tx,
+        activeSession,
+        now,
+        clientInstanceId,
+        'start',
+      );
+    });
+
+    return serializeSession(session);
+  }
+
+  async heartbeatSession(
+    clerkUserId: string,
+    libraryItemId: string,
+    sessionId: string,
+    clientInstanceId: string,
+  ) {
+    validateSessionId(sessionId);
+    validateClientInstanceId(clientInstanceId);
+    const user = await this.usersService.getCurrentUserRecord(clerkUserId);
+    const now = new Date();
+    const session = await this.prisma.$transaction(async (tx) => {
+      const lockedSession = await this.lockOwnedSessionTx(
+        tx,
+        user.id,
+        libraryItemId,
+        sessionId,
+      );
+
+      if (!lockedSession) {
+        throw new NotFoundException('The reading session was not found.');
+      }
+
+      if (lockedSession.endedAt) {
+        return lockedSession;
+      }
+
+      return this.applySessionActionTx(
+        tx,
+        lockedSession,
+        now,
+        clientInstanceId,
+        'heartbeat',
+      );
+    });
+
+    return serializeSession(session);
+  }
+
+  async stopSession(
+    clerkUserId: string,
+    libraryItemId: string,
+    sessionId: string,
+    clientInstanceId: string,
+  ) {
+    validateSessionId(sessionId);
+    validateClientInstanceId(clientInstanceId);
+    const user = await this.usersService.getCurrentUserRecord(clerkUserId);
+    const now = new Date();
+    const session = await this.prisma.$transaction(async (tx) => {
+      const lockedSession = await this.lockOwnedSessionTx(
+        tx,
+        user.id,
+        libraryItemId,
+        sessionId,
+      );
+
+      if (!lockedSession) {
+        throw new NotFoundException('The reading session was not found.');
+      }
+
+      if (lockedSession.endedAt) {
+        return lockedSession;
+      }
+
+      return this.applySessionActionTx(
+        tx,
+        lockedSession,
+        now,
+        clientInstanceId,
+        'stop',
+      );
+    });
+
+    return serializeSession(session);
+  }
+
   private async getOwnedLibraryItem(
     clerkUserId: string,
     libraryItemId: string,
@@ -262,6 +430,251 @@ export class ReaderService {
     }
 
     return libraryItem;
+  }
+
+  private async lockActiveSessionTx(
+    tx: Prisma.TransactionClient,
+    userId: string,
+    libraryItemId: string,
+  ) {
+    const rows = await tx.$queryRaw<LockedSessionRecord[]>(Prisma.sql`
+      SELECT
+        "id",
+        "userId",
+        "libraryItemId",
+        "trackedDay",
+        "durationSeconds",
+        "startedAt",
+        "lastTrackedAt",
+        "endedAt"
+      FROM "ReadingSession"
+      WHERE "userId" = ${userId}
+        AND "libraryItemId" = ${libraryItemId}
+        AND "endedAt" IS NULL
+      ORDER BY "startedAt" DESC
+      LIMIT 1
+      FOR UPDATE
+    `);
+
+    return rows[0] ?? null;
+  }
+
+  private async lockOwnedSessionTx(
+    tx: Prisma.TransactionClient,
+    userId: string,
+    libraryItemId: string,
+    sessionId: string,
+  ) {
+    const rows = await tx.$queryRaw<LockedSessionRecord[]>(Prisma.sql`
+      SELECT
+        "id",
+        "userId",
+        "libraryItemId",
+        "trackedDay",
+        "durationSeconds",
+        "startedAt",
+        "lastTrackedAt",
+        "endedAt"
+      FROM "ReadingSession"
+      WHERE "id" = ${sessionId}
+        AND "libraryItemId" = ${libraryItemId}
+        AND "userId" = ${userId}
+      LIMIT 1
+      FOR UPDATE
+    `);
+
+    return rows[0] ?? null;
+  }
+
+  private async applySessionActionTx(
+    tx: Prisma.TransactionClient,
+    session: LockedSessionRecord,
+    now: Date,
+    clientInstanceId: string,
+    action: 'heartbeat' | 'start' | 'stop',
+  ) {
+    const activeCutoff = new Date(
+      now.getTime() - SESSION_PARTICIPANT_IDLE_TIMEOUT_MS,
+    );
+    await tx.readingSessionParticipant.updateMany({
+      where: {
+        readingSessionId: session.id,
+        stoppedAt: null,
+        lastSeenAt: {
+          lt: activeCutoff,
+        },
+      },
+      data: {
+        stoppedAt: now,
+      },
+    });
+
+    const activeParticipantCountBefore =
+      await tx.readingSessionParticipant.count({
+        where: {
+          readingSessionId: session.id,
+          stoppedAt: null,
+          lastSeenAt: {
+            gte: activeCutoff,
+          },
+        },
+      });
+
+    const elapsedSeconds =
+      activeParticipantCountBefore > 0
+        ? computeElapsedSeconds(session.lastTrackedAt ?? now, now)
+        : 0;
+
+    if (elapsedSeconds > 0) {
+      await this.incrementSessionSegmentsTx(
+        tx,
+        session,
+        session.lastTrackedAt ?? now,
+        elapsedSeconds,
+      );
+    }
+
+    if (action === 'stop') {
+      await tx.readingSessionParticipant.upsert({
+        where: {
+          readingSessionId_clientInstanceId: {
+            readingSessionId: session.id,
+            clientInstanceId,
+          },
+        },
+        update: {
+          lastSeenAt: now,
+          stoppedAt: now,
+        },
+        create: {
+          clientInstanceId,
+          lastSeenAt: now,
+          libraryItemId: session.libraryItemId,
+          readingSessionId: session.id,
+          stoppedAt: now,
+          userId: session.userId,
+        },
+      });
+    } else {
+      await tx.readingSessionParticipant.upsert({
+        where: {
+          readingSessionId_clientInstanceId: {
+            readingSessionId: session.id,
+            clientInstanceId,
+          },
+        },
+        update: {
+          lastSeenAt: now,
+          stoppedAt: null,
+        },
+        create: {
+          clientInstanceId,
+          lastSeenAt: now,
+          libraryItemId: session.libraryItemId,
+          readingSessionId: session.id,
+          stoppedAt: null,
+          userId: session.userId,
+        },
+      });
+    }
+
+    const activeParticipantCountAfter =
+      await tx.readingSessionParticipant.count({
+        where: {
+          readingSessionId: session.id,
+          stoppedAt: null,
+          lastSeenAt: {
+            gte: activeCutoff,
+          },
+        },
+      });
+    const shouldEnd = action === 'stop' && activeParticipantCountAfter === 0;
+    const nextDurationSeconds = session.durationSeconds + elapsedSeconds;
+
+    const updatedSession = await tx.readingSession.update({
+      where: {
+        id: session.id,
+      },
+      data: {
+        durationMinutes: Math.floor(nextDurationSeconds / 60),
+        durationSeconds: nextDurationSeconds,
+        endedAt: shouldEnd ? now : null,
+        lastTrackedAt: now,
+        trackedDay: startOfUtcDay(now),
+      },
+      select: lockedSessionSelect,
+    });
+
+    if (elapsedSeconds > 0) {
+      await this.syncReadingProgressMinutesTx(
+        tx,
+        session.userId,
+        session.libraryItemId,
+      );
+    }
+
+    return updatedSession;
+  }
+
+  private async incrementSessionSegmentsTx(
+    tx: Prisma.TransactionClient,
+    session: LockedSessionRecord,
+    startTimestamp: Date,
+    elapsedSeconds: number,
+  ) {
+    const segmentDeltas = splitElapsedSecondsByUtcDay(
+      startTimestamp,
+      elapsedSeconds,
+    );
+
+    for (const segment of segmentDeltas) {
+      await tx.readingSessionSegment.upsert({
+        where: {
+          readingSessionId_trackedDay: {
+            readingSessionId: session.id,
+            trackedDay: segment.trackedDay,
+          },
+        },
+        update: {
+          durationSeconds: {
+            increment: segment.durationSeconds,
+          },
+        },
+        create: {
+          durationSeconds: segment.durationSeconds,
+          libraryItemId: session.libraryItemId,
+          readingSessionId: session.id,
+          trackedDay: segment.trackedDay,
+          userId: session.userId,
+        },
+      });
+    }
+  }
+
+  private async syncReadingProgressMinutesTx(
+    tx: Prisma.TransactionClient,
+    userId: string,
+    libraryItemId: string,
+  ) {
+    const totalSeconds = await tx.readingSessionSegment.aggregate({
+      where: {
+        libraryItemId,
+        userId,
+      },
+      _sum: {
+        durationSeconds: true,
+      },
+    });
+
+    await tx.readingProgress.updateMany({
+      where: {
+        libraryItemId,
+        userId,
+      },
+      data: {
+        minutesRead: Math.floor((totalSeconds._sum.durationSeconds ?? 0) / 60),
+      },
+    });
   }
 }
 
@@ -335,6 +748,59 @@ function createProgressSummary(
   };
 }
 
+function serializeSession(session: {
+  durationSeconds: number;
+  endedAt: Date | null;
+  id: string;
+  lastTrackedAt: Date | null;
+  startedAt: Date;
+}): ReaderSessionPayload {
+  return {
+    durationSeconds: session.durationSeconds,
+    endedAt: session.endedAt?.toISOString() ?? null,
+    lastTrackedAt: session.lastTrackedAt?.toISOString() ?? null,
+    sessionId: session.id,
+    startedAt: session.startedAt.toISOString(),
+  };
+}
+
+function computeElapsedSeconds(lastTrackedAt: Date, timestamp: Date) {
+  return Math.max(
+    Math.round((timestamp.getTime() - lastTrackedAt.getTime()) / 1000),
+    0,
+  );
+}
+
+function splitElapsedSecondsByUtcDay(start: Date, elapsedSeconds: number) {
+  if (elapsedSeconds <= 0) {
+    return [] as Array<{ durationSeconds: number; trackedDay: Date }>;
+  }
+
+  const segments: Array<{ durationSeconds: number; trackedDay: Date }> = [];
+  let cursorSeconds = Math.floor(start.getTime() / 1000);
+  const endSeconds = cursorSeconds + elapsedSeconds;
+
+  while (cursorSeconds < endSeconds) {
+    const cursorDate = new Date(cursorSeconds * 1000);
+    const trackedDay = startOfUtcDay(cursorDate);
+    const nextDayBoundarySeconds =
+      Math.floor(trackedDay.getTime() / 1000) + SESSION_SECONDS_PER_DAY;
+    const sliceEnd = Math.min(endSeconds, nextDayBoundarySeconds);
+    const durationSeconds = Math.max(sliceEnd - cursorSeconds, 0);
+
+    if (durationSeconds > 0) {
+      segments.push({
+        durationSeconds,
+        trackedDay,
+      });
+    }
+
+    cursorSeconds = sliceEnd;
+  }
+
+  return segments;
+}
+
 function parseLocator(value: string | null) {
   if (!value) {
     return null;
@@ -364,6 +830,20 @@ function parseLocator(value: string | null) {
 function validateLocator(locator: ReaderLocator) {
   if (!locator || Number.isNaN(locator.textOffset) || locator.textOffset < 0) {
     throw new BadRequestException('A valid reader locator is required.');
+  }
+}
+
+function validateSessionId(sessionId: string) {
+  if (!sessionId?.trim()) {
+    throw new BadRequestException('A valid reader session id is required.');
+  }
+}
+
+function validateClientInstanceId(clientInstanceId: string) {
+  if (!clientInstanceId?.trim()) {
+    throw new BadRequestException(
+      'A valid reader client instance id is required.',
+    );
   }
 }
 
@@ -506,4 +986,10 @@ function findFirstTocMatch(
   }
 
   return null;
+}
+
+function startOfUtcDay(date: Date) {
+  return new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
+  );
 }

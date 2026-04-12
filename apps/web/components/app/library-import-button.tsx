@@ -12,7 +12,7 @@ type LibraryImportButtonProps = {
   hideNotice?: boolean;
   label?: string;
   notice?: string | null;
-  onNoticeChange?: (notice: string | null) => void;
+  onNoticeChangeAction?: (notice: string | null) => void;
   variant?: "primary" | "soft" | "ghost" | "icon";
 };
 
@@ -32,7 +32,7 @@ export function LibraryImportButton({
   hideNotice = false,
   label = "Import book",
   notice,
-  onNoticeChange,
+  onNoticeChangeAction,
   variant = "primary",
 }: LibraryImportButtonProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -44,7 +44,7 @@ export function LibraryImportButton({
 
   function publishNotice(nextNotice: string | null) {
     setInternalNotice(nextNotice);
-    onNoticeChange?.(nextNotice);
+    onNoticeChangeAction?.(nextNotice);
   }
 
   async function onFileSelected(file: File) {

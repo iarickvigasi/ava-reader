@@ -40,9 +40,13 @@ export class HomeService {
     const [
       libraryItems,
       featuredCatalogEntries,
-      readingSessions,
+      recentReadingSessions,
       annotations,
       collections,
+      totalReadingSecondsAggregate,
+      highlightsCount,
+      completedBooksCount,
+      aiCommentsCount,
     ] = await Promise.all([
       this.prisma.libraryItem.findMany({
         where: {
@@ -72,7 +76,7 @@ export class HomeService {
           },
         },
       }),
-      this.prisma.readingSession.findMany({
+      this.prisma.readingSessionSegment.findMany({
         where: {
           userId: user.id,
           trackedDay: {
@@ -81,6 +85,10 @@ export class HomeService {
         },
         orderBy: {
           trackedDay: 'asc',
+        },
+        select: {
+          durationSeconds: true,
+          trackedDay: true,
         },
       }),
       this.prisma.annotation.findMany({
@@ -117,14 +125,38 @@ export class HomeService {
         orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
         take: 6,
       }),
+      this.prisma.readingSessionSegment.aggregate({
+        where: {
+          userId: user.id,
+        },
+        _sum: {
+          durationSeconds: true,
+        },
+      }),
+      this.prisma.annotation.count({
+        where: {
+          userId: user.id,
+        },
+      }),
+      this.prisma.readingProgress.count({
+        where: {
+          userId: user.id,
+          completionPercent: {
+            gte: 100,
+          },
+        },
+      }),
+      this.prisma.aiComment.count({
+        where: {
+          userId: user.id,
+        },
+      }),
     ]);
 
     const state = libraryItems.length > 0 ? 'POPULATED' : 'EMPTY';
     const currentEngagement = selectCurrentEngagement(libraryItems);
-    const totalMinutes = readingSessions.reduce(
-      (sum, session) => sum + session.durationMinutes,
-      0,
-    );
+    const totalReadingSeconds =
+      totalReadingSecondsAggregate._sum.durationSeconds ?? 0;
 
     return {
       collections: {
@@ -160,7 +192,7 @@ export class HomeService {
             title: currentEngagement.book.title,
           }
         : null,
-      mastery: createMasteryPayload(readingSessions),
+      mastery: createMasteryPayload(recentReadingSessions),
       recentAnnotations: {
         items: annotations.map((annotation) => ({
           bookTitle: annotation.libraryItem.book.title,
@@ -173,18 +205,10 @@ export class HomeService {
       },
       state,
       stats: {
-        highlights: annotations.length
-          ? await this.prisma.annotation.count({ where: { userId: user.id } })
-          : 0,
-        hoursReading: Math.round(totalMinutes / 60),
-        volumesRead: await this.prisma.readingProgress.count({
-          where: {
-            userId: user.id,
-            completionPercent: {
-              gte: 100,
-            },
-          },
-        }),
+        aiComments: aiCommentsCount,
+        highlights: highlightsCount,
+        hoursReading: Math.round(totalReadingSeconds / 3600),
+        volumesRead: completedBooksCount,
       },
       user: {
         avatarUrl: user.avatarUrl,
@@ -262,19 +286,22 @@ function serializeCatalogEntry(entry: CatalogEntryRecord) {
 }
 
 function createMasteryPayload(
-  readingSessions: Array<{ durationMinutes: number; trackedDay: Date }>,
+  readingSessions: Array<{ durationSeconds: number; trackedDay: Date }>,
 ) {
-  const dayMap = new Map<string, number>();
+  const daySecondsMap = new Map<string, number>();
 
   for (const session of readingSessions) {
     const key = session.trackedDay.toISOString().slice(0, 10);
-    dayMap.set(key, (dayMap.get(key) ?? 0) + session.durationMinutes);
+    daySecondsMap.set(
+      key,
+      (daySecondsMap.get(key) ?? 0) + session.durationSeconds,
+    );
   }
 
   const days = Array.from({ length: 7 }, (_, index) => {
     const date = startOfDay(daysAgo(6 - index));
     const key = date.toISOString().slice(0, 10);
-    const minutes = dayMap.get(key) ?? 0;
+    const minutes = Math.floor((daySecondsMap.get(key) ?? 0) / 60);
 
     return {
       dayLabel: date.toLocaleDateString('en-US', { weekday: 'short' }),

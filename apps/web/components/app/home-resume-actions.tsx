@@ -25,7 +25,7 @@ export function HomeResumeActions({ readerHref }: HomeResumeActionsProps) {
           label="Import another book"
           hideNotice
           notice={notice}
-          onNoticeChange={setNotice}
+          onNoticeChangeAction={setNotice}
         />
       </div>
       {notice ? <p className="text-xs tracking-[0.08em] text-muted">{notice}</p> : null}

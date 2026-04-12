@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  HttpCode,
   Param,
   Patch,
   Post,
@@ -33,19 +32,6 @@ export class ReaderController {
     );
   }
 
-  @Post('open')
-  @HttpCode(204)
-  @UseGuards(ClerkAuthGuard)
-  async markReaderOpened(
-    @Req() request: AuthenticatedRequest,
-    @Param('libraryItemId') libraryItemId: string,
-  ) {
-    await this.readerService.markReaderOpened(
-      request.auth.clerkUserId,
-      libraryItemId,
-    );
-  }
-
   @Patch('progress')
   @UseGuards(ClerkAuthGuard)
   updateProgress(
@@ -57,6 +43,62 @@ export class ReaderController {
       request.auth.clerkUserId,
       libraryItemId,
       body.locator as ReaderLocator,
+    );
+  }
+
+  @Post('open')
+  @UseGuards(ClerkAuthGuard)
+  markReaderOpened(
+    @Req() request: AuthenticatedRequest,
+    @Param('libraryItemId') libraryItemId: string,
+  ) {
+    return this.readerService.markReaderOpened(
+      request.auth.clerkUserId,
+      libraryItemId,
+    );
+  }
+
+  @Post('session')
+  @UseGuards(ClerkAuthGuard)
+  startSession(
+    @Req() request: AuthenticatedRequest,
+    @Param('libraryItemId') libraryItemId: string,
+    @Body() body: { clientInstanceId?: string },
+  ) {
+    return this.readerService.startSession(
+      request.auth.clerkUserId,
+      libraryItemId,
+      body.clientInstanceId as string,
+    );
+  }
+
+  @Patch('session')
+  @UseGuards(ClerkAuthGuard)
+  heartbeatSession(
+    @Req() request: AuthenticatedRequest,
+    @Param('libraryItemId') libraryItemId: string,
+    @Body() body: { clientInstanceId?: string; sessionId?: string },
+  ) {
+    return this.readerService.heartbeatSession(
+      request.auth.clerkUserId,
+      libraryItemId,
+      body.sessionId as string,
+      body.clientInstanceId as string,
+    );
+  }
+
+  @Post('session/stop')
+  @UseGuards(ClerkAuthGuard)
+  stopSession(
+    @Req() request: AuthenticatedRequest,
+    @Param('libraryItemId') libraryItemId: string,
+    @Body() body: { clientInstanceId?: string; sessionId?: string },
+  ) {
+    return this.readerService.stopSession(
+      request.auth.clerkUserId,
+      libraryItemId,
+      body.sessionId as string,
+      body.clientInstanceId as string,
     );
   }
 }

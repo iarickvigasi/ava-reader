@@ -1,0 +1,2 @@
+-- RenameIndex
+ALTER INDEX "ReadingSessionParticipant_readingSessionId_stoppedAt_lastSeenAt" RENAME TO "ReadingSessionParticipant_readingSessionId_stoppedAt_lastSe_idx";
