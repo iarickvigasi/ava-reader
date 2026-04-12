@@ -9,7 +9,10 @@ import { getPublicApiBaseUrl } from "@/lib/api";
 
 type LibraryImportButtonProps = {
   className?: string;
+  hideNotice?: boolean;
   label?: string;
+  notice?: string | null;
+  onNoticeChange?: (notice: string | null) => void;
   variant?: "primary" | "soft" | "ghost" | "icon";
 };
 
@@ -26,25 +29,34 @@ const styles = {
 
 export function LibraryImportButton({
   className,
+  hideNotice = false,
   label = "Import book",
+  notice,
+  onNoticeChange,
   variant = "primary",
 }: LibraryImportButtonProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { getToken, isLoaded, isSignedIn } = useAuth();
   const router = useRouter();
-  const [notice, setNotice] = useState<string | null>(null);
+  const [internalNotice, setInternalNotice] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const resolvedNotice = notice ?? internalNotice;
+
+  function publishNotice(nextNotice: string | null) {
+    setInternalNotice(nextNotice);
+    onNoticeChange?.(nextNotice);
+  }
 
   async function onFileSelected(file: File) {
     if (!isLoaded || !isSignedIn) {
-      setNotice("Sign in to upload a book.");
+      publishNotice("Sign in to upload a book.");
       return;
     }
 
     const token = await getToken();
 
     if (!token) {
-      setNotice("No session token was available.");
+      publishNotice("No session token was available.");
       return;
     }
 
@@ -63,11 +75,11 @@ export function LibraryImportButton({
       const payload = (await response.json().catch(() => null)) as
         | { message?: string }
         | null;
-      setNotice(payload?.message ?? "The upload could not be completed.");
+      publishNotice(payload?.message ?? "The upload could not be completed.");
       return;
     }
 
-    setNotice(`Imported ${file.name}.`);
+    publishNotice(`Imported ${file.name}.`);
     router.refresh();
   }
 
@@ -107,8 +119,8 @@ export function LibraryImportButton({
         {variant === "icon" ? <span className="sr-only">{label}</span> : isPending ? "Uploading..." : label}
       </button>
 
-      {notice ? (
-        <p className="text-xs tracking-[0.08em] text-muted">{notice}</p>
+      {!hideNotice && resolvedNotice ? (
+        <p className="text-xs tracking-[0.08em] text-muted">{resolvedNotice}</p>
       ) : null}
     </div>
   );

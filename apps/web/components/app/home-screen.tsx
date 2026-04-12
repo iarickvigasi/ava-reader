@@ -13,6 +13,7 @@ import { CatalogAddButton } from "@/components/app/catalog-add-button";
 import { FeedbackForm } from "@/components/app/feedback-form";
 import { LibraryImportButton } from "@/components/app/library-import-button";
 import { ListeningControls } from "@/components/app/listening-controls";
+import { HomeResumeActions } from "@/components/app/home-resume-actions";
 import type { HomePayload } from "@/lib/api-types";
 import { APP_LIBRARY_HREF } from "@/lib/app-routes";
 import { cn } from "@/lib/cn";
@@ -209,10 +210,7 @@ function PopulatedHomeState({ home }: HomeScreenProps) {
             <LibraryImportButton variant="soft" label="Import another book" />
           </div>
 
-          <div className="hidden md:flex md:items-center md:gap-3">
-            <LinkAction href={readerHref} label="Resume Reading" emphasis />
-            <LibraryImportButton variant="soft" label="Import another book" />
-          </div>
+          <HomeResumeActions readerHref={readerHref} />
         </div>
       </section>
 

@@ -1,0 +1,34 @@
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+import { LibraryImportButton } from "@/components/app/library-import-button";
+
+type HomeResumeActionsProps = {
+  readerHref: string;
+};
+
+export function HomeResumeActions({ readerHref }: HomeResumeActionsProps) {
+  const [notice, setNotice] = useState<string | null>(null);
+
+  return (
+    <div className="hidden md:flex md:flex-col md:items-start md:gap-2">
+      <div className="flex items-center gap-3">
+        <Link
+          href={readerHref}
+          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[14px] border border-brand-fill bg-brand-fill px-5 text-sm font-semibold uppercase tracking-[0.14em] text-brand-foreground shadow-(--shadow-card) transition hover:bg-brand-fill-strong"
+        >
+          Resume Reading
+        </Link>
+        <LibraryImportButton
+          variant="soft"
+          label="Import another book"
+          hideNotice
+          notice={notice}
+          onNoticeChange={setNotice}
+        />
+      </div>
+      {notice ? <p className="text-xs tracking-[0.08em] text-muted">{notice}</p> : null}
+    </div>
+  );
+}
