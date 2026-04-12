@@ -1,7 +1,7 @@
 import { cn } from "@/lib/cn";
 import type { ReaderNavigationTarget } from "@/lib/reader-navigation";
 import { resolveTocNavigationTarget } from "@/lib/reader-toc";
-import type { ReadyReaderTocEntry } from "./types";
+import type { ReadyReaderTocEntry } from "../shared/types";
 
 type ReaderContentsTreeNodeProps = {
   activeChapterId: string;

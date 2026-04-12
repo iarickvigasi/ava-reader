@@ -5,7 +5,7 @@ import type {
   ReaderStatusPayload,
 } from "@/lib/api-types";
 import { getPublicApiBaseUrl } from "@/lib/api";
-import { READER_SESSION_CLIENT_INSTANCE_ID_STORAGE_KEY } from "./constants";
+import { READER_SESSION_CLIENT_INSTANCE_ID_STORAGE_KEY } from "../shared/constants";
 
 const HTTP_METHOD_POST = "POST";
 const HTTP_METHOD_PATCH = "PATCH";

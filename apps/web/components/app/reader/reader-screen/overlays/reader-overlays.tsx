@@ -11,9 +11,9 @@ import {
   findActiveTocPathIds,
 } from "@/lib/reader-toc";
 import { ReaderContentsTreeNode } from "./reader-contents-tree-node";
-import type { ReadyReaderPayload } from "./types";
+import type { ReadyReaderPayload } from "../shared/types";
 import { useCloseOnEscape } from "./use-close-on-escape";
-import { clamp } from "./utils";
+import { clamp } from "../shared/utils";
 
 function SectionLabel({ children }: { children: ReactNode }) {
   return (

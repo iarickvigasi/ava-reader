@@ -25,7 +25,7 @@ import type {
   ReaderScreenControllerInput,
   ReaderScreenControllerResult,
   ReadyReaderPayload,
-} from "./types";
+} from "../shared/types";
 import {
   READER_NAVIGATION_EDGE_START,
   READER_PERSISTENCE_MODE_REMOTE,
@@ -35,7 +35,7 @@ import {
   READER_STATUS_PROCESSING,
   READER_STATUS_READY,
   READER_VISIBILITY_HIDDEN,
-} from "./constants";
+} from "../shared/constants";
 import {
   fetchReaderPayload,
   getOrCreateReaderClientInstanceId,
@@ -44,7 +44,7 @@ import {
   persistReaderProgress,
   startReaderSession,
   stopReaderSession,
-} from "./reader-client";
+} from "../data/reader-client";
 import {
   createLocatorFromRestoreIntent,
   createLocatorKey,
@@ -52,7 +52,7 @@ import {
   isReadyReaderPayload,
   normalizeReaderStatusPayload,
   shouldRefreshChapterWindow,
-} from "./utils";
+} from "../shared/utils";
 
 const RESTORE_INTENT_KEY_SEPARATOR = ":";
 

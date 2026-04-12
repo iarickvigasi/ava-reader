@@ -2,15 +2,15 @@
 
 import type { CSSProperties } from "react";
 import { useCallback, useMemo, useState } from "react";
-import { ReadyReader } from "./reader-screen/ready-reader";
-import { ReaderStatusState } from "./reader-screen/reader-status-state";
+import { ReadyReader } from "./reader-screen/screen/ready-reader";
+import { ReaderStatusState } from "./reader-screen/screen/reader-status-state";
 import {
   READER_PERSISTENCE_MODE_REMOTE,
   READER_STATUS_READY,
-} from "./reader-screen/constants";
-import type { ReaderScreenProps } from "./reader-screen/types";
-import { roundFontScale } from "./reader-screen/utils";
-import { useReaderScreenController } from "./reader-screen/use-reader-screen-controller";
+} from "./reader-screen/shared/constants";
+import type { ReaderScreenProps } from "./reader-screen/shared/types";
+import { roundFontScale } from "./reader-screen/shared/utils";
+import { useReaderScreenController } from "./reader-screen/state/use-reader-screen-controller";
 
 export function ReaderScreen({
   initialPayload,

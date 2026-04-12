@@ -7,7 +7,7 @@ import { createReaderResumeFixturePayload } from "@/lib/reader-test-fixture";
 import {
   READER_PERSISTENCE_MODE_LOCAL_ONLY,
   READER_STATUS_PROCESSING,
-} from "./reader-screen/constants";
+} from "./reader-screen/shared/constants";
 import { ReaderScreen } from "./reader-screen";
 
 vi.mock("@clerk/nextjs", () => ({

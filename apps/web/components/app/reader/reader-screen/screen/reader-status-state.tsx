@@ -4,7 +4,7 @@ import {
   READER_STATUS_FAILED,
   READER_STATUS_READY,
   READER_STATUS_UNSUPPORTED,
-} from "./constants";
+} from "../shared/constants";
 
 export function ReaderStatusState({
   payload,

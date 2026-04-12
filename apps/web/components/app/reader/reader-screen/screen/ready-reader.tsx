@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useReaderUi } from "@/components/app/core/reader-ui-context";
-import { ReaderArticle, ReaderPaginationPreloader } from "./reader-article";
+import { ReaderArticle, ReaderPaginationPreloader } from "../content/reader-article";
 import {
   ReadyReaderActivityStatus,
   ReadyReaderHeader,
@@ -10,13 +10,13 @@ import {
   ReaderContentsOverlay,
   ReaderPanelButton,
   ReaderSidebarOverlay,
-} from "./reader-overlays";
+} from "../overlays/reader-overlays";
 import {
   READER_PANEL_CONTENTS,
   READER_VISIBILITY_HIDDEN,
-} from "./constants";
-import type { ReadyReaderProps } from "./types";
-import { useReaderPagination } from "./use-reader-pagination";
+} from "../shared/constants";
+import type { ReadyReaderProps } from "../shared/types";
+import { useReaderPagination } from "../pagination/use-reader-pagination";
 
 export function ReadyReader({
   activeChapter,

@@ -11,7 +11,7 @@ import { createPaginationLayoutKey } from "@/lib/reader-pagination";
 import {
   PAGE_GAP,
   READER_VISIBILITY_HIDDEN,
-} from "./constants";
+} from "../shared/constants";
 import { ReaderBlockView } from "./reader-block-view";
 
 export function ReaderArticle({

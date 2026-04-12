@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { READER_KEY_ESCAPE } from "./constants";
+import { READER_KEY_ESCAPE } from "../shared/constants";
 
 export function useCloseOnEscape(onClose: () => void) {
   useEffect(() => {

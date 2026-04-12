@@ -1,6 +1,6 @@
 import type { ReaderChapterPayload } from "@/lib/api-types";
-import type { ReadyReaderPayload } from "./types";
-import { formatReaderHeaderLine } from "./utils";
+import type { ReadyReaderPayload } from "../shared/types";
+import { formatReaderHeaderLine } from "../shared/utils";
 
 export function ReadyReaderHeader({
   activeChapter,

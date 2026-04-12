@@ -34,14 +34,14 @@ import {
   READER_NAVIGATION_EDGE_START,
   SWIPE_MAX_OFF_AXIS,
   SWIPE_THRESHOLD,
-} from "./constants";
-import type { PageBoxSize } from "./types";
+} from "../shared/constants";
+import type { PageBoxSize } from "../shared/types";
 import {
   clamp,
   createLocatorFromRestoreIntent,
   getBrowserViewportHeight,
   isInteractiveTarget,
-} from "./utils";
+} from "../shared/utils";
 
 const READER_MEASUREMENT_STATUS_PENDING = "pending";
 const READER_MEASUREMENT_STATUS_READY = "ready";
