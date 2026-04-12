@@ -1,10 +1,15 @@
 import { cn } from "@/lib/cn";
 import type { ReaderStatusPayload } from "@/lib/api-types";
+import {
+  READER_STATUS_FAILED,
+  READER_STATUS_READY,
+  READER_STATUS_UNSUPPORTED,
+} from "./constants";
 
 export function ReaderStatusState({
   payload,
 }: {
-  payload: Exclude<ReaderStatusPayload, { status: "READY" }>;
+  payload: Exclude<ReaderStatusPayload, { status: typeof READER_STATUS_READY }>;
 }) {
   return (
     <div className="mx-auto flex min-h-screen max-w-3xl items-center px-5 py-16 sm:px-8">
@@ -28,9 +33,9 @@ export function ReaderStatusState({
           <span
             className={cn(
               "font-(--font-ui) text-[1.1rem] uppercase tracking-[0.24em] sm:text-[1.35rem]",
-              payload.status === "FAILED"
+              payload.status === READER_STATUS_FAILED
                 ? "text-danger"
-                : payload.status === "UNSUPPORTED"
+                : payload.status === READER_STATUS_UNSUPPORTED
                   ? "text-title/82"
                   : "text-ink/60",
             )}

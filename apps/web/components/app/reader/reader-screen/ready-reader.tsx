@@ -1,34 +1,22 @@
 import { useEffect, useState } from "react";
 import { useReaderUi } from "@/components/app/core/reader-ui-context";
-import type {
-  ReaderChapterPayload,
-  ReaderStatusPayload,
-} from "@/lib/api-types";
 import { ReaderArticle, ReaderPaginationPreloader } from "./reader-article";
+import {
+  ReadyReaderActivityStatus,
+  ReadyReaderHeader,
+  ReadyReaderProgress,
+} from "./ready-reader-sections";
 import {
   ReaderContentsOverlay,
   ReaderPanelButton,
   ReaderSidebarOverlay,
 } from "./reader-overlays";
+import {
+  READER_PANEL_CONTENTS,
+  READER_VISIBILITY_HIDDEN,
+} from "./constants";
 import type { ReadyReaderProps } from "./types";
-import { formatReaderHeaderLine } from "./utils";
-import { useReadyReaderPagination } from "./use-ready-reader-pagination";
-
-function ReaderHeader({
-  activeChapter,
-  payload,
-}: {
-  activeChapter: ReaderChapterPayload;
-  payload: Extract<ReaderStatusPayload, { status: "READY" }>;
-}) {
-  return (
-    <header className="min-w-0 flex-1 pt-1">
-      <h1 className="max-w-full truncate font-(--font-ui) text-[1.05rem] leading-none tracking-[0.01em] text-title sm:text-[1.2rem]">
-        {formatReaderHeaderLine(payload, activeChapter)}
-      </h1>
-    </header>
-  );
-}
+import { useReaderPagination } from "./use-reader-pagination";
 
 export function ReadyReader({
   activeChapter,
@@ -49,7 +37,7 @@ export function ReadyReader({
 }: ReadyReaderProps) {
   const { activePanel, closePanel } = useReaderUi();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const isContentsOpen = activePanel === "contents";
+  const isContentsOpen = activePanel === READER_PANEL_CONTENTS;
   const isPanelOpen = isSidebarOpen || isContentsOpen;
 
   const {
@@ -64,7 +52,7 @@ export function ReadyReader({
     rootRef,
     shouldMaskArticle,
     storeMeasurementEntry,
-  } = useReadyReaderPagination({
+  } = useReaderPagination({
     activeChapter,
     fontScale,
     isBootstrapping,
@@ -83,7 +71,7 @@ export function ReadyReader({
     }
 
     const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = READER_VISIBILITY_HIDDEN;
 
     return () => {
       document.body.style.overflow = previousOverflow;
@@ -101,24 +89,16 @@ export function ReadyReader({
       >
         <section className="mx-auto flex h-full max-w-312 min-w-0 flex-col">
           <div className="flex items-start justify-between gap-6">
-            <ReaderHeader activeChapter={activeChapter} payload={payload} />
+            <ReadyReaderHeader activeChapter={activeChapter} payload={payload} />
             <ReaderPanelButton onOpen={() => setIsSidebarOpen(true)} />
           </div>
 
           <div className="mt-6 flex min-h-0 flex-1 flex-col gap-4 sm:mt-8">
-            {isBootstrapping ? (
-              <p className="font-(--font-ui) text-xs uppercase tracking-[0.16em] text-ink/45">
-                Restoring your last page...
-              </p>
-            ) : isLoadingChapter ? (
-              <p className="font-(--font-ui) text-xs uppercase tracking-[0.16em] text-ink/45">
-                Loading chapter...
-              </p>
-            ) : isRefreshingWindow ? (
-              <p className="font-(--font-ui) text-xs uppercase tracking-[0.16em] text-ink/35">
-                Preloading nearby chapter...
-              </p>
-            ) : null}
+            <ReadyReaderActivityStatus
+              isBootstrapping={isBootstrapping}
+              isLoadingChapter={isLoadingChapter}
+              isRefreshingWindow={isRefreshingWindow}
+            />
 
             <div
               className="relative min-h-0 flex-1 overflow-hidden px-3 py-5 sm:px-5 sm:py-6 md:px-6"
@@ -140,14 +120,11 @@ export function ReadyReader({
               ) : null}
             </div>
 
-            <div className="flex flex-wrap items-center justify-end gap-3 pt-4 pb-4">
-              <div className="flex flex-wrap items-center gap-3 font-(--font-ui) text-[0.7rem] uppercase tracking-[0.16em] text-ink/45">
-                <span>{payload.progress.completionPercent}% complete</span>
-                <span>
-                  Page {Math.min(currentPageIndex + 1, pageCount)} of {pageCount} in chapter
-                </span>
-              </div>
-            </div>
+            <ReadyReaderProgress
+              completionPercent={payload.progress.completionPercent}
+              currentPageIndex={currentPageIndex}
+              pageCount={pageCount}
+            />
           </div>
         </section>
       </div>

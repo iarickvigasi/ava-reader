@@ -16,15 +16,22 @@ import type {
   ReaderLocator,
 } from "@/lib/api-types";
 import {
-  hasPendingRestoreIntent,
   isStickyRestoreIntent,
   type ReaderNavigationTarget,
   type RestoreIntent,
 } from "@/lib/reader-navigation";
-import { createPaginationLayoutKey } from "@/lib/reader-pagination";
-import type { ReaderMeasurementEntry } from "@/lib/reader-measurement";
+import {
+  createPaginationLayoutKey,
+  resolvePaginationDecision,
+} from "@/lib/reader-pagination";
+import type {
+  ReaderMeasurementEntry,
+  ReaderMeasurementPageResolution,
+} from "@/lib/reader-measurement";
 import {
   PAGE_GAP,
+  READER_NAVIGATION_EDGE_END,
+  READER_NAVIGATION_EDGE_START,
   SWIPE_MAX_OFF_AXIS,
   SWIPE_THRESHOLD,
 } from "./constants";
@@ -36,7 +43,16 @@ import {
   isInteractiveTarget,
 } from "./utils";
 
-type UseReadyReaderPaginationInput = {
+const READER_MEASUREMENT_STATUS_PENDING = "pending";
+const READER_MEASUREMENT_STATUS_READY = "ready";
+const READER_RESTORE_PHASE_RESTORING = "restoring";
+const READER_RESTORE_PHASE_SETTLED = "settled";
+const KEY_ARROW_LEFT = "ArrowLeft";
+const KEY_ARROW_RIGHT = "ArrowRight";
+const PAGE_DIRECTION_FORWARD = 1;
+const PAGE_DIRECTION_BACKWARD = -1;
+
+type UseReaderPaginationInput = {
   activeChapter: ReaderChapterPayload;
   fontScale: number;
   isBootstrapping: boolean;
@@ -49,7 +65,7 @@ type UseReadyReaderPaginationInput = {
   visibleLocator: ReaderLocator | null;
 };
 
-type UseReadyReaderPaginationResult = {
+type UseReaderPaginationResult = {
   articleStyle: CSSProperties;
   availableHeight: number;
   currentPageIndex: number;
@@ -63,7 +79,25 @@ type UseReadyReaderPaginationResult = {
   storeMeasurementEntry: (entry: ReaderMeasurementEntry) => void;
 };
 
-export function useReadyReaderPagination({
+function resolvePageResolutionForLocator(input: {
+  activeChapterId: string;
+  locator: ReaderLocator | null;
+  measurementEntry: Extract<ReaderMeasurementEntry, { status: "ready" }> | null;
+}) {
+  if (!input.measurementEntry || !input.locator) {
+    return null;
+  }
+
+  if (input.locator.chapterId !== input.activeChapterId) {
+    return null;
+  }
+
+  return input.measurementEntry.resolvePageIndex(
+    input.locator,
+  ) satisfies ReaderMeasurementPageResolution;
+}
+
+export function useReaderPagination({
   activeChapter,
   fontScale,
   isBootstrapping,
@@ -74,7 +108,7 @@ export function useReadyReaderPagination({
   onVisibleLocatorChange,
   restoreIntent,
   visibleLocator,
-}: UseReadyReaderPaginationInput): UseReadyReaderPaginationResult {
+}: UseReaderPaginationInput): UseReaderPaginationResult {
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [measurementEntries, setMeasurementEntries] = useState(
     () => new Map<string, ReaderMeasurementEntry>(),
@@ -216,16 +250,17 @@ export function useReadyReaderPagination({
     : null;
 
   const activeReadyMeasurementEntry =
-    activeMeasurementEntry?.status === "ready" ? activeMeasurementEntry : null;
+    activeMeasurementEntry?.status === READER_MEASUREMENT_STATUS_READY
+      ? activeMeasurementEntry
+      : null;
   const activeMeasurementStatus =
-    activeMeasurementEntry?.status ??
-    (activePaginationLayoutKey ? "pending" : "pending");
+    activeMeasurementEntry?.status ?? READER_MEASUREMENT_STATUS_PENDING;
   const pageCount = activeReadyMeasurementEntry?.pageCount ?? 1;
   const restorePhase =
     settledRestoreCycleKey === activeRestoreCycleKey &&
-    activeMeasurementStatus !== "pending"
-      ? "settled"
-      : "restoring";
+    activeMeasurementStatus !== READER_MEASUREMENT_STATUS_PENDING
+      ? READER_RESTORE_PHASE_SETTLED
+      : READER_RESTORE_PHASE_RESTORING;
 
   const storeMeasurementEntry = useCallback((entry: ReaderMeasurementEntry) => {
     setMeasurementEntries((current) => {
@@ -264,85 +299,48 @@ export function useReadyReaderPagination({
       return;
     }
 
-    if (activeMeasurementEntry.status === "pending") {
+    if (activeMeasurementEntry.status === READER_MEASUREMENT_STATUS_PENDING) {
       return;
     }
 
     const currentRestoreIntent = restoreIntentRef.current;
     const readyMeasurementEntry =
-      activeMeasurementEntry.status === "ready" ? activeMeasurementEntry : null;
-    const maximumPageIndex = Math.max(0, pageCount - 1);
-    let nextPageIndex = clamp(currentPageIndexRef.current, 0, maximumPageIndex);
-    let shouldConsumeRestoreIntent = false;
+      activeMeasurementEntry.status === READER_MEASUREMENT_STATUS_READY
+        ? activeMeasurementEntry
+        : null;
+    const visibleLocator = visibleLocatorRef.current;
+    const restorePageResolution = resolvePageResolutionForLocator({
+      activeChapterId: activeChapter.chapterId,
+      locator: createLocatorFromRestoreIntent(currentRestoreIntent),
+      measurementEntry: readyMeasurementEntry,
+    });
+    const visiblePageResolution = resolvePageResolutionForLocator({
+      activeChapterId: activeChapter.chapterId,
+      locator: visibleLocator,
+      measurementEntry: readyMeasurementEntry,
+    });
+    const decision = resolvePaginationDecision({
+      activeChapterId: activeChapter.chapterId,
+      consumedRestoreIntentKey: consumedRestoreIntentKeyRef.current,
+      currentPageIndex: currentPageIndexRef.current,
+      keepRestorePinned: keepCommittedRestorePinnedRef.current,
+      measurementStatus: activeMeasurementEntry.status,
+      pageCount,
+      restoreIntent: currentRestoreIntent,
+      restorePageResolution,
+      visibleLocatorChapterId: visibleLocator?.chapterId ?? null,
+      visiblePageResolution,
+    });
 
-    if (
-      currentRestoreIntent &&
-      hasPendingRestoreIntent(
-        currentRestoreIntent,
-        activeChapter.chapterId,
-        consumedRestoreIntentKeyRef.current,
-      )
-    ) {
-      if (activeMeasurementEntry.status === "failed") {
-        warnFailedMeasurement(activeMeasurementEntry.layoutKey);
-        nextPageIndex =
-          currentRestoreIntent.kind === "edge-end" ? maximumPageIndex : 0;
-        shouldConsumeRestoreIntent = true;
-      } else if (currentRestoreIntent.kind === "block") {
-        const restoreLocator = createLocatorFromRestoreIntent(currentRestoreIntent);
-        const pageResolution = restoreLocator
-          ? readyMeasurementEntry?.resolvePageIndex(restoreLocator) ?? {
-              status: "missing-block" as const,
-            }
-          : {
-              status: "missing-block" as const,
-            };
-
-        if (
-          pageResolution.status === "block-start" ||
-          pageResolution.status === "exact"
-        ) {
-          nextPageIndex = clamp(pageResolution.pageIndex, 0, maximumPageIndex);
-        } else {
-          nextPageIndex = 0;
-        }
-
-        shouldConsumeRestoreIntent = true;
-      } else {
-        nextPageIndex =
-          currentRestoreIntent.kind === "edge-end" ? maximumPageIndex : 0;
-        shouldConsumeRestoreIntent = true;
-      }
-    } else if (
-      keepCommittedRestorePinnedRef.current &&
-      currentRestoreIntent?.chapterId === activeChapter.chapterId &&
-      isStickyRestoreIntent(currentRestoreIntent)
-    ) {
-      nextPageIndex =
-        currentRestoreIntent.kind === "edge-end" ? maximumPageIndex : 0;
-    } else if (
-      readyMeasurementEntry &&
-      visibleLocatorRef.current?.chapterId === activeChapter.chapterId
-    ) {
-      const pageResolution = readyMeasurementEntry.resolvePageIndex(
-        visibleLocatorRef.current,
-      );
-
-      if (
-        pageResolution.status === "block-start" ||
-        pageResolution.status === "exact"
-      ) {
-        nextPageIndex = clamp(pageResolution.pageIndex, 0, maximumPageIndex);
-      }
-    } else if (activeMeasurementEntry.status === "failed") {
+    if (decision.shouldWarnFailedMeasurement) {
       warnFailedMeasurement(activeMeasurementEntry.layoutKey);
     }
 
     setCurrentPageIndex((current) =>
-      current === nextPageIndex ? current : nextPageIndex,
+      current === decision.nextPageIndex ? current : decision.nextPageIndex,
     );
 
-    if (currentRestoreIntent && shouldConsumeRestoreIntent) {
+    if (currentRestoreIntent && decision.shouldConsumeRestoreIntent) {
       consumedRestoreIntentKeyRef.current = currentRestoreIntent.key;
     }
 
@@ -366,7 +364,7 @@ export function useReadyReaderPagination({
   useEffect(() => {
     if (
       isBootstrapping ||
-      restorePhase !== "settled" ||
+      restorePhase !== READER_RESTORE_PHASE_SETTLED ||
       !activeReadyMeasurementEntry
     ) {
       return;
@@ -402,53 +400,49 @@ export function useReadyReaderPagination({
   const hasPreviousPage = currentPageIndex > 0;
   const hasNextPage = currentPageIndex < pageCount - 1;
 
-  const goToNextPage = useCallback(() => {
+  const stepPage = useCallback((direction: typeof PAGE_DIRECTION_BACKWARD | typeof PAGE_DIRECTION_FORWARD) => {
     if (isLoadingChapter) {
       return;
     }
 
-    if (hasNextPage) {
+    const isForward = direction === PAGE_DIRECTION_FORWARD;
+    const hasNeighborPage = isForward ? hasNextPage : hasPreviousPage;
+
+    if (hasNeighborPage) {
       keepCommittedRestorePinnedRef.current = false;
-      setCurrentPageIndex((current) => clamp(current + 1, 0, pageCount - 1));
+      setCurrentPageIndex((current) =>
+        clamp(current + direction, 0, pageCount - 1),
+      );
       return;
     }
 
-    if (activeChapter.nextChapterId) {
-      onSelectChapter(activeChapter.nextChapterId, {
-        edge: "start",
+    const nextChapterId = isForward
+      ? activeChapter.nextChapterId
+      : activeChapter.previousChapterId;
+    if (nextChapterId) {
+      onSelectChapter(nextChapterId, {
+        edge: isForward
+          ? READER_NAVIGATION_EDGE_START
+          : READER_NAVIGATION_EDGE_END,
       });
     }
   }, [
     activeChapter.nextChapterId,
-    hasNextPage,
-    isLoadingChapter,
-    onSelectChapter,
-    pageCount,
-  ]);
-
-  const goToPreviousPage = useCallback(() => {
-    if (isLoadingChapter) {
-      return;
-    }
-
-    if (hasPreviousPage) {
-      keepCommittedRestorePinnedRef.current = false;
-      setCurrentPageIndex((current) => clamp(current - 1, 0, pageCount - 1));
-      return;
-    }
-
-    if (activeChapter.previousChapterId) {
-      onSelectChapter(activeChapter.previousChapterId, {
-        edge: "end",
-      });
-    }
-  }, [
     activeChapter.previousChapterId,
+    hasNextPage,
     hasPreviousPage,
     isLoadingChapter,
     onSelectChapter,
     pageCount,
   ]);
+
+  const goToNextPage = useCallback(() => {
+    stepPage(PAGE_DIRECTION_FORWARD);
+  }, [stepPage]);
+
+  const goToPreviousPage = useCallback(() => {
+    stepPage(PAGE_DIRECTION_BACKWARD);
+  }, [stepPage]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -456,12 +450,12 @@ export function useReadyReaderPagination({
         return;
       }
 
-      if (event.key === "ArrowRight") {
+      if (event.key === KEY_ARROW_RIGHT) {
         event.preventDefault();
         goToNextPage();
       }
 
-      if (event.key === "ArrowLeft") {
+      if (event.key === KEY_ARROW_LEFT) {
         event.preventDefault();
         goToPreviousPage();
       }
@@ -536,7 +530,9 @@ export function useReadyReaderPagination({
   );
 
   const shouldMaskArticle =
-    isBootstrapping || isLoadingChapter || restorePhase !== "settled";
+    isBootstrapping ||
+    isLoadingChapter ||
+    restorePhase !== READER_RESTORE_PHASE_SETTLED;
 
   return {
     articleStyle,

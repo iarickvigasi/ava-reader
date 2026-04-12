@@ -2,6 +2,10 @@ import { describe, expect, it } from "vitest";
 import type { ReaderStatusPayload } from "@/lib/api-types";
 import { createReaderResumeFixturePayload } from "@/lib/reader-test-fixture";
 import {
+  READER_STATUS_FAILED,
+  READER_STATUS_READY,
+} from "./constants";
+import {
   clamp,
   createLocatorFromRestoreIntent,
   formatReaderChapterLabel,
@@ -10,6 +14,9 @@ import {
   roundFontScale,
   shouldRefreshChapterWindow,
 } from "./utils";
+
+const RESTORE_INTENT_KIND_BLOCK = "block";
+const RESTORE_INTENT_KIND_EDGE_START = "edge-start";
 
 describe("reader screen utils", () => {
   it("pads chapter numbers in chapter labels", () => {
@@ -40,7 +47,7 @@ describe("reader screen utils", () => {
       createLocatorFromRestoreIntent({
         blockId: "b1",
         chapterId: "c1",
-        kind: "block",
+        kind: RESTORE_INTENT_KIND_BLOCK,
         key: "k1",
         textOffset: 7,
       }),
@@ -53,7 +60,7 @@ describe("reader screen utils", () => {
     expect(
       createLocatorFromRestoreIntent({
         chapterId: "c1",
-        kind: "edge-start",
+        kind: RESTORE_INTENT_KIND_EDGE_START,
         key: "k2",
         sticky: true,
       }),
@@ -76,14 +83,14 @@ describe("reader screen utils", () => {
         lastReadAt: null,
         locator: null,
       },
-      status: "READY",
+      status: READER_STATUS_READY,
       toc: null,
     } as unknown as ReaderStatusPayload;
 
     const normalized = normalizeReaderStatusPayload(malformedReadyPayload);
 
-    expect(normalized.status).toBe("FAILED");
-    if (normalized.status === "FAILED") {
+    expect(normalized.status).toBe(READER_STATUS_FAILED);
+    if (normalized.status === READER_STATUS_FAILED) {
       expect(normalized.message).toContain("incomplete");
     }
   });
@@ -100,7 +107,7 @@ describe("reader screen utils", () => {
 function getReadyFixturePayload() {
   const payload = createReaderResumeFixturePayload();
 
-  if (payload.status !== "READY") {
+  if (payload.status !== READER_STATUS_READY) {
     throw new Error("Expected READY fixture payload.");
   }
 

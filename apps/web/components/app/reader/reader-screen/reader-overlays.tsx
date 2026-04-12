@@ -1,18 +1,18 @@
 import type { ReactNode } from "react";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { ChartIcon } from "@/components/app/shared/app-icons";
 import type {
   ReaderChapterPayload,
   ReaderLocator,
-  ReaderStatusPayload,
 } from "@/lib/api-types";
-import { cn } from "@/lib/cn";
 import type { ReaderNavigationTarget } from "@/lib/reader-navigation";
 import {
   countUniqueTocChapters,
   findActiveTocPathIds,
-  resolveTocNavigationTarget,
 } from "@/lib/reader-toc";
+import { ReaderContentsTreeNode } from "./reader-contents-tree-node";
+import type { ReadyReaderPayload } from "./types";
+import { useCloseOnEscape } from "./use-close-on-escape";
 import { clamp } from "./utils";
 
 function SectionLabel({ children }: { children: ReactNode }) {
@@ -38,22 +38,9 @@ export function ReaderSidebarOverlay({
   onClose: () => void;
   onDecreaseFont: () => void;
   onIncreaseFont: () => void;
-  payload: Extract<ReaderStatusPayload, { status: "READY" }>;
+  payload: ReadyReaderPayload;
 }) {
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        onClose();
-      }
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [onClose]);
+  useCloseOnEscape(onClose);
 
   return (
     <div className="fixed inset-0 z-50">
@@ -146,7 +133,7 @@ export function ReaderContentsOverlay({
     chapterId: string,
     target: ReaderNavigationTarget,
   ) => void;
-  payload: Extract<ReaderStatusPayload, { status: "READY" }>;
+  payload: ReadyReaderPayload;
   pendingChapterId: string | null;
 }) {
   const activePathIds = useMemo(
@@ -164,20 +151,7 @@ export function ReaderContentsOverlay({
     [payload.toc],
   );
 
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        onClose();
-      }
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [onClose]);
+  useCloseOnEscape(onClose);
 
   return (
     <div className="pointer-events-none fixed inset-0 z-50">
@@ -251,106 +225,6 @@ export function ReaderContentsOverlay({
           </div>
         </div>
       </aside>
-    </div>
-  );
-}
-
-function ReaderContentsTreeNode({
-  activeChapterId,
-  activePathIds,
-  depth,
-  entry,
-  onSelectChapter,
-  pendingChapterId,
-}: {
-  activeChapterId: string;
-  activePathIds: Set<string>;
-  depth: number;
-  entry: Extract<ReaderStatusPayload, { status: "READY" }>['toc'][number];
-  onSelectChapter: (
-    chapterId: string,
-    target: ReaderNavigationTarget,
-  ) => void;
-  pendingChapterId: string | null;
-}) {
-  const isActivePath = activePathIds.has(entry.id);
-  const isPending = Boolean(entry.chapterId && pendingChapterId === entry.chapterId);
-  const navigationTarget = resolveTocNavigationTarget(entry);
-  const chapterId = entry.chapterId;
-  const isClickable = Boolean(chapterId && navigationTarget);
-  const isCurrentSection = Boolean(
-    entry.blockId && isActivePath && entry.chapterId === activeChapterId,
-  );
-  const isCurrentChapter = !isCurrentSection && entry.chapterId === activeChapterId;
-
-  return (
-    <div className="space-y-3">
-      <div
-        className="border-l border-title/10 pl-4"
-        style={{ marginLeft: `${depth * 14}px` }}
-      >
-        {isClickable && chapterId && navigationTarget ? (
-          <button
-            type="button"
-            className="flex w-full items-start justify-between gap-3 text-left"
-            onClick={() => onSelectChapter(chapterId, navigationTarget)}
-          >
-            <span
-              className={cn(
-                "min-w-0 font-(--font-reader) leading-6 transition",
-                depth === 0 ? "text-[0.98rem]" : "text-[0.92rem]",
-                isCurrentSection
-                  ? "font-semibold text-title"
-                  : isCurrentChapter || isActivePath
-                    ? "text-title"
-                    : depth > 0
-                      ? "text-title/62 hover:text-title"
-                      : "text-title/78 hover:text-title",
-              )}
-            >
-              {entry.label}
-            </span>
-            <span className="shrink-0 pt-1 font-(--font-ui) text-[0.62rem] uppercase tracking-[0.16em] text-ink/35">
-              {isPending
-                ? "Loading"
-                : isCurrentSection
-                  ? "Current"
-                  : entry.blockId
-                    ? "Section"
-                    : isCurrentChapter
-                      ? "Chapter"
-                      : ""}
-            </span>
-          </button>
-        ) : (
-          <div className="flex items-start justify-between gap-3">
-            <span
-              className={cn(
-                "min-w-0 font-(--font-ui) text-[0.72rem] uppercase tracking-[0.14em]",
-                isActivePath ? "text-title/72" : "text-ink/42",
-              )}
-            >
-              {entry.label}
-            </span>
-          </div>
-        )}
-      </div>
-
-      {entry.children.length > 0 ? (
-        <div className="space-y-3">
-          {entry.children.map((child) => (
-            <ReaderContentsTreeNode
-              key={child.id}
-              activeChapterId={activeChapterId}
-              activePathIds={activePathIds}
-              depth={depth + 1}
-              entry={child}
-              onSelectChapter={onSelectChapter}
-              pendingChapterId={pendingChapterId}
-            />
-          ))}
-        </div>
-      ) : null}
     </div>
   );
 }

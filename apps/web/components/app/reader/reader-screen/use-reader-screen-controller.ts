@@ -27,6 +27,16 @@ import type {
   ReadyReaderPayload,
 } from "./types";
 import {
+  READER_NAVIGATION_EDGE_START,
+  READER_PERSISTENCE_MODE_REMOTE,
+  READER_RESUME_PHASE_APPLIED,
+  READER_RESUME_PHASE_APPLYING,
+  READER_RESUME_PHASE_SELECTING,
+  READER_STATUS_PROCESSING,
+  READER_STATUS_READY,
+  READER_VISIBILITY_HIDDEN,
+} from "./constants";
+import {
   fetchReaderPayload,
   getOrCreateReaderClientInstanceId,
   heartbeatReaderSession,
@@ -44,6 +54,24 @@ import {
   shouldRefreshChapterWindow,
 } from "./utils";
 
+const RESTORE_INTENT_KEY_SEPARATOR = ":";
+
+function createRestoreIntentKey(input: {
+  chapterId: string;
+  sequence: number;
+  target: ReaderNavigationTarget;
+}) {
+  return [
+    input.chapterId,
+    resolveRestoreIntentTargetSegment(input.target),
+    input.sequence,
+  ].join(RESTORE_INTENT_KEY_SEPARATOR);
+}
+
+function resolveRestoreIntentTargetSegment(target: ReaderNavigationTarget) {
+  return target?.blockId ?? target?.edge ?? READER_NAVIGATION_EDGE_START;
+}
+
 export function useReaderScreenController({
   initialPayload,
   libraryItemId,
@@ -59,7 +87,7 @@ export function useReaderScreenController({
   const [visibleLocator, setVisibleLocator] = useState<ReaderLocator | null>(null);
   const [initialResume, setInitialResume] = useState<InitialResumeBootstrapState>(
     {
-      phase: "selecting",
+      phase: READER_RESUME_PHASE_SELECTING,
       snapshot: null,
     },
   );
@@ -111,7 +139,8 @@ export function useReaderScreenController({
     visibleChapterId: traversal.visibleChapterId,
   });
   const activeReadyChapterIdRef = useRef<string | null>(currentReadyChapterId);
-  const remotePersistenceEnabled = persistenceMode === "remote";
+  const remotePersistenceEnabled =
+    persistenceMode === READER_PERSISTENCE_MODE_REMOTE;
   const isLoadingChapter = traversal.pendingChapterId !== null;
   const isRefreshingWindow = backgroundChapterId !== null;
   const displayLocator = useMemo(() => {
@@ -196,7 +225,7 @@ export function useReaderScreenController({
     });
 
     setInitialResume({
-      phase: "applying",
+      phase: READER_RESUME_PHASE_APPLYING,
       snapshot: selection.snapshot,
     });
   }, [initialPayload.progress, libraryItemId]);
@@ -205,7 +234,11 @@ export function useReaderScreenController({
     (nextChapterId: string, target: ReaderNavigationTarget) => {
       restoreIntentSequenceRef.current += 1;
 
-      return `${nextChapterId}:${target?.blockId ?? target?.edge ?? "start"}:${restoreIntentSequenceRef.current}`;
+      return createRestoreIntentKey({
+        chapterId: nextChapterId,
+        sequence: restoreIntentSequenceRef.current,
+        target,
+      });
     },
     [],
   );
@@ -226,7 +259,7 @@ export function useReaderScreenController({
 
   const mergeReadyPayload = useCallback((nextPayload: ReadyReaderPayload) => {
     setPayload((current) =>
-      current.status === "READY"
+      current.status === READER_STATUS_READY
         ? {
             ...nextPayload,
             progress: current.progress,
@@ -395,8 +428,8 @@ export function useReaderScreenController({
 
   useEffect(() => {
     if (
-      initialResume.phase !== "applying" ||
-      payload.status !== "READY" ||
+      initialResume.phase !== READER_RESUME_PHASE_APPLYING ||
+      payload.status !== READER_STATUS_READY ||
       initialResumeApplyStartedRef.current
     ) {
       return;
@@ -429,10 +462,10 @@ export function useReaderScreenController({
       } finally {
         if (!isCancelled) {
           setInitialResume((current) =>
-            current.phase === "applying"
+            current.phase === READER_RESUME_PHASE_APPLYING
               ? {
                   ...current,
-                  phase: "applied",
+                  phase: READER_RESUME_PHASE_APPLIED,
                 }
               : current,
           );
@@ -456,7 +489,7 @@ export function useReaderScreenController({
   ]);
 
   useEffect(() => {
-    if (payload.status !== "PROCESSING") {
+    if (payload.status !== READER_STATUS_PROCESSING) {
       return;
     }
 
@@ -521,7 +554,7 @@ export function useReaderScreenController({
         }
 
         setPayload((current) =>
-          current.status === "READY"
+          current.status === READER_STATUS_READY
             ? {
                 ...current,
                 progress: nextProgress,
@@ -560,9 +593,9 @@ export function useReaderScreenController({
 
       if (
         session.endedAt &&
-        payload.status === "READY" &&
+        payload.status === READER_STATUS_READY &&
         typeof document !== "undefined" &&
-        document.visibilityState !== "hidden"
+        document.visibilityState !== READER_VISIBILITY_HIDDEN
       ) {
         activeSessionIdRef.current = null;
         void restartSessionTrackingRef.current?.();
@@ -626,9 +659,9 @@ export function useReaderScreenController({
   const startReaderSessionTracking = useCallback(async () => {
     if (
       !remotePersistenceEnabled ||
-      payload.status !== "READY" ||
+      payload.status !== READER_STATUS_READY ||
       typeof document === "undefined" ||
-      document.visibilityState === "hidden" ||
+      document.visibilityState === READER_VISIBILITY_HIDDEN ||
       activeSessionIdRef.current ||
       sessionStartAbortRef.current
     ) {
@@ -699,8 +732,8 @@ export function useReaderScreenController({
 
   useEffect(() => {
     if (
-      payload.status !== "READY" ||
-      initialResume.phase !== "applied" ||
+      payload.status !== READER_STATUS_READY ||
+      initialResume.phase !== READER_RESUME_PHASE_APPLIED ||
       !visibleLocator
     ) {
       return;
@@ -762,8 +795,8 @@ export function useReaderScreenController({
   useEffect(() => {
     if (
       !remotePersistenceEnabled ||
-      payload.status !== "READY" ||
-      initialResume.phase !== "applied"
+      payload.status !== READER_STATUS_READY ||
+      initialResume.phase !== READER_RESUME_PHASE_APPLIED
     ) {
       return;
     }
@@ -789,7 +822,7 @@ export function useReaderScreenController({
     };
 
     const handleVisibilityChange = () => {
-      if (document.visibilityState === "hidden") {
+      if (document.visibilityState === READER_VISIBILITY_HIDDEN) {
         flushPendingProgress();
       }
     };
@@ -809,7 +842,7 @@ export function useReaderScreenController({
   ]);
 
   useEffect(() => {
-    if (!remotePersistenceEnabled || payload.status !== "READY") {
+    if (!remotePersistenceEnabled || payload.status !== READER_STATUS_READY) {
       return;
     }
 
@@ -822,12 +855,12 @@ export function useReaderScreenController({
     }
 
     const handleVisibilityChange = () => {
-      if (document.visibilityState === "hidden") {
+      if (document.visibilityState === READER_VISIBILITY_HIDDEN) {
         void stopReaderSessionTracking(true);
         return;
       }
 
-      if (payload.status === "READY") {
+      if (payload.status === READER_STATUS_READY) {
         void startReaderSessionTracking();
       }
     };
@@ -859,7 +892,7 @@ export function useReaderScreenController({
   return {
     activeChapter,
     displayLocator,
-    isBootstrapping: initialResume.phase !== "applied",
+    isBootstrapping: initialResume.phase !== READER_RESUME_PHASE_APPLIED,
     isLoadingChapter,
     isRefreshingWindow,
     navigateToChapter,

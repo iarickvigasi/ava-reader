@@ -4,7 +4,14 @@ import type {
   ReaderStatusPayload,
 } from "@/lib/api-types";
 import type { RestoreIntent } from "@/lib/reader-navigation";
+import {
+  READER_STATUS_FAILED,
+  READER_STATUS_READY,
+} from "./constants";
 import type { ReadyReaderPayload } from "./types";
+
+const RESTORE_INTENT_KIND_BLOCK = "block";
+const DOM_EXCEPTION_ABORT_ERROR_NAME = "AbortError";
 
 export function getBrowserViewportHeight() {
   if (typeof window === "undefined") {
@@ -35,7 +42,7 @@ export function shouldRefreshChapterWindow(
 }
 
 export function formatReaderHeaderLine(
-  payload: Extract<ReaderStatusPayload, { status: "READY" }>,
+  payload: Extract<ReaderStatusPayload, { status: typeof READER_STATUS_READY }>,
   activeChapter: ReaderChapterPayload,
 ) {
   const chapterLabel = formatReaderChapterLabel(activeChapter.label);
@@ -61,7 +68,7 @@ export function createLocatorKey(locator: ReaderLocator | null) {
 }
 
 export function createLocatorFromRestoreIntent(restoreIntent: RestoreIntent | null) {
-  if (!restoreIntent || restoreIntent.kind !== "block") {
+  if (!restoreIntent || restoreIntent.kind !== RESTORE_INTENT_KIND_BLOCK) {
     return null;
   }
 
@@ -81,14 +88,14 @@ export function clamp(value: number, minimum: number, maximum: number) {
 }
 
 export function isAbortError(error: unknown) {
-  return error instanceof DOMException && error.name === "AbortError";
+  return error instanceof DOMException && error.name === DOM_EXCEPTION_ABORT_ERROR_NAME;
 }
 
 export function isReadyReaderPayload(
   payload: ReaderStatusPayload,
 ): payload is ReadyReaderPayload {
   return (
-    payload.status === "READY" &&
+    payload.status === READER_STATUS_READY &&
     Array.isArray(payload.chapters) &&
     Array.isArray(payload.toc)
   );
@@ -97,7 +104,7 @@ export function isReadyReaderPayload(
 export function normalizeReaderStatusPayload(
   payload: ReaderStatusPayload,
 ): ReaderStatusPayload {
-  if (payload.status !== "READY") {
+  if (payload.status !== READER_STATUS_READY) {
     return payload;
   }
 
@@ -115,7 +122,7 @@ export function normalizeReaderStatusPayload(
     book: candidate.book,
     message: "The reader payload was incomplete. Please reload and try again.",
     progress: candidate.progress,
-    status: "FAILED",
+    status: READER_STATUS_FAILED,
   };
 }
 

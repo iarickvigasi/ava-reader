@@ -1,11 +1,6 @@
 import type { CSSProperties, Ref } from "react";
 import { useCallback, useLayoutEffect, useMemo, useRef } from "react";
-import type {
-  ReaderBlock,
-  ReaderChapterPayload,
-  ReaderInline,
-} from "@/lib/api-types";
-import { cn } from "@/lib/cn";
+import type { ReaderBlock, ReaderChapterPayload } from "@/lib/api-types";
 import {
   createFailedReaderMeasurementEntry,
   createPendingReaderMeasurementEntry,
@@ -13,7 +8,11 @@ import {
   type ReaderMeasurementEntry,
 } from "@/lib/reader-measurement";
 import { createPaginationLayoutKey } from "@/lib/reader-pagination";
-import { PAGE_GAP } from "./constants";
+import {
+  PAGE_GAP,
+  READER_VISIBILITY_HIDDEN,
+} from "./constants";
+import { ReaderBlockView } from "./reader-block-view";
 
 export function ReaderArticle({
   articleRef,
@@ -207,7 +206,7 @@ export function ReaderPaginationPreloader({
       aria-hidden="true"
       className="pointer-events-none fixed left-[-200vw] top-0 z-[-1] overflow-hidden opacity-0"
       style={{
-        visibility: "hidden",
+        visibility: READER_VISIBILITY_HIDDEN,
       }}
     >
       <div className="space-y-4">
@@ -235,202 +234,5 @@ export function ReaderPaginationPreloader({
         ))}
       </div>
     </div>
-  );
-}
-
-function ReaderBlockView({
-  block,
-  pageHeight,
-}: {
-  block: ReaderBlock;
-  pageHeight: number;
-}) {
-  const sharedProps = {
-    "data-block-id": block.id,
-    "data-reader-block-kind": block.kind,
-    "data-reader-block": "true",
-    id: block.anchorId ?? undefined,
-  } as const;
-
-  if (block.kind === "heading") {
-    const headingClassName =
-      "break-inside-avoid-column font-(--font-reader) text-[calc(1.7rem*var(--reader-font-scale))] leading-[1.15] font-bold tracking-[-0.03em] text-ink sm:text-[calc(2.15rem*var(--reader-font-scale))]";
-
-    if (block.level === 1) {
-      return (
-        <h1 {...sharedProps} className={headingClassName}>
-          <InlineContent inlines={block.inlines} />
-        </h1>
-      );
-    }
-
-    if (block.level === 2) {
-      return (
-        <h2 {...sharedProps} className={headingClassName}>
-          <InlineContent inlines={block.inlines} />
-        </h2>
-      );
-    }
-
-    if (block.level === 3) {
-      return (
-        <h3 {...sharedProps} className={headingClassName}>
-          <InlineContent inlines={block.inlines} />
-        </h3>
-      );
-    }
-
-    if (block.level === 4) {
-      return (
-        <h4 {...sharedProps} className={headingClassName}>
-          <InlineContent inlines={block.inlines} />
-        </h4>
-      );
-    }
-
-    if (block.level === 5) {
-      return (
-        <h5 {...sharedProps} className={headingClassName}>
-          <InlineContent inlines={block.inlines} />
-        </h5>
-      );
-    }
-
-    return (
-      <h6 {...sharedProps} className={headingClassName}>
-        <InlineContent inlines={block.inlines} />
-      </h6>
-    );
-  }
-
-  if (block.kind === "blockquote") {
-    return (
-      <blockquote
-        {...sharedProps}
-        className="border-l border-line/60 pl-5 font-(--font-reader) text-[calc(1.18rem*var(--reader-font-scale))] leading-[1.9] italic text-ink/90 sm:text-[calc(1.3rem*var(--reader-font-scale))]"
-      >
-        <InlineContent inlines={block.inlines} />
-      </blockquote>
-    );
-  }
-
-  if (block.kind === "list") {
-    const listClassName = cn(
-      "space-y-4 pl-6 font-(--font-reader) text-[calc(1.12rem*var(--reader-font-scale))] leading-loose text-ink sm:text-[calc(1.28rem*var(--reader-font-scale))]",
-      block.ordered ? "list-decimal" : "list-disc",
-    );
-
-    if (block.ordered) {
-      return (
-        <ol {...sharedProps} className={listClassName}>
-          {block.items.map((item) => (
-            <li key={item.id}>
-              <InlineContent inlines={item.inlines} />
-            </li>
-          ))}
-        </ol>
-      );
-    }
-
-    return (
-      <ul {...sharedProps} className={listClassName}>
-        {block.items.map((item) => (
-          <li key={item.id}>
-            <InlineContent inlines={item.inlines} />
-          </li>
-        ))}
-      </ul>
-    );
-  }
-
-  if (block.kind === "image") {
-    const imageMaxHeight =
-      pageHeight > 0
-        ? `${Math.max(160, Math.floor(pageHeight - 64))}px`
-        : undefined;
-
-    return (
-      <figure {...sharedProps} className="break-inside-avoid-column space-y-3">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          alt={block.alt ?? ""}
-          className="w-full rounded-[22px] border border-line/30 object-contain"
-          src={block.src}
-          style={{
-            maxHeight: imageMaxHeight,
-          }}
-        />
-        {block.alt ? (
-          <figcaption className="font-(--font-ui) text-sm text-ink/55">
-            {block.alt}
-          </figcaption>
-        ) : null}
-      </figure>
-    );
-  }
-
-  return (
-    <p
-      {...sharedProps}
-      className="font-(--font-reader) text-[calc(1.16rem*var(--reader-font-scale))] leading-loose tracking-[-0.01em] text-ink sm:text-[calc(1.34rem*var(--reader-font-scale))]"
-    >
-      <InlineContent inlines={block.inlines} />
-    </p>
-  );
-}
-
-function InlineContent({ inlines }: { inlines: ReaderInline[] }) {
-  return (
-    <>
-      {inlines.map((inline, index) => {
-        const key = `${inline.kind}-${index}`;
-
-        if (inline.kind === "image") {
-          const image = (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              alt={inline.alt ?? ""}
-              className="mx-1 inline-block max-h-8 max-w-32 align-middle"
-              src={inline.src}
-            />
-          );
-
-          return inline.href ? (
-            <a
-              key={key}
-              href={inline.href}
-              className="underline decoration-line/60 underline-offset-4"
-            >
-              {image}
-            </a>
-          ) : (
-            <span key={key}>{image}</span>
-          );
-        }
-
-        const content = (
-          <span
-            className={cn(
-              inline.bold && "font-bold",
-              inline.italic && "italic",
-            )}
-          >
-            {inline.text}
-          </span>
-        );
-
-        return inline.href ? (
-          <a
-            key={key}
-            href={inline.href}
-            className="underline decoration-line/60 underline-offset-4 hover:text-title"
-          >
-            {content}
-          </a>
-        ) : (
-          <span key={key}>{content}</span>
-        );
-      })}
-    </>
   );
 }

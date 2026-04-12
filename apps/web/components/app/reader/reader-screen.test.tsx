@@ -4,6 +4,10 @@ import { describe, expect, it, vi } from "vitest";
 import { ReaderUiProvider } from "@/components/app/core/reader-ui-context";
 import type { ReaderStatusPayload } from "@/lib/api-types";
 import { createReaderResumeFixturePayload } from "@/lib/reader-test-fixture";
+import {
+  READER_PERSISTENCE_MODE_LOCAL_ONLY,
+  READER_STATUS_PROCESSING,
+} from "./reader-screen/constants";
 import { ReaderScreen } from "./reader-screen";
 
 vi.mock("@clerk/nextjs", () => ({
@@ -30,7 +34,7 @@ describe("reader screen", () => {
         lastReadAt: null,
         locator: null,
       },
-      status: "PROCESSING",
+      status: READER_STATUS_PROCESSING,
     };
 
     const markup = renderToStaticMarkup(
@@ -39,7 +43,7 @@ describe("reader screen", () => {
 
     expect(markup).toContain("Pending Reader");
     expect(markup).toContain("Your book is being processed.");
-    expect(markup).toContain("PROCESSING");
+    expect(markup).toContain(READER_STATUS_PROCESSING);
   });
 
   it("renders ready reader shell and controls", () => {
@@ -50,7 +54,7 @@ describe("reader screen", () => {
         <ReaderScreen
           initialPayload={payload}
           libraryItemId={payload.book.libraryItemId}
-          persistenceMode="local-only"
+          persistenceMode={READER_PERSISTENCE_MODE_LOCAL_ONLY}
         />
       </WithReaderUi>,
     );

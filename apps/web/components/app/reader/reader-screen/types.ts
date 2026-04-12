@@ -8,11 +8,16 @@ import type {
   RestoreIntent,
 } from "@/lib/reader-navigation";
 import type { ReaderResumeSnapshot } from "@/lib/reader-resume";
+import {
+  READER_STATUS_READY,
+  type ReaderPersistenceMode,
+  type ReaderResumePhase,
+} from "./constants";
 
 export type ReaderScreenProps = {
   initialPayload: ReaderStatusPayload;
   libraryItemId: string;
-  persistenceMode?: "local-only" | "remote";
+  persistenceMode?: ReaderPersistenceMode;
 };
 
 export type PageBoxSize = {
@@ -20,10 +25,15 @@ export type PageBoxSize = {
   width: number;
 };
 
-export type ReadyReaderPayload = Extract<ReaderStatusPayload, { status: "READY" }>;
+export type ReadyReaderPayload = Extract<
+  ReaderStatusPayload,
+  { status: typeof READER_STATUS_READY }
+>;
+
+export type ReadyReaderTocEntry = ReadyReaderPayload["toc"][number];
 
 export type InitialResumeBootstrapState = {
-  phase: "selecting" | "applying" | "applied";
+  phase: ReaderResumePhase;
   snapshot: ReaderResumeSnapshot | null;
 };
 
@@ -39,7 +49,10 @@ export type ReadyReaderProps = {
   onIncreaseFont: () => void;
   onSelectChapter: (chapterId: string, target?: ReaderNavigationTarget) => void;
   onVisibleLocatorChange: (locator: ReaderLocator | null) => void;
-  payload: Extract<ReaderStatusPayload, { status: "READY" }>;
+  payload: Extract<
+    ReaderStatusPayload,
+    { status: typeof READER_STATUS_READY }
+  >;
   pendingChapterId: string | null;
   restoreIntent: RestoreIntent | null;
   visibleLocator: ReaderLocator | null;
@@ -48,7 +61,7 @@ export type ReadyReaderProps = {
 export type ReaderScreenControllerInput = {
   initialPayload: ReaderStatusPayload;
   libraryItemId: string;
-  persistenceMode: "local-only" | "remote";
+  persistenceMode: ReaderPersistenceMode;
 };
 
 export type ReaderScreenControllerResult = {

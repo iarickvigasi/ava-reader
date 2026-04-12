@@ -7,6 +7,13 @@ import type {
 import { getPublicApiBaseUrl } from "@/lib/api";
 import { READER_SESSION_CLIENT_INSTANCE_ID_STORAGE_KEY } from "./constants";
 
+const HTTP_METHOD_POST = "POST";
+const HTTP_METHOD_PATCH = "PATCH";
+const HTTP_HEADER_CONTENT_TYPE = "Content-Type";
+const HTTP_CONTENT_TYPE_APPLICATION_JSON = "application/json";
+const READER_SESSION_PATH_SESSION = "session";
+const READER_SESSION_PATH_SESSION_STOP = "session/stop";
+
 type ReaderAuthInput = {
   getToken: () => Promise<string | null>;
   isLoaded: boolean;
@@ -70,7 +77,7 @@ export async function markReaderOpened(input: ReaderAuthInput & {
   const response = await fetch(
     `${getPublicApiBaseUrl()}/api/library/${input.libraryItemId}/reader/open`,
     {
-      method: "POST",
+      method: HTTP_METHOD_POST,
       keepalive: true,
       headers: {
         Authorization: `Bearer ${token}`,
@@ -103,9 +110,9 @@ export async function persistReaderProgress(input: ReaderAuthInput & {
   const response = await fetch(
     `${getPublicApiBaseUrl()}/api/library/${input.libraryItemId}/reader/progress`,
     {
-      method: "PATCH",
+      method: HTTP_METHOD_PATCH,
       headers: {
-        "Content-Type": "application/json",
+        [HTTP_HEADER_CONTENT_TYPE]: HTTP_CONTENT_TYPE_APPLICATION_JSON,
         Authorization: `Bearer ${token}`,
       },
       keepalive: input.keepalive,
@@ -135,8 +142,8 @@ export async function startReaderSession(input: ReaderAuthInput & {
     isLoaded: input.isLoaded,
     isSignedIn: input.isSignedIn,
     libraryItemId: input.libraryItemId,
-    method: "POST",
-    path: "session",
+    method: HTTP_METHOD_POST,
+    path: READER_SESSION_PATH_SESSION,
     signal: input.signal,
   });
 }
@@ -155,8 +162,8 @@ export async function heartbeatReaderSession(input: ReaderAuthInput & {
     isLoaded: input.isLoaded,
     isSignedIn: input.isSignedIn,
     libraryItemId: input.libraryItemId,
-    method: "PATCH",
-    path: "session",
+    method: HTTP_METHOD_PATCH,
+    path: READER_SESSION_PATH_SESSION,
   });
 }
 
@@ -176,8 +183,8 @@ export async function stopReaderSession(input: ReaderAuthInput & {
     isSignedIn: input.isSignedIn,
     keepalive: input.keepalive,
     libraryItemId: input.libraryItemId,
-    method: "POST",
-    path: "session/stop",
+    method: HTTP_METHOD_POST,
+    path: READER_SESSION_PATH_SESSION_STOP,
   });
 }
 
@@ -185,8 +192,10 @@ async function performReaderSessionRequest(input: ReaderAuthInput & {
   body?: Record<string, unknown>;
   keepalive?: boolean;
   libraryItemId: string;
-  method: "PATCH" | "POST";
-  path: "session" | "session/stop";
+  method: typeof HTTP_METHOD_PATCH | typeof HTTP_METHOD_POST;
+  path:
+    | typeof READER_SESSION_PATH_SESSION
+    | typeof READER_SESSION_PATH_SESSION_STOP;
   signal?: AbortSignal;
 }) {
   if (!input.isLoaded || !input.isSignedIn) {
@@ -206,7 +215,7 @@ async function performReaderSessionRequest(input: ReaderAuthInput & {
     {
       method: input.method,
       headers: {
-        "Content-Type": "application/json",
+        [HTTP_HEADER_CONTENT_TYPE]: HTTP_CONTENT_TYPE_APPLICATION_JSON,
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(input.body ?? {}),

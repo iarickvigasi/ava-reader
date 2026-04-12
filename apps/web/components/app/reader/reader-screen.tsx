@@ -1,9 +1,13 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ReadyReader } from "./reader-screen/ready-reader";
 import { ReaderStatusState } from "./reader-screen/reader-status-state";
+import {
+  READER_PERSISTENCE_MODE_REMOTE,
+  READER_STATUS_READY,
+} from "./reader-screen/constants";
 import type { ReaderScreenProps } from "./reader-screen/types";
 import { roundFontScale } from "./reader-screen/utils";
 import { useReaderScreenController } from "./reader-screen/use-reader-screen-controller";
@@ -11,7 +15,7 @@ import { useReaderScreenController } from "./reader-screen/use-reader-screen-con
 export function ReaderScreen({
   initialPayload,
   libraryItemId,
-  persistenceMode = "remote",
+  persistenceMode = READER_PERSISTENCE_MODE_REMOTE,
 }: ReaderScreenProps) {
   const [fontScale, setFontScale] = useState(1);
   const {
@@ -31,6 +35,15 @@ export function ReaderScreen({
     libraryItemId,
     persistenceMode,
   });
+  const isReaderReady = payload.status === READER_STATUS_READY;
+
+  const handleDecreaseFont = useCallback(() => {
+    setFontScale((current) => Math.max(0.85, roundFontScale(current - 0.1)));
+  }, []);
+
+  const handleIncreaseFont = useCallback(() => {
+    setFontScale((current) => Math.min(1.35, roundFontScale(current + 0.1)));
+  }, []);
 
   const readerStyle = useMemo(
     () =>
@@ -43,7 +56,7 @@ export function ReaderScreen({
   return (
     <div className="bg-paper text-ink" style={readerStyle}>
       <div className="mx-auto min-h-screen max-w-375 md:pl-20">
-        {payload.status !== "READY" ? (
+        {!isReaderReady ? (
           <ReaderStatusState payload={payload} />
         ) : activeChapter ? (
           <ReadyReader
@@ -54,16 +67,8 @@ export function ReaderScreen({
             isLoadingChapter={isLoadingChapter}
             isRefreshingWindow={isRefreshingWindow}
             libraryItemId={libraryItemId}
-            onDecreaseFont={() =>
-              setFontScale((current) =>
-                Math.max(0.85, roundFontScale(current - 0.1)),
-              )
-            }
-            onIncreaseFont={() =>
-              setFontScale((current) =>
-                Math.min(1.35, roundFontScale(current + 0.1)),
-              )
-            }
+            onDecreaseFont={handleDecreaseFont}
+            onIncreaseFont={handleIncreaseFont}
             onSelectChapter={navigateToChapter}
             onVisibleLocatorChange={setVisibleLocator}
             payload={payload}

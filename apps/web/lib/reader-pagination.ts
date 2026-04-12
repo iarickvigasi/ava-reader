@@ -1,19 +1,34 @@
-import type { ReaderLocator } from "./api-types";
 import {
   hasPendingRestoreIntent,
-  resolveNextPageIndex,
+  isStickyRestoreIntent,
 } from "./reader-navigation";
 import type { RestoreIntent } from "./reader-navigation";
+import type { ReaderMeasurementPageResolution } from "./reader-measurement";
 
-export type PaginationSnapshot = {
-  blockPageIndexById: Record<string, number>;
-  layoutKey: string;
+const RESTORE_INTENT_KIND_BLOCK = "block";
+const RESTORE_INTENT_KIND_EDGE_END = "edge-end";
+const READER_MEASUREMENT_STATUS_FAILED = "failed";
+const READER_PAGE_RESOLUTION_BLOCK_START = "block-start";
+const READER_PAGE_RESOLUTION_EXACT = "exact";
+const READER_PAGE_RESOLUTION_MISSING_BLOCK = "missing-block";
+
+export type PaginationDecisionInput = {
+  activeChapterId: string;
+  consumedRestoreIntentKey: string | null;
+  currentPageIndex: number;
+  keepRestorePinned: boolean;
+  measurementStatus: "failed" | "pending" | "ready";
   pageCount: number;
+  restoreIntent: RestoreIntent | null;
+  restorePageResolution: ReaderMeasurementPageResolution | null;
+  visibleLocatorChapterId: string | null;
+  visiblePageResolution: ReaderMeasurementPageResolution | null;
 };
 
-export type ResolvedPaginationSnapshot = {
+export type PaginationDecision = {
   nextPageIndex: number;
-  restoreState: "idle" | "pending" | "resolved";
+  shouldConsumeRestoreIntent: boolean;
+  shouldWarnFailedMeasurement: boolean;
 };
 
 export function createPaginationLayoutKey(input: {
@@ -32,92 +47,125 @@ export function createPaginationLayoutKey(input: {
   ].join(":");
 }
 
-export function measurePaginationSnapshot(input: {
-  article: HTMLElement | null;
-  currentPageIndex: number;
-  layoutKey: string;
-  pageBox: HTMLElement | null;
-  pageGap: number;
-}): PaginationSnapshot | null {
-  const { article, currentPageIndex, layoutKey, pageBox, pageGap } = input;
+export function resolvePaginationDecision(
+  input: PaginationDecisionInput,
+): PaginationDecision {
+  const maximumPageIndex = Math.max(0, input.pageCount - 1);
+  let nextPageIndex = clamp(input.currentPageIndex, 0, maximumPageIndex);
+  let shouldConsumeRestoreIntent = false;
+  let shouldWarnFailedMeasurement = false;
+  const restoreIntent = input.restoreIntent;
 
-  if (!article || !pageBox) {
-    return null;
-  }
+  if (
+    restoreIntent &&
+    hasPendingRestoreIntent(
+      restoreIntent,
+      input.activeChapterId,
+      input.consumedRestoreIntentKey,
+    )
+  ) {
+    if (input.measurementStatus === READER_MEASUREMENT_STATUS_FAILED) {
+      shouldWarnFailedMeasurement = true;
+      nextPageIndex =
+        restoreIntent.kind === RESTORE_INTENT_KIND_EDGE_END
+          ? maximumPageIndex
+          : 0;
+      shouldConsumeRestoreIntent = true;
 
-  const pageBoxWidth = Math.floor(pageBox.clientWidth);
-  const pageBoxHeight = Math.floor(pageBox.clientHeight);
-
-  if (pageBoxWidth <= 0 || pageBoxHeight <= 0) {
-    return null;
-  }
-
-  const pageSpan = pageBoxWidth + pageGap;
-  if (pageSpan <= pageGap) {
-    return null;
-  }
-
-  const contentWidth = Math.floor(article.scrollWidth);
-  const pageCount = Math.max(1, Math.ceil((contentWidth + pageGap) / pageSpan));
-  const pageBoxRect = pageBox.getBoundingClientRect();
-  const blockPageIndexById: Record<string, number> = {};
-
-  for (const blockElement of article.querySelectorAll<HTMLElement>(
-    "[data-reader-block='true']",
-  )) {
-    const blockId = blockElement.dataset.blockId;
-    if (!blockId) {
-      continue;
+      return {
+        nextPageIndex,
+        shouldConsumeRestoreIntent,
+        shouldWarnFailedMeasurement,
+      };
     }
 
-    const absoluteLeft =
-      blockElement.getBoundingClientRect().left -
-      pageBoxRect.left +
-      currentPageIndex * pageSpan;
+    if (restoreIntent.kind === RESTORE_INTENT_KIND_BLOCK) {
+      if (
+        input.restorePageResolution?.status ===
+          READER_PAGE_RESOLUTION_BLOCK_START ||
+        input.restorePageResolution?.status === READER_PAGE_RESOLUTION_EXACT
+      ) {
+        nextPageIndex = clamp(
+          input.restorePageResolution.pageIndex,
+          0,
+          maximumPageIndex,
+        );
+      } else if (
+        input.restorePageResolution?.status ===
+        READER_PAGE_RESOLUTION_MISSING_BLOCK
+      ) {
+        nextPageIndex = 0;
+      } else {
+        // Includes unresolved/null resolution; preserve fallback-to-start behavior.
+        nextPageIndex = 0;
+      }
 
-    blockPageIndexById[blockId] = Math.floor(Math.max(absoluteLeft, 0) / pageSpan);
+      shouldConsumeRestoreIntent = true;
+
+      return {
+        nextPageIndex,
+        shouldConsumeRestoreIntent,
+        shouldWarnFailedMeasurement,
+      };
+    }
+
+    nextPageIndex =
+      restoreIntent.kind === RESTORE_INTENT_KIND_EDGE_END
+        ? maximumPageIndex
+        : 0;
+    shouldConsumeRestoreIntent = true;
+
+    return {
+      nextPageIndex,
+      shouldConsumeRestoreIntent,
+      shouldWarnFailedMeasurement,
+    };
   }
 
-  return {
-    blockPageIndexById,
-    layoutKey,
-    pageCount,
-  };
-}
+  if (
+    input.keepRestorePinned &&
+    restoreIntent?.chapterId === input.activeChapterId &&
+    isStickyRestoreIntent(restoreIntent)
+  ) {
+    nextPageIndex =
+      restoreIntent.kind === RESTORE_INTENT_KIND_EDGE_END
+        ? maximumPageIndex
+        : 0;
 
-export function resolvePageIndexFromPaginationSnapshot(input: {
-  activeChapterId: string;
-  activeLocator: ReaderLocator | null;
-  consumedRestoreIntentKey: string | null;
-  currentPageIndex: number;
-  keepRestorePinned: boolean;
-  locatorPageIndex: number | null;
-  restorePageIndex: number | null;
-  restoreIntent: RestoreIntent | null;
-  snapshot: PaginationSnapshot;
-}) {
-  const hasPendingChapterRestoreIntent = hasPendingRestoreIntent(
-    input.restoreIntent,
-    input.activeChapterId,
-    input.consumedRestoreIntentKey,
-  );
-  const nextPageIndex = resolveNextPageIndex({
-    activeChapterId: input.activeChapterId,
-    consumedRestoreIntentKey: input.consumedRestoreIntentKey,
-    currentPageIndex: input.currentPageIndex,
-    keepRestorePinned: input.keepRestorePinned,
-    locatorPageIndex: input.locatorPageIndex,
-    measuredPageCount: input.snapshot.pageCount,
-    restorePageIndex: input.restorePageIndex,
-    restoreIntent: input.restoreIntent,
-  });
+    return {
+      nextPageIndex,
+      shouldConsumeRestoreIntent,
+      shouldWarnFailedMeasurement,
+    };
+  }
+
+  if (
+    input.measurementStatus === "ready" &&
+    input.visibleLocatorChapterId === input.activeChapterId &&
+    (input.visiblePageResolution?.status ===
+      READER_PAGE_RESOLUTION_BLOCK_START ||
+      input.visiblePageResolution?.status === READER_PAGE_RESOLUTION_EXACT)
+  ) {
+    nextPageIndex = clamp(input.visiblePageResolution.pageIndex, 0, maximumPageIndex);
+
+    return {
+      nextPageIndex,
+      shouldConsumeRestoreIntent,
+      shouldWarnFailedMeasurement,
+    };
+  }
+
+  if (input.measurementStatus === READER_MEASUREMENT_STATUS_FAILED) {
+    shouldWarnFailedMeasurement = true;
+  }
 
   return {
     nextPageIndex,
-    restoreState: hasPendingChapterRestoreIntent
-      ? input.restoreIntent?.kind === "block" && input.restorePageIndex === null
-        ? "pending"
-        : "resolved"
-      : "idle",
-  } satisfies ResolvedPaginationSnapshot;
+    shouldConsumeRestoreIntent,
+    shouldWarnFailedMeasurement,
+  };
+}
+
+function clamp(value: number, minimum: number, maximum: number) {
+  return Math.min(Math.max(value, minimum), maximum);
 }
