@@ -15,10 +15,10 @@ export function LibraryScreen({ library }: LibraryScreenProps) {
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col px-5 pb-10 pt-6 sm:px-6 md:pb-14 md:pt-8 lg:px-10">
-      <div className="mx-auto w-full max-w-[1280px] space-y-10 md:space-y-12">
+      <div className="mx-auto w-full max-w-7xl space-y-10 md:space-y-12">
         <section>
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
-            <label className="block md:w-[352px] md:max-w-[352px] md:shrink-0">
+            <label className="block md:w-88 md:max-w-88 md:shrink-0">
             <span className="sr-only">Search library</span>
             <input
               aria-label="Search library"
@@ -40,7 +40,7 @@ export function LibraryScreen({ library }: LibraryScreenProps) {
             <Button
               type="button"
               variant="primary"
-              className="min-h-10 w-full rounded-[10px] px-4 text-[0.72rem] uppercase tracking-[0.14em] shadow-[var(--shadow-nav)] md:ml-auto md:w-auto"
+              className="min-h-10 w-full rounded-[10px] px-4 text-[0.72rem] uppercase tracking-[0.14em] shadow-(--shadow-nav) md:ml-auto md:w-auto"
             >
               New collection
             </Button>
@@ -64,10 +64,10 @@ export function LibraryScreen({ library }: LibraryScreenProps) {
 export function LibraryScreenSkeleton() {
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col px-5 pb-10 pt-6 sm:px-6 md:pb-14 md:pt-8 lg:px-10">
-      <div className="mx-auto w-full max-w-[1280px] space-y-10 md:space-y-12">
+      <div className="mx-auto w-full max-w-7xl space-y-10 md:space-y-12">
         <section>
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
-            <div className="h-10 w-full animate-pulse rounded-[10px] bg-paper-strong md:w-[352px] md:max-w-[352px] md:shrink-0" />
+            <div className="h-10 w-full animate-pulse rounded-[10px] bg-paper-strong md:w-88 md:max-w-88 md:shrink-0" />
 
             <div className="flex items-center gap-5 sm:gap-8 md:gap-10">
               <SummaryMetricSkeleton />
@@ -194,12 +194,12 @@ function CollectionSectionSkeleton() {
 
 function BookCardSkeleton({ mobile = false }: { mobile?: boolean }) {
   return (
-    <div className={cn("shrink-0", mobile ? "w-[174px]" : "w-full")}>
+    <div className={cn("shrink-0", mobile ? "w-43.5" : "w-full")}>
       <div className="space-y-3">
         <div
           className={cn(
             "aspect-[0.666] w-full animate-pulse rounded-[3px] bg-paper-strong",
-            mobile ? "max-w-[174px]" : "max-w-[246px]",
+            mobile ? "max-w-43.5" : "max-w-61.5",
           )}
         />
         <div className="space-y-2">
