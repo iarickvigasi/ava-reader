@@ -1,0 +1,70 @@
+import type { ReactNode } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { describe, expect, it, vi } from "vitest";
+import { ReaderUiProvider } from "@/components/app/core/reader-ui-context";
+import type { ReaderStatusPayload } from "@/lib/api-types";
+import { createReaderResumeFixturePayload } from "@/lib/reader-test-fixture";
+import { ReaderScreen } from "./reader-screen";
+
+vi.mock("@clerk/nextjs", () => ({
+  useAuth: () => ({
+    getToken: async () => "test-token",
+    isLoaded: true,
+    isSignedIn: true,
+  }),
+}));
+
+describe("reader screen", () => {
+  it("renders non-ready reader state", () => {
+    const payload: ReaderStatusPayload = {
+      book: {
+        author: null,
+        libraryItemId: "library-1",
+        primaryFormat: "EPUB",
+        title: "Pending Reader",
+      },
+      message: "Your book is being processed.",
+      progress: {
+        chapterLabel: "Chapter 1",
+        completionPercent: 0,
+        lastReadAt: null,
+        locator: null,
+      },
+      status: "PROCESSING",
+    };
+
+    const markup = renderToStaticMarkup(
+      <ReaderScreen initialPayload={payload} libraryItemId="library-1" />,
+    );
+
+    expect(markup).toContain("Pending Reader");
+    expect(markup).toContain("Your book is being processed.");
+    expect(markup).toContain("PROCESSING");
+  });
+
+  it("renders ready reader shell and controls", () => {
+    const payload = createReaderResumeFixturePayload();
+
+    const markup = renderToStaticMarkup(
+      <WithReaderUi>
+        <ReaderScreen
+          initialPayload={payload}
+          libraryItemId={payload.book.libraryItemId}
+          persistenceMode="local-only"
+        />
+      </WithReaderUi>,
+    );
+
+    expect(markup).toContain("Reader panel");
+    expect(markup).toContain("Restoring your last page");
+    expect(markup).toContain("0% complete");
+    expect(markup).toContain("Page 1 of 1 in chapter");
+    expect(markup).toContain(
+      "Reader Resume Fixture, Fixture Author - Fixture Chapter 01",
+    );
+  });
+});
+
+function WithReaderUi({ children }: { children: ReactNode }) {
+  return <ReaderUiProvider>{children}</ReaderUiProvider>;
+}
