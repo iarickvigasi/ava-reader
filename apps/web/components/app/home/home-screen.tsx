@@ -217,7 +217,10 @@ function PopulatedHomeState({ home }: HomeScreenProps) {
 
       {home.listening ? (
         <section className="space-y-8">
-          <SectionHeader label="Now Listening" action={<SparkIconLink href="/app/ai" />} />
+          <SectionHeader
+            label="Now Listening"
+            action={<SparkIconLink href="" />}
+          />
           <div className="rounded-lg bg-soft-fill px-6 py-6 sm:rounded-3xl sm:px-8">
             <div className="grid gap-6 md:grid-cols-[192px_1fr] md:items-center">
               <BookCover
@@ -778,7 +781,7 @@ function SparkIconLink({ href }: { href: string }) {
     <Link
       href={href}
       className="text-[#264B5F] transition hover:opacity-80"
-      aria-label="Open AVA AI"
+      aria-label="Open insights"
     >
       <NowListeningHeaderIcon className="h-[11.667px] w-auto" />
     </Link>

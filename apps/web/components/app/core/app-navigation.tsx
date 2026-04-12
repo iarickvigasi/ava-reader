@@ -44,7 +44,7 @@ const readerNavItems = [
     label: "Preferences",
   },
   {
-    href: "/app/ai",
+    href: "",
     icon: ReaderNotesIcon,
     label: "AI Chats",
   },
@@ -59,17 +59,17 @@ const readerNavItems = [
     label: "AI Comments",
   },
   {
-    href: "/app/insights",
+    href: "",
     icon: ReaderBookmarksIcon,
     label: "Bookmarks",
   },
   {
-    href: "/app/explore",
+    href: "",
     icon: ReaderSearchIcon,
     label: "Search",
   },
   {
-    href: "/app/ai",
+    href: "",
     icon: ReaderListeningIcon,
     label: "Listen to Book",
   },

@@ -1,6 +1,6 @@
 import { ButtonLink } from "@/components/ui/button";
 
-type PlaceholderPageProps = {
+type LibraryPlaceholderPageProps = {
   ctaHref?: string;
   ctaLabel?: string;
   eyebrow: string;
@@ -8,13 +8,13 @@ type PlaceholderPageProps = {
   body: string;
 };
 
-export function PlaceholderPage({
+export function LibraryPlaceholderPage({
   body,
   ctaHref = "/app",
   ctaLabel = "Back to Home",
   eyebrow,
   title,
-}: PlaceholderPageProps) {
+}: LibraryPlaceholderPageProps) {
   return (
     <div className="mx-auto flex w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-10">
       <section className="w-full rounded-[28px] bg-surface px-6 py-8 sm:px-8 sm:py-10">
