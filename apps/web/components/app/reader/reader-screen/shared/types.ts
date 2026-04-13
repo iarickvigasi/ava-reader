@@ -64,6 +64,12 @@ export type ReaderScreenControllerInput = {
   persistenceMode: ReaderPersistenceMode;
 };
 
+export type ReaderControllerAuth = {
+  getToken: () => Promise<string | null>;
+  isLoaded: boolean;
+  isSignedIn: boolean | undefined;
+};
+
 export type ReaderScreenControllerResult = {
   activeChapter: ReaderChapterPayload | null;
   displayLocator: ReaderLocator | null;
