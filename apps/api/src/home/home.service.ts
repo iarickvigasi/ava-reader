@@ -207,7 +207,7 @@ export class HomeService {
       stats: {
         aiComments: aiCommentsCount,
         highlights: highlightsCount,
-        hoursReading: Math.round(totalReadingSeconds / 3600),
+        hoursReading: Math.floor(totalReadingSeconds / 3600),
         volumesRead: completedBooksCount,
       },
       user: {

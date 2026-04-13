@@ -137,4 +137,24 @@ describe('HomeService', () => {
       title: 'Example Title',
     });
   });
+
+  it('counts only full hours for hoursReading', async () => {
+    prisma.libraryItem.findMany.mockResolvedValue([]);
+    prisma.catalogEntry.findMany.mockResolvedValue([]);
+    prisma.readingSessionSegment.findMany.mockResolvedValue([]);
+    prisma.annotation.findMany.mockResolvedValue([]);
+    prisma.collection.findMany.mockResolvedValue([]);
+    prisma.readingSessionSegment.aggregate.mockResolvedValue({
+      _sum: {
+        durationSeconds: 3_000,
+      },
+    });
+    prisma.annotation.count.mockResolvedValue(0);
+    prisma.readingProgress.count.mockResolvedValue(0);
+    prisma.aiComment.count.mockResolvedValue(0);
+
+    const home = await homeService.getHome('clerk_1');
+
+    expect(home.stats.hoursReading).toBe(0);
+  });
 });
