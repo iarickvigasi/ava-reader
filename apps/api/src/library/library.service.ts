@@ -7,11 +7,18 @@ import {
   Prisma,
   ProcessingStatus,
 } from '@prisma/client';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { bufferToDataUrl } from '../shared/blob-utils';
+import {
+  bufferToDataUrl,
+  checksumBuffer,
+  toPrismaBytes,
+} from '../shared/blob-utils';
 import { UsersService } from '../users/users.service';
-import { checksumBuffer, toPrismaBytes } from '../shared/blob-utils';
 import {
   DEFAULT_SMART_COLLECTIONS,
   getSmartCollectionKey,
@@ -252,6 +259,92 @@ export class LibraryService {
     };
   }
 
+  async renameCollection(
+    clerkUserId: string,
+    collectionId: string,
+    input: {
+      description?: null | string;
+      name?: string;
+    },
+  ) {
+    const user = await this.usersService.getCurrentUserRecord(clerkUserId);
+    const name = input.name?.trim() ?? '';
+
+    if (!name) {
+      throw new BadRequestException('Collection name is required.');
+    }
+
+    const collection = await this.prisma.collection.findFirst({
+      where: {
+        id: collectionId,
+        userId: user.id,
+      },
+      select: {
+        description: true,
+        id: true,
+      },
+    });
+
+    if (!collection) {
+      throw new NotFoundException('Collection not found.');
+    }
+
+    const description =
+      input.description === undefined
+        ? collection.description
+        : normalizeCollectionDescription(input.description);
+
+    try {
+      const renamed = await this.prisma.collection.update({
+        where: {
+          id: collection.id,
+        },
+        data: {
+          description,
+          name,
+        },
+        select: {
+          description: true,
+          id: true,
+          name: true,
+        },
+      });
+
+      return {
+        collectionId: renamed.id,
+        description: renamed.description,
+        name: renamed.name,
+      };
+    } catch (error) {
+      if (isPrismaUniqueConstraintError(error)) {
+        throw new BadRequestException(
+          'A collection with this name already exists.',
+        );
+      }
+
+      throw error;
+    }
+  }
+
+  async deleteCollection(clerkUserId: string, collectionId: string) {
+    const user = await this.usersService.getCurrentUserRecord(clerkUserId);
+    const result = await this.prisma.collection.deleteMany({
+      where: {
+        id: collectionId,
+        userId: user.id,
+      },
+    });
+
+    if (result.count === 0) {
+      throw new NotFoundException('Collection not found.');
+    }
+
+    return {
+      collectionId,
+      state: 'deleted' as const,
+    };
+  }
+
   private async addBookToUserLibraryTx(
     tx: TransactionClient,
     input: {
@@ -439,7 +532,10 @@ function serializeCollection(
       author: item.book.author,
       completionPercent: item.progress?.completionPercent ?? 0,
       coverImageDataUrl: item.book.coverBlob
-        ? bufferToDataUrl(item.book.coverBlob.bytes, item.book.coverBlob.mimeType)
+        ? bufferToDataUrl(
+            item.book.coverBlob.bytes,
+            item.book.coverBlob.mimeType,
+          )
         : null,
       lastReadAt: getMostRecentLibraryItemEngagementDate(item).toISOString(),
       libraryItemId: item.id,
@@ -487,6 +583,20 @@ function getMostRecentLibraryItemEngagementDate(
   const addedAtMs = item.addedAt.getTime();
 
   return new Date(Math.max(lastReadAtMs, lastOpenedAtMs, addedAtMs));
+}
+
+function isPrismaUniqueConstraintError(error: unknown) {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    (error as { code?: string }).code === 'P2002'
+  );
+}
+
+function normalizeCollectionDescription(rawDescription: null | string) {
+  const trimmed = rawDescription?.trim() ?? '';
+  return trimmed.length > 0 ? trimmed : null;
 }
 
 function inferMimeType(format: BookFileFormat) {

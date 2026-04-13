@@ -3,6 +3,14 @@ import { describe, expect, it, vi } from "vitest";
 import { LibraryCollectionScreen } from "./library-collection-screen";
 import type { LibraryCollection } from "@/lib/api-types";
 
+vi.mock("@clerk/nextjs", () => ({
+  useAuth: () => ({
+    getToken: vi.fn(),
+    isLoaded: true,
+    isSignedIn: true,
+  }),
+}));
+
 vi.mock("next/link", () => ({
   default: ({
     children,
@@ -18,6 +26,13 @@ vi.mock("next/link", () => ({
   ),
 }));
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    refresh: vi.fn(),
+  }),
+}));
+
 describe("library collection detail UI", () => {
   it("renders all books in a collection and back navigation", () => {
     const markup = renderToStaticMarkup(
@@ -30,6 +45,8 @@ describe("library collection detail UI", () => {
     expect(markup).toContain('href="/app/read/library-3"');
     expect(markup).toContain("Imported Books");
     expect(markup).toContain("3 items • 2 unread");
+    expect(markup).toContain("Edit");
+    expect(markup).toContain("Delete");
   });
 });
 

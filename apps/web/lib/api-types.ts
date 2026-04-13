@@ -121,6 +121,17 @@ export type LibraryCollectionPayload = {
   collection: LibraryCollection;
 };
 
+export type LibraryCollectionRenamePayload = {
+  collectionId: string;
+  description: string | null;
+  name: string;
+};
+
+export type LibraryCollectionDeletePayload = {
+  collectionId: string;
+  state: "deleted";
+};
+
 export type LibraryMutationPayload = {
   addedAt: string;
   book: {

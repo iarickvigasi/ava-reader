@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { LibraryCollection } from "@/lib/api-types";
+import { LibraryCollectionActions } from "./library-collection-actions";
 import { LibraryBookCard } from "./library-book-card";
 
 type LibraryCollectionScreenProps = {
@@ -18,20 +19,28 @@ export function LibraryCollectionScreen({ collection }: LibraryCollectionScreenP
             Back to Library
           </Link>
 
-          <div className="space-y-2">
-            <div className="flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-end sm:gap-3">
-              <h1 className="font-sans text-[1.9rem] font-medium leading-[1.05] tracking-[-0.03em] text-title md:text-[2rem]">
-                {collection.name}
-              </h1>
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-olive md:pb-1">
-                {collection.itemCount} items • {collection.unreadCount} unread
-              </p>
+          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            <div className="space-y-2">
+              <div className="flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-end sm:gap-3">
+                <h1
+                  className="font-sans text-[1.9rem] font-medium leading-[1.05] tracking-[-0.03em] text-title md:text-[2rem]">
+                  {collection.name}
+                </h1>
+                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-olive md:pb-1">
+                  {collection.itemCount} items • {collection.unreadCount} unread
+                </p>
+              </div>
+              {collection.description ? (
+                <p className="max-w-3xl text-base leading-6 text-copy">
+                  {collection.description}
+                </p>
+              ) : null}
             </div>
-            {collection.description ? (
-              <p className="max-w-3xl text-base leading-6 text-copy">
-                {collection.description}
-              </p>
-            ) : null}
+            <LibraryCollectionActions
+              collectionDescription={collection.description}
+              collectionId={collection.id}
+              collectionName={collection.name}
+            />
           </div>
         </section>
 

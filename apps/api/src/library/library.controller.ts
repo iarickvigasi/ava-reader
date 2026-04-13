@@ -1,7 +1,10 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
   Param,
+  Patch,
   Post,
   Req,
   UploadedFile,
@@ -30,6 +33,35 @@ export class LibraryController {
     @Param('collectionId') collectionId: string,
   ) {
     return this.libraryService.getCollection(
+      request.auth.clerkUserId,
+      collectionId,
+    );
+  }
+
+  @Patch('collections/:collectionId')
+  @UseGuards(ClerkAuthGuard)
+  renameCollection(
+    @Req() request: AuthenticatedRequest,
+    @Param('collectionId') collectionId: string,
+    @Body() body: { description?: null | string; name?: string },
+  ) {
+    return this.libraryService.renameCollection(
+      request.auth.clerkUserId,
+      collectionId,
+      {
+        description: body.description,
+        name: body.name,
+      },
+    );
+  }
+
+  @Delete('collections/:collectionId')
+  @UseGuards(ClerkAuthGuard)
+  deleteCollection(
+    @Req() request: AuthenticatedRequest,
+    @Param('collectionId') collectionId: string,
+  ) {
+    return this.libraryService.deleteCollection(
       request.auth.clerkUserId,
       collectionId,
     );

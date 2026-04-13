@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { BookFileFormat, BookFileKind } from '@prisma/client';
 import { LibraryService } from './library.service';
 
@@ -6,10 +6,14 @@ describe('LibraryService', () => {
   const getCurrentUserRecord = jest.fn();
   const findMany = jest.fn();
   const findFirst = jest.fn();
+  const update = jest.fn();
+  const deleteManyCollections = jest.fn();
   const prisma = {
     collection: {
+      deleteMany: deleteManyCollections,
       findFirst,
       findMany,
+      update,
     },
   };
   const usersService = {
@@ -21,6 +25,8 @@ describe('LibraryService', () => {
     getCurrentUserRecord.mockReset();
     findFirst.mockReset();
     findMany.mockReset();
+    update.mockReset();
+    deleteManyCollections.mockReset();
     libraryService = new LibraryService(prisma as never, usersService as never);
     getCurrentUserRecord.mockResolvedValue({ id: 'user-1' });
   });
@@ -254,7 +260,10 @@ describe('LibraryService', () => {
       }),
     );
 
-    const payload = await libraryService.getCollection('clerk_123', 'collection-1');
+    const payload = await libraryService.getCollection(
+      'clerk_123',
+      'collection-1',
+    );
 
     expect(findFirst).toHaveBeenCalledWith({
       where: {
@@ -279,9 +288,11 @@ describe('LibraryService', () => {
         },
       },
     });
-    expect(
-      payload.collection.books.map((book) => book.libraryItemId),
-    ).toEqual(['library-3', 'library-2', 'library-1']);
+    expect(payload.collection.books.map((book) => book.libraryItemId)).toEqual([
+      'library-3',
+      'library-2',
+      'library-1',
+    ]);
     expect(payload.collection.itemCount).toBe(3);
   });
 
@@ -293,6 +304,185 @@ describe('LibraryService', () => {
     ).rejects.toBeInstanceOf(NotFoundException);
     await expect(
       libraryService.getCollection('clerk_123', 'missing-collection'),
+    ).rejects.toThrow('Collection not found.');
+  });
+
+  it('renames one owned collection with a trimmed name', async () => {
+    findFirst.mockResolvedValue({
+      description: 'Old description',
+      id: 'collection-1',
+    });
+    update.mockResolvedValue({
+      description: 'Updated description',
+      id: 'collection-1',
+      name: 'Updated Shelf',
+    });
+
+    const payload = await libraryService.renameCollection(
+      'clerk_123',
+      'collection-1',
+      {
+        description: '  Updated description  ',
+        name: '  Updated Shelf  ',
+      },
+    );
+
+    expect(findFirst).toHaveBeenCalledWith({
+      where: {
+        id: 'collection-1',
+        userId: 'user-1',
+      },
+      select: {
+        description: true,
+        id: true,
+      },
+    });
+    expect(update).toHaveBeenCalledWith({
+      where: {
+        id: 'collection-1',
+      },
+      data: {
+        description: 'Updated description',
+        name: 'Updated Shelf',
+      },
+      select: {
+        description: true,
+        id: true,
+        name: true,
+      },
+    });
+    expect(payload).toEqual({
+      collectionId: 'collection-1',
+      description: 'Updated description',
+      name: 'Updated Shelf',
+    });
+  });
+
+  it('rejects renaming with an empty collection name', async () => {
+    await expect(
+      libraryService.renameCollection('clerk_123', 'collection-1', {
+        description: 'Any description',
+        name: '   ',
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    await expect(
+      libraryService.renameCollection('clerk_123', 'collection-1', {
+        description: 'Any description',
+        name: '   ',
+      }),
+    ).rejects.toThrow('Collection name is required.');
+    expect(findFirst).not.toHaveBeenCalled();
+    expect(update).not.toHaveBeenCalled();
+  });
+
+  it('rejects renaming to a duplicate collection name', async () => {
+    findFirst.mockResolvedValue({
+      description: null,
+      id: 'collection-1',
+    });
+    update.mockRejectedValue({ code: 'P2002' });
+
+    await expect(
+      libraryService.renameCollection('clerk_123', 'collection-1', {
+        description: 'desc',
+        name: 'Already Used',
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    await expect(
+      libraryService.renameCollection('clerk_123', 'collection-1', {
+        description: 'desc',
+        name: 'Already Used',
+      }),
+    ).rejects.toThrow('A collection with this name already exists.');
+  });
+
+  it('throws not found when renaming a missing or not-owned collection', async () => {
+    findFirst.mockResolvedValue(null);
+
+    await expect(
+      libraryService.renameCollection('clerk_123', 'missing-collection', {
+        description: 'desc',
+        name: 'Next Name',
+      }),
+    ).rejects.toBeInstanceOf(NotFoundException);
+    await expect(
+      libraryService.renameCollection('clerk_123', 'missing-collection', {
+        description: 'desc',
+        name: 'Next Name',
+      }),
+    ).rejects.toThrow('Collection not found.');
+    expect(update).not.toHaveBeenCalled();
+  });
+
+  it('normalizes blank description to null when renaming', async () => {
+    findFirst.mockResolvedValue({
+      description: 'Existing description',
+      id: 'collection-1',
+    });
+    update.mockResolvedValue({
+      description: null,
+      id: 'collection-1',
+      name: 'Updated Name',
+    });
+
+    const payload = await libraryService.renameCollection(
+      'clerk_123',
+      'collection-1',
+      {
+        description: '   ',
+        name: 'Updated Name',
+      },
+    );
+
+    expect(update).toHaveBeenCalledWith({
+      where: {
+        id: 'collection-1',
+      },
+      data: {
+        description: null,
+        name: 'Updated Name',
+      },
+      select: {
+        description: true,
+        id: true,
+        name: true,
+      },
+    });
+    expect(payload).toEqual({
+      collectionId: 'collection-1',
+      description: null,
+      name: 'Updated Name',
+    });
+  });
+
+  it('deletes one owned collection, including non-empty collections', async () => {
+    deleteManyCollections.mockResolvedValue({ count: 1 });
+
+    const payload = await libraryService.deleteCollection(
+      'clerk_123',
+      'collection-filled',
+    );
+
+    expect(deleteManyCollections).toHaveBeenCalledWith({
+      where: {
+        id: 'collection-filled',
+        userId: 'user-1',
+      },
+    });
+    expect(payload).toEqual({
+      collectionId: 'collection-filled',
+      state: 'deleted',
+    });
+  });
+
+  it('throws not found when deleting a missing or not-owned collection', async () => {
+    deleteManyCollections.mockResolvedValue({ count: 0 });
+
+    await expect(
+      libraryService.deleteCollection('clerk_123', 'missing-collection'),
+    ).rejects.toBeInstanceOf(NotFoundException);
+    await expect(
+      libraryService.deleteCollection('clerk_123', 'missing-collection'),
     ).rejects.toThrow('Collection not found.');
   });
 });

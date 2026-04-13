@@ -214,6 +214,32 @@ export function CheckIcon(props: IconProps) {
   );
 }
 
+export function EditIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
+      <path
+        d="M4 20h4l10-10-4-4L4 16v4Z"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="m13.5 6.5 4 4" strokeWidth="1.8" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+export function TrashIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
+      <path d="M4 7h16" strokeWidth="1.8" strokeLinecap="round"/>
+      <path d="M9 4h6" strokeWidth="1.8" strokeLinecap="round"/>
+      <path d="M7 7v12h10V7" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M10 11v5" strokeWidth="1.8" strokeLinecap="round"/>
+      <path d="M14 11v5" strokeWidth="1.8" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
 export function ReaderLayoutIcon(props: IconProps) {
   return (
     <svg viewBox="0 0 17.5 13.5" fill="none" stroke="currentColor" {...props}>
