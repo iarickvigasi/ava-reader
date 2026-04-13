@@ -16,9 +16,9 @@ export function LibraryCollectionPlaceholderPage() {
           </div>
         </section>
 
-        <div className="flex gap-4 overflow-x-auto pb-2 md:hidden">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-6 md:hidden">
           {Array.from({ length: 4 }, (_, index) => (
-            <CollectionBookCardSkeleton key={index} mobile />
+            <CollectionBookCardSkeleton key={index} />
           ))}
         </div>
 

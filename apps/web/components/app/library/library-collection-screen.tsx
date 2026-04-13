@@ -50,9 +50,9 @@ export function LibraryCollectionScreen({ collection }: LibraryCollectionScreenP
           </div>
         ) : (
           <>
-            <div className="flex gap-4 overflow-x-auto pb-2 md:hidden">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-6 md:hidden">
               {collection.books.map((book) => (
-                <LibraryBookCard key={book.libraryItemId} book={book} mobile />
+                <LibraryBookCard key={book.libraryItemId} book={book} />
               ))}
             </div>
 
