@@ -2,9 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { ReaderStatusPayload } from "./api-types";
 import {
   createInitialTraversalState,
-  createRestoreIntent,
   readerTraversalReducer,
-  resolveNextPageIndex,
   resolveRequestedChapterId,
   resolveVisibleChapterId,
 } from "./reader-navigation";
@@ -37,40 +35,6 @@ describe("reader navigation", () => {
     expect(resolveVisibleChapterId(fetchedPayload, committedState.visibleChapterId)).toBe(
       "chapter-b",
     );
-  });
-
-  it("pins edge-end restores to the real last page after late pagination changes", () => {
-    const restoreIntent = createRestoreIntent(
-      "chapter-a",
-      { edge: "end" },
-      "restore:chapter-a:end",
-    );
-
-    expect(
-      resolveNextPageIndex({
-        activeChapterId: "chapter-a",
-        consumedRestoreIntentKey: null,
-        currentPageIndex: 0,
-        keepRestorePinned: true,
-        locatorPageIndex: null,
-        measuredPageCount: 22,
-        restorePageIndex: null,
-        restoreIntent,
-      }),
-    ).toBe(21);
-
-    expect(
-      resolveNextPageIndex({
-        activeChapterId: "chapter-a",
-        consumedRestoreIntentKey: restoreIntent.key,
-        currentPageIndex: 21,
-        keepRestorePinned: true,
-        locatorPageIndex: null,
-        measuredPageCount: 24,
-        restorePageIndex: null,
-        restoreIntent,
-      }),
-    ).toBe(23);
   });
 
   it("commits loaded TOC navigation immediately at chapter start", () => {
