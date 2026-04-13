@@ -34,11 +34,21 @@ describe("library and navigation UI", () => {
       <LibraryScreen library={createLibraryPayload()} />,
     );
 
-    expect(markup).toContain('href="/app/read/library-1"');
-    expect(markup).toContain('href="/app/read/library-2"');
-    expect(markup).toContain('href="/app/read/library-3"');
-    expect(markup).toContain('href="/app/read/library-4"');
-    expect(markup).not.toContain('href="/app/read/library-5"');
+    expect(markup).toContain(
+      'href="/app/library/books/library-1?fromCollection=collection-1"',
+    );
+    expect(markup).toContain(
+      'href="/app/library/books/library-2?fromCollection=collection-1"',
+    );
+    expect(markup).toContain(
+      'href="/app/library/books/library-3?fromCollection=collection-1"',
+    );
+    expect(markup).toContain(
+      'href="/app/library/books/library-4?fromCollection=collection-1"',
+    );
+    expect(markup).not.toContain(
+      'href="/app/library/books/library-5?fromCollection=collection-1"',
+    );
     expect(markup).toContain("Imported Books");
     expect(markup).toContain("No books are in this collection yet.");
   });

@@ -259,6 +259,90 @@ export class LibraryService {
     };
   }
 
+  async getLibraryItem(clerkUserId: string, libraryItemId: string) {
+    const user = await this.usersService.getCurrentUserRecord(clerkUserId);
+
+    const item = await this.prisma.libraryItem.findFirst({
+      where: {
+        id: libraryItemId,
+        isArchived: false,
+        userId: user.id,
+      },
+      include: {
+        book: {
+          include: {
+            coverBlob: true,
+            files: true,
+          },
+        },
+        collectionItems: {
+          include: {
+            collection: {
+              select: {
+                id: true,
+                kind: true,
+                name: true,
+                sortOrder: true,
+              },
+            },
+          },
+        },
+        progress: true,
+      },
+    });
+
+    if (!item) {
+      throw new NotFoundException('Book not found in library.');
+    }
+
+    const primarySource =
+      item.book.files.find(
+        (file) => file.kind === BookFileKind.SOURCE && file.isPrimary,
+      ) ??
+      item.book.files.find((file) => file.isPrimary) ??
+      null;
+
+    const collections = item.collectionItems
+      .map((collectionItem) => collectionItem.collection)
+      .sort((left, right) => {
+        if (left.sortOrder === right.sortOrder) {
+          return left.name.localeCompare(right.name);
+        }
+
+        return left.sortOrder - right.sortOrder;
+      })
+      .map((collection) => ({
+        id: collection.id,
+        kind: collection.kind,
+        name: collection.name,
+      }));
+
+    return {
+      book: {
+        addedAt: item.addedAt.toISOString(),
+        author: item.book.author,
+        chapterLabel: item.progress?.chapterLabel ?? null,
+        collections,
+        completionPercent: item.progress?.completionPercent ?? 0,
+        coverImageDataUrl: item.book.coverBlob
+          ? bufferToDataUrl(
+              item.book.coverBlob.bytes,
+              item.book.coverBlob.mimeType,
+            )
+          : null,
+        description: item.book.description,
+        language: item.book.language,
+        lastReadAt: item.progress?.lastReadAt?.toISOString() ?? null,
+        libraryItemId: item.id,
+        minutesRead: item.progress?.minutesRead ?? 0,
+        primaryFormat: primarySource?.format ?? BookFileFormat.UNKNOWN,
+        publishedYear: item.book.publishedYear,
+        source: item.source,
+        title: item.book.title,
+      },
+    };
+  }
+
   async renameCollection(
     clerkUserId: string,
     collectionId: string,

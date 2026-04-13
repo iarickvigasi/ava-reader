@@ -2,16 +2,24 @@ import Link from "next/link";
 import type { LibraryPayload } from "@/lib/api-types";
 import { cn } from "@/lib/cn";
 import { BookCover } from "@/components/app/shared/book-cover";
+import { getLibraryBookInfoHref } from "@/lib/app-routes";
 
 type LibraryBookCardProps = {
   book: LibraryPayload["collections"][number]["books"][number];
+  collectionId?: string;
   mobile?: boolean;
 };
 
-export function LibraryBookCard({ book, mobile = false }: LibraryBookCardProps) {
+export function LibraryBookCard({
+  book,
+  collectionId,
+  mobile = false,
+}: LibraryBookCardProps) {
   return (
     <Link
-      href={`/app/read/${book.libraryItemId}`}
+      href={getLibraryBookInfoHref(book.libraryItemId, {
+        fromCollectionId: collectionId,
+      })}
       className={cn(
         "group block shrink-0 transition hover:-translate-y-0.5",
         mobile ? "w-43.5" : "w-full",

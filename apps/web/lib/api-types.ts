@@ -121,6 +121,32 @@ export type LibraryCollectionPayload = {
   collection: LibraryCollection;
 };
 
+export type LibraryBookInfo = {
+  addedAt: string;
+  author: string | null;
+  chapterLabel: string | null;
+  collections: Array<{
+    id: string;
+    kind: "SMART" | "CUSTOM";
+    name: string;
+  }>;
+  completionPercent: number;
+  coverImageDataUrl: string | null;
+  description: string | null;
+  language: string | null;
+  lastReadAt: string | null;
+  libraryItemId: string;
+  minutesRead: number;
+  primaryFormat: BookFileFormat;
+  publishedYear: number | null;
+  source: "IMPORTED" | "CATALOG";
+  title: string;
+};
+
+export type LibraryBookInfoPayload = {
+  book: LibraryBookInfo;
+};
+
 export type LibraryCollectionRenamePayload = {
   collectionId: string;
   description: string | null;

@@ -129,13 +129,22 @@ function CollectionSection({
         <>
           <div className="flex gap-4 overflow-x-auto pb-2 md:hidden">
             {collection.books.map((book) => (
-              <LibraryBookCard key={book.libraryItemId} book={book} mobile />
+              <LibraryBookCard
+                key={book.libraryItemId}
+                book={book}
+                collectionId={collection.id}
+                mobile
+              />
             ))}
           </div>
 
           <div className="hidden gap-x-8 gap-y-6 md:grid md:grid-cols-3 xl:grid-cols-4">
             {collection.books.map((book) => (
-              <LibraryBookCard key={book.libraryItemId} book={book} />
+              <LibraryBookCard
+                key={book.libraryItemId}
+                book={book}
+                collectionId={collection.id}
+              />
             ))}
           </div>
         </>

@@ -40,9 +40,15 @@ describe("library collection detail UI", () => {
     );
 
     expect(markup).toContain('href="/app/library"');
-    expect(markup).toContain('href="/app/read/library-1"');
-    expect(markup).toContain('href="/app/read/library-2"');
-    expect(markup).toContain('href="/app/read/library-3"');
+    expect(markup).toContain(
+      'href="/app/library/books/library-1?fromCollection=collection-1"',
+    );
+    expect(markup).toContain(
+      'href="/app/library/books/library-2?fromCollection=collection-1"',
+    );
+    expect(markup).toContain(
+      'href="/app/library/books/library-3?fromCollection=collection-1"',
+    );
     expect(markup).toContain("Imported Books");
     expect(markup).toContain("3 items • 2 unread");
     expect(markup).toContain("Edit");

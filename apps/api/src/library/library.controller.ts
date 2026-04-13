@@ -38,6 +38,18 @@ export class LibraryController {
     );
   }
 
+  @Get(':libraryItemId')
+  @UseGuards(ClerkAuthGuard)
+  getLibraryItem(
+    @Req() request: AuthenticatedRequest,
+    @Param('libraryItemId') libraryItemId: string,
+  ) {
+    return this.libraryService.getLibraryItem(
+      request.auth.clerkUserId,
+      libraryItemId,
+    );
+  }
+
   @Patch('collections/:collectionId')
   @UseGuards(ClerkAuthGuard)
   renameCollection(
