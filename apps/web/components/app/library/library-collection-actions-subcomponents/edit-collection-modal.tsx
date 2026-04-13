@@ -23,7 +23,7 @@ export function EditCollectionModal({
 }: EditCollectionModalProps) {
   return (
     <form
-      className="relative w-full max-w-2xl rounded-[28px] border border-line/65 bg-surface/95 p-5 shadow-(--shadow-card) backdrop-blur sm:p-6"
+      className="relative w-full max-w-2xl rounded-[28px] bg-surface/95 p-5 shadow-(--shadow-card) backdrop-blur sm:p-6"
       onSubmit={onSubmit}
     >
       <p className="font-(--font-ui) text-[0.7rem] uppercase tracking-[0.15em] text-ink/50">
@@ -40,7 +40,7 @@ export function EditCollectionModal({
           </span>
           <input
             aria-label="Collection title"
-            className="h-11 w-full rounded-[11px] border border-line/30 bg-paper-strong/90 px-3 text-[0.96rem] text-title outline-none placeholder:text-muted"
+            className="h-11 w-full rounded-[11px] bg-paper-strong/90 px-3 text-[0.96rem] text-title outline-none placeholder:text-muted"
             disabled={isPending}
             onChange={(event) => onNameChange(event.target.value)}
             value={collectionName}
@@ -53,7 +53,7 @@ export function EditCollectionModal({
           </span>
           <textarea
             aria-label="Collection description"
-            className="h-28 w-full resize-none rounded-[11px] border border-line/30 bg-paper-strong/90 px-3 py-2.5 text-sm leading-6 text-copy outline-none placeholder:text-muted"
+            className="h-28 w-full resize-none rounded-[11px] bg-paper-strong/90 px-3 py-2.5 text-sm leading-6 text-copy outline-none placeholder:text-muted"
             disabled={isPending}
             onChange={(event) => onDescriptionChange(event.target.value)}
             placeholder="Add a short description for this collection."
@@ -66,7 +66,7 @@ export function EditCollectionModal({
 
       <div className="mt-5 flex items-center justify-end gap-2">
         <button
-          className="inline-flex min-h-10 items-center justify-center rounded-[11px] border border-line bg-white/45 px-4 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-ink transition hover:bg-white/75 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex min-h-10 items-center justify-center rounded-[11px] bg-soft-fill px-4 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-ink transition hover:bg-soft-tone-fill disabled:cursor-not-allowed disabled:opacity-60"
           disabled={isPending}
           onClick={onClose}
           type="button"
@@ -74,7 +74,7 @@ export function EditCollectionModal({
           Cancel
         </button>
         <button
-          className="inline-flex min-h-10 items-center justify-center rounded-[11px] border border-brand-fill bg-brand-fill px-4 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-brand-foreground transition hover:bg-brand-fill-strong disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex min-h-10 items-center justify-center rounded-[11px] bg-brand-fill px-4 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-brand-foreground transition hover:bg-brand-fill-strong disabled:cursor-not-allowed disabled:opacity-60"
           disabled={isPending}
           type="submit"
         >

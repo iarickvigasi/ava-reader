@@ -24,7 +24,7 @@ const styles = {
   primary:
     "border border-brand-fill bg-brand-fill text-brand-foreground shadow-[var(--shadow-card)] hover:bg-brand-fill-strong",
   soft:
-    "border border-transparent bg-soft-fill text-soft-foreground hover:border-line hover:bg-white",
+    "bg-soft-fill text-soft-foreground hover:bg-soft-tone-fill",
 } as const;
 
 export function LibraryImportButton({

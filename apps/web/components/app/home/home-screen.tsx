@@ -201,7 +201,7 @@ function PopulatedHomeState({ home }: HomeScreenProps) {
 
           <div className="sm:hidden">
             <LibraryImportButton
-              variant="ghost"
+              variant="soft"
               label="Import another book"
               className="w-full justify-center"
             />

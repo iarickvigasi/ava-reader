@@ -14,7 +14,7 @@ export function DeleteCollectionModal({
   onConfirmDelete,
 }: DeleteCollectionModalProps) {
   return (
-    <div className="relative w-full max-w-md rounded-[28px] border border-line/65 bg-surface/95 p-5 shadow-(--shadow-card) backdrop-blur sm:p-6">
+    <div className="relative w-full max-w-md rounded-[28px] bg-surface/95 p-5 shadow-(--shadow-card) backdrop-blur sm:p-6">
       <p className="font-(--font-ui) text-[0.7rem] uppercase tracking-[0.15em] text-danger/80">
         Collection
       </p>
@@ -31,7 +31,7 @@ export function DeleteCollectionModal({
 
       <div className="mt-5 flex items-center justify-end gap-2">
         <button
-          className="inline-flex min-h-10 items-center justify-center rounded-[11px] border border-line bg-white/45 px-4 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-ink transition hover:bg-white/75 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex min-h-10 items-center justify-center rounded-[11px] bg-soft-fill px-4 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-ink transition hover:bg-soft-tone-fill disabled:cursor-not-allowed disabled:opacity-60"
           disabled={isPending}
           onClick={onClose}
           type="button"
@@ -39,7 +39,7 @@ export function DeleteCollectionModal({
           Cancel
         </button>
         <button
-          className="inline-flex min-h-10 items-center justify-center rounded-[11px] border border-danger/70 bg-danger px-4 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex min-h-10 items-center justify-center rounded-[11px] bg-danger px-4 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
           disabled={isPending}
           onClick={onConfirmDelete}
           type="button"
