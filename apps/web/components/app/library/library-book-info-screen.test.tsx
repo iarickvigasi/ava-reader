@@ -32,12 +32,27 @@ describe("library book info metadata", () => {
     );
 
     expect(markup).toContain("Reading time");
-    expect(markup).toContain("3.3 h");
+    expect(markup).toContain("3.3 h / 5.4 h estimated");
     expect(markup).toContain("Page count");
     expect(markup).toContain("~163 pages");
     expect(markup).toContain("Published");
     expect(markup).toContain("1818");
     expect(markup).not.toContain("Minutes read");
+  });
+
+  it("renders full language name for canonical language tags", () => {
+    const markup = renderToStaticMarkup(
+      <LibraryBookInfoScreen
+        backHref="/app/library"
+        book={createBookInfo({
+          language: "en",
+        })}
+      />,
+    );
+
+    expect(markup).toContain("Language");
+    expect(markup).toContain("English");
+    expect(markup).not.toContain(">en<");
   });
 
   it("renders unknown page count fallback", () => {
@@ -54,6 +69,24 @@ describe("library book info metadata", () => {
     expect(markup).toContain("Page count");
     expect(markup).toContain("Unknown");
     expect(markup).toContain("Published");
+    expect(markup).toContain("Reading time");
+    expect(markup).toContain("3.3 h");
+    expect(markup).not.toContain("estimated");
+  });
+
+  it("renders estimated total reading time from page count", () => {
+    const markup = renderToStaticMarkup(
+      <LibraryBookInfoScreen
+        backHref="/app/library"
+        book={createBookInfo({
+          approximatePageCount: 60,
+          minutesRead: 0,
+        })}
+      />,
+    );
+
+    expect(markup).toContain("Reading time");
+    expect(markup).toContain("0.0 h / 2.0 h estimated");
   });
 });
 

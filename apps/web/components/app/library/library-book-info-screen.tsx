@@ -35,7 +35,7 @@ export function LibraryBookInfoScreen({
   const metadata: MetadataEntry[] = [
     {
       label: "Language",
-      value: book.language ?? "Unknown",
+      value: formatBookLanguage(book.language),
     },
     {
       label: "Format",
@@ -266,8 +266,10 @@ function buildBookTags(book: LibraryBookInfo) {
     book.source === "CATALOG" ? "Catalog" : "Imported",
   ];
 
-  if (book.language) {
-    tags.push(book.language);
+  const formattedLanguage = formatOptionalBookLanguage(book.language);
+
+  if (formattedLanguage) {
+    tags.push(formattedLanguage);
   }
 
   if (book.collections[0]?.name) {
@@ -328,6 +330,33 @@ function formatDate(value: string) {
     month: "short",
     year: "numeric",
   }).format(parsed);
+}
+
+function formatBookLanguage(language: null | string) {
+  const formatted = formatOptionalBookLanguage(language);
+
+  return formatted ?? "Unknown";
+}
+
+function formatOptionalBookLanguage(language: null | string) {
+  const trimmed = language?.trim();
+
+  if (!trimmed) {
+    return null;
+  }
+
+  if (typeof Intl.DisplayNames === "undefined") {
+    return trimmed;
+  }
+
+  try {
+    const displayNames = new Intl.DisplayNames(undefined, {
+      type: "language",
+    });
+    return displayNames.of(trimmed) ?? trimmed;
+  } catch {
+    return trimmed;
+  }
 }
 
 function formatReadingTime(minutesRead: number) {

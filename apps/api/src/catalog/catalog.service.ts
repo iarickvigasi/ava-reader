@@ -1,4 +1,3 @@
-import type { Express } from 'express';
 import {
   BlobPurpose,
   BookFileFormat,
@@ -145,8 +144,9 @@ export class CatalogService {
               description:
                 parseOptionalStringInput(body.description) ??
                 metadata.description,
-              language:
+              language: normalizeBookLanguage(
                 parseOptionalStringInput(body.language) ?? metadata.language,
+              ),
               publishedYear:
                 parseOptionalNumberInput(body.publishedYear) ??
                 metadata.publishedYear ??
@@ -335,10 +335,11 @@ export class CatalogService {
                 parseOptionalStringInput(body.description) ??
                 metadata?.description ??
                 currentEntry.book.description,
-              language:
+              language: normalizeBookLanguage(
                 parseOptionalStringInput(body.language) ??
-                metadata?.language ??
-                currentEntry.book.language,
+                  metadata?.language ??
+                  currentEntry.book.language,
+              ),
               publishedYear:
                 parseOptionalNumberInput(body.publishedYear) ??
                 metadata?.publishedYear ??
@@ -438,4 +439,24 @@ function inferMimeType(format: BookFileFormat) {
   }
 
   return 'application/octet-stream';
+}
+
+function normalizeBookLanguage(
+  value: null | string | undefined,
+): null | string {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const trimmed = value.trim();
+
+  if (trimmed.length === 0) {
+    return null;
+  }
+
+  try {
+    return new Intl.Locale(trimmed.replace(/_/g, '-')).toString();
+  } catch {
+    return trimmed;
+  }
 }

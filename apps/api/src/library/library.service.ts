@@ -1,4 +1,3 @@
-import type { Express } from 'express';
 import {
   BlobPurpose,
   BookFileFormat,
@@ -116,7 +115,7 @@ export class LibraryService {
           title: metadata.title,
           author: metadata.author,
           description: metadata.description,
-          language: metadata.language,
+          language: normalizeBookLanguage(metadata.language),
           publishedYear: metadata.publishedYear,
           coverBlobId: coverBlob?.id,
           files: {
@@ -694,4 +693,24 @@ function inferMimeType(format: BookFileFormat) {
   }
 
   return 'application/octet-stream';
+}
+
+function normalizeBookLanguage(
+  value: null | string | undefined,
+): null | string {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const trimmed = value.trim();
+
+  if (trimmed.length === 0) {
+    return null;
+  }
+
+  try {
+    return new Intl.Locale(trimmed.replace(/_/g, '-')).toString();
+  } catch {
+    return trimmed;
+  }
 }

@@ -364,7 +364,10 @@ describe('LibraryService', () => {
       userId: 'user-1',
     });
 
-    const payload = await libraryService.getLibraryItem('clerk_123', 'library-42');
+    const payload = await libraryService.getLibraryItem(
+      'clerk_123',
+      'library-42',
+    );
 
     expect(findFirstLibraryItem).toHaveBeenCalledWith({
       where: {
