@@ -13,9 +13,11 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { checksumBuffer, toPrismaBytes } from '../shared/blob-utils';
 import { buildReaderPackageFromEpub } from './epub-reader-package';
+import type { ReaderPackage } from './reader-types';
 
 const READER_PACKAGE_MIME_TYPE = 'application/vnd.ava.reader-package+json';
 const READER_PROCESSING_TRANSACTION_TIMEOUT_MS = 30_000;
+const ESTIMATED_CHARACTERS_PER_PAGE = 1_800;
 
 @Injectable()
 export class ReaderProcessingService implements OnModuleInit, OnModuleDestroy {
@@ -129,11 +131,21 @@ export class ReaderProcessingService implements OnModuleInit, OnModuleDestroy {
         language: run.book.language,
         title: run.book.title,
       });
+      const estimatedPageCount = estimatePageCount(readerPackage);
       const packageBytes = Buffer.from(JSON.stringify(readerPackage), 'utf8');
       const checksum = checksumBuffer(packageBytes);
 
       await this.prisma.$transaction(
         async (tx) => {
+          await tx.book.update({
+            where: {
+              id: run.bookId,
+            },
+            data: {
+              estimatedPageCount,
+            },
+          });
+
           await tx.bookFile.updateMany({
             where: {
               bookId: run.bookId,
@@ -202,4 +214,19 @@ export class ReaderProcessingService implements OnModuleInit, OnModuleDestroy {
       },
     });
   }
+}
+
+function estimatePageCount(readerPackage: ReaderPackage) {
+  const totalCharacters = readerPackage.chapters.reduce((chapterSum, chapter) => {
+    return (
+      chapterSum +
+      chapter.blocks.reduce((blockSum, block) => blockSum + block.text.length, 0)
+    );
+  }, 0);
+
+  if (totalCharacters <= 0) {
+    return null;
+  }
+
+  return Math.max(1, Math.round(totalCharacters / ESTIMATED_CHARACTERS_PER_PAGE));
 }

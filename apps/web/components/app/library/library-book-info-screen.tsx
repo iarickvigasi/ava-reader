@@ -45,15 +45,18 @@ export function LibraryBookInfoScreen({
       label: "In library since",
       value: formatDate(book.addedAt),
     },
-    book.publishedYear
-      ? {
-          label: "Published",
-          value: `${book.publishedYear}`,
-        }
-      : {
-          label: "Minutes read",
-          value: `${book.minutesRead} min`,
-        },
+    {
+      label: "Published",
+      value: book.publishedYear ? `${book.publishedYear}` : "Unknown",
+    },
+    {
+      label: "Reading time",
+      value: formatReadingTime(book.minutesRead),
+    },
+    {
+      label: "Page count",
+      value: formatApproximatePageCount(book.approximatePageCount),
+    },
   ];
   const collectionLabel =
     book.collections.length > 0
@@ -143,7 +146,7 @@ export function LibraryBookInfoScreen({
                 </p>
               </section>
 
-              <section className="grid grid-cols-2 gap-x-6 gap-y-6 border-t border-line/30 pt-6 md:gap-x-10">
+              <section className="grid grid-cols-3 gap-x-6 gap-y-6 border-t border-line/30 pt-6 md:gap-x-10">
                 {metadata.map((entry) => (
                   <MetadataCell
                     key={entry.label}
@@ -325,6 +328,20 @@ function formatDate(value: string) {
     month: "short",
     year: "numeric",
   }).format(parsed);
+}
+
+function formatReadingTime(minutesRead: number) {
+  const hours = Math.max(0, minutesRead) / 60;
+
+  return `${hours.toFixed(1)} h`;
+}
+
+function formatApproximatePageCount(approximatePageCount: number | null) {
+  if (!approximatePageCount || approximatePageCount < 1) {
+    return "Unknown";
+  }
+
+  return `~${approximatePageCount} page${approximatePageCount === 1 ? "" : "s"}`;
 }
 
 function clampPercent(percent: number) {

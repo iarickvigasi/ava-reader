@@ -320,6 +320,7 @@ export class LibraryService {
     return {
       book: {
         addedAt: item.addedAt.toISOString(),
+        approximatePageCount: item.book.estimatedPageCount ?? null,
         author: item.book.author,
         chapterLabel: item.progress?.chapterLabel ?? null,
         collections,

@@ -123,6 +123,7 @@ export type LibraryCollectionPayload = {
 
 export type LibraryBookInfo = {
   addedAt: string;
+  approximatePageCount: number | null;
   author: string | null;
   chapterLabel: string | null;
   collections: Array<{

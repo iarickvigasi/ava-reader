@@ -6,6 +6,7 @@ describe('LibraryService', () => {
   const getCurrentUserRecord = jest.fn();
   const findMany = jest.fn();
   const findFirst = jest.fn();
+  const findFirstLibraryItem = jest.fn();
   const update = jest.fn();
   const deleteManyCollections = jest.fn();
   const prisma = {
@@ -14,6 +15,9 @@ describe('LibraryService', () => {
       findFirst,
       findMany,
       update,
+    },
+    libraryItem: {
+      findFirst: findFirstLibraryItem,
     },
   };
   const usersService = {
@@ -24,6 +28,7 @@ describe('LibraryService', () => {
   beforeEach(() => {
     getCurrentUserRecord.mockReset();
     findFirst.mockReset();
+    findFirstLibraryItem.mockReset();
     findMany.mockReset();
     update.mockReset();
     deleteManyCollections.mockReset();
@@ -305,6 +310,156 @@ describe('LibraryService', () => {
     await expect(
       libraryService.getCollection('clerk_123', 'missing-collection'),
     ).rejects.toThrow('Collection not found.');
+  });
+
+  it('returns one library item payload with approximate page count when available', async () => {
+    findFirstLibraryItem.mockResolvedValue({
+      addedAt: new Date('2026-04-01T10:00:00.000Z'),
+      book: {
+        author: 'Mary Shelley',
+        coverBlob: {
+          bytes: Buffer.from('cover-book'),
+          mimeType: 'image/png',
+        },
+        description: 'A gothic classic.',
+        estimatedPageCount: 163,
+        files: [
+          {
+            format: BookFileFormat.EPUB,
+            isPrimary: true,
+            kind: BookFileKind.SOURCE,
+          },
+        ],
+        language: 'English',
+        publishedYear: 1818,
+        title: 'Frankenstein',
+      },
+      collectionItems: [
+        {
+          collection: {
+            id: 'collection-b',
+            kind: 'CUSTOM',
+            name: 'Night Reads',
+            sortOrder: 2,
+          },
+        },
+        {
+          collection: {
+            id: 'collection-a',
+            kind: 'SMART',
+            name: 'Imported Books',
+            sortOrder: 1,
+          },
+        },
+      ],
+      id: 'library-42',
+      isArchived: false,
+      progress: {
+        chapterLabel: 'Chapter 7',
+        completionPercent: 44,
+        lastReadAt: new Date('2026-04-11T08:30:00.000Z'),
+        minutesRead: 195,
+      },
+      source: 'IMPORTED',
+      userId: 'user-1',
+    });
+
+    const payload = await libraryService.getLibraryItem('clerk_123', 'library-42');
+
+    expect(findFirstLibraryItem).toHaveBeenCalledWith({
+      where: {
+        id: 'library-42',
+        isArchived: false,
+        userId: 'user-1',
+      },
+      include: {
+        book: {
+          include: {
+            coverBlob: true,
+            files: true,
+          },
+        },
+        collectionItems: {
+          include: {
+            collection: {
+              select: {
+                id: true,
+                kind: true,
+                name: true,
+                sortOrder: true,
+              },
+            },
+          },
+        },
+        progress: true,
+      },
+    });
+    expect(payload).toEqual({
+      book: {
+        addedAt: '2026-04-01T10:00:00.000Z',
+        approximatePageCount: 163,
+        author: 'Mary Shelley',
+        chapterLabel: 'Chapter 7',
+        collections: [
+          {
+            id: 'collection-a',
+            kind: 'SMART',
+            name: 'Imported Books',
+          },
+          {
+            id: 'collection-b',
+            kind: 'CUSTOM',
+            name: 'Night Reads',
+          },
+        ],
+        completionPercent: 44,
+        coverImageDataUrl: 'data:image/png;base64,Y292ZXItYm9vaw==',
+        description: 'A gothic classic.',
+        language: 'English',
+        lastReadAt: '2026-04-11T08:30:00.000Z',
+        libraryItemId: 'library-42',
+        minutesRead: 195,
+        primaryFormat: BookFileFormat.EPUB,
+        publishedYear: 1818,
+        source: 'IMPORTED',
+        title: 'Frankenstein',
+      },
+    });
+  });
+
+  it('returns null approximate page count when no estimate is available', async () => {
+    findFirstLibraryItem.mockResolvedValue({
+      addedAt: new Date('2026-04-03T10:00:00.000Z'),
+      book: {
+        author: null,
+        coverBlob: null,
+        description: null,
+        estimatedPageCount: null,
+        files: [
+          {
+            format: BookFileFormat.PDF,
+            isPrimary: true,
+            kind: BookFileKind.SOURCE,
+          },
+        ],
+        language: null,
+        publishedYear: null,
+        title: 'Unknown Treatise',
+      },
+      collectionItems: [],
+      id: 'library-unknown',
+      isArchived: false,
+      progress: null,
+      source: 'CATALOG',
+      userId: 'user-1',
+    });
+
+    const payload = await libraryService.getLibraryItem(
+      'clerk_123',
+      'library-unknown',
+    );
+
+    expect(payload.book.approximatePageCount).toBeNull();
   });
 
   it('renames one owned collection with a trimmed name', async () => {

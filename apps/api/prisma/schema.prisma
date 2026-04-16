@@ -101,6 +101,7 @@ model Book {
   description   String?
   language      String?
   publishedYear Int?
+  estimatedPageCount Int?
   coverBlobId   String?
   coverBlob     StoredBlob?        @relation("BookCover", fields: [coverBlobId], references: [id], onDelete: SetNull)
   files         BookFile[]
