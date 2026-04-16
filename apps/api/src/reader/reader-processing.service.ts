@@ -217,16 +217,25 @@ export class ReaderProcessingService implements OnModuleInit, OnModuleDestroy {
 }
 
 function estimatePageCount(readerPackage: ReaderPackage) {
-  const totalCharacters = readerPackage.chapters.reduce((chapterSum, chapter) => {
-    return (
-      chapterSum +
-      chapter.blocks.reduce((blockSum, block) => blockSum + block.text.length, 0)
-    );
-  }, 0);
+  const totalCharacters = readerPackage.chapters.reduce(
+    (chapterSum, chapter) => {
+      return (
+        chapterSum +
+        chapter.blocks.reduce(
+          (blockSum, block) => blockSum + block.text.length,
+          0,
+        )
+      );
+    },
+    0,
+  );
 
   if (totalCharacters <= 0) {
     return null;
   }
 
-  return Math.max(1, Math.round(totalCharacters / ESTIMATED_CHARACTERS_PER_PAGE));
+  return Math.max(
+    1,
+    Math.round(totalCharacters / ESTIMATED_CHARACTERS_PER_PAGE),
+  );
 }

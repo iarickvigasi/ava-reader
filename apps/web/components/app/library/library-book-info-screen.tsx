@@ -24,6 +24,8 @@ type MetadataEntry = {
   value: string;
 };
 
+const ESTIMATED_PAGES_PER_HOUR = 30;
+
 export function LibraryBookInfoScreen({
   backHref,
   book,
@@ -51,7 +53,7 @@ export function LibraryBookInfoScreen({
     },
     {
       label: "Reading time",
-      value: formatReadingTime(book.minutesRead),
+      value: formatReadingTime(book.minutesRead, book.approximatePageCount),
     },
     {
       label: "Page count",
@@ -359,9 +361,29 @@ function formatOptionalBookLanguage(language: null | string) {
   }
 }
 
-function formatReadingTime(minutesRead: number) {
-  const hours = Math.max(0, minutesRead) / 60;
+function formatReadingTime(
+  minutesRead: number,
+  approximatePageCount: number | null,
+) {
+  const spentReadingTime = formatHours(Math.max(0, minutesRead) / 60);
+  const estimatedReadingTime = formatEstimatedReadingHours(approximatePageCount);
 
+  if (!estimatedReadingTime) {
+    return spentReadingTime;
+  }
+
+  return `${spentReadingTime} / ${estimatedReadingTime}`;
+}
+
+function formatEstimatedReadingHours(approximatePageCount: number | null) {
+  if (!approximatePageCount || approximatePageCount < 1) {
+    return null;
+  }
+
+  return `${formatHours(approximatePageCount / ESTIMATED_PAGES_PER_HOUR)} estimated`;
+}
+
+function formatHours(hours: number) {
   return `${hours.toFixed(1)} h`;
 }
 
