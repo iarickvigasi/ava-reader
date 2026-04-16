@@ -115,6 +115,7 @@ export class LibraryService {
           title: metadata.title,
           author: metadata.author,
           description: metadata.description,
+          genres: metadata.genres,
           language: normalizeBookLanguage(metadata.language),
           publishedYear: metadata.publishedYear,
           coverBlobId: coverBlob?.id,
@@ -331,6 +332,7 @@ export class LibraryService {
             )
           : null,
         description: item.book.description,
+        genres: item.book.genres,
         language: item.book.language,
         lastReadAt: item.progress?.lastReadAt?.toISOString() ?? null,
         libraryItemId: item.id,

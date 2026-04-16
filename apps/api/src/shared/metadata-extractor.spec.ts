@@ -19,6 +19,7 @@ describe('extractBookMetadata', () => {
     expect(metadata.title).toBe('Example Title');
     expect(metadata.author).toBe('Example Author');
     expect(metadata.description).toBe('Example Description');
+    expect(metadata.genres).toEqual([]);
     expect(metadata.language).toBe('en');
     expect(metadata.publishedYear).toBe(2024);
     expect(metadata.coverImage).toEqual({
@@ -26,6 +27,53 @@ describe('extractBookMetadata', () => {
       mimeType: 'image/jpeg',
       originalFilename: 'cover.jpg',
     });
+  });
+
+  it('extracts EPUB subjects as normalized, deduplicated genres', async () => {
+    const epubBuffer = await createEpubBuffer({
+      dcSubjects: ['Science Fiction', ' Gothic ', 'Science Fiction'],
+      subjects: ['Classic', 'Gothic'],
+    });
+
+    const metadata = await extractBookMetadata({
+      buffer: epubBuffer,
+      mimetype: 'application/epub+zip',
+      originalname: 'example.epub',
+    });
+
+    expect(metadata.genres).toEqual(['Science Fiction', 'Gothic', 'Classic']);
+  });
+
+  it('splits subject chains and keeps only unique genre tokens', async () => {
+    const epubBuffer = await createEpubBuffer({
+      dcSubjects: [
+        'Novelists, English -- 19th century -- Correspondence',
+        'Austen, Jane, 1775-1817 -- Correspondence',
+        'Management - General',
+        'Self-Help',
+        'Personal Growth - Success',
+      ],
+      subjects: ['Management', 'Business & Economics'],
+    });
+
+    const metadata = await extractBookMetadata({
+      buffer: epubBuffer,
+      mimetype: 'application/epub+zip',
+      originalname: 'example.epub',
+    });
+
+    expect(metadata.genres).toEqual([
+      'Novelists, English',
+      '19th century',
+      'Correspondence',
+      'Austen, Jane, 1775-1817',
+      'Management',
+      'General',
+      'Self-Help',
+      'Personal Growth',
+      'Success',
+      'Business & Economics',
+    ]);
   });
 
   it('returns null coverImage when the EPUB has no embedded cover', async () => {
@@ -44,6 +92,8 @@ describe('extractBookMetadata', () => {
 async function createEpubBuffer(input: {
   coverBytes?: Buffer;
   coverHref?: string;
+  dcSubjects?: string[];
+  subjects?: string[];
 }) {
   const zip = new JSZip();
   zip.file(
@@ -64,6 +114,14 @@ async function createEpubBuffer(input: {
     input.coverBytes && input.coverHref
       ? '<meta name="cover" content="cover-image"/>'
       : '';
+  const dcSubjectTags =
+    input.dcSubjects
+      ?.map((subject) => `<dc:subject>${subject}</dc:subject>`)
+      .join('\n    ') ?? '';
+  const subjectTags =
+    input.subjects
+      ?.map((subject) => `<subject>${subject}</subject>`)
+      .join('\n    ') ?? '';
 
   zip.file(
     'OEBPS/content.opf',
@@ -75,6 +133,8 @@ async function createEpubBuffer(input: {
     <dc:description>Example Description</dc:description>
     <dc:language>en</dc:language>
     <dc:date>2024-01-15</dc:date>
+    ${dcSubjectTags}
+    ${subjectTags}
     ${coverMeta}
   </metadata>
   <manifest>

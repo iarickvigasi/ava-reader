@@ -330,6 +330,7 @@ describe('LibraryService', () => {
             kind: BookFileKind.SOURCE,
           },
         ],
+        genres: ['Gothic', 'Horror'],
         language: 'English',
         publishedYear: 1818,
         title: 'Frankenstein',
@@ -418,6 +419,7 @@ describe('LibraryService', () => {
         completionPercent: 44,
         coverImageDataUrl: 'data:image/png;base64,Y292ZXItYm9vaw==',
         description: 'A gothic classic.',
+        genres: ['Gothic', 'Horror'],
         language: 'English',
         lastReadAt: '2026-04-11T08:30:00.000Z',
         libraryItemId: 'library-42',
@@ -445,6 +447,7 @@ describe('LibraryService', () => {
             kind: BookFileKind.SOURCE,
           },
         ],
+        genres: [],
         language: null,
         publishedYear: null,
         title: 'Unknown Treatise',
@@ -463,6 +466,7 @@ describe('LibraryService', () => {
     );
 
     expect(payload.book.approximatePageCount).toBeNull();
+    expect(payload.book.genres).toEqual([]);
   });
 
   it('renames one owned collection with a trimmed name', async () => {

@@ -263,22 +263,13 @@ function ActionCard({
 }
 
 function buildBookTags(book: LibraryBookInfo) {
-  const tags = [
-    formatPrimaryFormat(book.primaryFormat),
-    book.source === "CATALOG" ? "Catalog" : "Imported",
-  ];
-
-  const formattedLanguage = formatOptionalBookLanguage(book.language);
-
-  if (formattedLanguage) {
-    tags.push(formattedLanguage);
+  if (!Array.isArray(book.genres)) {
+    return [];
   }
 
-  if (book.collections[0]?.name) {
-    tags.push(book.collections[0].name);
-  }
-
-  return tags;
+  return book.genres
+    .map((genre) => genre.trim())
+    .filter((genre) => genre.length > 0);
 }
 
 function buildProgressLabel(book: LibraryBookInfo) {

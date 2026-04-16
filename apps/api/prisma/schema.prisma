@@ -99,6 +99,7 @@ model Book {
   subtitle      String?
   author        String?
   description   String?
+  genres        String[]           @default([])
   language      String?
   publishedYear Int?
   estimatedPageCount Int?

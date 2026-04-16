@@ -134,6 +134,7 @@ export type LibraryBookInfo = {
   completionPercent: number;
   coverImageDataUrl: string | null;
   description: string | null;
+  genres: string[];
   language: string | null;
   lastReadAt: string | null;
   libraryItemId: string;

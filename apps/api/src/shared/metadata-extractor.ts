@@ -20,6 +20,7 @@ export type ExtractedBookMetadata = {
   } | null;
   description: string | null;
   format: BookFileFormat;
+  genres: string[];
   language: string | null;
   publishedYear: number | null;
   title: string;
@@ -45,6 +46,7 @@ export async function extractBookMetadata(
       coverImage: epubMetadata.coverImage ?? null,
       description: epubMetadata.description ?? null,
       format,
+      genres: epubMetadata.genres ?? [],
       language: epubMetadata.language ?? null,
       publishedYear: epubMetadata.publishedYear ?? null,
       title: epubMetadata.title ?? fallbackTitle,
@@ -56,6 +58,7 @@ export async function extractBookMetadata(
     coverImage: null,
     description: null,
     format,
+    genres: [],
     language: null,
     publishedYear: null,
     title: fallbackTitle,
@@ -138,6 +141,7 @@ async function tryExtractEpubMetadata(buffer: Buffer) {
         'dc:description',
         'description',
       ]),
+      genres: readMetadataGenres(metadata, ['dc:subject', 'subject']),
       language: readMetadataText(metadata, ['dc:language', 'language']),
       publishedYear: readPublishedYear(
         readMetadataText(metadata, ['dc:date', 'date']),
@@ -257,52 +261,89 @@ function readMetadataText(
   metadata: Record<string, unknown> | undefined,
   keys: string[],
 ) {
+  return readMetadataTexts(metadata, keys)[0] ?? null;
+}
+
+function readMetadataTexts(
+  metadata: Record<string, unknown> | undefined,
+  keys: string[],
+) {
   if (!metadata) {
-    return null;
+    return [];
   }
+
+  const values: string[] = [];
 
   for (const key of keys) {
     const entry = metadata[key];
-    const text = normalizeXmlText(entry);
-
-    if (text) {
-      return text;
-    }
+    values.push(...normalizeXmlTexts(entry));
   }
 
-  return null;
+  return values;
 }
 
-function normalizeXmlText(value: unknown): string | null {
+function readMetadataGenres(
+  metadata: Record<string, unknown> | undefined,
+  keys: string[],
+) {
+  const values = readMetadataTexts(metadata, keys).flatMap(splitGenreTokens);
+
+  return dedupeGenresPreserveOrder(values);
+}
+
+function normalizeXmlTexts(value: unknown): string[] {
   if (!value) {
-    return null;
+    return [];
   }
 
   if (typeof value === 'string') {
-    return value.trim() || null;
+    const trimmed = value.trim();
+
+    return trimmed.length > 0 ? [trimmed] : [];
   }
 
   if (Array.isArray(value)) {
-    for (const entry of value) {
-      const text = normalizeXmlText(entry);
+    const values: string[] = [];
 
-      if (text) {
-        return text;
-      }
+    for (const entry of value) {
+      values.push(...normalizeXmlTexts(entry));
     }
 
-    return null;
+    return values;
   }
 
   if (typeof value === 'object') {
     const maybeText = (value as Record<string, unknown>)['#text'];
 
-    if (typeof maybeText === 'string' && maybeText.trim().length > 0) {
-      return maybeText.trim();
-    }
+    return normalizeXmlTexts(maybeText);
   }
 
-  return null;
+  return [];
+}
+
+function dedupeGenresPreserveOrder(values: string[]) {
+  const uniqueValues: string[] = [];
+  const seenValues = new Set<string>();
+
+  for (const value of values) {
+    const normalizedValue = value.toLocaleLowerCase();
+
+    if (seenValues.has(normalizedValue)) {
+      continue;
+    }
+
+    seenValues.add(normalizedValue);
+    uniqueValues.push(value);
+  }
+
+  return uniqueValues;
+}
+
+function splitGenreTokens(value: string) {
+  return value
+    .split(/\s+(?:--|-)\s+/g)
+    .map((token) => token.trim())
+    .filter((token) => token.length > 0);
 }
 
 function firstAsArray<T>(value: T | T[] | undefined) {

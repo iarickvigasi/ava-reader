@@ -88,6 +88,44 @@ describe("library book info metadata", () => {
     expect(markup).toContain("Reading time");
     expect(markup).toContain("0.0 h / 2.0 h estimated");
   });
+
+  it("renders genre chips instead of legacy source and collection tags", () => {
+    const markup = renderToStaticMarkup(
+      <LibraryBookInfoScreen
+        backHref="/app/library"
+        book={createBookInfo({
+          collections: [
+            {
+              id: "collection-1",
+              kind: "SMART",
+              name: "Imported Books",
+            },
+          ],
+          genres: ["Gothic", "Science Fiction"],
+          source: "CATALOG",
+        })}
+      />,
+    );
+
+    expect(markup).toContain("Gothic");
+    expect(markup).toContain("Science Fiction");
+    expect(markup).not.toContain(">Catalog<");
+    expect(markup).not.toContain("Imported Books");
+  });
+
+  it("does not crash when genres are missing in a legacy payload", () => {
+    const markup = renderToStaticMarkup(
+      <LibraryBookInfoScreen
+        backHref="/app/library"
+        book={createBookInfo({
+          genres: undefined as unknown as string[],
+        })}
+      />,
+    );
+
+    expect(markup).not.toContain(">Catalog<");
+    expect(markup).toContain("Frankenstein");
+  });
 });
 
 function createBookInfo(
@@ -108,6 +146,7 @@ function createBookInfo(
     completionPercent: 44,
     coverImageDataUrl: null,
     description: "A gothic classic.",
+    genres: ["Gothic", "Classic"],
     language: "English",
     lastReadAt: "2026-04-11T08:30:00.000Z",
     libraryItemId: "library-42",

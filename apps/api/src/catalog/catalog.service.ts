@@ -144,6 +144,7 @@ export class CatalogService {
               description:
                 parseOptionalStringInput(body.description) ??
                 metadata.description,
+              genres: metadata.genres,
               language: normalizeBookLanguage(
                 parseOptionalStringInput(body.language) ?? metadata.language,
               ),
@@ -345,6 +346,7 @@ export class CatalogService {
                 metadata?.publishedYear ??
                 currentEntry.book.publishedYear ??
                 undefined,
+              ...(metadata ? { genres: metadata.genres } : {}),
               coverBlobId,
             },
           },
