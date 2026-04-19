@@ -185,9 +185,7 @@ export class HomeService {
       },
       listening: currentEngagement
         ? {
-            authorLine: `${
-              currentEngagement.book.author ?? 'Unknown author'
-            } • Listening mode coming soon`,
+            authorLine: `${formatAuthors(currentEngagement.book.authors)} • Listening mode coming soon`,
             progressPercent: currentEngagement.progress?.completionPercent ?? 0,
             title: currentEngagement.book.title,
           }
@@ -242,7 +240,7 @@ function serializeCurrentEngagement(item: LibraryItemRecord) {
   );
 
   return {
-    author: item.book.author,
+    authors: item.book.authors,
     chapterLabel: item.progress?.chapterLabel ?? 'Opening chapters',
     completionPercent: item.progress?.completionPercent ?? 0,
     coverImageDataUrl: item.book.coverBlob
@@ -270,7 +268,7 @@ function serializeCatalogEntry(entry: CatalogEntryRecord) {
   );
 
   return {
-    author: entry.book.author,
+    authors: entry.book.authors,
     coverImageDataUrl: entry.book.coverBlob
       ? bufferToDataUrl(
           entry.book.coverBlob.bytes,
@@ -351,4 +349,12 @@ function startOfDay(date: Date) {
   return new Date(
     Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
   );
+}
+
+function formatAuthors(authors: string[]) {
+  if (authors.length === 0) {
+    return 'Unknown author';
+  }
+
+  return authors.join(', ');
 }

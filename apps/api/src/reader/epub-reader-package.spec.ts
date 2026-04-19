@@ -6,7 +6,7 @@ describe('buildReaderPackageFromEpub', () => {
     const epubBuffer = await createReaderEpubBuffer();
 
     const readerPackage = await buildReaderPackageFromEpub({
-      author: 'Example Author',
+      authors: ['Example Author'],
       buffer: epubBuffer,
       checksum: 'source-checksum',
       language: 'en',
@@ -14,6 +14,7 @@ describe('buildReaderPackageFromEpub', () => {
     });
 
     expect(readerPackage.version).toBe(2);
+    expect(readerPackage.manifest.authors).toEqual(['Example Author']);
     expect(readerPackage.manifest.totalChapters).toBe(2);
     expect(readerPackage.toc).toHaveLength(2);
     const firstTocEntry = expectDefined(readerPackage.toc[0]);
@@ -68,7 +69,7 @@ describe('buildReaderPackageFromEpub', () => {
     const epubBuffer = await createReaderEpubBufferWithNcx();
 
     const readerPackage = await buildReaderPackageFromEpub({
-      author: 'Example Author',
+      authors: ['Example Author'],
       buffer: epubBuffer,
       checksum: 'source-checksum',
       language: 'en',
@@ -94,7 +95,7 @@ describe('buildReaderPackageFromEpub', () => {
     const epubBuffer = await createReaderEpubBufferWithoutSpine();
 
     const readerPackage = await buildReaderPackageFromEpub({
-      author: 'Example Author',
+      authors: ['Example Author'],
       buffer: epubBuffer,
       checksum: 'source-checksum',
       language: 'en',
@@ -118,7 +119,7 @@ describe('buildReaderPackageFromEpub', () => {
     const epubBuffer = await createReaderEpubBufferWithoutSpineOrToc();
 
     const readerPackage = await buildReaderPackageFromEpub({
-      author: 'Example Author',
+      authors: ['Example Author'],
       buffer: epubBuffer,
       checksum: 'source-checksum',
       language: 'en',
@@ -141,7 +142,7 @@ describe('buildReaderPackageFromEpub', () => {
       await createReaderEpubBufferWithBookTitleAsChapterLabel();
 
     const readerPackage = await buildReaderPackageFromEpub({
-      author: 'Example Author',
+      authors: ['Example Author'],
       buffer: epubBuffer,
       checksum: 'source-checksum',
       language: 'en',
@@ -168,7 +169,7 @@ describe('buildReaderPackageFromEpub', () => {
   it('throws on malformed EPUB archives', async () => {
     await expect(
       buildReaderPackageFromEpub({
-        author: null,
+        authors: [],
         buffer: Buffer.from('not-an-epub'),
         checksum: 'bad',
         language: null,

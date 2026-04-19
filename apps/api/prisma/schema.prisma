@@ -97,7 +97,7 @@ model Book {
   id            String             @id @default(cuid())
   title         String
   subtitle      String?
-  author        String?
+  authors       String[]           @default([])
   description   String?
   genres        String[]           @default([])
   language      String?

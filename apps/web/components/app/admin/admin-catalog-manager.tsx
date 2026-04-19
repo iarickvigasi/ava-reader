@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import type { AdminCatalogEntry } from "@/lib/api-types";
 import { cn } from "@/lib/cn";
 import { getPublicApiBaseUrl } from "@/lib/api";
+import { formatAuthors } from "@/lib/format-authors";
 
 type AdminCatalogManagerProps = {
   initialEntries: AdminCatalogEntry[];
@@ -110,7 +111,7 @@ export function AdminCatalogManager({
             })
           }>
             <Field label="Title" name="title" required />
-            <Field label="Author" name="author" />
+            <Field label="Authors" name="authors" />
             <TextAreaField
               className="sm:col-span-2"
               label="Description"
@@ -192,7 +193,7 @@ export function AdminCatalogManager({
                           {entry.book.title}
                         </p>
                         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-plum">
-                          {entry.book.author ?? "Unknown author"}
+                          {formatAuthors(entry.book.authors)}
                         </p>
                       </div>
                     </div>
@@ -219,9 +220,9 @@ export function AdminCatalogManager({
                     required
                   />
                   <Field
-                    defaultValue={entry.book.author ?? ""}
-                    label="Author"
-                    name="author"
+                    defaultValue={entry.book.authors.join(", ")}
+                    label="Authors"
+                    name="authors"
                   />
                   <TextAreaField
                     className="sm:col-span-2"

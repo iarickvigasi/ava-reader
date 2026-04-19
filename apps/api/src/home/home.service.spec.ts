@@ -65,7 +65,7 @@ describe('HomeService', () => {
       {
         addedAt: new Date('2026-04-01T10:00:00.000Z'),
         book: {
-          author: 'Example Author',
+          authors: ['Example Author'],
           coverBlob: null,
           files: [
             {
@@ -131,7 +131,7 @@ describe('HomeService', () => {
       volumesRead: 2,
     });
     expect(home.currentEngagement).toMatchObject({
-      author: 'Example Author',
+      authors: ['Example Author'],
       chapterLabel: 'Chapter 4',
       id: 'library-1',
       title: 'Example Title',

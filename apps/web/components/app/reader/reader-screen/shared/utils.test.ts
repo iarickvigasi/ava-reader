@@ -71,7 +71,7 @@ describe("reader screen utils", () => {
     const malformedReadyPayload = {
       activeChapterId: "chapter-1",
       book: {
-        author: null,
+        authors: [],
         libraryItemId: "library-1",
         primaryFormat: "EPUB",
         title: "Malformed",

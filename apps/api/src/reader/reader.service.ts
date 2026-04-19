@@ -28,7 +28,7 @@ type ReaderProgressSummary = {
 type ReaderReadyPayload = {
   activeChapterId: string;
   book: {
-    author: string | null;
+    authors: string[];
     libraryItemId: string;
     primaryFormat: BookFileFormat;
     title: string;
@@ -43,7 +43,7 @@ type ReaderStatusPayload =
   | ReaderReadyPayload
   | {
       book: {
-        author: string | null;
+        authors: string[];
         libraryItemId: string;
         primaryFormat: BookFileFormat;
         title: string;
@@ -104,7 +104,7 @@ export class ReaderService {
     if (!sourceFile || sourceFile.format !== BookFileFormat.EPUB) {
       return {
         book: {
-          author: libraryItem.book.author,
+          authors: libraryItem.book.authors,
           libraryItemId: libraryItem.id,
           primaryFormat: sourceFile?.format ?? BookFileFormat.UNKNOWN,
           title: libraryItem.book.title,
@@ -128,7 +128,7 @@ export class ReaderService {
       if (latestRun?.status === ProcessingStatus.FAILED) {
         return {
           book: {
-            author: libraryItem.book.author,
+            authors: libraryItem.book.authors,
             libraryItemId: libraryItem.id,
             primaryFormat: sourceFile.format,
             title: libraryItem.book.title,
@@ -143,7 +143,7 @@ export class ReaderService {
 
       return {
         book: {
-          author: libraryItem.book.author,
+          authors: libraryItem.book.authors,
           libraryItemId: libraryItem.id,
           primaryFormat: sourceFile.format,
           title: libraryItem.book.title,
@@ -176,7 +176,7 @@ export class ReaderService {
     return {
       activeChapterId: selectedChapter.chapterId,
       book: {
-        author: libraryItem.book.author,
+        authors: libraryItem.book.authors,
         libraryItemId: libraryItem.id,
         primaryFormat: sourceFile.format,
         title: libraryItem.book.title,
@@ -697,7 +697,9 @@ function parseReaderPackage(buffer: Buffer): ReaderPackage {
     return normalizeLegacyReaderPackage(raw as LegacyReaderPackage);
   }
 
-  return raw as ReaderPackage;
+  return normalizeReaderPackageManifestAuthors(
+    raw as ReaderPackageWithLegacyAuthors,
+  );
 }
 
 function selectChapter(
@@ -906,10 +908,17 @@ type LegacyReaderPackage = Omit<ReaderPackage, 'toc' | 'version'> & {
   version: 1;
 };
 
+type ReaderPackageWithLegacyAuthors = Omit<ReaderPackage, 'manifest'> & {
+  manifest: Omit<ReaderPackage['manifest'], 'authors'> & {
+    author?: null | string;
+    authors?: string[];
+  };
+};
+
 function normalizeLegacyReaderPackage(
   readerPackage: LegacyReaderPackage,
 ): ReaderPackage {
-  return {
+  const normalizedPackage: ReaderPackageWithLegacyAuthors = {
     ...readerPackage,
     toc: readerPackage.toc.map((entry, index) => ({
       anchorId: null,
@@ -922,6 +931,29 @@ function normalizeLegacyReaderPackage(
       spineIndex: entry.spineIndex,
     })),
     version: 2,
+  };
+
+  return normalizeReaderPackageManifestAuthors(normalizedPackage);
+}
+
+function normalizeReaderPackageManifestAuthors(
+  readerPackage: ReaderPackageWithLegacyAuthors,
+): ReaderPackage {
+  const authorCandidates = Array.isArray(readerPackage.manifest.authors)
+    ? readerPackage.manifest.authors
+    : typeof readerPackage.manifest.author === 'string'
+      ? [readerPackage.manifest.author]
+      : [];
+  const authors = authorCandidates
+    .map((author) => author.trim())
+    .filter((author) => author.length > 0);
+
+  return {
+    ...readerPackage,
+    manifest: {
+      ...readerPackage.manifest,
+      authors,
+    },
   };
 }
 

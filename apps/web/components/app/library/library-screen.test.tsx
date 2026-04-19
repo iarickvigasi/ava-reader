@@ -66,7 +66,7 @@ function createLibraryPayload(): LibraryPayload {
       {
         books: [
           {
-            author: "Marcus Aurelius",
+            authors: ["Marcus Aurelius"],
             completionPercent: 42,
             coverImageDataUrl: null,
             lastReadAt: "2026-04-08T10:00:00.000Z",
@@ -75,7 +75,7 @@ function createLibraryPayload(): LibraryPayload {
             title: "Meditations",
           },
           {
-            author: "Plato",
+            authors: ["Plato"],
             completionPercent: 100,
             coverImageDataUrl: null,
             lastReadAt: "2026-04-06T10:00:00.000Z",
@@ -84,7 +84,7 @@ function createLibraryPayload(): LibraryPayload {
             title: "The Republic",
           },
           {
-            author: "Epictetus",
+            authors: ["Epictetus"],
             completionPercent: 8,
             coverImageDataUrl: null,
             lastReadAt: "2026-04-05T10:00:00.000Z",
@@ -93,7 +93,7 @@ function createLibraryPayload(): LibraryPayload {
             title: "Discourses",
           },
           {
-            author: "Aristotle",
+            authors: ["Aristotle"],
             completionPercent: 13,
             coverImageDataUrl: null,
             lastReadAt: "2026-04-04T10:00:00.000Z",

@@ -140,7 +140,7 @@ export class CatalogService {
           book: {
             create: {
               title: parseOptionalStringInput(body.title) ?? metadata.title,
-              author: parseOptionalStringInput(body.author) ?? metadata.author,
+              authors: parseAuthorsInput(body.authors) ?? metadata.authors,
               description:
                 parseOptionalStringInput(body.description) ??
                 metadata.description,
@@ -328,10 +328,10 @@ export class CatalogService {
                 parseOptionalStringInput(body.title) ??
                 metadata?.title ??
                 currentEntry.book.title,
-              author:
-                parseOptionalStringInput(body.author) ??
-                metadata?.author ??
-                currentEntry.book.author,
+              authors:
+                parseAuthorsInput(body.authors) ??
+                metadata?.authors ??
+                currentEntry.book.authors,
               description:
                 parseOptionalStringInput(body.description) ??
                 metadata?.description ??
@@ -376,7 +376,7 @@ export class CatalogService {
 
     return {
       book: {
-        author: entry.book.author,
+        authors: entry.book.authors,
         coverImageDataUrl: entry.book.coverBlob
           ? bufferToDataUrl(
               entry.book.coverBlob.bytes,
@@ -419,6 +419,34 @@ function parseCatalogStatus(value: unknown) {
   }
 
   return CatalogStatus.DRAFT;
+}
+
+function parseAuthorsInput(value: unknown) {
+  const raw = parseOptionalStringInput(value);
+
+  if (!raw) {
+    return undefined;
+  }
+
+  const authors = raw
+    .split(',')
+    .map((author) => author.trim())
+    .filter((author) => author.length > 0);
+  const dedupedAuthors: string[] = [];
+  const seenAuthors = new Set<string>();
+
+  for (const author of authors) {
+    const normalizedAuthor = author.toLocaleLowerCase();
+
+    if (seenAuthors.has(normalizedAuthor)) {
+      continue;
+    }
+
+    seenAuthors.add(normalizedAuthor);
+    dedupedAuthors.push(author);
+  }
+
+  return dedupedAuthors;
 }
 
 function normalizeNullableValue(value: unknown) {

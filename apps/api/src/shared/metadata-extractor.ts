@@ -10,9 +10,13 @@ type UploadedFileLike = {
   mimetype?: string;
   originalname: string;
 };
+type EpubCreator = {
+  role: null | string;
+  text: string;
+};
 
 export type ExtractedBookMetadata = {
-  author: string | null;
+  authors: string[];
   coverImage: {
     bytes: Buffer;
     mimeType: string;
@@ -42,7 +46,7 @@ export async function extractBookMetadata(
     const epubMetadata = await tryExtractEpubMetadata(file.buffer);
 
     return {
-      author: epubMetadata.author ?? null,
+      authors: epubMetadata.authors ?? [],
       coverImage: epubMetadata.coverImage ?? null,
       description: epubMetadata.description ?? null,
       format,
@@ -54,7 +58,7 @@ export async function extractBookMetadata(
   }
 
   return {
-    author: null,
+    authors: [],
     coverImage: null,
     description: null,
     format,
@@ -135,7 +139,7 @@ async function tryExtractEpubMetadata(buffer: Buffer) {
       : null;
 
     return {
-      author: readMetadataText(metadata, ['dc:creator', 'creator']),
+      authors: readEpubAuthors(metadata, ['dc:creator', 'creator']),
       coverImage,
       description: readMetadataText(metadata, [
         'dc:description',
@@ -282,6 +286,86 @@ function readMetadataTexts(
   return values;
 }
 
+function readEpubAuthors(
+  metadata: Record<string, unknown> | undefined,
+  keys: string[],
+) {
+  const creators = readMetadataCreators(metadata, keys);
+  const creatorsWithAuthorRole = creators.filter(
+    (creator) => normalizeCreatorRole(creator.role) === 'aut',
+  );
+  const selectedCreators =
+    creatorsWithAuthorRole.length > 0 ? creatorsWithAuthorRole : creators;
+
+  return dedupeTextsPreserveOrder(
+    selectedCreators.map((creator) => creator.text),
+  );
+}
+
+function readMetadataCreators(
+  metadata: Record<string, unknown> | undefined,
+  keys: string[],
+): EpubCreator[] {
+  if (!metadata) {
+    return [];
+  }
+
+  const creators: EpubCreator[] = [];
+
+  for (const key of keys) {
+    const entry = metadata[key];
+    creators.push(...normalizeXmlCreatorEntries(entry));
+  }
+
+  return creators;
+}
+
+function normalizeXmlCreatorEntries(value: unknown): EpubCreator[] {
+  if (!value) {
+    return [];
+  }
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+
+    return trimmed.length > 0 ? [{ role: null, text: trimmed }] : [];
+  }
+
+  if (Array.isArray(value)) {
+    const creators: EpubCreator[] = [];
+
+    for (const entry of value) {
+      creators.push(...normalizeXmlCreatorEntries(entry));
+    }
+
+    return creators;
+  }
+
+  if (typeof value === 'object') {
+    const creatorRecord = value as Record<string, unknown>;
+    const textValue = normalizeXmlTexts(creatorRecord['#text'])[0] ?? null;
+
+    if (!textValue) {
+      return [];
+    }
+
+    const roleRaw =
+      creatorRecord['@_opf:role'] ??
+      creatorRecord['@_role'] ??
+      creatorRecord['@_opf:ROLE'] ??
+      creatorRecord['@_ROLE'];
+
+    return [
+      {
+        role: typeof roleRaw === 'string' ? roleRaw : null,
+        text: textValue,
+      },
+    ];
+  }
+
+  return [];
+}
+
 function readMetadataGenres(
   metadata: Record<string, unknown> | undefined,
   keys: string[],
@@ -289,6 +373,15 @@ function readMetadataGenres(
   const values = readMetadataTexts(metadata, keys).flatMap(splitGenreTokens);
 
   return dedupeGenresPreserveOrder(values);
+}
+
+function normalizeCreatorRole(role: string | null) {
+  if (!role) {
+    return null;
+  }
+
+  const normalized = role.trim().toLowerCase();
+  return normalized.length > 0 ? normalized : null;
 }
 
 function normalizeXmlTexts(value: unknown): string[] {
@@ -322,6 +415,10 @@ function normalizeXmlTexts(value: unknown): string[] {
 }
 
 function dedupeGenresPreserveOrder(values: string[]) {
+  return dedupeTextsPreserveOrder(values);
+}
+
+function dedupeTextsPreserveOrder(values: string[]) {
   const uniqueValues: string[] = [];
   const seenValues = new Set<string>();
 

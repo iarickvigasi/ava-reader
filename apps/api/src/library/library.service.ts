@@ -34,7 +34,7 @@ const LIBRARY_COLLECTION_PREVIEW_LIMIT = 4;
 export type LibraryMutationPayload = {
   addedAt: string;
   book: {
-    author: string | null;
+    authors: string[];
     format: BookFileFormat;
     id: string;
     title: string;
@@ -113,7 +113,7 @@ export class LibraryService {
       const book = await tx.book.create({
         data: {
           title: metadata.title,
-          author: metadata.author,
+          authors: metadata.authors,
           description: metadata.description,
           genres: metadata.genres,
           language: normalizeBookLanguage(metadata.language),
@@ -321,7 +321,7 @@ export class LibraryService {
       book: {
         addedAt: item.addedAt.toISOString(),
         approximatePageCount: item.book.estimatedPageCount ?? null,
-        author: item.book.author,
+        authors: item.book.authors,
         chapterLabel: item.progress?.chapterLabel ?? null,
         collections,
         completionPercent: item.progress?.completionPercent ?? 0,
@@ -517,7 +517,7 @@ export class LibraryService {
     return {
       addedAt: libraryItem.addedAt.toISOString(),
       book: {
-        author: libraryItem.book.author,
+        authors: libraryItem.book.authors,
         format: primaryFile?.format ?? BookFileFormat.UNKNOWN,
         id: libraryItem.book.id,
         title: libraryItem.book.title,
@@ -615,7 +615,7 @@ function serializeCollection(
       null;
 
     return {
-      author: item.book.author,
+      authors: item.book.authors,
       completionPercent: item.progress?.completionPercent ?? 0,
       coverImageDataUrl: item.book.coverBlob
         ? bufferToDataUrl(

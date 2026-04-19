@@ -603,7 +603,7 @@ function createLibraryItemRecord(input?: {
   const readerPackage = {
     version,
     manifest: {
-      author: 'Example Author',
+      authors: ['Example Author'],
       language: 'en',
       sourceChecksum: 'checksum',
       title: 'Example Title',
@@ -785,7 +785,7 @@ function createLibraryItemRecord(input?: {
       lastReadAt: new Date('2026-04-07T10:00:00.000Z'),
     },
     book: {
-      author: 'Example Author',
+      authors: ['Example Author'],
       title: 'Example Title',
       files: [
         {

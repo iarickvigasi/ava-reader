@@ -35,7 +35,7 @@ async function main() {
   }
 
   const architecture = await ensureBook({
-    author: 'Alain de Botton',
+    authors: ['Alain de Botton'],
     description:
       'A demo seed title used to verify the real populated dashboard state.',
     sourceFormat: BookFileFormat.PDF,
@@ -45,7 +45,7 @@ async function main() {
   });
 
   const meditations = await ensureBook({
-    author: 'Marcus Aurelius',
+    authors: ['Marcus Aurelius'],
     description: 'Stoic reflections for the public catalog seed.',
     sourceFormat: BookFileFormat.EPUB,
     sourceName: 'meditations.epub',
@@ -54,7 +54,7 @@ async function main() {
   });
 
   const frankenstein = await ensureBook({
-    author: 'Mary Shelley',
+    authors: ['Mary Shelley'],
     description: 'A public-domain gothic novel for catalog testing.',
     sourceFormat: BookFileFormat.EPUB,
     sourceName: 'frankenstein.epub',
@@ -301,7 +301,7 @@ async function main() {
 }
 
 async function ensureBook(input: {
-  author: string;
+  authors: string[];
   description: string;
   sourceFormat: BookFileFormat;
   sourceName: string;
@@ -311,7 +311,9 @@ async function ensureBook(input: {
   const existing = await prisma.book.findFirst({
     where: {
       title: input.title,
-      author: input.author,
+      authors: {
+        equals: input.authors,
+      },
     },
   });
 
@@ -319,7 +321,7 @@ async function ensureBook(input: {
     return existing;
   }
 
-  const coverSvg = createCoverSvg(input.title, input.author);
+  const coverSvg = createCoverSvg(input.title, input.authors);
   const coverBuffer = Buffer.from(coverSvg, 'utf8');
   const sourceBuffer = Buffer.from(input.sourceText, 'utf8');
 
@@ -351,7 +353,7 @@ async function ensureBook(input: {
   return prisma.book.create({
     data: {
       title: input.title,
-      author: input.author,
+      authors: input.authors,
       description: input.description,
       coverBlobId: coverBlob.id,
       files: {
@@ -424,7 +426,9 @@ async function ensureCollectionMembership(
   });
 }
 
-function createCoverSvg(title: string, author: string) {
+function createCoverSvg(title: string, authors: string[]) {
+  const authorLabel = authors.join(', ');
+
   return `
     <svg xmlns="http://www.w3.org/2000/svg" width="720" height="960" viewBox="0 0 720 960">
       <defs>
@@ -437,7 +441,7 @@ function createCoverSvg(title: string, author: string) {
       <rect x="54" y="54" width="612" height="852" fill="none" stroke="#264b5f" stroke-opacity="0.14" />
       <text x="72" y="140" font-family="Georgia, serif" font-size="28" fill="#655f37" letter-spacing="6">AVA READER</text>
       <text x="72" y="510" font-family="Georgia, serif" font-size="72" fill="#264b5f">${escapeXml(title)}</text>
-      <text x="72" y="580" font-family="Arial, sans-serif" font-size="28" fill="#6e5678" letter-spacing="4">${escapeXml(author.toUpperCase())}</text>
+      <text x="72" y="580" font-family="Arial, sans-serif" font-size="28" fill="#6e5678" letter-spacing="4">${escapeXml(authorLabel.toUpperCase())}</text>
     </svg>
   `;
 }

@@ -18,6 +18,7 @@ import { HomeResumeActions } from "@/components/app/home/home-resume-actions";
 import type { HomePayload } from "@/lib/api-types";
 import { APP_LIBRARY_HREF } from "@/lib/app-routes";
 import { cn } from "@/lib/cn";
+import { formatAuthors } from "@/lib/format-authors";
 
 type HomeScreenProps = {
   home: HomePayload;
@@ -131,7 +132,7 @@ function PopulatedHomeState({ home }: HomeScreenProps) {
             </Link>
             <div className="flex items-center gap-4 text-sm uppercase tracking-[0.08em] text-muted sm:flex-col sm:items-start sm:gap-2 sm:text-base sm:normal-case sm:tracking-normal md:block">
               <p className="text-lg italic normal-case tracking-normal text-plum sm:text-2xl">
-                {home.currentEngagement.author ?? "Unknown author"}
+                {formatAuthors(home.currentEngagement.authors)}
               </p>
               <span className="h-px w-12 bg-line sm:hidden" />
               <p className="font-semibold text-copy sm:text-xs sm:uppercase sm:tracking-[0.18em] md:hidden">
@@ -511,7 +512,7 @@ function FeaturedBooksSection({
                     {entry.title}
                   </h3>
                   <p className="text-[0.6rem] font-semibold uppercase tracking-[0.14em] text-plum">
-                    {entry.author ?? "Unknown author"}
+                    {formatAuthors(entry.authors)}
                   </p>
                 </div>
               </div>
@@ -536,7 +537,7 @@ function FeaturedBooksSection({
                       {entry.title}
                     </h3>
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-plum">
-                      {entry.author ?? "Unknown author"}
+                      {formatAuthors(entry.authors)}
                     </p>
                   </div>
                   <p className="text-base leading-7 text-copy">

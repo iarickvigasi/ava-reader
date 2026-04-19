@@ -58,7 +58,7 @@ function createReadyPayload(input: {
   return {
     activeChapterId: input.activeChapterId,
     book: {
-      author: "Fixture Author",
+      authors: ["Fixture Author"],
       libraryItemId: "reader-resume-fixture",
       primaryFormat: "EPUB",
       title: "Reader Resume Fixture",

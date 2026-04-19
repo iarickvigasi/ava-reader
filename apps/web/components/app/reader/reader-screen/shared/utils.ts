@@ -4,6 +4,7 @@ import type {
   ReaderStatusPayload,
 } from "@/lib/api-types";
 import type { RestoreIntent } from "@/lib/reader-navigation";
+import { formatAuthors } from "@/lib/format-authors";
 import {
   READER_STATUS_FAILED,
   READER_STATUS_READY,
@@ -46,11 +47,7 @@ export function formatReaderHeaderLine(
   activeChapter: ReaderChapterPayload,
 ) {
   const chapterLabel = formatReaderChapterLabel(activeChapter.label);
-  if (payload.book.author) {
-    return `${payload.book.title}, ${payload.book.author} - ${chapterLabel}`;
-  }
-
-  return `${payload.book.title} - ${chapterLabel}`;
+  return `${payload.book.title}, ${formatAuthors(payload.book.authors)} - ${chapterLabel}`;
 }
 
 export function formatReaderChapterLabel(label: string) {

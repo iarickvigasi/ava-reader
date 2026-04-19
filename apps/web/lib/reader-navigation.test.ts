@@ -108,7 +108,7 @@ function createReadyPayload(input: {
   return {
     activeChapterId: input.activeChapterId,
     book: {
-      author: "Author",
+      authors: ["Author"],
       libraryItemId: "library-item",
       primaryFormat: "EPUB",
       title: "Book",

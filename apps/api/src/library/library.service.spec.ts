@@ -43,7 +43,7 @@ describe('LibraryService', () => {
         items: [
           createCollectionItem({
             addedAt: '2026-04-01T10:00:00.000Z',
-            author: 'First Author',
+            authors: ['First Author'],
             completionPercent: 25,
             coverBytes: Buffer.from('cover-a'),
             id: 'library-a',
@@ -52,7 +52,7 @@ describe('LibraryService', () => {
           }),
           createCollectionItem({
             addedAt: '2026-04-03T10:00:00.000Z',
-            author: 'Archived Author',
+            authors: ['Archived Author'],
             completionPercent: 10,
             id: 'library-archived',
             isArchived: true,
@@ -60,7 +60,7 @@ describe('LibraryService', () => {
           }),
           createCollectionItem({
             addedAt: '2026-04-02T10:00:00.000Z',
-            author: 'Second Author',
+            authors: ['Second Author'],
             completionPercent: 100,
             id: 'library-b',
             lastOpenedAt: '2026-04-06T10:00:00.000Z',
@@ -109,7 +109,7 @@ describe('LibraryService', () => {
       payload.collections[0].books.map((book) => book.libraryItemId),
     ).toEqual(['library-a', 'library-b']);
     expect(payload.collections[0].books[0]).toMatchObject({
-      author: 'First Author',
+      authors: ['First Author'],
       completionPercent: 25,
       primaryFormat: BookFileFormat.EPUB,
       title: 'First Book',
@@ -180,7 +180,7 @@ describe('LibraryService', () => {
         items: [
           createCollectionItem({
             addedAt: '2026-04-04T08:30:00.000Z',
-            author: null,
+            authors: [],
             completionPercent: 0,
             id: 'library-c',
             title: 'Untitled Notes',
@@ -201,7 +201,7 @@ describe('LibraryService', () => {
     });
     expect(payload.collections[0].books).toEqual([]);
     expect(payload.collections[1].books[0]).toMatchObject({
-      author: null,
+      authors: [],
       lastReadAt: '2026-04-04T08:30:00.000Z',
       libraryItemId: 'library-c',
       title: 'Untitled Notes',
@@ -316,7 +316,7 @@ describe('LibraryService', () => {
     findFirstLibraryItem.mockResolvedValue({
       addedAt: new Date('2026-04-01T10:00:00.000Z'),
       book: {
-        author: 'Mary Shelley',
+        authors: ['Mary Shelley'],
         coverBlob: {
           bytes: Buffer.from('cover-book'),
           mimeType: 'image/png',
@@ -402,7 +402,7 @@ describe('LibraryService', () => {
       book: {
         addedAt: '2026-04-01T10:00:00.000Z',
         approximatePageCount: 163,
-        author: 'Mary Shelley',
+        authors: ['Mary Shelley'],
         chapterLabel: 'Chapter 7',
         collections: [
           {
@@ -436,7 +436,7 @@ describe('LibraryService', () => {
     findFirstLibraryItem.mockResolvedValue({
       addedAt: new Date('2026-04-03T10:00:00.000Z'),
       book: {
-        author: null,
+        authors: [],
         coverBlob: null,
         description: null,
         estimatedPageCount: null,
@@ -673,7 +673,7 @@ function createCollectionRecord(
 function createCollectionItem(
   overrides: Partial<{
     addedAt: string;
-    author: string | null;
+    authors: string[];
     completionPercent: number;
     coverBytes: Buffer | null;
     id: string;
@@ -685,7 +685,7 @@ function createCollectionItem(
 ) {
   const {
     addedAt = '2026-04-01T00:00:00.000Z',
-    author = 'Author',
+    authors = ['Author'],
     completionPercent = 0,
     coverBytes = null,
     id = 'library-item',
@@ -699,7 +699,7 @@ function createCollectionItem(
     libraryItem: {
       addedAt: new Date(addedAt),
       book: {
-        author,
+        authors,
         coverBlob: coverBytes
           ? {
               bytes: coverBytes,

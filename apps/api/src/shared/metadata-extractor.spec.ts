@@ -17,7 +17,7 @@ describe('extractBookMetadata', () => {
 
     expect(metadata.format).toBe(BookFileFormat.EPUB);
     expect(metadata.title).toBe('Example Title');
-    expect(metadata.author).toBe('Example Author');
+    expect(metadata.authors).toEqual(['Example Author']);
     expect(metadata.description).toBe('Example Description');
     expect(metadata.genres).toEqual([]);
     expect(metadata.language).toBe('en');
@@ -87,11 +87,68 @@ describe('extractBookMetadata', () => {
 
     expect(metadata.coverImage).toBeNull();
   });
+
+  it('prefers creators with author roles and deduplicates names', async () => {
+    const epubBuffer = await createEpubBuffer({
+      creators: [
+        {
+          name: 'Editor Name',
+          role: 'edt',
+        },
+        {
+          name: 'Jason Fried',
+          role: 'aut',
+        },
+        {
+          name: 'David Heinemeier Hansson',
+          role: 'AUT',
+        },
+        {
+          name: 'jason fried',
+          role: 'aut',
+        },
+      ],
+    });
+
+    const metadata = await extractBookMetadata({
+      buffer: epubBuffer,
+      mimetype: 'application/epub+zip',
+      originalname: 'example.epub',
+    });
+
+    expect(metadata.authors).toEqual([
+      'Jason Fried',
+      'David Heinemeier Hansson',
+    ]);
+  });
+
+  it('falls back to all creators when no author role exists', async () => {
+    const epubBuffer = await createEpubBuffer({
+      creators: [
+        {
+          name: 'Creator One',
+        },
+        {
+          name: 'Creator Two',
+          role: 'trl',
+        },
+      ],
+    });
+
+    const metadata = await extractBookMetadata({
+      buffer: epubBuffer,
+      mimetype: 'application/epub+zip',
+      originalname: 'example.epub',
+    });
+
+    expect(metadata.authors).toEqual(['Creator One', 'Creator Two']);
+  });
 });
 
 async function createEpubBuffer(input: {
   coverBytes?: Buffer;
   coverHref?: string;
+  creators?: Array<{ name: string; role?: string }>;
   dcSubjects?: string[];
   subjects?: string[];
 }) {
@@ -122,14 +179,21 @@ async function createEpubBuffer(input: {
     input.subjects
       ?.map((subject) => `<subject>${subject}</subject>`)
       .join('\n    ') ?? '';
+  const creatorTags =
+    input.creators
+      ?.map((creator) => {
+        const roleAttribute = creator.role ? ` opf:role="${creator.role}"` : '';
+        return `<dc:creator${roleAttribute}>${creator.name}</dc:creator>`;
+      })
+      .join('\n    ') ?? '<dc:creator>Example Author</dc:creator>';
 
   zip.file(
     'OEBPS/content.opf',
     `<?xml version="1.0" encoding="UTF-8"?>
-<package xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+<package xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf" version="2.0">
   <metadata>
     <dc:title>Example Title</dc:title>
-    <dc:creator>Example Author</dc:creator>
+    ${creatorTags}
     <dc:description>Example Description</dc:description>
     <dc:language>en</dc:language>
     <dc:date>2024-01-15</dc:date>

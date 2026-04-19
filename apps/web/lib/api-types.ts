@@ -23,7 +23,7 @@ export type HomePayload = {
     }>;
   };
   currentEngagement: null | {
-    author: string | null;
+    authors: string[];
     chapterLabel: string;
     completionPercent: number;
     coverImageDataUrl: string | null;
@@ -38,7 +38,7 @@ export type HomePayload = {
   };
   featuredCatalog: {
     entries: Array<{
-      author: string | null;
+      authors: string[];
       coverImageDataUrl: string | null;
       description: string | null;
       id: string;
@@ -90,7 +90,7 @@ export type HomePayload = {
 };
 
 export type LibraryCollectionBook = {
-  author: string | null;
+  authors: string[];
   completionPercent: number;
   coverImageDataUrl: string | null;
   lastReadAt: string;
@@ -124,7 +124,7 @@ export type LibraryCollectionPayload = {
 export type LibraryBookInfo = {
   addedAt: string;
   approximatePageCount: number | null;
-  author: string | null;
+  authors: string[];
   chapterLabel: string | null;
   collections: Array<{
     id: string;
@@ -163,7 +163,7 @@ export type LibraryCollectionDeletePayload = {
 export type LibraryMutationPayload = {
   addedAt: string;
   book: {
-    author: string | null;
+    authors: string[];
     format: BookFileFormat;
     id: string;
     title: string;
@@ -228,7 +228,7 @@ export type ReaderBlock =
     };
 
 export type ReaderManifest = {
-  author: string | null;
+  authors: string[];
   language: string | null;
   sourceChecksum: string;
   title: string;
@@ -283,7 +283,7 @@ export type ReaderStatusPayload =
   | {
       activeChapterId: string;
       book: {
-        author: string | null;
+        authors: string[];
         libraryItemId: string;
         primaryFormat: BookFileFormat;
         title: string;
@@ -295,7 +295,7 @@ export type ReaderStatusPayload =
     }
   | {
       book: {
-        author: string | null;
+        authors: string[];
         libraryItemId: string;
         primaryFormat: BookFileFormat;
         title: string;
@@ -307,7 +307,7 @@ export type ReaderStatusPayload =
 
 export type AdminCatalogEntry = {
   book: {
-    author: string | null;
+    authors: string[];
     coverImageDataUrl: string | null;
     description: string | null;
     hasSourceFile: boolean;

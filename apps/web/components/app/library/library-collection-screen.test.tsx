@@ -65,7 +65,7 @@ function createCollection(): LibraryCollection {
   return {
     books: [
       {
-        author: "Marcus Aurelius",
+        authors: ["Marcus Aurelius"],
         completionPercent: 42,
         coverImageDataUrl: null,
         lastReadAt: "2026-04-08T10:00:00.000Z",
@@ -74,7 +74,7 @@ function createCollection(): LibraryCollection {
         title: "Meditations",
       },
       {
-        author: "Plato",
+        authors: ["Plato"],
         completionPercent: 100,
         coverImageDataUrl: null,
         lastReadAt: "2026-04-06T10:00:00.000Z",
@@ -83,7 +83,7 @@ function createCollection(): LibraryCollection {
         title: "The Republic",
       },
       {
-        author: "Epictetus",
+        authors: ["Epictetus"],
         completionPercent: 12,
         coverImageDataUrl: null,
         lastReadAt: "2026-04-05T10:00:00.000Z",

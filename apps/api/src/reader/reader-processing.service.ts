@@ -125,7 +125,7 @@ export class ReaderProcessingService implements OnModuleInit, OnModuleDestroy {
 
     try {
       const readerPackage = await buildReaderPackageFromEpub({
-        author: run.book.author,
+        authors: run.book.authors,
         buffer: Buffer.from(sourceFile.blob.bytes),
         checksum: sourceFile.blob.checksum,
         language: run.book.language,

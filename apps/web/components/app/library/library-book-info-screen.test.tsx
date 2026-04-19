@@ -134,7 +134,7 @@ function createBookInfo(
   return {
     addedAt: "2026-04-01T10:00:00.000Z",
     approximatePageCount: 163,
-    author: "Mary Shelley",
+    authors: ["Mary Shelley"],
     chapterLabel: "Chapter 7",
     collections: [
       {

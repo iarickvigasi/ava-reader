@@ -11,6 +11,7 @@ import {
 } from "@/components/app/shared/app-icons";
 import { Button, ButtonLink } from "@/components/ui/button";
 import type { LibraryBookInfo } from "@/lib/api-types";
+import { formatAuthors } from "@/lib/format-authors";
 
 type LibraryBookInfoScreenProps = {
   backHref: string;
@@ -105,7 +106,7 @@ export function LibraryBookInfoScreen({
                     {book.title}
                   </h1>
                   <p className="font-reader text-xl text-plum md:text-[1.75rem]">
-                    {book.author ?? "Unknown author"}
+                    {formatAuthors(book.authors)}
                   </p>
                 </div>
               </div>

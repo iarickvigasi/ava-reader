@@ -53,7 +53,7 @@ export type ReaderBlock =
     };
 
 export type ReaderManifest = {
-  author: string | null;
+  authors: string[];
   language: string | null;
   sourceChecksum: string;
   title: string;

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { LibraryPayload } from "@/lib/api-types";
 import { cn } from "@/lib/cn";
+import { formatAuthors } from "@/lib/format-authors";
 import { BookCover } from "@/components/app/shared/book-cover";
 import { getLibraryBookInfoHref } from "@/lib/app-routes";
 
@@ -48,7 +49,7 @@ export function LibraryBookCard({
             {book.title}
           </h3>
           <p className="text-[0.95rem] leading-5 text-plum md:text-base">
-            {book.author ?? "Unknown author"}
+            {formatAuthors(book.authors)}
           </p>
         </div>
       </div>

@@ -10,6 +10,7 @@ import {
   countUniqueTocChapters,
   findActiveTocPathIds,
 } from "@/lib/reader-toc";
+import { formatAuthors } from "@/lib/format-authors";
 import { ReaderContentsTreeNode } from "./reader-contents-tree-node";
 import type { ReadyReaderPayload } from "../shared/types";
 import { useCloseOnEscape } from "./use-close-on-escape";
@@ -172,11 +173,9 @@ export function ReaderContentsOverlay({
                   <h2 className="mt-4 font-(--font-reader) text-[2rem] leading-[0.95] tracking-[-0.04em] text-title">
                     {payload.book.title}
                   </h2>
-                  {payload.book.author ? (
-                    <p className="mt-4 font-(--font-ui) text-[0.82rem] uppercase tracking-[0.18em] text-title/70">
-                      {payload.book.author}
-                    </p>
-                  ) : null}
+                  <p className="mt-4 font-(--font-ui) text-[0.82rem] uppercase tracking-[0.18em] text-title/70">
+                    {formatAuthors(payload.book.authors)}
+                  </p>
                 </div>
                 <button
                   type="button"

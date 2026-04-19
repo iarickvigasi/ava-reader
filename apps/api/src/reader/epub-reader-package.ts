@@ -67,7 +67,7 @@ const readableDocumentMediaTypes = new Set([
 ]);
 
 export async function buildReaderPackageFromEpub(input: {
-  author: string | null;
+  authors: string[];
   buffer: Buffer;
   checksum: string;
   language: string | null;
@@ -198,7 +198,7 @@ export async function buildReaderPackageFromEpub(input: {
   return {
     chapters,
     manifest: {
-      author: input.author,
+      authors: input.authors,
       language: input.language,
       sourceChecksum: input.checksum,
       title: input.title,
@@ -716,7 +716,7 @@ function readNavListItem(
   };
 }
 
-function normalizeBlocksFromNodes(
+async function normalizeBlocksFromNodes(
   nodes: OrderedNode[],
   chapterId: string,
   resolveAsset: (assetPath: string) => Promise<string | null>,
@@ -745,9 +745,10 @@ function normalizeBlocksFromNodes(
     }
   };
 
-  return reduceAsync(nodes, async (_ignored, node) => {
-    await pushBlock(node);
-  }).then(() => blocks);
+  await reduceAsync(nodes, async (_ignored, node_3) => {
+    await pushBlock(node_3);
+  });
+  return blocks;
 }
 
 async function normalizeBlockNode(

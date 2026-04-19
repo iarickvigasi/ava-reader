@@ -22,7 +22,7 @@ describe("reader screen", () => {
   it("renders non-ready reader state", () => {
     const payload: ReaderStatusPayload = {
       book: {
-        author: null,
+        authors: [],
         libraryItemId: "library-1",
         primaryFormat: "EPUB",
         title: "Pending Reader",
