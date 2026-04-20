@@ -1,6 +1,6 @@
 import type { ReaderChapterPayload } from "@/lib/api-types";
 import type { ReadyReaderPayload } from "../shared/types";
-import { formatReaderHeaderLine } from "../shared/utils";
+import { formatReaderHeaderParts } from "../shared/utils";
 
 export function ReadyReaderHeader({
   activeChapter,
@@ -9,10 +9,27 @@ export function ReadyReaderHeader({
   activeChapter: ReaderChapterPayload;
   payload: ReadyReaderPayload;
 }) {
+  const { title, author, chapter } = formatReaderHeaderParts(payload, activeChapter);
+
   return (
     <header className="min-w-0 flex-1 pt-1">
-      <h1 className="max-w-full truncate font-(--font-ui) text-[1.05rem] leading-none tracking-[0.01em] text-title sm:text-[1.2rem]">
-        {formatReaderHeaderLine(payload, activeChapter)}
+      <h1 className="min-w-0 flex items-center gap-1 font-(--font-ui) text-[1.05rem] leading-none tracking-[0.01em] text-title sm:text-[1.2rem]">
+
+        <span className="min-w-0 truncate max-w-[25ch]">
+          {title}
+        </span>
+
+        <span className="shrink-0">,</span>
+
+        <span className="min-w-0 truncate">
+          {author}
+        </span>
+
+        <span className="shrink-0">–</span>
+
+        <span className="shrink-0 whitespace-nowrap">
+          {chapter}
+        </span>
       </h1>
     </header>
   );

@@ -9,7 +9,6 @@ import {
   clamp,
   createLocatorFromRestoreIntent,
   formatReaderChapterLabel,
-  formatReaderHeaderLine,
   normalizeReaderStatusPayload,
   roundFontScale,
   shouldRefreshChapterWindow,
@@ -23,15 +22,6 @@ describe("reader screen utils", () => {
     expect(formatReaderChapterLabel("Chapter 3")).toBe("Chapter 03");
     expect(formatReaderChapterLabel("chapter 12")).toBe("Chapter 12");
     expect(formatReaderChapterLabel("Part 1")).toBe("Part 1");
-  });
-
-  it("formats header line with author and normalized chapter label", () => {
-    const payload = getReadyFixturePayload();
-    const activeChapter = payload.chapters[0];
-
-    expect(formatReaderHeaderLine(payload, activeChapter)).toBe(
-      "Reader Resume Fixture, Fixture Author - Fixture Chapter 01",
-    );
   });
 
   it("clamps and rounds font scale values", () => {

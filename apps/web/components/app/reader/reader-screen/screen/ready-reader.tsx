@@ -90,15 +90,15 @@ export function ReadyReader({
         <section className="mx-auto flex h-full max-w-312 min-w-0 flex-col">
           <div className="flex items-start justify-between gap-6">
             <ReadyReaderHeader activeChapter={activeChapter} payload={payload} />
-            <ReaderPanelButton onOpen={() => setIsSidebarOpen(true)} />
-          </div>
-
-          <div className="mt-6 flex min-h-0 flex-1 flex-col gap-4 sm:mt-8">
             <ReadyReaderActivityStatus
               isBootstrapping={isBootstrapping}
               isLoadingChapter={isLoadingChapter}
               isRefreshingWindow={isRefreshingWindow}
             />
+            <ReaderPanelButton onOpen={() => setIsSidebarOpen(true)} />
+          </div>
+
+          <div className="mt-6 flex min-h-0 flex-1 flex-col gap-4 sm:mt-8">
 
             <div
               className="relative min-h-0 flex-1 overflow-hidden px-3 py-5 sm:px-5 sm:py-6 md:px-6"

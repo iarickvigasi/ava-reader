@@ -4,7 +4,6 @@ import type {
   ReaderStatusPayload,
 } from "@/lib/api-types";
 import type { RestoreIntent } from "@/lib/reader-navigation";
-import { formatAuthors } from "@/lib/format-authors";
 import {
   READER_STATUS_FAILED,
   READER_STATUS_READY,
@@ -42,12 +41,15 @@ export function shouldRefreshChapterWindow(
   );
 }
 
-export function formatReaderHeaderLine(
+export function formatReaderHeaderParts(
   payload: Extract<ReaderStatusPayload, { status: typeof READER_STATUS_READY }>,
   activeChapter: ReaderChapterPayload,
 ) {
-  const chapterLabel = formatReaderChapterLabel(activeChapter.label);
-  return `${payload.book.title}, ${formatAuthors(payload.book.authors)} - ${chapterLabel}`;
+  return {
+    title: payload.book.title,
+    author: payload.book.authors[0],
+    chapter: formatReaderChapterLabel(activeChapter.label),
+  };
 }
 
 export function formatReaderChapterLabel(label: string) {
