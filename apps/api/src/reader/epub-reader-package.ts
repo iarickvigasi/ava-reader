@@ -2,6 +2,7 @@ import { extname } from 'path';
 import { XMLParser } from 'fast-xml-parser';
 import JSZip from 'jszip';
 import mime from 'mime-types';
+import { resolveZipPath } from '../shared/zip-utils';
 import type {
   ReaderBlock,
   ReaderChapter,
@@ -1170,27 +1171,6 @@ function inferMimeTypeFromPath(path: string) {
   }
 
   return 'application/octet-stream';
-}
-
-function resolveZipPath(baseFilePath: string, relativeAssetPath: string) {
-  const baseSegments = baseFilePath.split('/').slice(0, -1);
-  const assetSegments = relativeAssetPath.split('/');
-  const resolved = [...baseSegments];
-
-  for (const segment of assetSegments) {
-    if (!segment || segment === '.') {
-      continue;
-    }
-
-    if (segment === '..') {
-      resolved.pop();
-      continue;
-    }
-
-    resolved.push(segment);
-  }
-
-  return resolved.join('/');
 }
 
 async function readZipText(zip: JSZip, path: string) {

@@ -27,6 +27,7 @@ import {
   extractBookMetadata,
   isSupportedSourceFormat,
 } from '../shared/metadata-extractor';
+import { inferMimeType, normalizeBookLanguage } from '../shared/book-utils';
 
 type TransactionClient = Prisma.TransactionClient;
 const LIBRARY_COLLECTION_PREVIEW_LIMIT = 4;
@@ -683,36 +684,4 @@ function isPrismaUniqueConstraintError(error: unknown) {
 function normalizeCollectionDescription(rawDescription: null | string) {
   const trimmed = rawDescription?.trim() ?? '';
   return trimmed.length > 0 ? trimmed : null;
-}
-
-function inferMimeType(format: BookFileFormat) {
-  if (format === BookFileFormat.EPUB) {
-    return 'application/epub+zip';
-  }
-
-  if (format === BookFileFormat.PDF) {
-    return 'application/pdf';
-  }
-
-  return 'application/octet-stream';
-}
-
-function normalizeBookLanguage(
-  value: null | string | undefined,
-): null | string {
-  if (typeof value !== 'string') {
-    return null;
-  }
-
-  const trimmed = value.trim();
-
-  if (trimmed.length === 0) {
-    return null;
-  }
-
-  try {
-    return new Intl.Locale(trimmed.replace(/_/g, '-')).toString();
-  } catch {
-    return trimmed;
-  }
 }

@@ -10,6 +10,7 @@ import {
   ProcessingStatus,
 } from '@prisma/client';
 import { checksumBuffer, toPrismaBytes } from '../shared/blob-utils';
+import { daysAgo, startOfDay } from '../shared/date-utils';
 
 const prisma = new PrismaClient();
 
@@ -456,18 +457,6 @@ function escapeXml(value: string) {
 
 function slugify(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-}
-
-function daysAgo(days: number) {
-  const date = new Date();
-  date.setDate(date.getDate() - days);
-  return date;
-}
-
-function startOfDay(date: Date) {
-  return new Date(
-    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
-  );
 }
 
 void main()

@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 import { bufferToDataUrl } from '../shared/blob-utils';
+import { daysAgo, startOfDay } from '../shared/date-utils';
 
 type LibraryItemRecord = Prisma.LibraryItemGetPayload<{
   include: {
@@ -336,19 +337,6 @@ function compareCatalogEntries(
   }
 
   return right.updatedAt.getTime() - left.updatedAt.getTime();
-}
-
-function daysAgo(days: number) {
-  const date = new Date();
-  date.setDate(date.getDate() - days);
-
-  return date;
-}
-
-function startOfDay(date: Date) {
-  return new Date(
-    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
-  );
 }
 
 function formatAuthors(authors: string[]) {
