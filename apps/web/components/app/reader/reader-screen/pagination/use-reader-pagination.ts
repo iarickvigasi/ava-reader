@@ -85,6 +85,17 @@ type UseReaderPaginationResult = {
   storeMeasurementEntry: (entry: ReaderMeasurementEntry) => void;
 };
 
+/**
+ * useReaderPagination = a state machine + layout engine that:
+ * - Splits a chapter into pages (columns)
+ * - Tracks current page
+ * Handles:
+ * -- restore position (where user left off)
+ * -- resizing / font changes
+ * -- swipe + keyboard navigation
+ * - Syncs a “locator” (reading position in text)
+ * - Moves between chapters
+ */
 export function useReaderPagination({
   activeChapter,
   fontScale,

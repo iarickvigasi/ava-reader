@@ -10,7 +10,6 @@ const RESTORE_INTENT_KIND_EDGE_END = "edge-end";
 const READER_MEASUREMENT_STATUS_FAILED = "failed";
 const READER_PAGE_RESOLUTION_BLOCK_START = "block-start";
 const READER_PAGE_RESOLUTION_EXACT = "exact";
-const READER_PAGE_RESOLUTION_MISSING_BLOCK = "missing-block";
 
 export type PaginationDecisionInput = {
   activeChapterId: string;
@@ -47,123 +46,121 @@ export function createPaginationLayoutKey(input: {
   ].join(":");
 }
 
+/**
+ * resolvePaginationDecision is a decision engine that answers one question:
+ * “Given everything we know (current page, restore intent, measurement results),
+ * what page should the reader show next?”
+ * It returns 3 things:
+ * - nextPageIndex → which page to display
+ * - shouldConsumeRestoreIntent → whether we should “use up” the restore instruction
+ * - shouldWarnFailedMeasurement → whether something went wrong and should be signaled
+ */
 export function resolvePaginationDecision(
   input: PaginationDecisionInput,
 ): PaginationDecision {
   const maximumPageIndex = Math.max(0, input.pageCount - 1);
+
   let nextPageIndex = clamp(input.currentPageIndex, 0, maximumPageIndex);
   let shouldConsumeRestoreIntent = false;
   let shouldWarnFailedMeasurement = false;
-  const restoreIntent = input.restoreIntent;
 
-  if (
+  const { restoreIntent } = input;
+
+  const hasPending =
     restoreIntent &&
     hasPendingRestoreIntent(
       restoreIntent,
       input.activeChapterId,
       input.consumedRestoreIntentKey,
-    )
-  ) {
+    );
+
+  const resolveEdge = () =>
+    restoreIntent
+      ? resolveEdgePage(restoreIntent.kind, maximumPageIndex)
+      : 0;
+
+  // --- 1. HANDLE RESTORE INTENT (highest priority)
+  if (hasPending && restoreIntent) {
+    shouldConsumeRestoreIntent = true;
+
     if (input.measurementStatus === READER_MEASUREMENT_STATUS_FAILED) {
       shouldWarnFailedMeasurement = true;
-      nextPageIndex =
-        restoreIntent.kind === RESTORE_INTENT_KIND_EDGE_END
-          ? maximumPageIndex
-          : 0;
-      shouldConsumeRestoreIntent = true;
-
-      return {
-        nextPageIndex,
-        shouldConsumeRestoreIntent,
-        shouldWarnFailedMeasurement,
-      };
+      nextPageIndex = resolveEdge();
+      return finalize();
     }
 
     if (restoreIntent.kind === RESTORE_INTENT_KIND_BLOCK) {
+      const status = input.restorePageResolution?.status;
+
       if (
-        input.restorePageResolution?.status ===
-          READER_PAGE_RESOLUTION_BLOCK_START ||
-        input.restorePageResolution?.status === READER_PAGE_RESOLUTION_EXACT
+        status === READER_PAGE_RESOLUTION_BLOCK_START ||
+        status === READER_PAGE_RESOLUTION_EXACT
       ) {
         nextPageIndex = clamp(
-          input.restorePageResolution.pageIndex,
+          input.restorePageResolution!.pageIndex,
           0,
           maximumPageIndex,
         );
-      } else if (
-        input.restorePageResolution?.status ===
-        READER_PAGE_RESOLUTION_MISSING_BLOCK
-      ) {
-        nextPageIndex = 0;
       } else {
-        // Includes unresolved/null resolution; preserve fallback-to-start behavior.
         nextPageIndex = 0;
       }
 
-      shouldConsumeRestoreIntent = true;
-
-      return {
-        nextPageIndex,
-        shouldConsumeRestoreIntent,
-        shouldWarnFailedMeasurement,
-      };
+      return finalize();
     }
 
-    nextPageIndex =
-      restoreIntent.kind === RESTORE_INTENT_KIND_EDGE_END
-        ? maximumPageIndex
-        : 0;
-    shouldConsumeRestoreIntent = true;
-
-    return {
-      nextPageIndex,
-      shouldConsumeRestoreIntent,
-      shouldWarnFailedMeasurement,
-    };
+    // edge intent
+    nextPageIndex = resolveEdge();
+    return finalize();
   }
 
+  // --- 2. STICKY RESTORE (does NOT consume)
   if (
     input.keepRestorePinned &&
     restoreIntent?.chapterId === input.activeChapterId &&
     isStickyRestoreIntent(restoreIntent)
   ) {
-    nextPageIndex =
-      restoreIntent.kind === RESTORE_INTENT_KIND_EDGE_END
-        ? maximumPageIndex
-        : 0;
-
-    return {
-      nextPageIndex,
-      shouldConsumeRestoreIntent,
-      shouldWarnFailedMeasurement,
-    };
+    nextPageIndex = resolveEdge();
+    return finalize();
   }
 
+  // --- 3. USE VISIBLE MEASUREMENT
   if (
     input.measurementStatus === "ready" &&
-    input.visibleLocatorChapterId === input.activeChapterId &&
-    (input.visiblePageResolution?.status ===
-      READER_PAGE_RESOLUTION_BLOCK_START ||
-      input.visiblePageResolution?.status === READER_PAGE_RESOLUTION_EXACT)
+    input.visibleLocatorChapterId === input.activeChapterId
   ) {
-    nextPageIndex = clamp(input.visiblePageResolution.pageIndex, 0, maximumPageIndex);
+    const status = input.visiblePageResolution?.status;
 
-    return {
-      nextPageIndex,
-      shouldConsumeRestoreIntent,
-      shouldWarnFailedMeasurement,
-    };
+    if (
+      status === READER_PAGE_RESOLUTION_BLOCK_START ||
+      status === READER_PAGE_RESOLUTION_EXACT
+    ) {
+      nextPageIndex = clamp(
+        input.visiblePageResolution!.pageIndex,
+        0,
+        maximumPageIndex,
+      );
+      return finalize();
+    }
   }
 
+  // --- 4. FAILURE WARNING ONLY
   if (input.measurementStatus === READER_MEASUREMENT_STATUS_FAILED) {
     shouldWarnFailedMeasurement = true;
   }
 
-  return {
-    nextPageIndex,
-    shouldConsumeRestoreIntent,
-    shouldWarnFailedMeasurement,
-  };
+  return finalize();
+
+  function finalize(): PaginationDecision {
+    return {
+      nextPageIndex,
+      shouldConsumeRestoreIntent,
+      shouldWarnFailedMeasurement,
+    };
+  }
+}
+
+function resolveEdgePage(kind: string, max: number) {
+  return kind === RESTORE_INTENT_KIND_EDGE_END ? max : 0;
 }
 
 function clamp(value: number, minimum: number, maximum: number) {
