@@ -107,6 +107,10 @@ async function normalizeBlockNode(
       return null;
     }
 
+    if (!text && hasInlineImages(inlines)) {
+      return buildImageBlocksFromInlines(inlines, createBlockId, anchorId);
+    }
+
     return {
       anchorId,
       id: createBlockId(),
@@ -189,6 +193,10 @@ async function normalizeBlockNode(
       return null;
     }
 
+    if (!text && hasInlineImages(inlines)) {
+      return buildImageBlocksFromInlines(inlines, createBlockId, anchorId);
+    }
+
     return {
       anchorId,
       id: createBlockId(),
@@ -204,6 +212,10 @@ async function normalizeBlockNode(
 
     if (!text && !hasInlineImages(inlines)) {
       return null;
+    }
+
+    if (!text && hasInlineImages(inlines)) {
+      return buildImageBlocksFromInlines(inlines, createBlockId, anchorId);
     }
 
     return {
@@ -396,4 +408,24 @@ function hasDirectBlockChildren(children: OrderedNode[]) {
 
 function hasInlineImages(inlines: ReaderInline[]) {
   return inlines.some((inline) => inline.kind === 'image');
+}
+
+function buildImageBlocksFromInlines(
+  inlines: ReaderInline[],
+  createBlockId: () => string,
+  anchorId: string | null,
+): ReaderBlock[] {
+  return inlines
+    .filter(
+      (inline): inline is Extract<ReaderInline, { kind: 'image' }> =>
+        inline.kind === 'image',
+    )
+    .map((inline) => ({
+      alt: inline.alt,
+      anchorId,
+      id: createBlockId(),
+      kind: 'image' as const,
+      src: inline.src,
+      text: inline.alt ?? '',
+    }));
 }

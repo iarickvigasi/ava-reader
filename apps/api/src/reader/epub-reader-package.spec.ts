@@ -177,6 +177,31 @@ describe('buildReaderPackageFromEpub', () => {
       }),
     ).rejects.toBeInstanceOf(Error);
   });
+
+  it('promotes images inside paragraph wrappers to block-level images', async () => {
+    const epubBuffer = await createReaderEpubBufferWithWrappedImage();
+
+    const readerPackage = await buildReaderPackageFromEpub({
+      authors: ['Example Author'],
+      buffer: epubBuffer,
+      checksum: 'source-checksum',
+      language: 'en',
+      title: 'Example Title',
+    });
+
+    expect(readerPackage.chapters).toHaveLength(1);
+    const chapter = expectDefined(readerPackage.chapters[0]);
+    expect(chapter.blocks).toHaveLength(1);
+    expect(chapter.blocks[0]).toMatchObject({
+      kind: 'image',
+      alt: 'cover',
+    });
+    const imageBlock = expectDefined(chapter.blocks[0]);
+    if (imageBlock.kind !== 'image') {
+      throw new Error('Expected the block to be an image.');
+    }
+    expect(imageBlock.src).toMatch(/^data:image\/png;base64,/);
+  });
 });
 
 async function createReaderEpubBuffer() {
@@ -504,6 +529,55 @@ async function createReaderEpubBufferWithBookTitleAsChapterLabel() {
   </body>
 </html>`,
   );
+
+  return Buffer.from(await zip.generateAsync({ type: 'uint8array' }));
+}
+
+async function createReaderEpubBufferWithWrappedImage() {
+  const zip = new JSZip();
+
+  zip.file(
+    'META-INF/container.xml',
+    `<?xml version="1.0" encoding="UTF-8"?>
+<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+  <rootfiles>
+    <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/>
+  </rootfiles>
+</container>`,
+  );
+
+  zip.file(
+    'OEBPS/content.opf',
+    `<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <manifest>
+    <item id="cover" href="text/cover.xhtml" media-type="application/xhtml+xml"/>
+    <item id="cover-image" href="images/cover.png" media-type="image/png"/>
+  </manifest>
+  <spine>
+    <itemref idref="cover"/>
+  </spine>
+  <guide>
+    <reference href="text/cover.xhtml" title="Cover" type="cover"/>
+  </guide>
+</package>`,
+  );
+
+  zip.file(
+    'OEBPS/text/cover.xhtml',
+    `<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <title>Cover</title>
+    <style type="text/css">@page{margin:0em;}</style>
+  </head>
+  <body style="vertical-align: middle; margin-top:0em; margin-bottom:0em;">
+    <p class="cover"><img alt="cover" src="../images/cover.png"/></p>
+  </body>
+</html>`,
+  );
+
+  zip.file('OEBPS/images/cover.png', Buffer.from('png-bits'));
 
   return Buffer.from(await zip.generateAsync({ type: 'uint8array' }));
 }
