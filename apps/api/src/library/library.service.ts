@@ -8,6 +8,7 @@ import {
 } from '@prisma/client';
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -369,11 +370,16 @@ export class LibraryService {
       select: {
         description: true,
         id: true,
+        kind: true,
       },
     });
 
     if (!collection) {
       throw new NotFoundException('Collection not found.');
+    }
+
+    if (collection.kind === 'SMART') {
+      throw new ForbiddenException('Smart collections cannot be renamed.');
     }
 
     const description =

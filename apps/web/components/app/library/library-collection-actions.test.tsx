@@ -18,11 +18,12 @@ vi.mock("next/navigation", () => ({
 }));
 
 describe("library collection actions", () => {
-  it("renders edit and delete buttons by default", () => {
+  it("renders edit and delete buttons for custom collections", () => {
     const markup = renderToStaticMarkup(
       <LibraryCollectionActions
         collectionDescription="Your personal uploads."
         collectionId="collection-1"
+        collectionKind="CUSTOM"
         collectionName="Imported Books"
       />,
     );
@@ -31,11 +32,26 @@ describe("library collection actions", () => {
     expect(markup).toContain("Delete");
   });
 
+  it("renders only delete button for smart collections", () => {
+    const markup = renderToStaticMarkup(
+      <LibraryCollectionActions
+        collectionDescription="Auto-generated collection."
+        collectionId="smart-collection-1"
+        collectionKind="SMART"
+        collectionName="Imported Books"
+      />,
+    );
+
+    expect(markup).not.toContain("Edit");
+    expect(markup).toContain("Delete");
+  });
+
   it("renders edit modal controls in editing mode", () => {
     const markup = renderToStaticMarkup(
       <LibraryCollectionActions
         collectionDescription="Your personal uploads."
         collectionId="collection-1"
+        collectionKind="CUSTOM"
         collectionName="Imported Books"
         initialModalMode="edit"
       />,
@@ -53,6 +69,7 @@ describe("library collection actions", () => {
       <LibraryCollectionActions
         collectionDescription="Your personal uploads."
         collectionId="collection-1"
+        collectionKind="CUSTOM"
         collectionName="Imported Books"
         initialModalMode="delete"
       />,

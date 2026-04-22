@@ -1,4 +1,8 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { BookFileFormat, BookFileKind } from '@prisma/client';
 import { LibraryService } from './library.service';
 
@@ -473,6 +477,7 @@ describe('LibraryService', () => {
     findFirst.mockResolvedValue({
       description: 'Old description',
       id: 'collection-1',
+      kind: 'CUSTOM',
     });
     update.mockResolvedValue({
       description: 'Updated description',
@@ -497,6 +502,7 @@ describe('LibraryService', () => {
       select: {
         description: true,
         id: true,
+        kind: true,
       },
     });
     expect(update).toHaveBeenCalledWith({
@@ -541,6 +547,7 @@ describe('LibraryService', () => {
     findFirst.mockResolvedValue({
       description: null,
       id: 'collection-1',
+      kind: 'CUSTOM',
     });
     update.mockRejectedValue({ code: 'P2002' });
 
@@ -580,6 +587,7 @@ describe('LibraryService', () => {
     findFirst.mockResolvedValue({
       description: 'Existing description',
       id: 'collection-1',
+      kind: 'CUSTOM',
     });
     update.mockResolvedValue({
       description: null,
@@ -615,6 +623,28 @@ describe('LibraryService', () => {
       description: null,
       name: 'Updated Name',
     });
+  });
+
+  it('rejects renaming a smart collection', async () => {
+    findFirst.mockResolvedValue({
+      description: 'Auto-generated collection.',
+      id: 'smart-collection-1',
+      kind: 'SMART',
+    });
+
+    await expect(
+      libraryService.renameCollection('clerk_123', 'smart-collection-1', {
+        description: 'New desc',
+        name: 'New Name',
+      }),
+    ).rejects.toBeInstanceOf(ForbiddenException);
+    await expect(
+      libraryService.renameCollection('clerk_123', 'smart-collection-1', {
+        description: 'New desc',
+        name: 'New Name',
+      }),
+    ).rejects.toThrow('Smart collections cannot be renamed.');
+    expect(update).not.toHaveBeenCalled();
   });
 
   it('deletes one owned collection, including non-empty collections', async () => {

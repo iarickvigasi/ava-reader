@@ -39,6 +39,7 @@ export function LibraryCollectionScreen({ collection }: LibraryCollectionScreenP
             <LibraryCollectionActions
               collectionDescription={collection.description}
               collectionId={collection.id}
+              collectionKind={collection.kind}
               collectionName={collection.name}
             />
           </div>

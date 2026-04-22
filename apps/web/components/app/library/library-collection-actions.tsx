@@ -1,7 +1,6 @@
 "use client";
 
-import type { FormEvent } from "react";
-import { useCallback, useEffect, useState, useTransition } from "react";
+import React, { useCallback, useEffect, useState, useTransition } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { getPublicApiBaseUrl } from "@/lib/api";
@@ -16,6 +15,7 @@ type ModalMode = "delete" | "edit" | null;
 type LibraryCollectionActionsProps = {
   collectionDescription: null | string;
   collectionId: string;
+    collectionKind: "CUSTOM" | "SMART";
   collectionName: string;
   initialModalMode?: ModalMode;
 };
@@ -23,6 +23,7 @@ type LibraryCollectionActionsProps = {
 export function LibraryCollectionActions({
   collectionDescription,
   collectionId,
+  collectionKind,
   collectionName,
   initialModalMode = null,
 }: LibraryCollectionActionsProps) {
@@ -178,7 +179,7 @@ export function LibraryCollectionActions({
   }, [collectionId, getToken, isLoaded, isSignedIn, router]);
 
   const handleRenameSubmit = useCallback(
-    (event: FormEvent<HTMLFormElement>) => {
+    (event: React.SyntheticEvent<HTMLFormElement>) => {
       event.preventDefault();
       startTransition(() => {
         void renameCollection();
@@ -197,7 +198,9 @@ export function LibraryCollectionActions({
     <>
       <CollectionActionButtons
         onDeleteClick={openDeleteModal}
-        onEditClick={openEditModal}
+        onEditClick={
+          collectionKind === "CUSTOM" ? openEditModal : undefined
+        }
       />
 
       {modalMode ? (

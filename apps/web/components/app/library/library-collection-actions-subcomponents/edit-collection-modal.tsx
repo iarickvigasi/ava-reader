@@ -1,5 +1,3 @@
-import type { FormEvent } from "react";
-
 type EditCollectionModalProps = {
   collectionDescription: string;
   collectionName: string;
@@ -8,7 +6,7 @@ type EditCollectionModalProps = {
   onClose: () => void;
   onDescriptionChange: (value: string) => void;
   onNameChange: (value: string) => void;
-  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  onSubmit: (event: React.SyntheticEvent<HTMLFormElement>) => void;
 };
 
 export function EditCollectionModal({

@@ -95,7 +95,7 @@ function createCollection(): LibraryCollection {
     description: "Your personal uploads.",
     id: "collection-1",
     itemCount: 3,
-    kind: "SMART",
+    kind: "CUSTOM",
     name: "Imported Books",
     unreadCount: 2,
   };
