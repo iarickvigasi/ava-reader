@@ -9,6 +9,7 @@ import {
   getNodeChildren,
   getNodeAttributes,
 } from './xml-utils';
+import { flattenInlineContent, normalizeInlineText } from './node-utils';
 
 const blockContainerTags = new Set([
   'article',
@@ -365,29 +366,6 @@ function buildInlineText(inlines: ReaderInline[]) {
     .replace(/\n[ \t]+/g, '\n')
     .replace(/[ \t]{2,}/g, ' ')
     .trim();
-}
-
-function normalizeInlineText(value: string) {
-  if (!value) {
-    return '';
-  }
-
-  return value.replace(/\s+/g, ' ');
-}
-
-function flattenInlineContent(node: OrderedNode): OrderedNode[] {
-  const children = getNodeChildren(node);
-  if (children.length === 0) {
-    return [];
-  }
-
-  return children.flatMap((child) => {
-    const tagName = getNodeTagName(child);
-    if (tagName === 'ol' || tagName === 'ul') {
-      return [];
-    }
-    return [child];
-  });
 }
 
 function hasDirectBlockChildren(children: OrderedNode[]) {

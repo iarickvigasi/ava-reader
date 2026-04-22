@@ -8,6 +8,7 @@ import {
   getNodeAttributes,
   firstAsArray,
 } from './xml-utils';
+import { flattenInlineContent, normalizeInlineText } from './node-utils';
 import { readZipText } from './archive';
 import { resolveZipPath } from '../../shared/zip-utils';
 import type {
@@ -208,21 +209,6 @@ function createTocNodeId(path: number[]) {
   return `toc:${path.join('.')}`;
 }
 
-function flattenInlineContent(node: OrderedNode): OrderedNode[] {
-  const children = getNodeChildren(node);
-  if (children.length === 0) {
-    return [];
-  }
-
-  return children.flatMap((child) => {
-    const tagName = getNodeTagName(child);
-    if (tagName === 'ol' || tagName === 'ul') {
-      return [];
-    }
-    return [child];
-  });
-}
-
 function inlineNodesToText(nodes: OrderedNode[]): string {
   return nodes
     .map((node) => {
@@ -238,14 +224,6 @@ function inlineNodesToText(nodes: OrderedNode[]): string {
     .join('')
     .replace(/\s+/g, ' ')
     .trim();
-}
-
-function normalizeInlineText(value: string) {
-  if (!value) {
-    return '';
-  }
-
-  return value.replace(/\s+/g, ' ');
 }
 
 export function findFirstTocLabelForHref(
