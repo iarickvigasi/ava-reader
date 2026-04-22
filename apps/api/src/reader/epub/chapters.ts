@@ -1,4 +1,4 @@
-import type { ReaderChapter, ReaderBlock } from '../reader-types';
+import type { ReaderBlock } from '../reader-types';
 
 export function createChapterId(spineIndex: number, href: string) {
   const base =
@@ -11,24 +11,6 @@ export function createChapterId(spineIndex: number, href: string) {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
   return `chapter-${spineIndex + 1}${slug ? `-${slug}` : ''}`;
-}
-
-export function createEmptyChapter(input: {
-  chapterId: string;
-  href: string;
-  label: string;
-  spineIndex: number;
-}): ReaderChapter {
-  return {
-    blocks: [],
-    chapterId: input.chapterId,
-    href: input.href,
-    label: input.label,
-    nextChapterId: null,
-    previousChapterId: null,
-    spineIndex: input.spineIndex,
-    title: input.label,
-  };
 }
 
 export function getChapterTitleFromBlocks(blocks: ReaderBlock[]) {

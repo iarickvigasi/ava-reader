@@ -26,7 +26,6 @@ import {
 } from './epub/toc';
 import {
   createChapterId,
-  createEmptyChapter,
   getChapterTitleFromBlocks,
   resolveChapterFallbackLabel,
 } from './epub/chapters';
@@ -77,11 +76,11 @@ export async function buildReaderPackageFromEpub(input: {
     throw new Error('The EPUB does not contain readable chapter documents.');
   }
 
-  let totalBlocks = 0;
-  const chapters = await Promise.all(
-    spineItems.map(async (item, spineIndex) => {
+  // First pass: parse every spine document and extract blocks.
+  // Documents with no <body> or zero readable blocks are discarded.
+  const rawChapters = await Promise.all(
+    spineItems.map(async (item) => {
       const href = item.href;
-      const chapterId = createChapterId(spineIndex, href);
       const chapterText = await readZipText(
         zip,
         resolveZipPath(packagePath, href),
@@ -92,48 +91,66 @@ export async function buildReaderPackageFromEpub(input: {
       const bodyNode = findFirstNodeByTag(parsedChapter, 'body');
 
       if (!bodyNode) {
-        const fallbackLabel = resolveChapterFallbackLabel({
-          bookTitle: input.title,
-          candidateLabel: findFirstTocLabelForHref(parsedToc, href),
-          chapterTitle: null,
-          spineIndex,
-        });
-
-        return createEmptyChapter({
-          chapterId,
-          href,
-          label: fallbackLabel,
-          spineIndex,
-        });
+        return null;
       }
 
       const blocks = await normalizeBlocksFromNodes(
         getNodeChildren(bodyNode),
-        chapterId,
+        'temp-id',
         (assetPath) =>
           readEpubAssetAsDataUrl(zip, packagePath, href, assetPath),
       );
 
-      totalBlocks += blocks.length;
+      if (blocks.length === 0) {
+        return null;
+      }
+
       const chapterTitle = getChapterTitleFromBlocks(blocks);
+
+      return {
+        blocks,
+        chapterTitle,
+        href,
+      };
+    }),
+  );
+
+  const nonEmptyRawChapters = rawChapters.filter(
+    (c): c is NonNullable<(typeof rawChapters)[0]> => c !== null,
+  );
+
+  if (nonEmptyRawChapters.length === 0) {
+    throw new Error('The EPUB does not contain readable chapter documents.');
+  }
+
+  // Second pass: assign sequential IDs, labels, and navigation links.
+  let totalBlocks = 0;
+  const chapters: ReaderChapter[] = nonEmptyRawChapters.map(
+    (raw, spineIndex) => {
+      totalBlocks += raw.blocks.length;
+      const chapterId = createChapterId(spineIndex, raw.href);
       const fallbackLabel = resolveChapterFallbackLabel({
         bookTitle: input.title,
-        candidateLabel: findFirstTocLabelForHref(parsedToc, href),
-        chapterTitle,
+        candidateLabel: findFirstTocLabelForHref(parsedToc, raw.href),
+        chapterTitle: raw.chapterTitle,
         spineIndex,
       });
 
       return {
-        blocks,
+        blocks: raw.blocks.map((block) =>
+          block.id.startsWith('temp-id')
+            ? { ...block, id: block.id.replace('temp-id', chapterId) }
+            : block,
+        ),
         chapterId,
-        href,
+        href: raw.href,
         label: fallbackLabel,
         nextChapterId: null,
         previousChapterId: null,
         spineIndex,
-        title: chapterTitle ?? fallbackLabel,
-      } satisfies ReaderChapter;
-    }),
+        title: raw.chapterTitle ?? fallbackLabel,
+      };
+    },
   );
 
   for (let index = 0; index < chapters.length; index += 1) {
