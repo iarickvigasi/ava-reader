@@ -90,7 +90,6 @@ export function ReaderContentsTreeNode({
   return (
     <div className="space-y-3">
       <div
-        className="border-l border-title/10 pl-4"
         style={{ marginLeft: `${depth * 14}px` }}
       >
         {isClickable && chapterId && navigationTarget ? (
