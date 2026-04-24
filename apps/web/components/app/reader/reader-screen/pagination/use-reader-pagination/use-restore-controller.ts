@@ -44,6 +44,9 @@ export function useRestoreController({
   const consumedRestoreIntentKeyRef = useRef<string | null>(null);
   const keepCommittedRestorePinnedRef = useRef(false);
   const settleRestoreFrameRef = useRef<number | null>(null);
+  // Page the last restore put the user on — used to detect whether the user
+  // has since navigated away. Reset on intent/chapter change.
+  const lastAppliedRestorePageIndexRef = useRef<number | null>(null);
   const [settledRestoreCycleKey, setSettledRestoreCycleKey] = useState<
     string | null
   >(null);
@@ -93,6 +96,7 @@ export function useRestoreController({
 
     consumedRestoreIntentKeyRef.current = null;
     keepCommittedRestorePinnedRef.current = isStickyRestoreIntent(restoreIntent);
+    lastAppliedRestorePageIndexRef.current = null;
   }, [activeChapter.chapterId, restoreIntent]);
 
   useLayoutEffect(() => {
@@ -119,9 +123,19 @@ export function useRestoreController({
       locator: visibleLocator,
       measurementEntry: readyMeasurementEntry,
     });
+    // While the user is still on the page the last restore produced, treat
+    // the intent as unconsumed so a corrected measurement (e.g. after fonts
+    // load and layout shifts) can re-place them.
+    const userStillOnRestoredPage =
+      lastAppliedRestorePageIndexRef.current !== null &&
+      currentPageIndexRef.current === lastAppliedRestorePageIndexRef.current;
+    const effectiveConsumedRestoreIntentKey = userStillOnRestoredPage
+      ? null
+      : consumedRestoreIntentKeyRef.current;
+
     const decision = resolvePaginationDecision({
       activeChapterId: activeChapter.chapterId,
-      consumedRestoreIntentKey: consumedRestoreIntentKeyRef.current,
+      consumedRestoreIntentKey: effectiveConsumedRestoreIntentKey,
       currentPageIndex: currentPageIndexRef.current,
       keepRestorePinned: keepCommittedRestorePinnedRef.current,
       measurementStatus: activeMeasurementEntry.status,
@@ -142,6 +156,7 @@ export function useRestoreController({
 
     if (currentRestoreIntent && decision.shouldConsumeRestoreIntent) {
       consumedRestoreIntentKeyRef.current = currentRestoreIntent.key;
+      lastAppliedRestorePageIndexRef.current = decision.nextPageIndex;
     }
 
     if (settleRestoreFrameRef.current !== null) {
