@@ -48,21 +48,28 @@ export function useRestoreController({
     string | null
   >(null);
 
+  /**
+   * These refs mirror the latest prop/state values so the decision
+   * `useLayoutEffect` below can read them without adding them to its
+   * dependency array (which would cause it to re-run on every page step and
+   * fight against user-driven page navigation).
+   *
+   * They MUST be updated during render — not in a `useEffect` — because the
+   * decision effect runs BEFORE paint on the same commit. A `useEffect`-based
+   * sync only runs after paint, which would leave the refs holding the
+   * previous render's values and cause the controller to make decisions
+   * against stale inputs (producing a one-frame flash of the wrong page on
+   * chapter changes).
+   */
   const restoreIntentRef = useRef(restoreIntent);
+  // eslint-disable-next-line react-hooks/refs
+  restoreIntentRef.current = restoreIntent;
   const visibleLocatorRef = useRef(visibleLocator);
+  // eslint-disable-next-line react-hooks/refs
+  visibleLocatorRef.current = visibleLocator;
   const currentPageIndexRef = useRef(currentPageIndex);
-
-  useEffect(() => {
-    currentPageIndexRef.current = currentPageIndex;
-  }, [currentPageIndex]);
-
-  useEffect(() => {
-    visibleLocatorRef.current = visibleLocator;
-  }, [visibleLocator]);
-
-  useEffect(() => {
-    restoreIntentRef.current = restoreIntent;
-  }, [restoreIntent]);
+  // eslint-disable-next-line react-hooks/refs
+  currentPageIndexRef.current = currentPageIndex;
 
   useEffect(() => {
     return () => {
