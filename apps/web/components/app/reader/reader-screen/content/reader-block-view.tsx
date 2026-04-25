@@ -108,7 +108,7 @@ export function ReaderBlockView({
 
   if (block.kind === READER_BLOCK_KIND_LIST) {
     const listClassName = cn(
-      "space-y-4 pl-6 font-(--font-reader) text-[calc(1.12rem*var(--reader-font-scale))] leading-loose text-ink sm:text-[calc(1.28rem*var(--reader-font-scale))]",
+      "space-y-1 pl-6 font-(--font-reader) text-[calc(1.12rem*var(--reader-font-scale))] leading-relaxed text-ink sm:text-[calc(1.28rem*var(--reader-font-scale))]",
       block.ordered ? "list-decimal" : "list-disc",
     );
 

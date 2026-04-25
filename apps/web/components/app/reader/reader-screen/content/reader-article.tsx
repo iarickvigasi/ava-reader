@@ -29,7 +29,7 @@ export function ReaderArticle({
   return (
     <article
       ref={articleRef}
-      className="h-full space-y-8 [column-fill:auto] sm:space-y-10 md:space-y-11"
+      className="h-full space-y-5 [column-fill:auto] sm:space-y-6 md:space-y-7"
       style={style}
     >
       {blocks.map((block) => (
