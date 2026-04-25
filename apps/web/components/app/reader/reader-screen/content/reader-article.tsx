@@ -12,6 +12,7 @@ import {
   PAGE_GAP,
   READER_VISIBILITY_HIDDEN,
 } from "../shared/constants";
+import { resolveReaderColumnCount } from "../shared/utils";
 import { ReaderBlockView } from "./reader-block-view";
 
 export function ReaderArticle({
@@ -84,14 +85,16 @@ export function ReaderPaginationPreloader({
     [],
   );
 
+  const columnCount = resolveReaderColumnCount(pageBoxWidth);
+
   const articleStyle = useMemo(
     () =>
       ({
+        columnCount,
         columnGap: `${PAGE_GAP}px`,
-        columnWidth: `${pageBoxWidth}px`,
         height: `${pageBoxHeight}px`,
       }) as CSSProperties,
-    [pageBoxHeight, pageBoxWidth],
+    [columnCount, pageBoxHeight],
   );
 
   const createLayoutKey = useCallback(

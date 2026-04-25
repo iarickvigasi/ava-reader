@@ -7,6 +7,7 @@ import type { RestoreIntent } from "@/lib/reader-navigation";
 import {
   READER_STATUS_FAILED,
   READER_STATUS_READY,
+  READER_TWO_COLUMN_MIN_WIDTH,
 } from "./constants";
 import type { ReadyReaderPayload } from "./types";
 
@@ -19,6 +20,10 @@ export function getBrowserViewportHeight() {
   }
 
   return Math.round(window.visualViewport?.height ?? window.innerHeight);
+}
+
+export function resolveReaderColumnCount(pageBoxWidth: number): 1 | 2 {
+  return pageBoxWidth >= READER_TWO_COLUMN_MIN_WIDTH ? 2 : 1;
 }
 
 export function shouldRefreshChapterWindow(

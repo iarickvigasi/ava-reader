@@ -2,6 +2,10 @@ export const PAGE_GAP = 48;
 export const SWIPE_THRESHOLD = 56;
 export const SWIPE_MAX_OFF_AXIS = 72;
 
+// Below this page-box width we render the article as a single column;
+// at or above it, we render two columns side-by-side.
+export const READER_TWO_COLUMN_MIN_WIDTH = 800;
+
 export const READER_SESSION_CLIENT_INSTANCE_ID_STORAGE_KEY =
   "ava-reader:reader-session-client-instance-id";
 
