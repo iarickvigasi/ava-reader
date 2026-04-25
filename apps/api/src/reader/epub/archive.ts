@@ -55,6 +55,23 @@ export async function readEpubAssetAsDataUrl(
   return `data:${mimeType};base64,${bytes.toString('base64')}`;
 }
 
+export async function readEpubAssetAsText(
+  zip: JSZip,
+  packagePath: string,
+  chapterHref: string,
+  assetPath: string,
+): Promise<string | null> {
+  const chapterPath = resolveZipPath(packagePath, chapterHref);
+  const resolvedPath = resolveZipPath(chapterPath, assetPath);
+  const assetFile = zip.file(resolvedPath);
+
+  if (!assetFile) {
+    return null;
+  }
+
+  return assetFile.async('text');
+}
+
 export function inferMimeTypeFromPath(path: string): string {
   const extension = extname(path).toLowerCase();
 

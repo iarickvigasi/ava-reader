@@ -6,9 +6,11 @@ import {
   getNodeAttributes,
 } from '../xml-utils';
 import { normalizeInlineText } from '../node-utils';
+import { resolveFontWeightFromStyle } from './font-weight';
 
 type InlineState = {
   bold?: boolean;
+  fontWeight?: number;
   href?: string;
   italic?: boolean;
 };
@@ -31,6 +33,7 @@ export async function normalizeInlineNodes(
       if (textValue.length > 0) {
         inlines.push({
           bold: state.bold,
+          fontWeight: state.fontWeight,
           href: state.href,
           italic: state.italic,
           kind: 'text',
@@ -45,6 +48,7 @@ export async function normalizeInlineNodes(
     if (tagName === 'br') {
       inlines.push({
         bold: nextState.bold,
+        fontWeight: nextState.fontWeight,
         href: nextState.href,
         italic: nextState.italic,
         kind: 'text',
@@ -89,8 +93,13 @@ function deriveInlineState(node: OrderedNode, state: InlineState): InlineState {
   const tagName = getNodeTagName(node);
   const attrs = getNodeAttributes(node);
 
+  // An inline `style="font-weight:…"` on this node overrides whatever
+  // weight came from a parent <strong> or earlier wrapper.
+  const inlineFontWeight = resolveFontWeightFromStyle(attrs['@_style']);
+
   return {
     bold: state.bold || tagName === 'b' || tagName === 'strong',
+    fontWeight: inlineFontWeight ?? state.fontWeight,
     href: tagName === 'a' ? (attrs['@_href'] ?? state.href) : state.href,
     italic: state.italic || tagName === 'em' || tagName === 'i',
   };
@@ -134,6 +143,7 @@ function compactInlines(inlines: ReaderInline[]) {
       previous &&
       previous.kind === 'text' &&
       previous.bold === inline.bold &&
+      previous.fontWeight === inline.fontWeight &&
       previous.italic === inline.italic &&
       previous.href === inline.href
     ) {

@@ -1,7 +1,20 @@
+import type { CSSProperties } from "react";
 import type { ReaderInline } from "@/lib/api-types";
 import { cn } from "@/lib/cn";
 
 const READER_INLINE_KIND_IMAGE = "image";
+
+// When the source EPUB carries an explicit numeric font-weight, render
+// it via inline style so it overrides the `font-bold` Tailwind class.
+// Falls back to the bold class when only the boolean flag is set.
+function resolveInlineStyle(
+  inline: Extract<ReaderInline, { kind: "text" }>,
+): CSSProperties | undefined {
+  if (typeof inline.fontWeight === "number") {
+    return { fontWeight: inline.fontWeight };
+  }
+  return undefined;
+}
 
 export function ReaderInlineContent({ inlines }: { inlines: ReaderInline[] }) {
   return (
@@ -32,12 +45,16 @@ export function ReaderInlineContent({ inlines }: { inlines: ReaderInline[] }) {
           );
         }
 
+        const inlineStyle = resolveInlineStyle(inline);
         const content = (
           <span
             className={cn(
-              inline.bold && "font-bold",
+              // Only apply the bold class when no numeric weight was
+              // supplied — otherwise the inline style takes over.
+              inline.bold && inlineStyle === undefined && "font-bold",
               inline.italic && "italic",
             )}
+            style={inlineStyle}
           >
             {inline.text}
           </span>

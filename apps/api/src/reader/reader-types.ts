@@ -3,6 +3,11 @@ export type ReaderInline =
       kind: 'text';
       text: string;
       bold?: boolean;
+      // Numeric CSS font-weight (100..900). Set when the source
+      // explicitly specifies a weight via `style="font-weight:…"` or
+      // a stylesheet rule. Takes precedence over `bold` on the
+      // frontend when both are present.
+      fontWeight?: number;
       href?: string;
       italic?: boolean;
     }
@@ -19,29 +24,43 @@ export type ReaderListItem = {
   text: string;
 };
 
+export type ReaderBlockAlign = 'left' | 'center' | 'right' | 'justify';
+
 export type ReaderBlock =
   | {
+      align?: ReaderBlockAlign;
       anchorId?: string | null;
+      fontSizeScale?: number;
+      fontWeight?: number;
       id: string;
       inlines: ReaderInline[];
       kind: 'paragraph' | 'blockquote';
       text: string;
+      textIndent?: number;
     }
   | {
+      align?: ReaderBlockAlign;
       anchorId?: string | null;
+      fontSizeScale?: number;
+      fontWeight?: number;
       id: string;
       inlines: ReaderInline[];
       kind: 'heading';
       level: number;
       text: string;
+      textIndent?: number;
     }
   | {
+      align?: ReaderBlockAlign;
       anchorId?: string | null;
+      fontSizeScale?: number;
+      fontWeight?: number;
       id: string;
       items: ReaderListItem[];
       kind: 'list';
       ordered: boolean;
       text: string;
+      textIndent?: number;
     }
   | {
       alt: string | null;

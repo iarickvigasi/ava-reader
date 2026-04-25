@@ -6,6 +6,52 @@ import type {
 import { OrderedNode, getNodeTagName } from '../xml-utils';
 import { flattenInlineContent } from '../node-utils';
 import { normalizeInlineNodes, buildInlineText } from './inline';
+import type { ReaderTextAlign } from './text-align';
+
+// Visual-only hints lifted from the source HTML/CSS for a single block.
+// Bundled together so we can extend it (margin, color, leading…)
+// without a parameter explosion across every builder.
+export type BlockStyleHints = {
+  align?: ReaderTextAlign | null;
+  fontSizeScale?: number | null;
+  // Numeric CSS font-weight (100..900). Null/undefined means the
+  // publisher didn't specify one and the renderer should use whatever
+  // is appropriate for the block kind (e.g. headings stay bold-by-default).
+  fontWeight?: number | null;
+  // First-line indent in em (so it scales with font size on render).
+  // 0 means "explicitly no indent" — distinct from undefined which
+  // means "publisher said nothing, use the frontend default".
+  textIndent?: number | null;
+};
+
+function applyBlockStyleHints<T extends Record<string, unknown>>(
+  block: T,
+  hints: BlockStyleHints | undefined,
+): T {
+  if (!hints) {
+    return block;
+  }
+
+  const result: Record<string, unknown> = { ...block };
+
+  if (hints.fontSizeScale != null) {
+    result.fontSizeScale = hints.fontSizeScale;
+  }
+
+  if (hints.align != null) {
+    result.align = hints.align;
+  }
+
+  if (hints.textIndent != null) {
+    result.textIndent = hints.textIndent;
+  }
+
+  if (hints.fontWeight != null) {
+    result.fontWeight = hints.fontWeight;
+  }
+
+  return result as T;
+}
 
 const blockContainerTags = new Set([
   'article',
@@ -110,6 +156,7 @@ export async function buildTextBlock(
   resolveAsset: (assetPath: string) => Promise<string | null>,
   anchorId: string | null,
   kind: 'paragraph' | 'blockquote',
+  hints?: BlockStyleHints,
 ): Promise<ReaderBlock | ReaderBlock[] | null> {
   return buildInlineBlock(
     children,
@@ -117,6 +164,8 @@ export async function buildTextBlock(
     resolveAsset,
     anchorId,
     kind,
+    undefined,
+    hints,
   );
 }
 
@@ -126,6 +175,7 @@ export async function buildHeadingBlock(
   resolveAsset: (assetPath: string) => Promise<string | null>,
   anchorId: string | null,
   level: number,
+  hints?: BlockStyleHints,
 ): Promise<ReaderBlock | ReaderBlock[] | null> {
   return buildInlineBlock(
     children,
@@ -134,6 +184,7 @@ export async function buildHeadingBlock(
     anchorId,
     'heading',
     level,
+    hints,
   );
 }
 
@@ -144,6 +195,7 @@ export async function buildListBlock(
   resolveAsset: (assetPath: string) => Promise<string | null>,
   anchorId: string | null,
   ordered: boolean,
+  hints?: BlockStyleHints,
 ): Promise<ReaderBlock | null> {
   const items = await Promise.all(
     children
@@ -169,14 +221,17 @@ export async function buildListBlock(
     return null;
   }
 
-  return {
-    anchorId,
-    id: createBlockId(),
-    items: meaningfulItems,
-    kind: 'list',
-    ordered,
-    text: meaningfulItems.map((item) => item.text).join('\n'),
-  };
+  return applyBlockStyleHints(
+    {
+      anchorId,
+      id: createBlockId(),
+      items: meaningfulItems,
+      kind: 'list' as const,
+      ordered,
+      text: meaningfulItems.map((item) => item.text).join('\n'),
+    },
+    hints,
+  );
 }
 
 export async function buildWrappedInlineBlock(
@@ -184,6 +239,7 @@ export async function buildWrappedInlineBlock(
   createBlockId: () => string,
   resolveAsset: (assetPath: string) => Promise<string | null>,
   anchorId: string | null,
+  hints?: BlockStyleHints,
 ): Promise<ReaderBlock | ReaderBlock[] | null> {
   return buildInlineBlock(
     [node],
@@ -191,6 +247,8 @@ export async function buildWrappedInlineBlock(
     resolveAsset,
     anchorId,
     'paragraph',
+    undefined,
+    hints,
   );
 }
 
@@ -200,7 +258,8 @@ async function buildInlineBlock(
   resolveAsset: (assetPath: string) => Promise<string | null>,
   anchorId: string | null,
   kind: 'paragraph' | 'blockquote' | 'heading',
-  level?: number,
+  level: number | undefined,
+  hints: BlockStyleHints | undefined,
 ): Promise<ReaderBlock | ReaderBlock[] | null> {
   const inlines = await normalizeInlineNodes(children, resolveAsset);
   const text = buildInlineText(inlines);
@@ -214,21 +273,27 @@ async function buildInlineBlock(
   }
 
   if (kind === 'heading') {
-    return {
+    return applyBlockStyleHints(
+      {
+        anchorId,
+        id: createBlockId(),
+        inlines,
+        kind: 'heading' as const,
+        level: level!,
+        text,
+      },
+      hints,
+    );
+  }
+
+  return applyBlockStyleHints(
+    {
       anchorId,
       id: createBlockId(),
       inlines,
-      kind: 'heading',
-      level: level!,
+      kind,
       text,
-    };
-  }
-
-  return {
-    anchorId,
-    id: createBlockId(),
-    inlines,
-    kind,
-    text,
-  };
+    },
+    hints,
+  );
 }

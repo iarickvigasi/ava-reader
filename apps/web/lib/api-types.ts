@@ -160,24 +160,12 @@ export type LibraryCollectionDeletePayload = {
   state: "deleted";
 };
 
-export type LibraryMutationPayload = {
-  addedAt: string;
-  book: {
-    authors: string[];
-    format: BookFileFormat;
-    id: string;
-    title: string;
-  };
-  libraryItemId: string;
-  source: "IMPORTED" | "CATALOG";
-  state: "added" | "existing";
-};
-
 export type ReaderInline =
   | {
       kind: "text";
       text: string;
       bold?: boolean;
+      fontWeight?: number;
       href?: string;
       italic?: boolean;
     }
@@ -194,29 +182,43 @@ export type ReaderListItem = {
   text: string;
 };
 
+export type ReaderBlockAlign = "left" | "center" | "right" | "justify";
+
 export type ReaderBlock =
   | {
+      align?: ReaderBlockAlign;
       anchorId?: string | null;
+      fontSizeScale?: number;
+      fontWeight?: number;
       id: string;
       inlines: ReaderInline[];
       kind: "paragraph" | "blockquote";
       text: string;
+      textIndent?: number;
     }
   | {
+      align?: ReaderBlockAlign;
       anchorId?: string | null;
+      fontSizeScale?: number;
+      fontWeight?: number;
       id: string;
       inlines: ReaderInline[];
       kind: "heading";
       level: number;
       text: string;
+      textIndent?: number;
     }
   | {
+      align?: ReaderBlockAlign;
       anchorId?: string | null;
+      fontSizeScale?: number;
+      fontWeight?: number;
       id: string;
       items: ReaderListItem[];
       kind: "list";
       ordered: boolean;
       text: string;
+      textIndent?: number;
     }
   | {
       alt: string | null;
@@ -226,15 +228,6 @@ export type ReaderBlock =
       src: string;
       text: string;
     };
-
-export type ReaderManifest = {
-  authors: string[];
-  language: string | null;
-  sourceChecksum: string;
-  title: string;
-  totalBlocks: number;
-  totalChapters: number;
-};
 
 export type ReaderTocNode = {
   anchorId: string | null;

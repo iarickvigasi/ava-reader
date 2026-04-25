@@ -225,6 +225,104 @@ describe('buildReaderPackageFromEpub', () => {
     expect(secondTocEntry.label).toBe('Chapter Two');
     expect(secondTocEntry.href).toBe('text/chapter-2.xhtml');
   });
+
+  it('reads stylesheet classes for align, font-size, and text-indent', async () => {
+    // Mirrors the user's Dune sample: a stylesheet (linked via <head>)
+    // defines class-based styles that must be picked up because the
+    // chapter HTML uses class names exclusively (no inline style="").
+    const epubBuffer = await createReaderEpubBufferWithLinkedStylesheet();
+
+    const readerPackage = await buildReaderPackageFromEpub({
+      authors: ['Frank Herbert'],
+      buffer: epubBuffer,
+      checksum: 'source-checksum',
+      language: 'en',
+      title: 'Dune-ish',
+    });
+
+    const chapter = expectDefined(readerPackage.chapters[0]);
+
+    // Block 0: epigraph paragraph (.nonindent) → indent disabled.
+    expect(chapter.blocks[0]).toMatchObject({
+      kind: 'paragraph',
+      textIndent: 0,
+    });
+    expect(chapter.blocks[0]).not.toHaveProperty('align');
+
+    // Block 1: epigraph attribution (.center01) → centered + smaller.
+    expect(chapter.blocks[1]).toMatchObject({
+      kind: 'paragraph',
+      align: 'center',
+      fontSizeScale: 0.85,
+    });
+
+    // Block 2: first body paragraph (.nonindent again).
+    expect(chapter.blocks[2]).toMatchObject({
+      kind: 'paragraph',
+      textIndent: 0,
+    });
+
+    // Block 3: subsequent body paragraph (.indent) → 1em indent.
+    expect(chapter.blocks[3]).toMatchObject({
+      kind: 'paragraph',
+      textIndent: 1,
+    });
+
+    // Block 4: another .indent paragraph — same hint.
+    expect(chapter.blocks[4]).toMatchObject({
+      kind: 'paragraph',
+      textIndent: 1,
+    });
+
+    // Block 5: .semibold class → block-level font-weight: 600.
+    expect(chapter.blocks[5]).toMatchObject({
+      kind: 'paragraph',
+      fontWeight: 600,
+    });
+
+    // Block 6: paragraph with an inline <span style="font-weight:500">
+    // — block has no fontWeight, but the inline carries one.
+    const block6 = chapter.blocks[6];
+    expect(block6.kind).toBe('paragraph');
+    if (block6.kind !== 'paragraph') {
+      throw new Error('Expected paragraph');
+    }
+    expect(block6).not.toHaveProperty('fontWeight');
+    const emphasized = block6.inlines.find(
+      (inline) =>
+        inline.kind === 'text' && inline.text.includes('medium-weight'),
+    );
+    expect(emphasized).toMatchObject({
+      kind: 'text',
+      fontWeight: 500,
+    });
+  });
+
+  it('survives a missing or unreadable stylesheet', async () => {
+    // The chapter <link>s a stylesheet that doesn't exist in the zip.
+    // Loading it must not break chapter parsing — blocks just come
+    // through without any class-derived hints.
+    const epubBuffer = await createReaderEpubBufferWithMissingStylesheet();
+
+    const readerPackage = await buildReaderPackageFromEpub({
+      authors: ['Author'],
+      buffer: epubBuffer,
+      checksum: 'source-checksum',
+      language: 'en',
+      title: 'Title',
+    });
+
+    const chapter = expectDefined(readerPackage.chapters[0]);
+    expect(chapter.blocks).toHaveLength(1);
+    expect(chapter.blocks[0]).toMatchObject({
+      kind: 'paragraph',
+      text: 'Hello world.',
+    });
+    // No hints because the stylesheet didn't load.
+    expect(chapter.blocks[0]).not.toHaveProperty('textIndent');
+    expect(chapter.blocks[0]).not.toHaveProperty('align');
+    expect(chapter.blocks[0]).not.toHaveProperty('fontSizeScale');
+  });
 });
 
 async function createReaderEpubBuffer() {
@@ -667,6 +765,109 @@ async function createReaderEpubBufferWithSubdirectoryNav() {
   <body>
     <h1>Chapter Two</h1>
     <p>Second chapter.</p>
+  </body>
+</html>`,
+  );
+
+  return Buffer.from(await zip.generateAsync({ type: 'uint8array' }));
+}
+
+async function createReaderEpubBufferWithLinkedStylesheet() {
+  const zip = new JSZip();
+
+  zip.file(
+    'META-INF/container.xml',
+    `<?xml version="1.0" encoding="UTF-8"?>
+<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+  <rootfiles>
+    <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/>
+  </rootfiles>
+</container>`,
+  );
+
+  zip.file(
+    'OEBPS/content.opf',
+    `<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns:dc="http://purl.org/dc/elements/1.1/" version="3.0">
+  <manifest>
+    <item id="chapter-1" href="text/chapter-1.xhtml" media-type="application/xhtml+xml"/>
+    <item id="css" href="css/style.css" media-type="text/css"/>
+  </manifest>
+  <spine>
+    <itemref idref="chapter-1"/>
+  </spine>
+</package>`,
+  );
+
+  zip.file(
+    'OEBPS/css/style.css',
+    `
+    .indent { text-indent: 1em; }
+    .nonindent { text-indent: 0; }
+    .center01 { text-align: center; font-size: 0.85em; }
+    .semibold { font-weight: 600; }
+    `,
+  );
+
+  zip.file(
+    'OEBPS/text/chapter-1.xhtml',
+    `<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
+  </head>
+  <body>
+    <div class="block">
+      <p class="nonindent">With the Lady Jessica and Arrakis.</p>
+      <p class="center01">FROM ANALYSIS<br/>BY THE PRINCESS IRULAN</p>
+    </div>
+    <p class="nonindent">All around the Lady Jessica stood the packaged freight.</p>
+    <p class="indent">Jessica stood in the center of the hall.</p>
+    <p class="indent">Some architect had reached far back into history.</p>
+    <p class="semibold">A semibold note from the publisher.</p>
+    <p>Mid-sentence <span style="font-weight: 500">medium-weight</span> emphasis.</p>
+  </body>
+</html>`,
+  );
+
+  return Buffer.from(await zip.generateAsync({ type: 'uint8array' }));
+}
+
+async function createReaderEpubBufferWithMissingStylesheet() {
+  const zip = new JSZip();
+
+  zip.file(
+    'META-INF/container.xml',
+    `<?xml version="1.0" encoding="UTF-8"?>
+<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+  <rootfiles>
+    <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/>
+  </rootfiles>
+</container>`,
+  );
+
+  zip.file(
+    'OEBPS/content.opf',
+    `<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns:dc="http://purl.org/dc/elements/1.1/" version="3.0">
+  <manifest>
+    <item id="chapter-1" href="text/chapter-1.xhtml" media-type="application/xhtml+xml"/>
+  </manifest>
+  <spine>
+    <itemref idref="chapter-1"/>
+  </spine>
+</package>`,
+  );
+
+  zip.file(
+    'OEBPS/text/chapter-1.xhtml',
+    `<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <link rel="stylesheet" type="text/css" href="../css/missing.css" />
+  </head>
+  <body>
+    <p class="indent">Hello world.</p>
   </body>
 </html>`,
   );

@@ -12,7 +12,9 @@ import {
   readZipText,
   readPackagePath,
   readEpubAssetAsDataUrl,
+  readEpubAssetAsText,
 } from './epub/archive';
+import { loadChapterStylesheetHints } from './epub/css/load-chapter-stylesheets';
 import {
   parseManifestItems,
   buildManifestById,
@@ -94,11 +96,21 @@ export async function buildReaderPackageFromEpub(input: {
         return null;
       }
 
+      // Compile this chapter's stylesheets (linked + inline <style>)
+      // into a tag/class hint lookup. The block normalizer then matches
+      // each block element against it, before applying any inline
+      // style="…" overrides.
+      const stylesheetHints = await loadChapterStylesheetHints(
+        parsedChapter,
+        (cssHref) => readEpubAssetAsText(zip, packagePath, href, cssHref),
+      );
+
       const blocks = await normalizeBlocksFromNodes(
         getNodeChildren(bodyNode),
         'temp-id',
         (assetPath) =>
           readEpubAssetAsDataUrl(zip, packagePath, href, assetPath),
+        stylesheetHints,
       );
 
       if (blocks.length === 0) {
