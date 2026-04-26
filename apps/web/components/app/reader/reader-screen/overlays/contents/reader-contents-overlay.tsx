@@ -6,11 +6,11 @@ import {
   countUniqueTocChapters,
   findActiveTocPathIds,
 } from "@/lib/reader-toc";
-import type { ReadyReaderPayload, ReadyReaderTocEntry } from "../shared/types";
-import { clamp } from "../shared/utils";
+import type { ReadyReaderPayload, ReadyReaderTocEntry } from "../../shared/types";
+import { clamp } from "../../shared/utils";
+import { SectionLabel } from "../section-label";
+import { useCloseOnEscape } from "../use-close-on-escape";
 import { ReaderContentsTreeNode } from "./reader-contents-tree-node";
-import { SectionLabel } from "./section-label";
-import { useCloseOnEscape } from "./use-close-on-escape";
 
 type ReaderContentsOverlayProps = {
   activeChapterId: string;

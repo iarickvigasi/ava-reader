@@ -11,6 +11,7 @@ export const READER_SESSION_CLIENT_INSTANCE_ID_STORAGE_KEY =
 
 export const READER_KEY_ESCAPE = "Escape";
 export const READER_PANEL_CONTENTS = "contents";
+export const READER_PANEL_PREFERENCES = "preferences";
 export const READER_VISIBILITY_HIDDEN = "hidden";
 export const READER_STATUS_POLL_INTERVAL_MS = 3_000;
 export const READER_PROGRESS_PERSIST_DEBOUNCE_MS = 900;

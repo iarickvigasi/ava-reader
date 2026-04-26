@@ -42,6 +42,7 @@ const readerNavItems = [
     href: "",
     icon: FontControlsIcon,
     label: "Preferences",
+    panel: "preferences",
   },
   {
     href: "",
@@ -217,14 +218,14 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
 
 function ReaderNavigation() {
   const { activePanel, togglePanel } = useReaderUi();
-  const isContentsOpen = activePanel === "contents";
+  const isLeftPanelOpen = activePanel === "contents" || activePanel === "preferences";
 
   return (
     <>
       <aside
         className={cn(
           "group/reader-nav fixed inset-y-0 left-0 z-40 hidden overflow-hidden transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:flex",
-          isContentsOpen
+          isLeftPanelOpen
             ? "w-94"
             : "w-20 hover:w-56 focus-within:w-56",
         )}
@@ -232,7 +233,7 @@ function ReaderNavigation() {
         <div
           className={cn(
             "absolute inset-y-0 left-0 w-full bg-linear-to-r from-paper-strong/88 via-paper/76 to-paper/0 backdrop-blur-[7px] transition-opacity duration-400 ease-out",
-            isContentsOpen
+            isLeftPanelOpen
               ? "opacity-100 shadow-none"
               : "opacity-0 shadow-[10px_0_40px_0_rgba(31,27,24,0.05)] group-hover/reader-nav:opacity-100 group-focus-within/reader-nav:opacity-100",
           )}
@@ -244,7 +245,7 @@ function ReaderNavigation() {
               href="/app"
               className={cn(
                 "absolute inset-x-0 top-0 flex h-8 w-full items-center justify-center overflow-hidden font-(--font-display) text-[1.25rem] leading-8 text-ink transition-opacity duration-300 ease-out",
-                isContentsOpen
+                isLeftPanelOpen
                   ? "pointer-events-none opacity-0"
                   : "opacity-100",
               )}
@@ -255,7 +256,7 @@ function ReaderNavigation() {
             <div
               className={cn(
                 "absolute inset-x-0 top-0 flex h-11 items-center justify-center px-1 transition-opacity duration-300 ease-out",
-                isContentsOpen
+                isLeftPanelOpen
                   ? "opacity-100"
                   : "pointer-events-none opacity-0",
               )}
@@ -272,7 +273,7 @@ function ReaderNavigation() {
           <div
             className={cn(
               "mt-7 flex min-h-0 flex-1 flex-col transition-[opacity,transform] duration-300 ease-out",
-              isContentsOpen
+              isLeftPanelOpen
                 ? "pointer-events-none -translate-x-3 opacity-0"
                 : "translate-x-0 opacity-100",
             )}

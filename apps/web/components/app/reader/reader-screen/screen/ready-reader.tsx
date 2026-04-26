@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useReaderUi } from "@/components/app/core/reader-ui-context";
 import { ReaderArticle } from "../content/reader-article";
 import { ReaderPaginationPreloader } from "../pagination/reader-pagination-preloader";
@@ -7,11 +7,11 @@ import {
   ReadyReaderHeader,
   ReadyReaderProgress,
 } from "./ready-reader-sections";
-import { ReaderContentsOverlay } from "../overlays/reader-contents-overlay";
-import { ReaderPanelButton } from "../overlays/reader-panel-button";
-import { ReaderSidebarOverlay } from "../overlays/reader-sidebar-overlay";
+import { ReaderContentsOverlay } from "../overlays/contents/reader-contents-overlay";
+import { ReaderPreferencesOverlay } from "../overlays/preferences/reader-preferences-overlay";
 import {
   READER_PANEL_CONTENTS,
+  READER_PANEL_PREFERENCES,
   READER_VISIBILITY_HIDDEN,
 } from "../shared/constants";
 import type { ReadyReaderProps } from "../shared/types";
@@ -35,9 +35,9 @@ export function ReadyReader({
   visibleLocator,
 }: ReadyReaderProps) {
   const { activePanel, closePanel } = useReaderUi();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const isContentsOpen = activePanel === READER_PANEL_CONTENTS;
-  const isPanelOpen = isSidebarOpen || isContentsOpen;
+  const isPreferencesOpen = activePanel === READER_PANEL_PREFERENCES;
+  const isPanelOpen = isContentsOpen || isPreferencesOpen;
 
   // Look up the immediate neighbours so the spread logic can fill column 2
   // with the next chapter when the active chapter is single-page, and skip
@@ -117,7 +117,6 @@ export function ReadyReader({
               isLoadingChapter={isLoadingChapter}
               isRefreshingWindow={isRefreshingWindow}
             />
-            <ReaderPanelButton onOpen={() => setIsSidebarOpen(true)} />
           </div>
 
           <div className="mt-6 flex min-h-0 flex-1 flex-col gap-4 sm:mt-8">
@@ -153,18 +152,6 @@ export function ReadyReader({
         </section>
       </div>
 
-      {isSidebarOpen ? (
-        <ReaderSidebarOverlay
-          activeChapter={activeChapter}
-          fontScale={fontScale}
-          isLoadingChapter={isLoadingChapter}
-          onClose={() => setIsSidebarOpen(false)}
-          onDecreaseFont={onDecreaseFont}
-          onIncreaseFont={onIncreaseFont}
-          payload={payload}
-        />
-      ) : null}
-
       {isContentsOpen ? (
         <ReaderContentsOverlay
           activeChapterId={activeChapter.chapterId}
@@ -176,6 +163,15 @@ export function ReadyReader({
           }}
           payload={payload}
           pendingChapterId={pendingChapterId}
+        />
+      ) : null}
+
+      {isPreferencesOpen ? (
+        <ReaderPreferencesOverlay
+          fontScale={fontScale}
+          onClose={closePanel}
+          onDecreaseFont={onDecreaseFont}
+          onIncreaseFont={onIncreaseFont}
         />
       ) : null}
 
