@@ -1,54 +1,45 @@
 import type {
   ReaderLocator,
   ReaderProgressPayload,
-  ReaderSessionPayload,
   ReaderStatusPayload,
 } from "@/lib/api-types";
-import { getPublicApiBaseUrl } from "@/lib/api";
-import { READER_SESSION_CLIENT_INSTANCE_ID_STORAGE_KEY } from "../shared/constants";
+import { type ReaderAuthInput, resolveReaderAuthToken } from "./reader-auth";
+import {
+  HTTP_METHOD_PATCH,
+  HTTP_METHOD_POST,
+  buildReaderUrl,
+  jsonContentTypeHeader,
+  withAuthHeader,
+} from "./reader-request";
 
-const HTTP_METHOD_POST = "POST";
-const HTTP_METHOD_PATCH = "PATCH";
-const HTTP_HEADER_CONTENT_TYPE = "Content-Type";
-const HTTP_CONTENT_TYPE_APPLICATION_JSON = "application/json";
-const READER_SESSION_PATH_SESSION = "session";
-const READER_SESSION_PATH_SESSION_STOP = "session/stop";
+// Public re-exports — keeps `../data/reader-client` as the single import
+// surface for the reader controller hooks.
+export {
+  heartbeatReaderSession,
+  startReaderSession,
+  stopReaderSession,
+} from "./reader-session-client";
+export { getOrCreateReaderClientInstanceId } from "./reader-client-instance-id";
+export type { ReaderAuthInput } from "./reader-auth";
 
-type ReaderAuthInput = {
-  getToken: () => Promise<string | null>;
-  isLoaded: boolean;
-  isSignedIn: boolean | undefined;
-};
+// Loads the reader payload (text + status) for a library item, optionally
+// scoped to a specific chapter. Supports cancellation via AbortSignal.
+export async function fetchReaderPayload(
+  input: ReaderAuthInput & {
+    chapterId?: string;
+    libraryItemId: string;
+    signal?: AbortSignal;
+  },
+) {
+  const token = await resolveReaderAuthToken(input);
 
-export async function fetchReaderPayload(input: ReaderAuthInput & {
-  chapterId?: string;
-  libraryItemId: string;
-  signal?: AbortSignal;
-}) {
-  if (!input.isLoaded || !input.isSignedIn) {
-    return Promise.reject(
-      new Error("Reader access requires an authenticated session."),
-    );
-  }
-
-  const token = await input.getToken();
-
-  if (!token) {
-    return Promise.reject(new Error("No session token was available."));
-  }
-
-  const url = new URL(
-    `${getPublicApiBaseUrl()}/api/library/${input.libraryItemId}/reader`,
-  );
-
+  const url = buildReaderUrl(input.libraryItemId);
   if (input.chapterId) {
     url.searchParams.set("chapter", input.chapterId);
   }
 
   const response = await fetch(url.toString(), {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: withAuthHeader(token),
     signal: input.signal,
   });
 
@@ -59,29 +50,21 @@ export async function fetchReaderPayload(input: ReaderAuthInput & {
   return (await response.json()) as ReaderStatusPayload;
 }
 
-export async function markReaderOpened(input: ReaderAuthInput & {
-  libraryItemId: string;
-}) {
-  if (!input.isLoaded || !input.isSignedIn) {
-    return Promise.reject(
-      new Error("Reader access requires an authenticated session."),
-    );
-  }
-
-  const token = await input.getToken();
-
-  if (!token) {
-    return Promise.reject(new Error("No session token was available."));
-  }
+// Records that the user opened the book — drives "last opened" timestamps
+// and analytics. `keepalive` lets it complete during page unload.
+export async function markReaderOpened(
+  input: ReaderAuthInput & {
+    libraryItemId: string;
+  },
+) {
+  const token = await resolveReaderAuthToken(input);
 
   const response = await fetch(
-    `${getPublicApiBaseUrl()}/api/library/${input.libraryItemId}/reader/open`,
+    buildReaderUrl(input.libraryItemId, "open").toString(),
     {
       method: HTTP_METHOD_POST,
       keepalive: true,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: withAuthHeader(token),
     },
   );
 
@@ -90,31 +73,22 @@ export async function markReaderOpened(input: ReaderAuthInput & {
   }
 }
 
-export async function persistReaderProgress(input: ReaderAuthInput & {
-  keepalive?: boolean;
-  libraryItemId: string;
-  locator: ReaderLocator;
-}) {
-  if (!input.isLoaded || !input.isSignedIn) {
-    return Promise.reject(
-      new Error("Reader access requires an authenticated session."),
-    );
-  }
-
-  const token = await input.getToken();
-
-  if (!token) {
-    return Promise.reject(new Error("No session token was available."));
-  }
+// Persists the reader's current locator (page / CFI) so progress survives
+// reloads. Debounced by the caller; `keepalive` flushes on tab close.
+export async function persistReaderProgress(
+  input: ReaderAuthInput & {
+    keepalive?: boolean;
+    libraryItemId: string;
+    locator: ReaderLocator;
+  },
+) {
+  const token = await resolveReaderAuthToken(input);
 
   const response = await fetch(
-    `${getPublicApiBaseUrl()}/api/library/${input.libraryItemId}/reader/progress`,
+    buildReaderUrl(input.libraryItemId, "progress").toString(),
     {
       method: HTTP_METHOD_PATCH,
-      headers: {
-        [HTTP_HEADER_CONTENT_TYPE]: HTTP_CONTENT_TYPE_APPLICATION_JSON,
-        Authorization: `Bearer ${token}`,
-      },
+      headers: withAuthHeader(token, jsonContentTypeHeader()),
       keepalive: input.keepalive,
       body: JSON.stringify({
         locator: input.locator,
@@ -127,139 +101,4 @@ export async function persistReaderProgress(input: ReaderAuthInput & {
   }
 
   return (await response.json()) as ReaderProgressPayload;
-}
-
-export async function startReaderSession(input: ReaderAuthInput & {
-  clientInstanceId: string;
-  libraryItemId: string;
-  signal?: AbortSignal;
-}) {
-  return performReaderSessionRequest({
-    body: {
-      clientInstanceId: input.clientInstanceId,
-    },
-    getToken: input.getToken,
-    isLoaded: input.isLoaded,
-    isSignedIn: input.isSignedIn,
-    libraryItemId: input.libraryItemId,
-    method: HTTP_METHOD_POST,
-    path: READER_SESSION_PATH_SESSION,
-    signal: input.signal,
-  });
-}
-
-export async function heartbeatReaderSession(input: ReaderAuthInput & {
-  clientInstanceId: string;
-  libraryItemId: string;
-  sessionId: string;
-}) {
-  return performReaderSessionRequest({
-    body: {
-      clientInstanceId: input.clientInstanceId,
-      sessionId: input.sessionId,
-    },
-    getToken: input.getToken,
-    isLoaded: input.isLoaded,
-    isSignedIn: input.isSignedIn,
-    libraryItemId: input.libraryItemId,
-    method: HTTP_METHOD_PATCH,
-    path: READER_SESSION_PATH_SESSION,
-  });
-}
-
-export async function stopReaderSession(input: ReaderAuthInput & {
-  clientInstanceId: string;
-  keepalive?: boolean;
-  libraryItemId: string;
-  sessionId: string;
-}) {
-  return performReaderSessionRequest({
-    body: {
-      clientInstanceId: input.clientInstanceId,
-      sessionId: input.sessionId,
-    },
-    getToken: input.getToken,
-    isLoaded: input.isLoaded,
-    isSignedIn: input.isSignedIn,
-    keepalive: input.keepalive,
-    libraryItemId: input.libraryItemId,
-    method: HTTP_METHOD_POST,
-    path: READER_SESSION_PATH_SESSION_STOP,
-  });
-}
-
-async function performReaderSessionRequest(input: ReaderAuthInput & {
-  body?: Record<string, unknown>;
-  keepalive?: boolean;
-  libraryItemId: string;
-  method: typeof HTTP_METHOD_PATCH | typeof HTTP_METHOD_POST;
-  path:
-    | typeof READER_SESSION_PATH_SESSION
-    | typeof READER_SESSION_PATH_SESSION_STOP;
-  signal?: AbortSignal;
-}) {
-  if (!input.isLoaded || !input.isSignedIn) {
-    return Promise.reject(
-      new Error("Reader access requires an authenticated session."),
-    );
-  }
-
-  const token = await input.getToken();
-
-  if (!token) {
-    return Promise.reject(new Error("No session token was available."));
-  }
-
-  const response = await fetch(
-    `${getPublicApiBaseUrl()}/api/library/${input.libraryItemId}/reader/${input.path}`,
-    {
-      method: input.method,
-      headers: {
-        [HTTP_HEADER_CONTENT_TYPE]: HTTP_CONTENT_TYPE_APPLICATION_JSON,
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(input.body ?? {}),
-      keepalive: input.keepalive,
-      signal: input.signal,
-    },
-  );
-
-  if (!response.ok) {
-    throw new Error("Reader session tracking could not be saved.");
-  }
-
-  return (await response.json()) as ReaderSessionPayload;
-}
-
-export function getOrCreateReaderClientInstanceId() {
-  if (typeof window === "undefined") {
-    return createReaderClientInstanceId();
-  }
-
-  try {
-    const existingClientInstanceId = window.sessionStorage.getItem(
-      READER_SESSION_CLIENT_INSTANCE_ID_STORAGE_KEY,
-    );
-
-    if (existingClientInstanceId) {
-      return existingClientInstanceId;
-    }
-
-    const nextClientInstanceId = createReaderClientInstanceId();
-    window.sessionStorage.setItem(
-      READER_SESSION_CLIENT_INSTANCE_ID_STORAGE_KEY,
-      nextClientInstanceId,
-    );
-    return nextClientInstanceId;
-  } catch {
-    return createReaderClientInstanceId();
-  }
-}
-
-function createReaderClientInstanceId() {
-  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
-    return crypto.randomUUID();
-  }
-
-  return `reader-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 }
