@@ -7,11 +7,9 @@ import {
   ReadyReaderHeader,
   ReadyReaderProgress,
 } from "./ready-reader-sections";
-import {
-  ReaderContentsOverlay,
-  ReaderPanelButton,
-  ReaderSidebarOverlay,
-} from "../overlays/reader-overlays";
+import { ReaderContentsOverlay } from "../overlays/reader-contents-overlay";
+import { ReaderPanelButton } from "../overlays/reader-panel-button";
+import { ReaderSidebarOverlay } from "../overlays/reader-sidebar-overlay";
 import {
   READER_PANEL_CONTENTS,
   READER_VISIBILITY_HIDDEN,
