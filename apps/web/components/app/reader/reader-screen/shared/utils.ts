@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import type {
   ReaderChapterPayload,
   ReaderLocator,
@@ -5,6 +6,7 @@ import type {
 } from "@/lib/api-types";
 import type { RestoreIntent } from "@/lib/reader-navigation";
 import {
+  PAGE_GAP,
   READER_STATUS_FAILED,
   READER_STATUS_READY,
   READER_TWO_COLUMN_MIN_WIDTH,
@@ -24,6 +26,23 @@ export function getBrowserViewportHeight() {
 
 export function resolveReaderColumnCount(pageBoxWidth: number): 1 | 2 {
   return pageBoxWidth >= READER_TWO_COLUMN_MIN_WIDTH ? 2 : 1;
+}
+
+// Column layout shared by the visible reader article and the offscreen
+// preloader. Page navigation styling (e.g. translate3d) is layered on
+// top of this by the caller.
+export function createReaderColumnLayoutStyle({
+  height,
+  width,
+}: {
+  height: number;
+  width: number;
+}): CSSProperties {
+  return {
+    columnCount: resolveReaderColumnCount(width),
+    columnGap: `${PAGE_GAP}px`,
+    height: height > 0 ? `${height}px` : undefined,
+  };
 }
 
 export function shouldRefreshChapterWindow(

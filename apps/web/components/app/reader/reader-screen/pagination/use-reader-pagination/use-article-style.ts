@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import type { CSSProperties } from "react";
 import { PAGE_GAP } from "../../shared/constants";
 import type { PageBoxSize } from "../../shared/types";
-import { resolveReaderColumnCount } from "../../shared/utils";
+import { createReaderColumnLayoutStyle } from "../../shared/utils";
 import { READER_RESTORE_PHASE_SETTLED } from "../use-reader-pagination.helpers";
 import type { ReaderRestorePhase } from "../use-reader-pagination.helpers";
 
@@ -27,18 +27,17 @@ export function useArticleStyle({
   // pageSpan is the horizontal distance between consecutive "pages".
   const pageSpan = pageBoxSize.width > 0 ? pageBoxSize.width + PAGE_GAP : 0;
   const pageTranslate = (currentPageIndex + prefixPageCount) * pageSpan;
-  const columnCount = resolveReaderColumnCount(pageBoxSize.width);
 
   const articleStyle = useMemo(
     () =>
       ({
-        columnCount,
-        columnGap: `${PAGE_GAP}px`,
-        height:
-          pageBoxSize.height > 0 ? `${pageBoxSize.height}px` : undefined,
+        ...createReaderColumnLayoutStyle({
+          height: pageBoxSize.height,
+          width: pageBoxSize.width,
+        }),
         transform: `translate3d(-${pageTranslate}px, 0, 0)`,
       }) as CSSProperties,
-    [columnCount, pageBoxSize.height, pageTranslate],
+    [pageBoxSize.height, pageBoxSize.width, pageTranslate],
   );
 
   const shouldMaskArticle =
