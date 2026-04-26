@@ -7,8 +7,12 @@ import {
 
 export function useMeasurementCache({
   activePaginationLayoutKey,
+  previousPaginationLayoutKey,
 }: {
   activePaginationLayoutKey: string | null;
+  // Layout key of the previous chapter — lets the spread logic ask "is the
+  // previous chapter single-page?" without exposing the entire cache.
+  previousPaginationLayoutKey?: string | null;
 }) {
   const [measurementEntries, setMeasurementEntries] = useState(
     () => new Map<string, ReaderMeasurementEntry>(),
@@ -23,6 +27,16 @@ export function useMeasurementCache({
     resolveReadyMeasurementEntry(activeMeasurementEntry);
   const activeMeasurementStatus = resolveMeasurementStatus(activeMeasurementEntry);
   const pageCount = activeReadyMeasurementEntry?.pageCount ?? 1;
+
+  // Page count for the previous chapter, used by the spread logic in
+  // useReaderPagination to decide whether to render the prefix.
+  const previousReadyMeasurementEntry = previousPaginationLayoutKey
+    ? resolveReadyMeasurementEntry(
+        measurementEntries.get(previousPaginationLayoutKey) ?? null,
+      )
+    : null;
+  const previousChapterPageCount =
+    previousReadyMeasurementEntry?.pageCount ?? null;
 
   const storeMeasurementEntry = useCallback((entry: ReaderMeasurementEntry) => {
     setMeasurementEntries((current) => {
@@ -48,6 +62,7 @@ export function useMeasurementCache({
     activeMeasurementStatus,
     activeReadyMeasurementEntry,
     pageCount,
+    previousChapterPageCount,
     storeMeasurementEntry,
     warnFailedMeasurement,
   };

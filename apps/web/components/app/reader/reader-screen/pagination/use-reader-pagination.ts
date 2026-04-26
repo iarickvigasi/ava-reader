@@ -5,6 +5,7 @@ import type {
 } from "react";
 import { useMemo, useState } from "react";
 import type {
+  ReaderBlock,
   ReaderChapterPayload,
   ReaderLocator,
 } from "@/lib/api-types";
@@ -17,6 +18,7 @@ import type {
   ReaderMeasurementEntry,
 } from "@/lib/reader-measurement";
 import type { PageBoxSize } from "../shared/types";
+import { resolveReaderColumnCount } from "../shared/utils";
 import { useViewportSize } from "./use-reader-pagination/use-viewport-size";
 import { useMeasurementCache } from "./use-reader-pagination/use-measurement-cache";
 import { useRestoreController } from "./use-reader-pagination/use-restore-controller";
@@ -31,6 +33,12 @@ export type UseReaderPaginationInput = {
   isLoadingChapter: boolean;
   isPanelOpen: boolean;
   libraryItemId: string;
+  // Previous chapter — when single-page in two-column mode, its blocks are
+  // surfaced as `prefixBlocks` so the active chapter starts in column 2.
+  previousChapter?: ReaderChapterPayload | null;
+  // Next chapter — when the active chapter is single-page in two-column mode,
+  // its blocks are surfaced as `spilloverBlocks` so column 2 isn't wasted.
+  nextChapter?: ReaderChapterPayload | null;
   onSelectChapter: (chapterId: string, target?: ReaderNavigationTarget) => void;
   onVisibleLocatorChange: (locator: ReaderLocator | null) => void;
   restoreIntent: RestoreIntent | null;
@@ -46,8 +54,14 @@ export type UseReaderPaginationResult = {
   pageBoxRef: RefObject<HTMLDivElement | null>;
   pageBoxSize: PageBoxSize;
   pageCount: number;
+  // Previous chapter's blocks to render before the active chapter (spread
+  // column 1) when the previous chapter is single-page in two-column mode.
+  prefixBlocks: ReaderBlock[] | undefined;
   rootRef: RefObject<HTMLDivElement | null>;
   shouldMaskArticle: boolean;
+  // Next chapter's blocks to render after the active chapter (spread
+  // column 2) when the active chapter is single-page in two-column mode.
+  spilloverBlocks: ReaderBlock[] | undefined;
   storeMeasurementEntry: (entry: ReaderMeasurementEntry) => void;
 };
 
@@ -67,8 +81,10 @@ export function useReaderPagination({
   isLoadingChapter,
   isPanelOpen,
   libraryItemId,
+  nextChapter,
   onSelectChapter,
   onVisibleLocatorChange,
+  previousChapter,
   restoreIntent,
   visibleLocator,
 }: UseReaderPaginationInput): UseReaderPaginationResult {
@@ -101,13 +117,39 @@ export function useReaderPagination({
     pageBoxSize.width,
   ]);
 
+  // Layout key for the previous chapter so we can read its measured page
+  // count from the same cache.
+  const previousPaginationLayoutKey = useMemo(() => {
+    if (!previousChapter || pageBoxSize.width <= 0 || pageBoxSize.height <= 0) {
+      return null;
+    }
+
+    return createPaginationLayoutKey({
+      chapterId: previousChapter.chapterId,
+      fontScale,
+      libraryItemId,
+      viewportHeight: pageBoxSize.height,
+      viewportWidth: pageBoxSize.width,
+    });
+  }, [
+    fontScale,
+    libraryItemId,
+    pageBoxSize.height,
+    pageBoxSize.width,
+    previousChapter,
+  ]);
+
   const {
     activeMeasurementEntry,
     activeReadyMeasurementEntry,
     pageCount,
+    previousChapterPageCount,
     storeMeasurementEntry,
     warnFailedMeasurement,
-  } = useMeasurementCache({ activePaginationLayoutKey });
+  } = useMeasurementCache({
+    activePaginationLayoutKey,
+    previousPaginationLayoutKey,
+  });
 
   const activeRestoreCycleKey = restoreIntent?.key ?? activeChapter.chapterId;
 
@@ -143,12 +185,51 @@ export function useReaderPagination({
     onSelectChapter,
   });
 
+  // Spreads only make sense in two-column layouts; single-column views
+  // already use the full width per chapter.
+  const isTwoColumnLayout = resolveReaderColumnCount(pageBoxSize.width) >= 2;
+
+  // Spillover: active chapter is single-page → flow next chapter into
+  // column 2 so the empty half-screen isn't wasted.
+  const spilloverBlocks = useMemo(() => {
+    if (
+      !isTwoColumnLayout ||
+      pageCount !== 1 ||
+      !nextChapter ||
+      activeChapter.nextChapterId !== nextChapter.chapterId
+    ) {
+      return undefined;
+    }
+
+    return nextChapter.blocks;
+  }, [
+    activeChapter.nextChapterId,
+    isTwoColumnLayout,
+    nextChapter,
+    pageCount,
+  ]);
+
+  // Prefix: previous chapter was single-page → render it as column 1 and
+  // shift the active chapter's translate by one page so its column 1 isn't
+  // re-shown (the user already saw it in the previous chapter's spread).
+  const isPreviousSinglePageSpread =
+    isTwoColumnLayout &&
+    previousChapterPageCount === 1 &&
+    Boolean(previousChapter) &&
+    activeChapter.previousChapterId === previousChapter?.chapterId;
+
+  const prefixBlocks = isPreviousSinglePageSpread
+    ? previousChapter?.blocks
+    : undefined;
+  const prefixPageCount = isPreviousSinglePageSpread ? 1 : 0;
+
   const { articleStyle, shouldMaskArticle } = useArticleStyle({
     pageBoxSize,
     currentPageIndex,
     isBootstrapping,
     isLoadingChapter,
     restorePhase,
+    prefixPageCount,
   });
 
   return {
@@ -160,8 +241,10 @@ export function useReaderPagination({
     pageBoxRef,
     pageBoxSize,
     pageCount,
+    prefixBlocks,
     rootRef,
     shouldMaskArticle,
+    spilloverBlocks,
     storeMeasurementEntry,
   };
 }

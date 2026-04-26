@@ -150,17 +150,25 @@ function renderHeadingBlock({
 export function ReaderBlockView({
   block,
   pageHeight,
+  forceColumnBreakBefore,
 }: {
   block: ReaderBlock;
   pageHeight: number;
+  forceColumnBreakBefore?: boolean;
 }) {
   const blockStyle = resolveBlockStyle(block);
+  // When a block is the first of a "spillover" chapter rendered after a
+  // single-page chapter, force it into a fresh column so the prior chapter
+  // stays alone in its column.
+  const mergedStyle: CSSProperties | undefined = forceColumnBreakBefore
+    ? { ...(blockStyle ?? {}), breakBefore: "column" }
+    : blockStyle;
   const sharedProps = {
     "data-block-id": block.id,
     "data-reader-block-kind": block.kind,
     "data-reader-block": READER_BLOCK_DATA_TRUE,
     id: block.anchorId ?? undefined,
-    ...(blockStyle ? { style: blockStyle } : {}),
+    ...(mergedStyle ? { style: mergedStyle } : {}),
   };
 
   const alignmentClass = resolveAlignmentClass(block);

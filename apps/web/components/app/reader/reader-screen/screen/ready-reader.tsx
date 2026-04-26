@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useReaderUi } from "@/components/app/core/reader-ui-context";
 import { ReaderArticle, ReaderPaginationPreloader } from "../content/reader-article";
 import {
@@ -40,6 +40,25 @@ export function ReadyReader({
   const isContentsOpen = activePanel === READER_PANEL_CONTENTS;
   const isPanelOpen = isSidebarOpen || isContentsOpen;
 
+  // Look up the immediate neighbours so the spread logic can fill column 2
+  // with the next chapter when the active chapter is single-page, and skip
+  // the active chapter's column 1 when the previous chapter was single-page
+  // (since the user already saw it in that previous chapter's spread).
+  const previousChapter = useMemo(
+    () =>
+      payload.chapters.find(
+        (chapter) => chapter.chapterId === activeChapter.previousChapterId,
+      ) ?? null,
+    [activeChapter.previousChapterId, payload.chapters],
+  );
+  const nextChapter = useMemo(
+    () =>
+      payload.chapters.find(
+        (chapter) => chapter.chapterId === activeChapter.nextChapterId,
+      ) ?? null,
+    [activeChapter.nextChapterId, payload.chapters],
+  );
+
   const {
     articleStyle,
     availableHeight,
@@ -49,8 +68,10 @@ export function ReadyReader({
     pageBoxRef,
     pageBoxSize,
     pageCount,
+    prefixBlocks,
     rootRef,
     shouldMaskArticle,
+    spilloverBlocks,
     storeMeasurementEntry,
   } = useReaderPagination({
     activeChapter,
@@ -59,8 +80,10 @@ export function ReadyReader({
     isLoadingChapter,
     isPanelOpen,
     libraryItemId,
+    nextChapter,
     onSelectChapter,
     onVisibleLocatorChange,
+    previousChapter,
     restoreIntent,
     visibleLocator,
   });
@@ -112,6 +135,8 @@ export function ReadyReader({
                 <ReaderArticle
                   blocks={activeChapter.blocks}
                   pageHeight={pageBoxSize.height}
+                  prefixBlocks={prefixBlocks}
+                  spilloverBlocks={spilloverBlocks}
                   style={articleStyle}
                 />
               </div>
