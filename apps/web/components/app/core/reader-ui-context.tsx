@@ -8,7 +8,11 @@ import {
   type ReactNode,
 } from "react";
 
-export type ReaderPanel = "contents" | "preferences";
+export type ReaderPanel =
+  | "contents"
+  | "preferences"
+  | "ai-chats"
+  | "highlights";
 
 type ReaderUiContextValue = {
   activePanel: ReaderPanel | null;

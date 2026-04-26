@@ -48,11 +48,13 @@ const readerNavItems = [
     href: "",
     icon: ReaderNotesIcon,
     label: "AI Chats",
+    panel: "ai-chats",
   },
   {
     href: "",
     icon: ReaderFavoritesIcon,
     label: "Highlights",
+    panel: "highlights",
   },
   {
     href: "",
@@ -218,7 +220,11 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
 
 function ReaderNavigation() {
   const { activePanel, togglePanel } = useReaderUi();
-  const isLeftPanelOpen = activePanel === "contents" || activePanel === "preferences";
+  const isLeftPanelOpen =
+    activePanel === "contents" ||
+    activePanel === "preferences" ||
+    activePanel === "ai-chats" ||
+    activePanel === "highlights";
 
   return (
     <>

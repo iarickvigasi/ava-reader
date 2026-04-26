@@ -7,10 +7,14 @@ import {
   ReadyReaderHeader,
   ReadyReaderProgress,
 } from "./ready-reader-sections";
+import { ReaderAiChatsOverlay } from "../overlays/ai-chats/reader-ai-chats-overlay";
 import { ReaderContentsOverlay } from "../overlays/contents/reader-contents-overlay";
+import { ReaderHighlightsOverlay } from "../overlays/highlights/reader-highlights-overlay";
 import { ReaderPreferencesOverlay } from "../overlays/preferences/reader-preferences-overlay";
 import {
+  READER_PANEL_AI_CHATS,
   READER_PANEL_CONTENTS,
+  READER_PANEL_HIGHLIGHTS,
   READER_PANEL_PREFERENCES,
   READER_VISIBILITY_HIDDEN,
 } from "../shared/constants";
@@ -37,7 +41,10 @@ export function ReadyReader({
   const { activePanel, closePanel } = useReaderUi();
   const isContentsOpen = activePanel === READER_PANEL_CONTENTS;
   const isPreferencesOpen = activePanel === READER_PANEL_PREFERENCES;
-  const isPanelOpen = isContentsOpen || isPreferencesOpen;
+  const isAiChatsOpen = activePanel === READER_PANEL_AI_CHATS;
+  const isHighlightsOpen = activePanel === READER_PANEL_HIGHLIGHTS;
+  const isPanelOpen =
+    isContentsOpen || isPreferencesOpen || isAiChatsOpen || isHighlightsOpen;
 
   // Look up the immediate neighbours so the spread logic can fill column 2
   // with the next chapter when the active chapter is single-page, and skip
@@ -173,6 +180,12 @@ export function ReadyReader({
           onDecreaseFont={onDecreaseFont}
           onIncreaseFont={onIncreaseFont}
         />
+      ) : null}
+
+      {isAiChatsOpen ? <ReaderAiChatsOverlay onClose={closePanel} /> : null}
+
+      {isHighlightsOpen ? (
+        <ReaderHighlightsOverlay onClose={closePanel} />
       ) : null}
 
       {pageBoxSize.width > 0 && pageBoxSize.height > 0 ? (
