@@ -12,7 +12,8 @@ export type ReaderPanel =
   | "contents"
   | "preferences"
   | "ai-chats"
-  | "highlights";
+  | "highlights"
+  | "ai-comments";
 
 type ReaderUiContextValue = {
   activePanel: ReaderPanel | null;

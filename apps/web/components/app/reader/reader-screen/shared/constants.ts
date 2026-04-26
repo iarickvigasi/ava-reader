@@ -14,6 +14,7 @@ export const READER_PANEL_CONTENTS = "contents";
 export const READER_PANEL_PREFERENCES = "preferences";
 export const READER_PANEL_AI_CHATS = "ai-chats";
 export const READER_PANEL_HIGHLIGHTS = "highlights";
+export const READER_PANEL_AI_COMMENTS = "ai-comments";
 export const READER_VISIBILITY_HIDDEN = "hidden";
 export const READER_STATUS_POLL_INTERVAL_MS = 3_000;
 export const READER_PROGRESS_PERSIST_DEBOUNCE_MS = 900;

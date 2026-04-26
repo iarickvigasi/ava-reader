@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useReaderUi } from "@/components/app/core/reader-ui-context";
 import { ReaderArticle } from "../content/reader-article";
 import { ReaderPaginationPreloader } from "../pagination/reader-pagination-preloader";
@@ -8,11 +8,13 @@ import {
   ReadyReaderProgress,
 } from "./ready-reader-sections";
 import { ReaderAiChatsOverlay } from "../overlays/ai-chats/reader-ai-chats-overlay";
+import { ReaderAiCommentsOverlay } from "../overlays/ai-comments/reader-ai-comments-overlay";
 import { ReaderContentsOverlay } from "../overlays/contents/reader-contents-overlay";
 import { ReaderHighlightsOverlay } from "../overlays/highlights/reader-highlights-overlay";
 import { ReaderPreferencesOverlay } from "../overlays/preferences/reader-preferences-overlay";
 import {
   READER_PANEL_AI_CHATS,
+  READER_PANEL_AI_COMMENTS,
   READER_PANEL_CONTENTS,
   READER_PANEL_HIGHLIGHTS,
   READER_PANEL_PREFERENCES,
@@ -20,6 +22,7 @@ import {
 } from "../shared/constants";
 import type { ReadyReaderProps } from "../shared/types";
 import { useReaderPagination } from "../pagination/use-reader-pagination";
+import { useReaderTextSelection } from "./use-reader-text-selection";
 
 export function ReadyReader({
   activeChapter,
@@ -38,13 +41,19 @@ export function ReadyReader({
   restoreIntent,
   visibleLocator,
 }: ReadyReaderProps) {
-  const { activePanel, closePanel } = useReaderUi();
+  const { activePanel, closePanel, openPanel } = useReaderUi();
+  const [selectedText, setSelectedText] = useState<string | null>(null);
   const isContentsOpen = activePanel === READER_PANEL_CONTENTS;
   const isPreferencesOpen = activePanel === READER_PANEL_PREFERENCES;
   const isAiChatsOpen = activePanel === READER_PANEL_AI_CHATS;
   const isHighlightsOpen = activePanel === READER_PANEL_HIGHLIGHTS;
+  const isAiCommentsOpen = activePanel === READER_PANEL_AI_COMMENTS;
   const isPanelOpen =
-    isContentsOpen || isPreferencesOpen || isAiChatsOpen || isHighlightsOpen;
+    isContentsOpen ||
+    isPreferencesOpen ||
+    isAiChatsOpen ||
+    isHighlightsOpen ||
+    isAiCommentsOpen;
 
   // Look up the immediate neighbours so the spread logic can fill column 2
   // with the next chapter when the active chapter is single-page, and skip
@@ -92,6 +101,25 @@ export function ReadyReader({
     previousChapter,
     restoreIntent,
     visibleLocator,
+  });
+
+  // When the user selects text inside the page-box, surface it in the AI
+  // Comments panel. We open the panel here (instead of forcing the caller of
+  // setSelectedText to do it) so the trigger remains centralised.
+  const handleTextSelected = useCallback(
+    (text: string) => {
+      setSelectedText(text);
+      openPanel(READER_PANEL_AI_COMMENTS);
+    },
+    [openPanel],
+  );
+
+  useReaderTextSelection({
+    containerRef: pageBoxRef,
+    onSelectText: handleTextSelected,
+    // Selecting while the article is masked (e.g., during chapter transitions)
+    // would surface stale text — skip those windows.
+    disabled: shouldMaskArticle,
   });
 
   useEffect(() => {
@@ -186,6 +214,13 @@ export function ReadyReader({
 
       {isHighlightsOpen ? (
         <ReaderHighlightsOverlay onClose={closePanel} />
+      ) : null}
+
+      {isAiCommentsOpen ? (
+        <ReaderAiCommentsOverlay
+          onClose={closePanel}
+          selectedText={selectedText ?? undefined}
+        />
       ) : null}
 
       {pageBoxSize.width > 0 && pageBoxSize.height > 0 ? (

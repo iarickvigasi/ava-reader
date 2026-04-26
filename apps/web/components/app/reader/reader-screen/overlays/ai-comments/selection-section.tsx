@@ -1,0 +1,33 @@
+import { CopyIcon, SpeakerIcon } from "@/components/app/shared/app-icons";
+import { SectionLabel } from "../section-label";
+
+type SelectionSectionProps = {
+  selectedText: string;
+};
+
+export function SelectionSection({ selectedText }: SelectionSectionProps) {
+  return (
+    <section className="flex flex-col gap-3">
+      <SectionLabel>Selection</SectionLabel>
+      <div className="flex items-center gap-3 rounded-[10px] bg-soft-tone-fill px-4 py-3">
+        <button
+          type="button"
+          aria-label="Read selection aloud"
+          className="inline-flex size-7 shrink-0 items-center justify-center rounded-full text-ink/70 transition hover:bg-paper-strong/70 hover:text-ink"
+        >
+          <SpeakerIcon className="size-4" />
+        </button>
+        <p className="min-w-0 flex-1 truncate font-(--font-display) text-[1.05rem] leading-[1.4] text-ink">
+          {`\u201C${selectedText}\u201D`}
+        </p>
+        <button
+          type="button"
+          aria-label="Copy selection"
+          className="inline-flex size-7 shrink-0 items-center justify-center rounded-full text-ink/55 transition hover:bg-paper-strong/70 hover:text-ink"
+        >
+          <CopyIcon className="size-4" />
+        </button>
+      </div>
+    </section>
+  );
+}
