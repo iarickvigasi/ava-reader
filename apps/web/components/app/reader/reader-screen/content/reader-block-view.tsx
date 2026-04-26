@@ -1,151 +1,49 @@
 import type { CSSProperties } from "react";
-import type { ReaderBlock, ReaderBlockAlign } from "@/lib/api-types";
+import type { ReaderBlock } from "@/lib/api-types";
 import { cn } from "@/lib/cn";
+import { resolveAlignmentClass, resolveBlockStyle } from "./reader-block-style";
 import { ReaderInlineContent } from "./reader-inline-content";
 
-const READER_BLOCK_DATA_TRUE = "true";
-const READER_BLOCK_KIND_HEADING = "heading";
-const READER_BLOCK_KIND_BLOCKQUOTE = "blockquote";
-const READER_BLOCK_KIND_LIST = "list";
-const READER_BLOCK_KIND_IMAGE = "image";
-
-// Default first-line indent for paragraphs that don't have one set on
-// the block. Books that ship no styling at all still look book-like.
-// Books that DO style their paragraphs (Dune-style stylesheets with
-// .indent / .nonindent) override this via block.textIndent.
-const DEFAULT_PARAGRAPH_INDENT_EM = 1.5;
-
-// Resolve the inline style for a block: a per-block font-size multiplier
-// (--reader-block-scale, picked up by the calc() classes below), an
-// explicit text-indent for paragraphs, and an explicit font-weight when
-// the publisher set one. Inline styles win over utility classes, which
-// is what we want — a heading's default `font-bold` should give way to
-// e.g. `font-weight: 600` when the source asks for semibold.
-function resolveBlockStyle(block: ReaderBlock): CSSProperties | undefined {
-  const style: Record<string, unknown> = {};
-
-  if ("fontSizeScale" in block && block.fontSizeScale) {
-    style["--reader-block-scale"] = block.fontSizeScale;
-  }
-
-  const indentEm = resolveParagraphIndentEm(block);
-  if (indentEm > 0) {
-    style.textIndent = `${indentEm}em`;
-  }
-
-  if ("fontWeight" in block && typeof block.fontWeight === "number") {
-    style.fontWeight = block.fontWeight;
-  }
-
-  return Object.keys(style).length > 0
-    ? (style as CSSProperties)
-    : undefined;
-}
-
-function resolveParagraphIndentEm(block: ReaderBlock): number {
-  if (block.kind !== "paragraph") {
-    return 0;
-  }
-
-  const align = "align" in block ? block.align : undefined;
-  if (align === "center" || align === "right") {
-    // Indenting a centered or right-aligned paragraph reads as a glitch.
-    return 0;
-  }
-
-  // Publisher-supplied value wins. textIndent === 0 means "explicitly
-  // no indent" (e.g. the .nonindent class on the first paragraph after
-  // a heading) and must be respected.
-  if (
-    "textIndent" in block &&
-    typeof block.textIndent === "number"
-  ) {
-    return block.textIndent;
-  }
-
-  return DEFAULT_PARAGRAPH_INDENT_EM;
-}
-
-// `text-left` is the default; we omit it so the class string stays
-// short and Tailwind's purge isn't tripped up by a class that doesn't
-// change anything.
-const ALIGNMENT_CLASS_BY_VALUE: Record<ReaderBlockAlign, string> = {
-  center: "text-center",
-  justify: "text-justify",
-  left: "",
-  right: "text-right",
+type SharedBlockProps = {
+  "data-block-id": string;
+  "data-reader-block-kind": string;
+  "data-reader-block": "true";
+  id: string | undefined;
+  style?: CSSProperties;
 };
 
-function resolveAlignmentClass(block: ReaderBlock): string {
-  if (!("align" in block) || !block.align) {
-    return "";
-  }
-  return ALIGNMENT_CLASS_BY_VALUE[block.align] ?? "";
-}
+// Paragraph and blockquote share a single union variant, so a
+// kind-by-kind Extract collapses to never. These aliases pull the
+// variants out by hand.
+type TextReaderBlock = Extract<ReaderBlock, { kind: "paragraph" | "blockquote" }>;
+type HeadingReaderBlock = Extract<ReaderBlock, { kind: "heading" }>;
+type ListReaderBlock = Extract<ReaderBlock, { kind: "list" }>;
+type ImageReaderBlock = Extract<ReaderBlock, { kind: "image" }>;
 
-function renderHeadingBlock({
-  className,
-  sharedProps,
-  block,
-}: {
-  className: string;
-  sharedProps: {
-    "data-block-id": string;
-    "data-reader-block-kind": string;
-    "data-reader-block": string;
-    id: string | undefined;
-    style?: CSSProperties;
-  };
-  block: Extract<ReaderBlock, { kind: "heading" }>;
-}) {
-  const level = block.level;
+type WithSharedProps<TBlock> = {
+  block: TBlock;
+  sharedProps: SharedBlockProps;
+  alignmentClass: string;
+};
 
-  if (level === 1) {
-    return (
-      <h1 {...sharedProps} className={className}>
-        <ReaderInlineContent inlines={block.inlines} />
-      </h1>
-    );
-  }
+const HEADING_CLASS =
+  "break-inside-avoid-column font-(--font-reader) text-[calc(1.7rem*var(--reader-font-scale)*var(--reader-block-scale,1))] leading-[1.15] font-bold tracking-[-0.03em] text-ink sm:text-[calc(2.15rem*var(--reader-font-scale)*var(--reader-block-scale,1))]";
 
-  if (level === 2) {
-    return (
-      <h2 {...sharedProps} className={className}>
-        <ReaderInlineContent inlines={block.inlines} />
-      </h2>
-    );
-  }
+const BLOCKQUOTE_CLASS =
+  "border-l border-line/60 pl-5 font-(--font-reader) text-[calc(1.18rem*var(--reader-font-scale)*var(--reader-block-scale,1))] leading-[1.9] italic text-ink/90 sm:text-[calc(1.3rem*var(--reader-font-scale)*var(--reader-block-scale,1))]";
 
-  if (level === 3) {
-    return (
-      <h3 {...sharedProps} className={className}>
-        <ReaderInlineContent inlines={block.inlines} />
-      </h3>
-    );
-  }
+const LIST_CLASS =
+  "space-y-1 pl-6 font-(--font-reader) text-[calc(1.12rem*var(--reader-font-scale)*var(--reader-block-scale,1))] leading-relaxed text-ink sm:text-[calc(1.28rem*var(--reader-font-scale)*var(--reader-block-scale,1))]";
 
-  if (level === 4) {
-    return (
-      <h4 {...sharedProps} className={className}>
-        <ReaderInlineContent inlines={block.inlines} />
-      </h4>
-    );
-  }
+const PARAGRAPH_CLASS =
+  "font-(--font-reader) text-[calc(1.16rem*var(--reader-font-scale)*var(--reader-block-scale,1))] leading-loose tracking-[-0.01em] text-ink sm:text-[calc(1.34rem*var(--reader-font-scale)*var(--reader-block-scale,1))]";
 
-  if (level === 5) {
-    return (
-      <h5 {...sharedProps} className={className}>
-        <ReaderInlineContent inlines={block.inlines} />
-      </h5>
-    );
-  }
+const FIGURE_MIN_HEIGHT_PX = 160;
+const FIGURE_RESERVED_HEIGHT_PX = 64;
 
-  return (
-    <h6 {...sharedProps} className={className}>
-      <ReaderInlineContent inlines={block.inlines} />
-    </h6>
-  );
-}
+type HeadingTag = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+const HEADING_LEVEL_MIN = 1;
+const HEADING_LEVEL_MAX = 6;
 
 export function ReaderBlockView({
   block,
@@ -156,112 +54,179 @@ export function ReaderBlockView({
   pageHeight: number;
   forceColumnBreakBefore?: boolean;
 }) {
-  const blockStyle = resolveBlockStyle(block);
-  // When a block is the first of a "spillover" chapter rendered after a
-  // single-page chapter, force it into a fresh column so the prior chapter
-  // stays alone in its column.
-  const mergedStyle: CSSProperties | undefined = forceColumnBreakBefore
-    ? { ...(blockStyle ?? {}), breakBefore: "column" }
-    : blockStyle;
-  const sharedProps = {
-    "data-block-id": block.id,
-    "data-reader-block-kind": block.kind,
-    "data-reader-block": READER_BLOCK_DATA_TRUE,
-    id: block.anchorId ?? undefined,
-    ...(mergedStyle ? { style: mergedStyle } : {}),
-  };
-
+  const sharedProps = createSharedBlockProps(block, forceColumnBreakBefore);
   const alignmentClass = resolveAlignmentClass(block);
 
-  if (block.kind === READER_BLOCK_KIND_HEADING) {
-    const headingClassName = cn(
-      "break-inside-avoid-column font-(--font-reader) text-[calc(1.7rem*var(--reader-font-scale)*var(--reader-block-scale,1))] leading-[1.15] font-bold tracking-[-0.03em] text-ink sm:text-[calc(2.15rem*var(--reader-font-scale)*var(--reader-block-scale,1))]",
-      alignmentClass,
-    );
-    return renderHeadingBlock({
-      block,
-      className: headingClassName,
-      sharedProps,
-    });
-  }
-
-  if (block.kind === READER_BLOCK_KIND_BLOCKQUOTE) {
-    return (
-      <blockquote
-        {...sharedProps}
-        className={cn(
-          "border-l border-line/60 pl-5 font-(--font-reader) text-[calc(1.18rem*var(--reader-font-scale)*var(--reader-block-scale,1))] leading-[1.9] italic text-ink/90 sm:text-[calc(1.3rem*var(--reader-font-scale)*var(--reader-block-scale,1))]",
-          alignmentClass,
-        )}
-      >
-        <ReaderInlineContent inlines={block.inlines} />
-      </blockquote>
-    );
-  }
-
-  if (block.kind === READER_BLOCK_KIND_LIST) {
-    const listClassName = cn(
-      "space-y-1 pl-6 font-(--font-reader) text-[calc(1.12rem*var(--reader-font-scale)*var(--reader-block-scale,1))] leading-relaxed text-ink sm:text-[calc(1.28rem*var(--reader-font-scale)*var(--reader-block-scale,1))]",
-      block.ordered ? "list-decimal" : "list-disc",
-      alignmentClass,
-    );
-
-    if (block.ordered) {
+  switch (block.kind) {
+    case "heading":
       return (
-        <ol {...sharedProps} className={listClassName}>
-          {block.items.map((item) => (
-            <li key={item.id}>
-              <ReaderInlineContent inlines={item.inlines} />
-            </li>
-          ))}
-        </ol>
-      );
-    }
-
-    return (
-      <ul {...sharedProps} className={listClassName}>
-        {block.items.map((item) => (
-          <li key={item.id}>
-            <ReaderInlineContent inlines={item.inlines} />
-          </li>
-        ))}
-      </ul>
-    );
-  }
-
-  if (block.kind === READER_BLOCK_KIND_IMAGE) {
-    const imageMaxHeight =
-      pageHeight > 0 ? `${Math.max(160, Math.floor(pageHeight - 64))}px` : undefined;
-
-    return (
-      <figure {...sharedProps} className="break-inside-avoid-column space-y-3">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          alt={block.alt ?? ""}
-          className="w-full rounded-[22px] border border-line/30 object-contain"
-          src={block.src}
-          style={{
-            maxHeight: imageMaxHeight,
-          }}
+        <HeadingBlock
+          block={block}
+          sharedProps={sharedProps}
+          alignmentClass={alignmentClass}
         />
-        {block.alt ? (
-          <figcaption className="font-(--font-ui) text-sm text-ink/55">
-            {block.alt}
-          </figcaption>
-        ) : null}
-      </figure>
-    );
+      );
+    case "blockquote":
+      return (
+        <BlockquoteBlock
+          block={block}
+          sharedProps={sharedProps}
+          alignmentClass={alignmentClass}
+        />
+      );
+    case "list":
+      return (
+        <ListBlock
+          block={block}
+          sharedProps={sharedProps}
+          alignmentClass={alignmentClass}
+        />
+      );
+    case "image":
+      return (
+        <ImageBlock
+          block={block}
+          sharedProps={sharedProps}
+          pageHeight={pageHeight}
+        />
+      );
+    default:
+      return (
+        <ParagraphBlock
+          block={block}
+          sharedProps={sharedProps}
+          alignmentClass={alignmentClass}
+        />
+      );
   }
+}
 
+function createSharedBlockProps(
+  block: ReaderBlock,
+  forceColumnBreakBefore: boolean | undefined,
+): SharedBlockProps {
+  const blockStyle = resolveBlockStyle(block);
+  // When the block is the first of a "spillover" chapter rendered
+  // after a single-page chapter, force it into a fresh column so the
+  // prior chapter stays alone in its column.
+  const style = forceColumnBreakBefore
+    ? ({ ...(blockStyle ?? {}), breakBefore: "column" } as CSSProperties)
+    : blockStyle;
+
+  return {
+    "data-block-id": block.id,
+    "data-reader-block-kind": block.kind,
+    "data-reader-block": "true",
+    id: block.anchorId ?? undefined,
+    ...(style ? { style } : {}),
+  };
+}
+
+function HeadingBlock({
+  block,
+  sharedProps,
+  alignmentClass,
+}: WithSharedProps<HeadingReaderBlock>) {
+  const level = clampHeadingLevel(block.level);
+  const Tag = `h${level}` as HeadingTag;
+
+  return (
+    <Tag {...sharedProps} className={cn(HEADING_CLASS, alignmentClass)}>
+      <ReaderInlineContent inlines={block.inlines} />
+    </Tag>
+  );
+}
+
+function clampHeadingLevel(level: number): 1 | 2 | 3 | 4 | 5 | 6 {
+  if (level <= HEADING_LEVEL_MIN) return 1;
+  if (level >= HEADING_LEVEL_MAX) return 6;
+  return level as 2 | 3 | 4 | 5;
+}
+
+function BlockquoteBlock({
+  block,
+  sharedProps,
+  alignmentClass,
+}: WithSharedProps<TextReaderBlock>) {
+  return (
+    <blockquote
+      {...sharedProps}
+      className={cn(BLOCKQUOTE_CLASS, alignmentClass)}
+    >
+      <ReaderInlineContent inlines={block.inlines} />
+    </blockquote>
+  );
+}
+
+function ListBlock({
+  block,
+  sharedProps,
+  alignmentClass,
+}: WithSharedProps<ListReaderBlock>) {
+  const Tag = block.ordered ? "ol" : "ul";
+  const className = cn(
+    LIST_CLASS,
+    block.ordered ? "list-decimal" : "list-disc",
+    alignmentClass,
+  );
+
+  return (
+    <Tag {...sharedProps} className={className}>
+      {block.items.map((item) => (
+        <li key={item.id}>
+          <ReaderInlineContent inlines={item.inlines} />
+        </li>
+      ))}
+    </Tag>
+  );
+}
+
+function ImageBlock({
+  block,
+  sharedProps,
+  pageHeight,
+}: {
+  block: ImageReaderBlock;
+  sharedProps: SharedBlockProps;
+  pageHeight: number;
+}) {
+  const maxHeight = resolveImageMaxHeight(pageHeight);
+
+  return (
+    <figure
+      {...sharedProps}
+      className="break-inside-avoid-column space-y-3"
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        alt={block.alt ?? ""}
+        className="w-full rounded-[22px] border border-line/30 object-contain"
+        src={block.src}
+        style={{ maxHeight }}
+      />
+      {block.alt ? (
+        <figcaption className="font-(--font-ui) text-sm text-ink/55">
+          {block.alt}
+        </figcaption>
+      ) : null}
+    </figure>
+  );
+}
+
+function resolveImageMaxHeight(pageHeight: number): string | undefined {
+  if (pageHeight <= 0) return undefined;
+  const available = pageHeight - FIGURE_RESERVED_HEIGHT_PX;
+  return `${Math.max(FIGURE_MIN_HEIGHT_PX, Math.floor(available))}px`;
+}
+
+function ParagraphBlock({
+  block,
+  sharedProps,
+  alignmentClass,
+}: WithSharedProps<TextReaderBlock>) {
   // text-indent comes through sharedProps.style (see resolveBlockStyle).
   return (
-    <p
-      {...sharedProps}
-      className={cn(
-        "font-(--font-reader) text-[calc(1.16rem*var(--reader-font-scale)*var(--reader-block-scale,1))] leading-loose tracking-[-0.01em] text-ink sm:text-[calc(1.34rem*var(--reader-font-scale)*var(--reader-block-scale,1))]",
-        alignmentClass,
-      )}
-    >
+    <p {...sharedProps} className={cn(PARAGRAPH_CLASS, alignmentClass)}>
       <ReaderInlineContent inlines={block.inlines} />
     </p>
   );
