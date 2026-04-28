@@ -59,7 +59,7 @@ function FontSizeButton({
   return (
     <button
       type="button"
-      className="inline-flex size-10 items-center justify-center rounded-full bg-soft-fill/80 font-(--font-ui) text-sm text-ink transition hover:bg-soft-tone-fill"
+      className="inline-flex size-10 items-center justify-center rounded-full bg-soft-tone-fill font-(--font-ui) text-sm text-ink transition hover:bg-soft-tone-fill/80"
       onClick={onClick}
     >
       {label}

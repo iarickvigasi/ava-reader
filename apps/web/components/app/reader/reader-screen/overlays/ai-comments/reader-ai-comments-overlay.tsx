@@ -60,7 +60,7 @@ function AiCommentsBackdrop({ onClose }: { onClose: () => void }) {
 
 function AiCommentsBackgroundLayer() {
   return (
-    <div className="absolute inset-0 bg-linear-to-l from-paper-strong to-paper-strong/80 shadow-[-10px_0_40px_rgba(31,27,24,0.05)] backdrop-blur-[2px]" />
+    <div className="absolute inset-0 bg-linear-to-l from-paper-strong/88 via-paper/76 to-paper/0 backdrop-blur-[7px]" />
   );
 }
 

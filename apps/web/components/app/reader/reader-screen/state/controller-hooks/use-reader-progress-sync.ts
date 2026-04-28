@@ -33,7 +33,7 @@ const PROGRESS_SAVE_GENERIC_MESSAGE =
 
 function notifyProgressSaveFailure() {
   const isOffline =
-    typeof navigator !== "undefined" && navigator.onLine === false;
+    typeof navigator !== "undefined" && !navigator.onLine;
   emitReaderToast({
     message: isOffline
       ? PROGRESS_SAVE_OFFLINE_MESSAGE
@@ -141,7 +141,6 @@ export function useReaderProgressSync({
         // a toast, and rely on the next debounced save (or pagehide flush) to
         // succeed once connectivity returns.
         if (process.env.NODE_ENV !== "production") {
-          // eslint-disable-next-line no-console
           console.warn("Reader progress save failed", error);
         }
 

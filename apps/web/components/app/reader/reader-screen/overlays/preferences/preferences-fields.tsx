@@ -45,7 +45,7 @@ export function SelectField({ value }: { value: string }) {
   return (
     <button
       type="button"
-      className="flex h-9.5 w-full items-center justify-between gap-2 rounded-lg bg-soft-fill/60 px-3 font-(--font-reader) text-base text-copy-strong transition  hover:bg-soft-tone-fill"
+      className="flex h-9.5 w-full items-center justify-between gap-2 rounded-lg bg-soft-tone-fill px-3 font-(--font-reader) text-base text-copy-strong transition hover:bg-soft-tone-fill/80"
     >
       <span className="truncate">{value}</span>
       <ChevronDownIcon className="size-4 shrink-0 text-ink/60" />
@@ -55,7 +55,7 @@ export function SelectField({ value }: { value: string }) {
 
 export function NumberField({ value }: { value: string }) {
   return (
-    <div className="flex h-9.5 w-full items-center rounded-lg bg-soft-fill/60 px-3 font-(--font-reader) text-base text-copy-strong hover:bg-soft-tone-fill">
+    <div className="flex h-9.5 w-full items-center rounded-lg bg-soft-tone-fill px-3 font-(--font-reader) text-base text-copy-strong hover:bg-soft-tone-fill/80">
       <span className="truncate">{value}</span>
     </div>
   );
@@ -78,7 +78,7 @@ export function IconControlButton({
       aria-label={ariaLabel}
       aria-pressed={ariaPressed}
       onClick={onClick}
-      className="inline-flex h-9 items-center justify-center rounded-md bg-soft-fill/55 px-3 text-title/80 transition hover:bg-soft-tone-fill hover:text-title"
+      className="inline-flex h-9 items-center justify-center rounded-md bg-soft-tone-fill px-3 text-title/80 transition hover:bg-soft-tone-fill/80 hover:text-title"
     >
       {children}
     </button>
