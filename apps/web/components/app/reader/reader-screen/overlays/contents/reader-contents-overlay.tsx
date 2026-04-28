@@ -8,7 +8,7 @@ import {
 } from "@/lib/reader-toc";
 import type { ReadyReaderPayload, ReadyReaderTocEntry } from "../../shared/types";
 import { clamp } from "../../shared/utils";
-import { SectionLabel } from "../section-label";
+import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
 import { ReaderContentsTreeNode } from "./reader-contents-tree-node";
 
@@ -110,7 +110,7 @@ function ContentsHeader({
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="min-w-0">
-        <SectionLabel>Contents</SectionLabel>
+        <PanelTitle>Contents</PanelTitle>
         <h2 className="mt-4 font-(--font-reader) text-[2rem] leading-[0.95] tracking-[-0.04em] text-title">
           {title}
         </h2>

@@ -1,4 +1,4 @@
-import { SectionLabel } from "../section-label";
+import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
 import { BilingualSection } from "./bilingual-section";
 import { ListeningSection } from "./listening-section";
@@ -62,7 +62,7 @@ function PreferencesHeader() {
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="min-w-0">
-        <SectionLabel>Preferences</SectionLabel>
+        <PanelTitle>Preferences</PanelTitle>
       </div>
     </div>
   );

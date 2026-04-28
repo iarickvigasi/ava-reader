@@ -1,4 +1,4 @@
-import { SectionLabel } from "../section-label";
+import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
 import { ControlsSection } from "./controls-section";
 import { FiltersSection } from "./filters-section";
@@ -53,7 +53,7 @@ function HighlightsHeader() {
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="min-w-0">
-        <SectionLabel>Highlights</SectionLabel>
+        <PanelTitle>Highlights</PanelTitle>
       </div>
     </div>
   );

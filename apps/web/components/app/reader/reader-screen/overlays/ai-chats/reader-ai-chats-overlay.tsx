@@ -1,4 +1,4 @@
-import { SectionLabel } from "../section-label";
+import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
 import { ChatListSection } from "./chat-list-section";
 import { ControlsSection } from "./controls-section";
@@ -50,7 +50,7 @@ function AiChatsHeader() {
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="min-w-0">
-        <SectionLabel>AI Chats</SectionLabel>
+        <PanelTitle>AI Chats</PanelTitle>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SectionLabel } from "../section-label";
+import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
 import type { HighlightColor } from "../highlights/highlights-data";
 import { AiToolsSection } from "./ai-tools-section";
@@ -68,7 +68,7 @@ function AiCommentsHeader() {
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="min-w-0">
-        <SectionLabel>AI Comments</SectionLabel>
+        <PanelTitle>AI Comments</PanelTitle>
       </div>
     </div>
   );
