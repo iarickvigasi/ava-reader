@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from "react";
 import { useCallback, useMemo, useState } from "react";
+import { ReaderToast } from "./reader-screen/overlays/reader-toast";
 import { ReadyReader } from "./reader-screen/screen/ready-reader";
 import { ReaderStatusState } from "./reader-screen/screen/reader-status-state";
 import {
@@ -78,6 +79,7 @@ export function ReaderScreen({
           />
         ) : null}
       </div>
+      <ReaderToast />
     </div>
   );
 }

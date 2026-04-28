@@ -19,11 +19,28 @@ import {
   writeLocalReaderResumeSnapshot,
   type ReaderResumeSnapshot,
 } from "@/lib/reader-resume";
+import { emitReaderToast } from "../../overlays/reader-toast";
 import {
   evaluatePersistEligibility,
   shouldClearPendingAfterAck,
   shouldFlushPendingProgress,
 } from "./use-reader-progress-sync.helpers";
+
+const PROGRESS_SAVE_OFFLINE_MESSAGE =
+  "You appear to be offline. Reading progress will sync when you reconnect.";
+const PROGRESS_SAVE_GENERIC_MESSAGE =
+  "Couldn't save your reading progress. We'll keep trying as you read.";
+
+function notifyProgressSaveFailure() {
+  const isOffline =
+    typeof navigator !== "undefined" && navigator.onLine === false;
+  emitReaderToast({
+    message: isOffline
+      ? PROGRESS_SAVE_OFFLINE_MESSAGE
+      : PROGRESS_SAVE_GENERIC_MESSAGE,
+    tone: "warning",
+  });
+}
 
 type UseReaderProgressSyncInput = ReaderControllerAuth & {
   initialResumePhase: ReaderResumePhase;
@@ -117,8 +134,19 @@ export function useReaderProgressSync({
 
         return nextProgress;
       } catch (error) {
+        // Progress saves can fail for transient reasons (offline, server hiccup,
+        // request aborted on tab close). Surfacing this as an unhandled
+        // exception turns up the Next.js error overlay in dev and crashes the
+        // reader UI in prod. Instead, swallow the error, let the user know via
+        // a toast, and rely on the next debounced save (or pagehide flush) to
+        // succeed once connectivity returns.
+        if (process.env.NODE_ENV !== "production") {
+          // eslint-disable-next-line no-console
+          console.warn("Reader progress save failed", error);
+        }
+
         if (!keepalive) {
-          throw error;
+          notifyProgressSaveFailure();
         }
 
         return null;
