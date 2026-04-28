@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class PrismaService extends PrismaClient {
   constructor() {
-    super({
-      datasourceUrl:
+    const adapter = new PrismaPg({
+      connectionString:
         process.env.DATABASE_URL ??
         'postgresql://postgres:postgres@localhost:5432/ava_reader?schema=public',
     });
+    super({ adapter });
   }
 }
