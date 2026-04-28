@@ -218,6 +218,7 @@ export function ReadyReader({
 
       {isAiCommentsOpen ? (
         <ReaderAiCommentsOverlay
+          libraryItemId={libraryItemId}
           onClose={closePanel}
           selectedText={selectedText ?? undefined}
         />

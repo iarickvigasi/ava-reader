@@ -7,11 +7,13 @@ import { HighlightSection } from "./highlight-section";
 import { SelectionSection } from "./selection-section";
 
 type ReaderAiCommentsOverlayProps = {
+  libraryItemId: string;
   onClose: () => void;
   selectedText?: string;
 };
 
 export function ReaderAiCommentsOverlay({
+  libraryItemId,
   onClose,
   selectedText,
 }: ReaderAiCommentsOverlayProps) {
@@ -30,6 +32,7 @@ export function ReaderAiCommentsOverlay({
             <div className="pointer-events-auto flex min-h-0 flex-1 flex-col px-6 py-8 sm:px-8 md:animate-[reader-contents-enter_320ms_cubic-bezier(0.22,1,0.36,1)_140ms_both] md:px-8 md:py-0">
               <AiCommentsHeader />
               <AiCommentsSections
+                libraryItemId={libraryItemId}
                 selectedColor={selectedColor}
                 selectedText={selectedText ?? ""}
                 onSelectColor={setSelectedColor}
@@ -72,10 +75,12 @@ function AiCommentsHeader() {
 }
 
 function AiCommentsSections({
+  libraryItemId,
   selectedColor,
   selectedText,
   onSelectColor,
 }: {
+  libraryItemId: string;
   selectedColor: HighlightColor | null;
   selectedText: string;
   onSelectColor: (color: HighlightColor) => void;
@@ -87,7 +92,10 @@ function AiCommentsSections({
         selectedColor={selectedColor}
         onSelectColor={onSelectColor}
       />
-      <AiToolsSection />
+      <AiToolsSection
+        libraryItemId={libraryItemId}
+        selectedText={selectedText}
+      />
     </div>
   );
 }

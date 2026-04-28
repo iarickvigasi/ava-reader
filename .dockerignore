@@ -1,6 +1,8 @@
 .git
 .gitignore
 .turbo
+.pnpm-store
+**/.pnpm-store
 node_modules
 **/node_modules
 **/.next

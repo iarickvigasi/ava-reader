@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 enum UserRole {
@@ -52,6 +51,12 @@ enum CatalogStatus {
 enum CollectionKind {
   SMART
   CUSTOM
+}
+
+enum AiCommentKind {
+  TRANSLATE
+  ETYMOLOGY
+  EXPLAIN
 }
 
 model User {
@@ -291,15 +296,23 @@ model Annotation {
 }
 
 model AiComment {
-  id            String      @id @default(cuid())
+  id            String        @id @default(cuid())
   userId        String
   libraryItemId String
+  kind          AiCommentKind
+  sourceText    String
+  sourceHash    String
+  targetLang    String?
+  model         String
+  body          String
   locator       String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  libraryItem   LibraryItem @relation(fields: [libraryItemId], references: [id], onDelete: Cascade)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  libraryItem   LibraryItem   @relation(fields: [libraryItemId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, sourceHash])
+  @@index([userId, libraryItemId, kind, createdAt])
   @@index([userId, createdAt])
 }
 
