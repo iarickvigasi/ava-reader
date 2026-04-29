@@ -51,9 +51,9 @@ export function HomeScreen({ home }: HomeScreenProps) {
 
 function EmptyHomeState({ home }: HomeScreenProps) {
   return (
-    <section className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+    <section className="grid gap-12 lg:grid-cols-[2fr_3fr] lg:items-center">
       <div className="space-y-6 pt-4">
-        <SectionEyebrow>Welcome</SectionEyebrow>
+        <SectionEyebrow>Hello, friend</SectionEyebrow>
         <h1 className="max-w-md font-display text-5xl leading-[1.05] tracking-[-0.04em] text-ink sm:text-6xl">
           Welcome to AVA Reader
         </h1>
@@ -80,7 +80,7 @@ function EmptyHomeState({ home }: HomeScreenProps) {
           description={
             home.featuredCatalog.entries.length > 0
               ? "Start with a curated public-domain title and add it to your shelf in one tap."
-              : "Your public catalog is still empty. Add the first public-domain title from the internal admin route."
+              : "Public domain books catalog is in progress."
           }
           action={<LinkAction href="/app/explore" label="Browse Catalog" />}
         />
@@ -491,9 +491,7 @@ function FeaturedBooksSection({
       {entries.length === 0 ? (
         <Panel className="p-6 sm:p-8">
           <p className="max-w-xl text-lg leading-8 text-copy">
-            Your admin catalog is still empty. Use the internal admin route to
-            publish the first public-domain title, then this section will start
-            surfacing featured books automatically.
+            Public domain books catalog is in progress.
           </p>
         </Panel>
       ) : (
