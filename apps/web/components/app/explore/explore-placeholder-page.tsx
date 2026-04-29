@@ -1,5 +1,5 @@
 import { BookCover } from "@/components/app/shared/book-cover";
-import { ExploreIcon, ReaderLibraryIcon } from "@/components/app/shared/app-icons";
+import { ExploreIcon } from "@/components/app/shared/app-icons";
 import { ButtonLink } from "@/components/ui/button";
 
 const catalogPreview = [
@@ -53,11 +53,11 @@ export function ExplorePlaceholderPage() {
         {catalogPreview.map((entry) => (
           <article
             key={entry.title}
-            className="rounded-[24px] border border-line/60 bg-paper-strong/70 p-4"
+            className="rounded-3xl border border-line/60 bg-paper-strong/70 p-4"
           >
             <BookCover
               alt={`${entry.title} placeholder cover`}
-              className="aspect-[0.72] w-full rounded-[4px]"
+              className="aspect-[0.72] w-full rounded-sm"
               src={null}
               title={entry.title}
             />
@@ -70,17 +70,6 @@ export function ExplorePlaceholderPage() {
             </div>
           </article>
         ))}
-      </section>
-
-      <section className="rounded-[24px] border border-line/60 bg-white/55 px-6 py-5">
-        <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.14em] text-olive">
-          <ReaderLibraryIcon className="size-4" />
-          Planned next
-        </p>
-        <p className="mt-2 text-base leading-7 text-copy">
-          Collection-aware filters and one-tap handoff from Explore results into
-          your personal library shelves.
-        </p>
       </section>
     </div>
   );

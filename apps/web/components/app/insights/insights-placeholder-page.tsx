@@ -27,12 +27,6 @@ const metricsPreview = [
   },
 ] as const;
 
-const roadmapSignals = [
-  "Daily and weekly momentum charts",
-  "Most annotated chapters and passages",
-  "Listening vs. reading split by title",
-] as const;
-
 export function InsightsPlaceholderPage() {
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-10">
@@ -66,7 +60,7 @@ export function InsightsPlaceholderPage() {
           return (
             <article
               key={metric.label}
-              className="rounded-[24px] border border-line/60 bg-paper-strong/70 px-5 py-5"
+              className="rounded-3xl border border-line/60 bg-paper-strong/70 px-5 py-5"
             >
               <p className="inline-flex size-10 items-center justify-center rounded-2xl bg-soft-fill text-ink">
                 <Icon className="size-5" />
@@ -81,22 +75,6 @@ export function InsightsPlaceholderPage() {
             </article>
           );
         })}
-      </section>
-
-      <section className="rounded-[24px] border border-line/60 bg-white/55 px-6 py-6">
-        <h2 className="text-[0.74rem] font-semibold uppercase tracking-[0.16em] text-olive">
-          Roadmap Signals
-        </h2>
-        <div className="mt-4 grid gap-3 sm:grid-cols-3">
-          {roadmapSignals.map((signal) => (
-            <p
-              key={signal}
-              className="rounded-[16px] bg-paper-strong px-4 py-3 text-sm leading-6 text-copy"
-            >
-              {signal}
-            </p>
-          ))}
-        </div>
       </section>
     </div>
   );
