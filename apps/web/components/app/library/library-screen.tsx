@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { LibraryBookCard } from "./library-book-card";
+import { LibraryBookCard } from "./book-card";
 import type { LibraryPayload } from "@/lib/api-types";
 import { cn } from "@/lib/cn";
 

@@ -5,10 +5,10 @@ import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { getPublicApiBaseUrl } from "@/lib/api";
 import type { LibraryCollectionDeletePayload, LibraryCollectionRenamePayload, } from "@/lib/api-types";
-import { CollectionActionButtons } from "./library-collection-actions-subcomponents/collection-action-buttons";
-import { DeleteCollectionModal } from "./library-collection-actions-subcomponents/delete-collection-modal";
-import { EditCollectionModal } from "./library-collection-actions-subcomponents/edit-collection-modal";
-import { ModalShell } from "./library-collection-actions-subcomponents/modal-shell";
+import { CollectionActionButtons } from "./collection-actions-subcomponents/collection-action-buttons";
+import { DeleteCollectionModal } from "./collection-actions-subcomponents/delete-collection-modal";
+import { EditCollectionModal } from "./collection-actions-subcomponents/edit-collection-modal";
+import { ModalShell } from "./collection-actions-subcomponents/modal-shell";
 
 type ModalMode = "delete" | "edit" | null;
 

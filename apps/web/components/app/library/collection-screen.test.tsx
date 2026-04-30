@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
-import { LibraryCollectionScreen } from "./library-collection-screen";
+import { LibraryCollectionScreen } from "./collection-screen";
 import type { LibraryCollection } from "@/lib/api-types";
 
 vi.mock("@clerk/nextjs", () => ({

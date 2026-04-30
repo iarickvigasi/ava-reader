@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
-import { LibraryBookInfoScreen } from "./library-book-info-screen";
+import { LibraryBookInfoScreen } from "./book-info-screen";
 import type { LibraryBookInfo } from "@/lib/api-types";
 
 vi.mock("next/link", () => ({

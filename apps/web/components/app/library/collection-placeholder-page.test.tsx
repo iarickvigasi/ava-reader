@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { LibraryCollectionPlaceholderPage } from "./library-collection-placeholder-page";
+import { LibraryCollectionPlaceholderPage } from "./collection-placeholder-page";
 
 describe("library collection placeholder UI", () => {
   it("renders mobile two-column grid and keeps desktop grid unchanged", () => {

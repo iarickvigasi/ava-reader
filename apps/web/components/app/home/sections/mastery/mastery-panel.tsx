@@ -1,5 +1,5 @@
-import { MasteryDesktopSection } from "./mastery-desktop-section";
-import { MasteryMobileSection } from "./mastery-mobile-section";
+import { MasteryDesktopSection } from "./desktop-section";
+import { MasteryMobileSection } from "./mobile-section";
 import {
   type Mastery,
   formatRemainingCopy,

@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
-import { LibraryCollectionActions } from "./library-collection-actions";
+import { LibraryCollectionActions } from "./collection-actions";
 
 vi.mock("@clerk/nextjs", () => ({
   useAuth: () => ({

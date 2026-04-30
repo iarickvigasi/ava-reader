@@ -1,10 +1,10 @@
 import type { HomePayload } from "@/lib/api-types";
 import { getReaderHref } from "@/lib/app-routes";
-import { EngagementCover } from "./engagement-cover";
-import { EngagementDesktopMeta } from "./engagement-desktop-meta";
-import { EngagementHeading } from "./engagement-heading";
-import { EngagementImportButtons } from "./engagement-import-buttons";
-import { EngagementMobileCard } from "./engagement-mobile-card";
+import { EngagementCover } from "./cover";
+import { EngagementDesktopMeta } from "./desktop-meta";
+import { EngagementHeading } from "./heading";
+import { EngagementImportButtons } from "./import-buttons";
+import { EngagementMobileCard } from "./mobile-card";
 import { HomeResumeActions } from "./home-resume-actions";
 
 type CurrentEngagement = NonNullable<HomePayload["currentEngagement"]>;

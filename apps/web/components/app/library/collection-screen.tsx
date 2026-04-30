@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { LibraryCollection } from "@/lib/api-types";
-import { LibraryCollectionActions } from "./library-collection-actions";
-import { LibraryBookCard } from "./library-book-card";
+import { LibraryCollectionActions } from "./collection-actions";
+import { LibraryBookCard } from "./book-card";
 
 type LibraryCollectionScreenProps = {
   collection: LibraryCollection;

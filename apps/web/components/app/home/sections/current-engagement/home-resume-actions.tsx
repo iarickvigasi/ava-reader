@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { LibraryImportButton } from "@/components/app/library/library-import-button";
+import { ImportButton } from "@/components/app/library/import-button";
 
 type HomeResumeActionsProps = {
   readerHref: string;
@@ -20,7 +20,7 @@ export function HomeResumeActions({ readerHref }: HomeResumeActionsProps) {
         >
           Resume Reading
         </Link>
-        <LibraryImportButton
+        <ImportButton
           variant="soft"
           label="Import another book"
           hideNotice

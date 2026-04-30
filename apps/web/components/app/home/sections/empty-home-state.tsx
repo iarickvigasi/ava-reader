@@ -1,4 +1,4 @@
-import { LibraryImportButton } from "@/components/app/library/library-import-button";
+import { ImportButton } from "@/components/app/library/import-button";
 import type { HomePayload } from "@/lib/api-types";
 import { ActionCard, LinkAction, SectionEyebrow } from "../shared/home-shared";
 
@@ -27,7 +27,7 @@ export function EmptyHomeState({ home }: EmptyHomeStateProps) {
           title="Import Your First Book"
           description="Bring your EPUB or PDF into a private library that follows you across devices."
           action={
-            <LibraryImportButton
+            <ImportButton
               variant="primary"
               label="Upload book"
               className="w-full"

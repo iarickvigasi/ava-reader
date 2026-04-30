@@ -7,7 +7,7 @@ import { UploadIcon } from "@/components/app/shared/app-icons";
 import { cn } from "@/lib/cn";
 import { getPublicApiBaseUrl } from "@/lib/api";
 
-type LibraryImportButtonProps = {
+type ImportButtonProps = {
   className?: string;
   hideNotice?: boolean;
   label?: string;
@@ -27,14 +27,14 @@ const styles = {
     "bg-soft-fill text-soft-foreground hover:bg-soft-tone-fill",
 } as const;
 
-export function LibraryImportButton({
+export function ImportButton({
   className,
   hideNotice = false,
   label = "Import book",
   notice,
   onNoticeChangeAction,
   variant = "primary",
-}: LibraryImportButtonProps) {
+}: ImportButtonProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { getToken, isLoaded, isSignedIn } = useAuth();
   const router = useRouter();

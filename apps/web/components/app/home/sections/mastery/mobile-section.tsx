@@ -1,5 +1,5 @@
 import { SectionHeader } from "../../shared/home-shared";
-import { MasteryDayColumn } from "./mastery-day-column";
+import { MasteryDayColumn } from "./day-column";
 import type { Mastery } from "./mastery-utils";
 
 export function MasteryMobileSection({
