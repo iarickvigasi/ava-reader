@@ -84,7 +84,7 @@ export function LibraryImportButton({
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex min-w-0 flex-col gap-2">
       <input
         ref={inputRef}
         type="file"
@@ -120,7 +120,7 @@ export function LibraryImportButton({
       </button>
 
       {!hideNotice && resolvedNotice ? (
-        <p className="text-xs tracking-[0.08em] text-muted">{resolvedNotice}</p>
+        <p className="truncate text-xs tracking-[0.08em] text-muted">{resolvedNotice}</p>
       ) : null}
     </div>
   );
