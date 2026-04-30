@@ -19,6 +19,7 @@ import { PrismaService } from './prisma/prisma.service';
 import { ReaderController } from './reader/reader.controller';
 import { ReaderProcessingService } from './reader/reader-processing.service';
 import { ReaderService } from './reader/reader.service';
+import { PreferencesService } from './users/preferences.service';
 import { UsersController } from './users/users.controller';
 import { UsersService } from './users/users.service';
 
@@ -40,6 +41,7 @@ import { UsersService } from './users/users.service';
     ClerkAuthGuard,
     ClerkAuthService,
     UsersService,
+    PreferencesService,
     HomeService,
     LibraryService,
     ReaderService,

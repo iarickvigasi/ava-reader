@@ -1,7 +1,12 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
+import {
+  MAX_FONT_SCALE,
+  MIN_FONT_SCALE,
+  useFontScale,
+} from "@/components/app/preferences/use-font-scale";
 import { ReaderToast } from "./reader-screen/overlays/reader-toast";
 import { ReadyReader } from "./reader-screen/screen/ready-reader";
 import { ReaderStatusState } from "./reader-screen/screen/reader-status-state";
@@ -18,7 +23,7 @@ export function ReaderScreen({
   libraryItemId,
   persistenceMode = READER_PERSISTENCE_MODE_REMOTE,
 }: ReaderScreenProps) {
-  const [fontScale, setFontScale] = useState(1);
+  const [fontScale, setFontScale] = useFontScale();
   const {
     activeChapter,
     displayLocator,
@@ -39,12 +44,12 @@ export function ReaderScreen({
   const isReaderReady = payload.status === READER_STATUS_READY;
 
   const handleDecreaseFont = useCallback(() => {
-    setFontScale((current) => Math.max(0.85, roundFontScale(current - 0.1)));
-  }, []);
+    setFontScale(Math.max(MIN_FONT_SCALE, roundFontScale(fontScale - 0.1)));
+  }, [fontScale, setFontScale]);
 
   const handleIncreaseFont = useCallback(() => {
-    setFontScale((current) => Math.min(1.35, roundFontScale(current + 0.1)));
-  }, []);
+    setFontScale(Math.min(MAX_FONT_SCALE, roundFontScale(fontScale + 0.1)));
+  }, [fontScale, setFontScale]);
 
   const readerStyle = useMemo(
     () =>

@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 import {
+  DEFAULT_TRANSLATE_TARGET_LANG,
+  useTranslateTargetLang,
+} from "@/components/app/preferences/use-translate-target-lang";
+import {
   ReaderTranslationIcon,
   SparkIcon,
   SpeakerIcon,
@@ -8,10 +12,6 @@ import { EtymologyIcon, LightbulbIcon } from "./ai-comments-icons";
 import { ToolResultView } from "./tool-result-view";
 import { ToolSection } from "./tool-section";
 import { useAiTool } from "./use-ai-tool";
-import {
-  DEFAULT_TRANSLATE_TARGET_LANG,
-  useTranslateTargetLang,
-} from "./translate-target-lang";
 
 type ToolKey = "translate" | "etymology" | "explain";
 

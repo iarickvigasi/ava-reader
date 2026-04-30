@@ -1,12 +1,19 @@
 "use client";
 
+import { useAuth } from "@clerk/nextjs";
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
+  useRef,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
+import {
+  fetchPreferences,
+  patchPreference,
+} from "@/components/app/preferences/preferences-store";
 
 type Theme = "light" | "dark";
 
@@ -77,30 +84,60 @@ export function ThemeProvider({
   children: ReactNode;
   initialTheme: Theme;
 }) {
+  const { getToken, isLoaded, isSignedIn } = useAuth();
   const theme = useSyncExternalStore(
     subscribe,
     () => getThemeSnapshot(initialTheme),
     () => getServerThemeSnapshot(initialTheme),
   );
+  // We optimistically updated the API on the last toggle — don't echo that
+  // change back into the cookie/localStorage on the next reconciliation.
+  const lastWrittenRef = useRef<Theme | null>(null);
 
   useEffect(() => {
     applyTheme(theme);
     persistTheme(theme);
   }, [theme]);
 
-  return (
-    <ThemeContext.Provider
-      value={{
-        theme,
-        toggleTheme: () => {
-          const nextTheme = theme === "light" ? "dark" : "light";
+  // Cross-device reconciliation. After hydration, GET /me/preferences and
+  // adopt the server's theme if it differs from what the cookie carried in.
+  // The cookie still drives the *first* paint, so this can't cause a
+  // hydration mismatch — only a one-shot transition after mount.
+  useEffect(() => {
+    if (!isLoaded || !isSignedIn) return;
+    let cancelled = false;
+    fetchPreferences(getToken)
+      .then((prefs) => {
+        if (cancelled) return;
+        const apiTheme = prefs.theme;
+        if (apiTheme !== "light" && apiTheme !== "dark") return;
+        if (apiTheme === lastWrittenRef.current) return;
+        const currentTheme = getStoredTheme(initialTheme);
+        if (apiTheme === currentTheme) return;
+        applyTheme(apiTheme);
+        persistTheme(apiTheme);
+        window.dispatchEvent(new Event(THEME_EVENT));
+      })
+      .catch(() => {
+        // Best effort.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [getToken, isLoaded, isSignedIn, initialTheme]);
 
-          applyTheme(nextTheme);
-          persistTheme(nextTheme);
-          window.dispatchEvent(new Event(THEME_EVENT));
-        },
-      }}
-    >
+  const toggleTheme = useCallback(() => {
+    const nextTheme: Theme = theme === "light" ? "dark" : "light";
+
+    applyTheme(nextTheme);
+    persistTheme(nextTheme);
+    window.dispatchEvent(new Event(THEME_EVENT));
+    lastWrittenRef.current = nextTheme;
+    void patchPreference(getToken, "theme", nextTheme);
+  }, [theme, getToken]);
+
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );
