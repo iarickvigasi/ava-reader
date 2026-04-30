@@ -1,4 +1,4 @@
-import { LibraryCollectionPlaceholderPage } from "@/components/app/library/collection-placeholder-page";
+import { LibraryCollectionPlaceholderPage } from "@/components/app/library/collection/collection-placeholder-page";
 
 export default function LibraryCollectionLoading() {
   return <LibraryCollectionPlaceholderPage />;

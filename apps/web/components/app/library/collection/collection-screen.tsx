@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { LibraryCollection } from "@/lib/api-types";
-import { LibraryCollectionActions } from "./collection-actions";
-import { LibraryBookCard } from "./book-card";
+import { LibraryCollectionActions } from "./collection-actions/collection-actions";
+import { LibraryBookCard } from "../shared/book-card";
 
 type LibraryCollectionScreenProps = {
   collection: LibraryCollection;
@@ -10,7 +10,7 @@ type LibraryCollectionScreenProps = {
 export function LibraryCollectionScreen({ collection }: LibraryCollectionScreenProps) {
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col px-5 pb-10 pt-6 sm:px-6 md:pb-14 md:pt-8 lg:px-10">
-      <div className="mx-auto w-full max-w-[1280px] space-y-8 md:space-y-10">
+      <div className="mx-auto w-full max-w-7xl space-y-8 md:space-y-10">
         <section className="space-y-4">
           <Link
             href="/app/library"

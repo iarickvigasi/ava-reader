@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { LibraryBookInfoScreen } from "@/components/app/library/book-info-screen";
+import { LibraryBookInfoScreen } from "@/components/app/library/book-info/book-info-screen";
 import { APP_LIBRARY_HREF } from "@/lib/app-routes";
 import type { LibraryBookInfoPayload } from "@/lib/api-types";
 import { fetchServerApi, ServerApiError } from "@/lib/server-api";

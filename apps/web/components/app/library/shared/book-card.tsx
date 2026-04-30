@@ -56,3 +56,26 @@ export function LibraryBookCard({
     </Link>
   );
 }
+
+type BookCardSkeletonProps = {
+  mobile?: boolean;
+};
+
+export function BookCardSkeleton({ mobile = false }: BookCardSkeletonProps) {
+  return (
+    <div className={cn("shrink-0", mobile ? "w-43.5" : "w-full")}>
+      <div className="space-y-3">
+        <div
+          className={cn(
+            "aspect-[0.666] w-full animate-pulse rounded-[3px] bg-paper-strong",
+            mobile ? "max-w-43.5" : "max-w-61.5",
+          )}
+        />
+        <div className="space-y-2">
+          <div className="h-8 w-4/5 animate-pulse rounded bg-paper-strong" />
+          <div className="h-5 w-2/3 animate-pulse rounded bg-paper-strong" />
+        </div>
+      </div>
+    </div>
+  );
+}

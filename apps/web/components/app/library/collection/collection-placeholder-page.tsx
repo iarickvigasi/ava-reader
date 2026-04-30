@@ -1,4 +1,4 @@
-import { cn } from "@/lib/cn";
+import { BookCardSkeleton } from "../shared/book-card";
 
 export function LibraryCollectionPlaceholderPage() {
   return (
@@ -18,33 +18,14 @@ export function LibraryCollectionPlaceholderPage() {
 
         <div className="grid grid-cols-2 gap-x-4 gap-y-6 md:hidden">
           {Array.from({ length: 4 }, (_, index) => (
-            <CollectionBookCardSkeleton key={index} />
+            <BookCardSkeleton key={index} />
           ))}
         </div>
 
         <div className="hidden gap-x-8 gap-y-6 md:grid md:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 8 }, (_, index) => (
-            <CollectionBookCardSkeleton key={index} />
+            <BookCardSkeleton key={index} />
           ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CollectionBookCardSkeleton({ mobile = false }: { mobile?: boolean }) {
-  return (
-    <div className={cn("shrink-0", mobile ? "w-43.5" : "w-full")}>
-      <div className="space-y-3">
-        <div
-          className={cn(
-            "aspect-[0.666] w-full animate-pulse rounded-[3px] bg-paper-strong",
-            mobile ? "max-w-43.5" : "max-w-61.5",
-          )}
-        />
-        <div className="space-y-2">
-          <div className="h-8 w-4/5 animate-pulse rounded bg-paper-strong" />
-          <div className="h-5 w-2/3 animate-pulse rounded bg-paper-strong" />
         </div>
       </div>
     </div>

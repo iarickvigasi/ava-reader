@@ -8,8 +8,8 @@ import { cn } from "@/lib/cn";
 type ToolSectionProps = {
   icon: ReactNode;
   label: string;
-  // "expandable" sections show a chevron-down that rotates when open and can
-  // reveal children. "link" sections (e.g. Ask AI) show a chevron-right and
+  // "expandable" library-sections show a chevron-down that rotates when open and can
+  // reveal children. "link" library-sections (e.g. Ask AI) show a chevron-right and
   // never expand inline — they navigate elsewhere.
   variant?: "expandable" | "link";
   isExpanded?: boolean;

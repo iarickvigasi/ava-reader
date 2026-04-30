@@ -1,4 +1,4 @@
-import { ImportButton } from "@/components/app/library/import-button";
+import { ImportButton } from "@/components/app/shared/import-button";
 import type { HomePayload } from "@/lib/api-types";
 import { ActionCard, LinkAction, SectionEyebrow } from "../shared/home-shared";
 

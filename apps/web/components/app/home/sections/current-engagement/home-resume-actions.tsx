@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ImportButton } from "@/components/app/library/import-button";
+import { ImportButton } from "@/components/app/shared/import-button";
 
 type HomeResumeActionsProps = {
   readerHref: string;

@@ -12,7 +12,7 @@ type ToolResultViewProps = {
   onRetry?: () => void;
 };
 
-// Shared body for the three AI Comments accordion sections. Handles the
+// Shared body for the three AI Comments accordion library-sections. Handles the
 // empty / streaming / error / done states so the per-tool wrappers only need
 // to pass props.
 export function ToolResultView({
