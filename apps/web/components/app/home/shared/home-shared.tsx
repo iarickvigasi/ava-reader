@@ -61,10 +61,12 @@ export function ActionCard({
 }
 
 export function LinkAction({
+  className,
   emphasis = false,
   href,
   label,
 }: {
+  className?: string;
   emphasis?: boolean;
   href: string;
   label: string;
@@ -77,6 +79,7 @@ export function LinkAction({
         emphasis
           ? "border border-brand-fill bg-brand-fill text-brand-foreground shadow-(--shadow-card) hover:bg-brand-fill-strong"
           : "bg-white/40 text-ink hover:bg-white/50",
+        className,
       )}
     >
       {label}

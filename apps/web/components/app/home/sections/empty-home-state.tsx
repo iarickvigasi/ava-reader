@@ -41,7 +41,13 @@ export function EmptyHomeState({ home }: EmptyHomeStateProps) {
               ? "Start with a curated public-domain title and add it to your shelf in one tap."
               : "Public domain books catalog is in progress."
           }
-          action={<LinkAction href="/app/explore" label="Browse Catalog" />}
+          action={
+            <LinkAction
+              href="/app/explore"
+              label="Browse Catalog"
+              className="w-full"
+            />
+          }
         />
       </div>
     </section>
