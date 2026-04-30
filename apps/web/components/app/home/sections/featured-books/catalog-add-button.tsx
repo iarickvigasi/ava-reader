@@ -60,7 +60,7 @@ export function CatalogAddButton({
     <button
       type="button"
       className={cn(
-        "inline-flex min-h-11 items-center justify-center gap-2 rounded-[12px] border border-line bg-white/40 px-4 text-xs font-semibold uppercase tracking-[0.14em] text-ink transition hover:bg-white/70 disabled:cursor-not-allowed disabled:opacity-60",
+        "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-line bg-white/40 px-4 text-xs font-semibold uppercase tracking-[0.14em] text-ink transition hover:bg-white/70 disabled:cursor-not-allowed disabled:opacity-60",
         className,
       )}
       disabled={isPending}

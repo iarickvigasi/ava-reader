@@ -91,7 +91,7 @@ export function FeedbackForm({ className }: FeedbackFormProps) {
       <div className="flex flex-col gap-3 sm:items-end">
         <button
           type="button"
-          className="inline-flex min-h-12 items-center justify-center rounded-[12px] border border-brand-fill bg-brand-fill px-8 text-xs font-bold uppercase tracking-[0.2em] text-brand-foreground shadow-[var(--shadow-card)] transition hover:bg-brand-fill-strong disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex min-h-12 items-center justify-center rounded-xl border border-brand-fill bg-brand-fill px-8 text-xs font-bold uppercase tracking-[0.2em] text-brand-foreground shadow-(--shadow-card) transition hover:bg-brand-fill-strong disabled:cursor-not-allowed disabled:opacity-60"
           disabled={isPending || message.trim().length < 4}
           onClick={() =>
             startTransition(() => {
