@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { TextInput } from "@/components/ui/text-input";
 
@@ -35,20 +36,24 @@ export function EmailCodePanel({
   onSubmitCode,
   onResendCode,
 }: EmailCodePanelProps) {
+  const t = useTranslations("auth.emailCode");
+  const tCommon = useTranslations("common");
   const isSignUp = mode === "sign-up";
 
   return (
-    <div className="space-y-4 rounded-[var(--radius-card)] bg-white/68 p-5 text-left">
+    <div className="space-y-4 rounded-(--radius-card) bg-white/68 p-5 text-left">
       <div className="space-y-1">
         <p className="text-sm uppercase tracking-[0.22em] text-muted">
-          {stage === "identifier" ? "Email access" : "Verify your code"}
+          {stage === "identifier"
+            ? t("identifierEyebrow")
+            : t("codeEyebrow")}
         </p>
         <p className="text-base text-copy">
           {stage === "identifier"
             ? isSignUp
-              ? "Enter your email to receive a one-time code and create your account."
-              : "Enter the email attached to your account and we will send you a one-time code."
-            : `We sent a one-time code to ${email}.`}
+              ? t("signUpIdentifierBody")
+              : t("signInIdentifierBody")
+            : t("codeSentTo", { email })}
         </p>
       </div>
 
@@ -62,8 +67,8 @@ export function EmailCodePanel({
         <div className="space-y-4">
           <TextInput
             autoComplete="email"
-            label="Email"
-            placeholder="name@example.com"
+            label={t("emailLabel")}
+            placeholder={t("emailPlaceholder")}
             type="email"
             value={email}
             onChange={onEmailChange}
@@ -76,7 +81,7 @@ export function EmailCodePanel({
               className="flex-1"
               onClick={onBack}
             >
-              Back
+              {tCommon("back")}
             </Button>
             <Button
               type="button"
@@ -84,7 +89,7 @@ export function EmailCodePanel({
               disabled={!email || busy}
               onClick={onSubmitIdentifier}
             >
-              {busy ? "Sending..." : "Send code"}
+              {busy ? t("sending") : t("sendCode")}
             </Button>
           </div>
         </div>
@@ -93,8 +98,8 @@ export function EmailCodePanel({
           <TextInput
             autoComplete="one-time-code"
             inputClassName="tracking-[0.4em]"
-            label="Code"
-            placeholder="123456"
+            label={t("codeLabel")}
+            placeholder={t("codePlaceholder")}
             value={code}
             onChange={onCodeChange}
           />
@@ -105,7 +110,7 @@ export function EmailCodePanel({
               className="sm:flex-1"
               onClick={onBack}
             >
-              Change email
+              {t("changeEmail")}
             </Button>
             <Button
               type="button"
@@ -114,7 +119,7 @@ export function EmailCodePanel({
               disabled={busy}
               onClick={onResendCode}
             >
-              Resend code
+              {t("resendCode")}
             </Button>
             <Button
               type="button"
@@ -124,11 +129,11 @@ export function EmailCodePanel({
             >
               {busy
                 ? isSignUp
-                  ? "Creating..."
-                  : "Signing in..."
+                  ? t("creating")
+                  : t("signingIn")
                 : isSignUp
-                  ? "Create account"
-                  : "Verify code"}
+                  ? t("createAccount")
+                  : t("verifyCode")}
             </Button>
           </div>
         </div>

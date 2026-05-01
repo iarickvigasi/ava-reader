@@ -19,6 +19,7 @@ export type HomePayload = {
       itemCount: number;
       kind: "SMART" | "CUSTOM";
       name: string;
+      smartKey: string | null;
       unreadCount: number;
     }>;
   };
@@ -55,7 +56,6 @@ export type HomePayload = {
   mastery: {
     dailyGoalMinutes: number;
     days: Array<{
-      dayLabel: string;
       goalMet: boolean;
       key: string;
       minutes: number;
@@ -106,6 +106,7 @@ export type LibraryCollection = {
   itemCount: number;
   kind: "SMART" | "CUSTOM";
   name: string;
+  smartKey: string | null;
   unreadCount: number;
 };
 
@@ -130,6 +131,7 @@ export type LibraryBookInfo = {
     id: string;
     kind: "SMART" | "CUSTOM";
     name: string;
+    smartKey: string | null;
   }>;
   completionPercent: number;
   coverImageDataUrl: string | null;

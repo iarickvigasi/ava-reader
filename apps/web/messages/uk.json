@@ -1,0 +1,468 @@
+{
+  "common": {
+    "back": "Назад"
+  },
+  "landing": {
+    "tagline": {
+      "line1": "Досліджуйте глибший",
+      "line2": "сенс книжок",
+      "line3": "не втрачаючи",
+      "line4": "зосередження"
+    },
+    "signIn": "Увійти",
+    "createAccount": "Створити обліковий запис",
+    "year": "2026",
+    "beginReading": "Почати читання"
+  },
+  "theme": {
+    "switchToLight": "Перейти до світлої теми",
+    "switchToDark": "Перейти до темної теми"
+  },
+  "legal": {
+    "agreePrefix": "Продовжуючи, ви погоджуєтесь з",
+    "termsAndPrivacy": "Умовами використання та Політикою конфіденційності AVA"
+  },
+  "explore": {
+    "eyebrow": "Огляд",
+    "title": "Повний перегляд каталогу з'явиться згодом",
+    "body": "Головна сторінка вже показує рекомендовані книжки та швидке додавання. Цей розділ розширить це фільтрами, відкриттями та глибшим дослідженням метаданих.",
+    "backToHome": "Повернутися на головну",
+    "openLibrary": "Відкрити бібліотеку"
+  },
+  "preferences": {
+    "title": "Налаштування",
+    "closePanel": "Закрити панель налаштувань",
+    "interfaceLang": {
+      "label": "Мова застосунку",
+      "ariaLabel": "Мова інтерфейсу застосунку"
+    },
+    "translate": {
+      "label": "Перекладати на",
+      "ariaLabel": "Мова перекладу"
+    },
+    "readingGoal": {
+      "label": "Ціль читання",
+      "unit": "(хв/день)"
+    },
+    "reading": {
+      "section": "Читання",
+      "typePercent": "Шрифт {percent}%",
+      "switchToLight": "Перейти до світлої теми",
+      "switchToDark": "Перейти до темної теми"
+    },
+    "listening": {
+      "section": "Прослуховування",
+      "chooseVoice": "Оберіть голос",
+      "chooseAmbient": "Оберіть фон",
+      "narratorSpeed": "Швидкість оповідача"
+    }
+  },
+  "home": {
+    "empty": {
+      "greeting": "Вітаю, друже",
+      "welcome": "Ласкаво просимо до AVA Reader",
+      "intro": "Розпочнімо вашу подорож. Оберіть книжку, у яку зануритеся, а ми сформуємо решту читалки навколо неї.",
+      "import": {
+        "title": "Імпортуйте свою першу книжку",
+        "body": "Перенесіть свій EPUB або PDF до приватної бібліотеки, що супроводжує вас на всіх пристроях.",
+        "action": "Завантажити книжку"
+      },
+      "explore": {
+        "title": "Огляньте книжки публічного домену",
+        "body": "Розпочніть із підібраної книжки публічного домену та додайте її на полицю одним дотиком.",
+        "comingSoon": "Каталог книжок публічного домену в роботі.",
+        "action": "Переглянути каталог"
+      }
+    },
+    "stats": {
+      "title": "Показники бібліотеки",
+      "booksRead": "Прочитані книжки",
+      "highlights": "Виділення",
+      "hoursReading": "Години читання",
+      "aiComments": "Коментарі ШІ"
+    },
+    "quote": {
+      "text": "Читання — це розмова. Усі книжки говорять. Але добра книжка ще й слухає.",
+      "attribution": "Mark Haddon"
+    },
+    "collections": {
+      "title": "Колекції",
+      "openAll": "Відкрити все",
+      "empty": "Колекції з'являться після того, як ви імпортуєте книжки чи додасте їх із публічного каталогу.",
+      "itemsAndUnread": "{items} елем. • {unread} непрочитаних"
+    },
+    "annotations": {
+      "title": "Останні нотатки",
+      "empty": "Нотатки з'являться тут, щойно ви створите виділення.",
+      "from": "З: {bookTitle}",
+      "highlighter": "Маркер: {colorLabel}",
+      "viewFullNotebook": "Переглянути повний нотатник"
+    },
+    "footer": {
+      "tagline": "© AVA Reader • Створено для читання без відволікань • 2026",
+      "privacy": "Конфіденційність",
+      "terms": "Умови",
+      "contact": "Контакт"
+    },
+    "shared": {
+      "openInsights": "Відкрити статистику"
+    },
+    "engagement": {
+      "currentlyEngaged": "Зараз читаєте",
+      "percentCompleted": "% завершено",
+      "completed": "Завершено",
+      "nextMilestone": "Наступний рубіж",
+      "nextMilestoneMobile": "Наступний рубіж",
+      "resumeReading": "Продовжити читання",
+      "importAnother": "Імпортувати ще книжку"
+    },
+    "featuredBooks": {
+      "fallback": "Підібрана книжка публічного домену, готова поповнити вашу бібліотеку.",
+      "explore": "Огляд",
+      "openAll": "Відкрити все",
+      "comingSoon": "Каталог книжок публічного домену в роботі."
+    },
+    "catalogAdd": {
+      "adding": "Додаємо...",
+      "added": "Додано",
+      "inLibrary": "У бібліотеці",
+      "retry": "Повторити",
+      "add": "Додати до бібліотеки"
+    },
+    "feedback": {
+      "title": "Постійний розвиток",
+      "subtitle": "Розкажіть, що б ви хотіли покращити чи виправити",
+      "attachScreenshot": "Додати знімок екрана",
+      "errors": {
+        "signIn": "Увійдіть, щоб надіслати відгук.",
+        "noToken": "Маркер сесії був недоступний.",
+        "submitFailed": "Не вдалося надіслати відгук."
+      },
+      "success": "Відгук отримано. Дякуємо.",
+      "placeholder": "Напишіть свій відгук тут...",
+      "submit": "Надіслати",
+      "submitting": "Надсилаємо..."
+    },
+    "listening": {
+      "title": "Зараз слухаєте",
+      "skipBackward": "Назад",
+      "skipForward": "Уперед",
+      "play": "Відтворити аудіо-передогляд",
+      "pause": "Призупинити аудіо-передогляд"
+    },
+    "mastery": {
+      "title": "Щоденна звичка",
+      "minToday": "Хв сьогодні",
+      "minutesAbbrev": "ХВ",
+      "remainingToGoal": "Залишилось {remaining} хвилин до денної цілі",
+      "goalMet": "Денну ціль виконано. Так тримати."
+    }
+  },
+  "reader": {
+    "contents": {
+      "title": "Зміст",
+      "completed": "{percent}% завершено",
+      "chapterCount": "{count} розділів"
+    },
+    "highlights": {
+      "title": "Виділення",
+      "searchPlaceholder": "Пошук",
+      "searchAria": "Пошук серед виділень",
+      "rename": "Перейменувати",
+      "delete": "Видалити"
+    },
+    "aiComments": {
+      "title": "Коментарі ШІ",
+      "selection": "Виділення",
+      "highlight": "Підсвітити",
+      "selectionReadAloud": "Прочитати виділення вголос",
+      "selectionCopy": "Скопіювати виділення"
+    },
+    "aiChats": {
+      "title": "Чати з ШІ",
+      "closePanel": "Закрити панель чатів з ШІ",
+      "searchAria": "Пошук серед чатів",
+      "searchPlaceholder": "Пошук",
+      "createNew": "Створити новий чат",
+      "rename": "Перейменувати",
+      "delete": "Видалити",
+      "groups": {
+        "today": "Сьогодні",
+        "yesterday": "Учора"
+      }
+    },
+    "aiTools": {
+      "translate": "Перекласти",
+      "etymology": "Етимологія",
+      "explain": "Пояснити",
+      "askAi": "Запитати ШІ",
+      "generating": "Створюємо…",
+      "selectTextHint": "Виділіть текст у читалці, щоб побачити його тут.",
+      "tryAgain": "Спробувати ще раз",
+      "errors": {
+        "signIn": "Потрібно увійти, щоб користуватися інструментами ШІ.",
+        "noToken": "Маркер сесії був недоступний.",
+        "requestFailed": "Запит до ШІ не вдався (HTTP {status}). Спробуйте ще раз.",
+        "emptyStream": "Відповідь ШІ виявилась порожньою.",
+        "generic": "Щось пішло не так."
+      }
+    },
+    "progressSync": {
+      "offline": "Схоже, ви офлайн. Прогрес читання синхронізується, коли зʼявиться зʼєднання.",
+      "generic": "Не вдалося зберегти ваш прогрес читання. Ми продовжимо спроби, поки ви читаєте."
+    },
+    "status": {
+      "label": "Читалка",
+      "backToHome": "Повернутися на головну"
+    },
+    "activity": {
+      "restoringPage": "Відновлюємо вашу останню сторінку...",
+      "loadingChapter": "Завантажуємо розділ...",
+      "preloadingChapter": "Попередньо завантажуємо сусідній розділ..."
+    },
+    "progress": {
+      "percentComplete": "{percent}% завершено",
+      "pageOfInChapter": "Сторінка {current} з {total} у розділі"
+    },
+    "toc": {
+      "loading": "Завантаження",
+      "current": "Поточний",
+      "section": "Підрозділ",
+      "chapter": "Розділ"
+    }
+  },
+  "shared": {
+    "import": {
+      "defaultLabel": "Імпортувати книжку",
+      "uploading": "Завантажуємо...",
+      "signIn": "Увійдіть, щоб завантажити книжку.",
+      "noToken": "Маркер сесії був недоступний.",
+      "uploadFailed": "Не вдалося завершити завантаження.",
+      "imported": "{filename} імпортовано."
+    }
+  },
+  "nav": {
+    "main": {
+      "home": "Головна",
+      "library": "Бібліотека",
+      "explore": "Огляд",
+      "insights": "Статистика"
+    },
+    "admin": {
+      "short": "Адмін",
+      "long": "Адмін-каталог"
+    },
+    "userFallbackName": "Читач",
+    "reader": {
+      "contents": "Зміст",
+      "preferences": "Налаштування",
+      "aiChats": "Чати з ШІ",
+      "highlights": "Виділення",
+      "aiComments": "Коментарі ШІ",
+      "bookmarks": "Закладки",
+      "search": "Пошук",
+      "listenToBook": "Слухати книжку",
+      "bilingualMode": "Білінгвальний режим",
+      "savePage": "Зберегти сторінку",
+      "shareBook": "Поділитися книжкою",
+      "downloadBook": "Завантажити книжку"
+    }
+  },
+  "smartCollections": {
+    "imported-library": {
+      "name": "Імпортовані книжки",
+      "description": "Ваші особисті завантаження EPUB та PDF."
+    },
+    "public-domain-library": {
+      "name": "Публічний домен",
+      "description": "Книжки, додані з публічного каталогу AVA."
+    }
+  },
+  "library": {
+    "header": {
+      "searchAria": "Пошук у бібліотеці",
+      "searchPlaceholder": "Пошук",
+      "collectionsMetric": "Колекції",
+      "booksMetric": "Книжки",
+      "newCollection": "Нова колекція"
+    },
+    "empty": {
+      "eyebrow": "Бібліотека",
+      "title": "Ваші колекції з'являться тут, поки ви будуєте свій світ читання.",
+      "body": "Імпортуйте книжки чи додавайте їх із публічного каталогу, і AVA почне впорядковувати їх у персональні колекції."
+    },
+    "collection": {
+      "itemsAndUnread": "{items} елем. • {unread} непрочитаних",
+      "viewAll": "Переглянути все",
+      "noBooksYet": "У цій колекції ще немає книжок.",
+      "backToLibrary": "Повернутися до бібліотеки"
+    },
+    "bookInfo": {
+      "backToLibrary": "Повернутися до бібліотеки",
+      "backToCollection": "Повернутися до колекції",
+      "read": "Читати",
+      "listen": "Слухати",
+      "readingProgressLabel": "Прогрес читання",
+      "completed": "{percent}% завершено",
+      "aboutThisBook": "Про цю книжку",
+      "metadata": {
+        "language": "Мова",
+        "format": "Формат",
+        "inLibrarySince": "У бібліотеці з",
+        "published": "Опубліковано",
+        "readingTime": "Час читання",
+        "pageCount": "Кількість сторінок",
+        "unknown": "Невідомо"
+      },
+      "formatters": {
+        "unknown": "Невідомо",
+        "readerFormat": "Reader",
+        "hours": "{value} год",
+        "estimated": "{hours} приблизно",
+        "approxPages": "{count, plural, one {~# сторінка} few {~# сторінки} many {~# сторінок} other {~# сторінки}}",
+        "notAssigned": "Не призначено",
+        "collectionsCount": "{count, plural, one {# колекція} few {# колекції} many {# колекцій} other {# колекції}}",
+        "lastReadWithChapter": "Востаннє читали: {chapter} - {date}",
+        "lastReadChapterOnly": "Востаннє читали: {chapter}",
+        "lastReadDateOnly": "Востаннє читали: {date}",
+        "descriptionFallback": "Цей твір у вашій бібліотеці. Детальних редакційних нотаток для цього видання поки що немає."
+      },
+      "actionCards": {
+        "downloadOffline": {
+          "title": "Завантажити офлайн",
+          "description": "PDF та EPUB"
+        },
+        "markAsFinished": {
+          "title": "Позначити як прочитане",
+          "description": "Виставляє прогрес 100%"
+        },
+        "manageCollections": {
+          "title": "Керувати колекціями"
+        },
+        "deleteBook": {
+          "title": "Видалити книжку",
+          "description": "Поки недоступно"
+        }
+      }
+    },
+    "collectionActions": {
+      "edit": "Редагувати",
+      "delete": "Видалити",
+      "editModal": {
+        "eyebrow": "Колекція",
+        "title": "Редагувати деталі",
+        "titleField": "Назва",
+        "titleAria": "Назва колекції",
+        "descriptionField": "Опис",
+        "descriptionAria": "Опис колекції",
+        "descriptionPlaceholder": "Додайте короткий опис цієї колекції.",
+        "cancel": "Скасувати",
+        "save": "Зберегти",
+        "saving": "Збереження..."
+      },
+      "deleteModal": {
+        "eyebrow": "Колекція",
+        "title": "Видалити колекцію?",
+        "body": "Це остаточно видалить <emphasis>{name}</emphasis> та її приналежність.",
+        "cancel": "Скасувати",
+        "confirm": "Підтвердити видалення",
+        "deleting": "Видаляємо..."
+      },
+      "errors": {
+        "nameEmpty": "Назва колекції не може бути порожньою.",
+        "signInToEdit": "Увійдіть, щоб редагувати цю колекцію.",
+        "signInToDelete": "Увійдіть, щоб видалити цю колекцію.",
+        "noToken": "Маркер сесії був недоступний.",
+        "updateFailed": "Не вдалося оновити колекцію.",
+        "deleteFailed": "Не вдалося видалити колекцію."
+      }
+    }
+  },
+  "insights": {
+    "eyebrow": "Статистика",
+    "title": "Статистика поглиблюватиметься після релізу читалки",
+    "body": "Головна сторінка вже показує прогрес читання та останню активність. Окремий екран статистики об'єднає ці сигнали в трендових поданнях для рефлексії та планування.",
+    "backToHome": "Повернутися на головну",
+    "goToLibrary": "Перейти до бібліотеки",
+    "metrics": {
+      "readingTime": {
+        "label": "Час читання",
+        "helper": "Цього тижня"
+      },
+      "highlights": {
+        "label": "Виділення",
+        "helper": "У активних книжках"
+      },
+      "booksOpened": {
+        "label": "Відкриті книжки",
+        "helper": "Зафіксовані сесії"
+      }
+    }
+  },
+  "auth": {
+    "signIn": {
+      "title": "Вхід",
+      "switchPrompt": "Потрібен обліковий запис?",
+      "switchAction": "Створити",
+      "notices": {
+        "oauthContinue": "Завершіть вхід, щоб продовжити.",
+        "oauthRequirements": "Потрібні додаткові деталі облікового запису. Продовжте через електронну пошту, щоб завершити вхід.",
+        "signedOut": "Ви вийшли з облікового запису."
+      },
+      "errors": {
+        "googleStartFailed": "Не вдалося розпочати вхід через Google.",
+        "needsSecondFactor": "Цей обліковий запис вимагає другого чинника автентифікації, який поки що не налаштовано.",
+        "needsClientTrust": "Clerk вимагає підтвердження довіри клієнта. Продовжте на тому самому довіреному пристрої або оновіть налаштування Clerk.",
+        "incomplete": "Спроба входу ще не завершена."
+      }
+    },
+    "signUp": {
+      "title": "Створити обліковий запис",
+      "subtitle": "Розпочніть із зосередженого простору для читання та зберіть свої думки в одному місці.",
+      "switchPrompt": "Уже маєте обліковий запис?",
+      "switchAction": "Увійти",
+      "notices": {
+        "oauthContinue": "Продовжте створення облікового запису, щоб почати читати.",
+        "oauthRequirements": "Потрібно ще трохи інформації, щоб завершити реєстрацію."
+      },
+      "errors": {
+        "googleStartFailed": "Не вдалося розпочати реєстрацію через Google.",
+        "incomplete": "Реєстрація потребує більше інформації, щоб завершитись."
+      }
+    },
+    "shared": {
+      "errors": {
+        "sessionTaskRequired": "Перед продовженням сесії потрібна додаткова дія з обліковим записом."
+      }
+    },
+    "providers": {
+      "continueWithEmail": "Продовжити через електронну пошту",
+      "continueWithGoogle": "Продовжити через Google"
+    },
+    "emailCode": {
+      "identifierEyebrow": "Доступ через електронну пошту",
+      "codeEyebrow": "Підтвердьте свій код",
+      "signInIdentifierBody": "Введіть електронну пошту вашого облікового запису, і ми надішлемо одноразовий код.",
+      "signUpIdentifierBody": "Введіть свою електронну пошту, щоб отримати одноразовий код і створити обліковий запис.",
+      "codeSentTo": "Ми надіслали одноразовий код на {email}.",
+      "emailLabel": "Електронна пошта",
+      "emailPlaceholder": "name@example.com",
+      "codeLabel": "Код",
+      "codePlaceholder": "123456",
+      "sending": "Надсилаємо...",
+      "sendCode": "Надіслати код",
+      "changeEmail": "Змінити пошту",
+      "resendCode": "Надіслати код повторно",
+      "signingIn": "Входимо...",
+      "creating": "Створюємо...",
+      "verifyCode": "Підтвердити код",
+      "createAccount": "Створити обліковий запис"
+    },
+    "misconfigured": {
+      "title": "Автентифікація не налаштована",
+      "subtitle": "Додайте змінні середовища Clerk, щоб увімкнути персональні потоки входу та реєстрації.",
+      "requiredVarsLabel": "Потрібні веб-змінні",
+      "returnToSplash": "Повернутися на стартовий екран"
+    }
+  }
+}

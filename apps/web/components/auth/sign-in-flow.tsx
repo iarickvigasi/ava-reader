@@ -2,6 +2,7 @@
 
 import { useAuth, useSignIn } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { AuthRouteSwitcher } from "@/components/auth/auth-route-switcher";
 import { AuthShell } from "@/components/auth/auth-shell";
@@ -16,6 +17,8 @@ type SignInFlowProps = {
 type Phase = "idle" | "email" | "code";
 
 export function SignInFlow({ initialNotice }: SignInFlowProps) {
+  const t = useTranslations("auth.signIn");
+  const tShared = useTranslations("auth.shared");
   const { signIn, errors, fetchStatus } = useSignIn();
   const { isSignedIn } = useAuth();
   const router = useRouter();
@@ -40,9 +43,7 @@ export function SignInFlow({ initialNotice }: SignInFlowProps) {
     await signIn.finalize({
       navigate: async ({ decorateUrl, session }) => {
         if (session?.currentTask) {
-          setLocalMessage(
-            "Additional account work is required before the session can continue.",
-          );
+          setLocalMessage(tShared("errors.sessionTaskRequired"));
           return;
         }
 
@@ -61,7 +62,7 @@ export function SignInFlow({ initialNotice }: SignInFlowProps) {
     });
 
     if (error) {
-      setLocalMessage("Google sign-in could not be started.");
+      setLocalMessage(t("errors.googleStartFailed"));
     }
   };
 
@@ -96,20 +97,16 @@ export function SignInFlow({ initialNotice }: SignInFlowProps) {
     }
 
     if (signIn.status === "needs_second_factor") {
-      setLocalMessage(
-        "This account requires a second authentication factor, which is not wired yet.",
-      );
+      setLocalMessage(t("errors.needsSecondFactor"));
       return;
     }
 
     if (signIn.status === "needs_client_trust") {
-      setLocalMessage(
-        "Clerk requested client trust verification. Continue on the same trusted device or update your Clerk settings.",
-      );
+      setLocalMessage(t("errors.needsClientTrust"));
       return;
     }
 
-    setLocalMessage("The sign-in attempt is not complete yet.");
+    setLocalMessage(t("errors.incomplete"));
   };
 
   const resendCode = async () => {
@@ -124,11 +121,11 @@ export function SignInFlow({ initialNotice }: SignInFlowProps) {
 
   return (
     <AuthShell
-      title="Sign In"
+      title={t("title")}
       footer={
         <AuthRouteSwitcher
-          prompt="Need an account?"
-          actionLabel="Create one"
+          prompt={t("switchPrompt")}
+          actionLabel={t("switchAction")}
           href="/sign-up"
         />
       }

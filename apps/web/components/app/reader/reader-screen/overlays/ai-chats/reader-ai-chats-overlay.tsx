@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
 import { ChatListSection } from "./chat-list-section";
@@ -30,10 +31,11 @@ export function ReaderAiChatsOverlay({ onClose }: ReaderAiChatsOverlayProps) {
 }
 
 function AiChatsBackdrop({ onClose }: { onClose: () => void }) {
+  const t = useTranslations("reader.aiChats");
   return (
     <button
       type="button"
-      aria-label="Close AI chats panel"
+      aria-label={t("closePanel")}
       className="pointer-events-auto absolute inset-0 bg-transparent md:left-94"
       onClick={onClose}
     />
@@ -47,10 +49,11 @@ function AiChatsBackgroundLayer() {
 }
 
 function AiChatsHeader() {
+  const t = useTranslations("reader.aiChats");
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="min-w-0">
-        <PanelTitle>AI Chats</PanelTitle>
+        <PanelTitle>{t("title")}</PanelTitle>
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/cn";
 
 type ToolResultViewProps = {
@@ -12,7 +13,7 @@ type ToolResultViewProps = {
   onRetry?: () => void;
 };
 
-// Shared body for the three AI Comments accordion sections. Handles the
+// Shared body for the three AI Comments accordion library-sections. Handles the
 // empty / streaming / error / done states so the per-tool wrappers only need
 // to pass props.
 export function ToolResultView({
@@ -22,6 +23,7 @@ export function ToolResultView({
   emptyHint,
   onRetry,
 }: ToolResultViewProps) {
+  const t = useTranslations("reader.aiTools");
   if (error) {
     return (
       <div className="flex flex-col gap-3">
@@ -34,7 +36,7 @@ export function ToolResultView({
             onClick={onRetry}
             className="inline-flex w-fit items-center rounded-full bg-paper-strong/70 px-3 py-1.5 font-(--font-ui) text-[0.7rem] uppercase tracking-[0.16em] text-ink transition hover:bg-paper-strong"
           >
-            Try again
+            {t("tryAgain")}
           </button>
         ) : null}
       </div>

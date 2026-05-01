@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { MoonIcon, SunIcon } from "@/components/app/shared/app-icons";
 import { useTheme } from "@/components/theme/theme-provider";
 import { SectionLabel } from "../section-label";
@@ -14,9 +15,10 @@ export function ReadingSection({
   onDecreaseFont,
   onIncreaseFont,
 }: ReadingSectionProps) {
+  const t = useTranslations("preferences.reading");
   return (
     <section className="space-y-6">
-      <SectionLabel>Reading</SectionLabel>
+      <SectionLabel>{t("section")}</SectionLabel>
       <div className="flex items-center gap-3">
         <FontSizeControls
           fontScale={fontScale}
@@ -38,12 +40,13 @@ function FontSizeControls({
   onDecreaseFont: () => void;
   onIncreaseFont: () => void;
 }) {
+  const t = useTranslations("preferences.reading");
   return (
     <div className="flex flex-1 items-center gap-2">
       <FontSizeButton label="A-" onClick={onDecreaseFont} />
       <FontSizeButton label="A+" onClick={onIncreaseFont} />
       <p className="ml-2 font-(--font-ui) text-[0.72rem] uppercase tracking-[0.16em] text-ink/45">
-        Type {Math.round(fontScale * 100)}%
+        {t("typePercent", { percent: Math.round(fontScale * 100) })}
       </p>
     </div>
   );
@@ -68,10 +71,11 @@ function FontSizeButton({
 }
 
 function ThemeToggleControl() {
+  const t = useTranslations("preferences.reading");
   const { theme, toggleTheme } = useTheme();
   const isLight = theme === "light";
   const Icon = isLight ? SunIcon : MoonIcon;
-  const label = isLight ? "Switch to dark mode" : "Switch to light mode";
+  const label = isLight ? t("switchToDark") : t("switchToLight");
 
   return (
     <IconControlButton

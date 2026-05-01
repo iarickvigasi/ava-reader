@@ -107,6 +107,7 @@ function createLibraryPayload(): LibraryPayload {
         itemCount: 5,
         kind: "SMART",
         name: "Imported Books",
+        smartKey: "imported-library",
         unreadCount: 4,
       },
       {
@@ -116,6 +117,7 @@ function createLibraryPayload(): LibraryPayload {
         itemCount: 0,
         kind: "CUSTOM",
         name: "Late Night Reads",
+        smartKey: null,
         unreadCount: 0,
       },
     ],

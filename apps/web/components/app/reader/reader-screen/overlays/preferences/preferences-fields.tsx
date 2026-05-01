@@ -41,7 +41,48 @@ export function StackedField({
   );
 }
 
-export function SelectField({ value }: { value: string }) {
+export type SelectFieldOption = {
+  value: string;
+  label: string;
+};
+
+export function SelectField({
+  ariaLabel,
+  onChange,
+  options,
+  value,
+}: {
+  ariaLabel?: string;
+  onChange?: (next: string) => void;
+  options?: SelectFieldOption[];
+  value: string;
+}) {
+  if (options && onChange) {
+    const hasValue = options.some((opt) => opt.value === value);
+    return (
+      <div className="relative h-9.5 w-full">
+        <select
+          aria-label={ariaLabel}
+          value={hasValue ? value : ""}
+          onChange={(event) => onChange(event.target.value)}
+          className="absolute inset-0 size-full cursor-pointer appearance-none rounded-lg bg-soft-tone-fill px-3 pr-9 font-(--font-reader) text-base text-copy-strong transition hover:bg-soft-tone-fill/80"
+        >
+          {!hasValue && (
+            <option value="" disabled>
+              {value || "Select…"}
+            </option>
+          )}
+          {options.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+        <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-ink/60" />
+      </div>
+    );
+  }
+
   return (
     <button
       type="button"

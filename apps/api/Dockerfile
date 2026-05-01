@@ -15,4 +15,4 @@ RUN pnpm --filter api build
 
 EXPOSE 4000
 
-CMD ["sh", "-c", "pnpm --filter api db:push && pnpm --filter api start:prod"]
+CMD ["sh", "-c", "pnpm --filter api db:migrate:deploy && pnpm --filter api start:prod"]

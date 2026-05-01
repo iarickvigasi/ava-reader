@@ -1,5 +1,6 @@
+import { useTranslations } from "next-intl";
 import { BookCover } from "@/components/app/shared/book-cover";
-import { ExploreIcon, ReaderLibraryIcon } from "@/components/app/shared/app-icons";
+import { ExploreIcon } from "@/components/app/shared/app-icons";
 import { ButtonLink } from "@/components/ui/button";
 
 const catalogPreview = [
@@ -24,27 +25,24 @@ const catalogPreview = [
 ] as const;
 
 export function ExplorePlaceholderPage() {
+  const t = useTranslations("explore");
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-5 pb-10 pt-6 sm:px-6 md:pt-8 lg:px-10">
       <section className="rounded-[28px] bg-surface px-6 py-8 sm:px-8 sm:py-10">
         <div className="max-w-3xl space-y-5">
           <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em] text-muted">
             <ExploreIcon className="size-4" />
-            Explore
+            {t("eyebrow")}
           </p>
           <h1 className="font-display text-4xl text-ink sm:text-5xl">
-            Full catalog browsing lands next
+            {t("title")}
           </h1>
-          <p className="text-lg leading-8 text-copy">
-            Home already surfaces featured books and quick add flows. This
-            dedicated route will expand that into filtering, discovery, and
-            richer metadata exploration.
-          </p>
+          <p className="text-lg leading-8 text-copy">{t("body")}</p>
           <div className="flex flex-wrap gap-3 pt-2">
             <ButtonLink href="/app" variant="soft">
-              Back to Home
+              {t("backToHome")}
             </ButtonLink>
-            <ButtonLink href="/app/library">Open Library</ButtonLink>
+            <ButtonLink href="/app/library">{t("openLibrary")}</ButtonLink>
           </div>
         </div>
       </section>
@@ -53,11 +51,11 @@ export function ExplorePlaceholderPage() {
         {catalogPreview.map((entry) => (
           <article
             key={entry.title}
-            className="rounded-[24px] border border-line/60 bg-paper-strong/70 p-4"
+            className="rounded-3xl border border-line/60 bg-paper-strong/70 p-4"
           >
             <BookCover
               alt={`${entry.title} placeholder cover`}
-              className="aspect-[0.72] w-full rounded-[4px]"
+              className="aspect-[0.72] w-full rounded-sm"
               src={null}
               title={entry.title}
             />
@@ -70,17 +68,6 @@ export function ExplorePlaceholderPage() {
             </div>
           </article>
         ))}
-      </section>
-
-      <section className="rounded-[24px] border border-line/60 bg-white/55 px-6 py-5">
-        <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.14em] text-olive">
-          <ReaderLibraryIcon className="size-4" />
-          Planned next
-        </p>
-        <p className="mt-2 text-base leading-7 text-copy">
-          Collection-aware filters and one-tap handoff from Explore results into
-          your personal library shelves.
-        </p>
       </section>
     </div>
   );

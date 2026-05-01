@@ -1,0 +1,468 @@
+{
+  "common": {
+    "back": "Zurück"
+  },
+  "landing": {
+    "tagline": {
+      "line1": "Erforsche die tiefere",
+      "line2": "Bedeutung von Büchern",
+      "line3": "ohne deine",
+      "line4": "Konzentration zu verlieren"
+    },
+    "signIn": "Anmelden",
+    "createAccount": "Konto erstellen",
+    "year": "2026",
+    "beginReading": "Mit dem Lesen beginnen"
+  },
+  "theme": {
+    "switchToLight": "Zum hellen Modus wechseln",
+    "switchToDark": "Zum dunklen Modus wechseln"
+  },
+  "legal": {
+    "agreePrefix": "Indem du fortfährst, akzeptierst du die",
+    "termsAndPrivacy": "Nutzungsbedingungen und Datenschutzerklärung von AVA"
+  },
+  "explore": {
+    "eyebrow": "Entdecken",
+    "title": "Vollständiges Stöbern im Katalog kommt als Nächstes",
+    "body": "Die Startseite zeigt bereits ausgewählte Bücher und schnelle Hinzufüge-Flows. Diese Ansicht erweitert sie um Filter, Entdeckung und reichhaltigere Metadaten-Erkundung.",
+    "backToHome": "Zurück zur Startseite",
+    "openLibrary": "Bibliothek öffnen"
+  },
+  "preferences": {
+    "title": "Einstellungen",
+    "closePanel": "Einstellungs-Panel schließen",
+    "interfaceLang": {
+      "label": "App-Sprache",
+      "ariaLabel": "Sprache der App-Oberfläche"
+    },
+    "translate": {
+      "label": "Übersetzen in",
+      "ariaLabel": "Übersetzungssprache"
+    },
+    "readingGoal": {
+      "label": "Leseziel",
+      "unit": "(Min/Tag)"
+    },
+    "reading": {
+      "section": "Lesen",
+      "typePercent": "Schrift {percent}%",
+      "switchToLight": "Zum hellen Modus wechseln",
+      "switchToDark": "Zum dunklen Modus wechseln"
+    },
+    "listening": {
+      "section": "Hören",
+      "chooseVoice": "Stimme wählen",
+      "chooseAmbient": "Ambiente wählen",
+      "narratorSpeed": "Sprechgeschwindigkeit"
+    }
+  },
+  "home": {
+    "empty": {
+      "greeting": "Hallo, Freund(in)",
+      "welcome": "Willkommen bei AVA Reader",
+      "intro": "Lass uns mit deiner Erkundung beginnen. Wähle ein Buch, in das du eintauchen möchtest, und wir gestalten den Rest des Lesers darum herum.",
+      "import": {
+        "title": "Importiere dein erstes Buch",
+        "body": "Bring deine EPUB- oder PDF-Datei in eine private Bibliothek, die dich auf allen Geräten begleitet.",
+        "action": "Buch hochladen"
+      },
+      "explore": {
+        "title": "Bücher aus dem Public Domain entdecken",
+        "body": "Beginne mit einem kuratierten Public-Domain-Titel und füge ihn mit einem Tipp deinem Regal hinzu.",
+        "comingSoon": "Der Public-Domain-Katalog ist in Arbeit.",
+        "action": "Katalog durchsuchen"
+      }
+    },
+    "stats": {
+      "title": "Bibliotheks-Kennzahlen",
+      "booksRead": "Gelesene Bücher",
+      "highlights": "Markierungen",
+      "hoursReading": "Lesestunden",
+      "aiComments": "KI-Kommentare"
+    },
+    "quote": {
+      "text": "Lesen ist ein Gespräch. Alle Bücher sprechen. Aber ein gutes Buch hört auch zu.",
+      "attribution": "Mark Haddon"
+    },
+    "collections": {
+      "title": "Sammlungen",
+      "openAll": "Alle öffnen",
+      "empty": "Sammlungen erscheinen, sobald du Bücher importierst oder aus dem öffentlichen Katalog hinzufügst.",
+      "itemsAndUnread": "{items} Einträge • {unread} ungelesen"
+    },
+    "annotations": {
+      "title": "Letzte Anmerkungen",
+      "empty": "Anmerkungen erscheinen hier, sobald du Markierungen erstellst.",
+      "from": "Aus: {bookTitle}",
+      "highlighter": "Marker: {colorLabel}",
+      "viewFullNotebook": "Vollständiges Notizbuch ansehen"
+    },
+    "footer": {
+      "tagline": "© AVA Reader • Für immersives Lesen entwickelt • 2026",
+      "privacy": "Datenschutz",
+      "terms": "Nutzungsbedingungen",
+      "contact": "Kontakt"
+    },
+    "shared": {
+      "openInsights": "Statistiken öffnen"
+    },
+    "engagement": {
+      "currentlyEngaged": "Aktuell aktiv",
+      "percentCompleted": "% abgeschlossen",
+      "completed": "Abgeschlossen",
+      "nextMilestone": "Nächster Meilenstein",
+      "nextMilestoneMobile": "Nächster Meilenstein",
+      "resumeReading": "Lesen fortsetzen",
+      "importAnother": "Weiteres Buch importieren"
+    },
+    "featuredBooks": {
+      "fallback": "Ein kuratierter Public-Domain-Titel, bereit für deine Bibliothek.",
+      "explore": "Entdecken",
+      "openAll": "Alle öffnen",
+      "comingSoon": "Der Public-Domain-Katalog ist in Arbeit."
+    },
+    "catalogAdd": {
+      "adding": "Wird hinzugefügt...",
+      "added": "Hinzugefügt",
+      "inLibrary": "In Bibliothek",
+      "retry": "Erneut versuchen",
+      "add": "Zur Bibliothek hinzufügen"
+    },
+    "feedback": {
+      "title": "Kontinuierliche Weiterentwicklung",
+      "subtitle": "Sag uns, was wir verbessern oder beheben sollen",
+      "attachScreenshot": "Screenshot anhängen",
+      "errors": {
+        "signIn": "Melde dich an, um Feedback zu senden.",
+        "noToken": "Kein Sitzungstoken verfügbar.",
+        "submitFailed": "Das Feedback konnte nicht gesendet werden."
+      },
+      "success": "Feedback erhalten. Vielen Dank.",
+      "placeholder": "Schreibe hier dein Feedback...",
+      "submit": "Senden",
+      "submitting": "Wird gesendet..."
+    },
+    "listening": {
+      "title": "Wird gehört",
+      "skipBackward": "Zurückspringen",
+      "skipForward": "Vorspringen",
+      "play": "Audiovorschau abspielen",
+      "pause": "Audiovorschau pausieren"
+    },
+    "mastery": {
+      "title": "Tägliche Routine",
+      "minToday": "Min heute",
+      "minutesAbbrev": "MIN",
+      "remainingToGoal": "Noch {remaining} Minuten bis zu deinem Tagesziel",
+      "goalMet": "Tagesziel erreicht. Bleib dran."
+    }
+  },
+  "reader": {
+    "contents": {
+      "title": "Inhalt",
+      "completed": "{percent}% abgeschlossen",
+      "chapterCount": "{count} Kapitel"
+    },
+    "highlights": {
+      "title": "Markierungen",
+      "searchPlaceholder": "Suchen",
+      "searchAria": "In Markierungen suchen",
+      "rename": "Umbenennen",
+      "delete": "Löschen"
+    },
+    "aiComments": {
+      "title": "KI-Kommentare",
+      "selection": "Auswahl",
+      "highlight": "Markierung",
+      "selectionReadAloud": "Auswahl vorlesen",
+      "selectionCopy": "Auswahl kopieren"
+    },
+    "aiChats": {
+      "title": "KI-Chats",
+      "closePanel": "KI-Chat-Panel schließen",
+      "searchAria": "Chats durchsuchen",
+      "searchPlaceholder": "Suchen",
+      "createNew": "Neuen Chat erstellen",
+      "rename": "Umbenennen",
+      "delete": "Löschen",
+      "groups": {
+        "today": "Heute",
+        "yesterday": "Gestern"
+      }
+    },
+    "aiTools": {
+      "translate": "Übersetzen",
+      "etymology": "Etymologie",
+      "explain": "Erklären",
+      "askAi": "KI fragen",
+      "generating": "Wird erstellt…",
+      "selectTextHint": "Markiere Text im Leser, um ihn hier zu sehen.",
+      "tryAgain": "Erneut versuchen",
+      "errors": {
+        "signIn": "Du musst angemeldet sein, um KI-Tools zu nutzen.",
+        "noToken": "Kein Sitzungstoken verfügbar.",
+        "requestFailed": "KI-Anfrage fehlgeschlagen (HTTP {status}). Bitte erneut versuchen.",
+        "emptyStream": "Die KI-Antwort war leer.",
+        "generic": "Etwas ist schiefgelaufen."
+      }
+    },
+    "progressSync": {
+      "offline": "Du bist anscheinend offline. Dein Lesefortschritt wird synchronisiert, sobald du wieder verbunden bist.",
+      "generic": "Dein Lesefortschritt konnte nicht gespeichert werden. Wir versuchen es weiter, während du liest."
+    },
+    "status": {
+      "label": "Leser",
+      "backToHome": "Zurück zur Startseite"
+    },
+    "activity": {
+      "restoringPage": "Letzte Seite wird wiederhergestellt...",
+      "loadingChapter": "Kapitel wird geladen...",
+      "preloadingChapter": "Nahegelegenes Kapitel wird vorab geladen..."
+    },
+    "progress": {
+      "percentComplete": "{percent}% abgeschlossen",
+      "pageOfInChapter": "Seite {current} von {total} im Kapitel"
+    },
+    "toc": {
+      "loading": "Wird geladen",
+      "current": "Aktuell",
+      "section": "Abschnitt",
+      "chapter": "Kapitel"
+    }
+  },
+  "shared": {
+    "import": {
+      "defaultLabel": "Buch importieren",
+      "uploading": "Wird hochgeladen...",
+      "signIn": "Melde dich an, um ein Buch hochzuladen.",
+      "noToken": "Kein Sitzungstoken verfügbar.",
+      "uploadFailed": "Der Upload konnte nicht abgeschlossen werden.",
+      "imported": "{filename} importiert."
+    }
+  },
+  "nav": {
+    "main": {
+      "home": "Start",
+      "library": "Bibliothek",
+      "explore": "Entdecken",
+      "insights": "Statistiken"
+    },
+    "admin": {
+      "short": "Admin",
+      "long": "Admin-Katalog"
+    },
+    "userFallbackName": "Leser",
+    "reader": {
+      "contents": "Inhalt",
+      "preferences": "Einstellungen",
+      "aiChats": "KI-Chats",
+      "highlights": "Markierungen",
+      "aiComments": "KI-Kommentare",
+      "bookmarks": "Lesezeichen",
+      "search": "Suchen",
+      "listenToBook": "Buch anhören",
+      "bilingualMode": "Bilingualer Modus",
+      "savePage": "Seite speichern",
+      "shareBook": "Buch teilen",
+      "downloadBook": "Buch herunterladen"
+    }
+  },
+  "smartCollections": {
+    "imported-library": {
+      "name": "Importierte Bücher",
+      "description": "Deine persönlichen EPUB- und PDF-Uploads."
+    },
+    "public-domain-library": {
+      "name": "Public Domain",
+      "description": "Bücher aus dem öffentlichen AVA-Katalog."
+    }
+  },
+  "library": {
+    "header": {
+      "searchAria": "Bibliothek durchsuchen",
+      "searchPlaceholder": "Suchen",
+      "collectionsMetric": "Sammlungen",
+      "booksMetric": "Bücher",
+      "newCollection": "Neue Sammlung"
+    },
+    "empty": {
+      "eyebrow": "Bibliothek",
+      "title": "Deine Sammlungen erscheinen hier, während du deine Lesewelt aufbaust.",
+      "body": "Importiere Bücher oder füge sie aus dem öffentlichen Katalog hinzu, und AVA beginnt, sie in persönliche Sammlungen zu organisieren."
+    },
+    "collection": {
+      "itemsAndUnread": "{items} Einträge • {unread} ungelesen",
+      "viewAll": "Alle ansehen",
+      "noBooksYet": "In dieser Sammlung sind noch keine Bücher.",
+      "backToLibrary": "Zurück zur Bibliothek"
+    },
+    "bookInfo": {
+      "backToLibrary": "Zurück zur Bibliothek",
+      "backToCollection": "Zurück zur Sammlung",
+      "read": "Lesen",
+      "listen": "Hören",
+      "readingProgressLabel": "Lesefortschritt",
+      "completed": "{percent}% abgeschlossen",
+      "aboutThisBook": "Über dieses Buch",
+      "metadata": {
+        "language": "Sprache",
+        "format": "Format",
+        "inLibrarySince": "In der Bibliothek seit",
+        "published": "Veröffentlicht",
+        "readingTime": "Lesezeit",
+        "pageCount": "Seitenzahl",
+        "unknown": "Unbekannt"
+      },
+      "formatters": {
+        "unknown": "Unbekannt",
+        "readerFormat": "Reader",
+        "hours": "{value} h",
+        "estimated": "{hours} geschätzt",
+        "approxPages": "{count, plural, one {~# Seite} other {~# Seiten}}",
+        "notAssigned": "Nicht zugeordnet",
+        "collectionsCount": "{count, plural, one {# Sammlung} other {# Sammlungen}}",
+        "lastReadWithChapter": "Zuletzt gelesen: {chapter} - {date}",
+        "lastReadChapterOnly": "Zuletzt gelesen: {chapter}",
+        "lastReadDateOnly": "Zuletzt gelesen: {date}",
+        "descriptionFallback": "Dieser Titel ist in deiner Bibliothek. Detaillierte redaktionelle Notizen sind für diese Ausgabe noch nicht verfügbar."
+      },
+      "actionCards": {
+        "downloadOffline": {
+          "title": "Offline herunterladen",
+          "description": "PDF und EPUB"
+        },
+        "markAsFinished": {
+          "title": "Als gelesen markieren",
+          "description": "Setzt den Fortschritt auf 100 %"
+        },
+        "manageCollections": {
+          "title": "Sammlungen verwalten"
+        },
+        "deleteBook": {
+          "title": "Buch löschen",
+          "description": "Noch nicht verfügbar"
+        }
+      }
+    },
+    "collectionActions": {
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "editModal": {
+        "eyebrow": "Sammlung",
+        "title": "Details bearbeiten",
+        "titleField": "Titel",
+        "titleAria": "Sammlungstitel",
+        "descriptionField": "Beschreibung",
+        "descriptionAria": "Beschreibung der Sammlung",
+        "descriptionPlaceholder": "Füge eine kurze Beschreibung für diese Sammlung hinzu.",
+        "cancel": "Abbrechen",
+        "save": "Speichern",
+        "saving": "Wird gespeichert..."
+      },
+      "deleteModal": {
+        "eyebrow": "Sammlung",
+        "title": "Sammlung löschen?",
+        "body": "Dies entfernt <emphasis>{name}</emphasis> dauerhaft samt aller Sammlungszugehörigkeiten.",
+        "cancel": "Abbrechen",
+        "confirm": "Löschen bestätigen",
+        "deleting": "Wird gelöscht..."
+      },
+      "errors": {
+        "nameEmpty": "Der Sammlungsname darf nicht leer sein.",
+        "signInToEdit": "Melde dich an, um diese Sammlung zu bearbeiten.",
+        "signInToDelete": "Melde dich an, um diese Sammlung zu löschen.",
+        "noToken": "Kein Sitzungstoken verfügbar.",
+        "updateFailed": "Aktualisierung der Sammlung fehlgeschlagen.",
+        "deleteFailed": "Löschen der Sammlung fehlgeschlagen."
+      }
+    }
+  },
+  "insights": {
+    "eyebrow": "Statistiken",
+    "title": "Statistiken werden nach dem Reader-Release ausgebaut",
+    "body": "Die Startseite zeigt bereits Lesefortschritt und letzte Aktivität. Die dedizierte Statistik-Ansicht bündelt diese Signale in Trendansichten zur Reflexion und Planung.",
+    "backToHome": "Zurück zur Startseite",
+    "goToLibrary": "Zur Bibliothek",
+    "metrics": {
+      "readingTime": {
+        "label": "Lesezeit",
+        "helper": "Diese Woche"
+      },
+      "highlights": {
+        "label": "Markierungen",
+        "helper": "Über aktive Bücher"
+      },
+      "booksOpened": {
+        "label": "Geöffnete Bücher",
+        "helper": "Erfasste Sitzungen"
+      }
+    }
+  },
+  "auth": {
+    "signIn": {
+      "title": "Anmelden",
+      "switchPrompt": "Brauchst du ein Konto?",
+      "switchAction": "Eines erstellen",
+      "notices": {
+        "oauthContinue": "Schließe die Anmeldung ab, um fortzufahren.",
+        "oauthRequirements": "Zusätzliche Kontoangaben sind erforderlich. Fahre mit der E-Mail fort, um die Anmeldung abzuschließen.",
+        "signedOut": "Du wurdest abgemeldet."
+      },
+      "errors": {
+        "googleStartFailed": "Google-Anmeldung konnte nicht gestartet werden.",
+        "needsSecondFactor": "Dieses Konto erfordert einen zweiten Authentifizierungsfaktor, der noch nicht eingerichtet ist.",
+        "needsClientTrust": "Clerk hat eine Client-Vertrauensprüfung angefordert. Fahre auf demselben vertrauenswürdigen Gerät fort oder aktualisiere deine Clerk-Einstellungen.",
+        "incomplete": "Der Anmeldeversuch ist noch nicht abgeschlossen."
+      }
+    },
+    "signUp": {
+      "title": "Konto erstellen",
+      "subtitle": "Beginne mit einem fokussierten Leseraum und führe deine Erkenntnisse an einem Ort zusammen.",
+      "switchPrompt": "Hast du bereits ein Konto?",
+      "switchAction": "Anmelden",
+      "notices": {
+        "oauthContinue": "Setze die Kontoerstellung fort, um mit dem Lesen zu beginnen.",
+        "oauthRequirements": "Es werden noch ein paar zusätzliche Kontoinformationen benötigt, bevor die Registrierung abgeschlossen werden kann."
+      },
+      "errors": {
+        "googleStartFailed": "Google-Registrierung konnte nicht gestartet werden.",
+        "incomplete": "Die Registrierung benötigt noch weitere Informationen, um abgeschlossen zu werden."
+      }
+    },
+    "shared": {
+      "errors": {
+        "sessionTaskRequired": "Vor dem Fortsetzen der Sitzung ist eine zusätzliche Kontoaktion erforderlich."
+      }
+    },
+    "providers": {
+      "continueWithEmail": "Mit E-Mail fortfahren",
+      "continueWithGoogle": "Mit Google fortfahren"
+    },
+    "emailCode": {
+      "identifierEyebrow": "E-Mail-Zugang",
+      "codeEyebrow": "Bestätige deinen Code",
+      "signInIdentifierBody": "Gib die mit deinem Konto verknüpfte E-Mail-Adresse ein, und wir senden dir einen Einmalcode.",
+      "signUpIdentifierBody": "Gib deine E-Mail-Adresse ein, um einen Einmalcode zu erhalten und dein Konto zu erstellen.",
+      "codeSentTo": "Wir haben einen Einmalcode an {email} gesendet.",
+      "emailLabel": "E-Mail",
+      "emailPlaceholder": "name@beispiel.com",
+      "codeLabel": "Code",
+      "codePlaceholder": "123456",
+      "sending": "Wird gesendet...",
+      "sendCode": "Code senden",
+      "changeEmail": "E-Mail ändern",
+      "resendCode": "Code erneut senden",
+      "signingIn": "Anmeldung...",
+      "creating": "Wird erstellt...",
+      "verifyCode": "Code bestätigen",
+      "createAccount": "Konto erstellen"
+    },
+    "misconfigured": {
+      "title": "Authentifizierung nicht konfiguriert",
+      "subtitle": "Füge deine Clerk-Umgebungsvariablen hinzu, um die individuellen Anmelde- und Registrierungsflüsse zu aktivieren.",
+      "requiredVarsLabel": "Erforderliche Web-Variablen",
+      "returnToSplash": "Zurück zum Startbildschirm"
+    }
+  }
+}

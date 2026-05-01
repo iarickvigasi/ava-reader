@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { AppHeaderBrand } from "@/components/brand/app-header-brand";
 import {
   useReaderUi,
@@ -32,78 +33,33 @@ import { isAppNavigationItemActive } from "@/lib/app-navigation";
 import { cn } from "@/lib/cn";
 
 const readerNavItems = [
-  {
-    href: "",
-    icon: ReaderLayoutIcon,
-    label: "Contents",
-    panel: "contents",
-  },
-  {
-    href: "",
-    icon: FontControlsIcon,
-    label: "Preferences",
-    panel: "preferences",
-  },
-  {
-    href: "",
-    icon: ReaderNotesIcon,
-    label: "AI Chats",
-    panel: "ai-chats",
-  },
-  {
-    href: "",
-    icon: ReaderFavoritesIcon,
-    label: "Highlights",
-    panel: "highlights",
-  },
-  {
-    href: "",
-    icon: SparkIcon,
-    label: "AI Comments",
-  },
-  {
-    href: "",
-    icon: ReaderBookmarksIcon,
-    label: "Bookmarks",
-  },
-  {
-    href: "",
-    icon: ReaderSearchIcon,
-    label: "Search",
-  },
-  {
-    href: "",
-    icon: ReaderListeningIcon,
-    label: "Listen to Book",
-  },
+  { href: "", icon: ReaderLayoutIcon, id: "contents", panel: "contents" },
+  { href: "", icon: FontControlsIcon, id: "preferences", panel: "preferences" },
+  { href: "", icon: ReaderNotesIcon, id: "aiChats", panel: "ai-chats" },
+  { href: "", icon: ReaderFavoritesIcon, id: "highlights", panel: "highlights" },
+  { href: "", icon: SparkIcon, id: "aiComments" },
+  { href: "", icon: ReaderBookmarksIcon, id: "bookmarks" },
+  { href: "", icon: ReaderSearchIcon, id: "search" },
+  { href: "", icon: ReaderListeningIcon, id: "listenToBook" },
   {
     href: "",
     icon: ReaderTranslationIcon,
+    id: "bilingualMode",
     isActive: true,
-    label: "Bilingual Mode",
   },
 ] as const;
 
 const readerUtilityItems = [
-  {
-    icon: ReaderSaveIcon,
-    label: "Save page",
-  },
-  {
-    icon: ReaderShareIcon,
-    label: "Share book",
-  },
-  {
-    icon: ReaderDownloadIcon,
-    label: "Download book",
-  },
+  { icon: ReaderSaveIcon, id: "savePage" },
+  { icon: ReaderShareIcon, id: "shareBook" },
+  { icon: ReaderDownloadIcon, id: "downloadBook" },
 ] as const;
 
 const items = [
-  { href: "/app", label: "Home", icon: HomeIcon },
-  { href: "/app/library", label: "Library", icon: ReaderLibraryIcon },
-  { href: "/app/explore", label: "Explore", icon: ExploreIcon },
-  { href: "/app/insights", label: "Insights", icon: ChartIcon },
+  { href: "/app", id: "home", icon: HomeIcon },
+  { href: "/app/library", id: "library", icon: ReaderLibraryIcon },
+  { href: "/app/explore", id: "explore", icon: ExploreIcon },
+  { href: "/app/insights", id: "insights", icon: ChartIcon },
 ] as const;
 
 type AppNavigationProps = {
@@ -111,6 +67,7 @@ type AppNavigationProps = {
 };
 
 export function AppNavigation({ currentUser }: AppNavigationProps) {
+  const t = useTranslations("nav");
   const pathname = usePathname();
   const isReaderRoute = pathname.startsWith("/app/read/");
   void currentUser;
@@ -134,7 +91,7 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
                   href="/app/admin/catalog"
                   className="inline-flex min-h-10 items-center rounded-pl border border-line px-3 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-ink"
                 >
-                  Admin
+                  {t("admin.short")}
                 </Link>
               ) : null}
               <UserMenuButton />
@@ -160,7 +117,7 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
                       isActive && "border-title font-medium text-title",
                     )}
                   >
-                    {item.label}
+                    {t(`main.${item.id}`)}
                   </Link>
                 );
               })}
@@ -172,14 +129,14 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
                   href="/app/admin/catalog"
                   className="inline-flex min-h-11 items-center rounded-[14px] border border-line bg-white/60 px-4 text-xs font-semibold uppercase tracking-[0.16em] text-ink transition hover:bg-white"
                 >
-                  Admin catalog
+                  {t("admin.long")}
                 </Link>
               ) : null}
               <ThemeToggle />
               <div className="flex items-center gap-3 rounded-2xl bg-soft-fill px-4 py-2">
                 <div className="hidden text-right lg:block">
                   <p className="text-sm font-semibold text-copy-strong">
-                    {currentUser.displayName ?? "Reader"}
+                    {currentUser.displayName ?? t("userFallbackName")}
                   </p>
                 </div>
                 <UserMenuButton />
@@ -208,7 +165,7 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
                 )}
               >
                 <Icon className="size-5" />
-                <span>{item.label}</span>
+                <span>{t(`main.${item.id}`)}</span>
               </Link>
             );
           })}
@@ -287,7 +244,7 @@ function ReaderNavigation() {
             <nav className="flex flex-col gap-3">
               {readerNavItems.map((item) => (
                 <ReaderNavItem
-                  key={item.label}
+                  key={item.id}
                   activePanel={activePanel}
                   item={item}
                   onTogglePanel={togglePanel}
@@ -297,7 +254,7 @@ function ReaderNavigation() {
 
             <div className="mt-auto flex translate-y-2 items-center justify-start gap-3 px-2 py-3 opacity-0 transition-all duration-300 group-hover/reader-nav:translate-y-0 group-hover/reader-nav:opacity-100 group-focus-within/reader-nav:translate-y-0 group-focus-within/reader-nav:opacity-100">
               {readerUtilityItems.map((item) => (
-                <ReaderUtilityItem key={item.label} item={item} />
+                <ReaderUtilityItem key={item.id} item={item} />
               ))}
             </div>
           </div>
@@ -315,7 +272,7 @@ function ReaderNavigation() {
           <div className="flex items-center gap-2 overflow-x-auto">
             {readerNavItems.slice(0, 5).map((item) => (
               <ReaderNavItem
-                key={item.label}
+                key={item.id}
                 activePanel={activePanel}
                 compact
                 item={item}
@@ -340,6 +297,8 @@ function ReaderNavItem({
   item: (typeof readerNavItems)[number];
   onTogglePanel: (panel: ReaderPanel) => void;
 }) {
+  const t = useTranslations("nav.reader");
+  const label = t(item.id);
   const Icon = item.icon;
   const isPanelItem = "panel" in item;
   const isActive = ("isActive" in item && item.isActive) || (
@@ -359,10 +318,10 @@ function ReaderNavItem({
         />
       </span>
       {compact ? (
-        <span className="sr-only">{item.label}</span>
+        <span className="sr-only">{label}</span>
       ) : (
         <span className="max-w-0 -translate-x-1 overflow-hidden whitespace-nowrap text-[0.95rem] uppercase tracking-[0.08em] text-title opacity-0 transition-[max-width,opacity,transform] duration-300 group-hover/reader-nav:max-w-36 group-hover/reader-nav:translate-x-0 group-hover/reader-nav:opacity-100 group-focus-within/reader-nav:max-w-36 group-focus-within/reader-nav:translate-x-0 group-focus-within/reader-nav:opacity-100">
-          {item.label}
+          {label}
         </span>
       )}
     </>
@@ -381,7 +340,7 @@ function ReaderNavItem({
     return (
       <button
         type="button"
-        aria-label={item.label}
+        aria-label={label}
         aria-pressed={isActive}
         className={className}
         onClick={() => onTogglePanel(item.panel)}
@@ -396,7 +355,7 @@ function ReaderNavItem({
   }
 
   return (
-    <Link aria-label={item.label} className={className} href={item.href}>
+    <Link aria-label={label} className={className} href={item.href}>
       {content}
     </Link>
   );
@@ -407,12 +366,13 @@ function ReaderUtilityItem({
 }: {
   item: (typeof readerUtilityItems)[number];
 }) {
+  const t = useTranslations("nav.reader");
   const Icon = item.icon;
 
   return (
     <button
       type="button"
-      aria-label={item.label}
+      aria-label={t(item.id)}
       className="flex size-8 items-center justify-center rounded-lg text-title transition hover:bg-soft-tone-fill/75"
     >
       <Icon aria-hidden="true" className="size-4.5" />

@@ -1,18 +1,20 @@
+import { useTranslations } from "next-intl";
 import { SectionLabel } from "../section-label";
 import { SelectField, StackedField } from "./preferences-fields";
 import { SpeakerLargeIcon, SpeakerSmallIcon } from "./preferences-icons";
 
 export function ListeningSection() {
+  const t = useTranslations("preferences.listening");
   return (
     <section className="space-y-6">
-      <SectionLabel>Listening</SectionLabel>
-      <StackedField label="Choose a voice">
+      <SectionLabel>{t("section")}</SectionLabel>
+      <StackedField label={t("chooseVoice")}>
         <SelectField value="The Curator (Oxford Female)" />
       </StackedField>
-      <StackedField label="Choose ambient">
+      <StackedField label={t("chooseAmbient")}>
         <SelectField value="Mirrorpunk — Endless Horizons" />
       </StackedField>
-      <StackedField label="Narrator speed">
+      <StackedField label={t("narratorSpeed")}>
         <NarratorSpeedSlider value="1.0x" position={50} />
       </StackedField>
     </section>

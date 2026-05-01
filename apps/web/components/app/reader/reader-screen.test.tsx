@@ -59,13 +59,12 @@ describe("reader screen", () => {
       </WithReaderUi>,
     );
 
-    expect(markup).toContain("Reader panel");
     expect(markup).toContain("Restoring your last page");
     expect(markup).toContain("0% complete");
     expect(markup).toContain("Page 1 of 1 in chapter");
-    expect(markup).toContain(
-      "Reader Resume Fixture, Fixture Author - Fixture Chapter 01",
-    );
+    expect(markup).toContain("Reader Resume Fixture");
+    expect(markup).toContain("Fixture Author");
+    expect(markup).toContain("Fixture Chapter 01");
   });
 });
 

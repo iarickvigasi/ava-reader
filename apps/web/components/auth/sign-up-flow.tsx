@@ -2,6 +2,7 @@
 
 import { useAuth, useSignUp } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { AuthRouteSwitcher } from "@/components/auth/auth-route-switcher";
 import { AuthShell } from "@/components/auth/auth-shell";
@@ -16,6 +17,8 @@ type SignUpFlowProps = {
 type Phase = "idle" | "email" | "code";
 
 export function SignUpFlow({ initialNotice }: SignUpFlowProps) {
+  const t = useTranslations("auth.signUp");
+  const tShared = useTranslations("auth.shared");
   const { signUp, errors, fetchStatus } = useSignUp();
   const { isSignedIn } = useAuth();
   const router = useRouter();
@@ -40,9 +43,7 @@ export function SignUpFlow({ initialNotice }: SignUpFlowProps) {
     await signUp.finalize({
       navigate: async ({ decorateUrl, session }) => {
         if (session?.currentTask) {
-          setLocalMessage(
-            "Additional account work is required before the session can continue.",
-          );
+          setLocalMessage(tShared("errors.sessionTaskRequired"));
           return;
         }
 
@@ -61,7 +62,7 @@ export function SignUpFlow({ initialNotice }: SignUpFlowProps) {
     });
 
     if (error) {
-      setLocalMessage("Google sign-up could not be started.");
+      setLocalMessage(t("errors.googleStartFailed"));
     }
   };
 
@@ -95,9 +96,7 @@ export function SignUpFlow({ initialNotice }: SignUpFlowProps) {
       return;
     }
 
-    setLocalMessage(
-      "The sign-up attempt needs more information before it can finish.",
-    );
+    setLocalMessage(t("errors.incomplete"));
   };
 
   const resendCode = async () => {
@@ -112,12 +111,12 @@ export function SignUpFlow({ initialNotice }: SignUpFlowProps) {
 
   return (
     <AuthShell
-      title="Create Account"
-      subtitle="Start with a focused reading space and bring your insights into one place."
+      title={t("title")}
+      subtitle={t("subtitle")}
       footer={
         <AuthRouteSwitcher
-          prompt="Already have an account?"
-          actionLabel="Sign in"
+          prompt={t("switchPrompt")}
+          actionLabel={t("switchAction")}
           href="/sign-in"
         />
       }

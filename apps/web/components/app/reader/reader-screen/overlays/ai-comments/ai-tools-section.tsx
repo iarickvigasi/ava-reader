@@ -1,4 +1,9 @@
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import {
+  DEFAULT_TRANSLATE_TARGET_LANG,
+  useTranslateTargetLang,
+} from "@/components/app/preferences/use-translate-target-lang";
 import {
   ReaderTranslationIcon,
   SparkIcon,
@@ -8,10 +13,6 @@ import { EtymologyIcon, LightbulbIcon } from "./ai-comments-icons";
 import { ToolResultView } from "./tool-result-view";
 import { ToolSection } from "./tool-section";
 import { useAiTool } from "./use-ai-tool";
-import {
-  DEFAULT_TRANSLATE_TARGET_LANG,
-  useTranslateTargetLang,
-} from "./translate-target-lang";
 
 type ToolKey = "translate" | "etymology" | "explain";
 
@@ -24,6 +25,7 @@ export function AiToolsSection({
   libraryItemId,
   selectedText,
 }: AiToolsSectionProps) {
+  const t = useTranslations("reader.aiTools");
   // Multi-open accordion: each tool has its own open/closed state and opening
   // one does NOT collapse the others. Sections only close when the user
   // clicks them again or when the whole panel is dismissed (the component
@@ -107,14 +109,14 @@ export function AiToolsSection({
   };
 
   const emptyHint = trimmedSelection
-    ? "Generating\u2026"
-    : "Select text in the reader to see this here.";
+    ? t("generating")
+    : t("selectTextHint");
 
   return (
     <div className="flex flex-col gap-4">
       <ToolSection
         icon={<ReaderTranslationIcon className="size-4" />}
-        label="Translate"
+        label={t("translate")}
         isExpanded={isTranslateOpen}
         onToggle={() => toggle("translate")}
       >
@@ -139,7 +141,7 @@ export function AiToolsSection({
 
       <ToolSection
         icon={<EtymologyIcon className="size-4" />}
-        label="Etymology"
+        label={t("etymology")}
         isExpanded={isEtymologyOpen}
         onToggle={() => toggle("etymology")}
       >
@@ -162,7 +164,7 @@ export function AiToolsSection({
 
       <ToolSection
         icon={<LightbulbIcon className="size-4" />}
-        label="Explain"
+        label={t("explain")}
         isExpanded={isExplainOpen}
         onToggle={() => toggle("explain")}
       >
@@ -186,7 +188,7 @@ export function AiToolsSection({
       <ToolSection
         variant="link"
         icon={<SparkIcon className="size-4" />}
-        label="Ask AI"
+        label={t("askAi")}
       />
     </div>
   );

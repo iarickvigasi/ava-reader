@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/cn";
 import type { ReaderNavigationTarget } from "@/lib/reader-navigation";
 import { resolveTocNavigationTarget } from "@/lib/reader-toc";
@@ -15,7 +16,9 @@ type ReaderContentsTreeNodeProps = {
   pendingChapterId: string | null;
 };
 
-function resolveEntryStateLabel({
+type TocStateKey = "loading" | "current" | "section" | "chapter" | null;
+
+function resolveEntryStateKey({
   entry,
   isCurrentChapter,
   isCurrentSection,
@@ -25,24 +28,12 @@ function resolveEntryStateLabel({
   isCurrentChapter: boolean;
   isCurrentSection: boolean;
   isPending: boolean;
-}) {
-  if (isPending) {
-    return "Loading";
-  }
-
-  if (isCurrentSection) {
-    return "Current";
-  }
-
-  if (entry.blockId) {
-    return "Section";
-  }
-
-  if (isCurrentChapter) {
-    return "Chapter";
-  }
-
-  return "";
+}): TocStateKey {
+  if (isPending) return "loading";
+  if (isCurrentSection) return "current";
+  if (entry.blockId) return "section";
+  if (isCurrentChapter) return "chapter";
+  return null;
 }
 
 function resolveEntryLabelClassName({
@@ -77,6 +68,7 @@ export function ReaderContentsTreeNode({
   onSelectChapter,
   pendingChapterId,
 }: ReaderContentsTreeNodeProps) {
+  const t = useTranslations("reader.toc");
   const isActivePath = activePathIds.has(entry.id);
   const isPending = Boolean(entry.chapterId && pendingChapterId === entry.chapterId);
   const navigationTarget = resolveTocNavigationTarget(entry);
@@ -109,12 +101,15 @@ export function ReaderContentsTreeNode({
               {entry.label}
             </span>
             <span className="shrink-0 pt-1 font-(--font-ui) text-[0.62rem] uppercase tracking-[0.16em] text-ink/35">
-              {resolveEntryStateLabel({
-                entry,
-                isCurrentChapter,
-                isCurrentSection,
-                isPending,
-              })}
+              {(() => {
+                const stateKey = resolveEntryStateKey({
+                  entry,
+                  isCurrentChapter,
+                  isCurrentSection,
+                  isPending,
+                });
+                return stateKey ? t(stateKey) : "";
+              })()}
             </span>
           </button>
         ) : (

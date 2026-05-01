@@ -1,13 +1,15 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { MoonIcon, SunIcon } from "@/components/app/shared/app-icons";
 import { useTheme } from "@/components/theme/theme-provider";
 
 export function ThemeToggle() {
+  const t = useTranslations("theme");
   const { theme, toggleTheme } = useTheme();
   const isLight = theme === "light";
   const Icon = isLight ? SunIcon : MoonIcon;
-  const label = isLight ? "Switch to dark mode" : "Switch to light mode";
+  const label = isLight ? t("switchToDark") : t("switchToLight");
 
   return (
     <button
