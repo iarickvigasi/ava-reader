@@ -1,4 +1,5 @@
 import { useAuth } from "@clerk/nextjs";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getPublicApiBaseUrl } from "@/lib/api";
 
@@ -54,6 +55,7 @@ type UseAiToolResult = {
 // request before opening a new one so two rapid selections don't race to
 // overwrite each other.
 export function useAiTool({ libraryItemId }: UseAiToolInput): UseAiToolResult {
+  const t = useTranslations("reader.aiTools.errors");
   const { getToken, isLoaded, isSignedIn } = useAuth();
   const [state, setState] = useState<State>(INITIAL_STATE);
   const abortRef = useRef<AbortController | null>(null);
@@ -78,11 +80,11 @@ export function useAiTool({ libraryItemId }: UseAiToolInput): UseAiToolResult {
 
       const run = async () => {
         if (!isLoaded || !isSignedIn) {
-          throw new Error("You need to be signed in to use AI tools.");
+          throw new Error(t("signIn"));
         }
         const token = await getToken();
         if (!token) {
-          throw new Error("No session token was available.");
+          throw new Error(t("noToken"));
         }
 
         const url = `${getPublicApiBaseUrl()}/api/library/${encodeURIComponent(
@@ -105,13 +107,12 @@ export function useAiTool({ libraryItemId }: UseAiToolInput): UseAiToolResult {
         if (!response.ok) {
           const detail = await response.text().catch(() => "");
           throw new Error(
-            detail ||
-              `AI request failed (HTTP ${response.status}). Please try again.`,
+            detail || t("requestFailed", { status: response.status }),
           );
         }
 
         if (!response.body) {
-          throw new Error("The AI response stream was empty.");
+          throw new Error(t("emptyStream"));
         }
 
         const reader = response.body.getReader();
@@ -154,7 +155,7 @@ export function useAiTool({ libraryItemId }: UseAiToolInput): UseAiToolResult {
           return;
         }
         const message =
-          error instanceof Error ? error.message : "Something went wrong.";
+          error instanceof Error ? error.message : t("generic");
         setState((current) => ({
           ...current,
           isStreaming: false,
@@ -162,7 +163,7 @@ export function useAiTool({ libraryItemId }: UseAiToolInput): UseAiToolResult {
         }));
       });
     },
-    [abort, getToken, isLoaded, isSignedIn, libraryItemId],
+    [abort, getToken, isLoaded, isSignedIn, libraryItemId, t],
   );
 
   // On unmount, make sure no fetch outlives the component.

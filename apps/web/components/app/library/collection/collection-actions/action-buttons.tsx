@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { EditIcon, TrashIcon } from "@/components/app/shared/app-icons";
 
 type CollectionActionButtonsProps = {
@@ -9,6 +10,7 @@ export function CollectionActionButtons({
   onDeleteClick,
   onEditClick,
 }: CollectionActionButtonsProps) {
+  const t = useTranslations("library.collectionActions");
   return (
     <div className="flex items-center gap-2 md:justify-end">
       {onEditClick ? (
@@ -18,7 +20,7 @@ export function CollectionActionButtons({
           onClick={onEditClick}
         >
           <EditIcon className="size-3.5" />
-          Edit
+          {t("edit")}
         </button>
       ) : null}
       <button
@@ -27,7 +29,7 @@ export function CollectionActionButtons({
         onClick={onDeleteClick}
       >
         <TrashIcon className="size-3.5" />
-        Delete
+        {t("delete")}
       </button>
     </div>
   );

@@ -97,6 +97,7 @@ function createCollection(): LibraryCollection {
     itemCount: 3,
     kind: "CUSTOM",
     name: "Imported Books",
+    smartKey: null,
     unreadCount: 2,
   };
 }

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { ArrowRightIcon } from "@/components/app/shared/app-icons";
 import type { HomePayload } from "@/lib/api-types";
 
@@ -13,6 +14,7 @@ export function EngagementMobileCard({
   engagement: CurrentEngagement;
   readerHref: string;
 }) {
+  const t = useTranslations("home.engagement");
   const railHeightPercent = Math.min(
     Math.max(engagement.completionPercent, RAIL_MIN_PERCENT),
     100,
@@ -28,7 +30,7 @@ export function EngagementMobileCard({
       </div>
       <div>
         <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-olive">
-          Next milestone
+          {t("nextMilestoneMobile")}
         </p>
         <p className="mt-3 font-display text-[1.35rem] leading-[1.35] text-title sm:text-2xl">
           {engagement.chapterLabel}
@@ -37,7 +39,7 @@ export function EngagementMobileCard({
           href={readerHref}
           className="mt-4 inline-flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-ink"
         >
-          Resume Reading
+          {t("resumeReading")}
           <ArrowRightIcon className="size-3.5" />
         </Link>
       </div>
@@ -45,7 +47,7 @@ export function EngagementMobileCard({
       <div className="hidden sm:block">
         <p className="text-4xl text-ink">{engagement.completionPercent}%</p>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-olive">
-          Completed
+          {t("completed")}
         </p>
       </div>
     </div>

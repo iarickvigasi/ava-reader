@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import {
   ChevronDownIcon,
   ReaderFavoritesIcon,
@@ -27,13 +28,14 @@ export function HighlightSection({
   selectedColor,
   onSelectColor,
 }: HighlightSectionProps) {
+  const t = useTranslations("reader.aiComments");
   return (
     <section className="rounded-[10px]">
       <div className="flex items-center justify-between gap-3 px-5 py-4">
         <div className="flex items-center gap-3">
           <ReaderFavoritesIcon className="size-4 text-copy" />
           <span className="font-(--font-ui) text-[0.78rem] uppercase tracking-[0.16em] text-copy">
-            Highlight
+            {t("highlight")}
           </span>
         </div>
         <ChevronDownIcon className="size-3.5 text-copy" />

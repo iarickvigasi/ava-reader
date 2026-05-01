@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import type { ReaderLocator } from "@/lib/api-types";
 import { formatAuthors } from "@/lib/format-authors";
@@ -107,10 +108,11 @@ function ContentsHeader({
   onClose: () => void;
   title: string;
 }) {
+  const t = useTranslations("reader.contents");
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="min-w-0">
-        <PanelTitle>Contents</PanelTitle>
+        <PanelTitle>{t("title")}</PanelTitle>
         <h2 className="mt-4 font-(--font-reader) text-[2rem] leading-[0.95] tracking-[-0.04em] text-title">
           {title}
         </h2>
@@ -142,14 +144,15 @@ function ContentsProgress({
   chapterCount: number;
   completionPercent: number;
 }) {
+  const t = useTranslations("reader.contents");
   return (
     <div className="mt-8">
       <div className="flex items-center justify-between gap-3">
         <span className="font-(--font-ui) text-[0.62rem] uppercase tracking-[0.16em] text-ink/55">
-          {completionPercent}% completed
+          {t("completed", { percent: completionPercent })}
         </span>
         <span className="font-(--font-ui) text-[0.62rem] uppercase tracking-[0.16em] text-ink/35">
-          {chapterCount} chapters
+          {t("chapterCount", { count: chapterCount })}
         </span>
       </div>
       <ProgressBar completionPercent={completionPercent} />

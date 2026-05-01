@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { MissingAuthConfiguration } from "@/components/auth/missing-auth-configuration";
 import { SignUpFlow } from "@/components/auth/sign-up-flow";
 
@@ -5,14 +6,14 @@ type SignUpPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
-function getNotice(value?: string | string[]) {
+function getNoticeKey(value?: string | string[]) {
   const notice = Array.isArray(value) ? value[0] : value;
 
   switch (notice) {
     case "oauth_continue":
-      return "Continue creating your account to start reading.";
+      return "oauthContinue" as const;
     case "oauth_requirements":
-      return "A bit more account information is needed before we can finish sign-up.";
+      return "oauthRequirements" as const;
     default:
       return undefined;
   }
@@ -24,6 +25,9 @@ export default async function SignUpPage({ searchParams }: SignUpPageProps) {
   }
 
   const params = (await searchParams) ?? {};
+  const noticeKey = getNoticeKey(params.notice);
+  const t = await getTranslations("auth.signUp.notices");
+  const initialNotice = noticeKey ? t(noticeKey) : undefined;
 
-  return <SignUpFlow initialNotice={getNotice(params.notice)} />;
+  return <SignUpFlow initialNotice={initialNotice} />;
 }

@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { BookCover } from "@/components/app/shared/book-cover";
 import type { HomePayload } from "@/lib/api-types";
 import { SectionHeader, SparkIconLink } from "../../shared/home-shared";
@@ -14,11 +15,12 @@ export function ListeningSection({
   coverImageDataUrl: string | null;
   listening: Listening;
 }) {
+  const t = useTranslations("home.listening");
   const progressWidth = Math.max(listening.progressPercent, PROGRESS_MIN_PERCENT);
 
   return (
     <section className="space-y-8">
-      <SectionHeader label="Now Listening" action={<SparkIconLink href="" />} />
+      <SectionHeader label={t("title")} action={<SparkIconLink href="" />} />
       <div className="rounded-lg bg-soft-fill px-6 py-6 sm:rounded-3xl sm:px-8">
         <div className="grid gap-6 md:grid-cols-[192px_1fr] md:items-center">
           <BookCover

@@ -3,6 +3,7 @@
 import { useRef, useState, useTransition } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { UploadIcon } from "@/components/app/shared/app-icons";
 import { cn } from "@/lib/cn";
 import { getPublicApiBaseUrl } from "@/lib/api";
@@ -30,17 +31,19 @@ const styles = {
 export function ImportButton({
   className,
   hideNotice = false,
-  label = "Import book",
+  label,
   notice,
   onNoticeChangeAction,
   variant = "primary",
 }: ImportButtonProps) {
+  const t = useTranslations("shared.import");
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { getToken, isLoaded, isSignedIn } = useAuth();
   const router = useRouter();
   const [internalNotice, setInternalNotice] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const resolvedNotice = notice ?? internalNotice;
+  const resolvedLabel = label ?? t("defaultLabel");
 
   function publishNotice(nextNotice: string | null) {
     setInternalNotice(nextNotice);
@@ -49,14 +52,14 @@ export function ImportButton({
 
   async function onFileSelected(file: File) {
     if (!isLoaded || !isSignedIn) {
-      publishNotice("Sign in to upload a book.");
+      publishNotice(t("signIn"));
       return;
     }
 
     const token = await getToken();
 
     if (!token) {
-      publishNotice("No session token was available.");
+      publishNotice(t("noToken"));
       return;
     }
 
@@ -75,11 +78,11 @@ export function ImportButton({
       const payload = (await response.json().catch(() => null)) as
         | { message?: string }
         | null;
-      publishNotice(payload?.message ?? "The upload could not be completed.");
+      publishNotice(payload?.message ?? t("uploadFailed"));
       return;
     }
 
-    publishNotice(`Imported ${file.name}.`);
+    publishNotice(t("imported", { filename: file.name }));
     router.refresh();
   }
 
@@ -116,7 +119,7 @@ export function ImportButton({
         onClick={() => inputRef.current?.click()}
       >
         <UploadIcon className={cn("shrink-0", variant === "icon" ? "size-5" : "size-4")} />
-        {variant === "icon" ? <span className="sr-only">{label}</span> : isPending ? "Uploading..." : label}
+        {variant === "icon" ? <span className="sr-only">{resolvedLabel}</span> : isPending ? t("uploading") : resolvedLabel}
       </button>
 
       {!hideNotice && resolvedNotice ? (

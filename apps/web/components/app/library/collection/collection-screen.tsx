@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import type { LibraryCollection } from "@/lib/api-types";
 import { LibraryCollectionActions } from "./collection-actions/collection-actions";
+import { useCollectionDisplay } from "../shared/collection-display";
 import { LibraryBookCard } from "../shared/book-card";
 
 type LibraryCollectionScreenProps = {
@@ -8,6 +10,10 @@ type LibraryCollectionScreenProps = {
 };
 
 export function LibraryCollectionScreen({ collection }: LibraryCollectionScreenProps) {
+  const t = useTranslations("library.collection");
+  const collectionDisplay = useCollectionDisplay();
+  const displayName = collectionDisplay.name(collection);
+  const displayDescription = collectionDisplay.description(collection);
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col px-5 pb-10 pt-6 sm:px-6 md:pb-14 md:pt-8 lg:px-10">
       <div className="mx-auto w-full max-w-7xl space-y-8 md:space-y-10">
@@ -16,7 +22,7 @@ export function LibraryCollectionScreen({ collection }: LibraryCollectionScreenP
             href="/app/library"
             className="inline-flex text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-brand-fill hover:text-brand-fill-strong"
           >
-            Back to Library
+            {t("backToLibrary")}
           </Link>
 
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
@@ -24,15 +30,18 @@ export function LibraryCollectionScreen({ collection }: LibraryCollectionScreenP
               <div className="flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-end sm:gap-3">
                 <h1
                   className="font-sans text-[1.9rem] font-medium leading-[1.05] tracking-[-0.03em] text-title md:text-[2rem]">
-                  {collection.name}
+                  {displayName}
                 </h1>
                 <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-olive md:pb-1">
-                  {collection.itemCount} items • {collection.unreadCount} unread
+                  {t("itemsAndUnread", {
+                    items: collection.itemCount,
+                    unread: collection.unreadCount,
+                  })}
                 </p>
               </div>
-              {collection.description ? (
+              {displayDescription ? (
                 <p className="max-w-3xl text-base leading-6 text-copy">
-                  {collection.description}
+                  {displayDescription}
                 </p>
               ) : null}
             </div>
@@ -40,14 +49,14 @@ export function LibraryCollectionScreen({ collection }: LibraryCollectionScreenP
               collectionDescription={collection.description}
               collectionId={collection.id}
               collectionKind={collection.kind}
-              collectionName={collection.name}
+              collectionName={displayName}
             />
           </div>
         </section>
 
         {collection.books.length === 0 ? (
           <div className="rounded-[22px] border border-line/30 bg-paper-strong/70 px-5 py-6 text-base leading-7 text-copy">
-            No books are in this collection yet.
+            {t("noBooksYet")}
           </div>
         ) : (
           <>

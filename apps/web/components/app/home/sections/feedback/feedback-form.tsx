@@ -3,6 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { CameraIcon } from "@/components/app/shared/app-icons";
 import { cn } from "@/lib/cn";
 import { getPublicApiBaseUrl } from "@/lib/api";
@@ -12,6 +13,7 @@ type FeedbackFormProps = {
 };
 
 export function FeedbackForm({ className }: FeedbackFormProps) {
+  const t = useTranslations("home.feedback");
   const { getToken, isLoaded, isSignedIn } = useAuth();
   const router = useRouter();
   const [message, setMessage] = useState("");
@@ -20,20 +22,20 @@ export function FeedbackForm({ className }: FeedbackFormProps) {
   const [isPending, startTransition] = useTransition();
 
   const attachmentLabel = useMemo(
-    () => attachment?.name ?? "Attach Screenshot",
-    [attachment],
+    () => attachment?.name ?? t("attachScreenshot"),
+    [attachment, t],
   );
 
   async function submitFeedback() {
     if (!isLoaded || !isSignedIn) {
-      setStatus("Sign in to submit feedback.");
+      setStatus(t("errors.signIn"));
       return;
     }
 
     const token = await getToken();
 
     if (!token) {
-      setStatus("No session token was available.");
+      setStatus(t("errors.noToken"));
       return;
     }
 
@@ -56,13 +58,13 @@ export function FeedbackForm({ className }: FeedbackFormProps) {
       const payload = (await response.json().catch(() => null)) as
         | { message?: string }
         | null;
-      setStatus(payload?.message ?? "The feedback could not be submitted.");
+      setStatus(payload?.message ?? t("errors.submitFailed"));
       return;
     }
 
     setMessage("");
     setAttachment(null);
-    setStatus("Feedback received. Thank you.");
+    setStatus(t("success"));
     router.refresh();
   }
 
@@ -71,7 +73,7 @@ export function FeedbackForm({ className }: FeedbackFormProps) {
       <div className="rounded-[18px] bg-soft-fill px-5 py-5">
         <textarea
           className="min-h-40 w-full resize-none bg-transparent text-lg text-copy-strong outline-none placeholder:text-copy/50 sm:text-xl"
-          placeholder="Type your feedback here..."
+          placeholder={t("placeholder")}
           value={message}
           onChange={(event) => setMessage(event.target.value)}
         />
@@ -99,7 +101,7 @@ export function FeedbackForm({ className }: FeedbackFormProps) {
             })
           }
         >
-          {isPending ? "Submitting..." : "Submit"}
+          {isPending ? t("submitting") : t("submit")}
         </button>
         {status ? <p className="text-sm text-muted">{status}</p> : null}
       </div>

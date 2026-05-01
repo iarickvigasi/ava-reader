@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { Panel } from "../../shared/home-shared";
 import { MasteryDayColumn } from "./day-column";
 import type { Mastery } from "./mastery-utils";
@@ -13,13 +14,14 @@ export function MasteryDesktopSection({
   remainingCopy: string;
   computeBarHeight: (minutes: number) => number;
 }) {
+  const t = useTranslations("home.mastery");
   return (
     <Panel className="hidden p-8 sm:block">
       <div className="flex h-full min-h-80 flex-col">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-2">
             <h2 className="text-[1.9rem] uppercase tracking-[0.04em] text-copy">
-              Daily Mastery
+              {t("title")}
             </h2>
             <p className="text-xl italic text-title">{remainingCopy}</p>
           </div>
@@ -28,7 +30,7 @@ export function MasteryDesktopSection({
               {mastery.todayMinutes}/{mastery.dailyGoalMinutes}
             </p>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-              Min today
+              {t("minToday")}
             </p>
           </div>
         </div>

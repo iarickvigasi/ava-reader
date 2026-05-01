@@ -15,9 +15,3 @@ export function makeBarHeightCalculator(mastery: Mastery) {
     return (clamped / ceilingMinutes) * 100;
   };
 }
-
-export function formatRemainingCopy(remainingMinutes: number) {
-  return remainingMinutes > 0
-    ? `${remainingMinutes} minutes to reach your daily goal`
-    : "Daily goal met. Keep the momentum going.";
-}

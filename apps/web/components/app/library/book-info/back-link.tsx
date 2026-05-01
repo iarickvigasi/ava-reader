@@ -1,13 +1,15 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 type BackLinkProps = {
   backHref: string;
 };
 
 export function BackLink({ backHref }: BackLinkProps) {
+  const t = useTranslations("library.bookInfo");
   const label = backHref.includes("/collections/")
-    ? "Back to Collection"
-    : "Back to Library";
+    ? t("backToCollection")
+    : t("backToLibrary");
 
   return (
     <Link

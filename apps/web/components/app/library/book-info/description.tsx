@@ -1,16 +1,25 @@
-import { buildDescriptionParagraphs } from "./formatters";
+import { useTranslations } from "next-intl";
+import {
+  buildDescriptionParagraphs,
+  useBookInfoFormatters,
+} from "./formatters";
 
 type BookDescriptionProps = {
   description: null | string;
 };
 
 export function BookDescription({ description }: BookDescriptionProps) {
-  const paragraphs = buildDescriptionParagraphs(description);
+  const t = useTranslations("library.bookInfo");
+  const fmt = useBookInfoFormatters();
+  const paragraphs = buildDescriptionParagraphs(
+    description,
+    fmt.descriptionFallback(),
+  );
 
   return (
     <article className="space-y-6">
       <h2 className="font-display text-4xl leading-none text-title md:text-5xl">
-        About this book
+        {t("aboutThisBook")}
       </h2>
       <div className="space-y-5">
         {paragraphs.map((paragraph) => (

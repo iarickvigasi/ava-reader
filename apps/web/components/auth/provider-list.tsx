@@ -1,4 +1,7 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { ProviderButton } from "@/components/auth/provider-button";
 
 type ProviderListProps = {
@@ -54,17 +57,18 @@ export function ProviderList({
   onEmail,
   onGoogle,
 }: ProviderListProps) {
+  const t = useTranslations("auth.providers");
   return (
     <div className="space-y-4">
       <ProviderButton
         icon={<EmailIcon />}
-        label="Continue with Email"
+        label={t("continueWithEmail")}
         variant="soft"
         onClick={onEmail}
       />
       <ProviderButton
         icon={<GoogleGlyph />}
-        label="Continue with Google"
+        label={t("continueWithGoogle")}
         onClick={onGoogle}
         disabled={googleDisabled}
       />

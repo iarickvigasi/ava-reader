@@ -167,6 +167,7 @@ export class HomeService {
           itemCount: collection.items.length,
           kind: collection.kind,
           name: collection.name,
+          smartKey: collection.smartKey,
           unreadCount: collection.items.filter(
             (item) => (item.libraryItem.progress?.completionPercent ?? 0) < 100,
           ).length,
@@ -302,8 +303,9 @@ function createMasteryPayload(
     const key = date.toISOString().slice(0, 10);
     const minutes = Math.floor((daySecondsMap.get(key) ?? 0) / 60);
 
+    // The client formats the weekday label from `key` using the user's
+    // locale — don't ship a server-localized string.
     return {
-      dayLabel: date.toLocaleDateString('en-US', { weekday: 'short' }),
       goalMet: minutes >= 60,
       key,
       minutes,

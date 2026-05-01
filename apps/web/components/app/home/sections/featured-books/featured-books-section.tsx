@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { BookCover } from "@/components/app/shared/book-cover";
 import type { HomePayload } from "@/lib/api-types";
 import { formatAuthors } from "@/lib/format-authors";
@@ -8,24 +9,23 @@ import { CatalogAddButton } from "./catalog-add-button";
 type FeaturedEntry = HomePayload["featuredCatalog"]["entries"][number];
 
 const COMPACT_VISIBLE_COUNT = 2;
-const FALLBACK_DESCRIPTION =
-  "A curated public-domain title ready to add to your library.";
 
 export function FeaturedBooksSection({
   entries,
 }: {
   entries: FeaturedEntry[];
 }) {
+  const t = useTranslations("home.featuredBooks");
   return (
     <section className="space-y-6">
       <SectionHeader
-        label="Explore"
+        label={t("explore")}
         action={
           <Link
             href="/app/explore"
             className="text-[0.8rem] font-bold uppercase tracking-[0.12em] text-ink underline decoration-line-strong underline-offset-6 sm:text-sm"
           >
-            Open all
+            {t("openAll")}
           </Link>
         }
       />
@@ -33,7 +33,7 @@ export function FeaturedBooksSection({
       {entries.length === 0 ? (
         <Panel className="p-6 sm:p-8">
           <p className="max-w-xl text-lg leading-8 text-copy">
-            Public domain books catalog is in progress.
+            {t("comingSoon")}
           </p>
         </Panel>
       ) : (
@@ -77,6 +77,7 @@ function FeaturedBookCompact({ entry }: { entry: FeaturedEntry }) {
 }
 
 function FeaturedBookFull({ entry }: { entry: FeaturedEntry }) {
+  const t = useTranslations("home.featuredBooks");
   return (
     <Panel className="grid gap-5 p-5 sm:grid-cols-[120px_1fr] sm:items-start sm:p-6">
       <BookCover
@@ -95,7 +96,7 @@ function FeaturedBookFull({ entry }: { entry: FeaturedEntry }) {
           </p>
         </div>
         <p className="text-base leading-7 text-copy">
-          {entry.description ?? FALLBACK_DESCRIPTION}
+          {entry.description ?? t("fallback")}
         </p>
         <div className="flex flex-wrap items-center gap-3">
           <span className="rounded-full border border-line/60 bg-white/55 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-olive">

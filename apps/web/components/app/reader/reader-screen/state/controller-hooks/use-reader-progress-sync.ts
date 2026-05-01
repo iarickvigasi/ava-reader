@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, type Dispatch, type SetStateAction } from "react";
 import type {
   ReaderLocator,
@@ -26,22 +27,6 @@ import {
   shouldFlushPendingProgress,
 } from "./use-reader-progress-sync.helpers";
 
-const PROGRESS_SAVE_OFFLINE_MESSAGE =
-  "You appear to be offline. Reading progress will sync when you reconnect.";
-const PROGRESS_SAVE_GENERIC_MESSAGE =
-  "Couldn't save your reading progress. We'll keep trying as you read.";
-
-function notifyProgressSaveFailure() {
-  const isOffline =
-    typeof navigator !== "undefined" && !navigator.onLine;
-  emitReaderToast({
-    message: isOffline
-      ? PROGRESS_SAVE_OFFLINE_MESSAGE
-      : PROGRESS_SAVE_GENERIC_MESSAGE,
-    tone: "warning",
-  });
-}
-
 type UseReaderProgressSyncInput = ReaderControllerAuth & {
   initialResumePhase: ReaderResumePhase;
   initialServerLocator: ReaderLocator | null;
@@ -64,6 +49,15 @@ export function useReaderProgressSync({
   setPayload,
   visibleLocator,
 }: UseReaderProgressSyncInput) {
+  const t = useTranslations("reader.progressSync");
+  const notifyProgressSaveFailure = useCallback(() => {
+    const isOffline =
+      typeof navigator !== "undefined" && !navigator.onLine;
+    emitReaderToast({
+      message: isOffline ? t("offline") : t("generic"),
+      tone: "warning",
+    });
+  }, [t]);
   const lastServerAckKeyRef = useRef<string | null>(
     createLocatorKey(initialServerLocator),
   );
@@ -156,6 +150,7 @@ export function useReaderProgressSync({
       isLoaded,
       isSignedIn,
       libraryItemId,
+      notifyProgressSaveFailure,
       remotePersistenceEnabled,
       setPayload,
     ],

@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import type { ReactElement, SVGProps } from "react";
 import {
   CheckIcon,
@@ -6,7 +7,7 @@ import {
   TrashIcon,
 } from "@/components/app/shared/app-icons";
 import type { LibraryBookInfo } from "@/lib/api-types";
-import { formatCollectionLabel } from "./formatters";
+import { useBookInfoFormatters } from "./formatters";
 
 type IconComponent = (props: SVGProps<SVGSVGElement>) => ReactElement;
 
@@ -15,28 +16,30 @@ type BookActionCardsProps = {
 };
 
 export function BookActionCards({ collections }: BookActionCardsProps) {
+  const t = useTranslations("library.bookInfo.actionCards");
+  const fmt = useBookInfoFormatters();
   return (
     <aside className="space-y-4">
       <ActionCard
-        description="PDF & EPUB"
+        description={t("downloadOffline.description")}
         icon={ReaderDownloadIcon}
-        title="Download Offline"
+        title={t("downloadOffline.title")}
       />
       <ActionCard
-        description="Set progress to 100%"
+        description={t("markAsFinished.description")}
         icon={CheckIcon}
-        title="Mark as Finished"
+        title={t("markAsFinished.title")}
       />
       <ActionCard
-        description={formatCollectionLabel(collections.length)}
+        description={fmt.formatCollectionLabel(collections.length)}
         icon={ReaderLibraryIcon}
-        title="Manage Collections"
+        title={t("manageCollections.title")}
       />
       <ActionCard
         danger
-        description="No action yet"
+        description={t("deleteBook.description")}
         icon={TrashIcon}
-        title="Delete Book"
+        title={t("deleteBook.title")}
       />
     </aside>
   );

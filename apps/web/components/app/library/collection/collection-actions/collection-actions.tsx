@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useState, useTransition } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { getPublicApiBaseUrl } from "@/lib/api";
 import type { LibraryCollectionDeletePayload, LibraryCollectionRenamePayload, } from "@/lib/api-types";
 import { CollectionActionButtons } from "./action-buttons";
@@ -27,6 +28,7 @@ export function LibraryCollectionActions({
   collectionName,
   initialModalMode = null,
 }: LibraryCollectionActionsProps) {
+  const tErrors = useTranslations("library.collectionActions.errors");
   const { getToken, isLoaded, isSignedIn } = useAuth();
   const router = useRouter();
   const [modalMode, setModalMode] = useState<ModalMode>(initialModalMode);
@@ -83,19 +85,19 @@ export function LibraryCollectionActions({
     const description = draftDescription.trim();
 
     if (!name) {
-      setError("Collection name cannot be empty.");
+      setError(tErrors("nameEmpty"));
       return;
     }
 
     if (!isLoaded || !isSignedIn) {
-      setError("Sign in to edit this collection.");
+      setError(tErrors("signInToEdit"));
       return;
     }
 
     const token = await getToken();
 
     if (!token) {
-      setError("No session token was available.");
+      setError(tErrors("noToken"));
       return;
     }
 
@@ -118,7 +120,7 @@ export function LibraryCollectionActions({
       const payload = (await response.json().catch(() => null)) as
         | { message?: string | string[] }
         | null;
-      setError(readApiErrorMessage(payload, "Collection update failed."));
+      setError(readApiErrorMessage(payload, tErrors("updateFailed")));
       return;
     }
 
@@ -136,18 +138,19 @@ export function LibraryCollectionActions({
     isLoaded,
     isSignedIn,
     router,
+    tErrors,
   ]);
 
   const deleteCollection = useCallback(async () => {
     if (!isLoaded || !isSignedIn) {
-      setError("Sign in to delete this collection.");
+      setError(tErrors("signInToDelete"));
       return;
     }
 
     const token = await getToken();
 
     if (!token) {
-      setError("No session token was available.");
+      setError(tErrors("noToken"));
       return;
     }
 
@@ -165,7 +168,7 @@ export function LibraryCollectionActions({
       const payload = (await response.json().catch(() => null)) as
         | { message?: string | string[] }
         | null;
-      setError(readApiErrorMessage(payload, "Collection delete failed."));
+      setError(readApiErrorMessage(payload, tErrors("deleteFailed")));
       return;
     }
 
@@ -176,7 +179,7 @@ export function LibraryCollectionActions({
     setModalMode(null);
     router.push("/app/library");
     router.refresh();
-  }, [collectionId, getToken, isLoaded, isSignedIn, router]);
+  }, [collectionId, getToken, isLoaded, isSignedIn, router, tErrors]);
 
   const handleRenameSubmit = useCallback(
     (event: React.SyntheticEvent<HTMLFormElement>) => {

@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
@@ -65,10 +66,11 @@ function AiCommentsBackgroundLayer() {
 }
 
 function AiCommentsHeader() {
+  const t = useTranslations("reader.aiComments");
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="min-w-0">
-        <PanelTitle>AI Comments</PanelTitle>
+        <PanelTitle>{t("title")}</PanelTitle>
       </div>
     </div>
   );

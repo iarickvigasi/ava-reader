@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import type { HomePayload } from "@/lib/api-types";
 
 type CurrentEngagement = NonNullable<HomePayload["currentEngagement"]>;
@@ -7,6 +8,7 @@ export function EngagementDesktopMeta({
 }: {
   engagement: CurrentEngagement;
 }) {
+  const t = useTranslations("home.engagement");
   return (
     <div className="hidden md:block">
       <div className="flex items-center gap-12 py-4">
@@ -15,7 +17,7 @@ export function EngagementDesktopMeta({
             {engagement.completionPercent}%
           </p>
           <p className="text-[0.85rem] uppercase tracking-[0.08em] text-olive">
-            Completed
+            {t("completed")}
           </p>
         </div>
 
@@ -26,7 +28,7 @@ export function EngagementDesktopMeta({
             {engagement.chapterLabel}
           </p>
           <p className="text-[0.75rem] uppercase tracking-widest text-olive">
-            Next Milestone
+            {t("nextMilestone")}
           </p>
         </div>
       </div>

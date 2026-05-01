@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
 import { ControlsSection } from "./controls-section";
@@ -50,10 +51,11 @@ function HighlightsBackgroundLayer() {
 }
 
 function HighlightsHeader() {
+  const t = useTranslations("reader.highlights");
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="min-w-0">
-        <PanelTitle>Highlights</PanelTitle>
+        <PanelTitle>{t("title")}</PanelTitle>
       </div>
     </div>
   );

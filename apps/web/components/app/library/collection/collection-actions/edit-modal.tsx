@@ -1,3 +1,5 @@
+import { useTranslations } from "next-intl";
+
 type EditCollectionModalProps = {
   collectionDescription: string;
   collectionName: string;
@@ -19,25 +21,26 @@ export function EditCollectionModal({
   onNameChange,
   onSubmit,
 }: EditCollectionModalProps) {
+  const t = useTranslations("library.collectionActions.editModal");
   return (
     <form
       className="relative w-full max-w-2xl rounded-[28px] bg-surface/95 p-5 shadow-(--shadow-card) backdrop-blur sm:p-6"
       onSubmit={onSubmit}
     >
       <p className="font-(--font-ui) text-[0.7rem] uppercase tracking-[0.15em] text-ink/50">
-        Collection
+        {t("eyebrow")}
       </p>
       <h2 className="mt-2 font-display text-3xl leading-none text-title sm:text-[2rem]">
-        Edit details
+        {t("title")}
       </h2>
 
       <div className="mt-5 space-y-4">
         <label className="block space-y-1.5">
           <span className="text-[0.68rem] font-semibold uppercase tracking-[0.13em] text-ink/55">
-            Title
+            {t("titleField")}
           </span>
           <input
-            aria-label="Collection title"
+            aria-label={t("titleAria")}
             className="h-11 w-full rounded-[11px] bg-paper-strong/90 px-3 text-[0.96rem] text-title outline-none placeholder:text-muted"
             disabled={isPending}
             onChange={(event) => onNameChange(event.target.value)}
@@ -47,14 +50,14 @@ export function EditCollectionModal({
 
         <label className="block space-y-1.5">
           <span className="text-[0.68rem] font-semibold uppercase tracking-[0.13em] text-ink/55">
-            Description
+            {t("descriptionField")}
           </span>
           <textarea
-            aria-label="Collection description"
+            aria-label={t("descriptionAria")}
             className="h-28 w-full resize-none rounded-[11px] bg-paper-strong/90 px-3 py-2.5 text-sm leading-6 text-copy outline-none placeholder:text-muted"
             disabled={isPending}
             onChange={(event) => onDescriptionChange(event.target.value)}
-            placeholder="Add a short description for this collection."
+            placeholder={t("descriptionPlaceholder")}
             value={collectionDescription}
           />
         </label>
@@ -69,14 +72,14 @@ export function EditCollectionModal({
           onClick={onClose}
           type="button"
         >
-          Cancel
+          {t("cancel")}
         </button>
         <button
           className="inline-flex min-h-10 items-center justify-center rounded-[11px] bg-brand-fill px-4 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-brand-foreground transition hover:bg-brand-fill-strong disabled:cursor-not-allowed disabled:opacity-60"
           disabled={isPending}
           type="submit"
         >
-          {isPending ? "Saving..." : "Save"}
+          {isPending ? t("saving") : t("save")}
         </button>
       </div>
     </form>

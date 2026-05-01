@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { CheckIcon } from "@/components/app/shared/app-icons";
 import { cn } from "@/lib/cn";
 import { getPublicApiBaseUrl } from "@/lib/api";
@@ -16,6 +17,7 @@ export function CatalogAddButton({
   className,
   entryId,
 }: CatalogAddButtonProps) {
+  const t = useTranslations("home.catalogAdd");
   const { getToken, isLoaded, isSignedIn } = useAuth();
   const router = useRouter();
   const [state, setState] = useState<"idle" | "added" | "existing" | "error">(
@@ -74,14 +76,14 @@ export function CatalogAddButton({
         <CheckIcon className="size-4" />
       ) : null}
       {isPending
-        ? "Adding..."
+        ? t("adding")
         : state === "added"
-          ? "Added"
+          ? t("added")
           : state === "existing"
-            ? "In library"
+            ? t("inLibrary")
             : state === "error"
-              ? "Retry add"
-              : "Add to library"}
+              ? t("retry")
+              : t("add")}
     </button>
   );
 }

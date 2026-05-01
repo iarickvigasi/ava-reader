@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { NowListeningHeaderIcon } from "@/components/app/shared/app-icons";
 import { cn } from "@/lib/cn";
@@ -88,11 +89,12 @@ export function LinkAction({
 }
 
 export function SparkIconLink({ href }: { href: string }) {
+  const t = useTranslations("home.shared");
   return (
     <Link
       href={href}
       className="text-[#264B5F] transition hover:opacity-80"
-      aria-label="Open insights"
+      aria-label={t("openInsights")}
     >
       <NowListeningHeaderIcon className="h-[11.667px] w-auto" />
     </Link>

@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import type { LibraryPayload } from "@/lib/api-types";
+import { useCollectionDisplay } from "../shared/collection-display";
 import { BookCardSkeleton, LibraryBookCard } from "../shared/book-card";
 
 type CollectionSectionProps = {
@@ -7,21 +9,27 @@ type CollectionSectionProps = {
 };
 
 export function CollectionSection({ collection }: CollectionSectionProps) {
+  const t = useTranslations("library.collection");
+  const collectionDisplay = useCollectionDisplay();
+  const description = collectionDisplay.description(collection);
   return (
     <section className="space-y-5 md:space-y-6">
       <div className="flex items-end justify-between gap-4">
         <div className="space-y-2">
           <div className="flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-end sm:gap-3">
             <h2 className="font-sans text-[1.9rem] font-medium leading-[1.05] tracking-[-0.03em] text-title md:text-[2rem]">
-              {collection.name}
+              {collectionDisplay.name(collection)}
             </h2>
             <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-olive md:pb-1">
-              {collection.itemCount} items • {collection.unreadCount} unread
+              {t("itemsAndUnread", {
+                items: collection.itemCount,
+                unread: collection.unreadCount,
+              })}
             </p>
           </div>
-          {collection.description ? (
+          {description ? (
             <p className="max-w-2xl text-base leading-6 text-copy">
-              {collection.description}
+              {description}
             </p>
           ) : null}
         </div>
@@ -30,14 +38,14 @@ export function CollectionSection({ collection }: CollectionSectionProps) {
             href={`/app/library/collections/${collection.id}`}
             className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-brand-fill"
           >
-            View all
+            {t("viewAll")}
           </Link>
         </div>
       </div>
 
       {collection.books.length === 0 ? (
         <div className="rounded-[22px] border border-line/30 bg-paper-strong/70 px-5 py-6 text-base leading-7 text-copy">
-          No books are in this collection yet.
+          {t("noBooksYet")}
         </div>
       ) : (
         <>

@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { CopyIcon, SpeakerIcon } from "@/components/app/shared/app-icons";
 import { SectionLabel } from "../section-label";
 
@@ -6,13 +7,14 @@ type SelectionSectionProps = {
 };
 
 export function SelectionSection({ selectedText }: SelectionSectionProps) {
+  const t = useTranslations("reader.aiComments");
   return (
     <section className="flex flex-col gap-3">
-      <SectionLabel>Selection</SectionLabel>
+      <SectionLabel>{t("selection")}</SectionLabel>
       <div className="flex items-center gap-3 rounded-[10px] bg-soft-tone-fill px-4 py-3">
         <button
           type="button"
-          aria-label="Read selection aloud"
+          aria-label={t("selectionReadAloud")}
           className="inline-flex size-7 shrink-0 items-center justify-center rounded-full text-ink/70 transition hover:bg-paper-strong/70 hover:text-ink"
         >
           <SpeakerIcon className="size-4" />
@@ -22,7 +24,7 @@ export function SelectionSection({ selectedText }: SelectionSectionProps) {
         </p>
         <button
           type="button"
-          aria-label="Copy selection"
+          aria-label={t("selectionCopy")}
           className="inline-flex size-7 shrink-0 items-center justify-center rounded-full text-ink/55 transition hover:bg-paper-strong/70 hover:text-ink"
         >
           <CopyIcon className="size-4" />

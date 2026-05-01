@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import type { ReaderChapterPayload } from "@/lib/api-types";
 import type { ReadyReaderPayload } from "../shared/types";
 import { formatReaderHeaderParts } from "../shared/utils";
@@ -44,10 +45,11 @@ export function ReadyReaderActivityStatus({
   isLoadingChapter: boolean;
   isRefreshingWindow: boolean;
 }) {
+  const t = useTranslations("reader.activity");
   if (isBootstrapping) {
     return (
       <p className="font-(--font-ui) text-xs uppercase tracking-[0.16em] text-ink/45">
-        Restoring your last page...
+        {t("restoringPage")}
       </p>
     );
   }
@@ -55,7 +57,7 @@ export function ReadyReaderActivityStatus({
   if (isLoadingChapter) {
     return (
       <p className="font-(--font-ui) text-xs uppercase tracking-[0.16em] text-ink/45">
-        Loading chapter...
+        {t("loadingChapter")}
       </p>
     );
   }
@@ -63,7 +65,7 @@ export function ReadyReaderActivityStatus({
   if (isRefreshingWindow) {
     return (
       <p className="font-(--font-ui) text-xs uppercase tracking-[0.16em] text-ink/35">
-        Preloading nearby chapter...
+        {t("preloadingChapter")}
       </p>
     );
   }
@@ -80,12 +82,16 @@ export function ReadyReaderProgress({
   currentPageIndex: number;
   pageCount: number;
 }) {
+  const t = useTranslations("reader.progress");
   return (
     <div className="flex flex-wrap items-center justify-end gap-3 pt-4 pb-4">
       <div className="flex flex-wrap items-center gap-3 font-(--font-ui) text-[0.7rem] uppercase tracking-[0.16em] text-ink/45">
-        <span>{completionPercent}% complete</span>
+        <span>{t("percentComplete", { percent: completionPercent })}</span>
         <span>
-          Page {Math.min(currentPageIndex + 1, pageCount)} of {pageCount} in chapter
+          {t("pageOfInChapter", {
+            current: Math.min(currentPageIndex + 1, pageCount),
+            total: pageCount,
+          })}
         </span>
       </div>
     </div>

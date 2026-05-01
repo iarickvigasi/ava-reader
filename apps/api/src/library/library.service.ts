@@ -284,6 +284,7 @@ export class LibraryService {
                 id: true,
                 kind: true,
                 name: true,
+                smartKey: true,
                 sortOrder: true,
               },
             },
@@ -317,6 +318,7 @@ export class LibraryService {
         id: collection.id,
         kind: collection.kind,
         name: collection.name,
+        smartKey: collection.smartKey,
       }));
 
     return {
@@ -649,6 +651,7 @@ function serializeCollection(
     itemCount: activeItems.length,
     kind: collection.kind,
     name: collection.name,
+    smartKey: collection.smartKey,
     unreadCount: activeItems.filter(
       (item) => (item.progress?.completionPercent ?? 0) < 100,
     ).length,

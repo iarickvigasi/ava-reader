@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { SectionHeader } from "../../shared/home-shared";
 import { MasteryDayColumn } from "./day-column";
 import type { Mastery } from "./mastery-utils";
@@ -13,13 +14,14 @@ export function MasteryMobileSection({
   remainingCopy: string;
   computeBarHeight: (minutes: number) => number;
 }) {
+  const t = useTranslations("home.mastery");
   return (
     <section className="space-y-6 sm:hidden">
       <SectionHeader
-        label="Daily Mastery"
+        label={t("title")}
         action={
           <span className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-ink">
-            {mastery.todayMinutes} / {mastery.dailyGoalMinutes} MIN
+            {mastery.todayMinutes} / {mastery.dailyGoalMinutes} {t("minutesAbbrev")}
           </span>
         }
       />

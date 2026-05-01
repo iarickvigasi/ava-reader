@@ -1,0 +1,468 @@
+{
+  "common": {
+    "back": "Voltar"
+  },
+  "landing": {
+    "tagline": {
+      "line1": "Investigue o sentido",
+      "line2": "mais profundo dos livros",
+      "line3": "sem perder",
+      "line4": "o foco"
+    },
+    "signIn": "Entrar",
+    "createAccount": "Criar conta",
+    "year": "2026",
+    "beginReading": "Começar a ler"
+  },
+  "theme": {
+    "switchToLight": "Mudar para o modo claro",
+    "switchToDark": "Mudar para o modo escuro"
+  },
+  "legal": {
+    "agreePrefix": "Ao continuar você concorda com os",
+    "termsAndPrivacy": "Termos de Serviço e a Política de Privacidade da AVA"
+  },
+  "explore": {
+    "eyebrow": "Explorar",
+    "title": "A navegação completa do catálogo chega em breve",
+    "body": "A página inicial já mostra livros em destaque e fluxos rápidos para adicioná-los. Esta seção vai expandir isso com filtros, descoberta e exploração mais rica de metadados.",
+    "backToHome": "Voltar à página inicial",
+    "openLibrary": "Abrir biblioteca"
+  },
+  "preferences": {
+    "title": "Preferências",
+    "closePanel": "Fechar painel de preferências",
+    "interfaceLang": {
+      "label": "Idioma do app",
+      "ariaLabel": "Idioma da interface do app"
+    },
+    "translate": {
+      "label": "Traduzir para",
+      "ariaLabel": "Idioma de tradução"
+    },
+    "readingGoal": {
+      "label": "Meta de leitura",
+      "unit": "(min/dia)"
+    },
+    "reading": {
+      "section": "Leitura",
+      "typePercent": "Fonte {percent}%",
+      "switchToLight": "Mudar para o modo claro",
+      "switchToDark": "Mudar para o modo escuro"
+    },
+    "listening": {
+      "section": "Audição",
+      "chooseVoice": "Escolha uma voz",
+      "chooseAmbient": "Escolha o ambiente",
+      "narratorSpeed": "Velocidade do narrador"
+    }
+  },
+  "home": {
+    "empty": {
+      "greeting": "Olá, amigo(a)",
+      "welcome": "Bem-vindo(a) ao AVA Reader",
+      "intro": "Vamos começar a sua exploração. Escolha um livro para mergulhar e ajustaremos o restante do leitor a ele.",
+      "import": {
+        "title": "Importe seu primeiro livro",
+        "body": "Leve seu EPUB ou PDF para uma biblioteca privada que segue você em todos os dispositivos.",
+        "action": "Enviar livro"
+      },
+      "explore": {
+        "title": "Explorar livros de domínio público",
+        "body": "Comece com um título de domínio público selecionado e adicione-o à sua estante com um toque.",
+        "comingSoon": "O catálogo de livros de domínio público está em andamento.",
+        "action": "Navegar pelo catálogo"
+      }
+    },
+    "stats": {
+      "title": "Métricas da biblioteca",
+      "booksRead": "Livros lidos",
+      "highlights": "Destaques",
+      "hoursReading": "Horas de leitura",
+      "aiComments": "Comentários da IA"
+    },
+    "quote": {
+      "text": "Ler é uma conversa. Todos os livros falam. Mas um bom livro também escuta.",
+      "attribution": "Mark Haddon"
+    },
+    "collections": {
+      "title": "Coleções",
+      "openAll": "Abrir tudo",
+      "empty": "As coleções aparecerão depois que você importar livros ou adicioná-los pelo catálogo público.",
+      "itemsAndUnread": "{items} itens • {unread} não lidos"
+    },
+    "annotations": {
+      "title": "Anotações recentes",
+      "empty": "As anotações começarão a aparecer aqui quando você criar destaques.",
+      "from": "De: {bookTitle}",
+      "highlighter": "Marcador: {colorLabel}",
+      "viewFullNotebook": "Ver caderno completo"
+    },
+    "footer": {
+      "tagline": "© AVA Reader • Projetado para uma leitura imersiva • 2026",
+      "privacy": "Privacidade",
+      "terms": "Termos",
+      "contact": "Contato"
+    },
+    "shared": {
+      "openInsights": "Abrir estatísticas"
+    },
+    "engagement": {
+      "currentlyEngaged": "Em andamento",
+      "percentCompleted": "% concluído",
+      "completed": "Concluído",
+      "nextMilestone": "Próximo marco",
+      "nextMilestoneMobile": "Próximo marco",
+      "resumeReading": "Continuar a leitura",
+      "importAnother": "Importar outro livro"
+    },
+    "featuredBooks": {
+      "fallback": "Um título de domínio público selecionado, pronto para entrar na sua biblioteca.",
+      "explore": "Explorar",
+      "openAll": "Abrir tudo",
+      "comingSoon": "O catálogo de livros de domínio público está em andamento."
+    },
+    "catalogAdd": {
+      "adding": "Adicionando...",
+      "added": "Adicionado",
+      "inLibrary": "Na biblioteca",
+      "retry": "Tentar novamente",
+      "add": "Adicionar à biblioteca"
+    },
+    "feedback": {
+      "title": "Evolução contínua",
+      "subtitle": "Conte o que você gostaria que melhorássemos ou consertássemos",
+      "attachScreenshot": "Anexar captura de tela",
+      "errors": {
+        "signIn": "Entre para enviar feedback.",
+        "noToken": "Nenhum token de sessão estava disponível.",
+        "submitFailed": "Não foi possível enviar o feedback."
+      },
+      "success": "Feedback recebido. Obrigado.",
+      "placeholder": "Digite seu feedback aqui...",
+      "submit": "Enviar",
+      "submitting": "Enviando..."
+    },
+    "listening": {
+      "title": "Ouvindo agora",
+      "skipBackward": "Voltar",
+      "skipForward": "Avançar",
+      "play": "Reproduzir prévia de áudio",
+      "pause": "Pausar prévia de áudio"
+    },
+    "mastery": {
+      "title": "Maestria diária",
+      "minToday": "Min hoje",
+      "minutesAbbrev": "MIN",
+      "remainingToGoal": "Faltam {remaining} minutos para alcançar a sua meta diária",
+      "goalMet": "Meta diária alcançada. Continue assim."
+    }
+  },
+  "reader": {
+    "contents": {
+      "title": "Sumário",
+      "completed": "{percent}% concluído",
+      "chapterCount": "{count} capítulos"
+    },
+    "highlights": {
+      "title": "Destaques",
+      "searchPlaceholder": "Buscar",
+      "searchAria": "Buscar nos destaques",
+      "rename": "Renomear",
+      "delete": "Excluir"
+    },
+    "aiComments": {
+      "title": "Comentários da IA",
+      "selection": "Seleção",
+      "highlight": "Destaque",
+      "selectionReadAloud": "Ler a seleção em voz alta",
+      "selectionCopy": "Copiar a seleção"
+    },
+    "aiChats": {
+      "title": "Chats com IA",
+      "closePanel": "Fechar painel de chats com IA",
+      "searchAria": "Buscar nos chats",
+      "searchPlaceholder": "Buscar",
+      "createNew": "Criar novo chat",
+      "rename": "Renomear",
+      "delete": "Excluir",
+      "groups": {
+        "today": "Hoje",
+        "yesterday": "Ontem"
+      }
+    },
+    "aiTools": {
+      "translate": "Traduzir",
+      "etymology": "Etimologia",
+      "explain": "Explicar",
+      "askAi": "Perguntar à IA",
+      "generating": "Gerando…",
+      "selectTextHint": "Selecione um trecho no leitor para vê-lo aqui.",
+      "tryAgain": "Tentar novamente",
+      "errors": {
+        "signIn": "Você precisa estar conectado para usar as ferramentas de IA.",
+        "noToken": "Nenhum token de sessão estava disponível.",
+        "requestFailed": "A requisição de IA falhou (HTTP {status}). Tente novamente.",
+        "emptyStream": "A resposta da IA chegou vazia.",
+        "generic": "Algo deu errado."
+      }
+    },
+    "progressSync": {
+      "offline": "Parece que você está offline. Seu progresso de leitura será sincronizado quando você reconectar.",
+      "generic": "Não foi possível salvar o seu progresso de leitura. Continuaremos tentando enquanto você lê."
+    },
+    "status": {
+      "label": "Leitor",
+      "backToHome": "Voltar à página inicial"
+    },
+    "activity": {
+      "restoringPage": "Restaurando sua última página...",
+      "loadingChapter": "Carregando capítulo...",
+      "preloadingChapter": "Pré-carregando capítulo próximo..."
+    },
+    "progress": {
+      "percentComplete": "{percent}% concluído",
+      "pageOfInChapter": "Página {current} de {total} no capítulo"
+    },
+    "toc": {
+      "loading": "Carregando",
+      "current": "Atual",
+      "section": "Seção",
+      "chapter": "Capítulo"
+    }
+  },
+  "shared": {
+    "import": {
+      "defaultLabel": "Importar livro",
+      "uploading": "Enviando...",
+      "signIn": "Entre para enviar um livro.",
+      "noToken": "Nenhum token de sessão estava disponível.",
+      "uploadFailed": "Não foi possível concluir o envio.",
+      "imported": "{filename} importado."
+    }
+  },
+  "nav": {
+    "main": {
+      "home": "Início",
+      "library": "Biblioteca",
+      "explore": "Explorar",
+      "insights": "Estatísticas"
+    },
+    "admin": {
+      "short": "Admin",
+      "long": "Catálogo admin"
+    },
+    "userFallbackName": "Leitor",
+    "reader": {
+      "contents": "Sumário",
+      "preferences": "Preferências",
+      "aiChats": "Chats com IA",
+      "highlights": "Destaques",
+      "aiComments": "Comentários da IA",
+      "bookmarks": "Marcadores",
+      "search": "Buscar",
+      "listenToBook": "Ouvir o livro",
+      "bilingualMode": "Modo bilíngue",
+      "savePage": "Salvar página",
+      "shareBook": "Compartilhar livro",
+      "downloadBook": "Baixar livro"
+    }
+  },
+  "smartCollections": {
+    "imported-library": {
+      "name": "Livros importados",
+      "description": "Seus envios pessoais de EPUB e PDF."
+    },
+    "public-domain-library": {
+      "name": "Domínio público",
+      "description": "Livros adicionados pelo catálogo público da AVA."
+    }
+  },
+  "library": {
+    "header": {
+      "searchAria": "Buscar na biblioteca",
+      "searchPlaceholder": "Buscar",
+      "collectionsMetric": "Coleções",
+      "booksMetric": "Livros",
+      "newCollection": "Nova coleção"
+    },
+    "empty": {
+      "eyebrow": "Biblioteca",
+      "title": "Suas coleções aparecerão aqui à medida que você constrói o seu mundo de leitura.",
+      "body": "Importe livros ou adicione-os pelo catálogo público e a AVA começará a organizá-los em coleções pessoais."
+    },
+    "collection": {
+      "itemsAndUnread": "{items} itens • {unread} não lidos",
+      "viewAll": "Ver tudo",
+      "noBooksYet": "Ainda não há livros nesta coleção.",
+      "backToLibrary": "Voltar à biblioteca"
+    },
+    "bookInfo": {
+      "backToLibrary": "Voltar à biblioteca",
+      "backToCollection": "Voltar à coleção",
+      "read": "Ler",
+      "listen": "Ouvir",
+      "readingProgressLabel": "Progresso de leitura",
+      "completed": "{percent}% concluído",
+      "aboutThisBook": "Sobre este livro",
+      "metadata": {
+        "language": "Idioma",
+        "format": "Formato",
+        "inLibrarySince": "Na biblioteca desde",
+        "published": "Publicado",
+        "readingTime": "Tempo de leitura",
+        "pageCount": "Número de páginas",
+        "unknown": "Desconhecido"
+      },
+      "formatters": {
+        "unknown": "Desconhecido",
+        "readerFormat": "Leitor",
+        "hours": "{value} h",
+        "estimated": "{hours} estimadas",
+        "approxPages": "{count, plural, one {~# página} other {~# páginas}}",
+        "notAssigned": "Não atribuído",
+        "collectionsCount": "{count, plural, one {# coleção} other {# coleções}}",
+        "lastReadWithChapter": "Última leitura: {chapter} - {date}",
+        "lastReadChapterOnly": "Última leitura: {chapter}",
+        "lastReadDateOnly": "Última leitura: {date}",
+        "descriptionFallback": "Este título está na sua biblioteca. Ainda não há notas editoriais detalhadas para esta edição."
+      },
+      "actionCards": {
+        "downloadOffline": {
+          "title": "Baixar offline",
+          "description": "PDF e EPUB"
+        },
+        "markAsFinished": {
+          "title": "Marcar como concluído",
+          "description": "Define o progresso para 100%"
+        },
+        "manageCollections": {
+          "title": "Gerenciar coleções"
+        },
+        "deleteBook": {
+          "title": "Excluir livro",
+          "description": "Ainda não disponível"
+        }
+      }
+    },
+    "collectionActions": {
+      "edit": "Editar",
+      "delete": "Excluir",
+      "editModal": {
+        "eyebrow": "Coleção",
+        "title": "Editar detalhes",
+        "titleField": "Título",
+        "titleAria": "Título da coleção",
+        "descriptionField": "Descrição",
+        "descriptionAria": "Descrição da coleção",
+        "descriptionPlaceholder": "Adicione uma breve descrição para esta coleção.",
+        "cancel": "Cancelar",
+        "save": "Salvar",
+        "saving": "Salvando..."
+      },
+      "deleteModal": {
+        "eyebrow": "Coleção",
+        "title": "Excluir a coleção?",
+        "body": "Isto removerá permanentemente <emphasis>{name}</emphasis> e suas associações de coleção.",
+        "cancel": "Cancelar",
+        "confirm": "Confirmar exclusão",
+        "deleting": "Excluindo..."
+      },
+      "errors": {
+        "nameEmpty": "O nome da coleção não pode estar vazio.",
+        "signInToEdit": "Entre para editar esta coleção.",
+        "signInToDelete": "Entre para excluir esta coleção.",
+        "noToken": "Nenhum token de sessão estava disponível.",
+        "updateFailed": "Falha ao atualizar a coleção.",
+        "deleteFailed": "Falha ao excluir a coleção."
+      }
+    }
+  },
+  "insights": {
+    "eyebrow": "Estatísticas",
+    "title": "As estatísticas serão aprofundadas após o lançamento do leitor",
+    "body": "A página inicial já mostra o progresso de leitura e a atividade recente. A tela de Estatísticas reunirá esses sinais em visualizações de tendências para reflexão e planejamento.",
+    "backToHome": "Voltar à página inicial",
+    "goToLibrary": "Ir para a biblioteca",
+    "metrics": {
+      "readingTime": {
+        "label": "Tempo de leitura",
+        "helper": "Esta semana"
+      },
+      "highlights": {
+        "label": "Destaques",
+        "helper": "Em livros ativos"
+      },
+      "booksOpened": {
+        "label": "Livros abertos",
+        "helper": "Sessões registradas"
+      }
+    }
+  },
+  "auth": {
+    "signIn": {
+      "title": "Entrar",
+      "switchPrompt": "Precisa de uma conta?",
+      "switchAction": "Criar uma",
+      "notices": {
+        "oauthContinue": "Conclua o fluxo de entrada para continuar.",
+        "oauthRequirements": "Detalhes adicionais da conta são necessários. Continue com o e-mail para terminar a entrada.",
+        "signedOut": "Você saiu da sua conta."
+      },
+      "errors": {
+        "googleStartFailed": "Não foi possível iniciar o login com o Google.",
+        "needsSecondFactor": "Esta conta requer um segundo fator de autenticação que ainda não está configurado.",
+        "needsClientTrust": "O Clerk solicitou a verificação de confiança do cliente. Continue no mesmo dispositivo confiável ou atualize as suas configurações do Clerk.",
+        "incomplete": "A tentativa de entrada ainda não foi concluída."
+      }
+    },
+    "signUp": {
+      "title": "Criar conta",
+      "subtitle": "Comece com um espaço de leitura focado e reúna as suas ideias em um só lugar.",
+      "switchPrompt": "Já tem uma conta?",
+      "switchAction": "Entrar",
+      "notices": {
+        "oauthContinue": "Continue criando a sua conta para começar a ler.",
+        "oauthRequirements": "Precisamos de um pouco mais de informações antes de concluir o cadastro."
+      },
+      "errors": {
+        "googleStartFailed": "Não foi possível iniciar o cadastro com o Google.",
+        "incomplete": "O cadastro precisa de mais informações para ser concluído."
+      }
+    },
+    "shared": {
+      "errors": {
+        "sessionTaskRequired": "Uma ação adicional na conta é necessária antes de continuar a sessão."
+      }
+    },
+    "providers": {
+      "continueWithEmail": "Continuar com e-mail",
+      "continueWithGoogle": "Continuar com Google"
+    },
+    "emailCode": {
+      "identifierEyebrow": "Acesso por e-mail",
+      "codeEyebrow": "Verifique o seu código",
+      "signInIdentifierBody": "Digite o e-mail vinculado à sua conta e enviaremos um código de uso único.",
+      "signUpIdentifierBody": "Digite o seu e-mail para receber um código de uso único e criar a sua conta.",
+      "codeSentTo": "Enviamos um código de uso único para {email}.",
+      "emailLabel": "E-mail",
+      "emailPlaceholder": "nome@exemplo.com",
+      "codeLabel": "Código",
+      "codePlaceholder": "123456",
+      "sending": "Enviando...",
+      "sendCode": "Enviar código",
+      "changeEmail": "Trocar e-mail",
+      "resendCode": "Reenviar código",
+      "signingIn": "Entrando...",
+      "creating": "Criando...",
+      "verifyCode": "Verificar código",
+      "createAccount": "Criar conta"
+    },
+    "misconfigured": {
+      "title": "Autenticação não configurada",
+      "subtitle": "Adicione as suas variáveis de ambiente do Clerk para ativar os fluxos personalizados de entrada e cadastro.",
+      "requiredVarsLabel": "Variáveis web obrigatórias",
+      "returnToSplash": "Voltar à tela inicial"
+    }
+  }
+}

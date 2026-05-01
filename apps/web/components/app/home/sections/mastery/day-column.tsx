@@ -1,3 +1,4 @@
+import { useLocale } from "next-intl";
 import { cn } from "@/lib/cn";
 import { GOAL_BAR_HEIGHT_PERCENT, type MasteryDay } from "./mastery-utils";
 
@@ -12,7 +13,13 @@ export function MasteryDayColumn({
   isToday: boolean;
   variant: "mobile" | "desktop";
 }) {
+  const locale = useLocale();
   const isMobile = variant === "mobile";
+  // `day.key` is an ISO date (YYYY-MM-DD). Append T00:00:00 so JS parses it
+  // as local midnight and the weekday matches the user's calendar day.
+  const dayLabel = new Intl.DateTimeFormat(locale, {
+    weekday: "short",
+  }).format(new Date(`${day.key}T00:00:00`));
 
   return (
     <div
@@ -44,7 +51,7 @@ export function MasteryDayColumn({
               : "text-xs tracking-[0.14em]",
           )}
         >
-          {day.dayLabel}
+          {dayLabel}
         </p>
         <p className={cn("text-copy", isMobile ? "text-[0.7rem]" : "text-sm")}>
           {day.minutes}m

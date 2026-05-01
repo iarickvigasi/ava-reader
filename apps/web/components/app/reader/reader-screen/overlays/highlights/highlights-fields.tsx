@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { EditIcon, TrashIcon } from "@/components/app/shared/app-icons";
 import { cn } from "@/lib/cn";
@@ -15,14 +16,15 @@ export function SearchField({
   onChange: (value: string) => void;
   value: string;
 }) {
+  const t = useTranslations("reader.highlights");
   return (
     <label className="block">
-      <span className="sr-only">Search highlights</span>
+      <span className="sr-only">{t("searchAria")}</span>
       <input
         type="search"
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        placeholder="Search"
+        placeholder={t("searchPlaceholder")}
         className="block h-9 w-full rounded-lg bg-soft-tone-fill px-3 font-(--font-ui) text-[0.78rem] uppercase tracking-[0.16em] text-muted placeholder:text-muted/70 focus:outline-none focus:ring-2 focus:ring-ink/15"
       />
     </label>
@@ -119,6 +121,7 @@ export function RowActionsMenu({
   onDelete?: () => void;
   onRename?: () => void;
 }) {
+  const t = useTranslations("reader.highlights");
   return (
     <div
       role="menu"
@@ -126,13 +129,13 @@ export function RowActionsMenu({
     >
       <RowActionsMenuItem
         icon={<EditIcon className="size-4" aria-hidden="true" />}
-        label="Rename"
+        label={t("rename")}
         tone="default"
         onClick={onRename}
       />
       <RowActionsMenuItem
         icon={<TrashIcon className="size-4" aria-hidden="true" />}
-        label="Delete"
+        label={t("delete")}
         tone="danger"
         onClick={onDelete}
       />

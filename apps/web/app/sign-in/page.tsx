@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { MissingAuthConfiguration } from "@/components/auth/missing-auth-configuration";
 import { SignInFlow } from "@/components/auth/sign-in-flow";
 
@@ -5,16 +6,16 @@ type SignInPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
-function getNotice(value?: string | string[]) {
+function getNoticeKey(value?: string | string[]) {
   const notice = Array.isArray(value) ? value[0] : value;
 
   switch (notice) {
     case "oauth_continue":
-      return "Complete the sign-in flow to continue.";
+      return "oauthContinue" as const;
     case "oauth_requirements":
-      return "Additional account details are required. Continue with email to finish signing in.";
+      return "oauthRequirements" as const;
     case "signed_out":
-      return "You have been signed out.";
+      return "signedOut" as const;
     default:
       return undefined;
   }
@@ -26,6 +27,9 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   }
 
   const params = (await searchParams) ?? {};
+  const noticeKey = getNoticeKey(params.notice);
+  const t = await getTranslations("auth.signIn.notices");
+  const initialNotice = noticeKey ? t(noticeKey) : undefined;
 
-  return <SignInFlow initialNotice={getNotice(params.notice)} />;
+  return <SignInFlow initialNotice={initialNotice} />;
 }
