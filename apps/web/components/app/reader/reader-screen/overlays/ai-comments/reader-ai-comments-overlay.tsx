@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import type { AiCommentLocator } from "@/lib/api-types";
 import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
 import type { HighlightColor } from "../highlights/highlights-data";
@@ -10,12 +11,18 @@ import { SelectionSection } from "./selection-section";
 type ReaderAiCommentsOverlayProps = {
   libraryItemId: string;
   onClose: () => void;
+  // Called once after each successful AI tool generation so the parent can
+  // refetch the comments list and re-render highlights.
+  onCommentCreated?: () => void;
+  selectedLocator?: AiCommentLocator | null;
   selectedText?: string;
 };
 
 export function ReaderAiCommentsOverlay({
   libraryItemId,
   onClose,
+  onCommentCreated,
+  selectedLocator,
   selectedText,
 }: ReaderAiCommentsOverlayProps) {
   useCloseOnEscape(onClose);
@@ -34,7 +41,9 @@ export function ReaderAiCommentsOverlay({
               <AiCommentsHeader />
               <AiCommentsSections
                 libraryItemId={libraryItemId}
+                onCommentCreated={onCommentCreated}
                 selectedColor={selectedColor}
+                selectedLocator={selectedLocator ?? null}
                 selectedText={selectedText ?? ""}
                 onSelectColor={setSelectedColor}
               />
@@ -78,12 +87,16 @@ function AiCommentsHeader() {
 
 function AiCommentsSections({
   libraryItemId,
+  onCommentCreated,
   selectedColor,
+  selectedLocator,
   selectedText,
   onSelectColor,
 }: {
   libraryItemId: string;
+  onCommentCreated?: () => void;
   selectedColor: HighlightColor | null;
+  selectedLocator: AiCommentLocator | null;
   selectedText: string;
   onSelectColor: (color: HighlightColor) => void;
 }) {
@@ -96,6 +109,8 @@ function AiCommentsSections({
       />
       <AiToolsSection
         libraryItemId={libraryItemId}
+        onCommentCreated={onCommentCreated}
+        selectedLocator={selectedLocator}
         selectedText={selectedText}
       />
     </div>

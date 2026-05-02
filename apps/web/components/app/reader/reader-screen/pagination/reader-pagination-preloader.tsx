@@ -98,6 +98,7 @@ function PreloadedChapter({
       <ReaderArticle
         articleRef={handleArticleRef}
         blocks={chapter.blocks}
+        chapterId={chapter.chapterId}
         pageHeight={pageBoxHeight}
         style={articleStyle}
       />

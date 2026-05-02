@@ -259,6 +259,20 @@ export type ReaderLocator = {
   textOffset: number;
 };
 
+// Position fingerprint for an AI-comment selection. Stored serialized as JSON
+// in `AiComment.locator`. The (blockId, offset) pair is the primary anchor;
+// contextBefore/contextAfter are the fallback when block IDs drift after a
+// re-import (text-quote-selector style).
+export type AiCommentLocator = {
+  chapterId: string;
+  startBlockId: string;
+  startOffset: number;
+  endBlockId: string;
+  endOffset: number;
+  contextBefore: string;
+  contextAfter: string;
+};
+
 export type ReaderProgressPayload = {
   chapterLabel: string | null;
   completionPercent: number;

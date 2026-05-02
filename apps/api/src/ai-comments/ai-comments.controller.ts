@@ -2,6 +2,8 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
+  Logger,
   Param,
   Post,
   Req,
@@ -22,6 +24,19 @@ import { etymologySchema, explainSchema, translateSchema } from './dto';
 @Controller('library/:libraryItemId/ai-comments')
 export class AiCommentsController {
   constructor(private readonly service: AiCommentsService) {}
+
+  @Get()
+  @UseGuards(ClerkAuthGuard)
+  async list(
+    @Req() request: AuthenticatedRequest,
+    @Param('libraryItemId') libraryItemId: string,
+  ) {
+    const items = await this.service.list(
+      request.auth.clerkUserId,
+      libraryItemId,
+    );
+    return { items };
+  }
 
   @Post('translate')
   @UseGuards(ClerkAuthGuard)
@@ -101,6 +116,8 @@ function parseBody<T>(
   }
 }
 
+const streamingLogger = new Logger('sendStreamingResponse');
+
 async function sendStreamingResponse(
   response: Response,
   result: AiToolGenerationResult,
@@ -156,7 +173,10 @@ async function sendStreamingResponse(
     // was severed mid-flight. Surface a terminal note so the client doesn't
     // hang on an indefinite "Generating…" state. We don't reset headers —
     // they're already on the wire.
-    console.error('[ai-comments] streamObject failed', { error });
+    streamingLogger.error(
+      'streamObject failed',
+      error instanceof Error ? error.stack : String(error),
+    );
     if (lastEmitted.length === 0) {
       response.write(
         'Sorry, the AI response could not be parsed. Please try again.',

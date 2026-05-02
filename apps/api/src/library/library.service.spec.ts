@@ -394,6 +394,7 @@ describe('LibraryService', () => {
                 id: true,
                 kind: true,
                 name: true,
+                smartKey: true,
                 sortOrder: true,
               },
             },

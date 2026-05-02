@@ -6,6 +6,7 @@ import { ReaderInlineContent } from "./reader-inline-content";
 
 type SharedBlockProps = {
   "data-block-id": string;
+  "data-chapter-id": string;
   "data-reader-block-kind": string;
   "data-reader-block": "true";
   id: string | undefined;
@@ -47,14 +48,20 @@ const HEADING_LEVEL_MAX = 6;
 
 export function ReaderBlockView({
   block,
+  chapterId,
   pageHeight,
   forceColumnBreakBefore,
 }: {
   block: ReaderBlock;
+  chapterId: string;
   pageHeight: number;
   forceColumnBreakBefore?: boolean;
 }) {
-  const sharedProps = createSharedBlockProps(block, forceColumnBreakBefore);
+  const sharedProps = createSharedBlockProps(
+    block,
+    chapterId,
+    forceColumnBreakBefore,
+  );
   const alignmentClass = resolveAlignmentClass(block);
 
   switch (block.kind) {
@@ -103,6 +110,7 @@ export function ReaderBlockView({
 
 function createSharedBlockProps(
   block: ReaderBlock,
+  chapterId: string,
   forceColumnBreakBefore: boolean | undefined,
 ): SharedBlockProps {
   const blockStyle = resolveBlockStyle(block);
@@ -115,6 +123,7 @@ function createSharedBlockProps(
 
   return {
     "data-block-id": block.id,
+    "data-chapter-id": chapterId,
     "data-reader-block-kind": block.kind,
     "data-reader-block": "true",
     id: block.anchorId ?? undefined,
