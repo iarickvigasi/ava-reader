@@ -165,7 +165,9 @@ function wrapRangeWithMarks(range: Range, commentId: string): void {
     mark.style.color = "inherit";
     mark.style.textDecorationLine = "underline";
     mark.style.textDecorationStyle = "solid";
-    mark.style.textDecorationColor = "currentColor";
+    // Pull the underline color from the theme so it follows light/dark mode.
+    // `--title` is the warm brown / cream token used elsewhere for headings.
+    mark.style.textDecorationColor = "var(--title)";
     mark.style.textDecorationThickness = "2px";
     mark.style.textUnderlineOffset = "3px";
     mark.style.cursor = "pointer";

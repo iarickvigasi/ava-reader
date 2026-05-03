@@ -176,7 +176,8 @@
       "selection": "Selection",
       "highlight": "Highlight",
       "selectionReadAloud": "Read selection aloud",
-      "selectionCopy": "Copy selection"
+      "selectionCopy": "Copy selection",
+      "highlightsLoadFailed": "Couldn't load AI comment highlights. We'll try again next time."
     },
     "aiChats": {
       "title": "AI Chats",

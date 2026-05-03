@@ -176,7 +176,8 @@
       "selection": "Auswahl",
       "highlight": "Markierung",
       "selectionReadAloud": "Auswahl vorlesen",
-      "selectionCopy": "Auswahl kopieren"
+      "selectionCopy": "Auswahl kopieren",
+      "highlightsLoadFailed": "Markierungen für KI-Kommentare konnten nicht geladen werden. Wir versuchen es beim nächsten Mal erneut."
     },
     "aiChats": {
       "title": "KI-Chats",

@@ -176,7 +176,8 @@
       "selection": "Seleção",
       "highlight": "Destaque",
       "selectionReadAloud": "Ler a seleção em voz alta",
-      "selectionCopy": "Copiar a seleção"
+      "selectionCopy": "Copiar a seleção",
+      "highlightsLoadFailed": "Não foi possível carregar os destaques dos comentários da IA. Tentaremos de novo na próxima vez."
     },
     "aiChats": {
       "title": "Chats com IA",
