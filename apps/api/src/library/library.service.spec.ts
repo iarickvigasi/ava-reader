@@ -376,9 +376,9 @@ describe('LibraryService', () => {
 
     expect(findFirstLibraryItem).toHaveBeenCalledWith({
       where: {
-        id: 'library-42',
-        isArchived: false,
         userId: 'user-1',
+        isArchived: false,
+        OR: [{ id: 'library-42' }, { slug: 'library-42' }],
       },
       include: {
         book: {

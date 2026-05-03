@@ -1,17 +1,16 @@
-export const APP_HOME_HREF = "/app";
 export const APP_LIBRARY_HREF = "/app/library";
 
-export function getReaderHref(libraryItemId: string) {
-  return `/app/read/${libraryItemId}`;
+export function getReaderHref(slug: string) {
+  return `/app/read/${slug}`;
 }
 
 export function getLibraryBookInfoHref(
-  libraryItemId: string,
+  slug: string,
   input?: {
     fromCollectionId?: string;
   },
 ) {
-  const baseHref = `/app/library/books/${libraryItemId}`;
+  const baseHref = `/app/library/books/${slug}`;
   const fromCollectionId = input?.fromCollectionId;
 
   if (!fromCollectionId) {

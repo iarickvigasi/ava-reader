@@ -10,6 +10,7 @@ import {
   ProcessingStatus,
 } from '@prisma/client';
 import { checksumBuffer, toPrismaBytes } from '../shared/blob-utils';
+import { buildBookSlugBase, resolveUniqueBookSlug } from '../shared/book-slug';
 import { daysAgo, startOfDay } from '../shared/date-utils';
 
 const prisma = new PrismaClient();
@@ -398,10 +399,27 @@ async function ensureLibraryItem(input: {
     return existing;
   }
 
+  const book = await prisma.book.findUniqueOrThrow({
+    where: { id: input.bookId },
+    select: { title: true, authors: true },
+  });
+  const baseSlug = buildBookSlugBase({
+    title: book.title,
+    authors: book.authors,
+  });
+  const slug = await resolveUniqueBookSlug(baseSlug, async (candidate) => {
+    const conflict = await prisma.libraryItem.findUnique({
+      where: { userId_slug: { userId: input.userId, slug: candidate } },
+      select: { id: true },
+    });
+    return conflict !== null;
+  });
+
   return prisma.libraryItem.create({
     data: {
       userId: input.userId,
       bookId: input.bookId,
+      slug,
       source: input.source,
       originCatalogEntryId: input.originCatalogEntryId,
     },

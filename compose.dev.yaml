@@ -8,7 +8,7 @@ services:
       [
         "sh",
         "-c",
-        "cd /app/apps/api && /app/node_modules/.pnpm/node_modules/.bin/prisma db push && /app/node_modules/.pnpm/node_modules/.bin/nest start --watch"
+        "cd /app/apps/api && /app/node_modules/.pnpm/node_modules/.bin/prisma migrate deploy && /app/node_modules/.pnpm/node_modules/.bin/prisma generate && /app/node_modules/.pnpm/node_modules/.bin/nest start --watch"
       ]
     volumes:
       - ./apps/api:/app/apps/api

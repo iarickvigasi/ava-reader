@@ -32,6 +32,7 @@ export type HomePayload = {
     lastReadAt: string;
     nextMilestone: string;
     primaryFormat: BookFileFormat;
+    slug: string;
     title: string;
   };
   feedback: {
@@ -96,6 +97,7 @@ export type LibraryCollectionBook = {
   lastReadAt: string;
   libraryItemId: string;
   primaryFormat: BookFileFormat;
+  slug: string;
   title: string;
 };
 
@@ -143,6 +145,7 @@ export type LibraryBookInfo = {
   minutesRead: number;
   primaryFormat: BookFileFormat;
   publishedYear: number | null;
+  slug: string;
   source: "IMPORTED" | "CATALOG";
   title: string;
 };
@@ -288,27 +291,25 @@ export type ReaderSessionPayload = {
   startedAt: string;
 };
 
+export type ReaderBookPayload = {
+  authors: string[];
+  libraryItemId: string;
+  primaryFormat: BookFileFormat;
+  slug: string;
+  title: string;
+};
+
 export type ReaderStatusPayload =
   | {
       activeChapterId: string;
-      book: {
-        authors: string[];
-        libraryItemId: string;
-        primaryFormat: BookFileFormat;
-        title: string;
-      };
+      book: ReaderBookPayload;
       chapters: ReaderChapterPayload[];
       progress: ReaderProgressPayload;
       status: "READY";
       toc: ReaderTocNode[];
     }
   | {
-      book: {
-        authors: string[];
-        libraryItemId: string;
-        primaryFormat: BookFileFormat;
-        title: string;
-      };
+      book: ReaderBookPayload;
       message: string;
       progress: ReaderProgressPayload;
       status: "FAILED" | "PROCESSING" | "UNSUPPORTED";

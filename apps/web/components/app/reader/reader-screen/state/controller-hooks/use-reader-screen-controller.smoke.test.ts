@@ -61,6 +61,7 @@ function createReadyPayload(input: {
       authors: ["Fixture Author"],
       libraryItemId: "reader-resume-fixture",
       primaryFormat: "EPUB",
+      slug: "reader-resume-fixture",
       title: "Reader Resume Fixture",
     },
     chapters: input.chapterIds.map((chapterId, index) => ({

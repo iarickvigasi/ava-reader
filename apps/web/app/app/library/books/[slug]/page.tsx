@@ -6,12 +6,12 @@ import { fetchServerApi, ServerApiError } from "@/lib/server-api";
 
 export const dynamic = "force-dynamic";
 
-async function getLibraryBookInfo(libraryItemId: string) {
+async function getLibraryBookInfo(slug: string) {
   try {
     return await fetchServerApi<LibraryBookInfoPayload>(
-      `/api/library/${libraryItemId}`,
+      `/api/library/${slug}`,
       {
-        returnBackUrl: `/app/library/books/${libraryItemId}`,
+        returnBackUrl: `/app/library/books/${slug}`,
       },
     );
   } catch (error) {
@@ -40,14 +40,14 @@ export default async function LibraryBookInfoPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ libraryItemId: string }>;
+  params: Promise<{ slug: string }>;
   searchParams: Promise<{ fromCollection?: string | string[] }>;
 }) {
-  const [{ libraryItemId }, resolvedSearchParams] = await Promise.all([
+  const [{ slug }, resolvedSearchParams] = await Promise.all([
     params,
     searchParams,
   ]);
-  const payload = await getLibraryBookInfo(libraryItemId);
+  const payload = await getLibraryBookInfo(slug);
   const fromCollectionId = normalizeFromCollection(
     resolvedSearchParams.fromCollection,
   );

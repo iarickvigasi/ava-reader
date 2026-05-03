@@ -21,6 +21,7 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:seed:home-demo": "ts-node src/scripts/seed-home-demo.ts",
+    "db:backfill-slugs": "ts-node src/scripts/backfill-library-item-slugs.ts",
     "admin:grant": "ts-node src/scripts/grant-admin.ts",
     "test": "jest",
     "test:watch": "jest --watch",

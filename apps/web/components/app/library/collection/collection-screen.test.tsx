@@ -71,6 +71,7 @@ function createCollection(): LibraryCollection {
         lastReadAt: "2026-04-08T10:00:00.000Z",
         libraryItemId: "library-1",
         primaryFormat: "EPUB",
+        slug: "meditations-by-marcus-aurelius",
         title: "Meditations",
       },
       {
@@ -80,6 +81,7 @@ function createCollection(): LibraryCollection {
         lastReadAt: "2026-04-06T10:00:00.000Z",
         libraryItemId: "library-2",
         primaryFormat: "EPUB",
+        slug: "the-republic-by-plato",
         title: "The Republic",
       },
       {
@@ -89,6 +91,7 @@ function createCollection(): LibraryCollection {
         lastReadAt: "2026-04-05T10:00:00.000Z",
         libraryItemId: "library-3",
         primaryFormat: "EPUB",
+        slug: "discourses-by-epictetus",
         title: "Discourses",
       },
     ],

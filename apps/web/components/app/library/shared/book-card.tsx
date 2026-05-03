@@ -18,7 +18,7 @@ export function LibraryBookCard({
 }: LibraryBookCardProps) {
   return (
     <Link
-      href={getLibraryBookInfoHref(book.libraryItemId, {
+      href={getLibraryBookInfoHref(book.slug, {
         fromCollectionId: collectionId,
       })}
       className={cn(
