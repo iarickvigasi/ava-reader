@@ -1,59 +1,53 @@
 "use client";
 
-import { useClerk } from "@clerk/nextjs";
+import { AuthenticateWithRedirectCallback, useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { AuthShell } from "@/components/auth/auth-shell";
 
 export function SsoCallbackHandler() {
-  const clerk = useClerk();
   const router = useRouter();
-  const hasRun = useRef(false);
+  const { isLoaded } = useAuth();
   const [message, setMessage] = useState("Finishing Google authentication...");
 
   useEffect(() => {
-    const completeFlow = async () => {
-      if (!clerk.loaded || hasRun.current) {
-        return;
-      }
+    if (!isLoaded) {
+      return;
+    }
 
-      hasRun.current = true;
+    const stallTimer = window.setTimeout(() => {
+      setMessage(
+        "Google authentication is taking longer than expected. Returning you to sign in...",
+      );
+      window.setTimeout(() => {
+        router.replace("/sign-in?notice=oauth_continue");
+      }, 1500);
+    }, 15000);
 
-      try {
-        await clerk.handleRedirectCallback(
-          {
-            signInUrl: "/sign-in",
-            signUpUrl: "/sign-up",
-            firstFactorUrl: "/sign-in?notice=oauth_continue",
-            secondFactorUrl: "/sign-in?notice=oauth_continue",
-            continueSignUpUrl: "/sign-up?notice=oauth_requirements",
-            signInForceRedirectUrl: "/app",
-            signUpForceRedirectUrl: "/app",
-            transferable: true,
-          },
-          async (target) => {
-            router.replace(target);
-          },
-        );
-      } catch {
-        setMessage(
-          "Google authentication could not be completed. Return to sign in and try again.",
-        );
-
-        window.setTimeout(() => {
-          router.replace("/sign-in?notice=oauth_continue");
-        }, 1000);
-      }
+    return () => {
+      window.clearTimeout(stallTimer);
     };
-
-    void completeFlow();
-  }, [clerk, router]);
+  }, [isLoaded, router]);
 
   return (
-    <AuthShell title="Just a moment" subtitle={message}>
-      <div className="rounded-[var(--radius-card)] bg-white/68 px-5 py-8 text-center">
-        <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-line border-t-ink" />
-      </div>
-    </AuthShell>
+    <>
+      {isLoaded ? (
+        <AuthenticateWithRedirectCallback
+          signInUrl="/sign-in"
+          signUpUrl="/sign-up"
+          firstFactorUrl="/sign-in?notice=oauth_continue"
+          secondFactorUrl="/sign-in?notice=oauth_continue"
+          continueSignUpUrl="/sign-up?notice=oauth_requirements"
+          signInForceRedirectUrl="/app"
+          signUpForceRedirectUrl="/app"
+        />
+      ) : null}
+      <AuthShell title="Just a moment" subtitle={message}>
+        <div className="rounded-[var(--radius-card)] bg-white/68 px-5 py-8 text-center">
+          <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-line border-t-ink" />
+          <div id="clerk-captcha" />
+        </div>
+      </AuthShell>
+    </>
   );
 }
