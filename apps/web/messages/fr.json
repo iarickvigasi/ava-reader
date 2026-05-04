@@ -176,7 +176,8 @@
       "selection": "Sélection",
       "highlight": "Surligner",
       "selectionReadAloud": "Lire la sélection à voix haute",
-      "selectionCopy": "Copier la sélection"
+      "selectionCopy": "Copier la sélection",
+      "highlightsLoadFailed": "Impossible de charger les surlignages des commentaires IA. Nous réessaierons la prochaine fois."
     },
     "aiChats": {
       "title": "Discussions IA",

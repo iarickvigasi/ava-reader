@@ -7,9 +7,14 @@ const SELECTION_MAX_LENGTH = 2048;
 const CONTEXT_MAX_LENGTH = SELECTION_MAX_LENGTH * 4;
 const META_MAX_LENGTH = 200;
 
+// `locator` carries a JSON-serialised AiCommentLocator: chapter id, two
+// (blockId, charOffset) pairs, and ~30 chars of surrounding context on each
+// side. 2 KB is a generous ceiling — typical payloads are 200–400 bytes.
+const LOCATOR_MAX_LENGTH = 2048;
+
 const baseSchema = z.object({
   text: z.string().min(1).max(SELECTION_MAX_LENGTH),
-  locator: z.string().max(512).optional(),
+  locator: z.string().max(LOCATOR_MAX_LENGTH).optional(),
 });
 
 export const translateSchema = baseSchema.extend({

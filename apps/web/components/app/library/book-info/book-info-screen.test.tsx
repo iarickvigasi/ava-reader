@@ -155,6 +155,7 @@ function createBookInfo(
     minutesRead: 195,
     primaryFormat: "EPUB",
     publishedYear: 1818,
+    slug: "frankenstein-by-mary-shelley",
     source: "IMPORTED",
     title: "Frankenstein",
     ...overrides,

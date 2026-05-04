@@ -1,17 +1,17 @@
 import { notFound } from "next/navigation";
 import { LibraryBookInfoScreen } from "@/components/app/library/book-info/book-info-screen";
-import { APP_LIBRARY_HREF } from "@/lib/app-routes";
+import { APP_LIBRARY_HREF, getCollectionHref } from "@/lib/app-routes";
 import type { LibraryBookInfoPayload } from "@/lib/api-types";
 import { fetchServerApi, ServerApiError } from "@/lib/server-api";
 
 export const dynamic = "force-dynamic";
 
-async function getLibraryBookInfo(libraryItemId: string) {
+async function getLibraryBookInfo(slug: string) {
   try {
     return await fetchServerApi<LibraryBookInfoPayload>(
-      `/api/library/${libraryItemId}`,
+      `/api/library/${slug}`,
       {
-        returnBackUrl: `/app/library/books/${libraryItemId}`,
+        returnBackUrl: `/app/library/books/${slug}`,
       },
     );
   } catch (error) {
@@ -40,19 +40,19 @@ export default async function LibraryBookInfoPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ libraryItemId: string }>;
+  params: Promise<{ slug: string }>;
   searchParams: Promise<{ fromCollection?: string | string[] }>;
 }) {
-  const [{ libraryItemId }, resolvedSearchParams] = await Promise.all([
+  const [{ slug }, resolvedSearchParams] = await Promise.all([
     params,
     searchParams,
   ]);
-  const payload = await getLibraryBookInfo(libraryItemId);
-  const fromCollectionId = normalizeFromCollection(
+  const payload = await getLibraryBookInfo(slug);
+  const fromCollectionSlug = normalizeFromCollection(
     resolvedSearchParams.fromCollection,
   );
-  const backHref = fromCollectionId
-    ? `/app/library/collections/${encodeURIComponent(fromCollectionId)}`
+  const backHref = fromCollectionSlug
+    ? getCollectionHref(fromCollectionSlug)
     : APP_LIBRARY_HREF;
 
   return (

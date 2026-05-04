@@ -252,6 +252,7 @@ function serializeCurrentEngagement(item: LibraryItemRecord) {
     lastReadAt: getMostRecentEngagementDate(item).toISOString(),
     nextMilestone: item.progress?.chapterLabel ?? 'Continue where you left off',
     primaryFormat: primarySource?.format ?? 'UNKNOWN',
+    slug: item.slug,
     title: item.book.title,
   };
 }

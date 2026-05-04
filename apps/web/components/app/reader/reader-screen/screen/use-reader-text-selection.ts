@@ -1,12 +1,20 @@
 import { useEffect, useRef, type RefObject } from "react";
 
+export type ReaderSelection = {
+  text: string;
+  // The live DOM range. The caller may inspect it synchronously (e.g., to
+  // compute an offset locator) but must not retain it past the current tick —
+  // browsers reuse selection objects and the underlying nodes can re-render.
+  range: Range;
+};
+
 type UseReaderTextSelectionParams = {
   // The element whose contents count as "selectable text" for the panel. Only
   // selections wholly inside this element fire the callback — selections in the
   // open AI Comments panel itself, or in the surrounding chrome, are ignored.
   containerRef: RefObject<HTMLElement | null>;
   // Called after a selection settles with non-empty trimmed text.
-  onSelectText: (text: string) => void;
+  onSelectText: (selection: ReaderSelection) => void;
   // When true, the hook is dormant. Used to switch off selection-driven open
   // logic during bootstrapping or when the reader is masked.
   disabled?: boolean;
@@ -59,7 +67,7 @@ export function useReaderTextSelection({
         return;
       }
 
-      onSelectRef.current(text);
+      onSelectRef.current({ text, range });
     };
 
     // The selection isn't fully resolved yet at the moment mouseup/touchend

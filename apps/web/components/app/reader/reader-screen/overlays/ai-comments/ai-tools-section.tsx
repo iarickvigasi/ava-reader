@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   DEFAULT_TRANSLATE_TARGET_LANG,
   useTranslateTargetLang,
@@ -9,6 +9,7 @@ import {
   SparkIcon,
   SpeakerIcon,
 } from "@/components/app/shared/app-icons";
+import type { AiCommentLocator } from "@/lib/api-types";
 import { EtymologyIcon, LightbulbIcon } from "./ai-comments-icons";
 import { ToolResultView } from "./tool-result-view";
 import { ToolSection } from "./tool-section";
@@ -18,11 +19,17 @@ type ToolKey = "translate" | "etymology" | "explain";
 
 type AiToolsSectionProps = {
   libraryItemId: string;
+  // Fired once after each successful tool generation. Used by the parent to
+  // refetch the persisted comments list and re-paint the reader highlights.
+  onCommentCreated?: () => void;
+  selectedLocator: AiCommentLocator | null;
   selectedText: string;
 };
 
 export function AiToolsSection({
   libraryItemId,
+  onCommentCreated,
+  selectedLocator,
   selectedText,
 }: AiToolsSectionProps) {
   const t = useTranslations("reader.aiTools");
@@ -40,10 +47,52 @@ export function AiToolsSection({
   const explain = useAiTool({ libraryItemId });
 
   const trimmedSelection = selectedText.trim();
+  // Serialise once per selection. The server stores this string verbatim in
+  // AiComment.locator so it can re-anchor the highlight on a future read.
+  const locatorJson = useMemo(
+    () => (selectedLocator ? JSON.stringify(selectedLocator) : undefined),
+    [selectedLocator],
+  );
 
   const isTranslateOpen = openTools.has("translate");
   const isEtymologyOpen = openTools.has("etymology");
   const isExplainOpen = openTools.has("explain");
+
+  // Tracks the previous streaming flag for each tool so we can fire
+  // onCommentCreated exactly once when a stream transitions from
+  // streaming → done with a non-empty body. The server persists the comment
+  // inside the stream's onFinish callback, so by the time isStreaming flips
+  // to false the row is already in the DB and a refetch will see it.
+  const prevStreaming = useRef({
+    translate: false,
+    etymology: false,
+    explain: false,
+  });
+  useEffect(() => {
+    const cur = {
+      translate: translate.isStreaming,
+      etymology: etymology.isStreaming,
+      explain: explain.isStreaming,
+    };
+    const finishedTranslate =
+      prevStreaming.current.translate && !cur.translate && translate.text;
+    const finishedEtymology =
+      prevStreaming.current.etymology && !cur.etymology && etymology.text;
+    const finishedExplain =
+      prevStreaming.current.explain && !cur.explain && explain.text;
+    if (finishedTranslate || finishedEtymology || finishedExplain) {
+      onCommentCreated?.();
+    }
+    prevStreaming.current = cur;
+  }, [
+    translate.isStreaming,
+    translate.text,
+    etymology.isStreaming,
+    etymology.text,
+    explain.isStreaming,
+    explain.text,
+    onCommentCreated,
+  ]);
 
   // One trigger effect per tool. Each fires when its section is open AND
   // there's a selection — opening multiple tools simultaneously kicks off
@@ -57,11 +106,12 @@ export function AiToolsSection({
       kind: "translate",
       text: trimmedSelection,
       targetLang: targetLang || DEFAULT_TRANSLATE_TARGET_LANG,
+      locator: locatorJson,
     });
     // `translate` is stable across renders; depending on it would re-fire on
     // every render and we'd never settle.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isTranslateOpen, trimmedSelection, targetLang]);
+  }, [isTranslateOpen, trimmedSelection, targetLang, locatorJson]);
 
   useEffect(() => {
     if (!isEtymologyOpen || !trimmedSelection) {
@@ -70,9 +120,10 @@ export function AiToolsSection({
     etymology.start({
       kind: "etymology",
       text: trimmedSelection,
+      locator: locatorJson,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEtymologyOpen, trimmedSelection]);
+  }, [isEtymologyOpen, trimmedSelection, locatorJson]);
 
   useEffect(() => {
     if (!isExplainOpen || !trimmedSelection) {
@@ -81,9 +132,10 @@ export function AiToolsSection({
     explain.start({
       kind: "explain",
       text: trimmedSelection,
+      locator: locatorJson,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isExplainOpen, trimmedSelection]);
+  }, [isExplainOpen, trimmedSelection, locatorJson]);
 
   // When a panel selection clears (user closed the panel and reopened), drop
   // any leftover bodies so the empty hint shows again.
@@ -133,6 +185,7 @@ export function AiToolsSection({
                     kind: "translate",
                     text: trimmedSelection,
                     targetLang: targetLang || DEFAULT_TRANSLATE_TARGET_LANG,
+                    locator: locatorJson,
                   })
               : undefined
           }
@@ -156,6 +209,7 @@ export function AiToolsSection({
                   etymology.start({
                     kind: "etymology",
                     text: trimmedSelection,
+                    locator: locatorJson,
                   })
               : undefined
           }
@@ -179,6 +233,7 @@ export function AiToolsSection({
                   explain.start({
                     kind: "explain",
                     text: trimmedSelection,
+                    locator: locatorJson,
                   })
               : undefined
           }
@@ -218,7 +273,7 @@ function TranslateBody({
         <button
           type="button"
           aria-label="Read translation aloud"
-          className="mt-[2px] inline-flex size-7 shrink-0 items-center justify-center rounded-full text-ink/70 transition hover:bg-paper-strong/70 hover:text-ink"
+          className="mt-0.5 inline-flex size-7 shrink-0 items-center justify-center rounded-full text-ink/70 transition hover:bg-paper-strong/70 hover:text-ink"
         >
           <SpeakerIcon className="size-4" />
         </button>

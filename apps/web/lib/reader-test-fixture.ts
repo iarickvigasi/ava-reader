@@ -13,6 +13,7 @@ export function createReaderResumeFixturePayload(): ReaderStatusPayload {
       authors: ["Fixture Author"],
       libraryItemId: "reader-resume-fixture",
       primaryFormat: "EPUB",
+      slug: "reader-resume-fixture",
       title: "Reader Resume Fixture",
     },
     chapters: chapterIds.map((chapterId, index) =>

@@ -7,19 +7,19 @@ import { getLibraryBookInfoHref } from "@/lib/app-routes";
 
 type LibraryBookCardProps = {
   book: LibraryPayload["collections"][number]["books"][number];
-  collectionId?: string;
+  collectionSlug?: string;
   mobile?: boolean;
 };
 
 export function LibraryBookCard({
   book,
-  collectionId,
+  collectionSlug,
   mobile = false,
 }: LibraryBookCardProps) {
   return (
     <Link
-      href={getLibraryBookInfoHref(book.libraryItemId, {
-        fromCollectionId: collectionId,
+      href={getLibraryBookInfoHref(book.slug, {
+        fromCollectionSlug: collectionSlug,
       })}
       className={cn(
         "group block shrink-0 transition hover:-translate-y-0.5",

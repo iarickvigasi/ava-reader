@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { AiCommentKind } from '@prisma/client';
@@ -48,13 +49,65 @@ export type AiToolGenerationResult =
       modelId: string;
     };
 
+// Shape returned by `list()` — the only difference from the raw Prisma row is
+// that we hand back the locator as a parsed object (or null) so the client
+// doesn't need to JSON.parse it. Anything that fails to parse is dropped to
+// null instead of erroring the whole list.
+export type AiCommentListItem = {
+  id: string;
+  kind: AiCommentKind;
+  sourceText: string;
+  body: string;
+  targetLang: string | null;
+  locator: unknown;
+  createdAt: Date;
+};
+
 @Injectable()
 export class AiCommentsService {
+  private readonly logger = new Logger(AiCommentsService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly users: UsersService,
     private readonly openrouter: OpenRouterClient,
   ) {}
+
+  // Returns every persisted AI comment the user has created for `libraryItemId`,
+  // newest first. Locator strings are parsed to JSON so the client can re-anchor
+  // them without an extra parse step; malformed locators come back as null.
+  async list(
+    clerkUserId: string,
+    libraryItemId: string,
+  ): Promise<AiCommentListItem[]> {
+    const user = await this.users.getCurrentUserRecord(clerkUserId);
+    const libraryItem = await this.prisma.libraryItem.findFirst({
+      where: { id: libraryItemId, userId: user.id },
+      select: { id: true },
+    });
+    if (!libraryItem) {
+      throw new NotFoundException('Library item not found.');
+    }
+
+    const rows = await this.prisma.aiComment.findMany({
+      where: { userId: user.id, libraryItemId: libraryItem.id },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        kind: true,
+        sourceText: true,
+        body: true,
+        targetLang: true,
+        locator: true,
+        createdAt: true,
+      },
+    });
+
+    return rows.map((row) => ({
+      ...row,
+      locator: parseLocator(row.locator),
+    }));
+  }
 
   async generate(input: GenerateInput): Promise<AiToolGenerationResult> {
     const user = await this.users.getCurrentUserRecord(input.clerkUserId);
@@ -143,12 +196,10 @@ export class AiCommentsService {
             },
           });
         } catch (error: unknown) {
-          // Persisting is a nice-to-have; the user already received the
-          // streamed answer. Log and continue.
-          console.error('[ai-comments] failed to persist generated body', {
-            error,
-            kind: input.kind,
-          });
+          this.logger.error(
+            `Failed to persist generated body (kind=${input.kind})`,
+            error instanceof Error ? error.stack : String(error),
+          );
         }
       },
     });
@@ -196,5 +247,23 @@ export class AiCommentsService {
         );
       }
     }
+  }
+}
+
+// Parses the persisted `locator` column. Old rows have null. Newer rows hold
+// a JSON-serialised AiCommentLocator. Anything that doesn't parse is treated
+// as null rather than throwing — a single corrupt row shouldn't break the
+// whole list.
+const parseLocatorLogger = new Logger('parseLocator');
+
+function parseLocator(raw: string | null): unknown {
+  if (!raw) {
+    return null;
+  }
+  try {
+    return JSON.parse(raw);
+  } catch {
+    parseLocatorLogger.error(`AiCommentLocator JSON was not parsed: ${raw}`);
+    return null;
   }
 }

@@ -25,14 +25,17 @@ type ReaderProgressSummary = {
   locator: ReaderLocator | null;
 };
 
+type ReaderBookPayload = {
+  authors: string[];
+  libraryItemId: string;
+  primaryFormat: BookFileFormat;
+  slug: string;
+  title: string;
+};
+
 type ReaderReadyPayload = {
   activeChapterId: string;
-  book: {
-    authors: string[];
-    libraryItemId: string;
-    primaryFormat: BookFileFormat;
-    title: string;
-  };
+  book: ReaderBookPayload;
   chapters: ReaderChapter[];
   progress: ReaderProgressSummary;
   status: 'READY';
@@ -42,12 +45,7 @@ type ReaderReadyPayload = {
 type ReaderStatusPayload =
   | ReaderReadyPayload
   | {
-      book: {
-        authors: string[];
-        libraryItemId: string;
-        primaryFormat: BookFileFormat;
-        title: string;
-      };
+      book: ReaderBookPayload;
       message: string;
       progress: ReaderProgressSummary;
       status: 'FAILED' | 'PROCESSING' | 'UNSUPPORTED';
@@ -107,6 +105,7 @@ export class ReaderService {
           authors: libraryItem.book.authors,
           libraryItemId: libraryItem.id,
           primaryFormat: sourceFile?.format ?? BookFileFormat.UNKNOWN,
+          slug: libraryItem.slug,
           title: libraryItem.book.title,
         },
         message: 'This reader currently supports EPUB books only.',
@@ -131,6 +130,7 @@ export class ReaderService {
             authors: libraryItem.book.authors,
             libraryItemId: libraryItem.id,
             primaryFormat: sourceFile.format,
+            slug: libraryItem.slug,
             title: libraryItem.book.title,
           },
           message:
@@ -146,6 +146,7 @@ export class ReaderService {
           authors: libraryItem.book.authors,
           libraryItemId: libraryItem.id,
           primaryFormat: sourceFile.format,
+          slug: libraryItem.slug,
           title: libraryItem.book.title,
         },
         message: 'Preparing this EPUB for the reader.',
@@ -179,6 +180,7 @@ export class ReaderService {
         authors: libraryItem.book.authors,
         libraryItemId: libraryItem.id,
         primaryFormat: sourceFile.format,
+        slug: libraryItem.slug,
         title: libraryItem.book.title,
       },
       chapters: chapterWindow,
@@ -399,8 +401,8 @@ export class ReaderService {
     const user = await this.usersService.getCurrentUserRecord(clerkUserId);
     const libraryItem = await this.prisma.libraryItem.findFirst({
       where: {
-        id: libraryItemId,
         userId: user.id,
+        OR: [{ id: libraryItemId }, { slug: libraryItemId }],
       },
       include: {
         book: {

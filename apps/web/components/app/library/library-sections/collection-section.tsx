@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import type { LibraryPayload } from "@/lib/api-types";
+import { getCollectionHref } from "@/lib/app-routes";
 import { useCollectionDisplay } from "../shared/collection-display";
 import { BookCardSkeleton, LibraryBookCard } from "../shared/book-card";
 
@@ -35,7 +36,7 @@ export function CollectionSection({ collection }: CollectionSectionProps) {
         </div>
         <div className="text-right">
           <Link
-            href={`/app/library/collections/${collection.id}`}
+            href={getCollectionHref(collection.slug)}
             className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-brand-fill"
           >
             {t("viewAll")}
@@ -54,7 +55,7 @@ export function CollectionSection({ collection }: CollectionSectionProps) {
               <LibraryBookCard
                 key={book.libraryItemId}
                 book={book}
-                collectionId={collection.id}
+                collectionSlug={collection.slug}
                 mobile
               />
             ))}
@@ -65,7 +66,7 @@ export function CollectionSection({ collection }: CollectionSectionProps) {
               <LibraryBookCard
                 key={book.libraryItemId}
                 book={book}
-                collectionId={collection.id}
+                collectionSlug={collection.slug}
               />
             ))}
           </div>

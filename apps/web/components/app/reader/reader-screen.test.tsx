@@ -25,6 +25,7 @@ describe("reader screen", () => {
         authors: [],
         libraryItemId: "library-1",
         primaryFormat: "EPUB",
+        slug: "library-1",
         title: "Pending Reader",
       },
       message: "Your book is being processed.",

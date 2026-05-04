@@ -7,20 +7,20 @@ export const dynamic = "force-dynamic";
 export default async function ReaderPage({
   params,
 }: {
-  params: Promise<{ libraryItemId: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const { libraryItemId } = await params;
+  const { slug } = await params;
   const reader = await fetchServerApi<ReaderStatusPayload>(
-    `/api/library/${libraryItemId}/reader`,
+    `/api/library/${slug}/reader`,
     {
-      returnBackUrl: `/app/read/${libraryItemId}`,
+      returnBackUrl: `/app/read/${slug}`,
     },
   );
 
   return (
     <ReaderScreen
       initialPayload={reader}
-      libraryItemId={libraryItemId}
+      libraryItemId={reader.book.libraryItemId}
     />
   );
 }

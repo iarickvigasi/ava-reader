@@ -31,7 +31,7 @@ export function LibraryBookInfoScreen({
 
             <div className="space-y-8">
               <BookHeader book={book} />
-              <BookActions libraryItemId={book.libraryItemId} />
+              <BookActions slug={book.slug} />
               <ReadingProgress book={book} />
               <BookMetadata book={book} />
             </div>

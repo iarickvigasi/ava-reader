@@ -41,13 +41,13 @@ describe("library collection detail UI", () => {
 
     expect(markup).toContain('href="/app/library"');
     expect(markup).toContain(
-      'href="/app/library/books/library-1?fromCollection=collection-1"',
+      'href="/app/library/books/meditations-by-marcus-aurelius?fromCollection=imported-books"',
     );
     expect(markup).toContain(
-      'href="/app/library/books/library-2?fromCollection=collection-1"',
+      'href="/app/library/books/the-republic-by-plato?fromCollection=imported-books"',
     );
     expect(markup).toContain(
-      'href="/app/library/books/library-3?fromCollection=collection-1"',
+      'href="/app/library/books/discourses-by-epictetus?fromCollection=imported-books"',
     );
     expect(markup).toContain("Imported Books");
     expect(markup).toContain("3 items • 2 unread");
@@ -71,6 +71,7 @@ function createCollection(): LibraryCollection {
         lastReadAt: "2026-04-08T10:00:00.000Z",
         libraryItemId: "library-1",
         primaryFormat: "EPUB",
+        slug: "meditations-by-marcus-aurelius",
         title: "Meditations",
       },
       {
@@ -80,6 +81,7 @@ function createCollection(): LibraryCollection {
         lastReadAt: "2026-04-06T10:00:00.000Z",
         libraryItemId: "library-2",
         primaryFormat: "EPUB",
+        slug: "the-republic-by-plato",
         title: "The Republic",
       },
       {
@@ -89,6 +91,7 @@ function createCollection(): LibraryCollection {
         lastReadAt: "2026-04-05T10:00:00.000Z",
         libraryItemId: "library-3",
         primaryFormat: "EPUB",
+        slug: "discourses-by-epictetus",
         title: "Discourses",
       },
     ],
@@ -97,6 +100,7 @@ function createCollection(): LibraryCollection {
     itemCount: 3,
     kind: "CUSTOM",
     name: "Imported Books",
+    slug: "imported-books",
     smartKey: null,
     unreadCount: 2,
   };

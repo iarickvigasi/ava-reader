@@ -1,11 +1,11 @@
 export default function LibraryBookInfoLoading() {
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col px-5 pb-10 pt-6 sm:px-6 md:pb-14 md:pt-8 lg:px-10">
-      <div className="mx-auto w-full max-w-[1280px] space-y-12 md:space-y-16">
+      <div className="mx-auto w-full max-w-7xl space-y-12 md:space-y-16">
         <div className="h-4 w-28 animate-pulse rounded bg-paper-strong" />
 
         <section className="grid gap-8 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:gap-12">
-          <div className="aspect-[2/3] w-full max-w-80 animate-pulse rounded-[4px] bg-paper-strong md:max-w-96" />
+          <div className="aspect-2/3 w-full max-w-80 animate-pulse rounded-sm bg-paper-strong md:max-w-96" />
 
           <div className="space-y-6">
             <div className="flex gap-2">

@@ -201,6 +201,7 @@ model LibraryItem {
   id                         String                      @id @default(cuid())
   userId                     String
   bookId                     String
+  slug                       String
   source                     LibrarySource
   originCatalogEntryId       String?
   addedAt                    DateTime                    @default(now())
@@ -220,6 +221,7 @@ model LibraryItem {
   collectionItems            CollectionItem[]
 
   @@unique([userId, bookId])
+  @@unique([userId, slug])
   @@index([userId, addedAt])
 }
 
@@ -339,6 +341,7 @@ model Collection {
   id          String           @id @default(cuid())
   userId      String
   name        String
+  slug        String
   description String?
   kind        CollectionKind   @default(CUSTOM)
   smartKey    String?
@@ -349,6 +352,7 @@ model Collection {
   items       CollectionItem[]
 
   @@unique([userId, name])
+  @@unique([userId, slug])
   @@unique([userId, smartKey])
   @@index([userId, sortOrder])
 }

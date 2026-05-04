@@ -28,6 +28,9 @@ import {
   extractBookMetadata,
   isSupportedSourceFormat,
 } from '../shared/metadata-extractor';
+import { buildBookSlugBase } from '../shared/book-slug';
+import { buildCollectionSlugBase } from '../shared/collection-slug';
+import { resolveUniqueSlug } from '../shared/slugify';
 import { inferMimeType, normalizeBookLanguage } from '../shared/book-utils';
 
 type TransactionClient = Prisma.TransactionClient;
@@ -42,6 +45,7 @@ export type LibraryMutationPayload = {
     title: string;
   };
   libraryItemId: string;
+  slug: string;
   source: LibrarySource;
   state: 'added' | 'existing';
 };
@@ -230,8 +234,8 @@ export class LibraryService {
 
     const collection = await this.prisma.collection.findFirst({
       where: {
-        id: collectionId,
         userId: user.id,
+        OR: [{ id: collectionId }, { slug: collectionId }],
       },
       include: {
         items: {
@@ -266,9 +270,9 @@ export class LibraryService {
 
     const item = await this.prisma.libraryItem.findFirst({
       where: {
-        id: libraryItemId,
-        isArchived: false,
         userId: user.id,
+        isArchived: false,
+        OR: [{ id: libraryItemId }, { slug: libraryItemId }],
       },
       include: {
         book: {
@@ -343,6 +347,7 @@ export class LibraryService {
         minutesRead: item.progress?.minutesRead ?? 0,
         primaryFormat: primarySource?.format ?? BookFileFormat.UNKNOWN,
         publishedYear: item.book.publishedYear,
+        slug: item.slug,
         source: item.source,
         title: item.book.title,
       },
@@ -470,27 +475,48 @@ export class LibraryService {
 
     const libraryItem =
       existing ??
-      (await tx.libraryItem.create({
-        data: {
-          userId: input.userId,
-          bookId: input.bookId,
-          source: input.source,
-          originCatalogEntryId: input.originCatalogEntryId,
-          progress: {
-            create: {
-              userId: input.userId,
+      (await (async () => {
+        const book = await tx.book.findUniqueOrThrow({
+          where: { id: input.bookId },
+          select: { title: true, authors: true },
+        });
+        const baseSlug = buildBookSlugBase({
+          title: book.title,
+          authors: book.authors,
+        });
+        const slug = await resolveUniqueSlug(baseSlug, async (candidate) => {
+          const conflict = await tx.libraryItem.findUnique({
+            where: {
+              userId_slug: { userId: input.userId, slug: candidate },
+            },
+            select: { id: true },
+          });
+          return conflict !== null;
+        });
+
+        return tx.libraryItem.create({
+          data: {
+            userId: input.userId,
+            bookId: input.bookId,
+            slug,
+            source: input.source,
+            originCatalogEntryId: input.originCatalogEntryId,
+            progress: {
+              create: {
+                userId: input.userId,
+              },
             },
           },
-        },
-        include: {
-          book: {
-            include: {
-              files: true,
+          include: {
+            book: {
+              include: {
+                files: true,
+              },
             },
+            progress: true,
           },
-          progress: true,
-        },
-      }));
+        });
+      })());
 
     if (
       existing &&
@@ -532,6 +558,7 @@ export class LibraryService {
         title: libraryItem.book.title,
       },
       libraryItemId: libraryItem.id,
+      slug: libraryItem.slug,
       source: input.source,
       state: existing ? 'existing' : 'added',
     };
@@ -542,6 +569,15 @@ export class LibraryService {
     userId: string,
   ) {
     for (const collection of DEFAULT_SMART_COLLECTIONS) {
+      const baseSlug = buildCollectionSlugBase({ name: collection.name });
+      const slug = await resolveUniqueSlug(baseSlug, async (candidate) => {
+        const conflict = await tx.collection.findUnique({
+          where: { userId_slug: { userId, slug: candidate } },
+          select: { id: true, smartKey: true },
+        });
+        return conflict !== null && conflict.smartKey !== collection.smartKey;
+      });
+
       await tx.collection.upsert({
         where: {
           userId_smartKey: {
@@ -561,6 +597,7 @@ export class LibraryService {
           description: collection.description,
           kind: 'SMART',
           name: collection.name,
+          slug,
           sortOrder: collection.sortOrder,
         },
       });
@@ -635,6 +672,7 @@ function serializeCollection(
       lastReadAt: getMostRecentLibraryItemEngagementDate(item).toISOString(),
       libraryItemId: item.id,
       primaryFormat: primarySource?.format ?? BookFileFormat.UNKNOWN,
+      slug: item.slug,
       title: item.book.title,
     };
   });
@@ -651,6 +689,7 @@ function serializeCollection(
     itemCount: activeItems.length,
     kind: collection.kind,
     name: collection.name,
+    slug: collection.slug,
     smartKey: collection.smartKey,
     unreadCount: activeItems.filter(
       (item) => (item.progress?.completionPercent ?? 0) < 100,

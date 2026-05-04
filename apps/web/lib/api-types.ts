@@ -32,6 +32,7 @@ export type HomePayload = {
     lastReadAt: string;
     nextMilestone: string;
     primaryFormat: BookFileFormat;
+    slug: string;
     title: string;
   };
   feedback: {
@@ -96,6 +97,7 @@ export type LibraryCollectionBook = {
   lastReadAt: string;
   libraryItemId: string;
   primaryFormat: BookFileFormat;
+  slug: string;
   title: string;
 };
 
@@ -106,6 +108,7 @@ export type LibraryCollection = {
   itemCount: number;
   kind: "SMART" | "CUSTOM";
   name: string;
+  slug: string;
   smartKey: string | null;
   unreadCount: number;
 };
@@ -143,6 +146,7 @@ export type LibraryBookInfo = {
   minutesRead: number;
   primaryFormat: BookFileFormat;
   publishedYear: number | null;
+  slug: string;
   source: "IMPORTED" | "CATALOG";
   title: string;
 };
@@ -259,6 +263,20 @@ export type ReaderLocator = {
   textOffset: number;
 };
 
+// Position fingerprint for an AI-comment selection. Stored serialized as JSON
+// in `AiComment.locator`. The (blockId, offset) pair is the primary anchor;
+// contextBefore/contextAfter are the fallback when block IDs drift after a
+// re-import (text-quote-selector style).
+export type AiCommentLocator = {
+  chapterId: string;
+  startBlockId: string;
+  startOffset: number;
+  endBlockId: string;
+  endOffset: number;
+  contextBefore: string;
+  contextAfter: string;
+};
+
 export type ReaderProgressPayload = {
   chapterLabel: string | null;
   completionPercent: number;
@@ -274,27 +292,25 @@ export type ReaderSessionPayload = {
   startedAt: string;
 };
 
+export type ReaderBookPayload = {
+  authors: string[];
+  libraryItemId: string;
+  primaryFormat: BookFileFormat;
+  slug: string;
+  title: string;
+};
+
 export type ReaderStatusPayload =
   | {
       activeChapterId: string;
-      book: {
-        authors: string[];
-        libraryItemId: string;
-        primaryFormat: BookFileFormat;
-        title: string;
-      };
+      book: ReaderBookPayload;
       chapters: ReaderChapterPayload[];
       progress: ReaderProgressPayload;
       status: "READY";
       toc: ReaderTocNode[];
     }
   | {
-      book: {
-        authors: string[];
-        libraryItemId: string;
-        primaryFormat: BookFileFormat;
-        title: string;
-      };
+      book: ReaderBookPayload;
       message: string;
       progress: ReaderProgressPayload;
       status: "FAILED" | "PROCESSING" | "UNSUPPORTED";

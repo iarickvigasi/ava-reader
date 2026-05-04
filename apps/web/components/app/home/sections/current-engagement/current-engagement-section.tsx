@@ -14,7 +14,7 @@ export function CurrentEngagementSection({
 }: {
   engagement: CurrentEngagement;
 }) {
-  const readerHref = getReaderHref(engagement.id);
+  const readerHref = getReaderHref(engagement.slug);
 
   return (
     <section className="grid gap-8 md:grid-cols-[0.32fr_0.58fr] md:items-start md:gap-8 lg:gap-10">

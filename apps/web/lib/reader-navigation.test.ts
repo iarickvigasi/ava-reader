@@ -111,6 +111,7 @@ function createReadyPayload(input: {
       authors: ["Author"],
       libraryItemId: "library-item",
       primaryFormat: "EPUB",
+      slug: "library-item",
       title: "Book",
     },
     chapters: input.chapterIds.map((chapterId, index) => ({
