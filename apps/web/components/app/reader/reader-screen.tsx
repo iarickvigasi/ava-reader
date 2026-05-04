@@ -61,7 +61,7 @@ export function ReaderScreen({
 
   return (
     <div className="bg-paper text-ink" style={readerStyle}>
-      <div className="mx-auto min-h-screen max-w-375 md:pl-20">
+      <div className="mx-auto h-dvh max-w-375 overflow-hidden md:pl-20">
         {!isReaderReady ? (
           <ReaderStatusState payload={payload} />
         ) : activeChapter ? (

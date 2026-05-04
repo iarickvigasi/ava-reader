@@ -175,7 +175,7 @@ export function ReadyReader({
             <div
               className="relative min-h-0 flex-1 overflow-hidden px-3 py-5 sm:px-5 sm:py-6 md:px-6"
               style={{
-                touchAction: "pan-y",
+                touchAction: "none",
               }}
               onTouchEnd={handleTouchEnd}
               onTouchStart={handleTouchStart}
