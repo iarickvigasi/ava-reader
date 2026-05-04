@@ -25,8 +25,8 @@ describe("library and navigation UI", () => {
       <LibraryScreen library={createLibraryPayload()} />,
     );
 
-    expect(markup).toContain('href="/app/library/collections/collection-1"');
-    expect(markup).toContain('href="/app/library/collections/collection-2"');
+    expect(markup).toContain('href="/app/library/collections/imported-books"');
+    expect(markup).toContain('href="/app/library/collections/late-night-reads"');
   });
 
   it("renders collection preview books and empty collection messaging on the library screen", () => {
@@ -35,19 +35,16 @@ describe("library and navigation UI", () => {
     );
 
     expect(markup).toContain(
-      'href="/app/library/books/library-1?fromCollection=collection-1"',
+      'href="/app/library/books/meditations-by-marcus-aurelius?fromCollection=imported-books"',
     );
     expect(markup).toContain(
-      'href="/app/library/books/library-2?fromCollection=collection-1"',
+      'href="/app/library/books/the-republic-by-plato?fromCollection=imported-books"',
     );
     expect(markup).toContain(
-      'href="/app/library/books/library-3?fromCollection=collection-1"',
+      'href="/app/library/books/discourses-by-epictetus?fromCollection=imported-books"',
     );
     expect(markup).toContain(
-      'href="/app/library/books/library-4?fromCollection=collection-1"',
-    );
-    expect(markup).not.toContain(
-      'href="/app/library/books/library-5?fromCollection=collection-1"',
+      'href="/app/library/books/nicomachean-ethics-by-aristotle?fromCollection=imported-books"',
     );
     expect(markup).toContain("Imported Books");
     expect(markup).toContain("No books are in this collection yet.");
@@ -111,6 +108,7 @@ function createLibraryPayload(): LibraryPayload {
         itemCount: 5,
         kind: "SMART",
         name: "Imported Books",
+        slug: "imported-books",
         smartKey: "imported-library",
         unreadCount: 4,
       },
@@ -121,6 +119,7 @@ function createLibraryPayload(): LibraryPayload {
         itemCount: 0,
         kind: "CUSTOM",
         name: "Late Night Reads",
+        slug: "late-night-reads",
         smartKey: null,
         unreadCount: 0,
       },

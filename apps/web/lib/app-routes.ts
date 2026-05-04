@@ -4,18 +4,22 @@ export function getReaderHref(slug: string) {
   return `/app/read/${slug}`;
 }
 
+export function getCollectionHref(slug: string) {
+  return `/app/library/collections/${slug}`;
+}
+
 export function getLibraryBookInfoHref(
   slug: string,
   input?: {
-    fromCollectionId?: string;
+    fromCollectionSlug?: string;
   },
 ) {
   const baseHref = `/app/library/books/${slug}`;
-  const fromCollectionId = input?.fromCollectionId;
+  const fromCollectionSlug = input?.fromCollectionSlug;
 
-  if (!fromCollectionId) {
+  if (!fromCollectionSlug) {
     return baseHref;
   }
 
-  return `${baseHref}?fromCollection=${encodeURIComponent(fromCollectionId)}`;
+  return `${baseHref}?fromCollection=${encodeURIComponent(fromCollectionSlug)}`;
 }

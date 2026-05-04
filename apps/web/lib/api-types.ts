@@ -108,6 +108,7 @@ export type LibraryCollection = {
   itemCount: number;
   kind: "SMART" | "CUSTOM";
   name: string;
+  slug: string;
   smartKey: string | null;
   unreadCount: number;
 };

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { LibraryBookInfoScreen } from "@/components/app/library/book-info/book-info-screen";
-import { APP_LIBRARY_HREF } from "@/lib/app-routes";
+import { APP_LIBRARY_HREF, getCollectionHref } from "@/lib/app-routes";
 import type { LibraryBookInfoPayload } from "@/lib/api-types";
 import { fetchServerApi, ServerApiError } from "@/lib/server-api";
 
@@ -48,11 +48,11 @@ export default async function LibraryBookInfoPage({
     searchParams,
   ]);
   const payload = await getLibraryBookInfo(slug);
-  const fromCollectionId = normalizeFromCollection(
+  const fromCollectionSlug = normalizeFromCollection(
     resolvedSearchParams.fromCollection,
   );
-  const backHref = fromCollectionId
-    ? `/app/library/collections/${encodeURIComponent(fromCollectionId)}`
+  const backHref = fromCollectionSlug
+    ? getCollectionHref(fromCollectionSlug)
     : APP_LIBRARY_HREF;
 
   return (

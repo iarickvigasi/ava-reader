@@ -10,7 +10,9 @@ import {
   ProcessingStatus,
 } from '@prisma/client';
 import { checksumBuffer, toPrismaBytes } from '../shared/blob-utils';
-import { buildBookSlugBase, resolveUniqueBookSlug } from '../shared/book-slug';
+import { buildBookSlugBase } from '../shared/book-slug';
+import { buildCollectionSlugBase } from '../shared/collection-slug';
+import { resolveUniqueSlug } from '../shared/slugify';
 import { daysAgo, startOfDay } from '../shared/date-utils';
 
 const prisma = new PrismaClient();
@@ -251,46 +253,18 @@ async function main() {
     ],
   });
 
-  const philosophyCollection = await prisma.collection.upsert({
-    where: {
-      userId_name: {
-        userId: user.id,
-        name: 'Philosophy Stack',
-      },
-    },
-    update: {
-      description: 'Books for slow thought and clear attention.',
-      kind: CollectionKind.CUSTOM,
-      sortOrder: 10,
-    },
-    create: {
-      userId: user.id,
-      name: 'Philosophy Stack',
-      description: 'Books for slow thought and clear attention.',
-      kind: CollectionKind.CUSTOM,
-      sortOrder: 10,
-    },
+  const philosophyCollection = await ensureCustomCollection({
+    userId: user.id,
+    name: 'Philosophy Stack',
+    description: 'Books for slow thought and clear attention.',
+    sortOrder: 10,
   });
 
-  const lateNightCollection = await prisma.collection.upsert({
-    where: {
-      userId_name: {
-        userId: user.id,
-        name: 'Late Night Fiction',
-      },
-    },
-    update: {
-      description: 'A darker shelf for evening reading.',
-      kind: CollectionKind.CUSTOM,
-      sortOrder: 20,
-    },
-    create: {
-      userId: user.id,
-      name: 'Late Night Fiction',
-      description: 'A darker shelf for evening reading.',
-      kind: CollectionKind.CUSTOM,
-      sortOrder: 20,
-    },
+  const lateNightCollection = await ensureCustomCollection({
+    userId: user.id,
+    name: 'Late Night Fiction',
+    description: 'A darker shelf for evening reading.',
+    sortOrder: 20,
   });
 
   await ensureCollectionMembership(philosophyCollection.id, currentItem.id);
@@ -407,7 +381,7 @@ async function ensureLibraryItem(input: {
     title: book.title,
     authors: book.authors,
   });
-  const slug = await resolveUniqueBookSlug(baseSlug, async (candidate) => {
+  const slug = await resolveUniqueSlug(baseSlug, async (candidate) => {
     const conflict = await prisma.libraryItem.findUnique({
       where: { userId_slug: { userId: input.userId, slug: candidate } },
       select: { id: true },
@@ -441,6 +415,48 @@ async function ensureCollectionMembership(
     create: {
       collectionId,
       libraryItemId,
+    },
+  });
+}
+
+async function ensureCustomCollection(input: {
+  description: string;
+  name: string;
+  sortOrder: number;
+  userId: string;
+}) {
+  const existing = await prisma.collection.findUnique({
+    where: { userId_name: { userId: input.userId, name: input.name } },
+  });
+
+  if (existing) {
+    return prisma.collection.update({
+      where: { id: existing.id },
+      data: {
+        description: input.description,
+        kind: CollectionKind.CUSTOM,
+        sortOrder: input.sortOrder,
+      },
+    });
+  }
+
+  const baseSlug = buildCollectionSlugBase({ name: input.name });
+  const slug = await resolveUniqueSlug(baseSlug, async (candidate) => {
+    const conflict = await prisma.collection.findUnique({
+      where: { userId_slug: { userId: input.userId, slug: candidate } },
+      select: { id: true },
+    });
+    return conflict !== null;
+  });
+
+  return prisma.collection.create({
+    data: {
+      userId: input.userId,
+      name: input.name,
+      description: input.description,
+      kind: CollectionKind.CUSTOM,
+      slug,
+      sortOrder: input.sortOrder,
     },
   });
 }

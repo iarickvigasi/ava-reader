@@ -41,13 +41,13 @@ describe("library collection detail UI", () => {
 
     expect(markup).toContain('href="/app/library"');
     expect(markup).toContain(
-      'href="/app/library/books/library-1?fromCollection=collection-1"',
+      'href="/app/library/books/meditations-by-marcus-aurelius?fromCollection=imported-books"',
     );
     expect(markup).toContain(
-      'href="/app/library/books/library-2?fromCollection=collection-1"',
+      'href="/app/library/books/the-republic-by-plato?fromCollection=imported-books"',
     );
     expect(markup).toContain(
-      'href="/app/library/books/library-3?fromCollection=collection-1"',
+      'href="/app/library/books/discourses-by-epictetus?fromCollection=imported-books"',
     );
     expect(markup).toContain("Imported Books");
     expect(markup).toContain("3 items • 2 unread");
@@ -100,6 +100,7 @@ function createCollection(): LibraryCollection {
     itemCount: 3,
     kind: "CUSTOM",
     name: "Imported Books",
+    slug: "imported-books",
     smartKey: null,
     unreadCount: 2,
   };

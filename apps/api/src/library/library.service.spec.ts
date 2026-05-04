@@ -276,8 +276,8 @@ describe('LibraryService', () => {
 
     expect(findFirst).toHaveBeenCalledWith({
       where: {
-        id: 'collection-1',
         userId: 'user-1',
+        OR: [{ id: 'collection-1' }, { slug: 'collection-1' }],
       },
       include: {
         items: {
@@ -687,15 +687,19 @@ function createCollectionRecord(
     items: ReturnType<typeof createCollectionItem>[];
     kind: 'SMART' | 'CUSTOM';
     name: string;
+    slug: string;
     sortOrder: number;
   }> = {},
 ) {
+  const id = overrides.id ?? 'collection-1';
+
   return {
     description: null,
-    id: 'collection-1',
+    id,
     items: [],
     kind: 'SMART',
     name: 'Collection',
+    slug: overrides.slug ?? id,
     sortOrder: 0,
     ...overrides,
   };
@@ -711,6 +715,7 @@ function createCollectionItem(
     isArchived: boolean;
     lastOpenedAt: string | null;
     lastReadAt: string | null;
+    slug: string;
     title: string;
   }> = {},
 ) {
@@ -723,6 +728,7 @@ function createCollectionItem(
     isArchived = false,
     lastOpenedAt = null,
     lastReadAt = null,
+    slug,
     title = 'Book',
   } = overrides;
 
@@ -753,6 +759,7 @@ function createCollectionItem(
         completionPercent,
         lastReadAt: lastReadAt ? new Date(lastReadAt) : null,
       },
+      slug: slug ?? id,
     },
   };
 }

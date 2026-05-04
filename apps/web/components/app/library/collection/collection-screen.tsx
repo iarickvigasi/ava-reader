@@ -65,7 +65,7 @@ export function LibraryCollectionScreen({ collection }: LibraryCollectionScreenP
                 <LibraryBookCard
                   key={book.libraryItemId}
                   book={book}
-                  collectionId={collection.id}
+                  collectionSlug={collection.slug}
                 />
               ))}
             </div>
@@ -75,7 +75,7 @@ export function LibraryCollectionScreen({ collection }: LibraryCollectionScreenP
                 <LibraryBookCard
                   key={book.libraryItemId}
                   book={book}
-                  collectionId={collection.id}
+                  collectionSlug={collection.slug}
                 />
               ))}
             </div>

@@ -28,7 +28,9 @@ import {
   extractBookMetadata,
   isSupportedSourceFormat,
 } from '../shared/metadata-extractor';
-import { buildBookSlugBase, resolveUniqueBookSlug } from '../shared/book-slug';
+import { buildBookSlugBase } from '../shared/book-slug';
+import { buildCollectionSlugBase } from '../shared/collection-slug';
+import { resolveUniqueSlug } from '../shared/slugify';
 import { inferMimeType, normalizeBookLanguage } from '../shared/book-utils';
 
 type TransactionClient = Prisma.TransactionClient;
@@ -232,8 +234,8 @@ export class LibraryService {
 
     const collection = await this.prisma.collection.findFirst({
       where: {
-        id: collectionId,
         userId: user.id,
+        OR: [{ id: collectionId }, { slug: collectionId }],
       },
       include: {
         items: {
@@ -482,18 +484,15 @@ export class LibraryService {
           title: book.title,
           authors: book.authors,
         });
-        const slug = await resolveUniqueBookSlug(
-          baseSlug,
-          async (candidate) => {
-            const conflict = await tx.libraryItem.findUnique({
-              where: {
-                userId_slug: { userId: input.userId, slug: candidate },
-              },
-              select: { id: true },
-            });
-            return conflict !== null;
-          },
-        );
+        const slug = await resolveUniqueSlug(baseSlug, async (candidate) => {
+          const conflict = await tx.libraryItem.findUnique({
+            where: {
+              userId_slug: { userId: input.userId, slug: candidate },
+            },
+            select: { id: true },
+          });
+          return conflict !== null;
+        });
 
         return tx.libraryItem.create({
           data: {
@@ -570,6 +569,15 @@ export class LibraryService {
     userId: string,
   ) {
     for (const collection of DEFAULT_SMART_COLLECTIONS) {
+      const baseSlug = buildCollectionSlugBase({ name: collection.name });
+      const slug = await resolveUniqueSlug(baseSlug, async (candidate) => {
+        const conflict = await tx.collection.findUnique({
+          where: { userId_slug: { userId, slug: candidate } },
+          select: { id: true, smartKey: true },
+        });
+        return conflict !== null && conflict.smartKey !== collection.smartKey;
+      });
+
       await tx.collection.upsert({
         where: {
           userId_smartKey: {
@@ -589,6 +597,7 @@ export class LibraryService {
           description: collection.description,
           kind: 'SMART',
           name: collection.name,
+          slug,
           sortOrder: collection.sortOrder,
         },
       });
@@ -680,6 +689,7 @@ function serializeCollection(
     itemCount: activeItems.length,
     kind: collection.kind,
     name: collection.name,
+    slug: collection.slug,
     smartKey: collection.smartKey,
     unreadCount: activeItems.filter(
       (item) => (item.progress?.completionPercent ?? 0) < 100,

@@ -5,12 +5,12 @@ import { ServerApiError, fetchServerApi } from "@/lib/server-api";
 
 export const dynamic = "force-dynamic";
 
-async function getLibraryCollection(collectionId: string) {
+async function getLibraryCollection(slug: string) {
   try {
     return await fetchServerApi<LibraryCollectionPayload>(
-      `/api/library/collections/${collectionId}`,
+      `/api/library/collections/${slug}`,
       {
-        returnBackUrl: `/app/library/collections/${collectionId}`,
+        returnBackUrl: `/app/library/collections/${slug}`,
       },
     );
   } catch (error) {
@@ -25,10 +25,10 @@ async function getLibraryCollection(collectionId: string) {
 export default async function LibraryCollectionPage({
   params,
 }: {
-  params: Promise<{ collectionId: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const { collectionId } = await params;
-  const payload = await getLibraryCollection(collectionId);
+  const { slug } = await params;
+  const payload = await getLibraryCollection(slug);
 
   return <LibraryCollectionScreen collection={payload.collection} />;
 }
