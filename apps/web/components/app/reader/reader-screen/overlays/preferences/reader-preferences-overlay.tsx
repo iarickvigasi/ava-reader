@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { MobileCloseButton } from "../mobile-close-button";
 import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
 import { BilingualSection } from "./bilingual-section";
@@ -29,7 +30,11 @@ export function ReaderPreferencesOverlay({
           <PreferencesBackgroundLayer />
           <div className="relative z-10 flex h-full flex-col md:pt-24">
             <div className="pointer-events-auto flex min-h-0 flex-1 flex-col px-6 py-8 sm:px-8 md:animate-[reader-contents-enter_320ms_cubic-bezier(0.22,1,0.36,1)_140ms_both] md:px-8 md:py-0">
-              <PreferencesHeader title={t("title")} />
+              <PreferencesHeader
+                closeLabel={t("closePanel")}
+                onClose={onClose}
+                title={t("title")}
+              />
               <PreferencesSections
                 fontScale={fontScale}
                 onDecreaseFont={onDecreaseFont}
@@ -66,12 +71,21 @@ function PreferencesBackgroundLayer() {
   );
 }
 
-function PreferencesHeader({ title }: { title: string }) {
+function PreferencesHeader({
+  closeLabel,
+  onClose,
+  title,
+}: {
+  closeLabel: string;
+  onClose: () => void;
+  title: string;
+}) {
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="min-w-0">
         <PanelTitle>{title}</PanelTitle>
       </div>
+      <MobileCloseButton ariaLabel={closeLabel} onClose={onClose} />
     </div>
   );
 }

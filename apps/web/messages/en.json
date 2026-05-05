@@ -161,11 +161,13 @@
   "reader": {
     "contents": {
       "title": "Contents",
+      "closePanel": "Close contents panel",
       "completed": "{percent}% completed",
       "chapterCount": "{count} chapters"
     },
     "highlights": {
       "title": "Highlights",
+      "closePanel": "Close highlights panel",
       "searchPlaceholder": "Search",
       "searchAria": "Search highlights",
       "rename": "Rename",
@@ -173,6 +175,7 @@
     },
     "aiComments": {
       "title": "AI Comments",
+      "closePanel": "Close AI comments panel",
       "selection": "Selection",
       "highlight": "Highlight",
       "selectionReadAloud": "Read selection aloud",
