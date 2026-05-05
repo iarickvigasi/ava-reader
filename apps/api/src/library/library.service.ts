@@ -91,67 +91,87 @@ export class LibraryService {
     const user = await this.usersService.getCurrentUserRecord(clerkUserId);
     const metadata = await extractBookMetadata(file);
 
-    return this.prisma.$transaction(async (tx) => {
-      const blob = await tx.storedBlob.create({
-        data: {
-          purpose: BlobPurpose.BOOK_SOURCE,
-          mimeType: file.mimetype || inferMimeType(format),
-          sizeBytes: file.size,
-          originalFilename: file.originalname,
-          checksum: checksumBuffer(file.buffer),
-          bytes: toPrismaBytes(file.buffer),
-        },
-      });
-
-      const coverBlob = metadata.coverImage
-        ? await tx.storedBlob.create({
-            data: {
-              purpose: BlobPurpose.BOOK_COVER,
-              mimeType: metadata.coverImage.mimeType,
-              sizeBytes: metadata.coverImage.bytes.byteLength,
-              originalFilename: metadata.coverImage.originalFilename,
-              checksum: checksumBuffer(metadata.coverImage.bytes),
-              bytes: toPrismaBytes(metadata.coverImage.bytes),
-            },
-          })
-        : null;
-
-      const book = await tx.book.create({
-        data: {
-          title: metadata.title,
-          authors: metadata.authors,
-          description: metadata.description,
-          genres: metadata.genres,
-          language: normalizeBookLanguage(metadata.language),
-          publishedYear: metadata.publishedYear,
-          coverBlobId: coverBlob?.id,
-          files: {
-            create: {
-              blobId: blob.id,
-              format,
-              kind: BookFileKind.SOURCE,
-              processingStatus: ProcessingStatus.READY,
-              isPrimary: true,
-            },
-          },
-          processingRuns:
-            format === BookFileFormat.EPUB
-              ? {
-                  create: {
-                    pipeline: 'normalize-reader-package-v1',
-                    status: ProcessingStatus.PENDING,
-                  },
-                }
-              : undefined,
-        },
-      });
-
-      return this.addBookToUserLibraryTx(tx, {
-        bookId: book.id,
-        source: LibrarySource.IMPORTED,
-        userId: user.id,
-      });
+    // Write the blob bytes outside the metadata transaction. Multi-MB
+    // writes can blow past the default interactive-transaction timeout
+    // and would also hold a DB connection plus row locks for the whole
+    // upload. Blobs are referenced by id, so as long as they exist when
+    // the metadata insert runs, relational integrity holds. If the
+    // metadata transaction fails, we best-effort delete the blobs we
+    // just wrote; anything we miss is an orphan that the periodic GC
+    // (OrphanBlobCleanupService) will sweep up.
+    const blob = await this.prisma.storedBlob.create({
+      data: {
+        purpose: BlobPurpose.BOOK_SOURCE,
+        mimeType: file.mimetype || inferMimeType(format),
+        sizeBytes: file.size,
+        originalFilename: file.originalname,
+        checksum: checksumBuffer(file.buffer),
+        bytes: toPrismaBytes(file.buffer),
+      },
     });
+
+    const coverBlob = metadata.coverImage
+      ? await this.prisma.storedBlob.create({
+          data: {
+            purpose: BlobPurpose.BOOK_COVER,
+            mimeType: metadata.coverImage.mimeType,
+            sizeBytes: metadata.coverImage.bytes.byteLength,
+            originalFilename: metadata.coverImage.originalFilename,
+            checksum: checksumBuffer(metadata.coverImage.bytes),
+            bytes: toPrismaBytes(metadata.coverImage.bytes),
+          },
+        })
+      : null;
+
+    try {
+      return await this.prisma.$transaction(async (tx) => {
+        const book = await tx.book.create({
+          data: {
+            title: metadata.title,
+            authors: metadata.authors,
+            description: metadata.description,
+            genres: metadata.genres,
+            language: normalizeBookLanguage(metadata.language),
+            publishedYear: metadata.publishedYear,
+            coverBlobId: coverBlob?.id,
+            files: {
+              create: {
+                blobId: blob.id,
+                format,
+                kind: BookFileKind.SOURCE,
+                processingStatus: ProcessingStatus.READY,
+                isPrimary: true,
+              },
+            },
+            processingRuns:
+              format === BookFileFormat.EPUB
+                ? {
+                    create: {
+                      pipeline: 'normalize-reader-package-v1',
+                      status: ProcessingStatus.PENDING,
+                    },
+                  }
+                : undefined,
+          },
+        });
+
+        return this.addBookToUserLibraryTx(tx, {
+          bookId: book.id,
+          source: LibrarySource.IMPORTED,
+          userId: user.id,
+        });
+      });
+    } catch (error) {
+      await this.prisma.storedBlob
+        .delete({ where: { id: blob.id } })
+        .catch(() => {});
+      if (coverBlob) {
+        await this.prisma.storedBlob
+          .delete({ where: { id: coverBlob.id } })
+          .catch(() => {});
+      }
+      throw error;
+    }
   }
 
   async addCatalogBookToLibrary(clerkUserId: string, entryId: string) {

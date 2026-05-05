@@ -15,6 +15,7 @@ import { HomeController } from './home/home.controller';
 import { HomeService } from './home/home.service';
 import { LibraryController } from './library/library.controller';
 import { LibraryService } from './library/library.service';
+import { OrphanBlobCleanupService } from './library/orphan-blob-cleanup.service';
 import { PrismaService } from './prisma/prisma.service';
 import { ReaderController } from './reader/reader.controller';
 import { ReaderProcessingService } from './reader/reader-processing.service';
@@ -44,6 +45,7 @@ import { UsersService } from './users/users.service';
     PreferencesService,
     HomeService,
     LibraryService,
+    OrphanBlobCleanupService,
     ReaderService,
     ReaderProcessingService,
     CatalogService,
