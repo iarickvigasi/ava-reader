@@ -161,11 +161,13 @@
   "reader": {
     "contents": {
       "title": "Inhalt",
+      "closePanel": "Inhaltsverzeichnis-Panel schließen",
       "completed": "{percent}% abgeschlossen",
       "chapterCount": "{count} Kapitel"
     },
     "highlights": {
       "title": "Markierungen",
+      "closePanel": "Markierungs-Panel schließen",
       "searchPlaceholder": "Suchen",
       "searchAria": "In Markierungen suchen",
       "rename": "Umbenennen",
@@ -173,6 +175,7 @@
     },
     "aiComments": {
       "title": "KI-Kommentare",
+      "closePanel": "KI-Kommentar-Panel schließen",
       "selection": "Auswahl",
       "highlight": "Markierung",
       "selectionReadAloud": "Auswahl vorlesen",

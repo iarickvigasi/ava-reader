@@ -1,4 +1,5 @@
 import type { ReaderBlock } from '../reader-types';
+import type { EpubAsset } from './archive';
 import type { StylesheetHintMap } from './css/build-stylesheet-hints';
 import { OrderedNode } from './xml-utils';
 import { normalizeBlockNode } from './blocks/block-normalizer';
@@ -6,7 +7,7 @@ import { normalizeBlockNode } from './blocks/block-normalizer';
 export async function normalizeBlocksFromNodes(
   nodes: OrderedNode[],
   chapterId: string,
-  resolveAsset: (assetPath: string) => Promise<string | null>,
+  resolveAsset: (assetPath: string) => Promise<EpubAsset | null>,
   stylesheetHints?: StylesheetHintMap,
 ) {
   let blockIndex = 0;

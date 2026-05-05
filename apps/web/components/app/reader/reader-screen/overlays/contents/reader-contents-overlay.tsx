@@ -9,6 +9,7 @@ import {
 } from "@/lib/reader-toc";
 import type { ReadyReaderPayload, ReadyReaderTocEntry } from "../../shared/types";
 import { clamp } from "../../shared/utils";
+import { MobileCloseButton } from "../mobile-close-button";
 import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
 import { ReaderContentsTreeNode } from "./reader-contents-tree-node";
@@ -120,20 +121,8 @@ function ContentsHeader({
           {formatAuthors(authors)}
         </p>
       </div>
-      <ContentsCloseButton onClose={onClose} />
+      <MobileCloseButton ariaLabel={t("closePanel")} onClose={onClose} />
     </div>
-  );
-}
-
-function ContentsCloseButton({ onClose }: { onClose: () => void }) {
-  return (
-    <button
-      type="button"
-      className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-line/45 bg-white/55 text-ink transition hover:bg-white md:hidden"
-      onClick={onClose}
-    >
-      <span className="font-(--font-ui) text-lg leading-none">×</span>
-    </button>
   );
 }
 

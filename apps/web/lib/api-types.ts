@@ -179,6 +179,7 @@ export type ReaderInline =
       alt: string | null;
       href?: string;
       kind: "image";
+      naturalWidth?: number | null;
       src: string;
     };
 

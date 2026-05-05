@@ -161,11 +161,13 @@
   "reader": {
     "contents": {
       "title": "Contenido",
+      "closePanel": "Cerrar el panel de contenido",
       "completed": "{percent}% completado",
       "chapterCount": "{count} capítulos"
     },
     "highlights": {
       "title": "Resaltados",
+      "closePanel": "Cerrar el panel de resaltados",
       "searchPlaceholder": "Buscar",
       "searchAria": "Buscar resaltados",
       "rename": "Renombrar",
@@ -173,6 +175,7 @@
     },
     "aiComments": {
       "title": "Comentarios de IA",
+      "closePanel": "Cerrar el panel de comentarios de IA",
       "selection": "Selección",
       "highlight": "Resaltado",
       "selectionReadAloud": "Leer la selección en voz alta",

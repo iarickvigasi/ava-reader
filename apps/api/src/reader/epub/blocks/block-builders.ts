@@ -3,10 +3,28 @@ import type {
   ReaderInline,
   ReaderListItem,
 } from '../../reader-types';
+import type { EpubAsset } from '../archive';
 import { OrderedNode, getNodeTagName } from '../xml-utils';
 import { flattenInlineContent } from '../node-utils';
 import { normalizeInlineNodes, buildInlineText } from './inline';
 import type { ReaderTextAlign } from './text-align';
+
+// Inline images at or above this natural width are promoted out of the
+// surrounding paragraph and rendered as standalone block images so text
+// flows above/below them rather than wrapping a small inline element.
+// Below this we treat them as drop-caps or glyph-sized graphics that
+// belong inline with the text they decorate.
+const LARGE_INLINE_IMAGE_WIDTH_PX = 200;
+
+function isLargeInlineImage(
+  inline: ReaderInline,
+): inline is Extract<ReaderInline, { kind: 'image' }> {
+  return (
+    inline.kind === 'image' &&
+    typeof inline.naturalWidth === 'number' &&
+    inline.naturalWidth >= LARGE_INLINE_IMAGE_WIDTH_PX
+  );
+}
 
 // Visual-only hints lifted from the source HTML/CSS for a single block.
 // Bundled together so we can extend it (margin, color, leading…)
@@ -127,7 +145,7 @@ export function buildImageBlocksFromInlines(
 export async function buildImageBlock(
   attrs: Record<string, string>,
   createBlockId: () => string,
-  resolveAsset: (assetPath: string) => Promise<string | null>,
+  resolveAsset: (assetPath: string) => Promise<EpubAsset | null>,
   anchorId: string | null,
 ): Promise<ReaderBlock | null> {
   const src = attrs['@_src'];
@@ -135,8 +153,8 @@ export async function buildImageBlock(
     return null;
   }
 
-  const resolvedSrc = await resolveAsset(src);
-  if (!resolvedSrc) {
+  const resolved = await resolveAsset(src);
+  if (!resolved) {
     return null;
   }
 
@@ -145,7 +163,7 @@ export async function buildImageBlock(
     anchorId,
     id: createBlockId(),
     kind: 'image',
-    src: resolvedSrc,
+    src: resolved.src,
     text: attrs['@_alt'] ?? '',
   };
 }
@@ -153,7 +171,7 @@ export async function buildImageBlock(
 export async function buildTextBlock(
   children: OrderedNode[],
   createBlockId: () => string,
-  resolveAsset: (assetPath: string) => Promise<string | null>,
+  resolveAsset: (assetPath: string) => Promise<EpubAsset | null>,
   anchorId: string | null,
   kind: 'paragraph' | 'blockquote',
   hints?: BlockStyleHints,
@@ -172,7 +190,7 @@ export async function buildTextBlock(
 export async function buildHeadingBlock(
   children: OrderedNode[],
   createBlockId: () => string,
-  resolveAsset: (assetPath: string) => Promise<string | null>,
+  resolveAsset: (assetPath: string) => Promise<EpubAsset | null>,
   anchorId: string | null,
   level: number,
   hints?: BlockStyleHints,
@@ -192,7 +210,7 @@ export async function buildListBlock(
   children: OrderedNode[],
   chapterId: string,
   createBlockId: () => string,
-  resolveAsset: (assetPath: string) => Promise<string | null>,
+  resolveAsset: (assetPath: string) => Promise<EpubAsset | null>,
   anchorId: string | null,
   ordered: boolean,
   hints?: BlockStyleHints,
@@ -237,7 +255,7 @@ export async function buildListBlock(
 export async function buildWrappedInlineBlock(
   node: OrderedNode,
   createBlockId: () => string,
-  resolveAsset: (assetPath: string) => Promise<string | null>,
+  resolveAsset: (assetPath: string) => Promise<EpubAsset | null>,
   anchorId: string | null,
   hints?: BlockStyleHints,
 ): Promise<ReaderBlock | ReaderBlock[] | null> {
@@ -255,7 +273,7 @@ export async function buildWrappedInlineBlock(
 async function buildInlineBlock(
   children: OrderedNode[],
   createBlockId: () => string,
-  resolveAsset: (assetPath: string) => Promise<string | null>,
+  resolveAsset: (assetPath: string) => Promise<EpubAsset | null>,
   anchorId: string | null,
   kind: 'paragraph' | 'blockquote' | 'heading',
   level: number | undefined,
@@ -270,6 +288,23 @@ async function buildInlineBlock(
 
   if (!text && hasInlineImages(inlines)) {
     return buildImageBlocksFromInlines(inlines, createBlockId, anchorId);
+  }
+
+  // When a block mixes text with a large illustration, split the
+  // illustration out as its own image block so it lays out at full
+  // width instead of trying to flow inline with text. Drop-cap-sized
+  // images (below the threshold) stay inline. Applies to headings too:
+  // chapter titles often bundle a decorative illustration ahead of the
+  // heading text in a single <h1>.
+  if (inlines.some(isLargeInlineImage)) {
+    return splitInlinesAroundLargeImages(
+      inlines,
+      createBlockId,
+      anchorId,
+      kind,
+      level,
+      hints,
+    );
   }
 
   if (kind === 'heading') {
@@ -296,4 +331,65 @@ async function buildInlineBlock(
     },
     hints,
   );
+}
+
+function splitInlinesAroundLargeImages(
+  inlines: ReaderInline[],
+  createBlockId: () => string,
+  anchorId: string | null,
+  kind: 'paragraph' | 'blockquote' | 'heading',
+  level: number | undefined,
+  hints: BlockStyleHints | undefined,
+): ReaderBlock[] {
+  const blocks: ReaderBlock[] = [];
+  let pending: ReaderInline[] = [];
+  let pendingAnchorId: string | null = anchorId;
+
+  const flushPending = () => {
+    const pendingText = buildInlineText(pending);
+    if (!pendingText && !hasInlineImages(pending)) {
+      pending = [];
+      return;
+    }
+    const baseBlock =
+      kind === 'heading'
+        ? {
+            anchorId: pendingAnchorId,
+            id: createBlockId(),
+            inlines: pending,
+            kind: 'heading' as const,
+            level: level!,
+            text: pendingText,
+          }
+        : {
+            anchorId: pendingAnchorId,
+            id: createBlockId(),
+            inlines: pending,
+            kind,
+            text: pendingText,
+          };
+    blocks.push(applyBlockStyleHints(baseBlock, hints));
+    pending = [];
+    pendingAnchorId = null;
+  };
+
+  for (const inline of inlines) {
+    if (isLargeInlineImage(inline)) {
+      flushPending();
+      blocks.push({
+        alt: inline.alt,
+        anchorId: pendingAnchorId,
+        id: createBlockId(),
+        kind: 'image' as const,
+        src: inline.src,
+        text: inline.alt ?? '',
+      });
+      pendingAnchorId = null;
+      continue;
+    }
+    pending.push(inline);
+  }
+
+  flushPending();
+  return blocks;
 }

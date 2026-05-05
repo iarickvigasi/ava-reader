@@ -41,7 +41,7 @@ export function EmailCodePanel({
   const isSignUp = mode === "sign-up";
 
   return (
-    <div className="space-y-4 rounded-(--radius-card) bg-white/68 p-5 text-left">
+    <div className="space-y-4 rounded-(--radius-card) bg-surface p-5 text-left">
       <div className="space-y-1">
         <p className="text-sm uppercase tracking-[0.22em] text-muted">
           {stage === "identifier"
