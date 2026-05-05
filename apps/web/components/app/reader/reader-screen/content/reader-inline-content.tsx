@@ -27,7 +27,7 @@ export function ReaderInlineContent({ inlines }: { inlines: ReaderInline[] }) {
             // eslint-disable-next-line @next/next/no-img-element
             <img
               alt={inline.alt ?? ""}
-              className="mx-1 inline-block max-h-8 max-w-32 align-middle"
+              className="mx-1 inline-block max-h-32 align-middle"
               src={inline.src}
             />
           );

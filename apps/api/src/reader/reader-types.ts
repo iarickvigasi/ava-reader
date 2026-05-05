@@ -15,6 +15,11 @@ export type ReaderInline =
       alt: string | null;
       href?: string;
       kind: 'image';
+      // Intrinsic pixel width read from the source asset. Null when the
+      // format isn't introspected (e.g. SVG). The block builder uses
+      // this to decide whether the image is a drop-cap that stays
+      // inline or an illustration that gets promoted to a block.
+      naturalWidth?: number | null;
       src: string;
     };
 

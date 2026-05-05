@@ -1,4 +1,5 @@
 import type { ReaderBlock } from '../../reader-types';
+import type { EpubAsset } from '../archive';
 import {
   createEmptyStylesheetHintMap,
   mergeStylesheetClassHints,
@@ -53,7 +54,7 @@ const EMPTY_HINTS: InheritedStyleHints = {
 export type NormalizeBlockOptions = {
   chapterId: string;
   createBlockId: () => string;
-  resolveAsset: (assetPath: string) => Promise<string | null>;
+  resolveAsset: (assetPath: string) => Promise<EpubAsset | null>;
   stylesheetHints?: StylesheetHintMap;
   inheritedHints?: InheritedStyleHints;
 };

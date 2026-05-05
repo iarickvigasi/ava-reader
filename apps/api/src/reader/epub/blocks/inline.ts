@@ -1,4 +1,5 @@
 import type { ReaderInline } from '../../reader-types';
+import type { EpubAsset } from '../archive';
 import {
   OrderedNode,
   getNodeTagName,
@@ -17,7 +18,7 @@ type InlineState = {
 
 export async function normalizeInlineNodes(
   nodes: OrderedNode[],
-  resolveAsset: (assetPath: string) => Promise<string | null>,
+  resolveAsset: (assetPath: string) => Promise<EpubAsset | null>,
   state: InlineState = {},
 ): Promise<ReaderInline[]> {
   const inlines: ReaderInline[] = [];
@@ -108,7 +109,7 @@ function deriveInlineState(node: OrderedNode, state: InlineState): InlineState {
 async function tryResolveImageInline(
   node: OrderedNode,
   href: string | undefined,
-  resolveAsset: (assetPath: string) => Promise<string | null>,
+  resolveAsset: (assetPath: string) => Promise<EpubAsset | null>,
 ): Promise<ReaderInline | null> {
   const attrs = getNodeAttributes(node);
   const src = attrs['@_src'];
@@ -116,8 +117,8 @@ async function tryResolveImageInline(
     return null;
   }
 
-  const resolvedSrc = await resolveAsset(src);
-  if (!resolvedSrc) {
+  const resolved = await resolveAsset(src);
+  if (!resolved) {
     return null;
   }
 
@@ -125,7 +126,8 @@ async function tryResolveImageInline(
     alt: attrs['@_alt'] ?? null,
     href,
     kind: 'image',
-    src: resolvedSrc,
+    naturalWidth: resolved.naturalWidth,
+    src: resolved.src,
   };
 }
 

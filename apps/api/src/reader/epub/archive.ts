@@ -3,6 +3,13 @@ import JSZip from 'jszip';
 import mime from 'mime-types';
 import { resolveZipPath } from '../../shared/zip-utils';
 import { xmlParser, firstAsArray } from './xml-utils';
+import { readImageDimensions } from './image-dimensions';
+
+export type EpubAsset = {
+  src: string;
+  naturalWidth: number | null;
+  naturalHeight: number | null;
+};
 
 export async function readZipText(zip: JSZip, path: string): Promise<string> {
   const file = zip.file(path);
@@ -40,7 +47,7 @@ export async function readEpubAssetAsDataUrl(
   packagePath: string,
   chapterHref: string,
   assetPath: string,
-): Promise<string | null> {
+): Promise<EpubAsset | null> {
   const chapterPath = resolveZipPath(packagePath, chapterHref);
   const resolvedPath = resolveZipPath(chapterPath, assetPath);
   const assetFile = zip.file(resolvedPath);
@@ -52,7 +59,12 @@ export async function readEpubAssetAsDataUrl(
   const bytes = await assetFile.async('nodebuffer');
   const mimeType =
     mime.lookup(resolvedPath) || inferMimeTypeFromPath(resolvedPath);
-  return `data:${mimeType};base64,${bytes.toString('base64')}`;
+  const dimensions = readImageDimensions(bytes);
+  return {
+    src: `data:${mimeType};base64,${bytes.toString('base64')}`,
+    naturalWidth: dimensions?.width ?? null,
+    naturalHeight: dimensions?.height ?? null,
+  };
 }
 
 export async function readEpubAssetAsText(
