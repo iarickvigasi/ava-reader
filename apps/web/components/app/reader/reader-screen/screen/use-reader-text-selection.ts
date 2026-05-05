@@ -43,7 +43,7 @@ export function useReaderTextSelection({
       return;
     }
 
-    const checkSelection = () => {
+    const checkSelection = (clearAfter: boolean) => {
       const selection = window.getSelection();
       if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
         return;
@@ -68,6 +68,16 @@ export function useReaderTextSelection({
       }
 
       onSelectRef.current({ text, range });
+
+      // On touch, the live selection causes the browser's native callout
+      // (Copy / Share / Look Up on iOS Safari, Copy / Translate on Chrome
+      // Android) to render on top of our panel. We've already captured the
+      // text and a locator, so we can drop the live selection without losing
+      // anything — color picks and translations operate on the captured
+      // values, not on window.getSelection().
+      if (clearAfter) {
+        selection.removeAllRanges();
+      }
     };
 
     // The selection isn't fully resolved yet at the moment mouseup/touchend
@@ -90,7 +100,8 @@ export function useReaderTextSelection({
       if (!(target instanceof Node) || !container.contains(target)) {
         return;
       }
-      window.setTimeout(checkSelection, 0);
+      const isTouch = event.type === "touchend";
+      window.setTimeout(() => checkSelection(isTouch), 0);
     };
 
     document.addEventListener("mouseup", handlePointerEnd);
