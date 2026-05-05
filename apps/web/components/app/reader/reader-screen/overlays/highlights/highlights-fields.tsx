@@ -53,7 +53,7 @@ export function ColorFilterChip({
       className={cn(
         "inline-flex h-8 items-center gap-1.5 rounded-lg pl-2.5 pr-1 transition",
         isActive
-          ? "bg-ink text-white"
+          ? "bg-brand-fill text-paper"
           : "bg-soft-tone-fill text-muted hover:bg-soft-tone-fill/80",
       )}
     >
