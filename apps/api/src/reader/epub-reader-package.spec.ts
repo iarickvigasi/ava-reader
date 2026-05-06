@@ -15,7 +15,9 @@ describe('buildReaderPackageFromEpub', () => {
 
     expect(readerPackage.version).toBe(2);
     expect(readerPackage.manifest.authors).toEqual(['Example Author']);
-    expect(readerPackage.manifest.totalChapters).toBe(2);
+    // chapter-1.xhtml is split at #part-one, so we get three chapters:
+    //   1) Chapter One leading section, 2) Part One, 3) Chapter Two.
+    expect(readerPackage.manifest.totalChapters).toBe(3);
     expect(readerPackage.toc).toHaveLength(2);
     const firstTocEntry = expectDefined(readerPackage.toc[0]);
     const firstNestedTocEntry = expectDefined(firstTocEntry.children[0]);
@@ -26,40 +28,50 @@ describe('buildReaderPackageFromEpub', () => {
     expect(firstTocEntry.id).toBe('toc:0');
     expect(firstTocEntry.label).toBe('Chapter One');
     expect(firstNestedTocEntry.anchorId).toBe('part-one');
-    expect(firstNestedTocEntry.blockId).toContain('::b2');
-    expect(firstNestedTocEntry.chapterId).toMatch(/^chapter-1-/);
+    // The Part One segment is now its own chapter, so its anchor block is the
+    // chapter's first block (b1).
+    expect(firstNestedTocEntry.blockId).toContain('::b1');
+    expect(firstNestedTocEntry.chapterId).toMatch(/^chapter-2-/);
     expect(firstNestedTocEntry.href).toBe('text/chapter-1.xhtml#part-one');
     expect(firstNestedTocEntry.id).toBe('toc:0.0');
     expect(firstNestedTocEntry.label).toBe('Part One');
     expect(secondTocEntry.chapterId).toBeNull();
     expect(secondTocEntry.href).toBeNull();
     expect(secondTocEntry.label).toBe('Part II');
-    expect(secondNestedTocEntry.chapterId).toMatch(/^chapter-2-/);
+    expect(secondNestedTocEntry.chapterId).toMatch(/^chapter-3-/);
     expect(secondNestedTocEntry.id).toBe('toc:1.0');
     expect(secondNestedTocEntry.label).toBe('Chapter Two');
     expect(readerPackage.chapters[0].chapterId).toMatch(/^chapter-1-/);
+    expect(readerPackage.chapters[0].blocks).toHaveLength(1);
     expect(readerPackage.chapters[0].blocks[0]).toMatchObject({
       kind: 'heading',
       text: 'Chapter One',
     });
-    expect(readerPackage.chapters[0].blocks[1]).toMatchObject({
+    expect(readerPackage.chapters[1].chapterId).toMatch(/^chapter-2-/);
+    expect(readerPackage.chapters[1].href).toBe(
+      'text/chapter-1.xhtml#part-one',
+    );
+    expect(readerPackage.chapters[1].blocks[0]).toMatchObject({
       anchorId: 'part-one',
       kind: 'heading',
       text: 'Part One',
     });
-    expect(readerPackage.chapters[0].blocks[2]).toMatchObject({
+    expect(readerPackage.chapters[1].blocks[1]).toMatchObject({
       kind: 'paragraph',
       text: 'Hello brave reader.',
     });
-    expect(readerPackage.chapters[0].blocks[3]).toMatchObject({
+    expect(readerPackage.chapters[1].blocks[2]).toMatchObject({
       kind: 'image',
     });
-    const fourthBlock = expectDefined(readerPackage.chapters[0].blocks[3]);
-    if (fourthBlock.kind !== 'image') {
-      throw new Error('Expected the fourth block to be an image.');
+    const partOneImageBlock = expectDefined(
+      readerPackage.chapters[1].blocks[2],
+    );
+    if (partOneImageBlock.kind !== 'image') {
+      throw new Error('Expected the third block of Part One to be an image.');
     }
-    expect(fourthBlock.src).toMatch(/^data:image\/png;base64,/);
-    expect(readerPackage.chapters[1].blocks[1]).toMatchObject({
+    expect(partOneImageBlock.src).toMatch(/^data:image\/png;base64,/);
+    expect(readerPackage.chapters[2].chapterId).toMatch(/^chapter-3-/);
+    expect(readerPackage.chapters[2].blocks[1]).toMatchObject({
       kind: 'list',
       text: 'First\nSecond',
     });
@@ -83,12 +95,115 @@ describe('buildReaderPackageFromEpub', () => {
     expect(firstTocEntry.chapterId).toMatch(/^chapter-1-/);
     expect(firstTocEntry.id).toBe('toc:0');
     expect(firstTocEntry.label).toBe('Chapter One');
-    expect(firstNestedTocEntry.chapterId).toMatch(/^chapter-1-/);
+    // chapter-1.xhtml is split at #part-one, so Part One becomes the second
+    // chapter overall and Chapter Two becomes the third.
+    expect(firstNestedTocEntry.chapterId).toMatch(/^chapter-2-/);
     expect(firstNestedTocEntry.id).toBe('toc:0.0');
     expect(firstNestedTocEntry.label).toBe('Part One');
-    expect(secondTocEntry.chapterId).toMatch(/^chapter-2-/);
+    expect(secondTocEntry.chapterId).toMatch(/^chapter-3-/);
     expect(secondTocEntry.id).toBe('toc:1');
     expect(secondTocEntry.label).toBe('Chapter Two');
+  });
+
+  it('splits a single spine document into multiple chapters at TOC anchor boundaries', async () => {
+    // Mirrors Project Gutenberg's "Pride and Prejudice" layout: a single
+    // XHTML spine doc contains many logical chapters separated only by anchor
+    // ids that the NCX TOC links to. Each anchor must produce its own
+    // ReaderChapter so navigation, highlighting, and per-chapter pagination
+    // work the same as for "one chapter per file" EPUBs.
+    const epubBuffer = await createReaderEpubBufferWithMultiChapterSpine();
+
+    const readerPackage = await buildReaderPackageFromEpub({
+      authors: ['Jane Austen'],
+      buffer: epubBuffer,
+      checksum: 'source-checksum',
+      language: 'en',
+      title: 'Pride and Prejudice',
+    });
+
+    expect(readerPackage.chapters).toHaveLength(4);
+
+    const [chapterFront, chapterOne, chapterTwo, chapterThree] =
+      readerPackage.chapters;
+    expect(chapterFront.href).toBe('text/spine-1.xhtml');
+    expect(chapterFront.label).toBe('Front matter');
+    expect(chapterFront.blocks[0]).toMatchObject({
+      kind: 'heading',
+      text: 'Pride and Prejudice',
+    });
+
+    expect(chapterOne.href).toBe('text/spine-1.xhtml#chapter-i');
+    expect(chapterOne.label).toBe('Chapter I');
+    expect(chapterOne.blocks[0]).toMatchObject({
+      anchorId: 'chapter-i',
+      kind: 'heading',
+      text: 'CHAPTER I.',
+    });
+    expect(chapterOne.blocks[1]).toMatchObject({
+      kind: 'paragraph',
+      text: 'It is a truth universally acknowledged.',
+    });
+    expect(chapterOne.previousChapterId).toBe(chapterFront.chapterId);
+    expect(chapterOne.nextChapterId).toBe(chapterTwo.chapterId);
+
+    expect(chapterTwo.href).toBe('text/spine-1.xhtml#chapter-ii');
+    expect(chapterTwo.label).toBe('Chapter II');
+    expect(chapterTwo.blocks[0]).toMatchObject({
+      anchorId: 'chapter-ii',
+      kind: 'heading',
+      text: 'CHAPTER II.',
+    });
+
+    // The second spine doc has no TOC anchors → stays as one chapter.
+    expect(chapterThree.href).toBe('text/spine-2.xhtml');
+    expect(chapterThree.label).toBe('Chapter III');
+    expect(chapterThree.previousChapterId).toBe(chapterTwo.chapterId);
+    expect(chapterThree.nextChapterId).toBeNull();
+
+    // TOC entries must point at the right per-chapter ids so the active
+    // chapter highlighting can distinguish between the three logical chapters
+    // that share spine-1.xhtml.
+    const tocByLabel = new Map(
+      readerPackage.toc.map((node) => [node.label, node]),
+    );
+    expect(tocByLabel.get('Chapter I')?.chapterId).toBe(chapterOne.chapterId);
+    expect(tocByLabel.get('Chapter I')?.blockId).toBe(chapterOne.blocks[0].id);
+    expect(tocByLabel.get('Chapter II')?.chapterId).toBe(chapterTwo.chapterId);
+    expect(tocByLabel.get('Chapter II')?.blockId).toBe(chapterTwo.blocks[0].id);
+    expect(tocByLabel.get('Chapter III')?.chapterId).toBe(
+      chapterThree.chapterId,
+    );
+
+    // Block numbering restarts per chapter — each chapter's first block is
+    // ::b1 regardless of where its segment started in the source spine doc.
+    expect(chapterOne.blocks[0].id.endsWith('::b1')).toBe(true);
+    expect(chapterTwo.blocks[0].id.endsWith('::b1')).toBe(true);
+  });
+
+  it('propagates a wrapping div anchor to its first child block', async () => {
+    // Some EPUBs only set the chapter anchor id on a wrapping <div> rather
+    // than on the heading itself. The splitter only sees anchors on block
+    // elements, so the normalizer must hand the container's id down to the
+    // first child block.
+    const epubBuffer = await createReaderEpubBufferWithDivAnchor();
+
+    const readerPackage = await buildReaderPackageFromEpub({
+      authors: ['Author'],
+      buffer: epubBuffer,
+      checksum: 'source-checksum',
+      language: 'en',
+      title: 'Title',
+    });
+
+    expect(readerPackage.chapters).toHaveLength(2);
+    const [front, chapterOne] = readerPackage.chapters;
+    expect(front.href).toBe('text/spine.xhtml');
+    expect(chapterOne.href).toBe('text/spine.xhtml#chap-1');
+    expect(chapterOne.blocks[0]).toMatchObject({
+      anchorId: 'chap-1',
+      kind: 'heading',
+      text: 'Chapter One',
+    });
   });
 
   it('falls back to toc order when the epub has no readable spine', async () => {
@@ -868,6 +983,152 @@ async function createReaderEpubBufferWithMissingStylesheet() {
   </head>
   <body>
     <p class="indent">Hello world.</p>
+  </body>
+</html>`,
+  );
+
+  return Buffer.from(await zip.generateAsync({ type: 'uint8array' }));
+}
+
+async function createReaderEpubBufferWithMultiChapterSpine() {
+  const zip = new JSZip();
+
+  zip.file(
+    'META-INF/container.xml',
+    `<?xml version="1.0" encoding="UTF-8"?>
+<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+  <rootfiles>
+    <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/>
+  </rootfiles>
+</container>`,
+  );
+
+  zip.file(
+    'OEBPS/content.opf',
+    `<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <manifest>
+    <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>
+    <item id="spine-1" href="text/spine-1.xhtml" media-type="application/xhtml+xml"/>
+    <item id="spine-2" href="text/spine-2.xhtml" media-type="application/xhtml+xml"/>
+  </manifest>
+  <spine toc="ncx">
+    <itemref idref="spine-1"/>
+    <itemref idref="spine-2"/>
+  </spine>
+</package>`,
+  );
+
+  zip.file(
+    'OEBPS/toc.ncx',
+    `<?xml version="1.0" encoding="UTF-8"?>
+<ncx version="2005-1">
+  <navMap>
+    <navPoint id="np-front" playOrder="1">
+      <navLabel><text>Front matter</text></navLabel>
+      <content src="text/spine-1.xhtml"/>
+    </navPoint>
+    <navPoint id="np-1" playOrder="2">
+      <navLabel><text>Chapter I</text></navLabel>
+      <content src="text/spine-1.xhtml#chapter-i"/>
+    </navPoint>
+    <navPoint id="np-2" playOrder="3">
+      <navLabel><text>Chapter II</text></navLabel>
+      <content src="text/spine-1.xhtml#chapter-ii"/>
+    </navPoint>
+    <navPoint id="np-3" playOrder="4">
+      <navLabel><text>Chapter III</text></navLabel>
+      <content src="text/spine-2.xhtml"/>
+    </navPoint>
+  </navMap>
+</ncx>`,
+  );
+
+  zip.file(
+    'OEBPS/text/spine-1.xhtml',
+    `<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <body>
+    <h1>Pride and Prejudice</h1>
+    <p>By Jane Austen.</p>
+    <h2 id="chapter-i">CHAPTER I.</h2>
+    <p>It is a truth universally acknowledged.</p>
+    <p>However little known the feelings.</p>
+    <h2 id="chapter-ii">CHAPTER II.</h2>
+    <p>Mr. Bennet was among the earliest.</p>
+  </body>
+</html>`,
+  );
+
+  zip.file(
+    'OEBPS/text/spine-2.xhtml',
+    `<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <body>
+    <h2>Chapter III</h2>
+    <p>Not all that Mrs. Bennet could do.</p>
+  </body>
+</html>`,
+  );
+
+  return Buffer.from(await zip.generateAsync({ type: 'uint8array' }));
+}
+
+async function createReaderEpubBufferWithDivAnchor() {
+  const zip = new JSZip();
+
+  zip.file(
+    'META-INF/container.xml',
+    `<?xml version="1.0" encoding="UTF-8"?>
+<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+  <rootfiles>
+    <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/>
+  </rootfiles>
+</container>`,
+  );
+
+  zip.file(
+    'OEBPS/content.opf',
+    `<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <manifest>
+    <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>
+    <item id="spine" href="text/spine.xhtml" media-type="application/xhtml+xml"/>
+  </manifest>
+  <spine toc="ncx">
+    <itemref idref="spine"/>
+  </spine>
+</package>`,
+  );
+
+  zip.file(
+    'OEBPS/toc.ncx',
+    `<?xml version="1.0" encoding="UTF-8"?>
+<ncx version="2005-1">
+  <navMap>
+    <navPoint id="np-front" playOrder="1">
+      <navLabel><text>Front matter</text></navLabel>
+      <content src="text/spine.xhtml"/>
+    </navPoint>
+    <navPoint id="np-1" playOrder="2">
+      <navLabel><text>Chapter One</text></navLabel>
+      <content src="text/spine.xhtml#chap-1"/>
+    </navPoint>
+  </navMap>
+</ncx>`,
+  );
+
+  zip.file(
+    'OEBPS/text/spine.xhtml',
+    `<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <body>
+    <h1>The Book</h1>
+    <p>Front matter.</p>
+    <div id="chap-1" class="chapter">
+      <h2>Chapter One</h2>
+      <p>The chapter begins here.</p>
+    </div>
   </body>
 </html>`,
   );

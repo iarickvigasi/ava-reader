@@ -18,7 +18,11 @@ import type { ParsedTocNode, NcxNode } from './toc/types';
 import { findTocNavNode, readNavEntries } from './toc/nav-parser';
 import { readNcxEntries } from './toc/ncx-parser';
 import { resolveTocNodes } from './toc/resolver';
-import { createTocNodeId } from './toc/utils';
+import {
+  createTocNodeId,
+  extractAnchorIdFromHref,
+  normalizeAnchorForLookup,
+} from './toc/utils';
 
 export type { ParsedTocNode } from './toc/types';
 
@@ -82,19 +86,38 @@ export async function readTocEntries(
   );
   return resolveTocNodeHrefs(ncxEntries, ncxFilePath, packageDirectory);
 }
-
-export function findFirstTocLabelForHref(
+/**
+ * Find the TOC label for a chapter at a specific (spinePath, anchorId)
+ * coordinate. We need this when a single spine doc is split into multiple
+ * logical chapters by anchor — `findFirstTocLabelForHref` would happily
+ * return the first matching path-only label for every segment.
+ */
+export function findTocLabelForChapterCoord(
   nodes: ParsedTocNode[],
-  href: string,
+  spinePath: string,
+  anchorId: string | null,
 ): string | null {
-  const targetHref = normalizeHrefForLookup(href);
+  const targetPath = normalizeHrefForLookup(spinePath);
+  const targetAnchor = anchorId ? normalizeAnchorForLookup(anchorId) : null;
 
   for (const node of nodes) {
-    if (node.href && normalizeHrefForLookup(node.href) === targetHref) {
-      return node.label;
+    if (node.href) {
+      const nodePath = normalizeHrefForLookup(node.href);
+      const nodeAnchorRaw = extractAnchorIdFromHref(node.href);
+      const nodeAnchor = nodeAnchorRaw
+        ? normalizeAnchorForLookup(nodeAnchorRaw)
+        : null;
+
+      if (nodePath === targetPath && nodeAnchor === targetAnchor) {
+        return node.label;
+      }
     }
 
-    const nestedMatch = findFirstTocLabelForHref(node.children, href);
+    const nestedMatch = findTocLabelForChapterCoord(
+      node.children,
+      spinePath,
+      anchorId,
+    );
     if (nestedMatch) {
       return nestedMatch;
     }
