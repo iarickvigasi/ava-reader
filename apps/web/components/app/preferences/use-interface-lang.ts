@@ -13,8 +13,6 @@ import { usePreference } from "./use-preference";
 const STORAGE_KEY = "ava.interfaceLang";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
-export const DEFAULT_INTERFACE_LANG: Locale = defaultLocale;
-
 function parseInterfaceLang(raw: unknown): Locale | null {
   return isLocale(raw) ? raw : null;
 }
