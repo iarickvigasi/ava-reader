@@ -1,6 +1,5 @@
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import type { AiCommentLocator } from "@/lib/api-types";
 import { MobileCloseButton } from "../mobile-close-button";
 import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
@@ -12,19 +11,11 @@ import { SelectionSection } from "./selection-section";
 type ReaderAiCommentsOverlayProps = {
   libraryItemId: string;
   onClose: () => void;
-  // Called once after each successful AI tool generation so the parent can
-  // refetch the comments list and re-render highlights.
-  onCommentCreated?: () => void;
-  selectedLocator?: AiCommentLocator | null;
-  selectedText?: string;
 };
 
 export function ReaderAiCommentsOverlay({
   libraryItemId,
   onClose,
-  onCommentCreated,
-  selectedLocator,
-  selectedText,
 }: ReaderAiCommentsOverlayProps) {
   useCloseOnEscape(onClose);
   const [selectedColor, setSelectedColor] = useState<HighlightColor | null>(
@@ -42,10 +33,7 @@ export function ReaderAiCommentsOverlay({
               <AiCommentsHeader onClose={onClose} />
               <AiCommentsSections
                 libraryItemId={libraryItemId}
-                onCommentCreated={onCommentCreated}
                 selectedColor={selectedColor}
-                selectedLocator={selectedLocator ?? null}
-                selectedText={selectedText ?? ""}
                 onSelectColor={setSelectedColor}
               />
             </div>
@@ -89,32 +77,21 @@ function AiCommentsHeader({ onClose }: { onClose: () => void }) {
 
 function AiCommentsSections({
   libraryItemId,
-  onCommentCreated,
   selectedColor,
-  selectedLocator,
-  selectedText,
   onSelectColor,
 }: {
   libraryItemId: string;
-  onCommentCreated?: () => void;
   selectedColor: HighlightColor | null;
-  selectedLocator: AiCommentLocator | null;
-  selectedText: string;
   onSelectColor: (color: HighlightColor) => void;
 }) {
   return (
     <div className="mt-8 flex min-h-0 flex-1 flex-col gap-6 overflow-auto pb-8 pr-1">
-      <SelectionSection selectedText={selectedText} />
+      <SelectionSection />
       <HighlightSection
         selectedColor={selectedColor}
         onSelectColor={onSelectColor}
       />
-      <AiToolsSection
-        libraryItemId={libraryItemId}
-        onCommentCreated={onCommentCreated}
-        selectedLocator={selectedLocator}
-        selectedText={selectedText}
-      />
+      <AiToolsSection libraryItemId={libraryItemId} />
     </div>
   );
 }

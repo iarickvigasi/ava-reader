@@ -9,7 +9,8 @@ import {
   SparkIcon,
   SpeakerIcon,
 } from "@/components/app/shared/app-icons";
-import type { AiCommentLocator } from "@/lib/api-types";
+import { useReaderSelectionContext } from "../../screen/reader-selection-context";
+import { useAiCommentsContext } from "./ai-comments-context";
 import { EtymologyIcon, LightbulbIcon } from "./ai-comments-icons";
 import { ToolResultView } from "./tool-result-view";
 import { ToolSection } from "./tool-section";
@@ -19,20 +20,13 @@ type ToolKey = "translate" | "etymology" | "explain";
 
 type AiToolsSectionProps = {
   libraryItemId: string;
-  // Fired once after each successful tool generation. Used by the parent to
-  // refetch the persisted comments list and re-paint the reader highlights.
-  onCommentCreated?: () => void;
-  selectedLocator: AiCommentLocator | null;
-  selectedText: string;
 };
 
-export function AiToolsSection({
-  libraryItemId,
-  onCommentCreated,
-  selectedLocator,
-  selectedText,
-}: AiToolsSectionProps) {
+export function AiToolsSection({ libraryItemId }: AiToolsSectionProps) {
   const t = useTranslations("reader.aiTools");
+  const { text: selectedText, locator: selectedLocator } =
+    useReaderSelectionContext();
+  const { refetch: refetchAiComments } = useAiCommentsContext();
   // Multi-open accordion: each tool has its own open/closed state and opening
   // one does NOT collapse the others. Sections only close when the user
   // clicks them again or when the whole panel is dismissed (the component
@@ -46,7 +40,7 @@ export function AiToolsSection({
   const etymology = useAiTool({ libraryItemId });
   const explain = useAiTool({ libraryItemId });
 
-  const trimmedSelection = selectedText.trim();
+  const trimmedSelection = (selectedText ?? "").trim();
   // Serialise once per selection. The server stores this string verbatim in
   // AiComment.locator so it can re-anchor the highlight on a future read.
   const locatorJson = useMemo(
@@ -81,7 +75,7 @@ export function AiToolsSection({
     const finishedExplain =
       prevStreaming.current.explain && !cur.explain && explain.text;
     if (finishedTranslate || finishedEtymology || finishedExplain) {
-      onCommentCreated?.();
+      refetchAiComments();
     }
     prevStreaming.current = cur;
   }, [
@@ -91,7 +85,7 @@ export function AiToolsSection({
     etymology.text,
     explain.isStreaming,
     explain.text,
-    onCommentCreated,
+    refetchAiComments,
   ]);
 
   // One trigger effect per tool. Each fires when its section is open AND
