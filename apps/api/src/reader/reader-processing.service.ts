@@ -10,9 +10,11 @@ import {
   OnModuleDestroy,
   OnModuleInit,
 } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { checksumBuffer, toPrismaBytes } from '../shared/blob-utils';
 import { buildReaderPackageFromEpub } from './epub-reader-package';
+import { buildReadingProgressIndex } from './reader.service';
 import type { ReaderPackage } from './reader-types';
 
 const READER_PACKAGE_MIME_TYPE = 'application/vnd.ava.reader-package+json';
@@ -123,6 +125,7 @@ export class ReaderProcessingService implements OnModuleInit, OnModuleDestroy {
       return;
     }
 
+    let createdBlobId: string | null = null;
     try {
       const readerPackage = await buildReaderPackageFromEpub({
         authors: run.book.authors,
@@ -134,6 +137,25 @@ export class ReaderProcessingService implements OnModuleInit, OnModuleDestroy {
       const estimatedPageCount = estimatePageCount(readerPackage);
       const packageBytes = Buffer.from(JSON.stringify(readerPackage), 'utf8');
       const checksum = checksumBuffer(packageBytes);
+      const readingProgressIndex = buildReadingProgressIndex(readerPackage);
+
+      // Write the package blob outside the metadata transaction. For large
+      // books the bytes payload runs to tens of MB and a single insert can
+      // exceed the interactive-transaction timeout; it would also pin a DB
+      // connection plus row locks for the entire write. Same pattern as
+      // LibraryService.importBook — orphan blobs are best-effort cleaned up
+      // below on failure, with OrphanBlobCleanupService as backstop.
+      const blob = await this.prisma.storedBlob.create({
+        data: {
+          bytes: toPrismaBytes(packageBytes),
+          checksum,
+          mimeType: READER_PACKAGE_MIME_TYPE,
+          originalFilename: `${run.bookId}-reader-package.json`,
+          purpose: BlobPurpose.DERIVED_READER,
+          sizeBytes: packageBytes.byteLength,
+        },
+      });
+      createdBlobId = blob.id;
 
       await this.prisma.$transaction(
         async (tx) => {
@@ -157,17 +179,6 @@ export class ReaderProcessingService implements OnModuleInit, OnModuleDestroy {
             },
           });
 
-          const blob = await tx.storedBlob.create({
-            data: {
-              bytes: toPrismaBytes(packageBytes),
-              checksum,
-              mimeType: READER_PACKAGE_MIME_TYPE,
-              originalFilename: `${run.bookId}-reader-package.json`,
-              purpose: BlobPurpose.DERIVED_READER,
-              sizeBytes: packageBytes.byteLength,
-            },
-          });
-
           const outputFile = await tx.bookFile.create({
             data: {
               blobId: blob.id,
@@ -176,6 +187,8 @@ export class ReaderProcessingService implements OnModuleInit, OnModuleDestroy {
               isPrimary: true,
               kind: BookFileKind.DERIVED_READER,
               processingStatus: ProcessingStatus.READY,
+              readingProgressIndex:
+                readingProgressIndex as unknown as Prisma.InputJsonValue,
             },
           });
 
@@ -195,6 +208,13 @@ export class ReaderProcessingService implements OnModuleInit, OnModuleDestroy {
         },
       );
     } catch (error) {
+      if (createdBlobId) {
+        await this.prisma.storedBlob
+          .delete({ where: { id: createdBlobId } })
+          .catch(() => {
+            // Sweeper will collect it.
+          });
+      }
       const message =
         error instanceof Error
           ? error.message

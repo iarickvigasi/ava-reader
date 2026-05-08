@@ -15,6 +15,7 @@ import type {
   ReaderChapter,
   ReaderLocator,
   ReaderPackage,
+  ReadingProgressIndex,
   ReaderTocNode,
 } from './reader-types';
 
@@ -61,6 +62,55 @@ type ReaderSessionPayload = {
 
 const SESSION_PARTICIPANT_IDLE_TIMEOUT_MS = 90_000;
 const SESSION_SECONDS_PER_DAY = 86_400;
+
+// In-process LRU cache for parsed reader packages. Each package can be tens of
+// MB once parsed into JS objects; without caching, every chapter navigation
+// re-loads the blob from Postgres and reparses the JSON, which spikes memory
+// and risks OOM-killing the API process for large books. Keyed by `blobId`,
+// which is immutable — a new StoredBlob row is created when the package is
+// regenerated (see ReaderProcessingService).
+const READER_PACKAGE_CACHE_MAX_ENTRIES = 4;
+const readerPackageCache = new Map<string, ReaderPackage>();
+// Coalesces concurrent loads for the same blobId so a burst of chapter
+// navigations doesn't trigger N parallel multi-MB JSON parses.
+const readerPackageLoadsInFlight = new Map<string, Promise<ReaderPackage>>();
+
+function rememberReaderPackage(
+  blobId: string,
+  readerPackage: ReaderPackage,
+): ReaderPackage {
+  // Refresh recency by deleting + reinserting (Map preserves insertion order).
+  readerPackageCache.delete(blobId);
+  readerPackageCache.set(blobId, readerPackage);
+  while (readerPackageCache.size > READER_PACKAGE_CACHE_MAX_ENTRIES) {
+    // `Map.keys().next()` types `.value` as `TReturn = any` on the done
+    // branch, which trips no-unsafe-assignment. Narrow via `done` instead.
+    const oldest = readerPackageCache.keys().next();
+    if (oldest.done) {
+      break;
+    }
+    readerPackageCache.delete(oldest.value);
+  }
+  return readerPackage;
+}
+
+function getCachedReaderPackage(blobId: string): ReaderPackage | null {
+  const cached = readerPackageCache.get(blobId);
+  if (!cached) {
+    return null;
+  }
+  // Touch for LRU recency.
+  readerPackageCache.delete(blobId);
+  readerPackageCache.set(blobId, cached);
+  return cached;
+}
+
+// Test hook — resets the in-process cache so unit tests do not leak parsed
+// packages between cases.
+export function __resetReaderPackageCacheForTesting() {
+  readerPackageCache.clear();
+  readerPackageLoadsInFlight.clear();
+}
 
 const lockedSessionSelect = {
   durationSeconds: true,
@@ -121,7 +171,7 @@ export class ReaderService {
         file.processingStatus === ProcessingStatus.READY,
     );
 
-    if (!derivedReader?.blob) {
+    if (!derivedReader) {
       const latestRun = libraryItem.book.processingRuns[0] ?? null;
 
       if (latestRun?.status === ProcessingStatus.FAILED) {
@@ -155,9 +205,7 @@ export class ReaderService {
       };
     }
 
-    const readerPackage = parseReaderPackage(
-      Buffer.from(derivedReader.blob.bytes),
-    );
+    const readerPackage = await this.loadReaderPackage(derivedReader.blobId);
     const selectedChapter =
       selectChapter(readerPackage, chapterId) ??
       selectChapter(readerPackage, progress.locator?.chapterId) ??
@@ -208,14 +256,12 @@ export class ReaderService {
         file.processingStatus === ProcessingStatus.READY,
     );
 
-    if (!derivedReader?.blob) {
+    if (!derivedReader) {
       throw new BadRequestException('The reader package is not ready yet.');
     }
 
-    const readerPackage = parseReaderPackage(
-      Buffer.from(derivedReader.blob.bytes),
-    );
-    const metrics = computeProgressMetrics(readerPackage, locator);
+    const index = await this.loadReadingProgressIndex(derivedReader);
+    const metrics = computeProgressMetricsFromIndex(index, locator);
 
     const progress = await this.prisma.readingProgress.update({
       where: {
@@ -408,8 +454,15 @@ export class ReaderService {
         book: {
           include: {
             files: {
-              include: {
-                blob: true,
+              select: {
+                id: true,
+                blobId: true,
+                createdAt: true,
+                format: true,
+                isPrimary: true,
+                kind: true,
+                processingStatus: true,
+                readingProgressIndex: true,
               },
               orderBy: {
                 createdAt: 'desc',
@@ -432,6 +485,66 @@ export class ReaderService {
     }
 
     return libraryItem;
+  }
+
+  private async loadBlobBytes(blobId: string): Promise<Buffer> {
+    const blob = await this.prisma.storedBlob.findUniqueOrThrow({
+      where: { id: blobId },
+      select: { bytes: true },
+    });
+    return Buffer.from(blob.bytes);
+  }
+
+  // Reads the compact progress index for a derived-reader file. For rows that
+  // were created before the `readingProgressIndex` column existed (or whose stored JSON
+  // doesn't validate), falls back to parsing the full package once and writes
+  // the index back so future calls are O(1).
+  private async loadReadingProgressIndex(file: {
+    blobId: string;
+    id: string;
+    readingProgressIndex: unknown;
+  }): Promise<ReadingProgressIndex> {
+    const stored = parseStoredReadingProgressIndex(file.readingProgressIndex);
+    if (stored) {
+      return stored;
+    }
+    const readerPackage = await this.loadReaderPackage(file.blobId);
+    const index = buildReadingProgressIndex(readerPackage);
+    // Fire-and-forget back-fill — failure to persist must not block the
+    // progress write the user is currently making.
+    this.prisma.bookFile
+      .update({
+        where: { id: file.id },
+        data: {
+          readingProgressIndex: index as unknown as Prisma.InputJsonValue,
+        },
+      })
+      .catch(() => {
+        // Swallow — next request will retry the back-fill.
+      });
+    return index;
+  }
+
+  private async loadReaderPackage(blobId: string): Promise<ReaderPackage> {
+    const cached = getCachedReaderPackage(blobId);
+    if (cached) {
+      return cached;
+    }
+    const inFlight = readerPackageLoadsInFlight.get(blobId);
+    if (inFlight) {
+      return inFlight;
+    }
+    const loadPromise = (async () => {
+      try {
+        const bytes = await this.loadBlobBytes(blobId);
+        const readerPackage = parseReaderPackage(bytes);
+        return rememberReaderPackage(blobId, readerPackage);
+      } finally {
+        readerPackageLoadsInFlight.delete(blobId);
+      }
+    })();
+    readerPackageLoadsInFlight.set(blobId, loadPromise);
+    return loadPromise;
   }
 
   private async lockActiveSessionTx(
@@ -851,11 +964,11 @@ function validateClientInstanceId(clientInstanceId: string) {
   }
 }
 
-function computeProgressMetrics(
-  readerPackage: ReaderPackage,
+function computeProgressMetricsFromIndex(
+  index: ReadingProgressIndex,
   locator: ReaderLocator,
 ) {
-  const chapterIndex = readerPackage.chapters.findIndex(
+  const chapterIndex = index.chapters.findIndex(
     (chapter) => chapter.chapterId === locator.chapterId,
   );
 
@@ -863,39 +976,78 @@ function computeProgressMetrics(
     throw new BadRequestException('The requested chapter does not exist.');
   }
 
-  const chapter = readerPackage.chapters[chapterIndex];
-  const blockIndex = chapter.blocks.findIndex(
-    (block) => block.id === locator.blockId,
-  );
+  const chapter = index.chapters[chapterIndex];
+  const blockIndex = chapter.blockIds.indexOf(locator.blockId);
 
   if (blockIndex === -1) {
     throw new BadRequestException('The requested block does not exist.');
   }
 
-  const blocksBeforeChapter = readerPackage.chapters
+  const blocksBeforeChapter = index.chapters
     .slice(0, chapterIndex)
-    .reduce((sum, currentChapter) => sum + currentChapter.blocks.length, 0);
+    .reduce((sum, currentChapter) => sum + currentChapter.blockIds.length, 0);
   const absoluteBlockIndex = blocksBeforeChapter + blockIndex + 1;
   const completionPercent =
-    readerPackage.manifest.totalBlocks > 0
+    index.totalBlocks > 0
       ? Math.min(
           100,
           Math.max(
             0,
-            Math.round(
-              (absoluteBlockIndex / readerPackage.manifest.totalBlocks) * 100,
-            ),
+            Math.round((absoluteBlockIndex / index.totalBlocks) * 100),
           ),
         )
       : 0;
 
   return {
     chapterLabel:
-      findBestTocLabel(readerPackage.toc, locator) ??
-      chapter.title ??
-      chapter.label,
+      findBestTocLabel(index.toc, locator) ?? chapter.title ?? chapter.label,
     completionPercent,
   };
+}
+
+// Builds the compact progress index from a fully-parsed reader package. Used
+// by the processing pipeline (eagerly) and by the reader service (as a lazy
+// back-fill for legacy DERIVED_READER rows that predate this column).
+export function buildReadingProgressIndex(
+  readerPackage: ReaderPackage,
+): ReadingProgressIndex {
+  return {
+    chapters: readerPackage.chapters.map((chapter) => ({
+      blockIds: chapter.blocks.map((block) => block.id),
+      chapterId: chapter.chapterId,
+      label: chapter.label,
+      title: chapter.title,
+    })),
+    toc: readerPackage.toc,
+    totalBlocks: readerPackage.manifest.totalBlocks,
+    version: 1,
+  };
+}
+
+// Validates a stored JSON value as a ReadingProgressIndex. Returns null if the
+// shape doesn't match (e.g. legacy `null`, or a value written by an older
+// schema version).
+function parseStoredReadingProgressIndex(
+  value: unknown,
+): ReadingProgressIndex | null {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+  const candidate = value as Partial<ReadingProgressIndex>;
+  if (
+    candidate.version !== 1 ||
+    typeof candidate.totalBlocks !== 'number' ||
+    !Array.isArray(candidate.chapters) ||
+    !Array.isArray(candidate.toc)
+  ) {
+    return null;
+  }
+  for (const chapter of candidate.chapters) {
+    if (!chapter || !Array.isArray(chapter.blockIds)) {
+      return null;
+    }
+  }
+  return candidate as ReadingProgressIndex;
 }
 
 type LegacyReaderTocEntry = {

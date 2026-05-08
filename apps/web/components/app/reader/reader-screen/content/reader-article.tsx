@@ -1,7 +1,7 @@
 import type { CSSProperties, RefCallback } from "react";
 import { useCallback, useLayoutEffect, useRef } from "react";
 import type { ReaderBlock } from "@/lib/api-types";
-import type { AiCommentRecord } from "../overlays/ai-comments/use-ai-comments";
+import { useAiCommentsContext } from "../overlays/ai-comments/ai-comments-context";
 import {
   applyAiCommentMarks,
   unwrapAllMarks,
@@ -10,7 +10,7 @@ import { ReaderBlockView } from "./reader-block-view";
 
 export function ReaderArticle({
   articleRef,
-  aiComments,
+  applyAiComments = false,
   blocks,
   chapterId,
   pageHeight,
@@ -24,11 +24,11 @@ export function ReaderArticle({
   // the pagination preloader's per-chapter measurement map). Object refs
   // are not supported because they would require mutating the prop.
   articleRef?: RefCallback<HTMLElement>;
-  // When provided, every comment whose locator resolves inside the article is
-  // wrapped in a styled <mark> after each render. The preloader renders
-  // off-screen "measurement" articles without comments, so highlighting is
-  // skipped there.
-  aiComments?: readonly AiCommentRecord[];
+  // Opt in to wrapping every comment whose locator resolves inside the
+  // article in a styled <mark> after each render. The preloader renders
+  // off-screen "measurement" articles where marks would corrupt the
+  // measured layout, so it leaves this off.
+  applyAiComments?: boolean;
   blocks: ReaderBlock[];
   chapterId: string;
   pageHeight: number;
@@ -48,6 +48,7 @@ export function ReaderArticle({
   const hasPrefix = (prefixBlocks?.length ?? 0) > 0;
 
   const internalArticleRef = useRef<HTMLElement | null>(null);
+  const { comments: aiComments } = useAiCommentsContext();
 
   // Combine the internal ref (used by the highlighter) with any forwarded
   // articleRef callback the parent needs (used by the pagination preloader).
@@ -63,15 +64,18 @@ export function ReaderArticle({
   // virtual text node against the actual DOM and replaces it). useLayoutEffect
   // re-applies them synchronously so the highlights never visibly flicker.
   useLayoutEffect(() => {
+    if (!applyAiComments) {
+      return;
+    }
     const article = internalArticleRef.current;
-    if (!article || !aiComments || aiComments.length === 0) {
+    if (!article || aiComments.length === 0) {
       return;
     }
     applyAiCommentMarks(article, aiComments);
     return () => {
       unwrapAllMarks(article);
     };
-  }, [aiComments, blocks, prefixBlocks, spilloverBlocks]);
+  }, [applyAiComments, aiComments, blocks, prefixBlocks, spilloverBlocks]);
 
   return (
     <article

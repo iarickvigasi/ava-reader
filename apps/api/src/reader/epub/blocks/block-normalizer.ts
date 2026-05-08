@@ -206,7 +206,16 @@ export async function normalizeBlockNode(
     if (hasDirectBlockChildren(children)) {
       // Pass hints down so e.g. <div style="text-align:center"> with
       // multiple <p> children applies the alignment to each child.
-      return await normalizeChildren(children, childOptions);
+      const childBlocks = await normalizeChildren(children, childOptions);
+      // Propagate the container's `id`/`name` anchor to the first child block
+      // that doesn't define one of its own. Many EPUBs (e.g. Project
+      // Gutenberg books with multi-chapter spine docs) use the anchor only on
+      // a wrapping <div>, and the TOC links target that div — without this
+      // step the splitter would never see the anchor on a block.
+      if (anchorId && childBlocks.length > 0 && !childBlocks[0].anchorId) {
+        childBlocks[0] = { ...childBlocks[0], anchorId };
+      }
+      return childBlocks;
     }
 
     return buildTextBlock(

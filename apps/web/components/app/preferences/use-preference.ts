@@ -36,6 +36,13 @@ type UsePreferenceOptions<T extends Primitive, F extends PreferenceField> = {
   // unparseable string, etc.) — the hook then falls back to the default
   // rather than blowing up on bad input.
   parse: ParseFn<T>;
+  // Optional: produce a default from the runtime environment when there's
+  // no saved value yet. Runs once after mount so it can read APIs like
+  // `navigator` that aren't safe during SSR. Returning `null` keeps
+  // `defaultValue`. The detected value is *not* written to localStorage or
+  // the server — it's a display default that gets replaced as soon as the
+  // user explicitly picks a value (or the server fetch returns one).
+  getClientDefault?: () => T | null;
 };
 
 export function usePreference<T extends Primitive, F extends PreferenceField>({
@@ -43,11 +50,21 @@ export function usePreference<T extends Primitive, F extends PreferenceField>({
   storageKey,
   defaultValue,
   parse,
+  getClientDefault,
 }: UsePreferenceOptions<T, F>): [T, (next: T) => void] {
   const { getToken, isLoaded, isSignedIn } = useAuth();
-  const [value, setValue] = useState<T>(() =>
-    readStorage(storageKey, parse) ?? defaultValue,
-  );
+  const [value, setValue] = useState<T>(() => {
+    const fromStorage = readStorage(storageKey, parse);
+    if (fromStorage !== null) return fromStorage;
+    // No saved value — try the runtime default (e.g. navigator.language)
+    // before the static fallback. Both readStorage and getClientDefault
+    // return null on the server, so SSR ends up at defaultValue.
+    if (getClientDefault) {
+      const detected = getClientDefault();
+      if (detected !== null) return detected;
+    }
+    return defaultValue;
+  });
 
   // Re-read on cross-component / cross-tab updates.
   useEffect(() => {
@@ -59,7 +76,15 @@ export function usePreference<T extends Primitive, F extends PreferenceField>({
         return;
       }
       const fromStorage = readStorage(storageKey, parse);
-      setValue(fromStorage ?? defaultValue);
+      if (fromStorage !== null) {
+        setValue(fromStorage);
+        return;
+      }
+      // Nothing saved anywhere — keep whatever runtime default we already
+      // computed at mount (navigator-detected or static) instead of
+      // resetting to the static one.
+      const detected = getClientDefault?.() ?? null;
+      setValue(detected ?? defaultValue);
     };
     const unsubscribe = subscribePreference(field, onUpdate);
     const onStorage = (event: StorageEvent) => {
@@ -70,7 +95,7 @@ export function usePreference<T extends Primitive, F extends PreferenceField>({
       unsubscribe();
       window.removeEventListener("storage", onStorage);
     };
-  }, [field, storageKey, defaultValue, parse]);
+  }, [field, storageKey, defaultValue, parse, getClientDefault]);
 
   // First load: pull the canonical value from the server. If the server
   // has a value, it overrides the local cache (covers "I changed this on

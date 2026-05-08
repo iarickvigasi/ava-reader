@@ -1,13 +1,12 @@
 import { useTranslations } from "next-intl";
 import { CopyIcon, SpeakerIcon } from "@/components/app/shared/app-icons";
+import { useReaderSelectionContext } from "../../screen/reader-selection-context";
 import { SectionLabel } from "../section-label";
 
-type SelectionSectionProps = {
-  selectedText: string;
-};
-
-export function SelectionSection({ selectedText }: SelectionSectionProps) {
+export function SelectionSection() {
   const t = useTranslations("reader.aiComments");
+  const { text } = useReaderSelectionContext();
+  const displayText = text ?? "";
   return (
     <section className="flex flex-col gap-3">
       <SectionLabel>{t("selection")}</SectionLabel>
@@ -20,7 +19,7 @@ export function SelectionSection({ selectedText }: SelectionSectionProps) {
           <SpeakerIcon className="size-4" />
         </button>
         <p className="min-w-0 flex-1 truncate font-(--font-display) text-[1.05rem] leading-[1.4] text-ink">
-          {`\u201C${selectedText}\u201D`}
+          {`“${displayText}”`}
         </p>
         <button
           type="button"

@@ -114,6 +114,25 @@ export type ReaderPackage = {
   version: 1 | 2;
 };
 
+// Compact progress index — stored alongside the derived-reader BookFile so
+// that recomputing progress metrics on every locator update does not require
+// loading and JSON-parsing the full reader package (which can be tens of MB
+// for a large book). Contains only the fields `computeProgressMetrics` reads:
+// total block count, per-chapter block ids and titles, and the TOC.
+export type ReadingProgressIndexChapter = {
+  blockIds: string[];
+  chapterId: string;
+  label: string;
+  title: string;
+};
+
+export type ReadingProgressIndex = {
+  chapters: ReadingProgressIndexChapter[];
+  toc: ReaderTocNode[];
+  totalBlocks: number;
+  version: 1;
+};
+
 export type ReaderLocator = {
   blockId: string;
   chapterId: string;

@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useReaderUi } from "@/components/app/core/reader-ui-context";
-import type { AiCommentLocator } from "@/lib/api-types";
 import { ReaderArticle } from "../content/reader-article";
 import { ReaderPaginationPreloader } from "../pagination/reader-pagination-preloader";
 import {
@@ -10,7 +9,6 @@ import {
 } from "./ready-reader-sections";
 import { ReaderAiChatsOverlay } from "../overlays/ai-chats/reader-ai-chats-overlay";
 import { ReaderAiCommentsOverlay } from "../overlays/ai-comments/reader-ai-comments-overlay";
-import { useAiComments } from "../overlays/ai-comments/use-ai-comments";
 import { ReaderContentsOverlay } from "../overlays/contents/reader-contents-overlay";
 import { ReaderHighlightsOverlay } from "../overlays/highlights/reader-highlights-overlay";
 import { ReaderPreferencesOverlay } from "../overlays/preferences/reader-preferences-overlay";
@@ -25,6 +23,7 @@ import {
 import type { ReadyReaderProps } from "../shared/types";
 import { useReaderPagination } from "../pagination/use-reader-pagination";
 import { computeAiCommentLocator } from "./compute-ai-comment-locator";
+import { useReaderSelectionContext } from "./reader-selection-context";
 import {
   useReaderTextSelection,
   type ReaderSelection,
@@ -48,11 +47,7 @@ export function ReadyReader({
   visibleLocator,
 }: ReadyReaderProps) {
   const { activePanel, closePanel, openPanel } = useReaderUi();
-  const [selectedText, setSelectedText] = useState<string | null>(null);
-  const [selectedLocator, setSelectedLocator] =
-    useState<AiCommentLocator | null>(null);
-  const { comments: aiComments, refetch: refetchAiComments } =
-    useAiComments(libraryItemId);
+  const { setSelection } = useReaderSelectionContext();
   const isContentsOpen = activePanel === READER_PANEL_CONTENTS;
   const isPreferencesOpen = activePanel === READER_PANEL_PREFERENCES;
   const isAiChatsOpen = activePanel === READER_PANEL_AI_CHATS;
@@ -121,13 +116,13 @@ export function ReadyReader({
   // live DOM nodes that may be re-rendered before the effect fires.
   const handleTextSelected = useCallback(
     ({ text, range }: ReaderSelection) => {
-      setSelectedText(text);
-      setSelectedLocator(
-        computeAiCommentLocator(range, activeChapter.chapterId),
-      );
+      setSelection({
+        text,
+        locator: computeAiCommentLocator(range, activeChapter.chapterId),
+      });
       openPanel(READER_PANEL_AI_COMMENTS);
     },
-    [activeChapter.chapterId, openPanel],
+    [activeChapter.chapterId, openPanel, setSelection],
   );
 
   useReaderTextSelection({
@@ -182,7 +177,7 @@ export function ReadyReader({
             >
               <div ref={pageBoxRef} className="h-full w-full overflow-hidden">
                 <ReaderArticle
-                  aiComments={aiComments}
+                  applyAiComments
                   blocks={activeChapter.blocks}
                   chapterId={activeChapter.chapterId}
                   pageHeight={pageBoxSize.height}
@@ -240,9 +235,6 @@ export function ReadyReader({
         <ReaderAiCommentsOverlay
           libraryItemId={libraryItemId}
           onClose={closePanel}
-          onCommentCreated={refetchAiComments}
-          selectedLocator={selectedLocator}
-          selectedText={selectedText ?? undefined}
         />
       ) : null}
 
