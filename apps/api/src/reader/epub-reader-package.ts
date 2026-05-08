@@ -26,6 +26,7 @@ import {
   createFallbackToc,
   resolveTocNodes,
 } from './epub/toc';
+import type { ParsedTocNode } from './epub/toc';
 import {
   collectTocAnchorsBySpinePath,
   createChapterId,
@@ -138,6 +139,31 @@ export async function buildReaderPackageFromEpub(input: {
     throw new Error('The EPUB does not contain readable chapter documents.');
   }
 
+  // Decide upfront whether the parsed TOC is rich enough to be authoritative.
+  // A degenerate NCX (Calibre "Start" entry, ukrlib 2-entry NCX) covers far
+  // fewer items than the spine has. Its labels tend to be structural noise
+  // ("Start", "Текст твору") rather than real chapter titles, so we treat it
+  // as untrusted for BOTH structure and labels.
+  const parsedTocNodeCount = countParsedTocNodes(parsedToc);
+  const isParsedTocRichEnough =
+    parsedTocNodeCount >= nonEmptyRawChapters.length;
+
+  // When NCX is sparse, we'd otherwise rely on per-chapter title extraction
+  // (heading or short first paragraph). That works well when the book is
+  // consistently structured (Demian: every body chapter has an <h1>) but
+  // produces noise when extraction succeeds for only a handful of chapters
+  // (Степовий вовк: a stray dialogue line gets picked up). Require a
+  // confident success rate; otherwise label every chapter generically.
+  const CHAPTER_TITLE_COVERAGE_THRESHOLD = 0.8;
+  const titleExtractionCoverage =
+    nonEmptyRawChapters.length === 0
+      ? 0
+      : nonEmptyRawChapters.filter((raw) => raw.chapterTitle !== null).length /
+        nonEmptyRawChapters.length;
+  const useExtractedChapterTitles =
+    isParsedTocRichEnough ||
+    titleExtractionCoverage >= CHAPTER_TITLE_COVERAGE_THRESHOLD;
+
   // Second pass: split each spine document at TOC-anchor boundaries (so that
   // EPUBs which pack many logical chapters into one big XHTML still produce
   // one ReaderChapter per chapter), then assign sequential IDs and labels.
@@ -163,12 +189,14 @@ export async function buildReaderPackageFromEpub(input: {
       const segmentTitle = getChapterTitleFromBlocks(segment.blocks);
       const fallbackLabel = resolveChapterFallbackLabel({
         bookTitle: input.title,
-        candidateLabel: findTocLabelForChapterCoord(
-          parsedToc,
-          raw.href,
-          segment.leadingAnchorId,
-        ),
-        chapterTitle: segmentTitle,
+        candidateLabel: isParsedTocRichEnough
+          ? findTocLabelForChapterCoord(
+              parsedToc,
+              raw.href,
+              segment.leadingAnchorId,
+            )
+          : null,
+        chapterTitle: useExtractedChapterTitles ? segmentTitle : null,
         spineIndex: segmentIndex,
       });
 
@@ -204,10 +232,13 @@ export async function buildReaderPackageFromEpub(input: {
     };
   }
 
-  const resolvedToc = resolveTocNodes(
-    parsedToc.length > 0 ? parsedToc : createFallbackToc(chapters),
-    chapters,
-  );
+  // Use the parsed TOC if it was rich enough to trust (Pride & Prejudice-style
+  // EPUBs where TOC anchors already drove chapter splitting). Otherwise, build
+  // a fallback TOC with one entry per chapter using each chapter's own label
+  // — which by now reflects either its <h1> heading or a generic "Chapter N".
+  const resolvedToc = isParsedTocRichEnough
+    ? resolveTocNodes(parsedToc, chapters)
+    : resolveTocNodes(createFallbackToc(chapters), chapters);
 
   return {
     chapters,
@@ -222,4 +253,18 @@ export async function buildReaderPackageFromEpub(input: {
     toc: resolvedToc,
     version: 2,
   };
+}
+
+function countParsedTocNodes(toc: ParsedTocNode[]) {
+  let count = 0;
+
+  function walk(nodes: ParsedTocNode[]) {
+    for (const node of nodes) {
+      count += 1;
+      walk(node.children);
+    }
+  }
+
+  walk(toc);
+  return count;
 }

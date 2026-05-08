@@ -281,6 +281,66 @@ describe('buildReaderPackageFromEpub', () => {
     });
   });
 
+  it('falls back to one toc entry per chapter when the parsed toc is degenerate', async () => {
+    const epubBuffer = await createReaderEpubBufferWithDegenerateToc();
+
+    const readerPackage = await buildReaderPackageFromEpub({
+      authors: ['Hermann Hesse'],
+      buffer: epubBuffer,
+      checksum: 'source-checksum',
+      language: 'de',
+      title: 'Demian',
+    });
+
+    expect(readerPackage.chapters).toHaveLength(3);
+    expect(readerPackage.toc).toHaveLength(3);
+    expect(readerPackage.toc[0]).toMatchObject({
+      chapterId: readerPackage.chapters[0]?.chapterId,
+      label: 'Erstes Kapitel',
+    });
+    expect(readerPackage.toc[1]).toMatchObject({
+      chapterId: readerPackage.chapters[1]?.chapterId,
+      label: 'Zweites Kapitel',
+    });
+    expect(readerPackage.toc[2]).toMatchObject({
+      chapterId: readerPackage.chapters[2]?.chapterId,
+      label: 'Drittes Kapitel',
+    });
+  });
+
+  it('uses generic chapter labels when the parsed toc is sparse and chapter title extraction is unreliable', async () => {
+    const epubBuffer = await createReaderEpubBufferWithPartialNcx();
+
+    const readerPackage = await buildReaderPackageFromEpub({
+      authors: ['Герман Гессе'],
+      buffer: epubBuffer,
+      checksum: 'source-checksum',
+      language: 'uk',
+      title: 'Степовий вовк',
+    });
+
+    expect(readerPackage.chapters).toHaveLength(5);
+    expect(readerPackage.toc).toHaveLength(5);
+    // Sparse NCX (2 entries vs 5 spine docs) is untrusted for labels. Title
+    // extraction succeeds for only 1 of 5 chapters (the one with a short
+    // first dialogue line), well below the 80% threshold, so we fall
+    // through to uniform "Chapter N" labels for the whole book — avoiding
+    // the noisy mix where one chapter is labeled with a stray dialogue line.
+    expect(readerPackage.toc.map((node) => node.label)).toEqual([
+      'Chapter 1',
+      'Chapter 2',
+      'Chapter 3',
+      'Chapter 4',
+      'Chapter 5',
+    ]);
+    expect(readerPackage.toc[0]).toMatchObject({
+      chapterId: readerPackage.chapters[0]?.chapterId,
+    });
+    expect(readerPackage.toc[4]).toMatchObject({
+      chapterId: readerPackage.chapters[4]?.chapterId,
+    });
+  });
+
   it('throws on malformed EPUB archives', async () => {
     await expect(
       buildReaderPackageFromEpub({
@@ -763,6 +823,190 @@ async function createReaderEpubBufferWithBookTitleAsChapterLabel() {
     <h1>Example Title</h1>
     <p>Second chapter.</p>
   </body>
+</html>`,
+  );
+
+  return Buffer.from(await zip.generateAsync({ type: 'uint8array' }));
+}
+
+async function createReaderEpubBufferWithPartialNcx() {
+  const zip = new JSZip();
+
+  zip.file(
+    'META-INF/container.xml',
+    `<?xml version="1.0" encoding="UTF-8"?>
+<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+  <rootfiles>
+    <rootfile full-path="content.opf" media-type="application/oebps-package+xml"/>
+  </rootfiles>
+</container>`,
+  );
+
+  zip.file(
+    'content.opf',
+    `<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://www.idpf.org/2007/opf" version="2.0" unique-identifier="BookId">
+  <manifest>
+    <item id="ncx" href="book.ncx" media-type="application/x-dtbncx+xml"/>
+    <item id="cover" href="Cover.html" media-type="application/xhtml+xml"/>
+    <item id="ch1" href="Chapter001_1.html" media-type="application/xhtml+xml"/>
+    <item id="ch2" href="Chapter001_2.html" media-type="application/xhtml+xml"/>
+    <item id="ch3" href="Chapter001_3.html" media-type="application/xhtml+xml"/>
+    <item id="ch4" href="Chapter001_4.html" media-type="application/xhtml+xml"/>
+  </manifest>
+  <spine toc="ncx">
+    <itemref idref="cover"/>
+    <itemref idref="ch1"/>
+    <itemref idref="ch2"/>
+    <itemref idref="ch3"/>
+    <itemref idref="ch4"/>
+  </spine>
+</package>`,
+  );
+
+  zip.file(
+    'book.ncx',
+    `<?xml version="1.0" encoding="UTF-8"?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
+  <navMap>
+    <navPoint id="np-1" playOrder="1">
+      <navLabel><text>Обкладинка</text></navLabel>
+      <content src="Cover.html"/>
+    </navPoint>
+    <navPoint id="np-2" playOrder="2">
+      <navLabel><text>Текст твору</text></navLabel>
+      <content src="Chapter001_1.html"/>
+    </navPoint>
+  </navMap>
+</ncx>`,
+  );
+
+  // Real ukrlib EPUBs lack proper <h1>-<h6> chapter titles. Most chapters
+  // open with a long body paragraph (no extractable title), but one happens
+  // to begin with a short line of dialogue that the paragraph fallback would
+  // mistake for a title — the case that makes us treat extraction as
+  // unreliable for the whole book.
+  const longBodyParagraph =
+    'Коли я повертався додому, я ще не знав, як скінчиться ця історія, і скільки ' +
+    'дивних думок вона залишить мені на пам’ять про той вечір.';
+  zip.file(
+    'Cover.html',
+    `<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <body><p>${longBodyParagraph}</p></body>
+</html>`,
+  );
+
+  zip.file(
+    'Chapter001_1.html',
+    `<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <body><p>${longBodyParagraph}</p></body>
+</html>`,
+  );
+
+  zip.file(
+    'Chapter001_2.html',
+    `<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <body><p>${longBodyParagraph}</p></body>
+</html>`,
+  );
+
+  zip.file(
+    'Chapter001_3.html',
+    `<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <body><p>— Колись пізніше покажу.</p><p>${longBodyParagraph}</p></body>
+</html>`,
+  );
+
+  zip.file(
+    'Chapter001_4.html',
+    `<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <body><p>${longBodyParagraph}</p></body>
+</html>`,
+  );
+
+  return Buffer.from(await zip.generateAsync({ type: 'uint8array' }));
+}
+
+async function createReaderEpubBufferWithDegenerateToc() {
+  const zip = new JSZip();
+
+  zip.file(
+    'META-INF/container.xml',
+    `<?xml version="1.0" encoding="UTF-8"?>
+<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+  <rootfiles>
+    <rootfile full-path="content.opf" media-type="application/oebps-package+xml"/>
+  </rootfiles>
+</container>`,
+  );
+
+  zip.file(
+    'content.opf',
+    `<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://www.idpf.org/2007/opf" version="2.0" unique-identifier="uuid_id">
+  <manifest>
+    <item id="titlepage" href="titlepage.xhtml" media-type="application/xhtml+xml"/>
+    <item id="chapter-1" href="index_split_001.xhtml" media-type="application/xhtml+xml"/>
+    <item id="chapter-2" href="index_split_002.xhtml" media-type="application/xhtml+xml"/>
+    <item id="chapter-3" href="index_split_003.xhtml" media-type="application/xhtml+xml"/>
+    <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>
+  </manifest>
+  <spine toc="ncx">
+    <itemref idref="titlepage"/>
+    <itemref idref="chapter-1"/>
+    <itemref idref="chapter-2"/>
+    <itemref idref="chapter-3"/>
+  </spine>
+</package>`,
+  );
+
+  zip.file(
+    'toc.ncx',
+    `<?xml version="1.0" encoding="utf-8"?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
+  <navMap>
+    <navPoint id="start" playOrder="1">
+      <navLabel><text>Start</text></navLabel>
+      <content src="titlepage.xhtml"/>
+    </navPoint>
+  </navMap>
+</ncx>`,
+  );
+
+  zip.file(
+    'titlepage.xhtml',
+    `<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <body></body>
+</html>`,
+  );
+
+  zip.file(
+    'index_split_001.xhtml',
+    `<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <body><h1>Erstes Kapitel</h1><p>Erste Zeile.</p></body>
+</html>`,
+  );
+
+  zip.file(
+    'index_split_002.xhtml',
+    `<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <body><h1>Zweites Kapitel</h1><p>Zweite Zeile.</p></body>
+</html>`,
+  );
+
+  zip.file(
+    'index_split_003.xhtml',
+    `<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <body><h1>Drittes Kapitel</h1><p>Dritte Zeile.</p></body>
 </html>`,
   );
 

@@ -19,11 +19,45 @@ export function createChapterId(
   return `chapter-${spineIndex + 1}${slug ? `-${slug}` : ''}${anchorSuffix}`;
 }
 
+/**
+ * Maximum length (in characters) we'll accept for a "looks like a title"
+ * paragraph fallback. Real chapter titles are short ("Розділ 1", "Частина
+ * перша"); first body paragraphs are almost always longer than this.
+ */
+const CHAPTER_TITLE_PARAGRAPH_MAX_LENGTH = 80;
+
 export function getChapterTitleFromBlocks(blocks: ReaderBlock[]) {
   for (const block of blocks) {
     if (block.kind === 'heading' && block.text.trim().length > 0) {
       return block.text.trim();
     }
+  }
+
+  // No explicit <h1>-<h6>. Some publishers (e.g. ukrlib EPUBs that wrap
+  // chapter titles in a styled <p>) put the title in a paragraph instead.
+  // If the first non-empty paragraph is short and there's body content
+  // after it, treat it as the chapter title.
+  for (let index = 0; index < blocks.length; index += 1) {
+    const block = blocks[index];
+
+    if (block.kind !== 'paragraph' && block.kind !== 'blockquote') {
+      continue;
+    }
+
+    const text = block.text.trim();
+    if (text.length === 0) {
+      continue;
+    }
+
+    if (text.length > CHAPTER_TITLE_PARAGRAPH_MAX_LENGTH) {
+      return null;
+    }
+
+    const hasMoreContent = blocks
+      .slice(index + 1)
+      .some((next) => 'text' in next && next.text.trim().length > 0);
+
+    return hasMoreContent ? text : null;
   }
 
   return null;
