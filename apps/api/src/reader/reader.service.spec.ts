@@ -1,5 +1,10 @@
 import { BookFileFormat, BookFileKind, ProcessingStatus } from '@prisma/client';
-import { ReaderService } from './reader.service';
+import {
+  ReaderService,
+  __resetReaderPackageCacheForTesting,
+  buildReadingProgressIndex,
+} from './reader.service';
+import type { ReaderPackage } from './reader-types';
 
 function getFirstCallArg<T>(fn: { mock: { calls: unknown[] } }): T {
   return (fn.mock.calls as Array<[T]>)[0][0];
@@ -8,6 +13,8 @@ function getFirstCallArg<T>(fn: { mock: { calls: unknown[] } }): T {
 describe('ReaderService', () => {
   const getCurrentUserRecord = jest.fn();
   const findFirstLibraryItem = jest.fn();
+  const findUniqueOrThrowStoredBlob = jest.fn();
+  const updateBookFile = jest.fn();
   const updateLibraryItem = jest.fn();
   const updateReadingProgress = jest.fn();
   const updateManyReadingProgress = jest.fn();
@@ -45,12 +52,18 @@ describe('ReaderService', () => {
       async (callback: (transactionClient: typeof tx) => Promise<unknown>) =>
         callback(tx),
     ),
+    bookFile: {
+      update: updateBookFile,
+    },
     libraryItem: {
       findFirst: findFirstLibraryItem,
       update: updateLibraryItem,
     },
     readingProgress: {
       update: updateReadingProgress,
+    },
+    storedBlob: {
+      findUniqueOrThrow: findUniqueOrThrowStoredBlob,
     },
   };
 
@@ -60,8 +73,17 @@ describe('ReaderService', () => {
   let readerService: ReaderService;
 
   beforeEach(() => {
+    __resetReaderPackageCacheForTesting();
     getCurrentUserRecord.mockReset();
     findFirstLibraryItem.mockReset();
+    findUniqueOrThrowStoredBlob.mockReset();
+    findUniqueOrThrowStoredBlob.mockImplementation(() =>
+      Promise.resolve({
+        bytes: Buffer.from(JSON.stringify(createReaderPackage()), 'utf8'),
+      }),
+    );
+    updateBookFile.mockReset();
+    updateBookFile.mockResolvedValue({});
     updateLibraryItem.mockReset();
     updateReadingProgress.mockReset();
     updateManyReadingProgress.mockReset();
@@ -143,6 +165,41 @@ describe('ReaderService', () => {
     }>(updateLibraryItem);
     expect(updateLibraryItemCall.where.id).toBe('library-1');
     expect(updateLibraryItemCall.data.lastOpenedAt).toBeInstanceOf(Date);
+  });
+
+  it('lazily back-fills the progress index for legacy derived-reader rows', async () => {
+    findFirstLibraryItem.mockResolvedValue(createLibraryItemRecord());
+    updateReadingProgress.mockResolvedValue({
+      chapterLabel: 'Chapter Two',
+      completionPercent: 50,
+      currentLocator: JSON.stringify({
+        blockId: 'chapter-2::b1',
+        chapterId: 'chapter-2',
+        textOffset: 0,
+      }),
+      lastReadAt: new Date('2026-04-07T12:00:00.000Z'),
+    });
+    updateLibraryItem.mockResolvedValue({});
+
+    await readerService.updateProgress('clerk_1', 'library-1', {
+      blockId: 'chapter-2::b1',
+      chapterId: 'chapter-2',
+      textOffset: 0,
+    });
+
+    // Wait for the fire-and-forget back-fill to settle.
+    await new Promise((resolve) => setImmediate(resolve));
+
+    expect(updateBookFile).toHaveBeenCalledTimes(1);
+    const backfillCall = getFirstCallArg<{
+      data: {
+        readingProgressIndex: { chapters: unknown[]; totalBlocks: number };
+      };
+      where: { id: string };
+    }>(updateBookFile);
+    expect(backfillCall.where.id).toBe('file-derived-reader');
+    expect(backfillCall.data.readingProgressIndex.totalBlocks).toBe(4);
+    expect(backfillCall.data.readingProgressIndex.chapters).toHaveLength(4);
   });
 
   it('marks a reader as opened by updating lastOpenedAt', async () => {
@@ -570,6 +627,96 @@ describe('ReaderService', () => {
   });
 });
 
+describe('buildReadingProgressIndex', () => {
+  it('captures totals, per-chapter block ids, and the toc', () => {
+    const readerPackage = {
+      version: 2,
+      manifest: {
+        authors: [],
+        language: null,
+        sourceChecksum: 'c',
+        title: 't',
+        totalBlocks: 3,
+        totalChapters: 2,
+      },
+      toc: [
+        {
+          anchorId: null,
+          blockId: null,
+          chapterId: 'chapter-1',
+          children: [],
+          href: 'c1.xhtml',
+          id: 'toc:0',
+          label: 'Chapter One',
+          spineIndex: 0,
+        },
+      ],
+      chapters: [
+        {
+          blocks: [
+            {
+              id: 'chapter-1::b1',
+              inlines: [],
+              kind: 'paragraph' as const,
+              text: 'a',
+            },
+          ],
+          chapterId: 'chapter-1',
+          href: 'c1.xhtml',
+          label: 'Chapter One',
+          nextChapterId: 'chapter-2',
+          previousChapterId: null,
+          spineIndex: 0,
+          title: 'Chapter One',
+        },
+        {
+          blocks: [
+            {
+              id: 'chapter-2::b1',
+              inlines: [],
+              kind: 'paragraph' as const,
+              text: 'b',
+            },
+            {
+              id: 'chapter-2::b2',
+              inlines: [],
+              kind: 'paragraph' as const,
+              text: 'c',
+            },
+          ],
+          chapterId: 'chapter-2',
+          href: 'c2.xhtml',
+          label: 'Chapter Two',
+          nextChapterId: null,
+          previousChapterId: 'chapter-1',
+          spineIndex: 1,
+          title: 'Chapter Two',
+        },
+      ],
+    } satisfies ReaderPackage;
+
+    const index = buildReadingProgressIndex(readerPackage);
+
+    expect(index.version).toBe(1);
+    expect(index.totalBlocks).toBe(3);
+    expect(index.toc).toEqual(readerPackage.toc);
+    expect(index.chapters).toEqual([
+      {
+        blockIds: ['chapter-1::b1'],
+        chapterId: 'chapter-1',
+        label: 'Chapter One',
+        title: 'Chapter One',
+      },
+      {
+        blockIds: ['chapter-2::b1', 'chapter-2::b2'],
+        chapterId: 'chapter-2',
+        label: 'Chapter Two',
+        title: 'Chapter Two',
+      },
+    ]);
+  });
+});
+
 function createLockedSessionRecord(
   input?: Partial<{
     durationSeconds: number;
@@ -594,13 +741,13 @@ function createLockedSessionRecord(
   };
 }
 
-function createLibraryItemRecord(input?: {
+function createReaderPackage(input?: {
   tocMode?: 'flat' | 'nested';
   version?: 1 | 2;
 }) {
   const tocMode = input?.tocMode ?? 'flat';
   const version = input?.version ?? 1;
-  const readerPackage = {
+  return {
     version,
     manifest: {
       authors: ['Example Author'],
@@ -770,7 +917,12 @@ function createLibraryItemRecord(input?: {
       },
     ],
   };
+}
 
+function createLibraryItemRecord() {
+  // `readingProgressIndex` is left null so the lazy back-fill path is exercised in
+  // tests; the runtime fast path (index already populated) is covered by the
+  // unit test for `buildReadingProgressIndex` below.
   return {
     id: 'library-1',
     userId: 'user-1',
@@ -789,22 +941,22 @@ function createLibraryItemRecord(input?: {
       title: 'Example Title',
       files: [
         {
-          blob: {
-            bytes: Buffer.from(JSON.stringify(readerPackage), 'utf8'),
-          },
+          id: 'file-derived-reader',
+          blobId: 'blob-derived-reader',
           format: BookFileFormat.READER_PACKAGE,
           isPrimary: true,
           kind: BookFileKind.DERIVED_READER,
           processingStatus: ProcessingStatus.READY,
+          readingProgressIndex: null,
         },
         {
-          blob: {
-            bytes: Buffer.from('epub'),
-          },
+          id: 'file-source-epub',
+          blobId: 'blob-source-epub',
           format: BookFileFormat.EPUB,
           isPrimary: true,
           kind: BookFileKind.SOURCE,
           processingStatus: ProcessingStatus.READY,
+          readingProgressIndex: null,
         },
       ],
       processingRuns: [],
