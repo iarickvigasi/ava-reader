@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 COPY . .
 
-RUN pnpm install --frozen-lockfile
+RUN DATABASE_URL=postgresql://build:build@build:5432/build pnpm install --frozen-lockfile
 RUN pnpm --filter api build
 
 EXPOSE 4000
