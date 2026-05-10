@@ -201,7 +201,6 @@
       "explain": "Explain",
       "askAi": "Ask AI",
       "generating": "Generating…",
-      "selectTextHint": "Select text in the reader to see this here.",
       "tryAgain": "Try again",
       "errors": {
         "signIn": "You need to be signed in to use AI tools.",

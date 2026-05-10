@@ -201,7 +201,6 @@
       "explain": "Erklären",
       "askAi": "KI fragen",
       "generating": "Wird erstellt…",
-      "selectTextHint": "Markiere Text im Leser, um ihn hier zu sehen.",
       "tryAgain": "Erneut versuchen",
       "errors": {
         "signIn": "Du musst angemeldet sein, um KI-Tools zu nutzen.",
