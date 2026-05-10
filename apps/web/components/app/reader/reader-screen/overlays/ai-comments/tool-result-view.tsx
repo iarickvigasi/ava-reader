@@ -27,7 +27,7 @@ export function ToolResultView({
   if (error) {
     return (
       <div className="flex flex-col gap-3">
-        <p className="font-(--font-display) text-[0.95rem] leading-[1.5] text-ink/80">
+        <p className="font-(--font-display) text-[0.95rem] leading-normal text-ink/80">
           {error}
         </p>
         {onRetry ? (
@@ -45,7 +45,7 @@ export function ToolResultView({
 
   if (text.length === 0 && !isStreaming) {
     return (
-      <p className="font-(--font-display) text-[0.95rem] leading-[1.5] text-ink/55">
+      <p className="font-(--font-display) text-[0.95rem] leading-normal text-ink/55">
         {emptyHint}
       </p>
     );
@@ -55,7 +55,7 @@ export function ToolResultView({
     <p
       className={cn(
         "font-(--font-display) text-[1.05rem] leading-[1.4] text-ink",
-        isStreaming && "after:ml-1 after:inline-block after:h-[1em] after:w-[2px] after:translate-y-[2px] after:animate-pulse after:bg-ink/60 after:align-middle",
+        isStreaming && "after:ml-1 after:inline-block after:h-[1em] after:w-0.5 after:translate-y-0.5 after:animate-pulse after:bg-ink/60 after:align-middle",
       )}
     >
       {text || (isStreaming ? "\u2026" : "")}
