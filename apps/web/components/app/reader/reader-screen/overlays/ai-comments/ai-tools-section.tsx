@@ -38,7 +38,6 @@ export function AiToolsSection({ libraryItemId }: AiToolsSectionProps) {
     [selectedLocator],
   );
   const language = targetLang || DEFAULT_TRANSLATE_TARGET_LANG;
-  const emptyHint = selection ? t("generating") : t("selectTextHint");
 
   const toggle = (tool: ToolKey) => {
     setOpenTools((current) => {
@@ -52,7 +51,7 @@ export function AiToolsSection({ libraryItemId }: AiToolsSectionProps) {
     });
   };
 
-  const common = { libraryItemId, selection, locator, emptyHint };
+  const common = { libraryItemId, selection, locator };
 
   return (
     <div className="flex flex-col gap-4">

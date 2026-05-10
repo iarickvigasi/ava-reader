@@ -16,7 +16,6 @@ type TranslateToolItemProps = {
   libraryItemId: string;
   selection: string;
   locator: string | undefined;
-  emptyHint: string;
 };
 
 export function TranslateToolItem({
@@ -27,7 +26,6 @@ export function TranslateToolItem({
   libraryItemId,
   selection,
   locator,
-  emptyHint,
 }: TranslateToolItemProps) {
   const payload = useMemo<AiToolPayload | null>(
     () =>
@@ -72,7 +70,6 @@ export function TranslateToolItem({
               text={text}
               isStreaming={isStreaming}
               error={error}
-              emptyHint={emptyHint}
               onRetry={retry}
             />
           </div>

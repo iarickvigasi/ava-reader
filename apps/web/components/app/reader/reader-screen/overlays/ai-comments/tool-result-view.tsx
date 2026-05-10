@@ -2,25 +2,19 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/cn";
 
 type ToolResultViewProps = {
-  // Either a hint shown when there's no selection yet, or the actual streamed
-  // body. The component decides which to render based on `text`.
   text: string;
   isStreaming: boolean;
   error: string | null;
-  // Shown when no generation has been kicked off yet (no selection, panel
-  // just opened, etc.).
-  emptyHint: string;
   onRetry?: () => void;
 };
 
-// Shared body for the three AI Comments accordion library-sections. Handles the
-// empty / streaming / error / done states so the per-tool wrappers only need
-// to pass props.
+// Shared body for the three AI Comments accordion library-sections. Handles
+// the streaming / error / done states so the per-tool wrappers only need to
+// pass props.
 export function ToolResultView({
   text,
   isStreaming,
   error,
-  emptyHint,
   onRetry,
 }: ToolResultViewProps) {
   const t = useTranslations("reader.aiTools");
@@ -43,22 +37,35 @@ export function ToolResultView({
     );
   }
 
-  if (text.length === 0 && !isStreaming) {
-    return (
-      <p className="font-(--font-display) text-[0.95rem] leading-normal text-ink/55">
-        {emptyHint}
-      </p>
-    );
-  }
+  // Cross-fade between the "Generating…" placeholder and the streamed body in
+  // the same grid cell. Both children share `col-start-1 row-start-1` so the
+  // taller of the two sizes the box — the placeholder is ~1 line, the body
+  // grows as chunks arrive — and opacity transitions blend them. The streamed
+  // body owns the blinking caret while still streaming.
+  const isWaiting = isStreaming && text.length === 0;
 
   return (
-    <p
-      className={cn(
-        "font-(--font-display) text-[1.05rem] leading-[1.4] text-ink",
-        isStreaming && "after:ml-1 after:inline-block after:h-[1em] after:w-0.5 after:translate-y-0.5 after:animate-pulse after:bg-ink/60 after:align-middle",
-      )}
-    >
-      {text || (isStreaming ? "\u2026" : "")}
-    </p>
+    <div className="grid">
+      <p
+        aria-hidden={!isWaiting}
+        className={cn(
+          "col-start-1 row-start-1 font-(--font-display) text-[1.05rem] leading-[1.4] text-ink/55 transition-opacity duration-300",
+          isWaiting ? "animate-pulse opacity-100" : "opacity-0",
+        )}
+      >
+        {t("generating")}
+      </p>
+      <p
+        className={cn(
+          "col-start-1 row-start-1 font-(--font-display) text-[1.05rem] leading-[1.4] text-ink transition-opacity duration-300",
+          text.length === 0 ? "opacity-0" : "opacity-100",
+          isStreaming &&
+            text.length > 0 &&
+            "after:ml-1 after:inline-block after:h-[1em] after:w-0.5 after:translate-y-0.5 after:animate-pulse after:bg-ink/60 after:align-middle",
+        )}
+      >
+        {text}
+      </p>
+    </div>
   );
 }

@@ -201,7 +201,6 @@
       "explain": "Explicar",
       "askAi": "Perguntar à IA",
       "generating": "Gerando…",
-      "selectTextHint": "Selecione um trecho no leitor para vê-lo aqui.",
       "tryAgain": "Tentar novamente",
       "errors": {
         "signIn": "Você precisa estar conectado para usar as ferramentas de IA.",

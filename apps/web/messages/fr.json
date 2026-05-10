@@ -201,7 +201,6 @@
       "explain": "Expliquer",
       "askAi": "Demander à l'IA",
       "generating": "Génération…",
-      "selectTextHint": "Sélectionnez du texte dans le lecteur pour le voir ici.",
       "tryAgain": "Réessayer",
       "errors": {
         "signIn": "Vous devez être connecté(e) pour utiliser les outils IA.",

@@ -18,7 +18,6 @@ type AiToolItemProps = {
   libraryItemId: string;
   selection: string;
   locator: string | undefined;
-  emptyHint: string;
 };
 
 export function AiToolItem({
@@ -30,7 +29,6 @@ export function AiToolItem({
   libraryItemId,
   selection,
   locator,
-  emptyHint,
 }: AiToolItemProps) {
   const payload = useMemo<AiToolPayload | null>(
     () => (selection ? { kind, text: selection, locator } : null),
@@ -54,7 +52,6 @@ export function AiToolItem({
         text={text}
         isStreaming={isStreaming}
         error={error}
-        emptyHint={emptyHint}
         onRetry={retry}
       />
     </ToolSection>
