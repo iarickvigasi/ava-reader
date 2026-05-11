@@ -171,7 +171,20 @@
       "searchPlaceholder": "Search",
       "searchAria": "Search highlights",
       "rename": "Rename",
-      "delete": "Delete"
+      "delete": "Delete",
+      "empty": "No highlights yet",
+      "loadFailed": "Couldn't load your highlights. We'll try again next time.",
+      "unknownChapter": "Unknown chapter",
+      "filterAll": "All",
+      "color": {
+        "apricot": "Apricot",
+        "mimosa": "Mimosa",
+        "jade": "Jade",
+        "sky": "Sky",
+        "lavender": "Lavender",
+        "rose": "Rose",
+        "mauve": "Mauve"
+      }
     },
     "aiComments": {
       "title": "AI Comments",

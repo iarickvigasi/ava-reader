@@ -171,7 +171,20 @@
       "searchPlaceholder": "Buscar",
       "searchAria": "Buscar nos destaques",
       "rename": "Renomear",
-      "delete": "Excluir"
+      "delete": "Excluir",
+      "empty": "Nenhum destaque ainda",
+      "loadFailed": "Não foi possível carregar seus destaques. Tentaremos novamente mais tarde.",
+      "unknownChapter": "Capítulo desconhecido",
+      "filterAll": "Todos",
+      "color": {
+        "apricot": "Damasco",
+        "mimosa": "Mimosa",
+        "jade": "Jade",
+        "sky": "Céu",
+        "lavender": "Lavanda",
+        "rose": "Rosa",
+        "mauve": "Malva"
+      }
     },
     "aiComments": {
       "title": "Comentários da IA",

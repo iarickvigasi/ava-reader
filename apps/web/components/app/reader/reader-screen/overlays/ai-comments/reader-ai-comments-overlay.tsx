@@ -1,9 +1,7 @@
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import { MobileCloseButton } from "../mobile-close-button";
 import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
-import type { HighlightColor } from "../highlights/highlights-data";
 import { AiToolsSection } from "./ai-tools-section";
 import { HighlightSection } from "./highlight-section";
 import { SelectionSection } from "./selection-section";
@@ -18,9 +16,6 @@ export function ReaderAiCommentsOverlay({
   onClose,
 }: ReaderAiCommentsOverlayProps) {
   useCloseOnEscape(onClose);
-  const [selectedColor, setSelectedColor] = useState<HighlightColor | null>(
-    "apricot",
-  );
 
   return (
     <div className="pointer-events-none fixed inset-0 z-50">
@@ -31,11 +26,7 @@ export function ReaderAiCommentsOverlay({
           <div className="relative z-10 flex h-full flex-col md:pt-24">
             <div className="pointer-events-auto flex min-h-0 flex-1 flex-col px-6 py-8 sm:px-8 md:animate-[reader-contents-enter_320ms_cubic-bezier(0.22,1,0.36,1)_140ms_both] md:px-8 md:py-0">
               <AiCommentsHeader onClose={onClose} />
-              <AiCommentsSections
-                libraryItemId={libraryItemId}
-                selectedColor={selectedColor}
-                onSelectColor={setSelectedColor}
-              />
+              <AiCommentsSections libraryItemId={libraryItemId} />
             </div>
           </div>
         </div>
@@ -75,22 +66,11 @@ function AiCommentsHeader({ onClose }: { onClose: () => void }) {
   );
 }
 
-function AiCommentsSections({
-  libraryItemId,
-  selectedColor,
-  onSelectColor,
-}: {
-  libraryItemId: string;
-  selectedColor: HighlightColor | null;
-  onSelectColor: (color: HighlightColor) => void;
-}) {
+function AiCommentsSections({ libraryItemId }: { libraryItemId: string }) {
   return (
     <div className="mt-8 flex min-h-0 flex-1 flex-col gap-6 overflow-auto pb-8 pr-1">
       <SelectionSection />
-      <HighlightSection
-        selectedColor={selectedColor}
-        onSelectColor={onSelectColor}
-      />
+      <HighlightSection />
       <AiToolsSection libraryItemId={libraryItemId} />
     </div>
   );

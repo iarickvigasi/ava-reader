@@ -6,29 +6,46 @@ import {
 import { cn } from "@/lib/cn";
 import {
   HIGHLIGHT_COLOR_HEX,
+  HIGHLIGHT_COLOR_ORDER,
   type HighlightColor,
 } from "../highlights/highlights-data";
+import { useHighlightsContext } from "../highlights/highlights-context";
+import { useReaderSelectionContext } from "../../screen/reader-selection-context";
 
-const HIGHLIGHT_COLOR_ORDER: HighlightColor[] = [
-  "apricot",
-  "mimosa",
-  "jade",
-  "sky",
-  "lavender",
-  "rose",
-  "mauve",
-];
-
-type HighlightSectionProps = {
-  selectedColor: HighlightColor | null;
-  onSelectColor: (color: HighlightColor) => void;
-};
-
-export function HighlightSection({
-  selectedColor,
-  onSelectColor,
-}: HighlightSectionProps) {
+export function HighlightSection() {
   const t = useTranslations("reader.aiComments");
+  const {
+    text,
+    locator,
+    highlightId,
+    highlightColor,
+    setHighlightBinding,
+  } = useReaderSelectionContext();
+  const { upsertHighlight, deleteHighlight } = useHighlightsContext();
+
+  const handleSelect = (color: HighlightColor) => {
+    if (!text) {
+      return;
+    }
+    // Toggle off when clicking the same color on an existing highlight.
+    if (highlightId && highlightColor === color) {
+      deleteHighlight(highlightId);
+      setHighlightBinding(null);
+      return;
+    }
+    // Update an existing highlight in place — same id, new color.
+    if (highlightId) {
+      upsertHighlight({ id: highlightId, excerpt: text, color, locator });
+      setHighlightBinding({ highlightId, highlightColor: color });
+      return;
+    }
+    // Create a new highlight; bind the selection to it so subsequent clicks
+    // in the same panel session toggle/replace this row instead of stacking
+    // duplicates.
+    const id = upsertHighlight({ excerpt: text, color, locator });
+    setHighlightBinding({ highlightId: id, highlightColor: color });
+  };
+
   return (
     <section className="rounded-[10px]">
       <div className="flex items-center justify-between gap-3 px-5 py-4">
@@ -45,8 +62,8 @@ export function HighlightSection({
           <HighlightColorSwatch
             key={color}
             color={color}
-            isSelected={selectedColor === color}
-            onSelect={() => onSelectColor(color)}
+            isSelected={highlightColor === color}
+            onSelect={() => handleSelect(color)}
           />
         ))}
       </div>

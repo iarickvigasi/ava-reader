@@ -171,7 +171,20 @@
       "searchPlaceholder": "Buscar",
       "searchAria": "Buscar resaltados",
       "rename": "Renombrar",
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "empty": "Aún no hay resaltados",
+      "loadFailed": "No se pudieron cargar los resaltados. Lo intentaremos más tarde.",
+      "unknownChapter": "Capítulo desconocido",
+      "filterAll": "Todos",
+      "color": {
+        "apricot": "Albaricoque",
+        "mimosa": "Mimosa",
+        "jade": "Jade",
+        "sky": "Cielo",
+        "lavender": "Lavanda",
+        "rose": "Rosa",
+        "mauve": "Malva"
+      }
     },
     "aiComments": {
       "title": "Comentarios de IA",

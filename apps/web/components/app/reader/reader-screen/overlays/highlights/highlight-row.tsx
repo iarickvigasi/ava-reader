@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/cn";
 import {
-  HighlightSwatch,
   RowActionsMenu,
   RowActionsMenuTrigger,
 } from "./highlights-fields";
@@ -12,6 +11,8 @@ type HighlightRowProps = {
   isMenuOpen: boolean;
   onMenuClose: () => void;
   onMenuToggle: () => void;
+  onDelete?: () => void;
+  onSelect?: () => void;
 };
 
 export function HighlightRow({
@@ -19,6 +20,8 @@ export function HighlightRow({
   isMenuOpen,
   onMenuClose,
   onMenuToggle,
+  onDelete,
+  onSelect,
 }: HighlightRowProps) {
   const rowRef = useRef<HTMLDivElement>(null);
 
@@ -46,30 +49,30 @@ export function HighlightRow({
     <div
       ref={rowRef}
       className={cn(
-        "group/highlight-row relative flex items-center gap-4 rounded-[10px] px-3 py-2 transition",
+        "group/highlight-row relative flex gap-4 rounded-[10px] px-3 py-2 transition",
         isMenuOpen ? "bg-soft-tone-fill/60" : "hover:bg-soft-tone-fill/45",
       )}
     >
       <button
         type="button"
-        className="flex min-w-0 flex-1 items-center gap-3 text-left"
+        onClick={onSelect}
+        className="flex min-w-0 flex-1 gap-3 text-left"
       >
-        <HighlightSwatch color={highlight.color} />
         <p className="min-w-0 flex-1 font-(--font-display) text-[1rem] leading-[1.3] text-title">
           {highlight.text}
         </p>
       </button>
-      <div className="flex shrink-0 flex-col items-center justify-between self-stretch py-0.5">
+      <div className="flex shrink-0 flex-row items-center justify-between self-stretch py-0.5">
         <RowActionsMenuTrigger
-          ariaLabel={`More options for highlight on page ${highlight.pageNumber}`}
+          ariaLabel={`More options for highlight in ${highlight.pageLabel}`}
           isOpen={isMenuOpen}
           onToggle={onMenuToggle}
         />
-        <span className="font-(--font-ui) text-[0.78rem] text-muted">
-          {highlight.pageNumber}
+        <span className="font-(--font-ui) text-[0.72rem] text-muted">
+          {highlight.pageLabel}
         </span>
       </div>
-      {isMenuOpen ? <RowActionsMenu /> : null}
+      {isMenuOpen ? <RowActionsMenu onDelete={onDelete} /> : null}
     </div>
   );
 }

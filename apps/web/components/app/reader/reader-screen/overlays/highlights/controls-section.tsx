@@ -1,12 +1,14 @@
-import { useState } from "react";
 import { SearchField } from "./highlights-fields";
 
-export function ControlsSection() {
-  const [searchQuery, setSearchQuery] = useState("");
+type ControlsSectionProps = {
+  onChange: (value: string) => void;
+  value: string;
+};
 
+export function ControlsSection({ onChange, value }: ControlsSectionProps) {
   return (
     <section>
-      <SearchField onChange={setSearchQuery} value={searchQuery} />
+      <SearchField onChange={onChange} value={value} />
     </section>
   );
 }

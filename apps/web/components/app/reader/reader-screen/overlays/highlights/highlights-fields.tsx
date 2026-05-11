@@ -4,7 +4,6 @@ import { EditIcon, TrashIcon } from "@/components/app/shared/app-icons";
 import { cn } from "@/lib/cn";
 import {
   HIGHLIGHT_COLOR_HEX,
-  type HighlightColor,
   type HighlightFilter,
 } from "./highlights-data";
 import { MoreVerticalIcon } from "./highlights-icons";
@@ -70,16 +69,6 @@ export function ColorFilterChip({
         {filter.count}
       </span>
     </button>
-  );
-}
-
-export function HighlightSwatch({ color }: { color: HighlightColor }) {
-  return (
-    <span
-      aria-hidden="true"
-      className="inline-block size-5 shrink-0 rounded-full"
-      style={{ backgroundColor: HIGHLIGHT_COLOR_HEX[color] }}
-    />
   );
 }
 

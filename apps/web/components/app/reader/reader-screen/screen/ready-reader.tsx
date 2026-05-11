@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useMemo } from "react";
 import { useReaderUi } from "@/components/app/core/reader-ui-context";
-import { ReaderArticle } from "../content/reader-article";
+import {
+  READER_HIGHLIGHT_CLICK_EVENT,
+  ReaderArticle,
+} from "../content/reader-article";
+import { useHighlightsContext } from "../overlays/highlights/highlights-context";
 import { ReaderPaginationPreloader } from "../pagination/reader-pagination-preloader";
 import {
   ReadyReaderActivityStatus,
@@ -48,6 +52,7 @@ export function ReadyReader({
 }: ReadyReaderProps) {
   const { activePanel, closePanel, openPanel } = useReaderUi();
   const { setSelection } = useReaderSelectionContext();
+  const { highlights } = useHighlightsContext();
   const isContentsOpen = activePanel === READER_PANEL_CONTENTS;
   const isPreferencesOpen = activePanel === READER_PANEL_PREFERENCES;
   const isAiChatsOpen = activePanel === READER_PANEL_AI_CHATS;
@@ -114,16 +119,59 @@ export function ReadyReader({
   //
   // We compute the locator synchronously here because the Range refers to
   // live DOM nodes that may be re-rendered before the effect fires.
+  //
+  // If the freshly-selected range corresponds to an existing highlight (same
+  // start block + offset), we pre-bind to that highlight id so subsequent
+  // swatch clicks operate on it instead of stacking duplicates.
   const handleTextSelected = useCallback(
     ({ text, range }: ReaderSelection) => {
+      const locator = computeAiCommentLocator(range, activeChapter.chapterId);
+      const matched = locator
+        ? highlights.find(
+            (highlight) =>
+              highlight.locator?.startBlockId === locator.startBlockId &&
+              highlight.locator?.startOffset === locator.startOffset &&
+              highlight.locator?.endBlockId === locator.endBlockId &&
+              highlight.locator?.endOffset === locator.endOffset,
+          ) ?? null
+        : null;
       setSelection({
         text,
-        locator: computeAiCommentLocator(range, activeChapter.chapterId),
+        locator,
+        highlightId: matched?.id ?? null,
+        highlightColor: matched?.color ?? null,
       });
       openPanel(READER_PANEL_AI_COMMENTS);
     },
-    [activeChapter.chapterId, openPanel, setSelection],
+    [activeChapter.chapterId, highlights, openPanel, setSelection],
   );
+
+  // Click on an existing highlight inside the article: open the AI Comments
+  // panel pre-bound to that highlight so the user can change/delete the
+  // color, or run AI tools against the same selection.
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent<{ highlightId: string }>).detail;
+      const highlight = highlights.find((row) => row.id === detail.highlightId);
+      if (!highlight) {
+        return;
+      }
+      setSelection({
+        text: highlight.excerpt,
+        locator: highlight.locator,
+        highlightId: highlight.id,
+        highlightColor: highlight.color,
+      });
+      openPanel(READER_PANEL_AI_COMMENTS);
+    };
+    window.addEventListener(READER_HIGHLIGHT_CLICK_EVENT, handler);
+    return () => {
+      window.removeEventListener(READER_HIGHLIGHT_CLICK_EVENT, handler);
+    };
+  }, [highlights, openPanel, setSelection]);
 
   useReaderTextSelection({
     containerRef: pageBoxRef,
@@ -228,7 +276,10 @@ export function ReadyReader({
       {isAiChatsOpen ? <ReaderAiChatsOverlay onClose={closePanel} /> : null}
 
       {isHighlightsOpen ? (
-        <ReaderHighlightsOverlay onClose={closePanel} />
+        <ReaderHighlightsOverlay
+          chapters={payload.chapters}
+          onClose={closePanel}
+        />
       ) : null}
 
       {isAiCommentsOpen ? (

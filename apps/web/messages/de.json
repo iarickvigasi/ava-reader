@@ -171,7 +171,20 @@
       "searchPlaceholder": "Suchen",
       "searchAria": "In Markierungen suchen",
       "rename": "Umbenennen",
-      "delete": "Löschen"
+      "delete": "Löschen",
+      "empty": "Noch keine Markierungen",
+      "loadFailed": "Markierungen konnten nicht geladen werden. Wir versuchen es später erneut.",
+      "unknownChapter": "Unbekanntes Kapitel",
+      "filterAll": "Alle",
+      "color": {
+        "apricot": "Apricot",
+        "mimosa": "Mimose",
+        "jade": "Jade",
+        "sky": "Himmel",
+        "lavender": "Lavendel",
+        "rose": "Rose",
+        "mauve": "Malve"
+      }
     },
     "aiComments": {
       "title": "KI-Kommentare",

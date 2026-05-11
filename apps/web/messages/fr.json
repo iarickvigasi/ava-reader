@@ -171,7 +171,20 @@
       "searchPlaceholder": "Rechercher",
       "searchAria": "Rechercher dans les surlignages",
       "rename": "Renommer",
-      "delete": "Supprimer"
+      "delete": "Supprimer",
+      "empty": "Aucun surlignage",
+      "loadFailed": "Impossible de charger vos surlignages. Nouvelle tentative plus tard.",
+      "unknownChapter": "Chapitre inconnu",
+      "filterAll": "Tout",
+      "color": {
+        "apricot": "Abricot",
+        "mimosa": "Mimosa",
+        "jade": "Jade",
+        "sky": "Ciel",
+        "lavender": "Lavande",
+        "rose": "Rose",
+        "mauve": "Mauve"
+      }
     },
     "aiComments": {
       "title": "Commentaires IA",
