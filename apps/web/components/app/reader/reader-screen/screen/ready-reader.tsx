@@ -1,10 +1,6 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useReaderUi } from "@/components/app/core/reader-ui-context";
-import {
-  READER_HIGHLIGHT_CLICK_EVENT,
-  ReaderArticle,
-} from "../content/reader-article";
-import { useHighlightsContext } from "../overlays/highlights/highlights-context";
+import { ReaderArticle } from "../content/reader-article";
 import { ReaderPaginationPreloader } from "../pagination/reader-pagination-preloader";
 import {
   ReadyReaderActivityStatus,
@@ -26,12 +22,8 @@ import {
 } from "../shared/constants";
 import type { ReadyReaderProps } from "../shared/types";
 import { useReaderPagination } from "../pagination/use-reader-pagination";
-import { computeAiCommentLocator } from "./compute-ai-comment-locator";
-import { useReaderSelectionContext } from "./reader-selection-context";
-import {
-  useReaderTextSelection,
-  type ReaderSelection,
-} from "./use-reader-text-selection";
+import { useHighlightSelectionBridge } from "./use-highlight-selection-bridge";
+import { useReaderTextSelection } from "./use-reader-text-selection";
 
 export function ReadyReader({
   activeChapter,
@@ -50,9 +42,7 @@ export function ReadyReader({
   restoreIntent,
   visibleLocator,
 }: ReadyReaderProps) {
-  const { activePanel, closePanel, openPanel } = useReaderUi();
-  const { setSelection } = useReaderSelectionContext();
-  const { highlights } = useHighlightsContext();
+  const { activePanel, closePanel } = useReaderUi();
   const isContentsOpen = activePanel === READER_PANEL_CONTENTS;
   const isPreferencesOpen = activePanel === READER_PANEL_PREFERENCES;
   const isAiChatsOpen = activePanel === READER_PANEL_AI_CHATS;
@@ -113,69 +103,16 @@ export function ReadyReader({
     visibleLocator,
   });
 
-  // When the user selects text inside the page-box, surface it in the AI
-  // Comments panel. We open the panel here (instead of forcing the caller of
-  // setSelectedText to do it) so the trigger remains centralised.
-  //
-  // We compute the locator synchronously here because the Range refers to
-  // live DOM nodes that may be re-rendered before the effect fires.
-  //
-  // If the freshly-selected range corresponds to an existing highlight (same
-  // start block + offset), we pre-bind to that highlight id so subsequent
-  // swatch clicks operate on it instead of stacking duplicates.
-  const handleTextSelected = useCallback(
-    ({ text, range }: ReaderSelection) => {
-      const locator = computeAiCommentLocator(range, activeChapter.chapterId);
-      const matched = locator
-        ? highlights.find(
-            (highlight) =>
-              highlight.locator?.startBlockId === locator.startBlockId &&
-              highlight.locator?.startOffset === locator.startOffset &&
-              highlight.locator?.endBlockId === locator.endBlockId &&
-              highlight.locator?.endOffset === locator.endOffset,
-          ) ?? null
-        : null;
-      setSelection({
-        text,
-        locator,
-        highlightId: matched?.id ?? null,
-        highlightColor: matched?.color ?? null,
-      });
-      openPanel(READER_PANEL_AI_COMMENTS);
-    },
-    [activeChapter.chapterId, highlights, openPanel, setSelection],
+  // Bridges fresh selections and clicks on painted highlights into the AI
+  // Comments panel, matching to existing rows when possible. Owns the
+  // highlight-store reads, so this component stays focused on layout.
+  const { onTextSelected } = useHighlightSelectionBridge(
+    activeChapter.chapterId,
   );
-
-  // Click on an existing highlight inside the article: open the AI Comments
-  // panel pre-bound to that highlight so the user can change/delete the
-  // color, or run AI tools against the same selection.
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-    const handler = (event: Event) => {
-      const detail = (event as CustomEvent<{ highlightId: string }>).detail;
-      const highlight = highlights.find((row) => row.id === detail.highlightId);
-      if (!highlight) {
-        return;
-      }
-      setSelection({
-        text: highlight.excerpt,
-        locator: highlight.locator,
-        highlightId: highlight.id,
-        highlightColor: highlight.color,
-      });
-      openPanel(READER_PANEL_AI_COMMENTS);
-    };
-    window.addEventListener(READER_HIGHLIGHT_CLICK_EVENT, handler);
-    return () => {
-      window.removeEventListener(READER_HIGHLIGHT_CLICK_EVENT, handler);
-    };
-  }, [highlights, openPanel, setSelection]);
 
   useReaderTextSelection({
     containerRef: pageBoxRef,
-    onSelectText: handleTextSelected,
+    onSelectText: onTextSelected,
     // Selecting while the article is masked (e.g., during chapter transitions)
     // would surface stale text — skip those windows.
     disabled: shouldMaskArticle,
