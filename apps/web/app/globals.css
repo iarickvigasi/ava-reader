@@ -32,6 +32,17 @@
   --shadow-nav: 0 12px 30px -20px rgba(38, 43, 58, 0.22);
   --radius-shell: 32px;
   --radius-card: 18px;
+
+  /* Highlight palette — light theme uses soft pastels that read against
+     dark body text. The matching dark-theme values below preserve the hue
+     family but drop to ~30% lightness so white text remains legible. */
+  --highlight-apricot: #fdddc9;
+  --highlight-mimosa: #fbe7cb;
+  --highlight-jade: #d7e7d4;
+  --highlight-sky: #d7e8f7;
+  --highlight-lavender: #d7d0ff;
+  --highlight-rose: #ffd8e0;
+  --highlight-mauve: #f4d9f7;
 }
 
 :root[data-theme="dark"] {
@@ -60,6 +71,16 @@
   --shadow-soft: 0 30px 80px -46px rgba(0, 0, 0, 0.55);
   --shadow-card: 0 28px 60px -38px rgba(0, 0, 0, 0.6);
   --shadow-nav: 0 12px 30px -20px rgba(0, 0, 0, 0.45);
+
+  /* Dark-theme highlight palette — same hues as the light palette, dropped
+     to ~30% lightness. All deliver >6:1 contrast with white text. */
+  --highlight-apricot: #7a3e1f;
+  --highlight-mimosa: #735518;
+  --highlight-jade: #2e6047;
+  --highlight-sky: #265680;
+  --highlight-lavender: #4d4080;
+  --highlight-rose: #7a2942;
+  --highlight-mauve: #6b357a;
 }
 
 @theme inline {

@@ -1,6 +1,6 @@
 import type { ReaderRangeLocator } from "@/lib/api-types";
 import {
-  HIGHLIGHT_COLOR_HEX,
+  HIGHLIGHT_COLOR_BG,
   type HighlightColor,
 } from "../overlays/highlights/highlights-data";
 import {
@@ -38,7 +38,7 @@ export function applyHighlightMarks(
     if (!range) {
       continue;
     }
-    const backgroundColor = HIGHLIGHT_COLOR_HEX[highlight.color];
+    const backgroundColor = HIGHLIGHT_COLOR_BG[highlight.color];
     wrapRangeWithMarks(range, (mark) => {
       mark.className = HIGHLIGHT_MARK_CLASS;
       mark.dataset.highlightId = highlight.id;

@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { EditIcon, TrashIcon } from "@/components/app/shared/app-icons";
 import { cn } from "@/lib/cn";
 import {
-  HIGHLIGHT_COLOR_HEX,
+  HIGHLIGHT_COLOR_BG,
   type HighlightFilter,
 } from "./highlights-data";
 import { MoreVerticalIcon } from "./highlights-icons";
@@ -42,7 +42,7 @@ export function ColorFilterChip({
   const badgeColor =
     filter.id === "all"
       ? "var(--paper-strong)"
-      : HIGHLIGHT_COLOR_HEX[filter.id];
+      : HIGHLIGHT_COLOR_BG[filter.id];
 
   return (
     <button

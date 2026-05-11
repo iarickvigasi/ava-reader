@@ -19,16 +19,19 @@ export type HighlightFilter = {
   count: number;
 };
 
-// Hex tokens for each highlight color. These live alongside the data because
-// they're specific to the highlights palette and aren't reused elsewhere yet.
-export const HIGHLIGHT_COLOR_HEX: Record<HighlightColor, string> = {
-  apricot: "#fdddc9",
-  mimosa: "#fbe7cb",
-  jade: "#d7e7d4",
-  sky: "#d7e8f7",
-  lavender: "#d7d0ff",
-  rose: "#ffd8e0",
-  mauve: "#f4d9f7",
+// CSS background value for each highlight color. We hand back `var(--…)`
+// references rather than literal hex codes so the colors swap when the user
+// flips between light and dark themes (definitions live in globals.css). The
+// light palette is the original soft pastel; the dark palette uses the same
+// hues at ~30% lightness so white body text stays legible on top.
+export const HIGHLIGHT_COLOR_BG: Record<HighlightColor, string> = {
+  apricot: "var(--highlight-apricot)",
+  mimosa: "var(--highlight-mimosa)",
+  jade: "var(--highlight-jade)",
+  sky: "var(--highlight-sky)",
+  lavender: "var(--highlight-lavender)",
+  rose: "var(--highlight-rose)",
+  mauve: "var(--highlight-mauve)",
 };
 
 // Stable left-to-right palette order. Used both for the right-panel swatches

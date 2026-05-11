@@ -5,7 +5,7 @@ import {
 } from "@/components/app/shared/app-icons";
 import { cn } from "@/lib/cn";
 import {
-  HIGHLIGHT_COLOR_HEX,
+  HIGHLIGHT_COLOR_BG,
   HIGHLIGHT_COLOR_ORDER,
   type HighlightColor,
 } from "../highlights/highlights-data";
@@ -92,7 +92,7 @@ function HighlightColorSwatch({
           ? "shadow-[0_0_0_2px_var(--paper),0_0_0_4px_var(--ink)]"
           : "hover:scale-105",
       )}
-      style={{ backgroundColor: HIGHLIGHT_COLOR_HEX[color] }}
+      style={{ backgroundColor: HIGHLIGHT_COLOR_BG[color] }}
     />
   );
 }
