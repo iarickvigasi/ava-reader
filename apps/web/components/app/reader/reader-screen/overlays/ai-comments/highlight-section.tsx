@@ -4,10 +4,10 @@ import {
   ReaderFavoritesIcon,
 } from "@/components/app/shared/app-icons";
 import { cn } from "@/lib/cn";
+import type { HighlightColor } from "@/lib/highlights-store";
 import {
   HIGHLIGHT_COLOR_BG,
   HIGHLIGHT_COLOR_ORDER,
-  type HighlightColor,
 } from "../highlights/highlights-data";
 import { useHighlightsContext } from "../highlights/highlights-context";
 import { useReaderSelectionContext } from "../../screen/reader-selection-context";

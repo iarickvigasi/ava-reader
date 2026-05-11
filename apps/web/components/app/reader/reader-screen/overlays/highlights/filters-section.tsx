@@ -1,8 +1,8 @@
 import { useTranslations } from "next-intl";
+import type { HighlightColor } from "@/lib/highlights-store";
 import { ColorFilterChip } from "./highlights-fields";
 import {
   HIGHLIGHT_COLOR_ORDER,
-  type HighlightColor,
   type HighlightFilter,
 } from "./highlights-data";
 

@@ -1,6 +1,3 @@
-// Single source of truth for the palette name lives in the store. Re-exported
-// here so existing UI imports keep working.
-export type { HighlightColor } from "@/lib/highlights-store";
 import type { HighlightColor } from "@/lib/highlights-store";
 
 export type Highlight = {

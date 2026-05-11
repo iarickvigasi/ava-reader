@@ -1,4 +1,4 @@
-import type { AiCommentLocator } from "@/lib/api-types";
+import type { ReaderRangeLocator } from "@/lib/api-types";
 
 // Number of characters of surrounding text we capture on each side of the
 // selection. Wide enough to disambiguate the same phrase appearing twice in a
@@ -17,7 +17,7 @@ const CONTEXT_CHAR_COUNT = 30;
 export function computeAiCommentLocator(
   range: Range,
   fallbackChapterId: string,
-): AiCommentLocator | null {
+): ReaderRangeLocator | null {
   const startBlock = findBlockElement(range.startContainer);
   const endBlock = findBlockElement(range.endContainer);
   if (!startBlock || !endBlock) {

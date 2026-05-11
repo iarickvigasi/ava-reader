@@ -279,10 +279,6 @@ export type ReaderRangeLocator = {
   contextAfter: string;
 };
 
-// Backwards-compatible alias for code that still imports the AI-comment-
-// flavored name. The two locator types are identical by design — both
-// describe a chapter-relative text range.
-export type AiCommentLocator = ReaderRangeLocator;
 
 export type ReaderProgressPayload = {
   chapterLabel: string | null;

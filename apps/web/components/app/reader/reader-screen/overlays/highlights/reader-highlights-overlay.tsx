@@ -1,13 +1,14 @@
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import type { ReaderChapterPayload } from "@/lib/api-types";
+import type { HighlightColor } from "@/lib/highlights-store";
 import { MobileCloseButton } from "../mobile-close-button";
 import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
 import { ControlsSection } from "./controls-section";
 import { FiltersSection } from "./filters-section";
 import { HighlightsListSection } from "./highlights-list-section";
-import { HIGHLIGHT_COLOR_ORDER, type HighlightColor } from "./highlights-data";
+import { HIGHLIGHT_COLOR_ORDER } from "./highlights-data";
 import { useHighlightsContext } from "./highlights-context";
 
 type ReaderHighlightsOverlayProps = {
