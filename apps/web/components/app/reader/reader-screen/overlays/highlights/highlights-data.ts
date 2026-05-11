@@ -7,9 +7,10 @@ export type Highlight = {
   id: string;
   text: string;
   color: HighlightColor;
-  // Chapter label, since exact page numbers aren't available on day one and
-  // chapter is a stable enough locator for the user's eye.
-  pageLabel: string;
+  // Chapter title. We don't surface page numbers yet because the EPUB
+  // pagination engine paginates per-viewport, so a "page" isn't a stable
+  // identifier across devices or font sizes.
+  chapterLabel: string;
 };
 
 export type HighlightFilter = {

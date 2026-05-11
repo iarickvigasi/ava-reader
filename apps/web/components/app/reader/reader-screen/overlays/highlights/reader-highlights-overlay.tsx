@@ -79,7 +79,7 @@ export function ReaderHighlightsOverlay({
         id: highlight.id,
         text: highlight.excerpt,
         color: highlight.color,
-        pageLabel:
+        chapterLabel:
           chapterLabelById.get(highlight.locator?.chapterId ?? "") ??
           t("unknownChapter"),
       }));
@@ -165,7 +165,7 @@ function HighlightsSections({
     id: string;
     text: string;
     color: HighlightColor;
-    pageLabel: string;
+    chapterLabel: string;
   }>;
 }) {
   return (

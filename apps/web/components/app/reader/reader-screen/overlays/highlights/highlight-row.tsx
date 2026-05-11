@@ -49,28 +49,28 @@ export function HighlightRow({
     <div
       ref={rowRef}
       className={cn(
-        "group/highlight-row relative flex gap-4 rounded-[10px] px-3 py-2 transition",
+        "group/highlight-row relative flex flex-col gap-2 rounded-[10px] px-3 py-2 transition",
         isMenuOpen ? "bg-soft-tone-fill/60" : "hover:bg-soft-tone-fill/45",
       )}
     >
       <button
         type="button"
         onClick={onSelect}
-        className="flex min-w-0 flex-1 gap-3 text-left"
+        className="min-w-0 text-left"
       >
-        <p className="min-w-0 flex-1 font-(--font-display) text-[1rem] leading-[1.3] text-title">
+        <p className="font-(--font-display) text-[1rem] leading-[1.3] text-title">
           {highlight.text}
         </p>
       </button>
-      <div className="flex shrink-0 flex-row items-center justify-between self-stretch py-0.5">
+      <div className="flex items-center justify-between gap-2">
+        <span className="font-(--font-ui) text-[0.72rem] text-muted">
+          {highlight.chapterLabel}
+        </span>
         <RowActionsMenuTrigger
-          ariaLabel={`More options for highlight in ${highlight.pageLabel}`}
+          ariaLabel={`More options for highlight in ${highlight.chapterLabel}`}
           isOpen={isMenuOpen}
           onToggle={onMenuToggle}
         />
-        <span className="font-(--font-ui) text-[0.72rem] text-muted">
-          {highlight.pageLabel}
-        </span>
       </div>
       {isMenuOpen ? <RowActionsMenu onDelete={onDelete} /> : null}
     </div>
