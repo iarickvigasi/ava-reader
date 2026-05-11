@@ -1,15 +1,9 @@
 import { useTranslations } from "next-intl";
-import { useMemo, useState } from "react";
 import type { ReaderChapterPayload } from "@/lib/api-types";
-import type { HighlightColor } from "@/lib/highlights-store";
 import { MobileCloseButton } from "../mobile-close-button";
 import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
-import { ControlsSection } from "./controls-section";
-import { FiltersSection } from "./filters-section";
-import { HighlightsListSection } from "./highlights-list-section";
-import { HIGHLIGHT_COLOR_ORDER } from "./highlights-data";
-import { useHighlightsContext } from "./highlights-context";
+import { HighlightsSections } from "./highlights-sections";
 
 type ReaderHighlightsOverlayProps = {
   chapters: ReaderChapterPayload[];
@@ -23,68 +17,6 @@ export function ReaderHighlightsOverlay({
   onSelectHighlight,
 }: ReaderHighlightsOverlayProps) {
   useCloseOnEscape(onClose);
-  const t = useTranslations("reader.highlights");
-  const { highlights, deleteHighlight } = useHighlightsContext();
-  const [activeFilterId, setActiveFilterId] = useState<HighlightColor | "all">(
-    "all",
-  );
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const chapterLabelById = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const chapter of chapters) {
-      map.set(chapter.chapterId, chapter.title);
-    }
-    return map;
-  }, [chapters]);
-
-  const counts = useMemo(() => {
-    const result: Record<HighlightColor, number> = {
-      apricot: 0,
-      mimosa: 0,
-      jade: 0,
-      sky: 0,
-      lavender: 0,
-      rose: 0,
-      mauve: 0,
-    };
-    for (const highlight of highlights) {
-      result[highlight.color] += 1;
-    }
-    return result;
-  }, [highlights]);
-
-  const visibleHighlights = useMemo(() => {
-    const trimmedQuery = searchQuery.trim().toLowerCase();
-    return highlights
-      .filter((highlight) =>
-        activeFilterId === "all" ? true : highlight.color === activeFilterId,
-      )
-      .filter((highlight) =>
-        trimmedQuery
-          ? highlight.excerpt.toLowerCase().includes(trimmedQuery)
-          : true,
-      )
-      // Group by color so the panel reads as "all jade together, then sky,
-      // ..." — that's what "aggregated by color" means in the brief.
-      .sort((a, b) => {
-        if (a.color !== b.color) {
-          return (
-            HIGHLIGHT_COLOR_ORDER.indexOf(a.color) -
-            HIGHLIGHT_COLOR_ORDER.indexOf(b.color)
-          );
-        }
-        return b.createdAt.localeCompare(a.createdAt);
-      })
-      .map((highlight) => ({
-        id: highlight.id,
-        text: highlight.excerpt,
-        color: highlight.color,
-        chapterLabel:
-          chapterLabelById.get(highlight.locator?.chapterId ?? "") ??
-          t("unknownChapter"),
-      }));
-  }, [activeFilterId, chapterLabelById, highlights, searchQuery, t]);
 
   return (
     <div className="pointer-events-none fixed inset-0 z-50">
@@ -96,15 +28,8 @@ export function ReaderHighlightsOverlay({
             <div className="pointer-events-auto flex min-h-0 flex-1 flex-col px-6 py-8 sm:px-8 md:animate-[reader-contents-enter_320ms_cubic-bezier(0.22,1,0.36,1)_140ms_both] md:px-8 md:py-0">
               <HighlightsHeader onClose={onClose} />
               <HighlightsSections
-                activeFilterId={activeFilterId}
-                counts={counts}
-                onChangeFilter={setActiveFilterId}
-                onChangeSearch={setSearchQuery}
-                onDelete={deleteHighlight}
+                chapters={chapters}
                 onSelectHighlight={onSelectHighlight}
-                searchQuery={searchQuery}
-                total={highlights.length}
-                visibleHighlights={visibleHighlights}
               />
             </div>
           </div>
@@ -139,50 +64,6 @@ function HighlightsHeader({ onClose }: { onClose: () => void }) {
         <PanelTitle>{t("title")}</PanelTitle>
       </div>
       <MobileCloseButton ariaLabel={t("closePanel")} onClose={onClose} />
-    </div>
-  );
-}
-
-function HighlightsSections({
-  activeFilterId,
-  counts,
-  onChangeFilter,
-  onChangeSearch,
-  onDelete,
-  onSelectHighlight,
-  searchQuery,
-  total,
-  visibleHighlights,
-}: {
-  activeFilterId: HighlightColor | "all";
-  counts: Record<HighlightColor, number>;
-  onChangeFilter: (next: HighlightColor | "all") => void;
-  onChangeSearch: (value: string) => void;
-  onDelete: (id: string) => void;
-  onSelectHighlight?: (id: string) => void;
-  searchQuery: string;
-  total: number;
-  visibleHighlights: Array<{
-    id: string;
-    text: string;
-    color: HighlightColor;
-    chapterLabel: string;
-  }>;
-}) {
-  return (
-    <div className="mt-8 flex min-h-0 flex-1 flex-col gap-6 overflow-hidden">
-      <ControlsSection value={searchQuery} onChange={onChangeSearch} />
-      <FiltersSection
-        activeFilterId={activeFilterId}
-        counts={counts}
-        onChange={onChangeFilter}
-        total={total}
-      />
-      <HighlightsListSection
-        highlights={visibleHighlights}
-        onDelete={onDelete}
-        onSelect={onSelectHighlight}
-      />
     </div>
   );
 }
