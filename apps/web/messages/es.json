@@ -94,8 +94,8 @@
     "annotations": {
       "title": "Anotaciones recientes",
       "empty": "Las anotaciones aparecerán aquí cuando crees resaltados.",
-      "from": "De: {bookTitle}",
-      "highlighter": "Resaltador: {colorLabel}",
+      "from": "Del libro: {bookTitle}",
+      "highlighter": "Resaltador: <color>{colorLabel}</color>",
       "viewFullNotebook": "Ver cuaderno completo"
     },
     "footer": {

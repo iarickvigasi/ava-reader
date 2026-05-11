@@ -94,8 +94,8 @@
     "annotations": {
       "title": "Recent Annotations",
       "empty": "Annotations will begin appearing here once you create highlights.",
-      "from": "From: {bookTitle}",
-      "highlighter": "Highlighter: {colorLabel}",
+      "from": "From book: {bookTitle}",
+      "highlighter": "Highlighter: <color>{colorLabel}</color>",
       "viewFullNotebook": "View full notebook"
     },
     "footer": {

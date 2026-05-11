@@ -43,6 +43,18 @@
   --highlight-lavender: #d7d0ff;
   --highlight-rose: #ffd8e0;
   --highlight-mauve: #f4d9f7;
+
+  /* Inverse-theme highlight palette. Always references the *other* theme's
+     value, so consumers can render content (e.g. a color name) on the
+     current paper and still see it pop — useful for chip labels that would
+     vanish if painted in the same-theme pastel. */
+  --highlight-apricot-inverse: #573120;
+  --highlight-mimosa-inverse: #52401b;
+  --highlight-jade-inverse: #26483a;
+  --highlight-sky-inverse: #20415f;
+  --highlight-lavender-inverse: #3a335f;
+  --highlight-rose-inverse: #572436;
+  --highlight-mauve-inverse: #4d2c5b;
 }
 
 :root[data-theme="dark"] {
@@ -81,6 +93,16 @@
   --highlight-lavender: #3a335f;
   --highlight-rose: #572436;
   --highlight-mauve: #4d2c5b;
+
+  /* Inverse palette in dark mode = the light-theme pastels, which pop on
+     the dark paper. */
+  --highlight-apricot-inverse: #fdddc9;
+  --highlight-mimosa-inverse: #fbe7cb;
+  --highlight-jade-inverse: #d7e7d4;
+  --highlight-sky-inverse: #d7e8f7;
+  --highlight-lavender-inverse: #d7d0ff;
+  --highlight-rose-inverse: #ffd8e0;
+  --highlight-mauve-inverse: #f4d9f7;
 }
 
 @theme inline {

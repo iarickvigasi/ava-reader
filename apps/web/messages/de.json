@@ -94,8 +94,8 @@
     "annotations": {
       "title": "Letzte Anmerkungen",
       "empty": "Anmerkungen erscheinen hier, sobald du Markierungen erstellst.",
-      "from": "Aus: {bookTitle}",
-      "highlighter": "Marker: {colorLabel}",
+      "from": "Aus dem Buch: {bookTitle}",
+      "highlighter": "Marker: <color>{colorLabel}</color>",
       "viewFullNotebook": "Vollständiges Notizbuch ansehen"
     },
     "footer": {

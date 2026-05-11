@@ -94,8 +94,8 @@
     "annotations": {
       "title": "Anotações recentes",
       "empty": "As anotações começarão a aparecer aqui quando você criar destaques.",
-      "from": "De: {bookTitle}",
-      "highlighter": "Marcador: {colorLabel}",
+      "from": "Do livro: {bookTitle}",
+      "highlighter": "Marcador: <color>{colorLabel}</color>",
       "viewFullNotebook": "Ver caderno completo"
     },
     "footer": {

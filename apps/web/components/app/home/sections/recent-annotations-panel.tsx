@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 import type { HomePayload } from "@/lib/api-types";
+import {
+  HIGHLIGHT_COLOR_BG_INVERSE,
+  isHighlightColor,
+} from "@/components/app/reader/reader-screen/overlays/highlights/highlights-data";
 import { Panel, SectionHeader } from "../shared/home-shared";
 
 type Annotation = HomePayload["recentAnnotations"]["items"][number];
@@ -30,6 +35,18 @@ export function RecentAnnotationsPanel({
 
 function AnnotationContent({ annotation }: { annotation: Annotation }) {
   const t = useTranslations("home.annotations");
+  const tColor = useTranslations("reader.highlights.color");
+
+  // The server passes the raw `highlightColor` enum value (e.g. "apricot")
+  // through as `colorLabel`. If it matches a known palette key we localize
+  // the display label and paint it in the inverse-theme color so it pops
+  // against the current paper. Anything else (legacy free-form strings)
+  // falls through as plain text in muted ink.
+  const rawColor = annotation.colorLabel;
+  const paletteKey = isHighlightColor(rawColor) ? rawColor : null;
+  const displayLabel = paletteKey ? tColor(paletteKey) : rawColor;
+  const inverseColor = paletteKey ? HIGHLIGHT_COLOR_BG_INVERSE[paletteKey] : null;
+
   return (
     <div className="space-y-6">
       <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-ink sm:text-xs">
@@ -40,7 +57,17 @@ function AnnotationContent({ annotation }: { annotation: Annotation }) {
       </blockquote>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-muted">
-          {t("highlighter", { colorLabel: annotation.colorLabel })}
+          {t.rich("highlighter", {
+            colorLabel: displayLabel,
+            color: (chunks: ReactNode) => (
+              <span
+                className="font-semibold"
+                style={inverseColor ? { color: inverseColor } : undefined}
+              >
+                {chunks}
+              </span>
+            ),
+          })}
         </p>
         <Link
           href="/app/insights"

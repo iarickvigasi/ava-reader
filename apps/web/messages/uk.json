@@ -94,8 +94,8 @@
     "annotations": {
       "title": "Останні нотатки",
       "empty": "Анотації з'являться тут, щойно ви їх створите.",
-      "from": "З: {bookTitle}",
-      "highlighter": "Маркер: {colorLabel}",
+      "from": "З книги: {bookTitle}",
+      "highlighter": "Маркер: <color>{colorLabel}</color>",
       "viewFullNotebook": "Переглянути повний нотатник"
     },
     "footer": {

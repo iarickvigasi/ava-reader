@@ -34,6 +34,25 @@ export const HIGHLIGHT_COLOR_BG: Record<HighlightColor, string> = {
   mauve: "var(--highlight-mauve)",
 };
 
+// Inverse-theme background — resolves to the other theme's palette value so
+// a chip painted in this color stays visible on the current paper. Use for
+// labels/badges that the same-theme pastel would wash out.
+export const HIGHLIGHT_COLOR_BG_INVERSE: Record<HighlightColor, string> = {
+  apricot: "var(--highlight-apricot-inverse)",
+  mimosa: "var(--highlight-mimosa-inverse)",
+  jade: "var(--highlight-jade-inverse)",
+  sky: "var(--highlight-sky-inverse)",
+  lavender: "var(--highlight-lavender-inverse)",
+  rose: "var(--highlight-rose-inverse)",
+  mauve: "var(--highlight-mauve-inverse)",
+};
+
+// Type guard so callers can validate a free-form server string against the
+// palette before keying the maps above.
+export function isHighlightColor(value: string): value is HighlightColor {
+  return (HIGHLIGHT_COLOR_ORDER as readonly string[]).includes(value);
+}
+
 // Stable left-to-right palette order. Used both for the right-panel swatches
 // and the left-panel filter chips so the UI stays in sync.
 export const HIGHLIGHT_COLOR_ORDER: HighlightColor[] = [
