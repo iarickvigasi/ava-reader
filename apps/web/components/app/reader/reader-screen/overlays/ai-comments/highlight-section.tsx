@@ -89,7 +89,7 @@ function HighlightColorSwatch({
       className={cn(
         "size-8 shrink-0 rounded-xl transition",
         isSelected
-          ? "shadow-[0_0_0_2px_var(--paper),0_0_0_4px_var(--ink)]"
+          ? "shadow-[0_0_0_2px_var(--paper),0_0_0_4px_var(--muted)]"
           : "hover:scale-105",
       )}
       style={{ backgroundColor: HIGHLIGHT_COLOR_BG[color] }}
