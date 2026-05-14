@@ -39,6 +39,12 @@ type UseHighlightsResult = {
   deleteHighlight: (id: string) => void;
 };
 
+// Single shared empty array for the SSR / pre-hydration snapshot. Must be a
+// stable reference: useSyncExternalStore calls getServerSnapshot repeatedly
+// and bails out with "infinite loop" if it sees a fresh array each time.
+const EMPTY_SERVER_SNAPSHOT: HighlightRecord[] = [];
+const getServerSnapshot = (): HighlightRecord[] => EMPTY_SERVER_SNAPSHOT;
+
 // Server snapshot loader. Failures are non-blocking: localStorage already
 // seeded the UI synchronously, so a failed GET just means the user keeps
 // seeing whatever was last successfully synced.
@@ -64,10 +70,6 @@ export function useHighlights(libraryItemId: string): UseHighlightsResult {
   const getSnapshot = useCallback(
     () => selectStableHighlights(getHighlightsBucket(libraryItemId, apiBaseUrl)),
     [apiBaseUrl, libraryItemId],
-  );
-  const getServerSnapshot = useCallback(
-    (): HighlightRecord[] => [],
-    [],
   );
   const highlights = useSyncExternalStore(
     subscribe,
