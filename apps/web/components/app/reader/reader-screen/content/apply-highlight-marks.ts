@@ -45,9 +45,42 @@ export function applyHighlightMarks(
       // The default <mark> color is a near-black; force inherit so the
       // highlight reads as a translucent wash under the body text.
       mark.style.color = "inherit";
-      mark.style.borderRadius = "8px";
       mark.style.cursor = "pointer";
     });
+  }
+
+  roundHighlightEnds(article);
+}
+
+// A single highlight that crosses inline boundaries (e.g. an <em>) becomes
+// multiple adjacent <mark>s. Padding/rounding every segment renders them as
+// separate pills with visible seams, and italic glyphs that overflow their
+// box get clipped by the next segment's rounded left edge. Apply the pill
+// shape only at the outer ends of each highlight so it reads as one wash.
+function roundHighlightEnds(article: HTMLElement): void {
+  const groups = new Map<string, HTMLElement[]>();
+  const marks = article.querySelectorAll<HTMLElement>(
+    `mark.${HIGHLIGHT_MARK_CLASS}`,
+  );
+  for (const mark of marks) {
+    const id = mark.dataset.highlightId;
+    if (!id) continue;
+    const list = groups.get(id);
+    if (list) {
+      list.push(mark);
+    } else {
+      groups.set(id, [mark]);
+    }
+  }
+  for (const list of groups.values()) {
+    const first = list[0];
+    first.style.paddingLeft = "2px";
+    first.style.borderTopLeftRadius = "8px";
+    first.style.borderBottomLeftRadius = "8px";
+    const last = list[list.length - 1];
+    last.style.paddingRight = "2px";
+    last.style.borderTopRightRadius = "8px";
+    last.style.borderBottomRightRadius = "8px";
   }
 }
 
