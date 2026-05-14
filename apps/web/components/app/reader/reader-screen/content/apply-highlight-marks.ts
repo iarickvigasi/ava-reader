@@ -50,6 +50,24 @@ export function applyHighlightMarks(
   }
 
   roundHighlightEnds(article);
+  liftItalicMarks(article);
+}
+
+// Italic glyphs overflow past their inline box's right edge. When the next
+// adjacent <mark>'s background paints — which happens after the italic mark's
+// text in normal flow — it covers that overflow and the trailing glyph looks
+// chopped vertically. Promoting italic marks to `position: relative` moves
+// them into the positioned-painting pass, which runs after in-flow inline
+// backgrounds, so the overflowing glyph stays on top.
+function liftItalicMarks(article: HTMLElement): void {
+  const marks = article.querySelectorAll<HTMLElement>(
+    `mark.${HIGHLIGHT_MARK_CLASS}`,
+  );
+  for (const mark of marks) {
+    if (getComputedStyle(mark).fontStyle !== "normal") {
+      mark.style.position = "relative";
+    }
+  }
 }
 
 // A single highlight that crosses inline boundaries (e.g. an <em>) becomes
