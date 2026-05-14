@@ -45,7 +45,7 @@ export function applyHighlightMarks(
       // The default <mark> color is a near-black; force inherit so the
       // highlight reads as a translucent wash under the body text.
       mark.style.color = "inherit";
-      mark.style.borderRadius = "2px";
+      mark.style.borderRadius = "8px";
       mark.style.cursor = "pointer";
     });
   }
