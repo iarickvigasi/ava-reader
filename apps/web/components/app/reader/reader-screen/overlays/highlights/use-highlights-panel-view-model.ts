@@ -2,9 +2,9 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import type { ReaderChapterPayload } from "@/lib/api-types";
+import type { ReaderTocNode } from "@/lib/api-types";
 import type { HighlightColor } from "@/lib/highlights-store";
-import { HIGHLIGHT_COLOR_ORDER } from "./highlights-data";
+import { collectTocChapterEntries } from "@/lib/reader-toc";
 import { useHighlightsContext } from "./highlights-context";
 
 export type HighlightsPanelRow = {
@@ -31,7 +31,7 @@ export type HighlightsPanelViewModel = {
 // the overlay component stays focused on layout and we can grow the panel
 // (e.g. add sorting) without bloating it.
 export function useHighlightsPanelViewModel(
-  chapters: ReaderChapterPayload[],
+  toc: ReaderTocNode[],
 ): HighlightsPanelViewModel {
   const t = useTranslations("reader.highlights");
   const { highlights, deleteHighlight } = useHighlightsContext();
@@ -40,13 +40,23 @@ export function useHighlightsPanelViewModel(
   );
   const [searchQuery, setSearchQuery] = useState("");
 
-  const chapterLabelById = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const chapter of chapters) {
-      map.set(chapter.chapterId, chapter.title);
+  // The reader payload only ships a 3-chapter window of full chapter data, so
+  // we read labels and order from the TOC, which covers the whole book.
+  const { chapterLabelById, chapterIndexById } = useMemo(() => {
+    const entries = collectTocChapterEntries(toc);
+    const labels = new Map<string, string>();
+    const indices = new Map<string, number>();
+    let fallbackIndex = 0;
+    for (const [chapterId, entry] of entries) {
+      labels.set(chapterId, entry.label);
+      indices.set(
+        chapterId,
+        entry.spineIndex ?? Number.MAX_SAFE_INTEGER - fallbackIndex,
+      );
+      fallbackIndex += 1;
     }
-    return map;
-  }, [chapters]);
+    return { chapterLabelById: labels, chapterIndexById: indices };
+  }, [toc]);
 
   const counts = useMemo(() => {
     const result: Record<HighlightColor, number> = {
@@ -75,14 +85,15 @@ export function useHighlightsPanelViewModel(
           ? highlight.excerpt.toLowerCase().includes(trimmedQuery)
           : true,
       )
-      // Group by color so the panel reads as "all jade together, then sky,
-      // …" — that's what "aggregated by color" means in the brief.
+      // Group by chapter, latest chapter in the book first. Highlights with
+      // no/unknown chapter sink to the bottom. Within a chapter, newest first.
       .sort((a, b) => {
-        if (a.color !== b.color) {
-          return (
-            HIGHLIGHT_COLOR_ORDER.indexOf(a.color) -
-            HIGHLIGHT_COLOR_ORDER.indexOf(b.color)
-          );
+        const aIndex = chapterIndexById.get(a.locator?.chapterId ?? "") ?? -1;
+        const bIndex = chapterIndexById.get(b.locator?.chapterId ?? "") ?? -1;
+        if (aIndex !== bIndex) {
+          if (aIndex === -1) return 1;
+          if (bIndex === -1) return -1;
+          return bIndex - aIndex;
         }
         return b.createdAt.localeCompare(a.createdAt);
       })
@@ -94,7 +105,14 @@ export function useHighlightsPanelViewModel(
           chapterLabelById.get(highlight.locator?.chapterId ?? "") ??
           t("unknownChapter"),
       }));
-  }, [activeFilterId, chapterLabelById, highlights, searchQuery, t]);
+  }, [
+    activeFilterId,
+    chapterIndexById,
+    chapterLabelById,
+    highlights,
+    searchQuery,
+    t,
+  ]);
 
   return {
     activeFilterId,

@@ -214,10 +214,7 @@ export function ReadyReader({
       {isAiChatsOpen ? <ReaderAiChatsOverlay onClose={closePanel} /> : null}
 
       {isHighlightsOpen ? (
-        <ReaderHighlightsOverlay
-          chapters={payload.chapters}
-          onClose={closePanel}
-        />
+        <ReaderHighlightsOverlay toc={payload.toc} onClose={closePanel} />
       ) : null}
 
       {isAiCommentsOpen ? (

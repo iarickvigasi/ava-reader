@@ -1,18 +1,18 @@
 import { useTranslations } from "next-intl";
-import type { ReaderChapterPayload } from "@/lib/api-types";
+import type { ReaderTocNode } from "@/lib/api-types";
 import { MobileCloseButton } from "../mobile-close-button";
 import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
 import { HighlightsSections } from "./highlights-sections";
 
 type ReaderHighlightsOverlayProps = {
-  chapters: ReaderChapterPayload[];
+  toc: ReaderTocNode[];
   onClose: () => void;
   onSelectHighlight?: (highlightId: string) => void;
 };
 
 export function ReaderHighlightsOverlay({
-  chapters,
+  toc,
   onClose,
   onSelectHighlight,
 }: ReaderHighlightsOverlayProps) {
@@ -28,7 +28,7 @@ export function ReaderHighlightsOverlay({
             <div className="pointer-events-auto flex min-h-0 flex-1 flex-col px-6 py-8 sm:px-8 md:animate-[reader-contents-enter_320ms_cubic-bezier(0.22,1,0.36,1)_140ms_both] md:px-8 md:py-0">
               <HighlightsHeader onClose={onClose} />
               <HighlightsSections
-                chapters={chapters}
+                toc={toc}
                 onSelectHighlight={onSelectHighlight}
               />
             </div>

@@ -1,13 +1,13 @@
 "use client";
 
-import type { ReaderChapterPayload } from "@/lib/api-types";
+import type { ReaderTocNode } from "@/lib/api-types";
 import { ControlsSection } from "./controls-section";
 import { FiltersSection } from "./filters-section";
 import { HighlightsListSection } from "./highlights-list-section";
 import { useHighlightsPanelViewModel } from "./use-highlights-panel-view-model";
 
 type HighlightsSectionsProps = {
-  chapters: ReaderChapterPayload[];
+  toc: ReaderTocNode[];
   onSelectHighlight?: (id: string) => void;
 };
 
@@ -15,7 +15,7 @@ type HighlightsSectionsProps = {
 // list. Owns no chrome — that lives in ReaderHighlightsOverlay. Reads its
 // derived state from the view-model hook so the props surface stays small.
 export function HighlightsSections({
-  chapters,
+  toc,
   onSelectHighlight,
 }: HighlightsSectionsProps) {
   const {
@@ -27,7 +27,7 @@ export function HighlightsSections({
     counts,
     visibleHighlights,
     deleteHighlight,
-  } = useHighlightsPanelViewModel(chapters);
+  } = useHighlightsPanelViewModel(toc);
 
   return (
     <div className="mt-8 flex min-h-0 flex-1 flex-col gap-6 overflow-hidden">
