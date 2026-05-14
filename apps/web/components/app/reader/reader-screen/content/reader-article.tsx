@@ -14,33 +14,12 @@ import {
 } from "./apply-highlight-marks";
 import { ReaderBlockView } from "./reader-block-view";
 
-type HighlightMarkClickEventDetail = {
-  highlightId: string;
-};
-
-// Bubbles up from a <mark.reader-highlight-mark> click so the screen can open
-// the AI Comments panel pre-bound to the clicked highlight. Custom event so
-// we don't have to thread refs/callbacks all the way down to ReaderArticle —
-// the panel sits much further up the tree.
-export const READER_HIGHLIGHT_CLICK_EVENT = "ava-reader:highlight-click";
-
-export function emitHighlightClick(detail: HighlightMarkClickEventDetail) {
-  if (typeof window === "undefined") {
-    return;
-  }
-  window.dispatchEvent(
-    new CustomEvent<HighlightMarkClickEventDetail>(
-      READER_HIGHLIGHT_CLICK_EVENT,
-      { detail },
-    ),
-  );
-}
-
 export function ReaderArticle({
   articleRef,
   applyAiComments = false,
   blocks,
   chapterId,
+  onHighlightClick,
   pageHeight,
   prefixBlocks,
   prefixChapterId,
@@ -59,6 +38,11 @@ export function ReaderArticle({
   applyAiComments?: boolean;
   blocks: ReaderBlock[];
   chapterId: string;
+  // Called when the user clicks a painted highlight inside the article.
+  // The screen routes this to the AI Comments panel pre-bound to the row.
+  // Omitted by the pagination preloader (its measurement articles aren't
+  // interactive).
+  onHighlightClick?: (highlightId: string) => void;
   pageHeight: number;
   // Previous chapter rendered in column 1 of the spread; the active
   // chapter's first block is then forced into a new column so it
@@ -121,29 +105,31 @@ export function ReaderArticle({
     spilloverBlocks,
   ]);
 
-  // Click-to-edit on a painted highlight. We listen at the article level
-  // (one delegated listener regardless of how many marks are painted) and
-  // fire a custom event the screen-level container picks up to open the AI
-  // Comments panel pre-bound to this highlight.
-  const handleArticleClick = useCallback((event: React.MouseEvent) => {
-    if (!applyAiComments) {
-      return;
-    }
-    const target = event.target as HTMLElement | null;
-    if (!target) {
-      return;
-    }
-    const mark = target.closest<HTMLElement>(`mark.${HIGHLIGHT_MARK_CLASS}`);
-    if (!mark) {
-      return;
-    }
-    const highlightId = mark.dataset.highlightId;
-    if (!highlightId) {
-      return;
-    }
-    event.stopPropagation();
-    emitHighlightClick({ highlightId });
-  }, [applyAiComments]);
+  // Click-to-edit on a painted highlight. One delegated listener on the
+  // article catches every mark click; the screen-level container handles
+  // the rest via the `onHighlightClick` callback.
+  const handleArticleClick = useCallback(
+    (event: React.MouseEvent) => {
+      if (!onHighlightClick) {
+        return;
+      }
+      const target = event.target as HTMLElement | null;
+      if (!target) {
+        return;
+      }
+      const mark = target.closest<HTMLElement>(`mark.${HIGHLIGHT_MARK_CLASS}`);
+      if (!mark) {
+        return;
+      }
+      const highlightId = mark.dataset.highlightId;
+      if (!highlightId) {
+        return;
+      }
+      event.stopPropagation();
+      onHighlightClick(highlightId);
+    },
+    [onHighlightClick],
+  );
 
   return (
     <article

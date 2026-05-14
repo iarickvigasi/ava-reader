@@ -1,8 +1,7 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { useReaderUi } from "@/components/app/core/reader-ui-context";
-import { READER_HIGHLIGHT_CLICK_EVENT } from "../content/reader-article";
 import { useHighlightsContext } from "../overlays/highlights/highlights-context";
 import { READER_PANEL_AI_COMMENTS } from "../shared/constants";
 import { computeAiCommentLocator } from "./compute-ai-comment-locator";
@@ -10,11 +9,12 @@ import { useReaderSelectionContext } from "./reader-selection-context";
 import type { ReaderSelection } from "./use-reader-text-selection";
 
 // Wires the highlight store into the reader's selection flow. Returns the
-// `onTextSelected` callback the page-box should fire on every fresh
-// selection; also subscribes to the highlight-click custom event so clicking
-// a painted highlight inside the article opens the AI Comments panel pre-bound to that row.
+// callbacks the page-box and ReaderArticle should fire on a fresh selection
+// or a click on a painted highlight — both ultimately open the AI Comments
+// panel pre-bound to the matching row.
 export function useHighlightSelectionBridge(activeChapterId: string): {
   onTextSelected: (selection: ReaderSelection) => void;
+  onHighlightClick: (highlightId: string) => void;
 } {
   const { openPanel } = useReaderUi();
   const { setSelection } = useReaderSelectionContext();
@@ -49,15 +49,10 @@ export function useHighlightSelectionBridge(activeChapterId: string): {
 
   // Click on an existing highlight inside the article: open the AI Comments
   // panel pre-bound to that highlight so the user can change/delete the
-  // color, or run AI tools against the same selection. The custom event is
-  // dispatched by ReaderArticle's delegated click handler.
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-    const handler = (event: Event) => {
-      const detail = (event as CustomEvent<{ highlightId: string }>).detail;
-      const highlight = highlights.find((row) => row.id === detail.highlightId);
+  // color, or run AI tools against the same selection.
+  const onHighlightClick = useCallback(
+    (highlightId: string) => {
+      const highlight = highlights.find((row) => row.id === highlightId);
       if (!highlight) {
         return;
       }
@@ -68,12 +63,9 @@ export function useHighlightSelectionBridge(activeChapterId: string): {
         highlightColor: highlight.color,
       });
       openPanel(READER_PANEL_AI_COMMENTS);
-    };
-    window.addEventListener(READER_HIGHLIGHT_CLICK_EVENT, handler);
-    return () => {
-      window.removeEventListener(READER_HIGHLIGHT_CLICK_EVENT, handler);
-    };
-  }, [highlights, openPanel, setSelection]);
+    },
+    [highlights, openPanel, setSelection],
+  );
 
-  return { onTextSelected };
+  return { onTextSelected, onHighlightClick };
 }

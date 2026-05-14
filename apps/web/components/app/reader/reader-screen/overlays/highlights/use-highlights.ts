@@ -14,11 +14,13 @@ import {
   applyServerSnapshot,
   enqueueDelete,
   enqueueUpsert,
+  flushAllPendingPersists,
   flushBucket,
   generateHighlightId,
   getHighlightsBucket,
   selectStableHighlights,
   setBucketAuth,
+  subscribeToDrops,
   subscribeToHighlights,
   toHighlightRecord,
   type HighlightColor,
@@ -130,7 +132,9 @@ export function useHighlights(libraryItemId: string): UseHighlightsResult {
 
   // Background flush triggers. Re-attempts when the network comes back, the
   // tab becomes visible (mobile suspends fetches in the background), or the
-  // user signs in.
+  // user signs in. `pagehide` flushes the debounced localStorage write so
+  // we never lose a queued mutation because the user closed the tab inside
+  // the 100ms persist window.
   useEffect(() => {
     if (typeof window === "undefined") {
       return;
@@ -143,13 +147,31 @@ export function useHighlights(libraryItemId: string): UseHighlightsResult {
         tryFlush();
       }
     };
+    const handlePageHide = () => {
+      flushAllPendingPersists();
+    };
     window.addEventListener("online", tryFlush);
+    window.addEventListener("pagehide", handlePageHide);
     document.addEventListener("visibilitychange", tryFlushWhenVisible);
     return () => {
       window.removeEventListener("online", tryFlush);
+      window.removeEventListener("pagehide", handlePageHide);
       document.removeEventListener("visibilitychange", tryFlushWhenVisible);
     };
   }, [apiBaseUrl, libraryItemId]);
+
+  // Surface permanent failures (400/403/422/etc.) as toasts so the user
+  // knows their highlight didn't save, and why. The store already dropped
+  // the mutation from the queue by the time we get here — they'll need to
+  // re-attempt the action.
+  useEffect(() => {
+    return subscribeToDrops(libraryItemId, apiBaseUrl, (event) => {
+      emitReaderToast({
+        tone: "warning",
+        message: t("saveFailed", { reason: event.reason }),
+      });
+    });
+  }, [apiBaseUrl, libraryItemId, t]);
 
   const upsertHighlight = useCallback<
     UseHighlightsResult["upsertHighlight"]

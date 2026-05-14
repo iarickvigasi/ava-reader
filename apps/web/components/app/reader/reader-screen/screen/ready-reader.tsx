@@ -106,7 +106,7 @@ export function ReadyReader({
   // Bridges fresh selections and clicks on painted highlights into the AI
   // Comments panel, matching to existing rows when possible. Owns the
   // highlight-store reads, so this component stays focused on layout.
-  const { onTextSelected } = useHighlightSelectionBridge(
+  const { onTextSelected, onHighlightClick } = useHighlightSelectionBridge(
     activeChapter.chapterId,
   );
 
@@ -165,6 +165,7 @@ export function ReadyReader({
                   applyAiComments
                   blocks={activeChapter.blocks}
                   chapterId={activeChapter.chapterId}
+                  onHighlightClick={onHighlightClick}
                   pageHeight={pageBoxSize.height}
                   prefixBlocks={prefixBlocks}
                   prefixChapterId={previousChapter?.chapterId ?? null}

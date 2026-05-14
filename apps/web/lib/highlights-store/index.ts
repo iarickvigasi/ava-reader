@@ -17,6 +17,8 @@
 // - id.ts         — client-generated highlight ids
 
 export type {
+  DropEvent,
+  DropListener,
   HighlightColor,
   HighlightRecord,
   PendingMutation,
@@ -24,8 +26,10 @@ export type {
 } from "./types";
 
 export {
+  flushAllPendingPersists,
   getHighlightsBucket,
   setBucketAuth,
+  subscribeToDrops,
   subscribeToHighlights,
 } from "./bucket";
 

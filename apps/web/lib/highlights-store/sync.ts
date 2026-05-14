@@ -1,20 +1,30 @@
 // Server sync: applying a fresh GET snapshot, replaying the pending queue
-// against the API, and the on-the-wire shape conversion.
+// against the API, the on-the-wire shape conversion, and the retry/backoff
+// policy for transient failures.
 
-import { getOrCreateBucket, persist } from "./bucket";
+import {
+  getOrCreateBucket,
+  notifyDrop,
+  persist,
+} from "./bucket";
 import {
   STORAGE_VERSION,
+  type DropEvent,
   type HighlightColor,
   type HighlightRecord,
   type PendingMutation,
   type ServerAnnotation,
+  type StorageBucket,
 } from "./types";
 
 type SendResult =
-  | "retry"
+  | { kind: "retry" }
   | { kind: "upserted"; row: HighlightRecord | null }
   | { kind: "deleted" }
-  | { kind: "drop" };
+  | { kind: "drop"; reason: string };
+
+const RETRY_BASE_MS = 1_000;
+const RETRY_MAX_MS = 30_000;
 
 // Replaces the server snapshot from a fresh GET. Pending mutations are kept
 // — they may not have been acked yet.
@@ -33,10 +43,16 @@ export function applyServerSnapshot(
 }
 
 // Tries to drain the pending queue head-first. One in-flight at a time per
-// bucket so the server sees mutations in order. On 5xx / network error we
-// stop and leave the queue intact — the next online/visibility event will
-// retry. On 4xx (other than 401/429) we drop the mutation: the server
-// rejected the data and retrying won't help.
+// bucket so the server sees mutations in order.
+//
+// Outcomes per mutation:
+// - Network error / 5xx / 408 / 425 / 429 / 401 → retry. We stop the loop,
+//   bump the backoff timer, and schedule another flush. `online` and
+//   `visibilitychange` also retry, on top of the timer.
+// - 400 / 403 / 404 (upsert) / 422 / any other 4xx → permanent drop. The
+//   mutation is popped from the queue and a DropEvent fires so the hook
+//   can toast a user-facing message.
+// - 2xx → success. Snapshot updates, backoff resets, loop continues.
 export async function flushBucket(
   libraryItemId: string,
   apiBaseUrl: string,
@@ -51,6 +67,8 @@ export async function flushBucket(
   if (!bucket.getToken) {
     return;
   }
+  // A fresh flush attempt cancels any scheduled retry — we're trying now.
+  cancelRetry(bucket);
   bucket.flushing = true;
   try {
     while (bucket.state.pending.length > 0) {
@@ -65,10 +83,10 @@ export async function flushBucket(
         head,
         token,
       );
-      if (result === "retry") {
+      if (result.kind === "retry") {
+        scheduleRetry(libraryItemId, bucket);
         return;
       }
-      // success or drop — pop the head and apply to snapshot.
       const popped = bucket.state.pending.slice(1);
       let nextSnapshot = bucket.state.snapshot;
       if (result.kind === "upserted" && result.row) {
@@ -76,6 +94,18 @@ export async function flushBucket(
         nextSnapshot = [...filtered, result.row];
       } else if (result.kind === "deleted") {
         nextSnapshot = nextSnapshot.filter((row) => row.id !== head.id);
+      } else if (result.kind === "drop") {
+        // Permanent failure. Surface to the hook so the UI can toast why,
+        // then drop the mutation from the queue. We *don't* roll back the
+        // optimistic local change — the user already sees it and re-applying
+        // a delete to "undo" their action would be more surprising than
+        // showing the toast. They can retry by clicking again.
+        const event: DropEvent = {
+          mutationKind: head.kind,
+          highlightId: head.id,
+          reason: result.reason,
+        };
+        notifyDrop(bucket, event);
       }
       bucket.state = {
         ...bucket.state,
@@ -83,9 +113,33 @@ export async function flushBucket(
         pending: popped,
       };
       persist(libraryItemId, bucket);
+      // We made progress (or cleanly discarded) — reset backoff so the next
+      // transient blip doesn't inherit the previous run's long delay.
+      bucket.retryDelayMs = 0;
     }
   } finally {
     bucket.flushing = false;
+  }
+}
+
+function scheduleRetry(libraryItemId: string, bucket: StorageBucket) {
+  const next = bucket.retryDelayMs === 0
+    ? RETRY_BASE_MS
+    : Math.min(bucket.retryDelayMs * 2, RETRY_MAX_MS);
+  bucket.retryDelayMs = next;
+  if (bucket.retryHandle) {
+    clearTimeout(bucket.retryHandle);
+  }
+  bucket.retryHandle = setTimeout(() => {
+    bucket.retryHandle = null;
+    void flushBucket(libraryItemId, bucket.apiBaseUrl);
+  }, next);
+}
+
+function cancelRetry(bucket: StorageBucket) {
+  if (bucket.retryHandle) {
+    clearTimeout(bucket.retryHandle);
+    bucket.retryHandle = null;
   }
 }
 
@@ -104,13 +158,11 @@ async function sendMutation(
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
+      // 404 on delete means "already gone" — same end state as success.
       if (response.ok || response.status === 404) {
         return { kind: "deleted" };
       }
-      if (response.status >= 500 || response.status === 408) {
-        return "retry";
-      }
-      return { kind: "drop" };
+      return classifyFailure(response);
     }
     const response = await fetch(url, {
       method: "PUT",
@@ -133,13 +185,76 @@ async function sendMutation(
       const row = data.item ? toHighlightRecord(data.item) : null;
       return { kind: "upserted", row };
     }
-    if (response.status >= 500 || response.status === 408) {
-      return "retry";
-    }
-    return { kind: "drop" };
+    return classifyFailure(response);
   } catch {
     // Network failure (offline, DNS, etc.). Always retryable.
-    return "retry";
+    return { kind: "retry" };
+  }
+}
+
+// Decide whether a 4xx/5xx response is transient (retry forever) or
+// permanent (drop and tell the user). We treat unknown statuses as
+// retryable: silently losing data is the worst outcome, and the queue is
+// idempotent so retrying a "should have been dropped" mutation just hits
+// the same error again.
+async function classifyFailure(response: Response): Promise<SendResult> {
+  if (isTransientStatus(response.status)) {
+    return { kind: "retry" };
+  }
+  if (isPermanentStatus(response.status)) {
+    const reason = await extractReason(response);
+    return { kind: "drop", reason };
+  }
+  // Conservatively retry anything we don't recognize.
+  return { kind: "retry" };
+}
+
+function isTransientStatus(status: number): boolean {
+  // 401: auth might refresh; 408 timeout; 425 too early; 429 rate limit;
+  // 5xx: server problem.
+  if (status === 401 || status === 408 || status === 425 || status === 429) {
+    return true;
+  }
+  return status >= 500 && status < 600;
+}
+
+function isPermanentStatus(status: number): boolean {
+  // 400 validation, 403 forbidden, 404 (upsert: library/annotation gone),
+  // 409 conflict, 410 gone, 413 payload too large, 415 unsupported,
+  // 422 unprocessable.
+  return (
+    status === 400 ||
+    status === 403 ||
+    status === 404 ||
+    status === 409 ||
+    status === 410 ||
+    status === 413 ||
+    status === 415 ||
+    status === 422
+  );
+}
+
+async function extractReason(response: Response): Promise<string> {
+  try {
+    const text = await response.text();
+    if (!text) {
+      return `HTTP ${response.status}`;
+    }
+    // Nest's HttpException emits { statusCode, message, error }.
+    try {
+      const parsed = JSON.parse(text) as { message?: string | string[] };
+      if (Array.isArray(parsed.message)) {
+        return parsed.message.join(", ");
+      }
+      if (typeof parsed.message === "string") {
+        return parsed.message;
+      }
+    } catch {
+      // Fall through — body wasn't JSON. Use the raw text.
+    }
+    return text;
+  } catch {
+    return `HTTP ${response.status}`;
   }
 }
 
