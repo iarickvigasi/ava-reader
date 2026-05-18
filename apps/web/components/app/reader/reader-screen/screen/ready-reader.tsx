@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useReaderUi } from "@/components/app/core/reader-ui-context";
 import { ReaderArticle } from "../content/reader-article";
 import { ReaderPaginationPreloader } from "../pagination/reader-pagination-preloader";
@@ -11,6 +11,7 @@ import { ReaderAiChatsOverlay } from "../overlays/ai-chats/reader-ai-chats-overl
 import { ReaderAiCommentsOverlay } from "../overlays/ai-comments/reader-ai-comments-overlay";
 import { ReaderContentsOverlay } from "../overlays/contents/reader-contents-overlay";
 import { ReaderHighlightsOverlay } from "../overlays/highlights/reader-highlights-overlay";
+import { useHighlightsContext } from "../overlays/highlights/highlights-context";
 import { ReaderPreferencesOverlay } from "../overlays/preferences/reader-preferences-overlay";
 import {
   READER_PANEL_AI_CHATS,
@@ -108,6 +109,22 @@ export function ReadyReader({
   // highlight-store reads, so this component stays focused on layout.
   const { onTextSelected, onHighlightClick } = useHighlightSelectionBridge(
     activeChapter.chapterId,
+  );
+
+  const { highlights } = useHighlightsContext();
+  const handleSelectHighlightFromList = useCallback(
+    (highlightId: string) => {
+      const highlight = highlights.find((row) => row.id === highlightId);
+      if (!highlight?.locator) {
+        return;
+      }
+      closePanel();
+      onSelectChapter(highlight.locator.chapterId, {
+        blockId: highlight.locator.startBlockId,
+        textOffset: highlight.locator.startOffset,
+      });
+    },
+    [closePanel, highlights, onSelectChapter],
   );
 
   useReaderTextSelection({
@@ -214,7 +231,11 @@ export function ReadyReader({
       {isAiChatsOpen ? <ReaderAiChatsOverlay onClose={closePanel} /> : null}
 
       {isHighlightsOpen ? (
-        <ReaderHighlightsOverlay toc={payload.toc} onClose={closePanel} />
+        <ReaderHighlightsOverlay
+          toc={payload.toc}
+          onClose={closePanel}
+          onSelectHighlight={handleSelectHighlightFromList}
+        />
       ) : null}
 
       {isAiCommentsOpen ? (

@@ -103,6 +103,11 @@ export function resolveVisibleLocatorPublishDecision(input: {
   activeReadyMeasurementEntry: ReadyReaderMeasurementEntry | null;
   currentPageIndex: number;
   isBootstrapping: boolean;
+  // When > 0 the active chapter's first visible spread starts at the
+  // preloader spread's right column (prefix content occupies the left
+  // column). Publishing must search from that shifted start so the saved
+  // locator points to content the user is actually viewing.
+  prefixPageCount: number;
   restorePhase: ReaderRestorePhase;
   visibleLocator: ReaderLocator | null;
 }) {
@@ -117,8 +122,10 @@ export function resolveVisibleLocatorPublishDecision(input: {
     };
   }
 
+  const columnOffset: 1 | 2 = input.prefixPageCount > 0 ? 2 : 1;
   const nextLocator = input.activeReadyMeasurementEntry.resolveLocator(
     input.currentPageIndex,
+    columnOffset,
   );
 
   if (!nextLocator || areLocatorsEqual(input.visibleLocator, nextLocator)) {

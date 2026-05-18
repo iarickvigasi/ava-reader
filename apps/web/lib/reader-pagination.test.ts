@@ -62,6 +62,7 @@ describe("reader pagination", () => {
           restoreIntent,
           restorePageResolution: {
             pageIndex: 7,
+            column: 2,
             status: "exact",
           },
         }),
@@ -86,6 +87,7 @@ describe("reader pagination", () => {
           restoreIntent,
           restorePageResolution: {
             pageIndex: 5,
+            column: 2,
             status: "block-start",
           },
         }),
@@ -184,6 +186,7 @@ describe("reader pagination", () => {
           visibleLocatorChapterId: "chapter-a",
           visiblePageResolution: {
             pageIndex: 7,
+            column: 2,
             status: "exact",
           },
         }),
@@ -203,6 +206,7 @@ describe("reader pagination", () => {
           visibleLocatorChapterId: "chapter-b",
           visiblePageResolution: {
             pageIndex: 7,
+            column: 2,
             status: "exact",
           },
         }),
@@ -250,6 +254,7 @@ describe("reader pagination", () => {
           visibleLocatorChapterId: "chapter-a",
           visiblePageResolution: {
             pageIndex: 99,
+            column: 2,
             status: "exact",
           },
         }),

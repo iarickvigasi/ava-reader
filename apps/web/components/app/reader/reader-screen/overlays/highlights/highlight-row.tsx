@@ -1,3 +1,4 @@
+import type { KeyboardEvent as ReactKeyboardEvent } from "react";
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/cn";
 import {
@@ -45,23 +46,32 @@ export function HighlightRow({
     };
   }, [isMenuOpen, onMenuClose]);
 
+  const handleCardKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    if (!onSelect) {
+      return;
+    }
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onSelect();
+    }
+  };
+
   return (
     <div
       ref={rowRef}
+      role={onSelect ? "button" : undefined}
+      tabIndex={onSelect ? 0 : undefined}
+      onClick={onSelect}
+      onKeyDown={onSelect ? handleCardKeyDown : undefined}
       className={cn(
-        "group/highlight-row relative flex flex-col gap-2 rounded-[10px] px-3 py-2 transition",
+        "group/highlight-row relative flex flex-col gap-2 rounded-[10px] px-3 py-2 text-left transition",
+        onSelect && "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-line/60",
         isMenuOpen ? "bg-soft-tone-fill/60" : "hover:bg-soft-tone-fill/45",
       )}
     >
-      <button
-        type="button"
-        onClick={onSelect}
-        className="min-w-0 text-left"
-      >
-        <p className="font-(--font-display) text-[1rem] leading-[1.3] text-title">
-          {highlight.text}
-        </p>
-      </button>
+      <p className="min-w-0 font-(--font-display) text-[1rem] leading-[1.3] text-title">
+        {highlight.text}
+      </p>
       <div className="flex items-center justify-between gap-2">
         <span className="font-(--font-ui) text-[0.72rem] text-muted">
           {highlight.chapterLabel}
@@ -72,7 +82,11 @@ export function HighlightRow({
           onToggle={onMenuToggle}
         />
       </div>
-      {isMenuOpen ? <RowActionsMenu onDelete={onDelete} /> : null}
+      {isMenuOpen ? (
+        <div onClick={(event) => event.stopPropagation()}>
+          <RowActionsMenu onDelete={onDelete} />
+        </div>
+      ) : null}
     </div>
   );
 }

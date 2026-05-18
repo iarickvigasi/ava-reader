@@ -8,6 +8,7 @@ export function useLocatorSync({
   currentPageIndex,
   activeReadyMeasurementEntry,
   isBootstrapping,
+  prefixPageCount,
   restorePhase,
   visibleLocator,
   onVisibleLocatorChange,
@@ -18,6 +19,7 @@ export function useLocatorSync({
     { status: "ready" }
   > | null;
   isBootstrapping: boolean;
+  prefixPageCount: number;
   restorePhase: ReaderRestorePhase;
   visibleLocator: ReaderLocator | null;
   onVisibleLocatorChange: (locator: ReaderLocator | null) => void;
@@ -38,6 +40,7 @@ export function useLocatorSync({
       activeReadyMeasurementEntry,
       currentPageIndex,
       isBootstrapping,
+      prefixPageCount,
       restorePhase,
       visibleLocator: visibleLocatorRef.current,
     });
@@ -58,6 +61,7 @@ export function useLocatorSync({
     activeReadyMeasurementEntry,
     currentPageIndex,
     isBootstrapping,
+    prefixPageCount,
     restorePhase,
   ]);
 }

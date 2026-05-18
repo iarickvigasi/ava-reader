@@ -7,6 +7,7 @@ import {
 const FIRST_VISIBLE_CHARACTER_PADDING = 12;
 
 type PageMetrics = {
+  columnCount: 1 | 2;
   pageBoxLeft: number;
   pageSpan: number;
   pageWidth: number;
@@ -25,7 +26,16 @@ type TextNodeSegment = {
 
 export type ReaderMeasurementPageResolution =
   | {
+      // 0-based index of the spread the locator sits in within the
+      // preloader's standalone layout of the chapter.
       pageIndex: number;
+      // Which column of that preloader spread the locator sits in. 1 for
+      // the left column, 2 for the right column. Always 1 in single-column
+      // layouts. The visible reader can re-flow active-chapter content by
+      // one column (prefix from a single-page previous chapter), in which
+      // case the user's visible page differs from `pageIndex` for column-1
+      // locators — see the prefix adjustment in useReaderPagination.
+      column: 1 | 2;
       status: "block-start" | "exact";
     }
   | {
@@ -43,7 +53,16 @@ export type ReaderMeasurementEntry =
       chapterId: string;
       layoutKey: string;
       pageCount: number;
-      resolveLocator: (pageIndex: number) => ReaderLocator | null;
+      // When the visible reader prepends a single-page previous chapter,
+      // the active chapter's first visible spread starts at column 2 of
+      // preloader spread 0. Pass `columnOffset: 2` so the search begins at
+      // the column the user actually sees first; otherwise the published
+      // locator points to content the user already saw with the previous
+      // chapter and resume lands one page early.
+      resolveLocator: (
+        pageIndex: number,
+        columnOffset?: 1 | 2,
+      ) => ReaderLocator | null;
       resolvePageIndex: (
         locator: ReaderLocator,
       ) => ReaderMeasurementPageResolution;
@@ -77,11 +96,16 @@ export function createFailedReaderMeasurementEntry(input: {
 export function createReadyReaderMeasurementEntry(input: {
   article: HTMLElement;
   chapterId: string;
+  columnCount: 1 | 2;
   layoutKey: string;
   pageBox: HTMLElement;
   pageGap: number;
 }): ReaderMeasurementEntry {
-  const metrics = resolvePageMetrics(input.pageBox, input.pageGap);
+  const metrics = resolvePageMetrics(
+    input.pageBox,
+    input.pageGap,
+    input.columnCount,
+  );
 
   if (!metrics) {
     return createPendingReaderMeasurementEntry({
@@ -96,11 +120,12 @@ export function createReadyReaderMeasurementEntry(input: {
     chapterId: input.chapterId,
     layoutKey: input.layoutKey,
     pageCount,
-    resolveLocator(pageIndex) {
+    resolveLocator(pageIndex, columnOffset = 1) {
       return resolveLocatorFromPageIndex({
         article: input.article,
         chapterId: input.chapterId,
-        metrics: resolvePageMetrics(input.pageBox, input.pageGap),
+        columnOffset,
+        metrics: resolvePageMetrics(input.pageBox, input.pageGap, input.columnCount),
         pageCount,
         pageIndex,
       });
@@ -109,7 +134,7 @@ export function createReadyReaderMeasurementEntry(input: {
       return resolvePageIndexFromLocator({
         article: input.article,
         locator,
-        metrics: resolvePageMetrics(input.pageBox, input.pageGap),
+        metrics: resolvePageMetrics(input.pageBox, input.pageGap, input.columnCount),
       });
     },
     status: "ready",
@@ -119,6 +144,7 @@ export function createReadyReaderMeasurementEntry(input: {
 function resolveLocatorFromPageIndex(input: {
   article: HTMLElement;
   chapterId: string;
+  columnOffset: 1 | 2;
   metrics: PageMetrics | null;
   pageCount: number;
   pageIndex: number;
@@ -130,7 +156,7 @@ function resolveLocatorFromPageIndex(input: {
   }
 
   const safePageIndex = clamp(input.pageIndex, 0, Math.max(0, pageCount - 1));
-  const pageWindow = createPageWindow(metrics, safePageIndex);
+  const pageWindow = createPageWindow(metrics, safePageIndex, input.columnOffset);
   const blockElements = Array.from(
     article.querySelectorAll<HTMLElement>("[data-reader-block='true']"),
   );
@@ -203,14 +229,14 @@ function resolvePageIndexFromLocator(input: {
     };
   }
 
-  const blockStartPageIndex = resolvePageIndexFromRect(
-    blockElement.getBoundingClientRect(),
-    metrics,
-  );
+  const blockRect = blockElement.getBoundingClientRect();
+  const blockStartPageIndex = resolvePageIndexFromRect(blockRect, metrics);
+  const blockStartColumn = resolveColumnFromRect(blockRect, metrics);
   const segments = collectTextNodeSegments(blockElement);
 
   if (segments.length === 0) {
     return {
+      column: blockStartColumn,
       pageIndex: blockStartPageIndex,
       status: "block-start",
     };
@@ -221,12 +247,14 @@ function resolvePageIndexFromLocator(input: {
 
   if (!boundaryRect) {
     return {
+      column: blockStartColumn,
       pageIndex: blockStartPageIndex,
       status: "block-start",
     };
   }
 
   return {
+    column: resolveColumnFromRect(boundaryRect, metrics),
     pageIndex: resolvePageIndexFromRect(boundaryRect, metrics),
     status: "exact",
   };
@@ -397,12 +425,34 @@ function resolvePageIndexFromRect(
   metrics: PageMetrics,
 ) {
   const { left, right } = resolveAbsoluteHorizontalBounds(rect, metrics);
-  const midpoint = left + Math.max(right - left, 1) / 2;
+  const midpoint = Math.max(left + Math.max(right - left, 1) / 2, 0);
 
-  return Math.floor(Math.max(midpoint, 0) / metrics.pageSpan);
+  return Math.floor(midpoint / metrics.pageSpan);
 }
 
-function resolvePageMetrics(pageBox: HTMLElement, pageGap: number) {
+// In single-column layouts every locator is in column 1. In two-column,
+// the column is picked by the midpoint's position within the spread:
+// before the gap midline → column 1, after → column 2.
+function resolveColumnFromRect(
+  rect: Pick<DOMRect, "left" | "right">,
+  metrics: PageMetrics,
+): 1 | 2 {
+  if (metrics.columnCount === 1) {
+    return 1;
+  }
+
+  const { left, right } = resolveAbsoluteHorizontalBounds(rect, metrics);
+  const midpoint = Math.max(left + Math.max(right - left, 1) / 2, 0);
+  const offsetInSpread = midpoint - Math.floor(midpoint / metrics.pageSpan) * metrics.pageSpan;
+
+  return offsetInSpread < metrics.pageSpan / 2 ? 1 : 2;
+}
+
+function resolvePageMetrics(
+  pageBox: HTMLElement,
+  pageGap: number,
+  columnCount: 1 | 2,
+) {
   const pageWidth = Math.floor(pageBox.clientWidth);
 
   if (pageWidth <= 0) {
@@ -410,14 +460,27 @@ function resolvePageMetrics(pageBox: HTMLElement, pageGap: number) {
   }
 
   return {
+    columnCount,
     pageBoxLeft: pageBox.getBoundingClientRect().left,
     pageSpan: pageWidth + pageGap,
     pageWidth,
   } satisfies PageMetrics;
 }
 
-function createPageWindow(metrics: PageMetrics, pageIndex: number) {
-  const pageStart = pageIndex * metrics.pageSpan;
+// In a two-column layout `columnOffset: 2` shifts the search to begin at
+// the spread's right column — used by the visible reader when prefix
+// content occupies the spread's left column and the user-visible page
+// therefore starts half a spread later than the preloader's spread does.
+function createPageWindow(
+  metrics: PageMetrics,
+  pageIndex: number,
+  columnOffset: 1 | 2 = 1,
+) {
+  const halfSpreadShift =
+    metrics.columnCount === 2 && columnOffset === 2
+      ? metrics.pageSpan / 2
+      : 0;
+  const pageStart = pageIndex * metrics.pageSpan + halfSpreadShift;
 
   return {
     pageEnd: pageStart + metrics.pageWidth,
