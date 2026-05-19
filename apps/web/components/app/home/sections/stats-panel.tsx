@@ -81,7 +81,6 @@ function buildStatItems(
       label: t("aiComments"),
       value: stats.aiComments,
       icon: SparkIcon,
-      iconClassName: "scale-125",
     },
   ];
 }
