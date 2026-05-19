@@ -18,7 +18,7 @@ export function EngagementHeading({
     <div className="space-y-5 md:space-y-4">
       <SectionEyebrow>{t("currentlyEngaged")}</SectionEyebrow>
       <Link href={bookInfoHref} className="block w-full md:w-fit">
-        <h1 className="max-w-2xl break-words font-display text-[3rem] leading-[1.05] tracking-[-0.05em] text-ink transition hover:opacity-80 sm:text-6xl sm:leading-[1.04] md:max-w-none md:text-[3.5rem] md:leading-[1.1] md:tracking-[-0.02em]">
+        <h1 className="line-clamp-5 max-w-2xl break-words font-display text-[3rem] leading-[1.05] tracking-[-0.05em] text-ink transition hover:opacity-80 sm:text-6xl sm:leading-[1.04] md:line-clamp-3 md:max-w-none md:text-[3.5rem] md:leading-[1.1] md:tracking-[-0.02em]">
           {engagement.title}
         </h1>
       </Link>

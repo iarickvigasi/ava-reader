@@ -31,7 +31,7 @@ export function ListeningSection({
           />
           <div className="space-y-4">
             <div>
-              <h2 className="max-w-52 font-display text-[2rem] leading-[1.1] text-ink sm:max-w-none sm:text-4xl">
+              <h2 className="line-clamp-5 max-w-52 font-display text-[2rem] leading-[1.1] text-ink sm:max-w-none sm:text-4xl md:line-clamp-3">
                 {listening.title}
               </h2>
               <p className="mt-1 text-sm italic tracking-[0.02em] text-plum sm:text-xl">
