@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import {
   defaultLocale,
   isLocale,
@@ -15,6 +15,14 @@ const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
 function parseInterfaceLang(raw: unknown): Locale | null {
   return isLocale(raw) ? raw : null;
+}
+
+function readLocaleCookie(): Locale | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(
+    new RegExp(`(?:^|;\\s*)${LOCALE_COOKIE}=([^;]+)`),
+  );
+  return match ? parseInterfaceLang(decodeURIComponent(match[1])) : null;
 }
 
 function persistLocaleCookie(locale: Locale) {
@@ -31,12 +39,21 @@ export function useInterfaceLang(): [Locale, (next: Locale) => void] {
     parse: parseInterfaceLang,
   });
 
+  // Reconcile the cookie with the authoritative preference value. The server
+  // picks the message bundle from the cookie, but the DB (fetched async by
+  // usePreference) is the source of truth — if they disagree (stale cookie,
+  // Accept-Language fallback, change made on another device), sync the
+  // cookie and soft-refresh so the bundle matches the dropdown.
+  useEffect(() => {
+    if (readLocaleCookie() === locale) return;
+    persistLocaleCookie(locale);
+    router.refresh();
+  }, [locale, router]);
+
   const update = useCallback(
     (next: Locale) => {
       setLocale(next);
       persistLocaleCookie(next);
-      // Soft-refresh server components so getRequestConfig re-reads the
-      // cookie and ships the new message bundle.
       router.refresh();
     },
     [setLocale, router],

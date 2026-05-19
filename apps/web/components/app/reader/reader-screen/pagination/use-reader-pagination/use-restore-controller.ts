@@ -9,6 +9,7 @@ import type { RestoreIntent } from "@/lib/reader-navigation";
 import { isStickyRestoreIntent } from "@/lib/reader-navigation";
 import { resolvePaginationDecision } from "@/lib/reader-pagination";
 import type { ReaderMeasurementEntry } from "@/lib/reader-measurement";
+import type { ReaderMeasurementPageResolution } from "@/lib/reader-measurement";
 import { createLocatorFromRestoreIntent } from "../../shared/utils";
 import {
   READER_MEASUREMENT_STATUS_PENDING,
@@ -22,6 +23,7 @@ export function useRestoreController({
   activePaginationLayoutKey,
   activeMeasurementEntry,
   activeChapter,
+  prefixPageCount,
   restoreIntent,
   pageCount,
   currentPageIndex,
@@ -33,6 +35,12 @@ export function useRestoreController({
   activePaginationLayoutKey: string | null;
   activeMeasurementEntry: ReaderMeasurementEntry | null;
   activeChapter: ReaderChapterPayload;
+  // Number of preloader spreads that sit BEFORE the active chapter's first
+  // visible spread (= 1 when a single-page previous chapter occupies column
+  // 1 of spread 0, otherwise 0). Used to translate preloader-space page
+  // resolutions to the user's visible page when active-chapter content is
+  // shifted by one column.
+  prefixPageCount: number;
   restoreIntent: RestoreIntent | null;
   pageCount: number;
   currentPageIndex: number;
@@ -113,16 +121,22 @@ export function useRestoreController({
       resolveReadyMeasurementEntry(activeMeasurementEntry);
     const visibleLocator = visibleLocatorRef.current;
 
-    const restorePageResolution = resolvePageResolutionForLocator({
-      activeChapterId: activeChapter.chapterId,
-      locator: createLocatorFromRestoreIntent(currentRestoreIntent),
-      measurementEntry: readyMeasurementEntry,
-    });
-    const visiblePageResolution = resolvePageResolutionForLocator({
-      activeChapterId: activeChapter.chapterId,
-      locator: visibleLocator,
-      measurementEntry: readyMeasurementEntry,
-    });
+    const restorePageResolution = applyPrefixColumnShift(
+      resolvePageResolutionForLocator({
+        activeChapterId: activeChapter.chapterId,
+        locator: createLocatorFromRestoreIntent(currentRestoreIntent),
+        measurementEntry: readyMeasurementEntry,
+      }),
+      prefixPageCount,
+    );
+    const visiblePageResolution = applyPrefixColumnShift(
+      resolvePageResolutionForLocator({
+        activeChapterId: activeChapter.chapterId,
+        locator: visibleLocator,
+        measurementEntry: readyMeasurementEntry,
+      }),
+      prefixPageCount,
+    );
     // While the user is still on the page the last restore produced, treat
     // the intent as unconsumed so a corrected measurement (e.g. after fonts
     // load and layout shifts) can re-place them.
@@ -173,9 +187,34 @@ export function useRestoreController({
     activePaginationLayoutKey,
     activeRestoreCycleKey,
     pageCount,
+    prefixPageCount,
     setCurrentPageIndex,
     warnFailedMeasurement,
   ]);
 
   return restorePhase;
+}
+
+// The preloader measures each chapter standalone, so its pageIndex is in
+// "preloader spread" space. When the visible reader prepends a single-page
+// previous chapter (prefixPageCount > 0), the active chapter's first block
+// is forced into column 2 of the first visible spread. Active-chapter
+// content that lives in column 1 of a preloader spread therefore ends up
+// on the user's previous visible page; column-2 content stays put.
+function applyPrefixColumnShift(
+  resolution: ReaderMeasurementPageResolution | null,
+  prefixPageCount: number,
+): ReaderMeasurementPageResolution | null {
+  if (
+    !resolution ||
+    resolution.status === "missing-block" ||
+    prefixPageCount === 0 ||
+    resolution.column !== 1
+  ) {
+    return resolution;
+  }
+  return {
+    ...resolution,
+    pageIndex: Math.max(0, resolution.pageIndex - prefixPageCount),
+  };
 }

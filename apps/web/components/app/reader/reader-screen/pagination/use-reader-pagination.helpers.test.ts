@@ -25,6 +25,7 @@ describe("useReaderPagination helpers", () => {
 
     it("returns null page resolution when locator or measurement cannot resolve", () => {
       const resolvePageIndex = vi.fn(() => ({
+        column: 2,
         pageIndex: 3,
         status: "exact",
       }) as const);
@@ -58,6 +59,7 @@ describe("useReaderPagination helpers", () => {
     it("resolves locator page index for matching ready measurements", () => {
       const readyEntry = createReadyMeasurementEntry({
         resolvePageIndex: vi.fn(() => ({
+          column: 2 as const,
           pageIndex: 7,
           status: "exact" as const,
         })),
@@ -74,6 +76,7 @@ describe("useReaderPagination helpers", () => {
           measurementEntry: readyEntry,
         }),
       ).toEqual({
+        column: 2,
         pageIndex: 7,
         status: "exact",
       });
@@ -113,6 +116,7 @@ describe("useReaderPagination helpers", () => {
           activeReadyMeasurementEntry: readyEntry,
           currentPageIndex: 2,
           isBootstrapping: true,
+          prefixPageCount: 0,
           restorePhase: READER_RESTORE_PHASE_SETTLED,
           visibleLocator: null,
         }),
@@ -126,6 +130,7 @@ describe("useReaderPagination helpers", () => {
           activeReadyMeasurementEntry: readyEntry,
           currentPageIndex: 2,
           isBootstrapping: false,
+          prefixPageCount: 0,
           restorePhase: READER_RESTORE_PHASE_RESTORING,
           visibleLocator: null,
         }),
@@ -139,6 +144,7 @@ describe("useReaderPagination helpers", () => {
           activeReadyMeasurementEntry: readyEntry,
           currentPageIndex: 2,
           isBootstrapping: false,
+          prefixPageCount: 0,
           restorePhase: READER_RESTORE_PHASE_SETTLED,
           visibleLocator: {
             blockId: "chapter-a::block-3",
@@ -156,6 +162,7 @@ describe("useReaderPagination helpers", () => {
           activeReadyMeasurementEntry: readyEntry,
           currentPageIndex: 2,
           isBootstrapping: false,
+          prefixPageCount: 0,
           restorePhase: READER_RESTORE_PHASE_SETTLED,
           visibleLocator: {
             blockId: "chapter-a::block-1",
@@ -328,6 +335,7 @@ function createReadyMeasurementEntry(input?: {
     textOffset: number;
   } | null;
   resolvePageIndex?: () => {
+    column: 1 | 2;
     pageIndex: number;
     status: "exact";
   };
@@ -346,6 +354,7 @@ function createReadyMeasurementEntry(input?: {
     resolvePageIndex:
       input?.resolvePageIndex ??
       (() => ({
+        column: 2,
         pageIndex: 0,
         status: "exact",
       })),

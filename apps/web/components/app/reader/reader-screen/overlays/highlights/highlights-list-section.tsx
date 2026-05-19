@@ -1,17 +1,33 @@
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { HighlightRow } from "./highlight-row";
 import type { Highlight } from "./highlights-data";
 
 type HighlightsListSectionProps = {
   highlights: Highlight[];
+  onDelete?: (id: string) => void;
+  onSelect?: (id: string) => void;
 };
 
 export function HighlightsListSection({
   highlights,
+  onDelete,
+  onSelect,
 }: HighlightsListSectionProps) {
   const [openMenuHighlightId, setOpenMenuHighlightId] = useState<string | null>(
     null,
   );
+  const t = useTranslations("reader.highlights");
+
+  if (highlights.length === 0) {
+    return (
+      <div className="flex flex-1 items-center justify-center pb-8">
+        <p className="font-(--font-ui) text-[0.78rem] uppercase tracking-[0.16em] text-muted">
+          {t("empty")}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <ul
@@ -34,6 +50,15 @@ export function HighlightsListSection({
               )
             }
             onMenuClose={() => setOpenMenuHighlightId(null)}
+            onDelete={
+              onDelete
+                ? () => {
+                    onDelete(highlight.id);
+                    setOpenMenuHighlightId(null);
+                  }
+                : undefined
+            }
+            onSelect={onSelect ? () => onSelect(highlight.id) : undefined}
           />
         </li>
       ))}

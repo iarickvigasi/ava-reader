@@ -94,8 +94,8 @@
     "annotations": {
       "title": "Anotações recentes",
       "empty": "As anotações começarão a aparecer aqui quando você criar destaques.",
-      "from": "De: {bookTitle}",
-      "highlighter": "Marcador: {colorLabel}",
+      "from": "Do livro: {bookTitle}",
+      "highlighter": "Marcador: <color>{colorLabel}</color>",
       "viewFullNotebook": "Ver caderno completo"
     },
     "footer": {
@@ -170,8 +170,21 @@
       "closePanel": "Fechar painel de destaques",
       "searchPlaceholder": "Buscar",
       "searchAria": "Buscar nos destaques",
-      "rename": "Renomear",
-      "delete": "Excluir"
+      "delete": "Excluir",
+      "empty": "Nenhum destaque ainda",
+      "loadFailed": "Não foi possível carregar seus destaques. Tentaremos novamente mais tarde.",
+      "saveFailed": "Um destaque não pôde ser salvo: {reason}",
+      "unknownChapter": "Capítulo desconhecido",
+      "filterAll": "Todos",
+      "color": {
+        "apricot": "Damasco",
+        "mimosa": "Mimosa",
+        "jade": "Jade",
+        "sky": "Céu",
+        "lavender": "Lavanda",
+        "rose": "Rosa",
+        "mauve": "Malva"
+      }
     },
     "aiComments": {
       "title": "Comentários da IA",

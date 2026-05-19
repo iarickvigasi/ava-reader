@@ -4,31 +4,48 @@ import {
   ReaderFavoritesIcon,
 } from "@/components/app/shared/app-icons";
 import { cn } from "@/lib/cn";
+import type { HighlightColor } from "@/lib/highlights-store";
 import {
-  HIGHLIGHT_COLOR_HEX,
-  type HighlightColor,
+  HIGHLIGHT_COLOR_BG,
+  HIGHLIGHT_COLOR_ORDER,
 } from "../highlights/highlights-data";
+import { useHighlightsContext } from "../highlights/highlights-context";
+import { useReaderSelectionContext } from "../../screen/reader-selection-context";
 
-const HIGHLIGHT_COLOR_ORDER: HighlightColor[] = [
-  "apricot",
-  "mimosa",
-  "jade",
-  "sky",
-  "lavender",
-  "rose",
-  "mauve",
-];
-
-type HighlightSectionProps = {
-  selectedColor: HighlightColor | null;
-  onSelectColor: (color: HighlightColor) => void;
-};
-
-export function HighlightSection({
-  selectedColor,
-  onSelectColor,
-}: HighlightSectionProps) {
+export function HighlightSection() {
   const t = useTranslations("reader.aiComments");
+  const {
+    text,
+    locator,
+    highlightId,
+    highlightColor,
+    setHighlightBinding,
+  } = useReaderSelectionContext();
+  const { upsertHighlight, deleteHighlight } = useHighlightsContext();
+
+  const handleSelect = (color: HighlightColor) => {
+    if (!text) {
+      return;
+    }
+    // Toggle off when clicking the same color on an existing highlight.
+    if (highlightId && highlightColor === color) {
+      deleteHighlight(highlightId);
+      setHighlightBinding(null);
+      return;
+    }
+    // Update an existing highlight in place — same id, new color.
+    if (highlightId) {
+      upsertHighlight({ id: highlightId, excerpt: text, color, locator });
+      setHighlightBinding({ highlightId, highlightColor: color });
+      return;
+    }
+    // Create a new highlight; bind the selection to it so subsequent clicks
+    // in the same panel session toggle/replace this row instead of stacking
+    // duplicates.
+    const id = upsertHighlight({ excerpt: text, color, locator });
+    setHighlightBinding({ highlightId: id, highlightColor: color });
+  };
+
   return (
     <section className="rounded-[10px]">
       <div className="flex items-center justify-between gap-3 px-5 py-4">
@@ -45,8 +62,8 @@ export function HighlightSection({
           <HighlightColorSwatch
             key={color}
             color={color}
-            isSelected={selectedColor === color}
-            onSelect={() => onSelectColor(color)}
+            isSelected={highlightColor === color}
+            onSelect={() => handleSelect(color)}
           />
         ))}
       </div>
@@ -72,10 +89,10 @@ function HighlightColorSwatch({
       className={cn(
         "size-8 shrink-0 rounded-xl transition",
         isSelected
-          ? "shadow-[0_0_0_2px_var(--paper),0_0_0_4px_var(--ink)]"
+          ? "shadow-[0_0_0_2px_var(--paper),0_0_0_4px_var(--muted)]"
           : "hover:scale-105",
       )}
-      style={{ backgroundColor: HIGHLIGHT_COLOR_HEX[color] }}
+      style={{ backgroundColor: HIGHLIGHT_COLOR_BG[color] }}
     />
   );
 }

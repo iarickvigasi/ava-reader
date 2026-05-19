@@ -94,8 +94,8 @@
     "annotations": {
       "title": "Annotations récentes",
       "empty": "Les annotations apparaîtront ici dès que vous créerez des surlignages.",
-      "from": "Tiré de : {bookTitle}",
-      "highlighter": "Surligneur : {colorLabel}",
+      "from": "Tiré du livre : {bookTitle}",
+      "highlighter": "Surligneur : <color>{colorLabel}</color>",
       "viewFullNotebook": "Voir le carnet complet"
     },
     "footer": {
@@ -170,8 +170,21 @@
       "closePanel": "Fermer le panneau des surlignages",
       "searchPlaceholder": "Rechercher",
       "searchAria": "Rechercher dans les surlignages",
-      "rename": "Renommer",
-      "delete": "Supprimer"
+      "delete": "Supprimer",
+      "empty": "Aucun surlignage",
+      "loadFailed": "Impossible de charger vos surlignages. Nouvelle tentative plus tard.",
+      "saveFailed": "Un surlignage n'a pas pu être enregistré : {reason}",
+      "unknownChapter": "Chapitre inconnu",
+      "filterAll": "Tout",
+      "color": {
+        "apricot": "Abricot",
+        "mimosa": "Mimosa",
+        "jade": "Jade",
+        "sky": "Ciel",
+        "lavender": "Lavande",
+        "rose": "Rose",
+        "mauve": "Mauve"
+      }
     },
     "aiComments": {
       "title": "Commentaires IA",

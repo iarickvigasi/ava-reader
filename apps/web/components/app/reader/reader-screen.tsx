@@ -8,6 +8,7 @@ import {
   useFontScale,
 } from "@/components/app/preferences/use-font-scale";
 import { AiCommentsProvider } from "./reader-screen/overlays/ai-comments/ai-comments-context";
+import { HighlightsProvider } from "./reader-screen/overlays/highlights/highlights-context";
 import { ReaderToast } from "./reader-screen/overlays/reader-toast";
 import { ReadyReader } from "./reader-screen/screen/ready-reader";
 import { ReaderSelectionProvider } from "./reader-screen/screen/reader-selection-context";
@@ -68,25 +69,27 @@ export function ReaderScreen({
           <ReaderStatusState payload={payload} />
         ) : activeChapter ? (
           <AiCommentsProvider libraryItemId={libraryItemId}>
-            <ReaderSelectionProvider>
-              <ReadyReader
-                activeChapter={activeChapter}
-                displayLocator={displayLocator}
-                fontScale={fontScale}
-                isBootstrapping={isBootstrapping}
-                isLoadingChapter={isLoadingChapter}
-                isRefreshingWindow={isRefreshingWindow}
-                libraryItemId={libraryItemId}
-                onDecreaseFont={handleDecreaseFont}
-                onIncreaseFont={handleIncreaseFont}
-                onSelectChapter={navigateToChapter}
-                onVisibleLocatorChange={setVisibleLocator}
-                payload={payload}
-                pendingChapterId={pendingChapterId}
-                restoreIntent={restoreIntent}
-                visibleLocator={visibleLocator}
-              />
-            </ReaderSelectionProvider>
+            <HighlightsProvider libraryItemId={libraryItemId}>
+              <ReaderSelectionProvider>
+                <ReadyReader
+                  activeChapter={activeChapter}
+                  displayLocator={displayLocator}
+                  fontScale={fontScale}
+                  isBootstrapping={isBootstrapping}
+                  isLoadingChapter={isLoadingChapter}
+                  isRefreshingWindow={isRefreshingWindow}
+                  libraryItemId={libraryItemId}
+                  onDecreaseFont={handleDecreaseFont}
+                  onIncreaseFont={handleIncreaseFont}
+                  onSelectChapter={navigateToChapter}
+                  onVisibleLocatorChange={setVisibleLocator}
+                  payload={payload}
+                  pendingChapterId={pendingChapterId}
+                  restoreIntent={restoreIntent}
+                  visibleLocator={visibleLocator}
+                />
+              </ReaderSelectionProvider>
+            </HighlightsProvider>
           </AiCommentsProvider>
         ) : null}
       </div>

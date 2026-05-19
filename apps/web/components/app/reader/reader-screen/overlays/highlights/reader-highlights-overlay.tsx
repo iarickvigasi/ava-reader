@@ -1,18 +1,20 @@
 import { useTranslations } from "next-intl";
+import type { ReaderTocNode } from "@/lib/api-types";
 import { MobileCloseButton } from "../mobile-close-button";
 import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
-import { ControlsSection } from "./controls-section";
-import { FiltersSection } from "./filters-section";
-import { HighlightsListSection } from "./highlights-list-section";
-import { SAMPLE_HIGHLIGHTS } from "./highlights-data";
+import { HighlightsSections } from "./highlights-sections";
 
 type ReaderHighlightsOverlayProps = {
+  toc: ReaderTocNode[];
   onClose: () => void;
+  onSelectHighlight?: (highlightId: string) => void;
 };
 
 export function ReaderHighlightsOverlay({
+  toc,
   onClose,
+  onSelectHighlight,
 }: ReaderHighlightsOverlayProps) {
   useCloseOnEscape(onClose);
 
@@ -25,7 +27,10 @@ export function ReaderHighlightsOverlay({
           <div className="relative z-10 flex h-full flex-col md:pt-24">
             <div className="pointer-events-auto flex min-h-0 flex-1 flex-col px-6 py-8 sm:px-8 md:animate-[reader-contents-enter_320ms_cubic-bezier(0.22,1,0.36,1)_140ms_both] md:px-8 md:py-0">
               <HighlightsHeader onClose={onClose} />
-              <HighlightsSections />
+              <HighlightsSections
+                toc={toc}
+                onSelectHighlight={onSelectHighlight}
+              />
             </div>
           </div>
         </div>
@@ -59,16 +64,6 @@ function HighlightsHeader({ onClose }: { onClose: () => void }) {
         <PanelTitle>{t("title")}</PanelTitle>
       </div>
       <MobileCloseButton ariaLabel={t("closePanel")} onClose={onClose} />
-    </div>
-  );
-}
-
-function HighlightsSections() {
-  return (
-    <div className="mt-8 flex min-h-0 flex-1 flex-col gap-6 overflow-hidden">
-      <ControlsSection />
-      <FiltersSection />
-      <HighlightsListSection highlights={SAMPLE_HIGHLIGHTS} />
     </div>
   );
 }

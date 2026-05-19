@@ -94,8 +94,8 @@
     "annotations": {
       "title": "Letzte Anmerkungen",
       "empty": "Anmerkungen erscheinen hier, sobald du Markierungen erstellst.",
-      "from": "Aus: {bookTitle}",
-      "highlighter": "Marker: {colorLabel}",
+      "from": "Aus dem Buch: {bookTitle}",
+      "highlighter": "Marker: <color>{colorLabel}</color>",
       "viewFullNotebook": "Vollständiges Notizbuch ansehen"
     },
     "footer": {
@@ -170,8 +170,21 @@
       "closePanel": "Markierungs-Panel schließen",
       "searchPlaceholder": "Suchen",
       "searchAria": "In Markierungen suchen",
-      "rename": "Umbenennen",
-      "delete": "Löschen"
+      "delete": "Löschen",
+      "empty": "Noch keine Markierungen",
+      "loadFailed": "Markierungen konnten nicht geladen werden. Wir versuchen es später erneut.",
+      "saveFailed": "Eine Markierung konnte nicht gespeichert werden: {reason}",
+      "unknownChapter": "Unbekanntes Kapitel",
+      "filterAll": "Alle",
+      "color": {
+        "apricot": "Apricot",
+        "mimosa": "Mimose",
+        "jade": "Jade",
+        "sky": "Himmel",
+        "lavender": "Lavendel",
+        "rose": "Rose",
+        "mauve": "Malve"
+      }
     },
     "aiComments": {
       "title": "KI-Kommentare",

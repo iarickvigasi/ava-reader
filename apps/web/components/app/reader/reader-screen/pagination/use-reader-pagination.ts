@@ -153,10 +153,31 @@ export function useReaderPagination({
 
   const activeRestoreCycleKey = restoreIntent?.key ?? activeChapter.chapterId;
 
+  // Spreads only make sense in two-column layouts; single-column views
+  // already use the full width per chapter.
+  const isTwoColumnLayout = resolveReaderColumnCount(pageBoxSize.width) >= 2;
+
+  // Prefix: previous chapter was single-page → render it as column 1 and
+  // shift the active chapter's translate by one page so its column 1 isn't
+  // re-shown (the user already saw it in the previous chapter's spread).
+  // Hoisted above useRestoreController so the controller can translate
+  // preloader-space page indices into the user's visible page when the
+  // prefix shift is active.
+  const isPreviousSinglePageSpread =
+    isTwoColumnLayout &&
+    previousChapterPageCount === 1 &&
+    Boolean(previousChapter) &&
+    activeChapter.previousChapterId === previousChapter?.chapterId;
+  const prefixBlocks = isPreviousSinglePageSpread
+    ? previousChapter?.blocks
+    : undefined;
+  const prefixPageCount = isPreviousSinglePageSpread ? 1 : 0;
+
   const restorePhase = useRestoreController({
     activePaginationLayoutKey,
     activeMeasurementEntry,
     activeChapter,
+    prefixPageCount,
     restoreIntent,
     pageCount,
     currentPageIndex,
@@ -170,6 +191,7 @@ export function useReaderPagination({
     currentPageIndex,
     activeReadyMeasurementEntry,
     isBootstrapping,
+    prefixPageCount,
     restorePhase,
     visibleLocator,
     onVisibleLocatorChange,
@@ -184,10 +206,6 @@ export function useReaderPagination({
     activeChapter,
     onSelectChapter,
   });
-
-  // Spreads only make sense in two-column layouts; single-column views
-  // already use the full width per chapter.
-  const isTwoColumnLayout = resolveReaderColumnCount(pageBoxSize.width) >= 2;
 
   // Spillover: active chapter is single-page → flow next chapter into
   // column 2 so the empty half-screen isn't wasted.
@@ -208,20 +226,6 @@ export function useReaderPagination({
     nextChapter,
     pageCount,
   ]);
-
-  // Prefix: previous chapter was single-page → render it as column 1 and
-  // shift the active chapter's translate by one page so its column 1 isn't
-  // re-shown (the user already saw it in the previous chapter's spread).
-  const isPreviousSinglePageSpread =
-    isTwoColumnLayout &&
-    previousChapterPageCount === 1 &&
-    Boolean(previousChapter) &&
-    activeChapter.previousChapterId === previousChapter?.chapterId;
-
-  const prefixBlocks = isPreviousSinglePageSpread
-    ? previousChapter?.blocks
-    : undefined;
-  const prefixPageCount = isPreviousSinglePageSpread ? 1 : 0;
 
   const { articleStyle, shouldMaskArticle } = useArticleStyle({
     pageBoxSize,

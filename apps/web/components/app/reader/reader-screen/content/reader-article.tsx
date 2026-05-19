@@ -2,10 +2,16 @@ import type { CSSProperties, RefCallback } from "react";
 import { useCallback, useLayoutEffect, useRef } from "react";
 import type { ReaderBlock } from "@/lib/api-types";
 import { useAiCommentsContext } from "../overlays/ai-comments/ai-comments-context";
+import { useHighlightsContext } from "../overlays/highlights/highlights-context";
 import {
   applyAiCommentMarks,
   unwrapAllMarks,
 } from "./apply-ai-comment-marks";
+import {
+  HIGHLIGHT_MARK_CLASS,
+  applyHighlightMarks,
+  unwrapAllHighlightMarks,
+} from "./apply-highlight-marks";
 import { ReaderBlockView } from "./reader-block-view";
 
 export function ReaderArticle({
@@ -13,6 +19,7 @@ export function ReaderArticle({
   applyAiComments = false,
   blocks,
   chapterId,
+  onHighlightClick,
   pageHeight,
   prefixBlocks,
   prefixChapterId,
@@ -24,13 +31,18 @@ export function ReaderArticle({
   // the pagination preloader's per-chapter measurement map). Object refs
   // are not supported because they would require mutating the prop.
   articleRef?: RefCallback<HTMLElement>;
-  // Opt in to wrapping every comment whose locator resolves inside the
-  // article in a styled <mark> after each render. The preloader renders
+  // Opt in to wrapping every comment/highlight whose locator resolves inside
+  // the article in a styled <mark> after each render. The preloader renders
   // off-screen "measurement" articles where marks would corrupt the
   // measured layout, so it leaves this off.
   applyAiComments?: boolean;
   blocks: ReaderBlock[];
   chapterId: string;
+  // Called when the user clicks a painted highlight inside the article.
+  // The screen routes this to the AI Comments panel pre-bound to the row.
+  // Omitted by the pagination preloader (its measurement articles aren't
+  // interactive).
+  onHighlightClick?: (highlightId: string) => void;
   pageHeight: number;
   // Previous chapter rendered in column 1 of the spread; the active
   // chapter's first block is then forced into a new column so it
@@ -49,6 +61,7 @@ export function ReaderArticle({
 
   const internalArticleRef = useRef<HTMLElement | null>(null);
   const { comments: aiComments } = useAiCommentsContext();
+  const { highlights } = useHighlightsContext();
 
   // Combine the internal ref (used by the highlighter) with any forwarded
   // articleRef callback the parent needs (used by the pagination preloader).
@@ -63,23 +76,65 @@ export function ReaderArticle({
   // React clears our injected <mark> wrappers on every render (it diffs the
   // virtual text node against the actual DOM and replaces it). useLayoutEffect
   // re-applies them synchronously so the highlights never visibly flicker.
+  // Highlights paint first (background), then AI-comment underlines on top —
+  // both can coexist on the same span.
   useLayoutEffect(() => {
     if (!applyAiComments) {
       return;
     }
     const article = internalArticleRef.current;
-    if (!article || aiComments.length === 0) {
+    if (!article) {
       return;
     }
-    applyAiCommentMarks(article, aiComments);
+    if (highlights.length > 0) {
+      applyHighlightMarks(article, highlights);
+    }
+    if (aiComments.length > 0) {
+      applyAiCommentMarks(article, aiComments);
+    }
     return () => {
       unwrapAllMarks(article);
+      unwrapAllHighlightMarks(article);
     };
-  }, [applyAiComments, aiComments, blocks, prefixBlocks, spilloverBlocks]);
+  }, [
+    applyAiComments,
+    aiComments,
+    highlights,
+    blocks,
+    prefixBlocks,
+    spilloverBlocks,
+  ]);
+
+  // Click-to-edit on a painted highlight. One delegated listener on the
+  // article catches every mark click; the screen-level container handles
+  // the rest via the `onHighlightClick` callback.
+  const handleArticleClick = useCallback(
+    (event: React.MouseEvent) => {
+      if (!onHighlightClick) {
+        return;
+      }
+      const target = event.target as HTMLElement | null;
+      if (!target) {
+        return;
+      }
+      const mark = target.closest<HTMLElement>(`mark.${HIGHLIGHT_MARK_CLASS}`);
+      if (!mark) {
+        return;
+      }
+      const highlightId = mark.dataset.highlightId;
+      if (!highlightId) {
+        return;
+      }
+      event.stopPropagation();
+      onHighlightClick(highlightId);
+    },
+    [onHighlightClick],
+  );
 
   return (
     <article
       ref={setArticleRef}
+      onClick={handleArticleClick}
       className="h-full space-y-5 [column-fill:auto] sm:space-y-6 md:space-y-7"
       style={style}
     >

@@ -1,6 +1,33 @@
 import type { ReaderTocNode } from "./api-types";
 import type { ReaderNavigationTarget } from "./reader-navigation";
 
+export type TocChapterEntry = {
+  label: string;
+  spineIndex: number | null;
+};
+
+// Flatten the TOC into a chapterId → label/spineIndex map for callers that
+// need to label or order arbitrary chapters (e.g. highlights from outside
+// the loaded chapter window). First occurrence wins so nested section
+// entries don't override the canonical chapter label.
+export function collectTocChapterEntries(
+  toc: ReaderTocNode[],
+): Map<string, TocChapterEntry> {
+  const entries = new Map<string, TocChapterEntry>();
+
+  walkTocNodes(toc, (node) => {
+    if (!node.chapterId || entries.has(node.chapterId)) {
+      return;
+    }
+    entries.set(node.chapterId, {
+      label: node.label,
+      spineIndex: node.spineIndex,
+    });
+  });
+
+  return entries;
+}
+
 export function countUniqueTocChapters(toc: ReaderTocNode[]) {
   const chapterIds = new Set<string>();
 

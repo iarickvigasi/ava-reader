@@ -11,6 +11,7 @@ import { ReaderAiChatsOverlay } from "../overlays/ai-chats/reader-ai-chats-overl
 import { ReaderAiCommentsOverlay } from "../overlays/ai-comments/reader-ai-comments-overlay";
 import { ReaderContentsOverlay } from "../overlays/contents/reader-contents-overlay";
 import { ReaderHighlightsOverlay } from "../overlays/highlights/reader-highlights-overlay";
+import { useHighlightsContext } from "../overlays/highlights/highlights-context";
 import { ReaderPreferencesOverlay } from "../overlays/preferences/reader-preferences-overlay";
 import {
   READER_PANEL_AI_CHATS,
@@ -22,12 +23,8 @@ import {
 } from "../shared/constants";
 import type { ReadyReaderProps } from "../shared/types";
 import { useReaderPagination } from "../pagination/use-reader-pagination";
-import { computeAiCommentLocator } from "./compute-ai-comment-locator";
-import { useReaderSelectionContext } from "./reader-selection-context";
-import {
-  useReaderTextSelection,
-  type ReaderSelection,
-} from "./use-reader-text-selection";
+import { useHighlightSelectionBridge } from "./use-highlight-selection-bridge";
+import { useReaderTextSelection } from "./use-reader-text-selection";
 
 export function ReadyReader({
   activeChapter,
@@ -46,8 +43,7 @@ export function ReadyReader({
   restoreIntent,
   visibleLocator,
 }: ReadyReaderProps) {
-  const { activePanel, closePanel, openPanel } = useReaderUi();
-  const { setSelection } = useReaderSelectionContext();
+  const { activePanel, closePanel } = useReaderUi();
   const isContentsOpen = activePanel === READER_PANEL_CONTENTS;
   const isPreferencesOpen = activePanel === READER_PANEL_PREFERENCES;
   const isAiChatsOpen = activePanel === READER_PANEL_AI_CHATS;
@@ -108,26 +104,32 @@ export function ReadyReader({
     visibleLocator,
   });
 
-  // When the user selects text inside the page-box, surface it in the AI
-  // Comments panel. We open the panel here (instead of forcing the caller of
-  // setSelectedText to do it) so the trigger remains centralised.
-  //
-  // We compute the locator synchronously here because the Range refers to
-  // live DOM nodes that may be re-rendered before the effect fires.
-  const handleTextSelected = useCallback(
-    ({ text, range }: ReaderSelection) => {
-      setSelection({
-        text,
-        locator: computeAiCommentLocator(range, activeChapter.chapterId),
+  // Bridges fresh selections and clicks on painted highlights into the AI
+  // Comments panel, matching to existing rows when possible. Owns the
+  // highlight-store reads, so this component stays focused on layout.
+  const { onTextSelected, onHighlightClick } = useHighlightSelectionBridge(
+    activeChapter.chapterId,
+  );
+
+  const { highlights } = useHighlightsContext();
+  const handleSelectHighlightFromList = useCallback(
+    (highlightId: string) => {
+      const highlight = highlights.find((row) => row.id === highlightId);
+      if (!highlight?.locator) {
+        return;
+      }
+      closePanel();
+      onSelectChapter(highlight.locator.chapterId, {
+        blockId: highlight.locator.startBlockId,
+        textOffset: highlight.locator.startOffset,
       });
-      openPanel(READER_PANEL_AI_COMMENTS);
     },
-    [activeChapter.chapterId, openPanel, setSelection],
+    [closePanel, highlights, onSelectChapter],
   );
 
   useReaderTextSelection({
     containerRef: pageBoxRef,
-    onSelectText: handleTextSelected,
+    onSelectText: onTextSelected,
     // Selecting while the article is masked (e.g., during chapter transitions)
     // would surface stale text — skip those windows.
     disabled: shouldMaskArticle,
@@ -180,6 +182,7 @@ export function ReadyReader({
                   applyAiComments
                   blocks={activeChapter.blocks}
                   chapterId={activeChapter.chapterId}
+                  onHighlightClick={onHighlightClick}
                   pageHeight={pageBoxSize.height}
                   prefixBlocks={prefixBlocks}
                   prefixChapterId={previousChapter?.chapterId ?? null}
@@ -228,7 +231,11 @@ export function ReadyReader({
       {isAiChatsOpen ? <ReaderAiChatsOverlay onClose={closePanel} /> : null}
 
       {isHighlightsOpen ? (
-        <ReaderHighlightsOverlay onClose={closePanel} />
+        <ReaderHighlightsOverlay
+          toc={payload.toc}
+          onClose={closePanel}
+          onSelectHighlight={handleSelectHighlightFromList}
+        />
       ) : null}
 
       {isAiCommentsOpen ? (

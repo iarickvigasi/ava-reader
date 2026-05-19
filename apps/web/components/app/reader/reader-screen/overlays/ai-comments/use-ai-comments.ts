@@ -2,7 +2,7 @@ import { useAuth } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getPublicApiBaseUrl } from "@/lib/api";
-import type { AiCommentLocator } from "@/lib/api-types";
+import type { ReaderRangeLocator } from "@/lib/api-types";
 import { emitReaderToast } from "../reader-toast";
 
 // One row from GET /api/library/:libraryItemId/ai-comments. Mirrors the
@@ -14,7 +14,7 @@ export type AiCommentRecord = {
   sourceText: string;
   body: string;
   targetLang: string | null;
-  locator: AiCommentLocator | null;
+  locator: ReaderRangeLocator | null;
   createdAt: string;
 };
 

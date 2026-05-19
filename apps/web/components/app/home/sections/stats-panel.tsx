@@ -14,6 +14,7 @@ type Stats = HomePayload["stats"];
 type StatItem = {
   id: string;
   icon: ComponentType<SVGProps<SVGSVGElement>>;
+  iconClassName?: string;
   label: string;
   value: number;
 };
@@ -50,7 +51,9 @@ export function StatsPanel({ stats }: { stats: Stats }) {
                   {item.label}
                 </p>
               </div>
-              <item.icon className="h-5 w-auto shrink-0 text-title" />
+              <item.icon
+                className={`h-5 w-auto shrink-0 text-title${item.iconClassName ? ` ${item.iconClassName}` : ""}`}
+              />
             </div>
           </Panel>
         ))}
@@ -66,7 +69,18 @@ function buildStatItems(
   return [
     { id: "booksRead", label: t("booksRead"), value: stats.volumesRead, icon: StackBooksIcon },
     { id: "highlights", label: t("highlights"), value: stats.highlights, icon: HighlighterIcon },
-    { id: "hoursReading", label: t("hoursReading"), value: stats.hoursReading, icon: ReadingTimeIcon },
-    { id: "aiComments", label: t("aiComments"), value: stats.aiComments, icon: SparkIcon },
+    {
+      id: "hoursReading",
+      label: t("hoursReading"),
+      value: stats.hoursReading,
+      icon: ReadingTimeIcon,
+      iconClassName: "scale-125",
+    },
+    {
+      id: "aiComments",
+      label: t("aiComments"),
+      value: stats.aiComments,
+      icon: SparkIcon,
+    },
   ];
 }

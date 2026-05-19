@@ -8,6 +8,7 @@ import {
 } from "@/lib/reader-measurement";
 import { createPaginationLayoutKey } from "@/lib/reader-pagination";
 import { PAGE_GAP } from "../shared/constants";
+import { resolveReaderColumnCount } from "../shared/utils";
 
 type ChapterRefReader<T extends Element> = {
   get: (chapterId: string) => T | null;
@@ -64,6 +65,7 @@ export function useChapterMeasurements({
           createReadyReaderMeasurementEntry({
             article,
             chapterId,
+            columnCount: resolveReaderColumnCount(pageBoxWidth),
             layoutKey,
             pageBox,
             pageGap: PAGE_GAP,
@@ -73,7 +75,7 @@ export function useChapterMeasurements({
         onMeasurement(createFailedReaderMeasurementEntry({ chapterId, layoutKey }));
       }
     },
-    [articleRefs, pageBoxRefs, createLayoutKey, onMeasurement],
+    [articleRefs, createLayoutKey, onMeasurement, pageBoxRefs, pageBoxWidth],
   );
 
   const measureAllChapters = useCallback(() => {

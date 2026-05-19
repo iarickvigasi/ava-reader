@@ -1,23 +1,46 @@
-import { useState } from "react";
+import { useTranslations } from "next-intl";
+import type { HighlightColor } from "@/lib/highlights-store";
 import { ColorFilterChip } from "./highlights-fields";
 import {
-  SAMPLE_HIGHLIGHT_FILTERS,
+  HIGHLIGHT_COLOR_ORDER,
   type HighlightFilter,
 } from "./highlights-data";
 
-export function FiltersSection() {
-  const [activeFilterId, setActiveFilterId] = useState<HighlightFilter["id"]>(
-    "all",
-  );
+type FilterId = HighlightFilter["id"];
+
+type FiltersSectionProps = {
+  counts: Record<HighlightColor, number>;
+  total: number;
+  activeFilterId: FilterId;
+  onChange: (next: FilterId) => void;
+};
+
+export function FiltersSection({
+  counts,
+  total,
+  activeFilterId,
+  onChange,
+}: FiltersSectionProps) {
+  const t = useTranslations("reader.highlights");
+  const filters: HighlightFilter[] = [
+    { id: "all", label: t("filterAll"), count: total },
+    ...HIGHLIGHT_COLOR_ORDER.filter((color) => counts[color] > 0).map(
+      (color) => ({
+        id: color,
+        label: t(`color.${color}`),
+        count: counts[color],
+      }),
+    ),
+  ];
 
   return (
     <section className="flex flex-wrap gap-3">
-      {SAMPLE_HIGHLIGHT_FILTERS.map((filter) => (
+      {filters.map((filter) => (
         <ColorFilterChip
           key={filter.id}
           filter={filter}
           isActive={activeFilterId === filter.id}
-          onSelect={() => setActiveFilterId(filter.id)}
+          onSelect={() => onChange(filter.id)}
         />
       ))}
     </section>
