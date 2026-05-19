@@ -25,9 +25,9 @@ export function AppShell({ children, currentUser }: AppShellProps) {
   if (isReaderRoute) {
     return (
       <ReaderUiProvider>
-        <div className="min-h-screen">
+        <div className="flex h-dvh flex-col overflow-hidden">
           <AppNavigation currentUser={currentUser} />
-          <div>{children}</div>
+          <div className="min-h-0 flex-1">{children}</div>
         </div>
       </ReaderUiProvider>
     );
