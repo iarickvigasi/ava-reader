@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
-import { EditIcon, TrashIcon } from "@/components/app/shared/app-icons";
+import { TrashIcon } from "@/components/app/shared/app-icons";
 import { cn } from "@/lib/cn";
 import {
   HIGHLIGHT_COLOR_BG,
@@ -105,10 +105,8 @@ export function RowActionsMenuTrigger({
 
 export function RowActionsMenu({
   onDelete,
-  onRename,
 }: {
   onDelete?: () => void;
-  onRename?: () => void;
 }) {
   const t = useTranslations("reader.highlights");
   return (
@@ -116,12 +114,6 @@ export function RowActionsMenu({
       role="menu"
       className="absolute right-2 top-full z-10 mt-1 w-36 rounded-[10px] border border-line/40 bg-paper-strong p-2 shadow-[-6px_6px_18px_rgba(31,27,24,0.10)]"
     >
-      <RowActionsMenuItem
-        icon={<EditIcon className="size-4" aria-hidden="true" />}
-        label={t("rename")}
-        tone="default"
-        onClick={onRename}
-      />
       <RowActionsMenuItem
         icon={<TrashIcon className="size-4" aria-hidden="true" />}
         label={t("delete")}
