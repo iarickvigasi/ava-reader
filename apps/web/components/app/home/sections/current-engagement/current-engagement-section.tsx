@@ -1,5 +1,5 @@
 import type { HomePayload } from "@/lib/api-types";
-import { getReaderHref } from "@/lib/app-routes";
+import { getLibraryBookInfoHref, getReaderHref } from "@/lib/app-routes";
 import { EngagementCover } from "./cover";
 import { EngagementDesktopMeta } from "./desktop-meta";
 import { EngagementHeading } from "./heading";
@@ -15,13 +15,14 @@ export function CurrentEngagementSection({
   engagement: CurrentEngagement;
 }) {
   const readerHref = getReaderHref(engagement.slug);
+  const bookInfoHref = getLibraryBookInfoHref(engagement.slug);
 
   return (
     <section className="grid gap-8 md:grid-cols-[0.32fr_0.58fr] md:items-start md:gap-8 lg:gap-10">
       <EngagementCover engagement={engagement} readerHref={readerHref} />
 
       <div className="min-w-0 space-y-6 md:space-y-8 md:pt-16">
-        <EngagementHeading engagement={engagement} readerHref={readerHref} />
+        <EngagementHeading engagement={engagement} bookInfoHref={bookInfoHref} />
         <EngagementMobileCard engagement={engagement} readerHref={readerHref} />
         <EngagementDesktopMeta engagement={engagement} />
         <EngagementImportButtons />
