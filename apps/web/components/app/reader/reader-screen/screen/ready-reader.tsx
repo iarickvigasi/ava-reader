@@ -152,13 +152,13 @@ export function ReadyReader({
     <>
       <div
         ref={rootRef}
-        className="px-4 pb-5 pt-8 sm:px-6 md:px-7 md:pt-8 lg:px-8"
+        className="px-4 pb-2 pt-2 sm:px-6 sm:pb-5 sm:pt-8 md:px-7 md:pt-8 lg:px-8"
         style={{
           height: availableHeight > 0 ? `${availableHeight}px` : undefined,
         }}
       >
         <section className="mx-auto flex h-full max-w-312 min-w-0 flex-col">
-          <div className="flex items-start justify-between gap-6">
+          <div className="hidden items-start justify-between gap-6 sm:flex">
             <ReadyReaderHeader activeChapter={activeChapter} payload={payload} />
             <ReadyReaderActivityStatus
               isBootstrapping={isBootstrapping}
@@ -167,10 +167,10 @@ export function ReadyReader({
             />
           </div>
 
-          <div className="mt-6 flex min-h-0 flex-1 flex-col gap-4 sm:mt-8">
+          <div className="flex min-h-0 flex-1 flex-col gap-0 sm:mt-8 sm:gap-4">
 
             <div
-              className="relative min-h-0 flex-1 overflow-hidden px-3 py-5 sm:px-5 sm:py-6 md:px-6"
+              className="relative min-h-0 flex-1 overflow-hidden px-3 py-2 sm:px-5 sm:py-6 md:px-6"
               style={{
                 touchAction: "none",
               }}
