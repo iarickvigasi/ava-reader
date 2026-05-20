@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { ReaderTocNode } from "@/lib/api-types";
-import type { HighlightColor } from "@/features/reader/highlights";
+import type { HighlightColor } from "@/features/highlights";
 import { collectTocChapterEntries } from "@/features/reader/toc";
 import { useHighlightsContext } from "./highlights-context";
 

@@ -25,7 +25,7 @@ import {
   toHighlightRecord,
   type HighlightColor,
   type HighlightRecord,
-} from "@/features/reader/highlights";
+} from "@/features/highlights";
 import { emitReaderToast } from "../reader-toast";
 
 type UseHighlightsResult = {
