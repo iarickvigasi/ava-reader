@@ -1,8 +1,8 @@
-import type { ReaderLocator } from "./api-types";
+import type { ReaderLocator } from "@/lib/api-types";
 import {
   findFirstVisibleBlockIndex,
   resolveTextOffsetTarget,
-} from "./reader-locator-dom";
+} from "./locator-dom";
 
 const FIRST_VISIBLE_CHARACTER_PADDING = 12;
 

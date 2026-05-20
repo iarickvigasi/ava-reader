@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { ReaderLocator } from "@/lib/api-types";
-import type { ReaderMeasurementEntry } from "@/lib/reader-measurement";
+import type { ReaderMeasurementEntry } from "@/features/reader/measurement";
 import type { ReaderRestorePhase } from "../use-reader-pagination.helpers";
 import { resolveVisibleLocatorPublishDecision } from "../use-reader-pagination.helpers";
 

@@ -1,4 +1,4 @@
-import type { ReaderStatusPayload } from "./api-types";
+import type { ReaderStatusPayload } from "@/lib/api-types";
 
 export type ReaderNavigationTarget =
   | {

@@ -1,4 +1,4 @@
-import type { ReaderLocator, ReaderProgressPayload } from "./api-types";
+import type { ReaderLocator, ReaderProgressPayload } from "@/lib/api-types";
 
 const READER_RESUME_SNAPSHOT_VERSION = 2;
 

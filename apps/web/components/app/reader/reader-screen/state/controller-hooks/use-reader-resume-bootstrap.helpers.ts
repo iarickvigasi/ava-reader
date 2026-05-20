@@ -1,8 +1,8 @@
 import {
   resolveInitialNavigationTarget,
   type ReaderNavigationTarget,
-} from "@/lib/reader-navigation";
-import type { ReaderResumeSnapshot } from "@/lib/reader-resume";
+} from "@/features/reader/navigation";
+import type { ReaderResumeSnapshot } from "@/features/reader/resume";
 import type { ReadyReaderPayload } from "../../shared/types";
 
 export function resolveInitialResumeDestination(input: {

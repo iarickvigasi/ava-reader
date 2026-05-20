@@ -1,4 +1,4 @@
-import type { ReaderNavigationTarget } from "@/lib/reader-navigation";
+import type { ReaderNavigationTarget } from "@/features/reader/navigation";
 import { READER_NAVIGATION_EDGE_START } from "../../shared/constants";
 
 const RESTORE_INTENT_KEY_SEPARATOR = ":";

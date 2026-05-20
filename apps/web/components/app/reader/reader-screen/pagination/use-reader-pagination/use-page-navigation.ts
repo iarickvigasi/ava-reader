@@ -5,7 +5,7 @@ import {
 } from "react";
 import type { TouchEvent as ReactTouchEvent } from "react";
 import type { ReaderChapterPayload } from "@/lib/api-types";
-import type { ReaderNavigationTarget } from "@/lib/reader-navigation";
+import type { ReaderNavigationTarget } from "@/features/reader/navigation";
 import {
   READER_NAVIGATION_EDGE_END,
   READER_NAVIGATION_EDGE_START,

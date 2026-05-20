@@ -1,5 +1,5 @@
-import type { ReaderTocNode } from "./api-types";
-import type { ReaderNavigationTarget } from "./reader-navigation";
+import type { ReaderTocNode } from "@/lib/api-types";
+import type { ReaderNavigationTarget } from "./navigation";
 
 export type TocChapterEntry = {
   label: string;

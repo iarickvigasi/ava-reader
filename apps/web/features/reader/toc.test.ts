@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import type { ReaderTocNode } from "./api-types";
+import type { ReaderTocNode } from "@/lib/api-types";
 import {
   countUniqueTocChapters,
   findActiveTocPathIds,
   resolveTocNavigationTarget,
-} from "./reader-toc";
+} from "./toc";
 
 describe("reader toc helpers", () => {
   it("counts unique chapters across nested toc nodes", () => {

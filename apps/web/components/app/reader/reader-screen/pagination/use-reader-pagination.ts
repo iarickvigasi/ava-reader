@@ -12,11 +12,11 @@ import type {
 import type {
   ReaderNavigationTarget,
   RestoreIntent,
-} from "@/lib/reader-navigation";
-import { createPaginationLayoutKey } from "@/lib/reader-pagination";
+} from "@/features/reader/navigation";
+import { createPaginationLayoutKey } from "@/features/reader/pagination";
 import type {
   ReaderMeasurementEntry,
-} from "@/lib/reader-measurement";
+} from "@/features/reader/measurement";
 import type { PageBoxSize } from "../shared/types";
 import { resolveReaderColumnCount } from "../shared/utils";
 import { useViewportSize } from "./use-reader-pagination/use-viewport-size";

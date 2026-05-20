@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import type { ReaderMeasurementEntry } from "@/lib/reader-measurement";
+import type { ReaderMeasurementEntry } from "@/features/reader/measurement";
 import {
   PAGE_DIRECTION_BACKWARD,
   PAGE_DIRECTION_FORWARD,

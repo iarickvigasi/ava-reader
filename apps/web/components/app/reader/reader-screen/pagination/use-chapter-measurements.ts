@@ -5,8 +5,8 @@ import {
   createPendingReaderMeasurementEntry,
   createReadyReaderMeasurementEntry,
   type ReaderMeasurementEntry,
-} from "@/lib/reader-measurement";
-import { createPaginationLayoutKey } from "@/lib/reader-pagination";
+} from "@/features/reader/measurement";
+import { createPaginationLayoutKey } from "@/features/reader/pagination";
 import { PAGE_GAP } from "../shared/constants";
 import { resolveReaderColumnCount } from "../shared/utils";
 

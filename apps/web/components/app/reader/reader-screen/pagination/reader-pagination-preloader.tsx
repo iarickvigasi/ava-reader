@@ -1,7 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import { useCallback, useMemo, useRef } from "react";
 import type { ReaderChapterPayload } from "@/lib/api-types";
-import type { ReaderMeasurementEntry } from "@/lib/reader-measurement";
+import type { ReaderMeasurementEntry } from "@/features/reader/measurement";
 import { READER_VISIBILITY_HIDDEN } from "../shared/constants";
 import { createReaderColumnLayoutStyle } from "../shared/utils";
 import { ReaderArticle } from "../content/reader-article";

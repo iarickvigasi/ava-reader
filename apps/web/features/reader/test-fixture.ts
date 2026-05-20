@@ -2,7 +2,7 @@ import type {
   ReaderBlock,
   ReaderChapterPayload,
   ReaderStatusPayload,
-} from "./api-types";
+} from "@/lib/api-types";
 
 export function createReaderResumeFixturePayload(): ReaderStatusPayload {
   const chapterIds = ["chapter-1", "chapter-2", "chapter-3"];

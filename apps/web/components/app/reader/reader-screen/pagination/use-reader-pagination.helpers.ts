@@ -2,7 +2,7 @@ import type { ReaderLocator } from "@/lib/api-types";
 import type {
   ReaderMeasurementEntry,
   ReaderMeasurementPageResolution,
-} from "@/lib/reader-measurement";
+} from "@/features/reader/measurement";
 
 export const READER_MEASUREMENT_STATUS_PENDING = "pending";
 export const READER_MEASUREMENT_STATUS_READY = "ready";

@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import type { ReaderStatusPayload } from "./api-types";
+import type { ReaderStatusPayload } from "@/lib/api-types";
 import {
   createInitialTraversalState,
   readerTraversalReducer,
   resolveRequestedChapterId,
   resolveVisibleChapterId,
-} from "./reader-navigation";
+} from "./navigation";
 
 describe("reader navigation", () => {
   it("keeps the committed next chapter visible after a fetched window arrives", () => {

@@ -14,7 +14,7 @@ import type {
 import type {
   ReaderNavigationTarget,
   ReaderTraversalAction,
-} from "@/lib/reader-navigation";
+} from "@/features/reader/navigation";
 import { fetchReaderPayload } from "../../data/reader-client";
 import { READER_STATUS_READY } from "../../shared/constants";
 import type { ReaderControllerAuth, ReadyReaderPayload } from "../../shared/types";
