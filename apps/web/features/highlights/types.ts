@@ -3,7 +3,7 @@
 // and makes it obvious which shapes are part of the public surface vs.
 // internal plumbing.
 
-import type { ReaderRangeLocator } from "../api-types";
+import type { ReaderRangeLocator } from "@/lib/api-types";
 
 export type HighlightColor =
   | "apricot"

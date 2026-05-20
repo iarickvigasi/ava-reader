@@ -84,7 +84,7 @@ export function ReadyReaderProgress({
 }) {
   const t = useTranslations("reader.progress");
   return (
-    <div className="flex flex-wrap items-center justify-end gap-3 pt-4 pb-4">
+    <div className="flex flex-wrap items-center justify-end gap-3 pt-1 pb-1 sm:pt-4 sm:pb-4">
       <div className="flex flex-wrap items-center gap-3 font-(--font-ui) text-[0.7rem] uppercase tracking-[0.16em] text-ink/45">
         <span>{t("percentComplete", { percent: completionPercent })}</span>
         <span>

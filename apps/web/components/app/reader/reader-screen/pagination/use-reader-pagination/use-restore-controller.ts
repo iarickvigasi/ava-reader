@@ -5,11 +5,11 @@ import {
   useState,
 } from "react";
 import type { ReaderChapterPayload, ReaderLocator } from "@/lib/api-types";
-import type { RestoreIntent } from "@/lib/reader-navigation";
-import { isStickyRestoreIntent } from "@/lib/reader-navigation";
-import { resolvePaginationDecision } from "@/lib/reader-pagination";
-import type { ReaderMeasurementEntry } from "@/lib/reader-measurement";
-import type { ReaderMeasurementPageResolution } from "@/lib/reader-measurement";
+import type { RestoreIntent } from "@/features/reader/navigation";
+import { isStickyRestoreIntent } from "@/features/reader/navigation";
+import { resolvePaginationDecision } from "@/features/reader/pagination";
+import type { ReaderMeasurementEntry } from "@/features/reader/measurement";
+import type { ReaderMeasurementPageResolution } from "@/features/reader/measurement";
 import { createLocatorFromRestoreIntent } from "../../shared/utils";
 import {
   READER_MEASUREMENT_STATUS_PENDING,

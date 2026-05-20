@@ -4,7 +4,7 @@ import type {
   ReaderLocator,
   ReaderStatusPayload,
 } from "@/lib/api-types";
-import type { RestoreIntent } from "@/lib/reader-navigation";
+import type { RestoreIntent } from "@/features/reader/navigation";
 import {
   PAGE_GAP,
   READER_STATUS_FAILED,

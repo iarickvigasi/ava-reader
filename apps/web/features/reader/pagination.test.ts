@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import type { PaginationDecisionInput } from "./reader-pagination";
+import type { PaginationDecisionInput } from "./pagination";
 import {
   createPaginationLayoutKey,
   resolvePaginationDecision,
-} from "./reader-pagination";
-import { createRestoreIntent } from "./reader-navigation";
+} from "./pagination";
+import { createRestoreIntent } from "./navigation";
 
 describe("reader pagination", () => {
   it("resolves pending edge-start restores to the first page", () => {

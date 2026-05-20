@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from "react";
-import type { ReaderMeasurementEntry } from "@/lib/reader-measurement";
+import type { ReaderMeasurementEntry } from "@/features/reader/measurement";
 import {
   resolveMeasurementStatus,
   resolveReadyMeasurementEntry,

@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import { ReaderUiProvider } from "@/components/app/core/reader-ui-context";
 import type { ReaderStatusPayload } from "@/lib/api-types";
-import { createReaderResumeFixturePayload } from "@/lib/reader-test-fixture";
+import { createReaderResumeFixturePayload } from "@/features/reader/test-fixture";
 import {
   READER_PERSISTENCE_MODE_LOCAL_ONLY,
   READER_STATUS_PROCESSING,

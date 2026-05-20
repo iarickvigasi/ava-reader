@@ -2,11 +2,11 @@ import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import type { ReaderLocator } from "@/lib/api-types";
 import { formatAuthors } from "@/lib/format-authors";
-import type { ReaderNavigationTarget } from "@/lib/reader-navigation";
+import type { ReaderNavigationTarget } from "@/features/reader/navigation";
 import {
   countUniqueTocChapters,
   findActiveTocPathIds,
-} from "@/lib/reader-toc";
+} from "@/features/reader/toc";
 import type { ReadyReaderPayload, ReadyReaderTocEntry } from "../../shared/types";
 import { clamp } from "../../shared/utils";
 import { MobileCloseButton } from "../mobile-close-button";

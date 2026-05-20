@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { ReaderProgressPayload } from "./api-types";
+import type { ReaderProgressPayload } from "@/lib/api-types";
 import {
   createReaderResumeStorageKey,
   createServerResumeSnapshot,
   parseReaderResumeSnapshot,
   readLocalReaderResumeSnapshot,
   selectPreferredReaderResumeSnapshot,
-} from "./reader-resume";
+} from "./resume";
 
 describe("reader resume", () => {
   it("creates a storage key scoped to the library item", () => {

@@ -4,7 +4,7 @@ import {
   createInitialTraversalState,
   readerTraversalReducer,
   resolveVisibleChapterId,
-} from "@/lib/reader-navigation";
+} from "@/features/reader/navigation";
 import { createRestoreIntentKey } from "./use-reader-chapter-navigation.helpers";
 
 describe("useReaderScreenController smoke", () => {

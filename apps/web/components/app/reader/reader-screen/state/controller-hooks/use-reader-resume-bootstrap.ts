@@ -4,12 +4,12 @@ import type {
   ReaderLocator,
   ReaderStatusPayload,
 } from "@/lib/api-types";
-import type { ReaderNavigationTarget } from "@/lib/reader-navigation";
+import type { ReaderNavigationTarget } from "@/features/reader/navigation";
 import {
   createServerResumeSnapshot,
   readLocalReaderResumeSnapshot,
   selectPreferredReaderResumeSnapshot,
-} from "@/lib/reader-resume";
+} from "@/features/reader/resume";
 import {
   READER_RESUME_PHASE_APPLIED,
   READER_RESUME_PHASE_APPLYING,

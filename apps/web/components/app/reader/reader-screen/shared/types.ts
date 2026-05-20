@@ -6,8 +6,8 @@ import type {
 import type {
   ReaderNavigationTarget,
   RestoreIntent,
-} from "@/lib/reader-navigation";
-import type { ReaderResumeSnapshot } from "@/lib/reader-resume";
+} from "@/features/reader/navigation";
+import type { ReaderResumeSnapshot } from "@/features/reader/resume";
 import {
   READER_STATUS_READY,
   type ReaderPersistenceMode,

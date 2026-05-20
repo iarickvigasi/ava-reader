@@ -1,5 +1,5 @@
 import { ReaderScreen } from "@/components/app/reader/reader-screen";
-import { createReaderResumeFixturePayload } from "@/lib/reader-test-fixture";
+import { createReaderResumeFixturePayload } from "@/features/reader/test-fixture";
 
 export default function ReaderResumeFixturePage() {
   return (

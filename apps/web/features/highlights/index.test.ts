@@ -36,7 +36,7 @@ import {
   selectStableHighlights,
   setBucketAuth,
   type HighlightRecord,
-} from "./highlights-store";
+} from ".";
 
 const LIBRARY_ID = "lib-1";
 const API = "http://localhost:4000";

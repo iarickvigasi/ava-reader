@@ -19,7 +19,7 @@ import { createLocatorKey } from "../../shared/utils";
 import {
   writeLocalReaderResumeSnapshot,
   type ReaderResumeSnapshot,
-} from "@/lib/reader-resume";
+} from "@/features/reader/resume";
 import { emitReaderToast } from "../../overlays/reader-toast";
 import {
   evaluatePersistEligibility,

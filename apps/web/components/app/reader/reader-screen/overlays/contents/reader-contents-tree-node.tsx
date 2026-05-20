@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/cn";
-import type { ReaderNavigationTarget } from "@/lib/reader-navigation";
-import { resolveTocNavigationTarget } from "@/lib/reader-toc";
+import type { ReaderNavigationTarget } from "@/features/reader/navigation";
+import { resolveTocNavigationTarget } from "@/features/reader/toc";
 import type { ReadyReaderTocEntry } from "../../shared/types";
 
 type ReaderContentsTreeNodeProps = {

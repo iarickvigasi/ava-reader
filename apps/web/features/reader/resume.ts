@@ -1,4 +1,4 @@
-import type { ReaderLocator, ReaderProgressPayload } from "./api-types";
+import type { ReaderLocator, ReaderProgressPayload } from "@/lib/api-types";
 
 const READER_RESUME_SNAPSHOT_VERSION = 2;
 
@@ -66,72 +66,33 @@ export function parseReaderResumeSnapshot(value: string | null) {
   }
 }
 
+// Whichever snapshot is "newer" wins.
+// Local wins ties (both snapshots have the same timestamp score).
+// A missing snapshot is "older than anything."
+// A snapshot with an unparseable savedAt is treated as older than any dated snapshot,
+// but newer than a missing one.
 export function selectPreferredReaderResumeSnapshot(input: {
   localSnapshot: ReaderResumeSnapshot | null;
   serverSnapshot: ReaderResumeSnapshot | null;
 }): ReaderResumeSelection {
   const { localSnapshot, serverSnapshot } = input;
 
-  if (localSnapshot && serverSnapshot) {
-    const localTimestamp = parseSnapshotTimestamp(localSnapshot);
-    const serverTimestamp = parseSnapshotTimestamp(serverSnapshot);
-
-    if (
-      localTimestamp !== null &&
-      serverTimestamp !== null &&
-      localTimestamp >= serverTimestamp
-    ) {
-      return {
-        snapshot: localSnapshot,
-        source: "local",
-      };
-    }
-
-    if (localTimestamp !== null && serverTimestamp === null) {
-      return {
-        snapshot: localSnapshot,
-        source: "local",
-      };
-    }
-
-    if (serverTimestamp !== null && localTimestamp === null) {
-      return {
-        snapshot: serverSnapshot,
-        source: "server",
-      };
-    }
-
-    if (serverTimestamp !== null && localTimestamp !== null) {
-      return {
-        snapshot: serverSnapshot,
-        source: "server",
-      };
-    }
-
-    return {
-      snapshot: localSnapshot,
-      source: "local",
-    };
+  if (!localSnapshot && !serverSnapshot) {
+    return { snapshot: null, source: "none" };
   }
 
-  if (localSnapshot) {
-    return {
-      snapshot: localSnapshot,
-      source: "local",
-    };
-  }
+  // Local wins when server is absent, or when local's timestamp is at least
+  // as recent as server's. Snapshots with an unparseable savedAt score as
+  // -Infinity, so any dated snapshot beats an undated one, and local wins
+  // every tie (including both-undated).
+  const localWins =
+    !!localSnapshot &&
+    (!serverSnapshot ||
+      scoreSnapshot(localSnapshot) >= scoreSnapshot(serverSnapshot));
 
-  if (serverSnapshot) {
-    return {
-      snapshot: serverSnapshot,
-      source: "server",
-    };
-  }
-
-  return {
-    snapshot: null,
-    source: "none",
-  };
+  return localWins
+    ? { snapshot: localSnapshot, source: "local" }
+    : { snapshot: serverSnapshot!, source: "server" };
 }
 
 export function readLocalReaderResumeSnapshot(libraryItemId: string) {
@@ -191,7 +152,7 @@ function isReaderLocator(value: unknown): value is ReaderLocator {
   );
 }
 
-function parseSnapshotTimestamp(snapshot: ReaderResumeSnapshot) {
+function scoreSnapshot(snapshot: ReaderResumeSnapshot): number {
   const parsed = Date.parse(snapshot.savedAt);
-  return Number.isFinite(parsed) ? parsed : null;
+  return Number.isFinite(parsed) ? parsed : Number.NEGATIVE_INFINITY;
 }

@@ -1,9 +1,9 @@
 import {
   hasPendingRestoreIntent,
   isStickyRestoreIntent,
-} from "./reader-navigation";
-import type { RestoreIntent } from "./reader-navigation";
-import type { ReaderMeasurementPageResolution } from "./reader-measurement";
+} from "./navigation";
+import type { RestoreIntent } from "./navigation";
+import type { ReaderMeasurementPageResolution } from "./measurement";
 
 const RESTORE_INTENT_KIND_BLOCK = "block";
 const RESTORE_INTENT_KIND_EDGE_END = "edge-end";

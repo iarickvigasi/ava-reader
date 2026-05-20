@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { ReaderStatusPayload } from "@/lib/api-types";
-import { createReaderResumeFixturePayload } from "@/lib/reader-test-fixture";
+import { createReaderResumeFixturePayload } from "@/features/reader/test-fixture";
 import {
   READER_STATUS_FAILED,
   READER_STATUS_READY,

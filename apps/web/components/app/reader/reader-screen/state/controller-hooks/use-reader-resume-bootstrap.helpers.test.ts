@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { READER_STATUS_READY } from "../../shared/constants";
-import { createReaderResumeFixturePayload } from "@/lib/reader-test-fixture";
+import { createReaderResumeFixturePayload } from "@/features/reader/test-fixture";
 import { resolveInitialResumeDestination } from "./use-reader-resume-bootstrap.helpers";
 
 describe("reader resume bootstrap helpers", () => {

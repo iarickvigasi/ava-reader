@@ -6,7 +6,7 @@ import {
   readerTraversalReducer,
   resolveRequestedChapterId,
   resolveVisibleChapterId,
-} from "@/lib/reader-navigation";
+} from "@/features/reader/navigation";
 import type {
   InitialResumeBootstrapState,
   ReaderScreenControllerInput,
