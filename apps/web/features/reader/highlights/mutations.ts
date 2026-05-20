@@ -1,7 +1,7 @@
 // Write paths into the bucket. These are the only functions that should
 // append to the pending queue, and the only ones that kick a flush.
 
-import type { ReaderRangeLocator } from "../api-types";
+import type { ReaderRangeLocator } from "@/lib/api-types";
 import { getOrCreateBucket, persist } from "./bucket";
 import { flushBucket } from "./sync";
 import type { HighlightColor } from "./types";
