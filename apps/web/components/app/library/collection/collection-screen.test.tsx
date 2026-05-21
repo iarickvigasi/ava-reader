@@ -67,7 +67,7 @@ function createCollection(): LibraryCollection {
       {
         authors: ["Marcus Aurelius"],
         completionPercent: 42,
-        coverImageDataUrl: null,
+        coverImageUrl: null,
         lastReadAt: "2026-04-08T10:00:00.000Z",
         libraryItemId: "library-1",
         primaryFormat: "EPUB",
@@ -77,7 +77,7 @@ function createCollection(): LibraryCollection {
       {
         authors: ["Plato"],
         completionPercent: 100,
-        coverImageDataUrl: null,
+        coverImageUrl: null,
         lastReadAt: "2026-04-06T10:00:00.000Z",
         libraryItemId: "library-2",
         primaryFormat: "EPUB",
@@ -87,7 +87,7 @@ function createCollection(): LibraryCollection {
       {
         authors: ["Epictetus"],
         completionPercent: 12,
-        coverImageDataUrl: null,
+        coverImageUrl: null,
         lastReadAt: "2026-04-05T10:00:00.000Z",
         libraryItemId: "library-3",
         primaryFormat: "EPUB",

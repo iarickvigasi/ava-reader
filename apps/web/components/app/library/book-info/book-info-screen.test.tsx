@@ -146,7 +146,7 @@ function createBookInfo(
       },
     ],
     completionPercent: 44,
-    coverImageDataUrl: null,
+    coverImageUrl: null,
     description: "A gothic classic.",
     genres: ["Gothic", "Classic"],
     language: "English",

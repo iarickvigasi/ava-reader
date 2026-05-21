@@ -25,7 +25,7 @@ export function LibraryBookInfoScreen({
 
           <div className="grid gap-8 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:gap-12">
             <BookCoverPanel
-              coverImageDataUrl={book.coverImageDataUrl}
+              coverImageUrl={book.coverImageUrl}
               title={book.title}
             />
 

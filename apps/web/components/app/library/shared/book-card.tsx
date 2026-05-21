@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { LibraryPayload } from "@/lib/api-types";
+import { resolveApiAssetUrl } from "@/lib/api";
 import { cn } from "@/lib/cn";
 import { formatAuthors } from "@/lib/format-authors";
 import { BookCover } from "@/components/app/shared/book-cover";
@@ -31,10 +32,10 @@ export function LibraryBookCard({
           alt={`${book.title} cover`}
           className={cn(
             "aspect-[0.666] w-full rounded-[3px] border-0 bg-paper-strong",
-            book.coverImageDataUrl ? "shadow-(--shadow-card)" : "",
+            book.coverImageUrl ? "shadow-(--shadow-card)" : "",
             mobile ? "max-w-43.5" : "max-w-61.5",
           )}
-          src={book.coverImageDataUrl}
+          src={resolveApiAssetUrl(book.coverImageUrl)}
           title={book.title}
         />
         <div className="space-y-1">

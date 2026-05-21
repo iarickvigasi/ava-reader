@@ -3,7 +3,7 @@ import type { BookFileFormat } from "./shared";
 export type LibraryCollectionBook = {
   authors: string[];
   completionPercent: number;
-  coverImageDataUrl: string | null;
+  coverImageUrl: string | null;
   lastReadAt: string;
   libraryItemId: string;
   primaryFormat: BookFileFormat;
@@ -47,7 +47,7 @@ export type LibraryBookInfo = {
     smartKey: string | null;
   }>;
   completionPercent: number;
-  coverImageDataUrl: string | null;
+  coverImageUrl: string | null;
   description: string | null;
   genres: string[];
   language: string | null;

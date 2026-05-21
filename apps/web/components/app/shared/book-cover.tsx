@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { cn } from "@/lib/cn";
 
 export function BookCover({
@@ -11,20 +14,44 @@ export function BookCover({
   src: string | null;
   title: string;
 }) {
-  if (src) {
-    return (
-      <div
-        className={cn(
-          "overflow-hidden rounded-md border border-line/40 bg-white/60",
-          className,
-        )}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img alt={alt} className="size-full object-cover" src={src} />
-      </div>
-    );
+  const [loaded, setLoaded] = useState(false);
+
+  if (!src) {
+    return <BookCoverFallback className={className} title={title} />;
   }
 
+  return (
+    <div
+      className={cn(
+        "relative overflow-hidden rounded-md border border-line/40 bg-white/60",
+        className,
+      )}
+    >
+      <BookCoverFallback
+        className="absolute inset-0 size-full rounded-none border-0"
+        title={title}
+      />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        alt={alt}
+        className={cn(
+          "relative size-full object-cover transition-opacity duration-200",
+          loaded ? "opacity-100" : "opacity-0",
+        )}
+        onLoad={() => setLoaded(true)}
+        src={src}
+      />
+    </div>
+  );
+}
+
+function BookCoverFallback({
+  className,
+  title,
+}: {
+  className?: string;
+  title: string;
+}) {
   return (
     <div
       className={cn(

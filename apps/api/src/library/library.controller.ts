@@ -3,15 +3,18 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   Patch,
   Post,
   Req,
+  Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import type { Response } from 'express';
 import type { AuthenticatedRequest } from '../auth/authenticated-request';
 import { ClerkAuthGuard } from '../auth/clerk-auth.guard';
 import { LibraryService } from './library.service';
@@ -36,6 +39,24 @@ export class LibraryController {
       request.auth.clerkUserId,
       collectionId,
     );
+  }
+
+  // Public read endpoint. Covers are not sensitive (often marketing artwork),
+  // bookIds are unpredictable CUIDs, and skipping auth lets `<img>` tags load
+  // without juggling Clerk tokens. The long-lived Cache-Control header lets
+  // the browser skip repeat downloads as the user scrolls a collection.
+  @Get('covers/:bookId')
+  async getBookCover(
+    @Param('bookId') bookId: string,
+    @Res() response: Response,
+  ) {
+    const cover = await this.libraryService.getBookCover(bookId);
+    if (!cover) {
+      throw new NotFoundException('Cover not found.');
+    }
+    response.setHeader('Content-Type', cover.mimeType);
+    response.setHeader('Cache-Control', 'public, max-age=86400');
+    response.send(Buffer.from(cover.bytes));
   }
 
   @Get(':libraryItemId')

@@ -13,11 +13,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import {
-  bufferToDataUrl,
-  checksumBuffer,
-  toPrismaBytes,
-} from '../shared/blob-utils';
+import { checksumBuffer, toPrismaBytes } from '../shared/blob-utils';
 import { UsersService } from '../users/users.service';
 import {
   DEFAULT_SMART_COLLECTIONS,
@@ -58,7 +54,7 @@ type LibraryCollectionRecord = Prisma.CollectionGetPayload<{
           include: {
             book: {
               include: {
-                coverBlob: true;
+                coverBlob: { select: { mimeType: true } };
                 files: true;
               };
             };
@@ -66,6 +62,18 @@ type LibraryCollectionRecord = Prisma.CollectionGetPayload<{
           };
         };
       };
+    };
+  };
+}>;
+
+type LibraryItemLite = Prisma.LibraryItemGetPayload<{
+  select: {
+    id: true;
+    isArchived: true;
+    addedAt: true;
+    lastOpenedAt: true;
+    progress: {
+      select: { completionPercent: true; lastReadAt: true };
     };
   };
 }>;
@@ -206,22 +214,31 @@ export class LibraryService {
   async getLibrary(clerkUserId: string) {
     const user = await this.usersService.getCurrentUserRecord(clerkUserId);
 
+    // Phase 1: pull collections and a lightweight view of every item — enough
+    // to compute counts and the engagement sort, but without any book metadata
+    // or cover bytes. Touching cover bytes here is the historical hot path
+    // that made library loads slow.
     const collections = await this.prisma.collection.findMany({
-      where: {
-        userId: user.id,
-      },
-      include: {
+      where: { userId: user.id },
+      select: {
+        description: true,
+        id: true,
+        kind: true,
+        name: true,
+        slug: true,
+        smartKey: true,
+        sortOrder: true,
         items: {
-          include: {
+          select: {
             libraryItem: {
-              include: {
-                book: {
-                  include: {
-                    coverBlob: true,
-                    files: true,
-                  },
+              select: {
+                addedAt: true,
+                id: true,
+                isArchived: true,
+                lastOpenedAt: true,
+                progress: {
+                  select: { completionPercent: true, lastReadAt: true },
                 },
-                progress: true,
               },
             },
           },
@@ -230,23 +247,90 @@ export class LibraryService {
       orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
     });
 
+    const perCollection = collections.map((collection) => {
+      const activeItems = collection.items
+        .map((item) => item.libraryItem)
+        .filter((item) => !item.isArchived)
+        .sort(compareLightweightItemsByEngagement);
+      const previewIds = activeItems
+        .slice(0, LIBRARY_COLLECTION_PREVIEW_LIMIT)
+        .map((item) => item.id);
+      return { activeItems, collection, previewIds };
+    });
+
+    // Phase 2: fetch full book detail for only the preview library items we
+    // actually need to render. Cover blob is selected without `bytes` so the
+    // response shape stays small — the browser fetches cover images by URL.
+    const previewIds = Array.from(
+      new Set(perCollection.flatMap(({ previewIds }) => previewIds)),
+    );
+    const previewItems = previewIds.length
+      ? await this.prisma.libraryItem.findMany({
+          where: { id: { in: previewIds } },
+          select: {
+            id: true,
+            slug: true,
+            book: {
+              select: {
+                authors: true,
+                coverBlob: { select: { mimeType: true } },
+                files: {
+                  select: { format: true, isPrimary: true, kind: true },
+                },
+                id: true,
+                title: true,
+              },
+            },
+          },
+        })
+      : [];
+    const previewById = new Map(previewItems.map((item) => [item.id, item]));
+
     return {
-      collections: collections.map((collection) =>
-        serializeCollection(collection, {
-          previewBooksLimit: LIBRARY_COLLECTION_PREVIEW_LIMIT,
-        }),
+      collections: perCollection.map(
+        ({ activeItems, collection, previewIds }) => {
+          const books = previewIds
+            .map((id) => {
+              const item = previewById.get(id);
+              const lite = activeItems.find((candidate) => candidate.id === id);
+              if (!item || !lite) {
+                return null;
+              }
+              return serializePreviewBook(item, lite);
+            })
+            .filter((book): book is NonNullable<typeof book> => book !== null);
+
+          return {
+            books,
+            description: collection.description,
+            id: collection.id,
+            itemCount: activeItems.length,
+            kind: collection.kind,
+            name: collection.name,
+            slug: collection.slug,
+            smartKey: collection.smartKey,
+            unreadCount: activeItems.filter(
+              (item) => (item.progress?.completionPercent ?? 0) < 100,
+            ).length,
+          };
+        },
       ),
       summary: {
-        booksCount: collections.reduce(
-          (sum, collection) =>
-            sum +
-            collection.items.filter((item) => !item.libraryItem.isArchived)
-              .length,
+        booksCount: perCollection.reduce(
+          (sum, { activeItems }) => sum + activeItems.length,
           0,
         ),
         collectionsCount: collections.length,
       },
     };
+  }
+
+  async getBookCover(bookId: string) {
+    const book = await this.prisma.book.findUnique({
+      where: { id: bookId },
+      select: { coverBlob: { select: { bytes: true, mimeType: true } } },
+    });
+    return book?.coverBlob ?? null;
   }
 
   async getCollection(clerkUserId: string, collectionId: string) {
@@ -264,7 +348,7 @@ export class LibraryService {
               include: {
                 book: {
                   include: {
-                    coverBlob: true,
+                    coverBlob: { select: { mimeType: true } },
                     files: true,
                   },
                 },
@@ -297,7 +381,7 @@ export class LibraryService {
       include: {
         book: {
           include: {
-            coverBlob: true,
+            coverBlob: { select: { mimeType: true } },
             files: true,
           },
         },
@@ -353,11 +437,8 @@ export class LibraryService {
         chapterLabel: item.progress?.chapterLabel ?? null,
         collections,
         completionPercent: item.progress?.completionPercent ?? 0,
-        coverImageDataUrl: item.book.coverBlob
-          ? bufferToDataUrl(
-              item.book.coverBlob.bytes,
-              item.book.coverBlob.mimeType,
-            )
+        coverImageUrl: item.book.coverBlob
+          ? buildCoverImageUrl(item.book.id)
           : null,
         description: item.book.description,
         genres: item.book.genres,
@@ -662,17 +743,12 @@ export class LibraryService {
   }
 }
 
-function serializeCollection(
-  collection: LibraryCollectionRecord,
-  input?: {
-    previewBooksLimit?: number;
-  },
-) {
+function serializeCollection(collection: LibraryCollectionRecord) {
   const activeItems = collection.items
     .map((item) => item.libraryItem)
     .filter((item) => !item.isArchived)
     .sort(compareLibraryItemsByEngagement);
-  const serializedBooks = activeItems.map((item) => {
+  const books = activeItems.map((item) => {
     const primarySource =
       item.book.files.find(
         (file) => file.kind === BookFileKind.SOURCE && file.isPrimary,
@@ -683,11 +759,8 @@ function serializeCollection(
     return {
       authors: item.book.authors,
       completionPercent: item.progress?.completionPercent ?? 0,
-      coverImageDataUrl: item.book.coverBlob
-        ? bufferToDataUrl(
-            item.book.coverBlob.bytes,
-            item.book.coverBlob.mimeType,
-          )
+      coverImageUrl: item.book.coverBlob
+        ? buildCoverImageUrl(item.book.id)
         : null,
       lastReadAt: getMostRecentLibraryItemEngagementDate(item).toISOString(),
       libraryItemId: item.id,
@@ -696,11 +769,6 @@ function serializeCollection(
       title: item.book.title,
     };
   });
-
-  const books =
-    typeof input?.previewBooksLimit === 'number'
-      ? serializedBooks.slice(0, input.previewBooksLimit)
-      : serializedBooks;
 
   return {
     books,
@@ -715,6 +783,70 @@ function serializeCollection(
       (item) => (item.progress?.completionPercent ?? 0) < 100,
     ).length,
   };
+}
+
+type LibraryPreviewBookRecord = Prisma.LibraryItemGetPayload<{
+  select: {
+    id: true;
+    slug: true;
+    book: {
+      select: {
+        authors: true;
+        coverBlob: { select: { mimeType: true } };
+        files: { select: { format: true; isPrimary: true; kind: true } };
+        id: true;
+        title: true;
+      };
+    };
+  };
+}>;
+
+function serializePreviewBook(
+  item: LibraryPreviewBookRecord,
+  lite: LibraryItemLite,
+) {
+  const primarySource =
+    item.book.files.find(
+      (file) => file.kind === BookFileKind.SOURCE && file.isPrimary,
+    ) ??
+    item.book.files.find((file) => file.isPrimary) ??
+    null;
+
+  return {
+    authors: item.book.authors,
+    completionPercent: lite.progress?.completionPercent ?? 0,
+    coverImageUrl: item.book.coverBlob
+      ? buildCoverImageUrl(item.book.id)
+      : null,
+    lastReadAt: getEngagementDateFromLite(lite).toISOString(),
+    libraryItemId: item.id,
+    primaryFormat: primarySource?.format ?? BookFileFormat.UNKNOWN,
+    slug: item.slug,
+    title: item.book.title,
+  };
+}
+
+function buildCoverImageUrl(bookId: string) {
+  // The Nest app mounts under a global `/api` prefix (see app.config.ts), so
+  // the public-facing URL must include it.
+  return `/api/library/covers/${bookId}`;
+}
+
+function compareLightweightItemsByEngagement(
+  left: LibraryItemLite,
+  right: LibraryItemLite,
+) {
+  return (
+    getEngagementDateFromLite(right).getTime() -
+    getEngagementDateFromLite(left).getTime()
+  );
+}
+
+function getEngagementDateFromLite(item: LibraryItemLite) {
+  const lastReadAtMs = item.progress?.lastReadAt?.getTime() ?? 0;
+  const lastOpenedAtMs = item.lastOpenedAt?.getTime() ?? 0;
+  const addedAtMs = item.addedAt.getTime();
+  return new Date(Math.max(lastReadAtMs, lastOpenedAtMs, addedAtMs));
 }
 
 function compareLibraryItemsByEngagement(

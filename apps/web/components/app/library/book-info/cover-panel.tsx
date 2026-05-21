@@ -1,12 +1,13 @@
 import { BookCover } from "@/components/app/shared/book-cover";
+import { resolveApiAssetUrl } from "@/lib/api";
 
 type BookCoverPanelProps = {
-  coverImageDataUrl: null | string;
+  coverImageUrl: null | string;
   title: string;
 };
 
 export function BookCoverPanel({
-  coverImageDataUrl,
+  coverImageUrl,
   title,
 }: BookCoverPanelProps) {
   return (
@@ -15,7 +16,7 @@ export function BookCoverPanel({
       <BookCover
         alt={`${title} cover`}
         className="relative aspect-2/3 w-full rounded-sm border-0 bg-paper-strong shadow-(--shadow-card)"
-        src={coverImageDataUrl}
+        src={resolveApiAssetUrl(coverImageUrl)}
         title={title}
       />
     </div>

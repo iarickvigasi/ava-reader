@@ -8,7 +8,8 @@ import { LibraryService } from './library.service';
 
 describe('LibraryService', () => {
   const getCurrentUserRecord = jest.fn();
-  const findMany = jest.fn();
+  const findManyCollections = jest.fn();
+  const findManyLibraryItems = jest.fn();
   const findFirst = jest.fn();
   const findFirstLibraryItem = jest.fn();
   const update = jest.fn();
@@ -17,58 +18,92 @@ describe('LibraryService', () => {
     collection: {
       deleteMany: deleteManyCollections,
       findFirst,
-      findMany,
+      findMany: findManyCollections,
       update,
     },
     libraryItem: {
       findFirst: findFirstLibraryItem,
+      findMany: findManyLibraryItems,
     },
   };
   const usersService = {
     getCurrentUserRecord,
   };
   let libraryService: LibraryService;
+  const previewBooksById: Record<
+    string,
+    ReturnType<typeof createPreviewBook>
+  > = {};
+  function registerPreviewBook(book: ReturnType<typeof createPreviewBook>) {
+    previewBooksById[book.id] = book;
+    return book;
+  }
 
   beforeEach(() => {
     getCurrentUserRecord.mockReset();
     findFirst.mockReset();
     findFirstLibraryItem.mockReset();
-    findMany.mockReset();
+    findManyCollections.mockReset();
+    findManyLibraryItems.mockReset();
     update.mockReset();
     deleteManyCollections.mockReset();
+    for (const key of Object.keys(previewBooksById)) {
+      delete previewBooksById[key];
+    }
     libraryService = new LibraryService(prisma as never, usersService as never);
     getCurrentUserRecord.mockResolvedValue({ id: 'user-1' });
+    findManyLibraryItems.mockImplementation(
+      ({
+        where: {
+          id: { in: ids },
+        },
+      }: {
+        where: { id: { in: string[] } };
+      }) =>
+        Promise.resolve(ids.map((id) => previewBooksById[id]).filter(Boolean)),
+    );
   });
 
   it('returns only active collection books, ordered by engagement', async () => {
-    findMany.mockResolvedValue([
+    registerPreviewBook(
+      createPreviewBook({
+        authors: ['First Author'],
+        bookId: 'book-a',
+        hasCover: true,
+        id: 'library-a',
+        title: 'First Book',
+      }),
+    );
+    registerPreviewBook(
+      createPreviewBook({
+        authors: ['Second Author'],
+        bookId: 'book-b',
+        hasCover: false,
+        id: 'library-b',
+        title: 'Second Book',
+      }),
+    );
+    findManyCollections.mockResolvedValue([
       createCollectionRecord({
         id: 'collection-a',
         items: [
-          createCollectionItem({
+          createLightweightItem({
             addedAt: '2026-04-01T10:00:00.000Z',
-            authors: ['First Author'],
             completionPercent: 25,
-            coverBytes: Buffer.from('cover-a'),
             id: 'library-a',
             lastReadAt: '2026-04-08T10:00:00.000Z',
-            title: 'First Book',
           }),
-          createCollectionItem({
+          createLightweightItem({
             addedAt: '2026-04-03T10:00:00.000Z',
-            authors: ['Archived Author'],
             completionPercent: 10,
             id: 'library-archived',
             isArchived: true,
-            title: 'Archived Book',
           }),
-          createCollectionItem({
+          createLightweightItem({
             addedAt: '2026-04-02T10:00:00.000Z',
-            authors: ['Second Author'],
             completionPercent: 100,
             id: 'library-b',
             lastOpenedAt: '2026-04-06T10:00:00.000Z',
-            title: 'Second Book',
           }),
         ],
         name: 'Imported Books',
@@ -78,28 +113,49 @@ describe('LibraryService', () => {
     const payload = await libraryService.getLibrary('clerk_123');
 
     expect(getCurrentUserRecord).toHaveBeenCalledWith('clerk_123');
-    expect(findMany).toHaveBeenCalledWith({
-      where: {
-        userId: 'user-1',
-      },
-      include: {
+    expect(findManyCollections).toHaveBeenCalledWith({
+      where: { userId: 'user-1' },
+      select: {
+        description: true,
+        id: true,
+        kind: true,
+        name: true,
+        slug: true,
+        smartKey: true,
+        sortOrder: true,
         items: {
-          include: {
+          select: {
             libraryItem: {
-              include: {
-                book: {
-                  include: {
-                    coverBlob: true,
-                    files: true,
-                  },
+              select: {
+                addedAt: true,
+                id: true,
+                isArchived: true,
+                lastOpenedAt: true,
+                progress: {
+                  select: { completionPercent: true, lastReadAt: true },
                 },
-                progress: true,
               },
             },
           },
         },
       },
       orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
+    });
+    expect(findManyLibraryItems).toHaveBeenCalledWith({
+      where: { id: { in: ['library-a', 'library-b'] } },
+      select: {
+        id: true,
+        slug: true,
+        book: {
+          select: {
+            authors: true,
+            coverBlob: { select: { mimeType: true } },
+            files: { select: { format: true, isPrimary: true, kind: true } },
+            id: true,
+            title: true,
+          },
+        },
+      },
     });
 
     expect(payload.collections).toHaveLength(1);
@@ -118,41 +174,46 @@ describe('LibraryService', () => {
       primaryFormat: BookFileFormat.EPUB,
       title: 'First Book',
     });
-    expect(payload.collections[0].books[0].coverImageDataUrl).toBe(
-      'data:image/png;base64,Y292ZXItYQ==',
+    expect(payload.collections[0].books[0].coverImageUrl).toBe(
+      '/api/library/covers/book-a',
     );
-    expect(payload.collections[0].books[1].coverImageDataUrl).toBeNull();
+    expect(payload.collections[0].books[1].coverImageUrl).toBeNull();
   });
 
   it('limits library collection previews to the 4 most recent books', async () => {
-    findMany.mockResolvedValue([
+    for (let i = 1; i <= 5; i++) {
+      registerPreviewBook(
+        createPreviewBook({
+          authors: ['Author'],
+          bookId: `book-${i}`,
+          id: `library-${i}`,
+          title: `Book ${i}`,
+        }),
+      );
+    }
+    findManyCollections.mockResolvedValue([
       createCollectionRecord({
         id: 'collection-preview',
         items: [
-          createCollectionItem({
+          createLightweightItem({
             id: 'library-1',
             lastOpenedAt: '2026-04-10T10:00:00.000Z',
-            title: 'Book 1',
           }),
-          createCollectionItem({
+          createLightweightItem({
             id: 'library-2',
             lastOpenedAt: '2026-04-09T10:00:00.000Z',
-            title: 'Book 2',
           }),
-          createCollectionItem({
+          createLightweightItem({
             id: 'library-3',
             lastOpenedAt: '2026-04-08T10:00:00.000Z',
-            title: 'Book 3',
           }),
-          createCollectionItem({
+          createLightweightItem({
             id: 'library-4',
             lastOpenedAt: '2026-04-07T10:00:00.000Z',
-            title: 'Book 4',
           }),
-          createCollectionItem({
+          createLightweightItem({
             id: 'library-5',
             lastOpenedAt: '2026-04-06T10:00:00.000Z',
-            title: 'Book 5',
           }),
         ],
         name: 'Preview Shelf',
@@ -169,10 +230,26 @@ describe('LibraryService', () => {
     expect(
       payload.collections[0].books.map((book) => book.libraryItemId),
     ).toEqual(['library-1', 'library-2', 'library-3', 'library-4']);
+    // Preview phase should request only the top-N library item ids, not all 5.
+    expect(findManyLibraryItems).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          id: { in: ['library-1', 'library-2', 'library-3', 'library-4'] },
+        },
+      }),
+    );
   });
 
   it('keeps empty collections and serializes fallback timestamps safely', async () => {
-    findMany.mockResolvedValue([
+    registerPreviewBook(
+      createPreviewBook({
+        authors: [],
+        bookId: 'book-c',
+        id: 'library-c',
+        title: 'Untitled Notes',
+      }),
+    );
+    findManyCollections.mockResolvedValue([
       createCollectionRecord({
         description: 'Your personal uploads.',
         id: 'collection-empty',
@@ -182,12 +259,10 @@ describe('LibraryService', () => {
       createCollectionRecord({
         id: 'collection-filled',
         items: [
-          createCollectionItem({
+          createLightweightItem({
             addedAt: '2026-04-04T08:30:00.000Z',
-            authors: [],
             completionPercent: 0,
             id: 'library-c',
-            title: 'Untitled Notes',
           }),
         ],
         name: 'Fresh Reads',
@@ -213,22 +288,34 @@ describe('LibraryService', () => {
   });
 
   it('treats a newer open as fresher engagement than an older lastReadAt', async () => {
-    findMany.mockResolvedValue([
+    registerPreviewBook(
+      createPreviewBook({
+        bookId: 'book-reopened',
+        id: 'library-reopened',
+        title: 'Reopened Book',
+      }),
+    );
+    registerPreviewBook(
+      createPreviewBook({
+        bookId: 'book-recent-read',
+        id: 'library-recent-read',
+        title: 'Recently Read Book',
+      }),
+    );
+    findManyCollections.mockResolvedValue([
       createCollectionRecord({
         id: 'collection-engagement',
         items: [
-          createCollectionItem({
+          createLightweightItem({
             addedAt: '2026-04-01T10:00:00.000Z',
             id: 'library-reopened',
             lastOpenedAt: '2026-04-10T09:00:00.000Z',
             lastReadAt: '2026-04-02T08:00:00.000Z',
-            title: 'Reopened Book',
           }),
-          createCollectionItem({
+          createLightweightItem({
             addedAt: '2026-04-03T10:00:00.000Z',
             id: 'library-recent-read',
             lastReadAt: '2026-04-09T09:00:00.000Z',
-            title: 'Recently Read Book',
           }),
         ],
       }),
@@ -246,21 +333,21 @@ describe('LibraryService', () => {
 
   it('returns the full collection payload for one owned collection', async () => {
     findFirst.mockResolvedValue(
-      createCollectionRecord({
+      createFullCollectionRecord({
         id: 'collection-1',
         name: 'Imported Books',
         items: [
-          createCollectionItem({
+          createFullCollectionItem({
             id: 'library-3',
             lastOpenedAt: '2026-04-10T10:00:00.000Z',
             title: 'Newest',
           }),
-          createCollectionItem({
+          createFullCollectionItem({
             id: 'library-2',
             lastOpenedAt: '2026-04-09T10:00:00.000Z',
             title: 'Middle',
           }),
-          createCollectionItem({
+          createFullCollectionItem({
             id: 'library-1',
             lastOpenedAt: '2026-04-08T10:00:00.000Z',
             title: 'Oldest',
@@ -286,7 +373,7 @@ describe('LibraryService', () => {
               include: {
                 book: {
                   include: {
-                    coverBlob: true,
+                    coverBlob: { select: { mimeType: true } },
                     files: true,
                   },
                 },
@@ -305,6 +392,41 @@ describe('LibraryService', () => {
     expect(payload.collection.itemCount).toBe(3);
   });
 
+  it('emits cover image urls for books that have a cover blob', async () => {
+    findFirst.mockResolvedValue(
+      createFullCollectionRecord({
+        id: 'collection-covers',
+        items: [
+          createFullCollectionItem({
+            bookId: 'book-with-cover',
+            hasCover: true,
+            id: 'library-with',
+            title: 'With Cover',
+          }),
+          createFullCollectionItem({
+            bookId: 'book-no-cover',
+            hasCover: false,
+            id: 'library-without',
+            title: 'Without Cover',
+          }),
+        ],
+      }),
+    );
+
+    const payload = await libraryService.getCollection(
+      'clerk_123',
+      'collection-covers',
+    );
+
+    const byId = new Map(
+      payload.collection.books.map((book) => [book.libraryItemId, book]),
+    );
+    expect(byId.get('library-with')?.coverImageUrl).toBe(
+      '/api/library/covers/book-with-cover',
+    );
+    expect(byId.get('library-without')?.coverImageUrl).toBeNull();
+  });
+
   it('throws not found when requesting a missing collection', async () => {
     findFirst.mockResolvedValue(null);
 
@@ -321,10 +443,7 @@ describe('LibraryService', () => {
       addedAt: new Date('2026-04-01T10:00:00.000Z'),
       book: {
         authors: ['Mary Shelley'],
-        coverBlob: {
-          bytes: Buffer.from('cover-book'),
-          mimeType: 'image/png',
-        },
+        coverBlob: { mimeType: 'image/png' },
         description: 'A gothic classic.',
         estimatedPageCount: 163,
         files: [
@@ -335,6 +454,7 @@ describe('LibraryService', () => {
           },
         ],
         genres: ['Gothic', 'Horror'],
+        id: 'book-frank',
         language: 'English',
         publishedYear: 1818,
         title: 'Frankenstein',
@@ -383,7 +503,7 @@ describe('LibraryService', () => {
       include: {
         book: {
           include: {
-            coverBlob: true,
+            coverBlob: { select: { mimeType: true } },
             files: true,
           },
         },
@@ -422,7 +542,7 @@ describe('LibraryService', () => {
           },
         ],
         completionPercent: 44,
-        coverImageDataUrl: 'data:image/png;base64,Y292ZXItYm9vaw==',
+        coverImageUrl: '/api/library/covers/book-frank',
         description: 'A gothic classic.',
         genres: ['Gothic', 'Horror'],
         language: 'English',
@@ -453,6 +573,7 @@ describe('LibraryService', () => {
           },
         ],
         genres: [],
+        id: 'book-unknown',
         language: null,
         publishedYear: null,
         title: 'Unknown Treatise',
@@ -472,6 +593,7 @@ describe('LibraryService', () => {
 
     expect(payload.book.approximatePageCount).toBeNull();
     expect(payload.book.genres).toEqual([]);
+    expect(payload.book.coverImageUrl).toBeNull();
   });
 
   it('renames one owned collection with a trimmed name', async () => {
@@ -684,7 +806,7 @@ function createCollectionRecord(
   overrides: Partial<{
     description: string | null;
     id: string;
-    items: ReturnType<typeof createCollectionItem>[];
+    items: ReturnType<typeof createLightweightItem>[];
     kind: 'SMART' | 'CUSTOM';
     name: string;
     slug: string;
@@ -700,17 +822,105 @@ function createCollectionRecord(
     kind: 'SMART',
     name: 'Collection',
     slug: overrides.slug ?? id,
+    smartKey: null,
     sortOrder: 0,
     ...overrides,
   };
 }
 
-function createCollectionItem(
+function createLightweightItem(
+  overrides: Partial<{
+    addedAt: string;
+    completionPercent: number;
+    id: string;
+    isArchived: boolean;
+    lastOpenedAt: string | null;
+    lastReadAt: string | null;
+  }> = {},
+) {
+  const {
+    addedAt = '2026-04-01T00:00:00.000Z',
+    completionPercent = 0,
+    id = 'library-item',
+    isArchived = false,
+    lastOpenedAt = null,
+    lastReadAt = null,
+  } = overrides;
+
+  return {
+    libraryItem: {
+      addedAt: new Date(addedAt),
+      id,
+      isArchived,
+      lastOpenedAt: lastOpenedAt ? new Date(lastOpenedAt) : null,
+      progress: {
+        completionPercent,
+        lastReadAt: lastReadAt ? new Date(lastReadAt) : null,
+      },
+    },
+  };
+}
+
+function createPreviewBook(input: {
+  authors?: string[];
+  bookId: string;
+  hasCover?: boolean;
+  id: string;
+  slug?: string;
+  title?: string;
+}) {
+  return {
+    book: {
+      authors: input.authors ?? ['Author'],
+      coverBlob: input.hasCover === false ? null : { mimeType: 'image/png' },
+      files: [
+        {
+          format: BookFileFormat.EPUB,
+          isPrimary: true,
+          kind: BookFileKind.SOURCE,
+        },
+      ],
+      id: input.bookId,
+      title: input.title ?? 'Book',
+    },
+    id: input.id,
+    slug: input.slug ?? input.id,
+  };
+}
+
+function createFullCollectionRecord(
+  overrides: Partial<{
+    description: string | null;
+    id: string;
+    items: ReturnType<typeof createFullCollectionItem>[];
+    kind: 'SMART' | 'CUSTOM';
+    name: string;
+    slug: string;
+    sortOrder: number;
+  }> = {},
+) {
+  const id = overrides.id ?? 'collection-1';
+
+  return {
+    description: null,
+    id,
+    items: [],
+    kind: 'SMART',
+    name: 'Collection',
+    slug: overrides.slug ?? id,
+    smartKey: null,
+    sortOrder: 0,
+    ...overrides,
+  };
+}
+
+function createFullCollectionItem(
   overrides: Partial<{
     addedAt: string;
     authors: string[];
+    bookId: string;
     completionPercent: number;
-    coverBytes: Buffer | null;
+    hasCover: boolean;
     id: string;
     isArchived: boolean;
     lastOpenedAt: string | null;
@@ -722,8 +932,9 @@ function createCollectionItem(
   const {
     addedAt = '2026-04-01T00:00:00.000Z',
     authors = ['Author'],
+    bookId = `book-${overrides.id ?? 'library-item'}`,
     completionPercent = 0,
-    coverBytes = null,
+    hasCover = false,
     id = 'library-item',
     isArchived = false,
     lastOpenedAt = null,
@@ -737,12 +948,7 @@ function createCollectionItem(
       addedAt: new Date(addedAt),
       book: {
         authors,
-        coverBlob: coverBytes
-          ? {
-              bytes: coverBytes,
-              mimeType: 'image/png',
-            }
-          : null,
+        coverBlob: hasCover ? { mimeType: 'image/png' } : null,
         files: [
           {
             format: BookFileFormat.EPUB,
@@ -750,6 +956,7 @@ function createCollectionItem(
             kind: BookFileKind.SOURCE,
           },
         ],
+        id: bookId,
         title,
       },
       id,
