@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useAiCommentsContext } from "./ai-comments-context";
+import { useAiCommentsContext } from "../ai-comments/ai-comments-context";
 import { type AiToolPayload, useAiTool } from "./use-ai-tool";
 
 type UseAiToolBindingInput = {

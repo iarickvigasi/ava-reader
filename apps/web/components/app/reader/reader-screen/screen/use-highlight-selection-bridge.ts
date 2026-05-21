@@ -3,7 +3,7 @@
 import { useCallback } from "react";
 import { useReaderUi } from "@/components/app/core/reader-ui-context";
 import { useHighlightsContext } from "../overlays/highlights/highlights-context";
-import { READER_PANEL_AI_COMMENTS } from "../shared/constants";
+import { READER_PANEL_AI_TOOLBOX } from "../shared/constants";
 import { computeAiCommentLocator } from "./compute-ai-comment-locator";
 import { useReaderSelectionContext } from "./reader-selection-context";
 import type { ReaderSelection } from "./use-reader-text-selection";
@@ -42,7 +42,7 @@ export function useHighlightSelectionBridge(activeChapterId: string): {
         highlightId: matched?.id ?? null,
         highlightColor: matched?.color ?? null,
       });
-      openPanel(READER_PANEL_AI_COMMENTS);
+      openPanel(READER_PANEL_AI_TOOLBOX);
     },
     [activeChapterId, highlights, openPanel, setSelection],
   );
@@ -62,7 +62,7 @@ export function useHighlightSelectionBridge(activeChapterId: string): {
         highlightId: highlight.id,
         highlightColor: highlight.color,
       });
-      openPanel(READER_PANEL_AI_COMMENTS);
+      openPanel(READER_PANEL_AI_TOOLBOX);
     },
     [highlights, openPanel, setSelection],
   );

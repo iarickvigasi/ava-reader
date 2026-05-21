@@ -4,7 +4,7 @@ import { useReaderSelectionContext } from "../../screen/reader-selection-context
 import { SectionLabel } from "../section-label";
 
 export function SelectionSection() {
-  const t = useTranslations("reader.aiComments");
+  const t = useTranslations("reader.aiToolbox");
   const { text } = useReaderSelectionContext();
   const displayText = text ?? "";
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import { TRANSLATE_LANGUAGES } from "@/components/app/reader/reader-screen/overlays/ai-comments/translate-languages";
+import { TRANSLATE_LANGUAGES } from "@/components/app/reader/reader-screen/overlays/ai-toolbox/translate-languages";
 import { usePreference } from "./use-preference";
 
 // SSR-safe fallback used when navigator detection isn't available or

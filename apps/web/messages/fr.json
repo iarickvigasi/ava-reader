@@ -189,11 +189,29 @@
     "aiComments": {
       "title": "Commentaires IA",
       "closePanel": "Fermer le panneau des commentaires IA",
+      "searchPlaceholder": "Rechercher",
+      "searchAria": "Rechercher des commentaires IA",
+      "delete": "Supprimer",
+      "empty": "Aucun commentaire IA pour l'instant",
+      "unknownChapter": "Chapitre inconnu",
+      "filterAll": "Tous",
+      "emptyBody": "Pas encore de réponse",
+      "actionsLabel": "Plus d'options pour le commentaire dans {chapter}",
+      "highlightsLoadFailed": "Impossible de charger les surlignages des commentaires IA. Nous réessaierons la prochaine fois.",
+      "deleteFailed": "Impossible de supprimer ce commentaire IA. Veuillez réessayer.",
+      "kind": {
+        "EXPLAIN": "Explication",
+        "ETYMOLOGY": "Étymologie",
+        "TRANSLATE": "Traduction"
+      }
+    },
+    "aiToolbox": {
+      "title": "Boîte à outils IA",
+      "closePanel": "Fermer le panneau de la boîte à outils IA",
       "selection": "Sélection",
       "highlight": "Surligner",
       "selectionReadAloud": "Lire la sélection à voix haute",
-      "selectionCopy": "Copier la sélection",
-      "highlightsLoadFailed": "Impossible de charger les surlignages des commentaires IA. Nous réessaierons la prochaine fois."
+      "selectionCopy": "Copier la sélection"
     },
     "aiChats": {
       "title": "Discussions IA",

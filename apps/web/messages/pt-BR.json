@@ -189,11 +189,29 @@
     "aiComments": {
       "title": "Comentários da IA",
       "closePanel": "Fechar painel de comentários da IA",
+      "searchPlaceholder": "Buscar",
+      "searchAria": "Buscar comentários da IA",
+      "delete": "Excluir",
+      "empty": "Ainda não há comentários da IA",
+      "unknownChapter": "Capítulo desconhecido",
+      "filterAll": "Todos",
+      "emptyBody": "Ainda sem resposta",
+      "actionsLabel": "Mais opções para o comentário em {chapter}",
+      "highlightsLoadFailed": "Não foi possível carregar os destaques dos comentários da IA. Tentaremos de novo na próxima vez.",
+      "deleteFailed": "Não foi possível excluir esse comentário da IA. Tente de novo.",
+      "kind": {
+        "EXPLAIN": "Explicação",
+        "ETYMOLOGY": "Etimologia",
+        "TRANSLATE": "Tradução"
+      }
+    },
+    "aiToolbox": {
+      "title": "Caixa de ferramentas da IA",
+      "closePanel": "Fechar painel de ferramentas da IA",
       "selection": "Seleção",
       "highlight": "Destaque",
       "selectionReadAloud": "Ler a seleção em voz alta",
-      "selectionCopy": "Copiar a seleção",
-      "highlightsLoadFailed": "Não foi possível carregar os destaques dos comentários da IA. Tentaremos de novo na próxima vez."
+      "selectionCopy": "Copiar a seleção"
     },
     "aiChats": {
       "title": "Chats com IA",

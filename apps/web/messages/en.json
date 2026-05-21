@@ -189,11 +189,29 @@
     "aiComments": {
       "title": "AI Comments",
       "closePanel": "Close AI comments panel",
+      "searchPlaceholder": "Search",
+      "searchAria": "Search AI comments",
+      "delete": "Delete",
+      "empty": "No AI comments yet",
+      "unknownChapter": "Unknown chapter",
+      "filterAll": "All",
+      "emptyBody": "No response yet",
+      "actionsLabel": "More options for comment in {chapter}",
+      "highlightsLoadFailed": "Couldn't load AI comment highlights. We'll try again next time.",
+      "deleteFailed": "Couldn't delete that AI comment. Please try again.",
+      "kind": {
+        "EXPLAIN": "Explanation",
+        "ETYMOLOGY": "Etymology",
+        "TRANSLATE": "Translation"
+      }
+    },
+    "aiToolbox": {
+      "title": "AI Toolbox",
+      "closePanel": "Close AI toolbox panel",
       "selection": "Selection",
       "highlight": "Highlight",
       "selectionReadAloud": "Read selection aloud",
-      "selectionCopy": "Copy selection",
-      "highlightsLoadFailed": "Couldn't load AI comment highlights. We'll try again next time."
+      "selectionCopy": "Copy selection"
     },
     "aiChats": {
       "title": "AI Chats",

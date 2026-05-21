@@ -189,11 +189,29 @@
     "aiComments": {
       "title": "KI-Kommentare",
       "closePanel": "KI-Kommentar-Panel schließen",
+      "searchPlaceholder": "Suche",
+      "searchAria": "KI-Kommentare durchsuchen",
+      "delete": "Löschen",
+      "empty": "Noch keine KI-Kommentare",
+      "unknownChapter": "Unbekanntes Kapitel",
+      "filterAll": "Alle",
+      "emptyBody": "Noch keine Antwort",
+      "actionsLabel": "Weitere Optionen für Kommentar in {chapter}",
+      "highlightsLoadFailed": "Markierungen für KI-Kommentare konnten nicht geladen werden. Wir versuchen es beim nächsten Mal erneut.",
+      "deleteFailed": "KI-Kommentar konnte nicht gelöscht werden. Bitte erneut versuchen.",
+      "kind": {
+        "EXPLAIN": "Erklärung",
+        "ETYMOLOGY": "Etymologie",
+        "TRANSLATE": "Übersetzung"
+      }
+    },
+    "aiToolbox": {
+      "title": "KI-Werkzeuge",
+      "closePanel": "KI-Werkzeug-Panel schließen",
       "selection": "Auswahl",
       "highlight": "Markierung",
       "selectionReadAloud": "Auswahl vorlesen",
-      "selectionCopy": "Auswahl kopieren",
-      "highlightsLoadFailed": "Markierungen für KI-Kommentare konnten nicht geladen werden. Wir versuchen es beim nächsten Mal erneut."
+      "selectionCopy": "Auswahl kopieren"
     },
     "aiChats": {
       "title": "KI-Chats",

@@ -6,7 +6,7 @@ import {
 } from "@/components/app/preferences/use-translate-target-lang";
 import { SparkIcon } from "@/components/app/shared/app-icons";
 import { useReaderSelectionContext } from "../../screen/reader-selection-context";
-import { EtymologyIcon, LightbulbIcon } from "./ai-comments-icons";
+import { EtymologyIcon, LightbulbIcon } from "./ai-toolbox-icons";
 import { AiToolItem } from "./ai-tool-item";
 import { ToolSection } from "./tool-section";
 import { TranslateToolItem } from "./translate-tool-item";
