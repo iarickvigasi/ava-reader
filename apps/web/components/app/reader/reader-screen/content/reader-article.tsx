@@ -4,6 +4,7 @@ import type { ReaderBlock } from "@/lib/api-types";
 import { useAiCommentsContext } from "../overlays/ai-comments/ai-comments-context";
 import { useHighlightsContext } from "../overlays/highlights/highlights-context";
 import {
+  AI_COMMENT_MARK_CLASS,
   applyAiCommentMarks,
   unwrapAllMarks,
 } from "./apply-ai-comment-marks";
@@ -19,6 +20,7 @@ export function ReaderArticle({
   applyAiComments = false,
   blocks,
   chapterId,
+  onAiCommentClick,
   onHighlightClick,
   pageHeight,
   prefixBlocks,
@@ -38,6 +40,10 @@ export function ReaderArticle({
   applyAiComments?: boolean;
   blocks: ReaderBlock[];
   chapterId: string;
+  // Called when the user clicks an AI-comment underline inside the article.
+  // The screen routes this to the AI Toolbox pre-bound to the fragment.
+  // Omitted by the pagination preloader.
+  onAiCommentClick?: (aiCommentId: string) => void;
   // Called when the user clicks a painted highlight inside the article.
   // The screen routes this to the AI Comments panel pre-bound to the row.
   // Omitted by the pagination preloader (its measurement articles aren't
@@ -105,30 +111,43 @@ export function ReaderArticle({
     spilloverBlocks,
   ]);
 
-  // Click-to-edit on a painted highlight. One delegated listener on the
-  // article catches every mark click; the screen-level container handles
-  // the rest via the `onHighlightClick` callback.
+  // Click-to-edit on a painted highlight or AI-comment underline. One
+  // delegated listener on the article catches every mark click; `closest`
+  // returns the innermost matching ancestor, so overlapping marks resolve
+  // to whichever was applied last (AI-comment marks are nested inside
+  // highlight marks because they're applied second).
   const handleArticleClick = useCallback(
     (event: React.MouseEvent) => {
-      if (!onHighlightClick) {
+      if (!onHighlightClick && !onAiCommentClick) {
         return;
       }
       const target = event.target as HTMLElement | null;
       if (!target) {
         return;
       }
-      const mark = target.closest<HTMLElement>(`mark.${HIGHLIGHT_MARK_CLASS}`);
+      const mark = target.closest<HTMLElement>(
+        `mark.${AI_COMMENT_MARK_CLASS}, mark.${HIGHLIGHT_MARK_CLASS}`,
+      );
       if (!mark) {
         return;
       }
+      if (mark.classList.contains(AI_COMMENT_MARK_CLASS)) {
+        const aiCommentId = mark.dataset.aiCommentId;
+        if (!aiCommentId || !onAiCommentClick) {
+          return;
+        }
+        event.stopPropagation();
+        onAiCommentClick(aiCommentId);
+        return;
+      }
       const highlightId = mark.dataset.highlightId;
-      if (!highlightId) {
+      if (!highlightId || !onHighlightClick) {
         return;
       }
       event.stopPropagation();
       onHighlightClick(highlightId);
     },
-    [onHighlightClick],
+    [onAiCommentClick, onHighlightClick],
   );
 
   return (

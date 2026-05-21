@@ -18,6 +18,7 @@ type AiToolItemProps = {
   libraryItemId: string;
   selection: string;
   locator: string | undefined;
+  savedText?: string;
 };
 
 export function AiToolItem({
@@ -29,6 +30,7 @@ export function AiToolItem({
   libraryItemId,
   selection,
   locator,
+  savedText,
 }: AiToolItemProps) {
   const payload = useMemo<AiToolPayload | null>(
     () => (selection ? { kind, text: selection, locator } : null),
@@ -39,6 +41,7 @@ export function AiToolItem({
     isOpen,
     selection,
     payload,
+    savedText,
   });
 
   return (
