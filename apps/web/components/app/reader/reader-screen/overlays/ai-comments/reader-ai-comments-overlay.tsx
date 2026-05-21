@@ -1,32 +1,36 @@
 import { useTranslations } from "next-intl";
+import type { ReaderTocNode } from "@/lib/api-types";
 import { MobileCloseButton } from "../mobile-close-button";
 import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
-import { AiToolsSection } from "./ai-tools-section";
-import { HighlightSection } from "./highlight-section";
-import { SelectionSection } from "./selection-section";
+import { AiCommentsSections } from "./ai-comments-sections";
 
 type ReaderAiCommentsOverlayProps = {
-  libraryItemId: string;
+  toc: ReaderTocNode[];
   onClose: () => void;
+  onSelectAiComment?: (commentId: string) => void;
 };
 
 export function ReaderAiCommentsOverlay({
-  libraryItemId,
+  toc,
   onClose,
+  onSelectAiComment,
 }: ReaderAiCommentsOverlayProps) {
   useCloseOnEscape(onClose);
 
   return (
     <div className="pointer-events-none fixed inset-0 z-50">
       <AiCommentsBackdrop onClose={onClose} />
-      <aside className="absolute inset-y-0 right-0 flex w-full justify-end md:w-96r">
-        <div className="relative h-full w-full max-w-104 md:w-96 md:max-w-96">
+      <aside className="absolute inset-y-0 left-0 flex w-full justify-start md:w-94">
+        <div className="relative h-full w-full max-w-[24rem] md:w-94 md:max-w-94">
           <AiCommentsBackgroundLayer />
           <div className="relative z-10 flex h-full flex-col md:pt-24">
             <div className="pointer-events-auto flex min-h-0 flex-1 flex-col px-6 py-8 sm:px-8 md:animate-[reader-contents-enter_320ms_cubic-bezier(0.22,1,0.36,1)_140ms_both] md:px-8 md:py-0">
               <AiCommentsHeader onClose={onClose} />
-              <AiCommentsSections libraryItemId={libraryItemId} />
+              <AiCommentsSections
+                toc={toc}
+                onSelectAiComment={onSelectAiComment}
+              />
             </div>
           </div>
         </div>
@@ -36,13 +40,11 @@ export function ReaderAiCommentsOverlay({
 }
 
 function AiCommentsBackdrop({ onClose }: { onClose: () => void }) {
-  // The clickable region covers the area to the LEFT of the panel (the part
-  // of the screen the panel does not occupy)
   return (
     <button
       type="button"
       aria-label="Close AI comments panel"
-      className="pointer-events-auto absolute inset-0 bg-transparent md:right-94"
+      className="pointer-events-auto absolute inset-0 bg-transparent md:left-94"
       onClick={onClose}
     />
   );
@@ -50,7 +52,7 @@ function AiCommentsBackdrop({ onClose }: { onClose: () => void }) {
 
 function AiCommentsBackgroundLayer() {
   return (
-    <div className="absolute inset-0 bg-linear-to-l from-paper-strong/88 via-paper/76 to-paper/0 backdrop-blur-[7px]" />
+    <div className="absolute inset-0 border-r border-line/35 bg-linear-to-r from-paper-strong/88 via-paper/78 to-paper/50 shadow-[10px_0_40px_rgba(31,27,24,0.05)] backdrop-blur-[7px] md:hidden" />
   );
 }
 
@@ -62,16 +64,6 @@ function AiCommentsHeader({ onClose }: { onClose: () => void }) {
         <PanelTitle>{t("title")}</PanelTitle>
       </div>
       <MobileCloseButton ariaLabel={t("closePanel")} onClose={onClose} />
-    </div>
-  );
-}
-
-function AiCommentsSections({ libraryItemId }: { libraryItemId: string }) {
-  return (
-    <div className="mt-8 flex min-h-0 flex-1 flex-col gap-6 overflow-auto pb-8 pr-1">
-      <SelectionSection />
-      <HighlightSection />
-      <AiToolsSection libraryItemId={libraryItemId} />
     </div>
   );
 }

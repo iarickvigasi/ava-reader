@@ -13,7 +13,7 @@ import { useHighlightsContext } from "../highlights/highlights-context";
 import { useReaderSelectionContext } from "../../screen/reader-selection-context";
 
 export function HighlightSection() {
-  const t = useTranslations("reader.aiComments");
+  const t = useTranslations("reader.aiToolbox");
   const {
     text,
     locator,

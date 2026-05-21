@@ -109,6 +109,32 @@ export class AiCommentsService {
     }));
   }
 
+  async remove(input: {
+    clerkUserId: string;
+    libraryItemId: string;
+    id: string;
+  }): Promise<void> {
+    const user = await this.users.getCurrentUserRecord(input.clerkUserId);
+    const libraryItem = await this.prisma.libraryItem.findFirst({
+      where: { id: input.libraryItemId, userId: user.id },
+      select: { id: true },
+    });
+    if (!libraryItem) {
+      throw new NotFoundException('Library item not found.');
+    }
+
+    // deleteMany silently no-ops when the row is missing or owned by another
+    // user — matches the annotations contract so a replayed delete from a
+    // queued mutation can't surface a spurious 404 to the client.
+    await this.prisma.aiComment.deleteMany({
+      where: {
+        id: input.id,
+        userId: user.id,
+        libraryItemId: libraryItem.id,
+      },
+    });
+  }
+
   async generate(input: GenerateInput): Promise<AiToolGenerationResult> {
     const user = await this.users.getCurrentUserRecord(input.clerkUserId);
     const libraryItem = await this.prisma.libraryItem.findFirst({

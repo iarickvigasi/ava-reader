@@ -6,7 +6,7 @@ import {
   useTranslateTargetLang,
 } from "@/components/app/preferences/use-translate-target-lang";
 import { isLocale, locales, localeLabels } from "@/i18n/locales";
-import { TRANSLATE_LANGUAGES } from "../ai-comments/translate-languages";
+import { TRANSLATE_LANGUAGES } from "../ai-toolbox/translate-languages";
 import { FieldRow, NumberField, SelectField } from "./preferences-fields";
 
 const INTERFACE_LANG_OPTIONS = locales.map((value) => ({

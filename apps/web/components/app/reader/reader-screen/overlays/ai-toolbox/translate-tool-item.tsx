@@ -16,6 +16,7 @@ type TranslateToolItemProps = {
   libraryItemId: string;
   selection: string;
   locator: string | undefined;
+  savedText?: string;
 };
 
 export function TranslateToolItem({
@@ -26,6 +27,7 @@ export function TranslateToolItem({
   libraryItemId,
   selection,
   locator,
+  savedText,
 }: TranslateToolItemProps) {
   const payload = useMemo<AiToolPayload | null>(
     () =>
@@ -44,6 +46,7 @@ export function TranslateToolItem({
     isOpen,
     selection,
     payload,
+    savedText,
   });
 
   return (

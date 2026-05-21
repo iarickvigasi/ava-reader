@@ -2,7 +2,10 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Logger,
   Param,
   Post,
@@ -75,6 +78,21 @@ export class AiCommentsController {
       locator: parsed.locator,
     });
     await sendStreamingResponse(response, result);
+  }
+
+  @Delete(':id')
+  @UseGuards(ClerkAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(
+    @Req() request: AuthenticatedRequest,
+    @Param('libraryItemId') libraryItemId: string,
+    @Param('id') id: string,
+  ) {
+    await this.service.remove({
+      clerkUserId: request.auth.clerkUserId,
+      libraryItemId,
+      id,
+    });
   }
 
   @Post('explain')

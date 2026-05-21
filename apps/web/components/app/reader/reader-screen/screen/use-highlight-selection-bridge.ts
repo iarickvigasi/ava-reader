@@ -2,8 +2,9 @@
 
 import { useCallback } from "react";
 import { useReaderUi } from "@/components/app/core/reader-ui-context";
+import { useAiCommentsContext } from "../overlays/ai-comments/ai-comments-context";
 import { useHighlightsContext } from "../overlays/highlights/highlights-context";
-import { READER_PANEL_AI_COMMENTS } from "../shared/constants";
+import { READER_PANEL_AI_TOOLBOX } from "../shared/constants";
 import { computeAiCommentLocator } from "./compute-ai-comment-locator";
 import { useReaderSelectionContext } from "./reader-selection-context";
 import type { ReaderSelection } from "./use-reader-text-selection";
@@ -15,10 +16,12 @@ import type { ReaderSelection } from "./use-reader-text-selection";
 export function useHighlightSelectionBridge(activeChapterId: string): {
   onTextSelected: (selection: ReaderSelection) => void;
   onHighlightClick: (highlightId: string) => void;
+  onAiCommentClick: (aiCommentId: string) => void;
 } {
   const { openPanel } = useReaderUi();
   const { setSelection } = useReaderSelectionContext();
   const { highlights } = useHighlightsContext();
+  const { comments: aiComments } = useAiCommentsContext();
 
   // Fresh selection: open the AI Comments panel. If the range exactly
   // matches an existing highlight, pre-bind to its id/color so the swatch
@@ -42,7 +45,7 @@ export function useHighlightSelectionBridge(activeChapterId: string): {
         highlightId: matched?.id ?? null,
         highlightColor: matched?.color ?? null,
       });
-      openPanel(READER_PANEL_AI_COMMENTS);
+      openPanel(READER_PANEL_AI_TOOLBOX);
     },
     [activeChapterId, highlights, openPanel, setSelection],
   );
@@ -62,10 +65,37 @@ export function useHighlightSelectionBridge(activeChapterId: string): {
         highlightId: highlight.id,
         highlightColor: highlight.color,
       });
-      openPanel(READER_PANEL_AI_COMMENTS);
+      openPanel(READER_PANEL_AI_TOOLBOX);
     },
     [highlights, openPanel, setSelection],
   );
 
-  return { onTextSelected, onHighlightClick };
+  // Click on an existing AI-comment underline inside the article: open the
+  // AI Toolbox pre-bound to that comment's selection, matching the highlight
+  // click flow so the user can run more AI tools against the same fragment.
+  const onAiCommentClick = useCallback(
+    (aiCommentId: string) => {
+      const comment = aiComments.find((row) => row.id === aiCommentId);
+      if (!comment?.locator) {
+        return;
+      }
+      const matchedHighlight = highlights.find(
+        (highlight) =>
+          highlight.locator?.startBlockId === comment.locator?.startBlockId &&
+          highlight.locator?.startOffset === comment.locator?.startOffset &&
+          highlight.locator?.endBlockId === comment.locator?.endBlockId &&
+          highlight.locator?.endOffset === comment.locator?.endOffset,
+      );
+      setSelection({
+        text: comment.sourceText,
+        locator: comment.locator,
+        highlightId: matchedHighlight?.id ?? null,
+        highlightColor: matchedHighlight?.color ?? null,
+      });
+      openPanel(READER_PANEL_AI_TOOLBOX);
+    },
+    [aiComments, highlights, openPanel, setSelection],
+  );
+
+  return { onTextSelected, onHighlightClick, onAiCommentClick };
 }

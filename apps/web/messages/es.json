@@ -189,11 +189,29 @@
     "aiComments": {
       "title": "Comentarios de IA",
       "closePanel": "Cerrar el panel de comentarios de IA",
+      "searchPlaceholder": "Buscar",
+      "searchAria": "Buscar comentarios de IA",
+      "delete": "Eliminar",
+      "empty": "Aún no hay comentarios de IA",
+      "unknownChapter": "Capítulo desconocido",
+      "filterAll": "Todos",
+      "emptyBody": "Aún sin respuesta",
+      "actionsLabel": "Más opciones para el comentario en {chapter}",
+      "highlightsLoadFailed": "No se pudieron cargar los resaltados de comentarios de IA. Lo intentaremos de nuevo la próxima vez.",
+      "deleteFailed": "No se pudo eliminar ese comentario de IA. Inténtalo de nuevo.",
+      "kind": {
+        "EXPLAIN": "Explicación",
+        "ETYMOLOGY": "Etimología",
+        "TRANSLATE": "Traducción"
+      }
+    },
+    "aiToolbox": {
+      "title": "Caja de herramientas de IA",
+      "closePanel": "Cerrar el panel de herramientas de IA",
       "selection": "Selección",
       "highlight": "Resaltado",
       "selectionReadAloud": "Leer la selección en voz alta",
-      "selectionCopy": "Copiar la selección",
-      "highlightsLoadFailed": "No se pudieron cargar los resaltados de comentarios de IA. Lo intentaremos de nuevo la próxima vez."
+      "selectionCopy": "Copiar la selección"
     },
     "aiChats": {
       "title": "Chats con IA",

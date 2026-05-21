@@ -21,6 +21,7 @@ export type AiCommentRecord = {
 type UseAiCommentsResult = {
   comments: AiCommentRecord[];
   refetch: () => void;
+  deleteAiComment: (id: string) => Promise<void>;
 };
 
 // Fetches the persisted AI-comment list for a library item. The reader uses
@@ -96,5 +97,76 @@ export function useAiComments(libraryItemId: string): UseAiCommentsResult {
     setRefetchTick((tick) => tick + 1);
   }, []);
 
-  return { comments, refetch };
+  // Optimistically drops the row, then DELETEs on the server. On failure we
+  // re-insert the row at its original position and surface a toast — the
+  // server is the source of truth, so a stuck-locally row is worse than a
+  // visible error. A parallel Dexie effort will replace this in-memory cache;
+  // until then there's no queue/retry layer.
+  const deleteAiComment = useCallback(
+    async (id: string) => {
+      let snapshot: { index: number; row: AiCommentRecord } | null = null;
+      setComments((current) => {
+        const index = current.findIndex((row) => row.id === id);
+        if (index === -1) {
+          return current;
+        }
+        snapshot = { index, row: current[index] };
+        return current.filter((row) => row.id !== id);
+      });
+      if (!snapshot) {
+        return;
+      }
+
+      const restore = (snap: { index: number; row: AiCommentRecord }) => {
+        setComments((current) => {
+          if (current.some((row) => row.id === snap.row.id)) {
+            return current;
+          }
+          const next = current.slice();
+          const clampedIndex = Math.min(snap.index, next.length);
+          next.splice(clampedIndex, 0, snap.row);
+          return next;
+        });
+      };
+
+      try {
+        const token = await getToken();
+        if (!token) {
+          restore(snapshot);
+          emitReaderToast({
+            message: t("deleteFailed"),
+            tone: "warning",
+          });
+          return;
+        }
+        const response = await fetch(
+          `${getPublicApiBaseUrl()}/api/library/${encodeURIComponent(
+            libraryItemId,
+          )}/ai-comments/${encodeURIComponent(id)}`,
+          {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+        if (!response.ok) {
+          restore(snapshot);
+          emitReaderToast({
+            message: t("deleteFailed"),
+            tone: "warning",
+          });
+        }
+      } catch {
+        if (snapshot) {
+          restore(snapshot);
+        }
+        emitReaderToast({
+          message: t("deleteFailed"),
+          tone: "warning",
+        });
+      }
+    },
+    [getToken, libraryItemId, t],
+  );
+
+  return { comments, refetch, deleteAiComment };
 }

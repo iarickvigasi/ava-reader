@@ -37,7 +37,7 @@ const readerNavItems = [
   { href: "", icon: FontControlsIcon, id: "preferences", panel: "preferences" },
   { href: "", icon: ReaderNotesIcon, id: "aiChats", panel: "ai-chats" },
   { href: "", icon: ReaderFavoritesIcon, id: "highlights", panel: "highlights" },
-  { href: "", icon: SparkIcon, id: "aiComments" },
+  { href: "", icon: SparkIcon, id: "aiComments", panel: "ai-comments" },
   { href: "", icon: ReaderBookmarksIcon, id: "bookmarks" },
   { href: "", icon: ReaderSearchIcon, id: "search" },
   { href: "", icon: ReaderListeningIcon, id: "listenToBook" },
@@ -181,7 +181,8 @@ function ReaderNavigation() {
     activePanel === "contents" ||
     activePanel === "preferences" ||
     activePanel === "ai-chats" ||
-    activePanel === "highlights";
+    activePanel === "highlights" ||
+    activePanel === "ai-comments";
 
   return (
     <>

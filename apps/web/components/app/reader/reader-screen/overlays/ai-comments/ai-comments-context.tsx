@@ -6,6 +6,7 @@ import { useAiComments, type AiCommentRecord } from "./use-ai-comments";
 type AiCommentsContextValue = {
   comments: AiCommentRecord[];
   refetch: () => void;
+  deleteAiComment: (id: string) => Promise<void>;
 };
 
 const AiCommentsContext = createContext<AiCommentsContextValue | null>(null);
@@ -17,11 +18,11 @@ export function AiCommentsProvider({
   libraryItemId: string;
   children: ReactNode;
 }) {
-  const { comments, refetch } = useAiComments(libraryItemId);
+  const { comments, refetch, deleteAiComment } = useAiComments(libraryItemId);
 
   const value = useMemo<AiCommentsContextValue>(
-    () => ({ comments, refetch }),
-    [comments, refetch],
+    () => ({ comments, refetch, deleteAiComment }),
+    [comments, deleteAiComment, refetch],
   );
 
   return (

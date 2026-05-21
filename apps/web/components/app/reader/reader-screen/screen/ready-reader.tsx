@@ -9,6 +9,8 @@ import {
 } from "./ready-reader-sections";
 import { ReaderAiChatsOverlay } from "../overlays/ai-chats/reader-ai-chats-overlay";
 import { ReaderAiCommentsOverlay } from "../overlays/ai-comments/reader-ai-comments-overlay";
+import { useAiCommentsContext } from "../overlays/ai-comments/ai-comments-context";
+import { ReaderAiToolboxOverlay } from "../overlays/ai-toolbox/reader-ai-toolbox-overlay";
 import { ReaderContentsOverlay } from "../overlays/contents/reader-contents-overlay";
 import { ReaderHighlightsOverlay } from "../overlays/highlights/reader-highlights-overlay";
 import { useHighlightsContext } from "../overlays/highlights/highlights-context";
@@ -16,6 +18,7 @@ import { ReaderPreferencesOverlay } from "../overlays/preferences/reader-prefere
 import {
   READER_PANEL_AI_CHATS,
   READER_PANEL_AI_COMMENTS,
+  READER_PANEL_AI_TOOLBOX,
   READER_PANEL_CONTENTS,
   READER_PANEL_HIGHLIGHTS,
   READER_PANEL_PREFERENCES,
@@ -49,12 +52,14 @@ export function ReadyReader({
   const isAiChatsOpen = activePanel === READER_PANEL_AI_CHATS;
   const isHighlightsOpen = activePanel === READER_PANEL_HIGHLIGHTS;
   const isAiCommentsOpen = activePanel === READER_PANEL_AI_COMMENTS;
+  const isAiToolboxOpen = activePanel === READER_PANEL_AI_TOOLBOX;
   const isPanelOpen =
     isContentsOpen ||
     isPreferencesOpen ||
     isAiChatsOpen ||
     isHighlightsOpen ||
-    isAiCommentsOpen;
+    isAiCommentsOpen ||
+    isAiToolboxOpen;
 
   // Look up the immediate neighbours so the spread logic can fill column 2
   // with the next chapter when the active chapter is single-page, and skip
@@ -107,9 +112,8 @@ export function ReadyReader({
   // Bridges fresh selections and clicks on painted highlights into the AI
   // Comments panel, matching to existing rows when possible. Owns the
   // highlight-store reads, so this component stays focused on layout.
-  const { onTextSelected, onHighlightClick } = useHighlightSelectionBridge(
-    activeChapter.chapterId,
-  );
+  const { onTextSelected, onHighlightClick, onAiCommentClick } =
+    useHighlightSelectionBridge(activeChapter.chapterId);
 
   const { highlights } = useHighlightsContext();
   const handleSelectHighlightFromList = useCallback(
@@ -125,6 +129,22 @@ export function ReadyReader({
       });
     },
     [closePanel, highlights, onSelectChapter],
+  );
+
+  const { comments: aiComments } = useAiCommentsContext();
+  const handleSelectAiCommentFromList = useCallback(
+    (commentId: string) => {
+      const comment = aiComments.find((row) => row.id === commentId);
+      if (!comment?.locator) {
+        return;
+      }
+      closePanel();
+      onSelectChapter(comment.locator.chapterId, {
+        blockId: comment.locator.startBlockId,
+        textOffset: comment.locator.startOffset,
+      });
+    },
+    [aiComments, closePanel, onSelectChapter],
   );
 
   useReaderTextSelection({
@@ -182,6 +202,7 @@ export function ReadyReader({
                   applyAiComments
                   blocks={activeChapter.blocks}
                   chapterId={activeChapter.chapterId}
+                  onAiCommentClick={onAiCommentClick}
                   onHighlightClick={onHighlightClick}
                   pageHeight={pageBoxSize.height}
                   prefixBlocks={prefixBlocks}
@@ -240,6 +261,14 @@ export function ReadyReader({
 
       {isAiCommentsOpen ? (
         <ReaderAiCommentsOverlay
+          toc={payload.toc}
+          onClose={closePanel}
+          onSelectAiComment={handleSelectAiCommentFromList}
+        />
+      ) : null}
+
+      {isAiToolboxOpen ? (
+        <ReaderAiToolboxOverlay
           libraryItemId={libraryItemId}
           onClose={closePanel}
         />
