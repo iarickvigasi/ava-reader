@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { BookCover } from "@/components/app/shared/book-cover";
 import type { HomePayload } from "@/lib/api-types";
+import { resolveApiAssetUrl } from "@/lib/api";
 import { SectionHeader, SparkIconLink } from "../../shared/home-shared";
 import { ListeningControls } from "./listening-controls";
 
@@ -9,10 +10,10 @@ type Listening = NonNullable<HomePayload["listening"]>;
 const PROGRESS_MIN_PERCENT = 8;
 
 export function ListeningSection({
-  coverImageDataUrl,
+  coverImageUrl,
   listening,
 }: {
-  coverImageDataUrl: string | null;
+  coverImageUrl: string | null;
   listening: Listening;
 }) {
   const t = useTranslations("home.listening");
@@ -26,7 +27,7 @@ export function ListeningSection({
           <BookCover
             alt={`${listening.title} listening placeholder`}
             className="aspect-square w-32 rounded-xs shadow-(--shadow-card) sm:w-40"
-            src={coverImageDataUrl}
+            src={resolveApiAssetUrl(coverImageUrl)}
             title={listening.title}
           />
           <div className="space-y-4">

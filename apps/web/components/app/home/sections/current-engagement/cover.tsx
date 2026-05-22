@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BookCover } from "@/components/app/shared/book-cover";
 import type { HomePayload } from "@/lib/api-types";
+import { resolveApiAssetUrl } from "@/lib/api";
 
 type CurrentEngagement = NonNullable<HomePayload["currentEngagement"]>;
 
@@ -34,7 +35,7 @@ export function EngagementCover({
         <BookCover
           alt={`${engagement.title} cover`}
           className="mx-auto aspect-[0.72] w-full max-w-72 rounded-xs shadow-(--shadow-card) md:mx-0 md:max-w-80"
-          src={engagement.coverImageDataUrl}
+          src={resolveApiAssetUrl(engagement.coverImageUrl)}
           title={engagement.title}
         />
       </Link>

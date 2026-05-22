@@ -55,7 +55,9 @@ type LibraryCollectionRecord = Prisma.CollectionGetPayload<{
             book: {
               include: {
                 coverBlob: { select: { mimeType: true } };
-                files: true;
+                files: {
+                  select: { format: true; isPrimary: true; kind: true };
+                };
               };
             };
             progress: true;
@@ -349,7 +351,13 @@ export class LibraryService {
                 book: {
                   include: {
                     coverBlob: { select: { mimeType: true } },
-                    files: true,
+                    // readingProgressIndex on BookFile is a per-position
+                    // progress map (see schema.prisma) — multi-KB per file
+                    // and never rendered on this screen. Pick only the
+                    // scalars we need.
+                    files: {
+                      select: { format: true, isPrimary: true, kind: true },
+                    },
                   },
                 },
                 progress: true,
@@ -382,7 +390,11 @@ export class LibraryService {
         book: {
           include: {
             coverBlob: { select: { mimeType: true } },
-            files: true,
+            // See note in getCollection — files.readingProgressIndex is a
+            // multi-KB JSON we never render here.
+            files: {
+              select: { format: true, isPrimary: true, kind: true },
+            },
           },
         },
         collectionItems: {

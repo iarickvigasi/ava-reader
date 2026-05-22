@@ -56,7 +56,7 @@ function PopulatedHome({
 
       {home.listening ? (
         <ListeningSection
-          coverImageDataUrl={engagement.coverImageDataUrl}
+          coverImageUrl={engagement.coverImageUrl}
           listening={home.listening}
         />
       ) : null}

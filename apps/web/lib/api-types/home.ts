@@ -17,7 +17,7 @@ export type HomePayload = {
     authors: string[];
     chapterLabel: string;
     completionPercent: number;
-    coverImageDataUrl: string | null;
+    coverImageUrl: string | null;
     id: string;
     lastReadAt: string;
     nextMilestone: string;
@@ -31,7 +31,7 @@ export type HomePayload = {
   featuredCatalog: {
     entries: Array<{
       authors: string[];
-      coverImageDataUrl: string | null;
+      coverImageUrl: string | null;
       description: string | null;
       id: string;
       isFeatured: boolean;

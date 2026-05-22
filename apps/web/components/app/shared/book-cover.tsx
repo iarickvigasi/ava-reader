@@ -1,8 +1,12 @@
-"use client";
-
-import { useState } from "react";
 import { cn } from "@/lib/cn";
 
+// The fallback is rendered absolutely behind the <img>. While the image is
+// loading, the <img> element has no visible content (transparent) and the
+// fallback shows through; once the image is decoded the browser paints it
+// on top. No opacity transition, no state — so cached images render in the
+// same frame as mount (avoids the flicker that an opacity-0 → opacity-100
+// fade introduced when the book-info loading skeleton swapped to the
+// rendered page).
 export function BookCover({
   alt,
   className,
@@ -14,8 +18,6 @@ export function BookCover({
   src: string | null;
   title: string;
 }) {
-  const [loaded, setLoaded] = useState(false);
-
   if (!src) {
     return <BookCoverFallback className={className} title={title} />;
   }
@@ -34,11 +36,7 @@ export function BookCover({
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         alt={alt}
-        className={cn(
-          "relative size-full object-cover transition-opacity duration-200",
-          loaded ? "opacity-100" : "opacity-0",
-        )}
-        onLoad={() => setLoaded(true)}
+        className="relative size-full object-cover"
         src={src}
       />
     </div>

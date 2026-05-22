@@ -374,7 +374,9 @@ describe('LibraryService', () => {
                 book: {
                   include: {
                     coverBlob: { select: { mimeType: true } },
-                    files: true,
+                    files: {
+                      select: { format: true, isPrimary: true, kind: true },
+                    },
                   },
                 },
                 progress: true,
@@ -504,7 +506,9 @@ describe('LibraryService', () => {
         book: {
           include: {
             coverBlob: { select: { mimeType: true } },
-            files: true,
+            files: {
+              select: { format: true, isPrimary: true, kind: true },
+            },
           },
         },
         collectionItems: {

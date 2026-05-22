@@ -2,15 +2,18 @@ import { BookFileKind, type Prisma } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
-import { bufferToDataUrl } from '../shared/blob-utils';
 import { daysAgo, startOfDay } from '../shared/date-utils';
 
+// Match the same shape used by LibraryService: cover bytes are served from
+// `/api/library/covers/:bookId` and BookFile.readingProgressIndex is a multi-KB
+// Json column never rendered on home. Selecting only what we read keeps the
+// home payload small.
 type LibraryItemRecord = Prisma.LibraryItemGetPayload<{
   include: {
     book: {
       include: {
-        coverBlob: true;
-        files: true;
+        coverBlob: { select: { mimeType: true } };
+        files: { select: { format: true; isPrimary: true; kind: true } };
       };
     };
     progress: true;
@@ -21,8 +24,8 @@ type CatalogEntryRecord = Prisma.CatalogEntryGetPayload<{
   include: {
     book: {
       include: {
-        coverBlob: true;
-        files: true;
+        coverBlob: { select: { mimeType: true } };
+        files: { select: { format: true; isPrimary: true; kind: true } };
       };
     };
   };
@@ -57,8 +60,10 @@ export class HomeService {
         include: {
           book: {
             include: {
-              coverBlob: true,
-              files: true,
+              coverBlob: { select: { mimeType: true } },
+              files: {
+                select: { format: true, isPrimary: true, kind: true },
+              },
             },
           },
           progress: true,
@@ -71,8 +76,10 @@ export class HomeService {
         include: {
           book: {
             include: {
-              coverBlob: true,
-              files: true,
+              coverBlob: { select: { mimeType: true } },
+              files: {
+                select: { format: true, isPrimary: true, kind: true },
+              },
             },
           },
         },
@@ -245,8 +252,8 @@ function serializeCurrentEngagement(item: LibraryItemRecord) {
     authors: item.book.authors,
     chapterLabel: item.progress?.chapterLabel ?? 'Opening chapters',
     completionPercent: item.progress?.completionPercent ?? 0,
-    coverImageDataUrl: item.book.coverBlob
-      ? bufferToDataUrl(item.book.coverBlob.bytes, item.book.coverBlob.mimeType)
+    coverImageUrl: item.book.coverBlob
+      ? buildCoverImageUrl(item.book.id)
       : null,
     id: item.id,
     lastReadAt: getMostRecentEngagementDate(item).toISOString(),
@@ -255,6 +262,13 @@ function serializeCurrentEngagement(item: LibraryItemRecord) {
     slug: item.slug,
     title: item.book.title,
   };
+}
+
+function buildCoverImageUrl(bookId: string) {
+  // Mirrors LibraryService.buildCoverImageUrl — same public endpoint, served
+  // by LibraryController. Both home and library payloads point browsers at
+  // the same cached URLs.
+  return `/api/library/covers/${bookId}`;
 }
 
 function getMostRecentEngagementDate(item: LibraryItemRecord) {
@@ -272,11 +286,8 @@ function serializeCatalogEntry(entry: CatalogEntryRecord) {
 
   return {
     authors: entry.book.authors,
-    coverImageDataUrl: entry.book.coverBlob
-      ? bufferToDataUrl(
-          entry.book.coverBlob.bytes,
-          entry.book.coverBlob.mimeType,
-        )
+    coverImageUrl: entry.book.coverBlob
+      ? buildCoverImageUrl(entry.book.id)
       : null,
     description: entry.editorialDescription ?? entry.book.description,
     id: entry.id,

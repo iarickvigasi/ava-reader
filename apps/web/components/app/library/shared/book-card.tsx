@@ -20,6 +20,11 @@ export function LibraryBookCard({
   return (
     <Link
       href={getLibraryBookInfoHref(book.slug, {
+        card: {
+          authors: book.authors,
+          coverImageUrl: book.coverImageUrl,
+          title: book.title,
+        },
         fromCollectionSlug: collectionSlug,
       })}
       className={cn(

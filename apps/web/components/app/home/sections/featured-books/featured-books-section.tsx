@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { BookCover } from "@/components/app/shared/book-cover";
 import type { HomePayload } from "@/lib/api-types";
+import { resolveApiAssetUrl } from "@/lib/api";
 import { formatAuthors } from "@/lib/format-authors";
 import { Panel, SectionHeader } from "../../shared/home-shared";
 import { CatalogAddButton } from "./catalog-add-button";
@@ -61,7 +62,7 @@ function FeaturedBookCompact({ entry }: { entry: FeaturedEntry }) {
       <BookCover
         alt={`${entry.title} cover`}
         className="aspect-[0.72] w-full rounded-xs"
-        src={entry.coverImageDataUrl}
+        src={resolveApiAssetUrl(entry.coverImageUrl)}
         title={entry.title}
       />
       <div className="space-y-1">
@@ -83,7 +84,7 @@ function FeaturedBookFull({ entry }: { entry: FeaturedEntry }) {
       <BookCover
         alt={`${entry.title} cover`}
         className="aspect-[0.76] w-28"
-        src={entry.coverImageDataUrl}
+        src={resolveApiAssetUrl(entry.coverImageUrl)}
         title={entry.title}
       />
       <div className="space-y-4">
