@@ -59,6 +59,21 @@ export class LibraryController {
     response.send(Buffer.from(cover.bytes));
   }
 
+  // Returns only the fields the book-info screen needs ON TOP of the card
+  // data callers already have. Must be registered before the catch-all
+  // `:libraryItemId` route below so Nest's path-order matching picks it.
+  @Get(':libraryItemId/details')
+  @UseGuards(ClerkAuthGuard)
+  getLibraryItemDetails(
+    @Req() request: AuthenticatedRequest,
+    @Param('libraryItemId') libraryItemId: string,
+  ) {
+    return this.libraryService.getLibraryItemDetails(
+      request.auth.clerkUserId,
+      libraryItemId,
+    );
+  }
+
   @Get(':libraryItemId')
   @UseGuards(ClerkAuthGuard)
   getLibraryItem(

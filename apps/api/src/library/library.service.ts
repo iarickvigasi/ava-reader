@@ -377,6 +377,76 @@ export class LibraryService {
     };
   }
 
+  // Returns ONLY the fields that aren't already known from a card. Callers
+  // that navigate to book-info from the library / collection list already
+  // have title, authors, cover URL, etc. encoded in the URL — they only need
+  // the delta. Direct-nav callers (no card hints) hit `getLibraryItem` for
+  // the full record instead.
+  async getLibraryItemDetails(clerkUserId: string, libraryItemId: string) {
+    const user = await this.usersService.getCurrentUserRecord(clerkUserId);
+
+    const item = await this.prisma.libraryItem.findFirst({
+      where: {
+        userId: user.id,
+        isArchived: false,
+        OR: [{ id: libraryItemId }, { slug: libraryItemId }],
+      },
+      select: {
+        addedAt: true,
+        book: {
+          select: {
+            description: true,
+            estimatedPageCount: true,
+            genres: true,
+            language: true,
+            publishedYear: true,
+          },
+        },
+        collectionItems: {
+          include: {
+            collection: {
+              select: {
+                id: true,
+                kind: true,
+                name: true,
+                smartKey: true,
+                sortOrder: true,
+              },
+            },
+          },
+        },
+        progress: {
+          select: {
+            chapterLabel: true,
+            lastReadAt: true,
+            minutesRead: true,
+          },
+        },
+        source: true,
+      },
+    });
+
+    if (!item) {
+      throw new NotFoundException('Book not found in library.');
+    }
+
+    return {
+      details: {
+        addedAt: item.addedAt.toISOString(),
+        approximatePageCount: item.book.estimatedPageCount ?? null,
+        chapterLabel: item.progress?.chapterLabel ?? null,
+        collections: sortAndSerializeCollections(item.collectionItems),
+        description: item.book.description,
+        genres: item.book.genres,
+        language: item.book.language,
+        lastReadAt: item.progress?.lastReadAt?.toISOString() ?? null,
+        minutesRead: item.progress?.minutesRead ?? 0,
+        publishedYear: item.book.publishedYear,
+        source: item.source,
+      },
+    };
+  }
+
   async getLibraryItem(clerkUserId: string, libraryItemId: string) {
     const user = await this.usersService.getCurrentUserRecord(clerkUserId);
 
@@ -425,21 +495,7 @@ export class LibraryService {
       item.book.files.find((file) => file.isPrimary) ??
       null;
 
-    const collections = item.collectionItems
-      .map((collectionItem) => collectionItem.collection)
-      .sort((left, right) => {
-        if (left.sortOrder === right.sortOrder) {
-          return left.name.localeCompare(right.name);
-        }
-
-        return left.sortOrder - right.sortOrder;
-      })
-      .map((collection) => ({
-        id: collection.id,
-        kind: collection.kind,
-        name: collection.name,
-        smartKey: collection.smartKey,
-      }));
+    const collections = sortAndSerializeCollections(item.collectionItems);
 
     return {
       book: {
@@ -842,6 +898,35 @@ function buildCoverImageUrl(bookId: string) {
   // The Nest app mounts under a global `/api` prefix (see app.config.ts), so
   // the public-facing URL must include it.
   return `/api/library/covers/${bookId}`;
+}
+
+type CollectionItemForSerialize = {
+  collection: {
+    id: string;
+    kind: 'SMART' | 'CUSTOM';
+    name: string;
+    smartKey: null | string;
+    sortOrder: number;
+  };
+};
+
+function sortAndSerializeCollections(
+  collectionItems: CollectionItemForSerialize[],
+) {
+  return collectionItems
+    .map((collectionItem) => collectionItem.collection)
+    .sort((left, right) => {
+      if (left.sortOrder === right.sortOrder) {
+        return left.name.localeCompare(right.name);
+      }
+      return left.sortOrder - right.sortOrder;
+    })
+    .map((collection) => ({
+      id: collection.id,
+      kind: collection.kind,
+      name: collection.name,
+      smartKey: collection.smartKey,
+    }));
 }
 
 function compareLightweightItemsByEngagement(

@@ -133,7 +133,7 @@ describe('HomeService', () => {
     expect(home.currentEngagement).toMatchObject({
       authors: ['Example Author'],
       chapterLabel: 'Chapter 4',
-      id: 'library-1',
+      libraryItemId: 'library-1',
       title: 'Example Title',
     });
   });

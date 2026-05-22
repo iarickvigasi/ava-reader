@@ -1,5 +1,15 @@
+import type { LibraryCardBook } from "./library";
 import type { BookFileFormat } from "./shared";
 import type { UserRole } from "./user";
+
+// Home's hero "Continue reading" card. Extends LibraryCardBook so the same
+// minimum shape is shared with library + collection cards — any drift would
+// fail typecheck instead of silently diverging.
+export type CurrentEngagement = LibraryCardBook & {
+  chapterLabel: string;
+  lastReadAt: string;
+  nextMilestone: string;
+};
 
 export type HomePayload = {
   collections: {
@@ -13,18 +23,7 @@ export type HomePayload = {
       unreadCount: number;
     }>;
   };
-  currentEngagement: null | {
-    authors: string[];
-    chapterLabel: string;
-    completionPercent: number;
-    coverImageUrl: string | null;
-    id: string;
-    lastReadAt: string;
-    nextMilestone: string;
-    primaryFormat: BookFileFormat;
-    slug: string;
-    title: string;
-  };
+  currentEngagement: CurrentEngagement | null;
   feedback: {
     acceptsScreenshot: boolean;
   };
