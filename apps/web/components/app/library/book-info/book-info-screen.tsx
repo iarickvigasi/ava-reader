@@ -1,4 +1,7 @@
+"use client";
+
 import type { LibraryBookInfo } from "@/lib/api-types";
+import { useBookInfo } from "@/features/offline/buckets/library";
 import { BackLink } from "./back-link";
 import { BookActionCards } from "./action-cards";
 import { BookActions } from "./actions";
@@ -10,13 +13,17 @@ import { ReadingProgress } from "./reading-progress";
 
 type LibraryBookInfoScreenProps = {
   backHref: string;
+  // Initial payload from the RSC page. Used as the SSR-stable fallback;
+  // useBookInfo swaps in the Dexie-cached row when it becomes available so
+  // subsequent navigations / offline reloads still work.
   book: LibraryBookInfo;
 };
 
 export function LibraryBookInfoScreen({
   backHref,
-  book,
+  book: initial,
 }: LibraryBookInfoScreenProps) {
+  const book = useBookInfo(initial.slug, initial);
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col px-5 pb-10 pt-6 sm:px-6 md:pb-14 md:pt-8 lg:px-10">
       <div className="mx-auto w-full max-w-7xl space-y-12 md:space-y-16">

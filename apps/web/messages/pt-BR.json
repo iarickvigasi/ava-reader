@@ -18,6 +18,15 @@
     "switchToLight": "Mudar para o modo claro",
     "switchToDark": "Mudar para o modo escuro"
   },
+  "offline": {
+    "chip": "Sem conexão",
+    "chipAria": "Você está sem conexão. Toque para ver detalhes.",
+    "modal": {
+      "title": "Você está sem conexão",
+      "body": "O leitor funciona para todos os livros que você baixou para uso offline. Você ainda pode criar e editar destaques, marcadores e preferências — eles serão sincronizados quando você voltar a ficar on-line. Seu progresso de leitura e suas estatísticas ficam salvos localmente. Os comentários de IA que você solicitar serão executados assim que a conexão for restabelecida.",
+      "dismiss": "Entendi"
+    }
+  },
   "legal": {
     "agreePrefix": "Ao continuar você concorda com os",
     "termsAndPrivacy": "Termos de Serviço e a Política de Privacidade da AVA"

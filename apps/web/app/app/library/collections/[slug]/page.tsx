@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { LibraryCollectionScreen } from "@/components/app/library/collection/collection-screen";
+import { CollectionHydrator } from "@/features/offline/buckets/library";
 import type { LibraryCollectionPayload } from "@/lib/api-types";
 import { ServerApiError, fetchServerApi } from "@/lib/server-api";
 
@@ -30,5 +31,13 @@ export default async function LibraryCollectionPage({
   const { slug } = await params;
   const payload = await getLibraryCollection(slug);
 
-  return <LibraryCollectionScreen collection={payload.collection} />;
+  return (
+    <>
+      {/* CollectionHydrator seeds Dexie from this RSC payload and
+          revalidates against the API while online. The screen itself stays
+          render-only so it remains SSR-testable without a ClerkProvider. */}
+      <CollectionHydrator initial={payload.collection} />
+      <LibraryCollectionScreen collection={payload.collection} />
+    </>
+  );
 }

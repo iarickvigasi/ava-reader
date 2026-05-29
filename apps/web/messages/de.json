@@ -18,6 +18,15 @@
     "switchToLight": "Zum hellen Modus wechseln",
     "switchToDark": "Zum dunklen Modus wechseln"
   },
+  "offline": {
+    "chip": "Offline",
+    "chipAria": "Du bist offline. Tippe für Details.",
+    "modal": {
+      "title": "Du bist offline",
+      "body": "Der Reader funktioniert für jedes Buch, das du für die Offline-Nutzung heruntergeladen hast. Du kannst weiterhin Markierungen, Lesezeichen und Einstellungen erstellen und bearbeiten — sie werden synchronisiert, sobald du wieder online bist. Lesefortschritt und Statistiken werden lokal gespeichert. KI-Kommentare, die du anforderst, werden ausgeführt, sobald die Verbindung wiederhergestellt ist.",
+      "dismiss": "Verstanden"
+    }
+  },
   "legal": {
     "agreePrefix": "Indem du fortfährst, akzeptierst du die",
     "termsAndPrivacy": "Nutzungsbedingungen und Datenschutzerklärung von AVA"

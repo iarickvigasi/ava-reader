@@ -18,6 +18,15 @@
     "switchToLight": "Cambiar a modo claro",
     "switchToDark": "Cambiar a modo oscuro"
   },
+  "offline": {
+    "chip": "Sin conexión",
+    "chipAria": "No tienes conexión. Toca para ver los detalles.",
+    "modal": {
+      "title": "Estás sin conexión",
+      "body": "El lector funciona con todos los libros que hayas descargado para uso sin conexión. Aún puedes crear y editar resaltados, marcadores y preferencias — se sincronizarán cuando vuelvas a estar en línea. Tu progreso de lectura y estadísticas se guardan localmente. Los comentarios de IA que solicites se ejecutarán cuando se restablezca la conexión.",
+      "dismiss": "Entendido"
+    }
+  },
   "legal": {
     "agreePrefix": "Al continuar aceptas los",
     "termsAndPrivacy": "Términos de servicio y la política de privacidad de AVA"

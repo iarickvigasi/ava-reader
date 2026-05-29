@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { LibraryBookInfoScreen } from "@/components/app/library/book-info/book-info-screen";
+import { BookInfoHydrator } from "@/features/offline/buckets/library";
 import {
   APP_LIBRARY_HREF,
   getCollectionHref,
@@ -67,7 +68,16 @@ export default async function LibraryBookInfoPage({
     ? getCollectionHref(fromCollectionSlug)
     : APP_LIBRARY_HREF;
 
-  return <LibraryBookInfoScreen backHref={backHref} book={book} />;
+  return (
+    <>
+      {/* Seeds Dexie with the full LibraryBookInfo on first visit so the
+          page works offline thereafter. Revalidates against the API while
+          online so cached details (description, language, page count, …)
+          stay fresh. */}
+      <BookInfoHydrator initial={book} />
+      <LibraryBookInfoScreen backHref={backHref} book={book} />
+    </>
+  );
 }
 
 function pickFromCollection(

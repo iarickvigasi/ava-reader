@@ -18,6 +18,15 @@
     "switchToLight": "Passer en mode clair",
     "switchToDark": "Passer en mode sombre"
   },
+  "offline": {
+    "chip": "Hors ligne",
+    "chipAria": "Vous êtes hors ligne. Touchez pour plus de détails.",
+    "modal": {
+      "title": "Vous êtes hors ligne",
+      "body": "Le lecteur fonctionne pour tous les livres que vous avez téléchargés pour une utilisation hors ligne. Vous pouvez toujours créer et modifier des surlignages, des signets et des préférences — ils seront synchronisés dès votre retour en ligne. Votre progression de lecture et vos statistiques sont enregistrées localement. Les commentaires IA que vous demandez s'exécuteront dès que la connexion sera rétablie.",
+      "dismiss": "Compris"
+    }
+  },
   "legal": {
     "agreePrefix": "En continuant, vous acceptez les",
     "termsAndPrivacy": "Conditions d'utilisation et la politique de confidentialité d'AVA"

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { AppHeaderBrand } from "@/components/brand/app-header-brand";
+import { OfflineIndicator } from "@/components/app/core/offline-indicator";
 import {
   useReaderUi,
   type ReaderPanel,
@@ -81,7 +82,10 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
       <header className="sticky top-0 z-40 bg-paper/92 backdrop-blur">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10">
           <div className="flex h-16 items-center justify-between gap-3 md:hidden">
-            <ThemeToggle />
+            <div className="flex items-center gap-2">
+              <OfflineIndicator compact />
+              <ThemeToggle />
+            </div>
             <Link href="/app" className="min-w-0">
               <AppHeaderBrand className="justify-center gap-2" />
             </Link>
@@ -132,6 +136,7 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
                   {t("admin.long")}
                 </Link>
               ) : null}
+              <OfflineIndicator />
               <ThemeToggle />
               <div className="flex items-center gap-3 rounded-2xl bg-soft-fill px-4 py-2">
                 <div className="hidden text-right lg:block">
@@ -264,12 +269,15 @@ function ReaderNavigation() {
 
       <div className="sticky top-0 z-40 border-b border-line/40 bg-paper/95 px-4 py-3 backdrop-blur md:hidden">
         <div className="flex items-center justify-between gap-4">
-          <a
-            href="/app"
-            className="font-(--font-display) text-xl leading-none text-ink"
-          >
-            AVA
-          </a>
+          <div className="flex items-center gap-2">
+            <a
+              href="/app"
+              className="font-(--font-display) text-xl leading-none text-ink"
+            >
+              AVA
+            </a>
+            <OfflineIndicator compact />
+          </div>
           <div className="flex items-center gap-2 overflow-x-auto">
             {readerNavItems.slice(0, 5).map((item) => (
               <ReaderNavItem

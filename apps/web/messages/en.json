@@ -18,6 +18,15 @@
     "switchToLight": "Switch to light mode",
     "switchToDark": "Switch to dark mode"
   },
+  "offline": {
+    "chip": "Offline",
+    "chipAria": "You are offline. Tap for details.",
+    "modal": {
+      "title": "You're offline",
+      "body": "The reader works for every book you've downloaded for offline use. You can still create and edit highlights, bookmarks, and preferences — they'll sync when you're back online. Your reading progress and statistics are saved locally. AI comments you request will run once the connection is restored.",
+      "dismiss": "Got it"
+    }
+  },
   "legal": {
     "agreePrefix": "By continuing you agree AVA's",
     "termsAndPrivacy": "Terms of Service & Privacy Policy"
