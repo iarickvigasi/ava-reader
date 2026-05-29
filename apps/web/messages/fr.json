@@ -23,7 +23,7 @@
     "chipAria": "Vous êtes hors ligne. Touchez pour plus de détails.",
     "modal": {
       "title": "Vous êtes hors ligne",
-      "body": "Le lecteur fonctionne pour tous les livres que vous avez téléchargés pour une utilisation hors ligne. Vous pouvez toujours créer et modifier des surlignages, des signets et des préférences — ils seront synchronisés dès votre retour en ligne. Votre progression de lecture et vos statistiques sont enregistrées localement. Les commentaires IA que vous demandez s'exécuteront dès que la connexion sera rétablie.",
+      "body": "Pas de connexion ? Aucun problème. Tous les livres que vous avez enregistrés sont prêts à être lus. Vos surlignages, signets, réglages et votre progression de lecture sont tous conservés en sécurité sur votre appareil et se mettront à jour dès que vous serez de nouveau connecté. Tout ce qui nécessite l'IA s'exécutera une fois que vous serez de nouveau en ligne.",
       "dismiss": "Compris"
     }
   },

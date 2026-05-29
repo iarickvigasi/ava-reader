@@ -23,7 +23,7 @@
     "chipAria": "Você está sem conexão. Toque para ver detalhes.",
     "modal": {
       "title": "Você está sem conexão",
-      "body": "O leitor funciona para todos os livros que você baixou para uso offline. Você ainda pode criar e editar destaques, marcadores e preferências — eles serão sincronizados quando você voltar a ficar on-line. Seu progresso de leitura e suas estatísticas ficam salvos localmente. Os comentários de IA que você solicitar serão executados assim que a conexão for restabelecida.",
+      "body": "Sem internet? Sem problema. Qualquer livro que você salvou está pronto para leitura. Seus destaques, marcadores, configurações e progresso de leitura ficam guardados com segurança no seu dispositivo e serão sincronizados assim que você se reconectar. Tudo o que precisa de IA será executado quando você estiver on-line novamente.",
       "dismiss": "Entendi"
     }
   },

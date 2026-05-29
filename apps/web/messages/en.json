@@ -23,7 +23,7 @@
     "chipAria": "You are offline. Tap for details.",
     "modal": {
       "title": "You're offline",
-      "body": "The reader works for every book you've downloaded for offline use. You can still create and edit highlights, bookmarks, and preferences — they'll sync when you're back online. Your reading progress and statistics are saved locally. AI comments you request will run once the connection is restored.",
+      "body": "No internet? No problem. Any book you've saved is ready to read. Your highlights, bookmarks, settings, and reading progress are all kept safe on your device and will catch up the moment you reconnect. Anything that needs AI will run once you're online again.",
       "dismiss": "Got it"
     }
   },

@@ -23,7 +23,7 @@
     "chipAria": "No tienes conexión. Toca para ver los detalles.",
     "modal": {
       "title": "Estás sin conexión",
-      "body": "El lector funciona con todos los libros que hayas descargado para uso sin conexión. Aún puedes crear y editar resaltados, marcadores y preferencias — se sincronizarán cuando vuelvas a estar en línea. Tu progreso de lectura y estadísticas se guardan localmente. Los comentarios de IA que solicites se ejecutarán cuando se restablezca la conexión.",
+      "body": "¿Sin internet? No hay problema. Cualquier libro que hayas guardado está listo para leer. Tus resaltados, marcadores, ajustes y progreso de lectura se guardan de forma segura en tu dispositivo y se pondrán al día en cuanto vuelvas a conectarte. Todo lo que necesite IA se ejecutará cuando estés de nuevo en línea.",
       "dismiss": "Entendido"
     }
   },
