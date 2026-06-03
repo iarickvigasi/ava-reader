@@ -9,6 +9,7 @@ import { createContext, type ReactNode, useCallback, useContext, useEffect, useR
 import { usePathname } from "next/navigation";
 
 import { isOnline, subscribeToNetworkState, } from "@/features/offline/net-state";
+import { hasSeenOfflineModal, markOfflineModalSeen, } from "@/features/offline/seen-modal";
 import { OfflineModal } from "./offline-modal";
 
 type OfflineModalCtx = {
@@ -69,13 +70,20 @@ export function OfflineModalProvider({ children }: OfflineModalProviderProps) {
         setIsOpen(false);
         return;
       }
-      // Auto-open when offline
+      // Auto-open the first time we go offline; afterwards the chip is the
+      // only way back in. Record "seen" the moment we surface it (on display,
+      // not on dismiss).
+      if (hasSeenOfflineModal()) return;
+      markOfflineModalSeen();
       setIsOpen(true);
     };
     // Cold-start read. If we boot offline, surface the modal immediately
     // (this also covers the case where the user reloaded an offline tab).
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (!isOnline()) setIsOpen(true);
+    if (!isOnline() && !hasSeenOfflineModal()) {
+      markOfflineModalSeen();
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setIsOpen(true);
+    }
     return subscribeToNetworkState(applyOnline);
   }, []);
 

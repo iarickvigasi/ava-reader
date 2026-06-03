@@ -18,6 +18,7 @@ import { useEffect, useRef } from "react";
 
 import { clearHome } from "./buckets/home";
 import { clearCurrentUser } from "./buckets/me";
+import { clearOfflineModalSeen } from "./seen-modal";
 
 export function ClearOfflineOnSignOut() {
   const { isLoaded, userId } = useAuth();
@@ -37,6 +38,7 @@ export function ClearOfflineOnSignOut() {
     if (previous && !userId) {
       void clearCurrentUser();
       void clearHome();
+      clearOfflineModalSeen();
     }
   }, [isLoaded, userId]);
 
