@@ -53,6 +53,27 @@ export async function fetchServerApi<T>(
   return (await response.json()) as T;
 }
 
+// Like fetchServerApi, but tolerates "couldn't reach the API" by returning
+// null instead of throwing. Real HTTP errors (404, 403, 5xx…) still bubble
+// — those need to land in notFound() or the error boundary as usual.
+//
+// Use this from RSC pages that have an offline fallback path: a null return
+// means "render the cached / fallback UI", a thrown error means "this isn't
+// a connectivity problem, surface it normally."
+export async function fetchServerApiTolerant<T>(
+  path: string,
+  options: ApiRequestOptions = {},
+): Promise<T | null> {
+  try {
+    return await fetchServerApi<T>(path, options);
+  } catch (error) {
+    if (isNetworkError(error)) {
+      return null;
+    }
+    throw error;
+  }
+}
+
 // Distinguishes "couldn't reach the API at all" (offline, DNS failure, the
 // NestJS backend is down) from a real HTTP error response (404, 403, 500…).
 //

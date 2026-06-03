@@ -2,26 +2,24 @@ import { notFound } from "next/navigation";
 import { AdminCatalogManager } from "@/components/app/admin/admin-catalog-manager";
 import { OfflineRouteFallback } from "@/components/app/core/offline-route-fallback";
 import type { AdminCatalogEntry } from "@/lib/api-types";
-import { ServerApiError, fetchServerApi, isNetworkError } from "@/lib/server-api";
+import { ServerApiError, fetchServerApiTolerant } from "@/lib/server-api";
 
 export const dynamic = "force-dynamic";
 
 // Returns the entries, or null when the API is unreachable (offline) — admin
 // data isn't cached offline, so we surface the offline-route fallback rather
-// than crashing the route.
+// than crashing the route. The 403 (not-an-admin) case stays explicit because
+// it has its own UX (notFound), not the offline fallback.
 async function getAdminCatalogEntries(): Promise<AdminCatalogEntry[] | null> {
   try {
-    return await fetchServerApi<AdminCatalogEntry[]>("/api/admin/catalog", {
-      returnBackUrl: "/app/admin/catalog",
-    });
+    return await fetchServerApiTolerant<AdminCatalogEntry[]>(
+      "/api/admin/catalog",
+      { returnBackUrl: "/app/admin/catalog" },
+    );
   } catch (error) {
     if (error instanceof ServerApiError && error.status === 403) {
       notFound();
     }
-    if (isNetworkError(error)) {
-      return null;
-    }
-
     throw error;
   }
 }
