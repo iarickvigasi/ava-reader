@@ -50,7 +50,7 @@ export function OfflineModal() {
           <button
             type="button"
             onClick={close}
-            className="inline-flex h-11 items-center rounded-pl bg-brand-fill px-5 text-sm font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-brand-fill-strong"
+            className="inline-flex h-11 items-center rounded-[11px] bg-brand-fill px-5 text-sm font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-brand-fill-strong"
           >
             {t("dismiss")}
           </button>
