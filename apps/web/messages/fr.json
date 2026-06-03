@@ -25,6 +25,28 @@
       "title": "Vous êtes hors ligne",
       "body": "Pas de connexion ? Aucun problème. Tous les livres que vous avez enregistrés sont prêts à être lus. Vos surlignages, signets, réglages et votre progression de lecture sont tous conservés en sécurité sur votre appareil et se mettront à jour dès que vous serez de nouveau connecté. Tout ce qui nécessite l'IA s'exécutera une fois que vous serez de nouveau en ligne.",
       "dismiss": "Compris"
+    },
+    "routeFallback": {
+      "statusOnline": "De nouveau en ligne",
+      "statusOffline": "Hors ligne",
+      "openLibrary": "Ouvrir la bibliothèque",
+      "retry": "Réessayer",
+      "generic": {
+        "title": "Cette page nécessite une connexion",
+        "body": "Cette page n'est pas disponible hors ligne. Votre bibliothèque et les livres que vous avez enregistrés pour la lecture hors ligne restent accessibles."
+      },
+      "home": {
+        "title": "Votre tableau de bord nécessite une connexion",
+        "body": "Nous n'avons pas pu charger votre tableau de bord hors ligne. Ouvrez votre bibliothèque pour continuer à lire les livres que vous avez enregistrés : votre progression et vos surlignages sont en sécurité et se synchroniseront dès votre retour en ligne."
+      },
+      "admin": {
+        "title": "Les outils d'administration nécessitent une connexion",
+        "body": "Le gestionnaire de catalogue ne fonctionne qu'en ligne. Reconnectez-vous pour gérer le catalogue public."
+      },
+      "insights": {
+        "title": "Les statistiques nécessitent une connexion",
+        "body": "Vos statistiques de lecture sont calculées sur le serveur et nécessitent une connexion. Votre lecture hors ligne est toujours comptabilisée et apparaîtra ici dès votre reconnexion."
+      }
     }
   },
   "legal": {

@@ -1,11 +1,15 @@
 import { notFound } from "next/navigation";
 import { AdminCatalogManager } from "@/components/app/admin/admin-catalog-manager";
+import { OfflineRouteFallback } from "@/components/app/core/offline-route-fallback";
 import type { AdminCatalogEntry } from "@/lib/api-types";
-import { ServerApiError, fetchServerApi } from "@/lib/server-api";
+import { ServerApiError, fetchServerApi, isNetworkError } from "@/lib/server-api";
 
 export const dynamic = "force-dynamic";
 
-async function getAdminCatalogEntries() {
+// Returns the entries, or null when the API is unreachable (offline) — admin
+// data isn't cached offline, so we surface the offline-route fallback rather
+// than crashing the route.
+async function getAdminCatalogEntries(): Promise<AdminCatalogEntry[] | null> {
   try {
     return await fetchServerApi<AdminCatalogEntry[]>("/api/admin/catalog", {
       returnBackUrl: "/app/admin/catalog",
@@ -14,6 +18,9 @@ async function getAdminCatalogEntries() {
     if (error instanceof ServerApiError && error.status === 403) {
       notFound();
     }
+    if (isNetworkError(error)) {
+      return null;
+    }
 
     throw error;
   }
@@ -21,6 +28,10 @@ async function getAdminCatalogEntries() {
 
 export default async function AdminCatalogPage() {
   const entries = await getAdminCatalogEntries();
+
+  if (!entries) {
+    return <OfflineRouteFallback routeKey="admin" />;
+  }
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-8 sm:px-6 lg:px-10 lg:py-12">

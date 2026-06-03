@@ -25,6 +25,28 @@
       "title": "Estás sin conexión",
       "body": "¿Sin internet? No hay problema. Cualquier libro que hayas guardado está listo para leer. Tus resaltados, marcadores, ajustes y progreso de lectura se guardan de forma segura en tu dispositivo y se pondrán al día en cuanto vuelvas a conectarte. Todo lo que necesite IA se ejecutará cuando estés de nuevo en línea.",
       "dismiss": "Entendido"
+    },
+    "routeFallback": {
+      "statusOnline": "De nuevo en línea",
+      "statusOffline": "Sin conexión",
+      "openLibrary": "Abrir biblioteca",
+      "retry": "Reintentar",
+      "generic": {
+        "title": "Esta página necesita conexión",
+        "body": "Esta página no está disponible sin conexión. Tu biblioteca y los libros que has guardado para leer sin conexión siguen disponibles."
+      },
+      "home": {
+        "title": "Tu panel necesita conexión",
+        "body": "No pudimos cargar tu panel de inicio sin conexión. Abre tu biblioteca para seguir leyendo los libros que has guardado: tu progreso y tus resaltados están a salvo y se sincronizarán cuando vuelvas a estar en línea."
+      },
+      "admin": {
+        "title": "Las herramientas de administración necesitan conexión",
+        "body": "El gestor del catálogo solo funciona cuando estás en línea. Vuelve a conectarte para gestionar el catálogo público."
+      },
+      "insights": {
+        "title": "Las estadísticas necesitan conexión",
+        "body": "Tus estadísticas de lectura se calculan en el servidor y necesitan conexión. Tu lectura sin conexión sigue contando y aparecerá aquí cuando vuelvas a conectarte."
+      }
     }
   },
   "legal": {

@@ -4,19 +4,25 @@ import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { AppNavigation } from "@/components/app/core/app-navigation";
 import { OfflineModalProvider } from "@/components/app/core/offline-modal-context";
+import { ServiceWorkerRegistrar } from "@/components/app/core/service-worker-registrar";
 import { ReaderUiProvider } from "@/components/app/core/reader-ui-context";
 import { useInterfaceLang } from "@/components/app/preferences/use-interface-lang";
+import { useCurrentUserCached } from "@/features/offline/buckets/me";
 import type { CurrentUserPayload } from "@/lib/api-types";
 import { cn } from "@/lib/cn";
 
 type AppShellProps = {
   children: ReactNode;
-  currentUser: CurrentUserPayload;
+  // Null when the layout's /api/me fetch failed (offline). We recover the
+  // last-known user from Dexie via useCurrentUserCached so the nav still
+  // renders the admin entry + display name on an offline reload.
+  currentUser: CurrentUserPayload | null;
 };
 
-export function AppShell({ children, currentUser }: AppShellProps) {
+export function AppShell({ children, currentUser: initialUser }: AppShellProps) {
   const pathname = usePathname();
   const isReaderRoute = pathname.startsWith("/app/read/");
+  const currentUser = useCurrentUserCached(initialUser);
   // Mount the interface-language hook globally so the locale cookie stays in
   // sync with the DB-saved preference on every page (not just when the
   // preferences panel is open). The hook reconciles the cookie +
@@ -30,6 +36,7 @@ export function AppShell({ children, currentUser }: AppShellProps) {
   if (isReaderRoute) {
     return (
       <OfflineModalProvider>
+        <ServiceWorkerRegistrar />
         <ReaderUiProvider>
           <div className="flex h-dvh flex-col overflow-hidden">
             <AppNavigation currentUser={currentUser} />
@@ -42,6 +49,7 @@ export function AppShell({ children, currentUser }: AppShellProps) {
 
   return (
     <OfflineModalProvider>
+      <ServiceWorkerRegistrar />
       <div className="min-h-screen">
         <AppNavigation currentUser={currentUser} />
         <div className={cn(!isReaderRoute && "pb-24 md:pb-10")}>{children}</div>

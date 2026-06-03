@@ -52,3 +52,33 @@ export async function fetchServerApi<T>(
 
   return (await response.json()) as T;
 }
+
+// Distinguishes "couldn't reach the API at all" (offline, DNS failure, the
+// NestJS backend is down) from a real HTTP error response (404, 403, 500…).
+//
+// RSC pages use this to decide whether to fall back to client-rendering from
+// the offline cache (network error) or to let the error bubble to notFound()
+// / the error boundary (genuine HTTP error). A `fetch` that never gets a
+// response throws a TypeError; a `ServerApiError` always carries a real HTTP
+// status, so it is never a network error by definition.
+export function isNetworkError(error: unknown): boolean {
+  if (error instanceof ServerApiError) {
+    return false;
+  }
+  // `fetch` rejects with a TypeError when the request can't be made at all
+  // (no connection, refused, aborted DNS). Node/undici uses the same shape
+  // and often attaches a `cause`. We match on the type rather than the
+  // message so we're not locked to a single runtime's wording.
+  if (error instanceof TypeError) {
+    return true;
+  }
+  // undici wraps the underlying connection failure in `cause`; surface those
+  // too (ECONNREFUSED, ENOTFOUND, fetch failed, …).
+  if (
+    error instanceof Error &&
+    typeof (error as { cause?: unknown }).cause !== "undefined"
+  ) {
+    return true;
+  }
+  return false;
+}

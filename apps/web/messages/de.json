@@ -25,6 +25,28 @@
       "title": "Du bist offline",
       "body": "Kein Internet? Kein Problem. Jedes Buch, das du gespeichert hast, ist zum Lesen bereit. Deine Markierungen, Lesezeichen, Einstellungen und dein Lesefortschritt sind alle sicher auf deinem Gerät gespeichert und werden synchronisiert, sobald du wieder verbunden bist. Alles, was KI benötigt, wird ausgeführt, sobald du wieder online bist.",
       "dismiss": "Verstanden"
+    },
+    "routeFallback": {
+      "statusOnline": "Wieder online",
+      "statusOffline": "Offline",
+      "openLibrary": "Bibliothek öffnen",
+      "retry": "Erneut versuchen",
+      "generic": {
+        "title": "Diese Seite benötigt eine Verbindung",
+        "body": "Diese Seite ist offline nicht verfügbar. Deine Bibliothek und die Bücher, die du zum Offline-Lesen gespeichert hast, sind weiterhin verfügbar."
+      },
+      "home": {
+        "title": "Dein Dashboard benötigt eine Verbindung",
+        "body": "Wir konnten dein Start-Dashboard offline nicht laden. Öffne deine Bibliothek, um die gespeicherten Bücher weiterzulesen – dein Fortschritt und deine Markierungen sind sicher und werden synchronisiert, sobald du wieder online bist."
+      },
+      "admin": {
+        "title": "Admin-Tools benötigen eine Verbindung",
+        "body": "Der Katalog-Manager funktioniert nur online. Stelle die Verbindung wieder her, um den öffentlichen Katalog zu verwalten."
+      },
+      "insights": {
+        "title": "Einblicke benötigen eine Verbindung",
+        "body": "Deine Leseeinblicke werden auf dem Server berechnet und benötigen eine Verbindung. Dein Offline-Lesen zählt weiterhin und erscheint hier, sobald du wieder verbunden bist."
+      }
     }
   },
   "legal": {

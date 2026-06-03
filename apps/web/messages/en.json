@@ -25,6 +25,28 @@
       "title": "You're offline",
       "body": "No internet? No problem. Any book you've saved is ready to read. Your highlights, bookmarks, settings, and reading progress are all kept safe on your device and will catch up the moment you reconnect. Anything that needs AI will run once you're online again.",
       "dismiss": "Got it"
+    },
+    "routeFallback": {
+      "statusOnline": "Back online",
+      "statusOffline": "Offline",
+      "openLibrary": "Open library",
+      "retry": "Try again",
+      "generic": {
+        "title": "This page needs a connection",
+        "body": "This page isn't available offline. Your library and the books you've saved for offline reading are still available."
+      },
+      "home": {
+        "title": "Your dashboard needs a connection",
+        "body": "We couldn't load your home dashboard while offline. Open your library to keep reading the books you've saved — your progress and highlights are safe and will sync when you're back online."
+      },
+      "admin": {
+        "title": "Admin tools need a connection",
+        "body": "The catalog manager only works while you're online. Reconnect to manage the public catalog."
+      },
+      "insights": {
+        "title": "Insights need a connection",
+        "body": "Your reading insights are calculated on the server and need a connection. Your offline reading still counts and will appear here once you reconnect."
+      }
     }
   },
   "legal": {

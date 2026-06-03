@@ -16,6 +16,7 @@
 
 import Dexie, { type Table } from "dexie";
 
+import type { HomePayload } from "@/lib/api-types/home";
 import type {
   LibraryBookInfoDetails,
   LibraryCardBook,
@@ -26,6 +27,7 @@ import type {
   ReaderLocator,
   ReaderRangeLocator,
 } from "@/lib/api-types/reader";
+import type { CurrentUserPayload } from "@/lib/api-types/user";
 
 // ----- Library / collections (phase 1) ---------------------------------------
 
@@ -71,6 +73,24 @@ export type CollectionMembershipRow = {
   collectionId: string;
   libraryItemId: string;
   order: number;
+};
+
+// ----- App shell: current user + home (offline route loading) ----------------
+// Cached so the app layout + home screen can render when the user opens or
+// reloads the app offline (the service worker serves the HTML shell; these
+// rows feed the data). Both are single-row tables keyed by the literal "me"
+// — one signed-in user per browser profile.
+
+export type CurrentUserRow = {
+  id: "me";
+  user: CurrentUserPayload;
+  fetchedAt: string;
+};
+
+export type HomeRow = {
+  id: "me";
+  payload: HomePayload;
+  fetchedAt: string;
 };
 
 // ----- Book content (phase 2) ------------------------------------------------
@@ -246,13 +266,16 @@ export type MetaRow = {
   updatedAt: string;
 };
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 export const DB_NAME = "ava-reader";
 
 export class AvaReaderDB extends Dexie {
   libraryItems!: Table<LibraryItemRow, string>;
   collections!: Table<CollectionRow, string>;
   collectionMembership!: Table<CollectionMembershipRow, [string, string]>;
+
+  me!: Table<CurrentUserRow, "me">;
+  home!: Table<HomeRow, "me">;
 
   books!: Table<BookRow, string>;
   bookChapters!: Table<ChapterRow, [string, string]>;
@@ -311,6 +334,16 @@ export class AvaReaderDB extends Dexie {
       preferenceMutations: "mutationId, queuedAt",
 
       meta: "key",
+    });
+
+    // v2 — adds the single-row `me` (current user) and `home` (home payload)
+    // tables so the app layout + home screen can render offline. Purely
+    // additive: no existing table changed, so the upgrade is a no-op (Dexie
+    // creates the new object stores automatically). Existing rows in every
+    // other table carry over untouched.
+    this.version(2).stores({
+      me: "id",
+      home: "id",
     });
   }
 }

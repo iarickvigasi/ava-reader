@@ -64,14 +64,18 @@ const items = [
 ] as const;
 
 type AppNavigationProps = {
-  currentUser: CurrentUserPayload;
+  // Nullable to cover the offline cold-start window: if the app is opened
+  // offline and Dexie has no cached user yet, we still render the nav shell
+  // (brand, links, theme/offline controls) with the admin entry + display
+  // name hidden until a user is available.
+  currentUser: CurrentUserPayload | null;
 };
 
 export function AppNavigation({ currentUser }: AppNavigationProps) {
   const t = useTranslations("nav");
   const pathname = usePathname();
   const isReaderRoute = pathname.startsWith("/app/read/");
-  void currentUser;
+  const isAdmin = currentUser?.role === "ADMIN";
 
   if (isReaderRoute) {
     return <ReaderNavigation />;
@@ -90,7 +94,7 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
               <AppHeaderBrand className="justify-center gap-2" />
             </Link>
             <div className="flex items-center gap-2">
-              {currentUser.role === "ADMIN" ? (
+              {isAdmin ? (
                 <Link
                   href="/app/admin/catalog"
                   className="inline-flex min-h-10 items-center rounded-pl border border-line px-3 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-ink"
@@ -128,7 +132,7 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
             </nav>
 
             <div className="flex items-center gap-3">
-              {currentUser.role === "ADMIN" ? (
+              {isAdmin ? (
                 <Link
                   href="/app/admin/catalog"
                   className="inline-flex min-h-11 items-center rounded-[14px] border border-line bg-white/60 px-4 text-xs font-semibold uppercase tracking-[0.16em] text-ink transition hover:bg-white"
@@ -141,7 +145,7 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
               <div className="flex items-center gap-3 rounded-2xl bg-soft-fill px-4 py-2">
                 <div className="hidden text-right lg:block">
                   <p className="text-sm font-semibold text-copy-strong">
-                    {currentUser.displayName ?? t("userFallbackName")}
+                    {currentUser?.displayName ?? t("userFallbackName")}
                   </p>
                 </div>
                 <UserMenuButton />
