@@ -2,6 +2,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import { LibraryBookInfoScreen } from "./book-info-screen";
 import type { LibraryBookInfo } from "@/lib/api-types";
+import { withIntl } from "@/lib/test-utils/intl";
 
 vi.mock("next/link", () => ({
   default: ({
@@ -21,14 +22,14 @@ vi.mock("next/link", () => ({
 describe("library book info metadata", () => {
   it("renders reading time and approximate page count metadata", () => {
     const markup = renderToStaticMarkup(
-      <LibraryBookInfoScreen
+      withIntl(<LibraryBookInfoScreen
         backHref="/app/library"
         book={createBookInfo({
           approximatePageCount: 163,
           minutesRead: 195,
           publishedYear: 1818,
         })}
-      />,
+      />),
     );
 
     expect(markup).toContain("Reading time");
@@ -42,12 +43,12 @@ describe("library book info metadata", () => {
 
   it("renders full language name for canonical language tags", () => {
     const markup = renderToStaticMarkup(
-      <LibraryBookInfoScreen
+      withIntl(<LibraryBookInfoScreen
         backHref="/app/library"
         book={createBookInfo({
           language: "en",
         })}
-      />,
+      />),
     );
 
     expect(markup).toContain("Language");
@@ -57,13 +58,13 @@ describe("library book info metadata", () => {
 
   it("renders unknown page count fallback", () => {
     const markup = renderToStaticMarkup(
-      <LibraryBookInfoScreen
+      withIntl(<LibraryBookInfoScreen
         backHref="/app/library"
         book={createBookInfo({
           approximatePageCount: null,
           publishedYear: null,
         })}
-      />,
+      />),
     );
 
     expect(markup).toContain("Page count");
@@ -76,13 +77,13 @@ describe("library book info metadata", () => {
 
   it("renders estimated total reading time from page count", () => {
     const markup = renderToStaticMarkup(
-      <LibraryBookInfoScreen
+      withIntl(<LibraryBookInfoScreen
         backHref="/app/library"
         book={createBookInfo({
           approximatePageCount: 60,
           minutesRead: 0,
         })}
-      />,
+      />),
     );
 
     expect(markup).toContain("Reading time");
@@ -91,7 +92,7 @@ describe("library book info metadata", () => {
 
   it("renders genre chips instead of legacy source and collection tags", () => {
     const markup = renderToStaticMarkup(
-      <LibraryBookInfoScreen
+      withIntl(<LibraryBookInfoScreen
         backHref="/app/library"
         book={createBookInfo({
           collections: [
@@ -105,7 +106,7 @@ describe("library book info metadata", () => {
           genres: ["Gothic", "Science Fiction"],
           source: "CATALOG",
         })}
-      />,
+      />),
     );
 
     expect(markup).toContain("Gothic");
@@ -116,12 +117,12 @@ describe("library book info metadata", () => {
 
   it("does not crash when genres are missing in a legacy payload", () => {
     const markup = renderToStaticMarkup(
-      <LibraryBookInfoScreen
+      withIntl(<LibraryBookInfoScreen
         backHref="/app/library"
         book={createBookInfo({
           genres: undefined as unknown as string[],
         })}
-      />,
+      />),
     );
 
     expect(markup).not.toContain(">Catalog<");

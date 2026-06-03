@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { LibraryScreen } from "./library-screen";
 import { isAppNavigationItemActive } from "@/lib/app-navigation";
 import type { LibraryPayload } from "@/lib/api-types";
+import { withIntl } from "@/lib/test-utils/intl";
 
 vi.mock("next/link", () => ({
   default: ({
@@ -22,7 +23,7 @@ vi.mock("next/link", () => ({
 describe("library and navigation UI", () => {
   it("renders per-collection view-all links to collection detail screens", () => {
     const markup = renderToStaticMarkup(
-      <LibraryScreen library={createLibraryPayload()} />,
+      withIntl(<LibraryScreen library={createLibraryPayload()} />),
     );
 
     expect(markup).toContain('href="/app/library/collections/imported-books"');
@@ -31,20 +32,24 @@ describe("library and navigation UI", () => {
 
   it("renders collection preview books and empty collection messaging on the library screen", () => {
     const markup = renderToStaticMarkup(
-      <LibraryScreen library={createLibraryPayload()} />,
+      withIntl(<LibraryScreen library={createLibraryPayload()} />),
     );
 
-    expect(markup).toContain(
-      'href="/app/library/books/meditations-by-marcus-aurelius?fromCollection=imported-books"',
+    // Cards now embed snapshot params (title, author[], cover, liid, …) in
+    // the href so the next page can render from URL state. We assert the
+    // shape — correct slug + correct fromCollection — without pinning the
+    // exact tail, which would break on every URL hint change.
+    expect(markup).toMatch(
+      /href="\/app\/library\/books\/meditations-by-marcus-aurelius\?[^"]*fromCollection=imported-books/,
     );
-    expect(markup).toContain(
-      'href="/app/library/books/the-republic-by-plato?fromCollection=imported-books"',
+    expect(markup).toMatch(
+      /href="\/app\/library\/books\/the-republic-by-plato\?[^"]*fromCollection=imported-books/,
     );
-    expect(markup).toContain(
-      'href="/app/library/books/discourses-by-epictetus?fromCollection=imported-books"',
+    expect(markup).toMatch(
+      /href="\/app\/library\/books\/discourses-by-epictetus\?[^"]*fromCollection=imported-books/,
     );
-    expect(markup).toContain(
-      'href="/app/library/books/nicomachean-ethics-by-aristotle?fromCollection=imported-books"',
+    expect(markup).toMatch(
+      /href="\/app\/library\/books\/nicomachean-ethics-by-aristotle\?[^"]*fromCollection=imported-books/,
     );
     expect(markup).toContain("Imported Books");
     expect(markup).toContain("No books are in this collection yet.");
