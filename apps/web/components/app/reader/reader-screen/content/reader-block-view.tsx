@@ -213,11 +213,6 @@ function ImageBlock({
         src={block.src}
         style={{ maxHeight }}
       />
-      {block.alt ? (
-        <figcaption className="font-(--font-ui) text-sm text-ink/55">
-          {block.alt}
-        </figcaption>
-      ) : null}
     </figure>
   );
 }
