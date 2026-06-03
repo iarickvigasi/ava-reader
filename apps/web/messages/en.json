@@ -47,6 +47,9 @@
         "title": "Insights need a connection",
         "body": "Your reading insights are calculated on the server and need a connection. Your offline reading still counts and will appear here once you reconnect."
       }
+    },
+    "toast": {
+      "swFailed": "Offline mode unavailable — pages may not load if your connection drops."
     }
   },
   "legal": {

@@ -47,6 +47,9 @@
         "title": "Einblicke benötigen eine Verbindung",
         "body": "Deine Leseeinblicke werden auf dem Server berechnet und benötigen eine Verbindung. Dein Offline-Lesen zählt weiterhin und erscheint hier, sobald du wieder verbunden bist."
       }
+    },
+    "toast": {
+      "swFailed": "Offline-Modus nicht verfügbar – Seiten laden möglicherweise nicht ohne Verbindung."
     }
   },
   "legal": {

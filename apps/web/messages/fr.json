@@ -47,6 +47,9 @@
         "title": "Les statistiques nécessitent une connexion",
         "body": "Vos statistiques de lecture sont calculées sur le serveur et nécessitent une connexion. Votre lecture hors ligne est toujours comptabilisée et apparaîtra ici dès votre reconnexion."
       }
+    },
+    "toast": {
+      "swFailed": "Mode hors ligne indisponible — les pages risquent de ne pas se charger sans connexion."
     }
   },
   "legal": {

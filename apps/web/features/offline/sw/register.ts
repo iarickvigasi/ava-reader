@@ -5,7 +5,20 @@
 // installs a fresh worker (different bytes) and evicts the previous caches on
 // activate.
 
-export function registerServiceWorker(): void {
+import { emitAppToast } from "@/components/app/core/app-toast";
+
+// Session-scoped dedupe key so a persistent failure doesn't spam the toast
+// on every page navigation within the same tab/session.
+const SW_FAILED_TOAST_KEY = "ava-reader:sw-failed-toast-shown";
+
+type RegisterOptions = {
+  // Pre-localized toast message shown if the worker fails to register. The
+  // caller (a React component with `useTranslations`) passes this in; the
+  // registrar itself can't use the intl hook because it isn't React.
+  failureToastMessage?: string;
+};
+
+export function registerServiceWorker(options: RegisterOptions = {}): void {
   if (typeof window === "undefined") {
     return;
   }
@@ -22,7 +35,28 @@ export function registerServiceWorker(): void {
   const register = () => {
     navigator.serviceWorker.register(url, { scope: "/" }).catch(() => {
       // Registration failure is non-fatal — the app works online without the
-      // worker; it just won't have offline shell caching.
+      // worker; it just won't have offline shell caching. Surface this to
+      // the user via the global AppToast so they know why offline navigation
+      // won't work. Session-scoped dedupe avoids nagging on every nav.
+      if (!options.failureToastMessage) {
+        return;
+      }
+      try {
+        if (window.sessionStorage.getItem(SW_FAILED_TOAST_KEY) === "1") {
+          return;
+        }
+        window.sessionStorage.setItem(SW_FAILED_TOAST_KEY, "1");
+      } catch {
+        // sessionStorage may be disabled; falling through to always-show is
+        // the safer failure mode (user still hears about the issue).
+      }
+      emitAppToast({
+        message: options.failureToastMessage,
+        tone: "warning",
+        // A bit longer than the default so a single-line warning doesn't
+        // vanish before the user can read it.
+        durationMs: 9000,
+      });
     });
   };
 

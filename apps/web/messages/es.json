@@ -47,6 +47,9 @@
         "title": "Las estadísticas necesitan conexión",
         "body": "Tus estadísticas de lectura se calculan en el servidor y necesitan conexión. Tu lectura sin conexión sigue contando y aparecerá aquí cuando vuelvas a conectarte."
       }
+    },
+    "toast": {
+      "swFailed": "Modo sin conexión no disponible — las páginas pueden no cargar sin conexión."
     }
   },
   "legal": {

@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { AppNavigation } from "@/components/app/core/app-navigation";
+import { AppToast } from "@/components/app/core/app-toast";
 import { OfflineModalProvider } from "@/components/app/core/offline-modal-context";
 import { ServiceWorkerRegistrar } from "@/components/app/core/service-worker-registrar";
 import { ReaderUiProvider } from "@/components/app/core/reader-ui-context";
@@ -37,6 +38,7 @@ export function AppShell({ children, currentUser: initialUser }: AppShellProps) 
     return (
       <OfflineModalProvider>
         <ServiceWorkerRegistrar />
+        <AppToast />
         <ReaderUiProvider>
           <div className="flex h-dvh flex-col overflow-hidden">
             <AppNavigation currentUser={currentUser} />

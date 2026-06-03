@@ -20,7 +20,7 @@ import {
   writeLocalReaderResumeSnapshot,
   type ReaderResumeSnapshot,
 } from "@/features/reader/resume";
-import { emitReaderToast } from "../../overlays/reader-toast";
+import { emitAppToast } from "@/components/app/core/app-toast";
 import {
   evaluatePersistEligibility,
   shouldClearPendingAfterAck,
@@ -53,7 +53,7 @@ export function useReaderProgressSync({
   const notifyProgressSaveFailure = useCallback(() => {
     const isOffline =
       typeof navigator !== "undefined" && !navigator.onLine;
-    emitReaderToast({
+    emitAppToast({
       message: isOffline ? t("offline") : t("generic"),
       tone: "warning",
     });

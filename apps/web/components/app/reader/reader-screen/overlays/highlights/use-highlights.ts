@@ -26,7 +26,7 @@ import {
   type HighlightColor,
   type HighlightRecord,
 } from "@/features/highlights";
-import { emitReaderToast } from "../reader-toast";
+import { emitAppToast } from "@/components/app/core/app-toast";
 
 type UseHighlightsResult = {
   highlights: HighlightRecord[];
@@ -103,7 +103,7 @@ export function useHighlights(libraryItemId: string): UseHighlightsResult {
         },
       );
       if (!response.ok) {
-        emitReaderToast({
+        emitAppToast({
           message: t("loadFailed"),
           tone: "warning",
         });
@@ -121,7 +121,7 @@ export function useHighlights(libraryItemId: string): UseHighlightsResult {
     };
     run().catch(() => {
       if (!controller.signal.aborted) {
-        emitReaderToast({
+        emitAppToast({
           message: t("loadFailed"),
           tone: "warning",
         });
@@ -168,7 +168,7 @@ export function useHighlights(libraryItemId: string): UseHighlightsResult {
   // re-attempt the action.
   useEffect(() => {
     return subscribeToDrops(libraryItemId, apiBaseUrl, (event) => {
-      emitReaderToast({
+      emitAppToast({
         tone: "warning",
         message: t("saveFailed", { reason: event.reason }),
       });

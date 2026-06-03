@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getPublicApiBaseUrl } from "@/lib/api";
 import type { ReaderRangeLocator } from "@/lib/api-types";
-import { emitReaderToast } from "../reader-toast";
+import { emitAppToast } from "@/components/app/core/app-toast";
 
 // One row from GET /api/library/:libraryItemId/ai-comments. Mirrors the
 // `AiCommentListItem` shape on the server. Locator is parsed by the server
@@ -50,7 +50,7 @@ export function useAiComments(libraryItemId: string): UseAiCommentsResult {
       if (controller.signal.aborted) {
         return;
       }
-      emitReaderToast({
+      emitAppToast({
         message: t("highlightsLoadFailed"),
         tone: "warning",
       });
@@ -133,7 +133,7 @@ export function useAiComments(libraryItemId: string): UseAiCommentsResult {
         const token = await getToken();
         if (!token) {
           restore(snapshot);
-          emitReaderToast({
+          emitAppToast({
             message: t("deleteFailed"),
             tone: "warning",
           });
@@ -150,7 +150,7 @@ export function useAiComments(libraryItemId: string): UseAiCommentsResult {
         );
         if (!response.ok) {
           restore(snapshot);
-          emitReaderToast({
+          emitAppToast({
             message: t("deleteFailed"),
             tone: "warning",
           });
@@ -159,7 +159,7 @@ export function useAiComments(libraryItemId: string): UseAiCommentsResult {
         if (snapshot) {
           restore(snapshot);
         }
-        emitReaderToast({
+        emitAppToast({
           message: t("deleteFailed"),
           tone: "warning",
         });

@@ -47,6 +47,9 @@
         "title": "As estatísticas precisam de conexão",
         "body": "Suas estatísticas de leitura são calculadas no servidor e precisam de conexão. Sua leitura offline continua contando e aparecerá aqui quando você se reconectar."
       }
+    },
+    "toast": {
+      "swFailed": "Modo offline indisponível — as páginas podem não carregar sem conexão."
     }
   },
   "legal": {
