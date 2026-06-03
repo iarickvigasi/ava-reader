@@ -87,8 +87,8 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10">
           <div className="flex h-16 items-center justify-between gap-3 md:hidden">
             <div className="flex items-center gap-2">
-              <OfflineIndicator compact />
               <ThemeToggle />
+              <OfflineIndicator compact />
             </div>
             <Link href="/app" className="min-w-0">
               <AppHeaderBrand className="justify-center gap-2" />

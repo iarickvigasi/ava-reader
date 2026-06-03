@@ -53,7 +53,7 @@ export function OfflineIndicator({
       aria-label={t("chipAria")}
       onClick={open}
       className={cx(
-        "inline-flex h-9 items-center gap-2 rounded-full border border-line/60 bg-soft-fill px-3 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-copy-strong transition hover:bg-paper-strong",
+        "inline-flex h-9 items-center gap-2 rounded-full bg-soft-fill px-3 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-copy-strong transition hover:bg-paper-strong",
         className,
       )}
     >
