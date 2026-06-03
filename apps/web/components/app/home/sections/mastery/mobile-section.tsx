@@ -37,7 +37,7 @@ export function MasteryMobileSection({
             />
           ))}
         </div>
-        <p className="text-center font-display text-xl italic text-title">
+        <p className="text-center font-display text-xl text-title">
           {remainingCopy}
         </p>
       </div>
