@@ -11,7 +11,7 @@
 import { NextIntlClientProvider } from "next-intl";
 import type { ReactElement, ReactNode } from "react";
 
-import enMessages from "@/messages/en.json";
+import enMessages from "@/i18n/messages/en.json";
 
 export function withIntl(node: ReactNode): ReactElement {
   return (
