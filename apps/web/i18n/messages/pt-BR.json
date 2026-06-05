@@ -49,7 +49,14 @@
       }
     },
     "toast": {
-      "swFailed": "Modo offline indisponível — as páginas podem não carregar sem conexão."
+      "swFailed": "Modo offline indisponível — as páginas podem não carregar sem conexão.",
+      "quotaLow": "Sem espaço suficiente para salvar este livro offline — ele continua disponível quando você está on-line.",
+      "saveFailed": "Não foi possível salvar este livro offline. Tente novamente."
+    },
+    "missingBook": {
+      "title": "Abra este livro on-line para salvá-lo",
+      "body": "Você pode salvar este livro abrindo a página de informações e tocando em \"Salvar para leitura offline\" quando estiver com conexão à internet.",
+      "dismiss": "Entendi"
     }
   },
   "legal": {
@@ -370,6 +377,26 @@
       "backToCollection": "Voltar à coleção",
       "read": "Ler",
       "listen": "Ouvir",
+      "saveForOffline": {
+        "idle": {
+          "title": "Salvar para leitura offline",
+          "description": "Leia este livro mesmo sem conexão"
+        },
+        "downloading": {
+          "title": "Salvando para leitura offline",
+          "description": "{current} / {total} capítulos"
+        },
+        "saved": {
+          "title": "Remover dos downloads",
+          "description": "O livro continuará disponível on-line"
+        },
+        "confirm": {
+          "title": "Remover dos downloads?",
+          "body": "Você não poderá mais ler este livro sem conexão.",
+          "confirm": "Remover",
+          "cancel": "Cancelar"
+        }
+      },
       "readingProgressLabel": "Progresso de leitura",
       "completed": "{percent}% concluído",
       "aboutThisBook": "Sobre este livro",
@@ -396,10 +423,6 @@
         "descriptionFallback": "Este título está na sua biblioteca. Ainda não há notas editoriais detalhadas para esta edição."
       },
       "actionCards": {
-        "downloadOffline": {
-          "title": "Baixar offline",
-          "description": "PDF e EPUB"
-        },
         "markAsFinished": {
           "title": "Marcar como concluído",
           "description": "Define o progresso para 100%"

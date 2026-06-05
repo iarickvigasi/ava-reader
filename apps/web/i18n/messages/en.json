@@ -49,7 +49,14 @@
       }
     },
     "toast": {
-      "swFailed": "Offline mode unavailable — pages may not load if your connection drops."
+      "swFailed": "Offline mode unavailable — pages may not load if your connection drops.",
+      "quotaLow": "Not enough space to save this book offline — it's still available when you're online.",
+      "saveFailed": "Couldn't save this book offline. Please try again."
+    },
+    "missingBook": {
+      "title": "Open online to save this book",
+      "body": "You can save this book by opening its info page and tapping \"Save for offline\" when you have an internet connection.",
+      "dismiss": "Got it"
     }
   },
   "legal": {
@@ -370,6 +377,26 @@
       "backToCollection": "Back to Collection",
       "read": "Read",
       "listen": "Listen",
+      "saveForOffline": {
+        "idle": {
+          "title": "Save for offline",
+          "description": "Read this book when there is no connection"
+        },
+        "downloading": {
+          "title": "Saving for offline",
+          "description": "{current} / {total} chapters"
+        },
+        "saved": {
+          "title": "Remove from downloads",
+          "description": "Book will be still available online"
+        },
+        "confirm": {
+          "title": "Remove from downloads?",
+          "body": "You won't be able to read this book offline anymore.",
+          "confirm": "Remove",
+          "cancel": "Cancel"
+        }
+      },
       "readingProgressLabel": "Reading progress",
       "completed": "{percent}% completed",
       "aboutThisBook": "About this book",
@@ -396,10 +423,6 @@
         "descriptionFallback": "This title is in your library. Detailed editorial notes are not available yet for this edition."
       },
       "actionCards": {
-        "downloadOffline": {
-          "title": "Download Offline",
-          "description": "PDF & EPUB"
-        },
         "markAsFinished": {
           "title": "Mark as Finished",
           "description": "Set progress to 100%"

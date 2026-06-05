@@ -4,6 +4,17 @@ import { LibraryBookInfoScreen } from "./book-info-screen";
 import type { LibraryBookInfo } from "@/lib/api-types";
 import { withIntl } from "@/lib/test-utils/intl";
 
+// SaveForOfflineButton (rendered inside the screen) uses useAuth from Clerk;
+// without this mock the test runtime throws "useAuth can only be used within
+// <ClerkProvider />" before any assertion runs.
+vi.mock("@clerk/nextjs", () => ({
+  useAuth: () => ({
+    getToken: async () => "test-token",
+    isLoaded: true,
+    isSignedIn: true,
+  }),
+}));
+
 vi.mock("next/link", () => ({
   default: ({
     children,

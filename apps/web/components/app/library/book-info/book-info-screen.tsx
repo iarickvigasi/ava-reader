@@ -38,7 +38,10 @@ export function LibraryBookInfoScreen({
 
             <div className="space-y-8">
               <BookHeader book={book} />
-              <BookActions slug={book.slug} />
+              <BookActions
+                slug={book.slug}
+                libraryItemId={book.libraryItemId}
+              />
               <ReadingProgress book={book} />
               <BookMetadata book={book} />
             </div>
@@ -47,7 +50,10 @@ export function LibraryBookInfoScreen({
 
         <section className="grid gap-10 border-t border-line/30 pt-10 lg:grid-cols-[minmax(0,1fr)_minmax(300px,420px)] lg:gap-12 lg:pt-14">
           <BookDescription description={book.description} />
-          <BookActionCards collections={book.collections} />
+          <BookActionCards
+            collections={book.collections}
+            libraryItemId={book.libraryItemId}
+          />
         </section>
       </div>
     </div>

@@ -49,7 +49,14 @@
       }
     },
     "toast": {
-      "swFailed": "Mode hors ligne indisponible — les pages risquent de ne pas se charger sans connexion."
+      "swFailed": "Mode hors ligne indisponible — les pages risquent de ne pas se charger sans connexion.",
+      "quotaLow": "Pas assez d'espace pour enregistrer ce livre hors ligne — il reste disponible quand vous êtes en ligne.",
+      "saveFailed": "Impossible d'enregistrer ce livre hors ligne. Veuillez réessayer."
+    },
+    "missingBook": {
+      "title": "Ouvrez ce livre en ligne pour l'enregistrer",
+      "body": "Vous pouvez enregistrer ce livre en ouvrant sa page d'informations et en appuyant sur « Enregistrer hors ligne » lorsque vous avez une connexion internet.",
+      "dismiss": "Compris"
     }
   },
   "legal": {
@@ -370,6 +377,26 @@
       "backToCollection": "Retour à la collection",
       "read": "Lire",
       "listen": "Écouter",
+      "saveForOffline": {
+        "idle": {
+          "title": "Enregistrer hors ligne",
+          "description": "Lisez ce livre sans connexion"
+        },
+        "downloading": {
+          "title": "Enregistrement hors ligne",
+          "description": "{current} / {total} chapitres"
+        },
+        "saved": {
+          "title": "Retirer des téléchargements",
+          "description": "Le livre restera disponible en ligne"
+        },
+        "confirm": {
+          "title": "Retirer des téléchargements ?",
+          "body": "Vous ne pourrez plus lire ce livre hors ligne.",
+          "confirm": "Retirer",
+          "cancel": "Annuler"
+        }
+      },
       "readingProgressLabel": "Progression de lecture",
       "completed": "{percent}% terminé",
       "aboutThisBook": "À propos de ce livre",
@@ -396,10 +423,6 @@
         "descriptionFallback": "Ce titre est dans votre bibliothèque. Aucune note éditoriale détaillée n'est encore disponible pour cette édition."
       },
       "actionCards": {
-        "downloadOffline": {
-          "title": "Télécharger hors ligne",
-          "description": "PDF et EPUB"
-        },
         "markAsFinished": {
           "title": "Marquer comme terminé",
           "description": "Place la progression à 100 %"

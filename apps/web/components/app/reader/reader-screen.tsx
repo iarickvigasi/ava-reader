@@ -7,6 +7,7 @@ import {
   MIN_FONT_SCALE,
   useFontScale,
 } from "@/components/app/preferences/use-font-scale";
+import { BookContextProvider } from "@/features/offline/buckets/book/context";
 import { AiCommentsProvider } from "./reader-screen/overlays/ai-comments/ai-comments-context";
 import { HighlightsProvider } from "./reader-screen/overlays/highlights/highlights-context";
 import { ReadyReader } from "./reader-screen/screen/ready-reader";
@@ -62,6 +63,7 @@ export function ReaderScreen({
   );
 
   return (
+    <BookContextProvider libraryItemId={libraryItemId}>
     <div className="h-full bg-paper text-ink" style={readerStyle}>
       <div className="mx-auto h-full max-w-375 overflow-hidden md:pl-20">
         {!isReaderReady ? (
@@ -93,5 +95,6 @@ export function ReaderScreen({
         ) : null}
       </div>
     </div>
+    </BookContextProvider>
   );
 }

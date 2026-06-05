@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { ReadBookLink } from "@/components/app/core/read-book-link";
 import { BookCover } from "@/components/app/shared/book-cover";
 import type { HomePayload } from "@/lib/api-types";
 import { resolveApiAssetUrl } from "@/lib/api";
@@ -27,8 +27,9 @@ export function EngagementCover({
           style={{ height: `${railHeightPercent}%` }}
         />
       </div>
-      <Link
+      <ReadBookLink
         href={readerHref}
+        libraryItemId={engagement.libraryItemId}
         aria-label={`Open ${engagement.title}`}
         className="block"
       >
@@ -38,7 +39,7 @@ export function EngagementCover({
           src={resolveApiAssetUrl(engagement.coverImageUrl)}
           title={engagement.title}
         />
-      </Link>
+      </ReadBookLink>
     </div>
   );
 }

@@ -201,3 +201,16 @@
     transform: translate3d(0, 24px, 0);
   }
 }
+
+/* Three-dot opacity pulse used by the "Save for offline" button while the
+   book is downloading. Three spans with staggered animation-delay produce
+   the wave effect. Kept here next to the other reader keyframes so animation
+   names are easy to grep. */
+@keyframes ava-dot-pulse {
+  0%, 80%, 100% {
+    opacity: 0.3;
+  }
+  40% {
+    opacity: 1;
+  }
+}

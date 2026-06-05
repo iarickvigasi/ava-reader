@@ -49,7 +49,14 @@
       }
     },
     "toast": {
-      "swFailed": "Offline-Modus nicht verfügbar – Seiten laden möglicherweise nicht ohne Verbindung."
+      "swFailed": "Offline-Modus nicht verfügbar – Seiten laden möglicherweise nicht ohne Verbindung.",
+      "quotaLow": "Nicht genug Speicherplatz, um dieses Buch offline zu speichern – online ist es weiterhin verfügbar.",
+      "saveFailed": "Dieses Buch konnte nicht offline gespeichert werden. Bitte versuche es erneut."
+    },
+    "missingBook": {
+      "title": "Öffne dieses Buch online, um es zu speichern",
+      "body": "Du kannst dieses Buch speichern, indem du seine Infoseite öffnest und auf „Für offline speichern“ tippst, sobald du eine Internetverbindung hast.",
+      "dismiss": "Verstanden"
     }
   },
   "legal": {
@@ -370,6 +377,26 @@
       "backToCollection": "Zurück zur Sammlung",
       "read": "Lesen",
       "listen": "Hören",
+      "saveForOffline": {
+        "idle": {
+          "title": "Für offline speichern",
+          "description": "Lies dieses Buch auch ohne Verbindung"
+        },
+        "downloading": {
+          "title": "Wird offline gespeichert",
+          "description": "{current} / {total} Kapitel"
+        },
+        "saved": {
+          "title": "Aus Downloads entfernen",
+          "description": "Das Buch bleibt online verfügbar"
+        },
+        "confirm": {
+          "title": "Aus Downloads entfernen?",
+          "body": "Du kannst dieses Buch dann nicht mehr offline lesen.",
+          "confirm": "Entfernen",
+          "cancel": "Abbrechen"
+        }
+      },
       "readingProgressLabel": "Lesefortschritt",
       "completed": "{percent}% abgeschlossen",
       "aboutThisBook": "Über dieses Buch",
@@ -396,10 +423,6 @@
         "descriptionFallback": "Dieser Titel ist in deiner Bibliothek. Detaillierte redaktionelle Notizen sind für diese Ausgabe noch nicht verfügbar."
       },
       "actionCards": {
-        "downloadOffline": {
-          "title": "Offline herunterladen",
-          "description": "PDF und EPUB"
-        },
         "markAsFinished": {
           "title": "Als gelesen markieren",
           "description": "Setzt den Fortschritt auf 100 %"

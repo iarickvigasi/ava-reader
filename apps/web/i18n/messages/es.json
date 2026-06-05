@@ -49,7 +49,14 @@
       }
     },
     "toast": {
-      "swFailed": "Modo sin conexión no disponible — las páginas pueden no cargar sin conexión."
+      "swFailed": "Modo sin conexión no disponible — las páginas pueden no cargar sin conexión.",
+      "quotaLow": "No hay suficiente espacio para guardar este libro sin conexión — sigue disponible cuando estés en línea.",
+      "saveFailed": "No se pudo guardar este libro sin conexión. Inténtalo de nuevo."
+    },
+    "missingBook": {
+      "title": "Abre este libro en línea para guardarlo",
+      "body": "Puedes guardar este libro abriendo su página de información y tocando «Guardar para leer sin conexión» cuando tengas conexión a internet.",
+      "dismiss": "Entendido"
     }
   },
   "legal": {
@@ -370,6 +377,26 @@
       "backToCollection": "Volver a la colección",
       "read": "Leer",
       "listen": "Escuchar",
+      "saveForOffline": {
+        "idle": {
+          "title": "Guardar para leer sin conexión",
+          "description": "Lee este libro cuando no haya conexión"
+        },
+        "downloading": {
+          "title": "Guardando sin conexión",
+          "description": "{current} / {total} capítulos"
+        },
+        "saved": {
+          "title": "Quitar de las descargas",
+          "description": "El libro seguirá disponible en línea"
+        },
+        "confirm": {
+          "title": "¿Quitar de las descargas?",
+          "body": "Ya no podrás leer este libro sin conexión.",
+          "confirm": "Quitar",
+          "cancel": "Cancelar"
+        }
+      },
       "readingProgressLabel": "Progreso de lectura",
       "completed": "{percent}% completado",
       "aboutThisBook": "Sobre este libro",
@@ -396,10 +423,6 @@
         "descriptionFallback": "Este título está en tu biblioteca. Aún no hay notas editoriales detalladas para esta edición."
       },
       "actionCards": {
-        "downloadOffline": {
-          "title": "Descargar sin conexión",
-          "description": "PDF y EPUB"
-        },
         "markAsFinished": {
           "title": "Marcar como terminado",
           "description": "Pone el progreso al 100 %"
