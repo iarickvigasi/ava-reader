@@ -63,12 +63,28 @@ export class ReaderController {
   startSession(
     @Req() request: AuthenticatedRequest,
     @Param('libraryItemId') libraryItemId: string,
-    @Body() body: { clientInstanceId?: string },
+    @Body()
+    body: {
+      clientInstanceId?: string;
+      // Phase 4 (offline-first): stable client-generated session id. When
+      // supplied the server upserts by (userId, clientSessionId). When
+      // startedAt/endedAt are supplied, the server treats this as a
+      // completed-session replay from the offline queue and records those
+      // exact timestamps instead of "now."
+      clientSessionId?: string;
+      startedAt?: string;
+      endedAt?: string;
+    },
   ) {
     return this.readerService.startSession(
       request.auth.clerkUserId,
       libraryItemId,
       body.clientInstanceId as string,
+      {
+        clientSessionId: body.clientSessionId ?? null,
+        startedAt: body.startedAt ?? null,
+        endedAt: body.endedAt ?? null,
+      },
     );
   }
 

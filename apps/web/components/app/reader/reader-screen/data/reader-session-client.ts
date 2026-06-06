@@ -15,15 +15,30 @@ const READER_SESSION_PATH_SESSION_STOP = "session/stop";
 
 // Opens a fresh reader session for this client instance and returns the
 // server-assigned session id used by subsequent heartbeats / stop calls.
+//
+// Phase 4: callers may pass an idempotency triplet
+// (clientSessionId/startedAt/endedAt) so the same session id is recognised
+// across retries — and an offline-completed session can be replayed in a
+// single call after reconnect, preserving its original timestamps.
 export async function startReaderSession(
   input: ReaderAuthInput & {
     clientInstanceId: string;
     libraryItemId: string;
     signal?: AbortSignal;
+    clientSessionId?: string;
+    startedAt?: string;
+    endedAt?: string | null;
   },
 ) {
   return performReaderSessionRequest({
-    body: { clientInstanceId: input.clientInstanceId },
+    body: {
+      clientInstanceId: input.clientInstanceId,
+      ...(input.clientSessionId
+        ? { clientSessionId: input.clientSessionId }
+        : {}),
+      ...(input.startedAt ? { startedAt: input.startedAt } : {}),
+      ...(input.endedAt ? { endedAt: input.endedAt } : {}),
+    },
     getToken: input.getToken,
     isLoaded: input.isLoaded,
     isSignedIn: input.isSignedIn,

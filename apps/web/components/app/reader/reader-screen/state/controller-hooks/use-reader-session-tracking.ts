@@ -1,6 +1,14 @@
 import { useCallback, useEffect, useRef } from "react";
 import type { ReaderSessionPayload, ReaderStatusPayload } from "@/lib/api-types";
 import {
+  closeLocalSession,
+  createLocalSession,
+  generateClientSessionId,
+  markSessionActive,
+  markSessionSynced,
+  syncPendingSessions,
+} from "@/features/offline/buckets/sessions";
+import {
   getOrCreateReaderClientInstanceId,
   heartbeatReaderSession,
   startReaderSession,
@@ -28,6 +36,12 @@ export function useReaderSessionTracking({
   remotePersistenceEnabled,
 }: UseReaderSessionTrackingInput) {
   const activeSessionIdRef = useRef<string | null>(null);
+  // Phase 4: stable client-generated id for the current session. Written to
+  // Dexie as soon as the session begins (before the server call) so even an
+  // offline session has a durable row that the sync runner can replay later.
+  const clientSessionIdRef = useRef<string | null>(null);
+  const sessionStartedAtRef = useRef<string | null>(null);
+  const lastActiveAtRef = useRef<string | null>(null);
   const sessionClientInstanceIdRef = useRef<string | null>(null);
   const sessionHeartbeatIntervalRef = useRef<number | null>(null);
   const sessionStartAbortRef = useRef<AbortController | null>(null);
@@ -58,6 +72,16 @@ export function useReaderSessionTracking({
 
     if (!remotePersistenceEnabled || !sessionId) {
       return null;
+    }
+
+    // Phase 4: always bump the local heartbeat (Dexie). This is what we'll
+    // use as `endedAt` if the user's tab dies before a clean stop — the
+    // session won't over-count time the user wasn't actually reading.
+    const clientSessionId = clientSessionIdRef.current;
+    if (clientSessionId) {
+      const now = new Date().toISOString();
+      lastActiveAtRef.current = now;
+      void markSessionActive(clientSessionId, now);
     }
 
     try {
@@ -107,12 +131,24 @@ export function useReaderSessionTracking({
       const sessionId = activeSessionIdRef.current;
       activeSessionIdRef.current = null;
 
+      // Phase 4: close the local row first. The endedAt is always the last
+      // heartbeat we recorded — using "now" here would over-count time when
+      // the user was already away (e.g. tab hidden then this fires later).
+      const clientSessionId = clientSessionIdRef.current;
+      clientSessionIdRef.current = null;
+      const endedAt = lastActiveAtRef.current ?? new Date().toISOString();
+      lastActiveAtRef.current = null;
+      sessionStartedAtRef.current = null;
+      if (clientSessionId) {
+        void closeLocalSession({ clientSessionId, endedAt });
+      }
+
       if (!remotePersistenceEnabled || !sessionId) {
         return null;
       }
 
       try {
-        return await stopReaderSession({
+        const result = await stopReaderSession({
           clientInstanceId: getSessionClientInstanceId(),
           getToken,
           isLoaded,
@@ -121,6 +157,18 @@ export function useReaderSessionTracking({
           libraryItemId,
           sessionId,
         });
+        // Server acked the stop. Mark the local row synced so the sync
+        // runner doesn't replay it. On any thrown / non-ok path we fall
+        // through to the catch — the row stays unsynced and the runner
+        // replays it when the connection comes back.
+        if (clientSessionId) {
+          void markSessionSynced({
+            clientSessionId,
+            serverSessionId: sessionId,
+            syncedAt: new Date().toISOString(),
+          });
+        }
+        return result;
       } catch {
         return null;
       }
@@ -150,14 +198,31 @@ export function useReaderSessionTracking({
     const controller = new AbortController();
     sessionStartAbortRef.current = controller;
 
+    // Phase 4: write the session locally before talking to the server.
+    // Even if the network is dead, this row exists and the sync runner
+    // will replay it on reconnect (as a single POST with startedAt +
+    // endedAt) so reading hours stay accurate.
+    const clientSessionId = generateClientSessionId();
+    const startedAt = new Date().toISOString();
+    clientSessionIdRef.current = clientSessionId;
+    sessionStartedAtRef.current = startedAt;
+    lastActiveAtRef.current = startedAt;
+    void createLocalSession({
+      clientSessionId,
+      libraryItemId,
+      startedAt,
+    });
+
     try {
       const session = await startReaderSession({
         clientInstanceId: getSessionClientInstanceId(),
+        clientSessionId,
         getToken,
         isLoaded,
         isSignedIn,
         libraryItemId,
         signal: controller.signal,
+        startedAt,
       });
 
       if (controller.signal.aborted) {
@@ -165,6 +230,14 @@ export function useReaderSessionTracking({
       }
 
       sessionStartAbortRef.current = null;
+
+      // Server acked the open. Mark the local row synced so the runner
+      // doesn't post a duplicate replay on the next online tick.
+      void markSessionSynced({
+        clientSessionId,
+        serverSessionId: session.sessionId,
+        syncedAt: new Date().toISOString(),
+      });
 
       if (document.hidden) {
         activeSessionIdRef.current = session.sessionId;
@@ -256,4 +329,41 @@ export function useReaderSessionTracking({
       void stopReaderSessionTracking(true);
     };
   }, [stopReaderSessionTracking]);
+
+  // Phase 4 sync trigger: drain queued (closed but unsynced) sessions on
+  // every online/visibility flip. Cheap when the queue is empty — one
+  // Dexie scan. We pass the reader's clientInstanceId so the replayed
+  // sessions land under the same participant on the server.
+  useEffect(() => {
+    if (!remotePersistenceEnabled || !isLoaded || !isSignedIn) {
+      return;
+    }
+    const tryDrain = () => {
+      if (typeof navigator !== "undefined" && !navigator.onLine) {
+        return;
+      }
+      void syncPendingSessions(getToken, getSessionClientInstanceId());
+    };
+    tryDrain();
+    const onVisible = () => {
+      if (
+        typeof document !== "undefined" &&
+        document.visibilityState !== READER_VISIBILITY_HIDDEN
+      ) {
+        tryDrain();
+      }
+    };
+    window.addEventListener("online", tryDrain);
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      window.removeEventListener("online", tryDrain);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [
+    getSessionClientInstanceId,
+    getToken,
+    isLoaded,
+    isSignedIn,
+    remotePersistenceEnabled,
+  ]);
 }

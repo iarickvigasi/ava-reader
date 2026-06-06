@@ -307,6 +307,16 @@ export class ReaderService {
     clerkUserId: string,
     libraryItemId: string,
     clientInstanceId: string,
+    // Phase 4: offline replay support. When clientSessionId is supplied,
+    // the call upserts by (userId, clientSessionId) — the second invocation
+    // with the same id returns the existing row instead of creating a new
+    // one. startedAt/endedAt let an offline-completed session replay with
+    // its original timestamps so reading-hour totals stay accurate.
+    offlineReplay: {
+      clientSessionId: string | null;
+      startedAt: string | null;
+      endedAt: string | null;
+    } = { clientSessionId: null, startedAt: null, endedAt: null },
   ) {
     validateClientInstanceId(clientInstanceId);
     const libraryItem = await this.getOwnedLibraryItem(
@@ -314,7 +324,38 @@ export class ReaderService {
       libraryItemId,
     );
     const now = new Date();
+    const replayStart = offlineReplay.startedAt
+      ? new Date(offlineReplay.startedAt)
+      : null;
+    const replayEnd = offlineReplay.endedAt
+      ? new Date(offlineReplay.endedAt)
+      : null;
+    const sessionStartedAt = replayStart ?? now;
     const session = await this.prisma.$transaction(async (tx) => {
+      // Offline replay path: if the client supplied a stable id, look it
+      // up first. A second POST with the same id is a no-op-ish: returns
+      // the existing row. Distinct from the "active session" lookup below
+      // because a replayed session may already be `endedAt` and so isn't
+      // "active."
+      if (offlineReplay.clientSessionId) {
+        const existing = await tx.readingSession.findFirst({
+          where: {
+            userId: libraryItem.userId,
+            clientSessionId: offlineReplay.clientSessionId,
+          },
+          select: lockedSessionSelect,
+        });
+        if (existing) {
+          return this.applySessionActionTx(
+            tx,
+            existing,
+            now,
+            clientInstanceId,
+            'start',
+          );
+        }
+      }
+
       let activeSession = await this.lockActiveSessionTx(
         tx,
         libraryItem.userId,
@@ -327,11 +368,13 @@ export class ReaderService {
             data: {
               durationMinutes: 0,
               durationSeconds: 0,
-              lastTrackedAt: now,
+              lastTrackedAt: replayEnd ?? sessionStartedAt,
+              endedAt: replayEnd,
               libraryItemId,
-              startedAt: now,
-              trackedDay: startOfUtcDay(now),
+              startedAt: sessionStartedAt,
+              trackedDay: startOfUtcDay(sessionStartedAt),
               userId: libraryItem.userId,
+              clientSessionId: offlineReplay.clientSessionId,
             },
             select: lockedSessionSelect,
           });

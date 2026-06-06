@@ -1,0 +1,84 @@
+import "fake-indexeddb/auto";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+
+import { DB_NAME, __resetDbForTests } from "../../db";
+import {
+  markProgressSynced,
+  readCompletionPercent,
+  readProgress,
+  writeProgress,
+} from "./storage";
+
+beforeEach(() => {
+  __resetDbForTests();
+});
+
+afterEach(async () => {
+  __resetDbForTests();
+  await new Promise<void>((resolve) => {
+    const req = indexedDB.deleteDatabase(DB_NAME);
+    req.onsuccess = () => resolve();
+    req.onerror = () => resolve();
+    req.onblocked = () => resolve();
+  });
+});
+
+describe("progress storage", () => {
+  it("writeProgress + readProgress round-trip", async () => {
+    await writeProgress({
+      libraryItemId: "lib-1",
+      locator: { chapterId: "ch-1", blockId: "b1", textOffset: 0 },
+      completionPercent: 42,
+    });
+    const row = await readProgress("lib-1");
+    expect(row?.completionPercent).toBe(42);
+    expect(row?.locator?.chapterId).toBe("ch-1");
+    expect(row?.lastServerUpdateAt).toBeNull();
+    expect(row?.dirty).toBe(false);
+  });
+
+  it("readCompletionPercent falls back to 0 when there's no row", async () => {
+    expect(await readCompletionPercent("never-seen")).toBe(0);
+  });
+
+  it("writeProgress preserves lastServerUpdateAt across overwrites", async () => {
+    await writeProgress({
+      libraryItemId: "lib-1",
+      locator: null,
+      completionPercent: 10,
+    });
+    await markProgressSynced("lib-1");
+    const beforeOverwrite = await readProgress("lib-1");
+    expect(beforeOverwrite?.lastServerUpdateAt).not.toBeNull();
+    expect(beforeOverwrite?.dirty).toBe(false);
+
+    // A subsequent local write (the user reads further) — dirty flips back
+    // on, but lastServerUpdateAt is preserved as the previous successful
+    // sync's timestamp.
+    await writeProgress({
+      libraryItemId: "lib-1",
+      locator: { chapterId: "ch-2", blockId: "b2", textOffset: 0 },
+      completionPercent: 55,
+      dirty: true,
+    });
+    const after = await readProgress("lib-1");
+    expect(after?.completionPercent).toBe(55);
+    expect(after?.dirty).toBe(true);
+    expect(after?.lastServerUpdateAt).toBe(
+      beforeOverwrite?.lastServerUpdateAt,
+    );
+  });
+
+  it("markProgressSynced sets lastServerUpdateAt and clears dirty", async () => {
+    await writeProgress({
+      libraryItemId: "lib-1",
+      locator: null,
+      completionPercent: 20,
+      dirty: true,
+    });
+    await markProgressSynced("lib-1");
+    const row = await readProgress("lib-1");
+    expect(row?.dirty).toBe(false);
+    expect(row?.lastServerUpdateAt).not.toBeNull();
+  });
+});
