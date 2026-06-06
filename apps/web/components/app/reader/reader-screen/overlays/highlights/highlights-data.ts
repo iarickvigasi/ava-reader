@@ -1,4 +1,4 @@
-import type { HighlightColor } from "@/features/highlights";
+import type { HighlightColor } from "@/features/offline/buckets/highlights";
 
 export type Highlight = {
   id: string;

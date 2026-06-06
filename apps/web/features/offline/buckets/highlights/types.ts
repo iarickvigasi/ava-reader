@@ -1,7 +1,6 @@
-// Shared types for the offline-first highlights store. Keeping them in one
-// leaf module avoids circular imports between the bucket/storage/sync layers
-// and makes it obvious which shapes are part of the public surface vs.
-// internal plumbing.
+// Shared types for the offline-first highlights bucket. Keeping them in one
+// leaf module avoids circular imports between the storage/bucket/sync
+// layers and makes it obvious which shapes are public vs. internal.
 
 import type { ReaderRangeLocator } from "@/lib/api-types";
 
@@ -40,8 +39,9 @@ export type PendingMutation =
       queuedAt: string;
     };
 
-// Persisted shape. Versioned so we can migrate later without nuking data.
-export type HighlightsStorageV1 = {
+// In-memory state. Backed by Dexie rows but held in memory for fast,
+// synchronous reads from the selector + useSyncExternalStore.
+export type HighlightsState = {
   version: 1;
   snapshot: HighlightRecord[];
   pending: PendingMutation[];
@@ -69,7 +69,7 @@ export type DropListener = (event: DropEvent) => void;
 // `subscribeToHighlights` and re-read through `selectStableHighlights`,
 // which uses `version` as a memo key.
 export type StorageBucket = {
-  state: HighlightsStorageV1;
+  state: HighlightsState;
   listeners: Set<Listener>;
   dropListeners: Set<DropListener>;
   flushing: boolean;
@@ -87,8 +87,21 @@ export type StorageBucket = {
   // retry when a fresh mutation comes in.
   retryDelayMs: number;
   retryHandle: ReturnType<typeof setTimeout> | null;
-  // Debounce handle for the localStorage write — see bucket.persist().
-  persistHandle: ReturnType<typeof setTimeout> | null;
+  // Hydration state. The bucket is created synchronously with empty state
+  // and an async hydrate kicks off in the background; this promise resolves
+  // once Dexie has been read at least once. `flushBucket` awaits it so a
+  // queue drained from a previous session isn't double-sent before the
+  // in-memory queue catches up.
+  hydratedPromise: Promise<void>;
+  // Chains every fire-and-forget Dexie write done by mutations.ts / sync.ts.
+  // Tests await it via `awaitHighlightsPersistDrain` to make timing
+  // deterministic; production code never reads it (writes are always
+  // fire-and-forget by design).
+  pendingPersist: Promise<unknown>;
+  // The currently-running flushBucket promise, when there is one. Same
+  // story as `pendingPersist` — exposed to tests so they can await the
+  // network roundtrip + post-ack Dexie writes deterministically.
+  flushPromise: Promise<void> | null;
 };
 
 // Shape returned by the API. Annotation rows can have a null highlightColor

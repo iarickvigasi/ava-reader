@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // The net-state store reaches for `window` + `navigator`. The repo's vitest
 // config doesn't bundle jsdom, so we stub the minimum needed. Mirrors the
-// approach in features/highlights/index.test.ts.
+// approach in features/offline/buckets/highlights/index.test.ts.
 
 type Listener = (event?: unknown) => void;
 

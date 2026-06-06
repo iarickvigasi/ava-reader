@@ -5,7 +5,7 @@ import { useHighlights } from "./use-highlights";
 import type {
   HighlightColor,
   HighlightRecord,
-} from "@/features/highlights";
+} from "@/features/offline/buckets/highlights";
 import type { ReaderRangeLocator } from "@/lib/api-types";
 
 export type HighlightsContextValue = {

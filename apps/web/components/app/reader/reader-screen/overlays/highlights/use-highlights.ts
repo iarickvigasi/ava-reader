@@ -14,7 +14,6 @@ import {
   applyServerSnapshot,
   enqueueDelete,
   enqueueUpsert,
-  flushAllPendingPersists,
   flushBucket,
   generateHighlightId,
   getHighlightsBucket,
@@ -25,7 +24,7 @@ import {
   toHighlightRecord,
   type HighlightColor,
   type HighlightRecord,
-} from "@/features/highlights";
+} from "@/features/offline/buckets/highlights";
 import { emitAppToast } from "@/components/app/core/app-toast";
 
 type UseHighlightsResult = {
@@ -149,15 +148,13 @@ export function useHighlights(libraryItemId: string): UseHighlightsResult {
         tryFlush();
       }
     };
-    const handlePageHide = () => {
-      flushAllPendingPersists();
-    };
+    // No more `pagehide` flush — Dexie writes happen in lockstep with each
+    // mutation, so there's no debounced state that could be lost when the
+    // tab closes inside a write window.
     window.addEventListener("online", tryFlush);
-    window.addEventListener("pagehide", handlePageHide);
     document.addEventListener("visibilitychange", tryFlushWhenVisible);
     return () => {
       window.removeEventListener("online", tryFlush);
-      window.removeEventListener("pagehide", handlePageHide);
       document.removeEventListener("visibilitychange", tryFlushWhenVisible);
     };
   }, [apiBaseUrl, libraryItemId]);

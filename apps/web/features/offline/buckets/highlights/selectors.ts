@@ -8,9 +8,7 @@ import type { HighlightRecord, StorageBucket } from "./types";
 // Computes the merged view (snapshot + pending) the UI renders. Pending
 // mutations always win over the server snapshot — they represent the
 // user's local intent, which they expect to see reflected immediately.
-export function selectHighlights(
-  bucket: StorageBucket,
-): HighlightRecord[] {
+export function selectHighlights(bucket: StorageBucket): HighlightRecord[] {
   const byId = new Map<string, HighlightRecord>();
   for (const row of bucket.state.snapshot) {
     byId.set(row.id, row);

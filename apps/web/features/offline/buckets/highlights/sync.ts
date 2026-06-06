@@ -1,12 +1,23 @@
 // Server sync: applying a fresh GET snapshot, replaying the pending queue
 // against the API, the on-the-wire shape conversion, and the retry/backoff
 // policy for transient failures.
+//
+// Each in-memory state change is mirrored to Dexie immediately so a tab
+// crash or reload doesn't lose the post-ack snapshot or leave a flushed
+// mutation in the queue.
 
 import {
   getOrCreateBucket,
   notifyDrop,
   persist,
+  trackPersist,
 } from "./bucket";
+import {
+  removePendingMutation,
+  removeSnapshotRow,
+  replaceSnapshot,
+  upsertSnapshotRow,
+} from "./storage";
 import {
   STORAGE_VERSION,
   type DropEvent,
@@ -40,6 +51,9 @@ export function applyServerSnapshot(
     pending: bucket.state.pending,
   };
   persist(libraryItemId, bucket);
+  // Mirror the new authoritative snapshot to Dexie. Async; the in-memory
+  // state is already current for any synchronous read.
+  trackPersist(bucket, () => replaceSnapshot(libraryItemId, snapshot));
 }
 
 // Tries to drain the pending queue head-first. One in-flight at a time per
@@ -67,13 +81,37 @@ export async function flushBucket(
   if (!bucket.getToken) {
     return;
   }
-  // A fresh flush attempt cancels any scheduled retry — we're trying now.
-  cancelRetry(bucket);
+  // Claim the in-flight slot *synchronously* before any await — otherwise a
+  // second flushBucket call (e.g. the implicit one inside enqueueUpsert)
+  // would pass the early-return above and we'd send the same head twice.
   bucket.flushing = true;
+  // Expose the in-flight promise on the bucket so tests can await it
+  // deterministically. Production code never reads it.
+  const work = doFlush(libraryItemId, bucket);
+  bucket.flushPromise = work.finally(() => {
+    bucket.flushPromise = null;
+  });
+  return bucket.flushPromise;
+}
+
+async function doFlush(
+  libraryItemId: string,
+  bucket: StorageBucket,
+): Promise<void> {
+  // Now safe to await Dexie hydrate: a restored queue + an in-memory
+  // enqueue can't be double-sent because the only path into this block is
+  // gated by `flushing = true` set above.
+  await bucket.hydratedPromise;
+  cancelRetry(bucket);
+  const getToken = bucket.getToken;
+  if (!getToken) {
+    bucket.flushing = false;
+    return;
+  }
   try {
     while (bucket.state.pending.length > 0) {
       const head = bucket.state.pending[0];
-      const token = await bucket.getToken();
+      const token = await getToken();
       if (!token) {
         return;
       }
@@ -92,8 +130,13 @@ export async function flushBucket(
       if (result.kind === "upserted" && result.row) {
         const filtered = nextSnapshot.filter((row) => row.id !== head.id);
         nextSnapshot = [...filtered, result.row];
+        // Mirror the post-ack snapshot row to Dexie.
+        trackPersist(bucket, () =>
+          upsertSnapshotRow(libraryItemId, result.row!),
+        );
       } else if (result.kind === "deleted") {
         nextSnapshot = nextSnapshot.filter((row) => row.id !== head.id);
+        trackPersist(bucket, () => removeSnapshotRow(libraryItemId, head.id));
       } else if (result.kind === "drop") {
         // Permanent failure. Surface to the hook so the UI can toast why,
         // then drop the mutation from the queue. We *don't* roll back the
@@ -107,6 +150,9 @@ export async function flushBucket(
         };
         notifyDrop(bucket, event);
       }
+      // Whatever the outcome (success / drop), the head mutation leaves
+      // the queue. Mirror that to Dexie.
+      trackPersist(bucket, () => removePendingMutation(head.id));
       bucket.state = {
         ...bucket.state,
         snapshot: nextSnapshot,
@@ -123,9 +169,10 @@ export async function flushBucket(
 }
 
 function scheduleRetry(libraryItemId: string, bucket: StorageBucket) {
-  const next = bucket.retryDelayMs === 0
-    ? RETRY_BASE_MS
-    : Math.min(bucket.retryDelayMs * 2, RETRY_MAX_MS);
+  const next =
+    bucket.retryDelayMs === 0
+      ? RETRY_BASE_MS
+      : Math.min(bucket.retryDelayMs * 2, RETRY_MAX_MS);
   bucket.retryDelayMs = next;
   if (bucket.retryHandle) {
     clearTimeout(bucket.retryHandle);

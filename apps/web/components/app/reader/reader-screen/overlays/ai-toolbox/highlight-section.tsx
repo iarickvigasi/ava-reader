@@ -4,7 +4,7 @@ import {
   ReaderFavoritesIcon,
 } from "@/components/app/shared/app-icons";
 import { cn } from "@/lib/cn";
-import type { HighlightColor } from "@/features/highlights";
+import type { HighlightColor } from "@/features/offline/buckets/highlights";
 import {
   HIGHLIGHT_COLOR_BG,
   HIGHLIGHT_COLOR_ORDER,

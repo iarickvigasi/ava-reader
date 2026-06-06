@@ -120,13 +120,14 @@ export type ChapterRow = {
   fetchedAt: string;
 };
 
-// ----- Highlights (phase 3 — migrated from features/highlights) --------------
+// ----- Highlights (phase 3) --------------------------------------------------
 
 export type HighlightRow = {
   libraryItemId: string;
   id: string;
   excerpt: string;
-  // Mirrors HighlightColor in features/highlights/types.ts. Kept as string
+  // Mirrors HighlightColor in features/offline/buckets/highlights/types.ts.
+  // Kept as string
   // here so the offline DB doesn't depend on the highlights module's enum;
   // the bucket coerces back to the union on read.
   color: string;
