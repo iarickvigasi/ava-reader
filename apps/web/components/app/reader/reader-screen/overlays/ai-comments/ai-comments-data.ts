@@ -26,4 +26,9 @@ export type AiCommentPanelRow = {
   sourceText: string;
   body: string;
   chapterLabel: string;
+  // when "queued" or "streaming", the row renders at 0.8 opacity
+  // so the user can see at a glance which comments are local vs. server-
+  // confirmed. Optional + defaulting to "ready" keeps backwards-compat for
+  // callers that haven't been updated.
+  status?: "queued" | "streaming" | "ready" | "failed";
 };

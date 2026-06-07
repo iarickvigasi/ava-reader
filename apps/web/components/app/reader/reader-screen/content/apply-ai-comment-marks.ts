@@ -13,6 +13,10 @@ export const AI_COMMENT_MARK_CLASS = "ai-comment-mark";
 type CommentForMarking = {
   id: string;
   locator: ReaderRangeLocator | null;
+  // when "queued" or "streaming", the comment is locally pending
+  // and the underline renders at 50% opacity so the user can tell it's
+  // not yet on the server.
+  status?: "queued" | "streaming" | "ready" | "failed";
 };
 
 // Wraps every saved AI-comment range inside `article` with a styled <mark>
@@ -35,6 +39,8 @@ export function applyAiCommentMarks(
     if (!range) {
       continue;
     }
+    const pending =
+      comment.status === "queued" || comment.status === "streaming";
     wrapRangeWithMarks(range, (mark) => {
       mark.className = AI_COMMENT_MARK_CLASS;
       mark.dataset.aiCommentId = comment.id;
@@ -47,11 +53,19 @@ export function applyAiCommentMarks(
       mark.style.textDecorationStyle = "solid";
       // Pull the underline color from the theme so it follows light/dark
       // mode. `--title` is the warm brown / cream token used elsewhere for
-      // headings.
-      mark.style.textDecorationColor = "var(--title)";
+      // headings. Pending comments fade the underline (color → 50% alpha)
+      // without changing the underlying text color — the user can still
+      // read the source comfortably while a queued / streaming comment
+      // shows up as a softer marker.
+      mark.style.textDecorationColor = pending
+        ? "color-mix(in srgb, var(--title) 50%, transparent)"
+        : "var(--title)";
       mark.style.textDecorationThickness = "2px";
       mark.style.textUnderlineOffset = "3px";
       mark.style.cursor = "pointer";
+      if (pending) {
+        mark.dataset.aiCommentStatus = comment.status;
+      }
     });
   }
 }

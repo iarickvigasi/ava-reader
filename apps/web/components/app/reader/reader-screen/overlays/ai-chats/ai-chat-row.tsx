@@ -1,16 +1,18 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/cn";
+import { RowActionsMenu } from "../row-actions-menu";
+import { RowActionsMenuTrigger } from "../row-actions-menu-trigger";
+import { useDismissOnOutsideClick } from "../use-dismiss-on-outside-click";
 import type { AiChat } from "./ai-chats-data";
-import {
-  RowActionsMenu,
-  RowActionsMenuTrigger,
-} from "./ai-chats-fields";
 
 type AiChatRowProps = {
   chat: AiChat;
   isMenuOpen: boolean;
   onMenuClose: () => void;
   onMenuToggle: () => void;
+  onDelete?: () => void;
+  onRename?: () => void;
 };
 
 export function AiChatRow({
@@ -18,28 +20,12 @@ export function AiChatRow({
   isMenuOpen,
   onMenuClose,
   onMenuToggle,
+  onDelete,
+  onRename,
 }: AiChatRowProps) {
+  const t = useTranslations("reader.aiChats");
   const rowRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!isMenuOpen) {
-      return;
-    }
-
-    const handleDocumentClick = (event: MouseEvent) => {
-      if (
-        rowRef.current &&
-        !rowRef.current.contains(event.target as Node)
-      ) {
-        onMenuClose();
-      }
-    };
-
-    document.addEventListener("mousedown", handleDocumentClick);
-    return () => {
-      document.removeEventListener("mousedown", handleDocumentClick);
-    };
-  }, [isMenuOpen, onMenuClose]);
+  useDismissOnOutsideClick(rowRef, isMenuOpen, onMenuClose);
 
   return (
     <div
@@ -57,10 +43,19 @@ export function AiChatRow({
       </button>
       <RowActionsMenuTrigger
         ariaLabel={`More options for ${chat.title}`}
+        group="ai-chat-row"
         isOpen={isMenuOpen}
         onToggle={onMenuToggle}
+        sizeClass="size-7"
       />
-      {isMenuOpen ? <RowActionsMenu /> : null}
+      {isMenuOpen ? (
+        <RowActionsMenu
+          actions={[
+            { kind: "rename", label: t("rename"), onClick: onRename },
+            { kind: "delete", label: t("delete"), onClick: onDelete },
+          ]}
+        />
+      ) : null}
     </div>
   );
 }

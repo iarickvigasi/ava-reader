@@ -141,7 +141,12 @@ export type HighlightRow = {
 export type AiCommentRow = {
   libraryItemId: string;
   id: string;
-  kind: "translate" | "explain" | "etymology";
+  // Matches the AiCommentKind enum the API returns from GET — uppercase
+  // so callers don't have to convert at every boundary. Endpoint *paths*
+  // are still lowercase (/translate, /explain, /etymology) and are
+  // handled by the mutation envelope's "generate.translate" /
+  // "generate.explain" / "generate.etymology" kind tags.
+  kind: "TRANSLATE" | "EXPLAIN" | "ETYMOLOGY";
   sourceText: string;
   body: string;
   targetLang: string | null;

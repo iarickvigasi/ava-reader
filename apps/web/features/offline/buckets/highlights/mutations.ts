@@ -49,7 +49,7 @@ export function enqueueUpsert(
     ...bucket.state,
     pending: [...filtered, next],
   };
-  persist(libraryItemId, bucket);
+  persist(bucket);
   // Mirror to Dexie. mutationId == highlightId so put() coalesces with any
   // prior row for the same highlight automatically.
   trackPersist(bucket, () => upsertPendingMutation(libraryItemId, next));
@@ -71,7 +71,7 @@ export function enqueueDelete(
   );
   if (!everSynced) {
     bucket.state = { ...bucket.state, pending: filtered };
-    persist(libraryItemId, bucket);
+    persist(bucket);
     // Whatever upsert was queued, scrub it from Dexie too.
     trackPersist(bucket, () => removePendingMutation(id));
     return;
@@ -85,7 +85,7 @@ export function enqueueDelete(
     ...bucket.state,
     pending: [...filtered, next],
   };
-  persist(libraryItemId, bucket);
+  persist(bucket);
   trackPersist(bucket, () => upsertPendingMutation(libraryItemId, next));
   void flushBucket(libraryItemId, apiBaseUrl);
 }

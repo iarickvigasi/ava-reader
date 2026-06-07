@@ -93,6 +93,7 @@ export function useAiCommentsPanelViewModel(
         chapterLabel:
           chapterLabelById.get(comment.locator?.chapterId ?? "") ??
           t("unknownChapter"),
+        status: comment.status,
       }));
   }, [
     activeFilterId,

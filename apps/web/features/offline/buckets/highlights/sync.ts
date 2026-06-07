@@ -7,11 +7,18 @@
 // mutation in the queue.
 
 import {
-  getOrCreateBucket,
+  cancelRetry,
   notifyDrop,
   persist,
+  scheduleRetry,
   trackPersist,
-} from "./bucket";
+} from "../shared/bucket-core";
+import {
+  extractReason,
+  isPermanentStatus,
+  isTransientStatus,
+} from "../shared/http";
+import { getOrCreateBucket } from "./bucket";
 import {
   removePendingMutation,
   removeSnapshotRow,
@@ -34,9 +41,6 @@ type SendResult =
   | { kind: "deleted" }
   | { kind: "drop"; reason: string };
 
-const RETRY_BASE_MS = 1_000;
-const RETRY_MAX_MS = 30_000;
-
 // Replaces the server snapshot from a fresh GET. Pending mutations are kept
 // — they may not have been acked yet.
 export function applyServerSnapshot(
@@ -50,7 +54,7 @@ export function applyServerSnapshot(
     snapshot,
     pending: bucket.state.pending,
   };
-  persist(libraryItemId, bucket);
+  persist(bucket);
   // Mirror the new authoritative snapshot to Dexie. Async; the in-memory
   // state is already current for any synchronous read.
   trackPersist(bucket, () => replaceSnapshot(libraryItemId, snapshot));
@@ -122,7 +126,9 @@ async function doFlush(
         token,
       );
       if (result.kind === "retry") {
-        scheduleRetry(libraryItemId, bucket);
+        scheduleRetry(bucket, () =>
+          void flushBucket(libraryItemId, bucket.apiBaseUrl),
+        );
         return;
       }
       const popped = bucket.state.pending.slice(1);
@@ -158,35 +164,13 @@ async function doFlush(
         snapshot: nextSnapshot,
         pending: popped,
       };
-      persist(libraryItemId, bucket);
+      persist(bucket);
       // We made progress (or cleanly discarded) — reset backoff so the next
       // transient blip doesn't inherit the previous run's long delay.
       bucket.retryDelayMs = 0;
     }
   } finally {
     bucket.flushing = false;
-  }
-}
-
-function scheduleRetry(libraryItemId: string, bucket: StorageBucket) {
-  const next =
-    bucket.retryDelayMs === 0
-      ? RETRY_BASE_MS
-      : Math.min(bucket.retryDelayMs * 2, RETRY_MAX_MS);
-  bucket.retryDelayMs = next;
-  if (bucket.retryHandle) {
-    clearTimeout(bucket.retryHandle);
-  }
-  bucket.retryHandle = setTimeout(() => {
-    bucket.retryHandle = null;
-    void flushBucket(libraryItemId, bucket.apiBaseUrl);
-  }, next);
-}
-
-function cancelRetry(bucket: StorageBucket) {
-  if (bucket.retryHandle) {
-    clearTimeout(bucket.retryHandle);
-    bucket.retryHandle = null;
   }
 }
 
@@ -254,55 +238,6 @@ async function classifyFailure(response: Response): Promise<SendResult> {
   }
   // Conservatively retry anything we don't recognize.
   return { kind: "retry" };
-}
-
-function isTransientStatus(status: number): boolean {
-  // 401: auth might refresh; 408 timeout; 425 too early; 429 rate limit;
-  // 5xx: server problem.
-  if (status === 401 || status === 408 || status === 425 || status === 429) {
-    return true;
-  }
-  return status >= 500 && status < 600;
-}
-
-function isPermanentStatus(status: number): boolean {
-  // 400 validation, 403 forbidden, 404 (upsert: library/annotation gone),
-  // 409 conflict, 410 gone, 413 payload too large, 415 unsupported,
-  // 422 unprocessable.
-  return (
-    status === 400 ||
-    status === 403 ||
-    status === 404 ||
-    status === 409 ||
-    status === 410 ||
-    status === 413 ||
-    status === 415 ||
-    status === 422
-  );
-}
-
-async function extractReason(response: Response): Promise<string> {
-  try {
-    const text = await response.text();
-    if (!text) {
-      return `HTTP ${response.status}`;
-    }
-    // Nest's HttpException emits { statusCode, message, error }.
-    try {
-      const parsed = JSON.parse(text) as { message?: string | string[] };
-      if (Array.isArray(parsed.message)) {
-        return parsed.message.join(", ");
-      }
-      if (typeof parsed.message === "string") {
-        return parsed.message;
-      }
-    } catch {
-      // Fall through — body wasn't JSON. Use the raw text.
-    }
-    return text;
-  } catch {
-    return `HTTP ${response.status}`;
-  }
 }
 
 export function toHighlightRecord(

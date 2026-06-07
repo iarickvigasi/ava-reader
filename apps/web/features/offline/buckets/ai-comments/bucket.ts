@@ -1,6 +1,6 @@
-// Per-book bucket registry. One bucket holds the in-memory state, the
-// pending-mutation queue, the listener set, and the
-// latest token-getter for background flushes.
+// Per-book bucket registry for AI comments. Mirrors the structure of the
+// highlights bucket so the patterns stay consistent — same subscription
+// API, same hydrate-from-Dexie async dance, same trackPersist test helper.
 
 import {
   addDropListener,
@@ -10,12 +10,7 @@ import {
   setBucketAuth as applyBucketAuth,
 } from "../shared/bucket-core";
 import { readStorage } from "./storage";
-import {
-  STORAGE_VERSION,
-  type DropListener,
-  type Listener,
-  type StorageBucket,
-} from "./types";
+import type { DropListener, Listener, StorageBucket } from "./types";
 
 export { notifyDrop, persist, trackPersist } from "../shared/bucket-core";
 
@@ -28,10 +23,7 @@ export function getOrCreateBucket(
   let bucket = buckets.get(libraryItemId);
   if (!bucket) {
     bucket = {
-      // Start empty; Dexie hydrate runs in the background and fills the
-      // state once available. The bucket's `version` bumps on hydrate so
-      // subscribers re-read through the stable selector.
-      state: { version: STORAGE_VERSION, snapshot: [], pending: [] },
+      state: { snapshot: [], pending: [] },
       listeners: new Set(),
       dropListeners: new Set(),
       flushing: false,
@@ -49,8 +41,6 @@ export function getOrCreateBucket(
     buckets.set(libraryItemId, bucket);
     bucket.hydratedPromise = hydrate(libraryItemId, bucket);
   }
-  // The apiBaseUrl can shift between server-render and client-render in
-  // dev — always keep the latest so flushes target the right host.
   bucket.apiBaseUrl = apiBaseUrl;
   return bucket;
 }
@@ -61,49 +51,33 @@ async function hydrate(
 ): Promise<void> {
   try {
     const loaded = await readStorage(libraryItemId);
-    // If the caller already mutated the bucket in the brief window before
-    // hydrate resolved (e.g. a useHighlights effect dispatched applyServerSnapshot
-    // while we were reading Dexie), splice the Dexie pending queue in front
-    // of any in-memory pending; deduplicate by highlight id so the in-memory
-    // version (newer) wins.
+    // Merge: in-memory state wins (sibling effects may have called
+    // applyServerSnapshot or enqueueDelete before hydrate resolved).
     const inMemoryPendingById = new Map(
-      bucket.state.pending.map((mutation) => [mutation.id, mutation] as const),
+      bucket.state.pending.map((m) => [m.id, m] as const),
     );
     const mergedPending = [
-      ...loaded.pending.filter(
-        (mutation) => !inMemoryPendingById.has(mutation.id),
-      ),
+      ...loaded.pending.filter((m) => !inMemoryPendingById.has(m.id)),
       ...bucket.state.pending,
     ];
-    // Snapshot: same logic, but the *in-memory* one is preferred when both
-    // exist — applyServerSnapshot would have replaced state.snapshot with
-    // the freshest server view.
     const snapshot = bucket.state.snapshot.length
       ? bucket.state.snapshot
       : loaded.snapshot;
-    bucket.state = {
-      version: STORAGE_VERSION,
-      snapshot,
-      pending: mergedPending,
-    };
+    bucket.state = { snapshot, pending: mergedPending };
     persist(bucket);
   } catch {
-    // Dexie unavailable (private mode quirks, quota, …). The bucket keeps
-    // working in-memory for this session; we just don't have offline replay.
+    // Dexie unavailable — bucket runs in-memory for this session.
   }
 }
 
-// Public alias — callers outside the folder shouldn't see the
-// `getOrCreate` name (it sounds like it might mutate when they only want
-// to read), but they should still go through one entry point.
-export function getHighlightsBucket(
+export function getAiCommentsBucket(
   libraryItemId: string,
   apiBaseUrl: string,
 ): StorageBucket {
   return getOrCreateBucket(libraryItemId, apiBaseUrl);
 }
 
-export function subscribeToHighlights(
+export function subscribeToAiComments(
   libraryItemId: string,
   apiBaseUrl: string,
   listener: Listener,
@@ -130,17 +104,14 @@ export function setBucketAuth(
   applyBucketAuth(getOrCreateBucket(libraryItemId, apiBaseUrl), getToken);
 }
 
-// Test-only helper that waits for every in-flight async piece kicked off
-// by mutations/sync — the fire-and-forget Dexie write chain *and* any
-// currently-running flushBucket — to settle.
-export async function awaitHighlightsPersistDrain(
+// Test-only — drain everything in flight on this bucket.
+export async function awaitAiCommentsPersistDrain(
   libraryItemId: string,
 ): Promise<void> {
   return awaitPersistDrain(buckets.get(libraryItemId));
 }
 
-// Test-only — clears module-level state without nuking Dexie.
-export function __resetHighlightsBucketsForTests() {
+export function __resetAiCommentsBucketsForTests() {
   for (const bucket of buckets.values()) {
     if (bucket.retryHandle) {
       clearTimeout(bucket.retryHandle);

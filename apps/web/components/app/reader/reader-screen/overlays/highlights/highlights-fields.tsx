@@ -1,12 +1,9 @@
 import { useTranslations } from "next-intl";
-import type { ReactNode } from "react";
-import { TrashIcon } from "@/components/app/shared/app-icons";
 import { cn } from "@/lib/cn";
 import {
   HIGHLIGHT_COLOR_BG,
   type HighlightFilter,
 } from "./highlights-data";
-import { MoreVerticalIcon } from "./highlights-icons";
 
 export function SearchField({
   onChange,
@@ -68,88 +65,6 @@ export function ColorFilterChip({
       >
         {filter.count}
       </span>
-    </button>
-  );
-}
-
-export function RowActionsMenuTrigger({
-  ariaLabel,
-  isOpen,
-  onToggle,
-}: {
-  ariaLabel: string;
-  isOpen: boolean;
-  onToggle: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      aria-haspopup="menu"
-      aria-expanded={isOpen}
-      aria-label={ariaLabel}
-      className={cn(
-        "inline-flex size-6 shrink-0 items-center justify-center rounded-full text-ink/55 transition",
-        "hover:bg-soft-tone-fill hover:text-ink",
-        "opacity-0 group-hover/highlight-row:opacity-100 focus:opacity-100",
-        isOpen && "opacity-100 text-ink",
-      )}
-      onClick={(event) => {
-        event.stopPropagation();
-        onToggle();
-      }}
-    >
-      <MoreVerticalIcon className="size-4" />
-    </button>
-  );
-}
-
-export function RowActionsMenu({
-  onDelete,
-}: {
-  onDelete?: () => void;
-}) {
-  const t = useTranslations("reader.highlights");
-  return (
-    <div
-      role="menu"
-      className="absolute right-2 top-full z-10 mt-1 w-36 rounded-[10px] border border-line/40 bg-paper-strong p-2 shadow-[-6px_6px_18px_rgba(31,27,24,0.10)]"
-    >
-      <RowActionsMenuItem
-        icon={<TrashIcon className="size-4" aria-hidden="true" />}
-        label={t("delete")}
-        tone="danger"
-        onClick={onDelete}
-      />
-    </div>
-  );
-}
-
-function RowActionsMenuItem({
-  icon,
-  label,
-  onClick,
-  tone,
-}: {
-  icon: ReactNode;
-  label: string;
-  onClick?: () => void;
-  tone: "default" | "danger";
-}) {
-  return (
-    <button
-      type="button"
-      role="menuitem"
-      onClick={onClick}
-      className={cn(
-        "flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left font-(--font-ui) text-[0.72rem] uppercase tracking-[0.16em] transition",
-        "hover:bg-soft-tone-fill/80",
-        tone === "danger" ? "text-danger" : "text-copy",
-      )}
-    >
-      <span className="inline-flex size-5 items-center justify-center">
-        {icon}
-      </span>
-      {label}
     </button>
   );
 }

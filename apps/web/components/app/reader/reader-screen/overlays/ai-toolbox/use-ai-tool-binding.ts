@@ -1,6 +1,20 @@
 import { useEffect, useRef } from "react";
+import { generateAiCommentId } from "@/features/offline/buckets/ai-comments";
+import type { ReaderRangeLocator } from "@/lib/api-types";
 import { useAiCommentsContext } from "../ai-comments/ai-comments-context";
 import { type AiToolPayload, useAiTool } from "./use-ai-tool";
+
+// The payload's `locator` is a JSON-serialised string (the server's wire
+// format). The bucket stores a parsed ReaderRangeLocator so the reader's
+// underline-applier can target the range immediately without re-parsing.
+function parseLocator(raw: string | undefined): ReaderRangeLocator | null {
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as ReaderRangeLocator;
+  } catch {
+    return null;
+  }
+}
 
 type UseAiToolBindingInput = {
   libraryItemId: string;
@@ -31,7 +45,7 @@ export function useAiToolBinding({
   payload,
   savedText,
 }: UseAiToolBindingInput) {
-  const { refetch } = useAiCommentsContext();
+  const { refetch, enqueueGenerateIntent } = useAiCommentsContext();
   const tool = useAiTool({ libraryItemId });
 
   useEffect(() => {
@@ -43,10 +57,55 @@ export function useAiToolBinding({
       tool.reset();
       return;
     }
+    // when offline, drop the request into the bucket's queue
+    // instead of trying the network. The sync runner will replay it once
+    // we're back online and the streamed body will appear in the panel
+    // through the same selector-merged path. Online path is unchanged.
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      const id = generateAiCommentId();
+      const queuedAt = new Date().toISOString();
+      const locator = parseLocator(payload.locator);
+      if (payload.kind === "translate") {
+        enqueueGenerateIntent({
+          kind: "generate.translate",
+          id,
+          payload: {
+            text: payload.text,
+            targetLang: payload.targetLang,
+            locator: payload.locator,
+          },
+          locator,
+          queuedAt,
+        });
+      } else if (payload.kind === "etymology") {
+        enqueueGenerateIntent({
+          kind: "generate.etymology",
+          id,
+          payload: { text: payload.text, locator: payload.locator },
+          locator,
+          queuedAt,
+        });
+      } else {
+        enqueueGenerateIntent({
+          kind: "generate.explain",
+          id,
+          payload: {
+            text: payload.text,
+            context: payload.context,
+            bookTitle: payload.bookTitle,
+            author: payload.author,
+            locator: payload.locator,
+          },
+          locator,
+          queuedAt,
+        });
+      }
+      return;
+    }
     tool.start(payload);
     // `tool` is stable across renders; depending on it would re-fire forever.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, payload, savedText]);
+  }, [isOpen, payload, savedText, enqueueGenerateIntent]);
 
   useEffect(() => {
     if (!selection) tool.reset();
