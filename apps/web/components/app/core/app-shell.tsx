@@ -8,6 +8,7 @@ import { LegacyLocalStorageCleanupRunner } from "@/components/app/core/legacy-lo
 import { MissingBookOfflineModal } from "@/components/app/core/missing-book-offline-modal";
 import { OfflineModalProvider } from "@/components/app/core/offline-modal-context";
 import { ServiceWorkerRegistrar } from "@/components/app/core/service-worker-registrar";
+import { PreferencesSyncRunner } from "@/components/app/preferences/preferences-sync-runner";
 import { ReaderUiProvider } from "@/components/app/core/reader-ui-context";
 import { useInterfaceLang } from "@/components/app/preferences/use-interface-lang";
 import { useCurrentUserCached } from "@/features/offline/buckets/me";
@@ -41,6 +42,7 @@ export function AppShell({ children, currentUser: initialUser }: AppShellProps) 
       <OfflineModalProvider>
         <ServiceWorkerRegistrar />
         <LegacyLocalStorageCleanupRunner />
+        <PreferencesSyncRunner />
         <AppToast />
         <MissingBookOfflineModal />
         <ReaderUiProvider>

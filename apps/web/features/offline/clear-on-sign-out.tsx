@@ -16,8 +16,9 @@
 import { useAuth } from "@clerk/nextjs";
 import { useEffect, useRef } from "react";
 
-import { clearHome } from "./buckets/home";
-import { clearCurrentUser } from "./buckets/me";
+import { clearAllAiCommentsBuckets } from "./buckets/ai-comments";
+import { clearAllHighlightsBuckets } from "./buckets/highlights";
+import { clearAllDexieUserData } from "./db";
 import { clearOfflineModalSeen } from "./seen-modal";
 
 export function ClearOfflineOnSignOut() {
@@ -36,8 +37,17 @@ export function ClearOfflineOnSignOut() {
 
     // Fire only on a real sign-out edge: we *had* a user, now we don't.
     if (previous && !userId) {
-      void clearCurrentUser();
-      void clearHome();
+      // Wipe every row from every Dexie table — currentUser / home / library
+      // / books / highlights / ai-comments / sessions / progress /
+      // preferences and their mutation queues. Done in one transaction so
+      // it's atomic from React's perspective.
+      void clearAllDexieUserData();
+      // The bucket modules also hold *in-memory* state (per-book bucket
+      // registries) that's not in Dexie. Reset those too so the next user's
+      // session doesn't inherit the previous user's listeners + cached
+      // selectors.
+      clearAllAiCommentsBuckets();
+      clearAllHighlightsBuckets();
       clearOfflineModalSeen();
     }
   }, [isLoaded, userId]);

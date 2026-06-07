@@ -26,6 +26,7 @@ export type {
 } from "./types";
 
 export {
+  __resetHighlightsBucketsForTests as clearAllHighlightsBuckets,
   getHighlightsBucket,
   setBucketAuth,
   subscribeToDrops,

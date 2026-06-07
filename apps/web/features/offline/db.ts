@@ -365,6 +365,39 @@ export function getDb(): AvaReaderDB {
   return dbInstance;
 }
 
+// Wipes every row from every table in one transaction. Called from the
+// sign-out handler so a different user signing in on the same browser
+// profile can't see any of the previous user's cached data. We clear
+// rather than delete-the-database so the next read sees an empty store
+// instead of having to wait for `new AvaReaderDB()` to re-create the
+// schema (which can race with concurrent reads from React effects).
+export async function clearAllDexieUserData(): Promise<void> {
+  const db = getDb();
+  const tables = [
+    db.libraryItems,
+    db.collections,
+    db.collectionMembership,
+    db.me,
+    db.home,
+    db.books,
+    db.bookChapters,
+    db.highlights,
+    db.aiComments,
+    db.sessions,
+    db.progress,
+    db.statsSnapshot,
+    db.preferences,
+    db.highlightMutations,
+    db.aiCommentMutations,
+    db.sessionMutations,
+    db.preferenceMutations,
+    db.meta,
+  ];
+  await db.transaction("rw", tables, async () => {
+    await Promise.all(tables.map((table) => table.clear()));
+  });
+}
+
 // Test-only: lets a vitest suite drop the singleton between cases so each
 // fake-indexeddb instance starts clean. NOT exported via the package barrel.
 export function __resetDbForTests() {

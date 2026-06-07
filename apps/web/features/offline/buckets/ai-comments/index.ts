@@ -21,6 +21,7 @@ export {
   subscribeToAiComments,
   subscribeToDrops,
   __resetAiCommentsBucketsForTests,
+  __resetAiCommentsBucketsForTests as clearAllAiCommentsBuckets,
   awaitAiCommentsPersistDrain,
 } from "./bucket";
 
