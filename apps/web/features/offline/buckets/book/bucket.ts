@@ -111,6 +111,14 @@ export function clearInFlight(libraryItemId: string): void {
   state.inFlight.delete(libraryItemId);
 }
 
+// True when any book save is currently in flight. The background primer reads
+// this before starting a save so it never aborts a save the user just kicked
+// off (saveBookOffline unconditionally aborts other in-flight saves); when a
+// user save is running the primer yields and resumes on a later home load.
+export function hasInFlightSaves(): boolean {
+  return state.inFlight.size > 0;
+}
+
 // Cancel any in-flight save that ISN'T for `keepLibraryItemId`. Used when
 // the user opens a different book mid-save: per spec, the prior save is
 // abandoned (partial rows cleaned up by the orchestrator's abort handler).
