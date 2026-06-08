@@ -57,6 +57,12 @@
       "title": "Open online to save this book",
       "body": "You can save this book by opening its info page and tapping \"Save for offline\" when you have an internet connection.",
       "dismiss": "Got it"
+    },
+    "primeConsent": {
+      "title": "Save your books for offline reading?",
+      "body": "You're on a connection that may use mobile data. Download the books you've marked for offline — with their highlights and notes — so they're ready without a connection?",
+      "confirm": "Download",
+      "cancel": "Not now"
     }
   },
   "legal": {
@@ -386,15 +392,25 @@
           "title": "Saving for offline",
           "description": "{current} / {total} chapters"
         },
-        "saved": {
-          "title": "Remove from downloads",
-          "description": "Book will be still available online"
+        "pending": {
+          "title": "Download queued",
+          "description": "We'll download it when you're back online — tap to cancel"
         },
-        "confirm": {
-          "title": "Remove from downloads?",
-          "body": "You won't be able to read this book offline anymore.",
-          "confirm": "Remove",
-          "cancel": "Cancel"
+        "aborting": {
+          "title": "Cancelling download",
+          "description": "Stopping and cleaning up…"
+        },
+        "keep": {
+          "title": "Keep for offline",
+          "description": "Cached while reading — tap to keep it after you move on"
+        },
+        "saved": {
+          "title": "Saved offline",
+          "description": "Tap to stop keeping it offline"
+        },
+        "remove": {
+          "title": "Remove from downloads",
+          "description": "Frees up space, the book will be still available online"
         }
       },
       "readingProgressLabel": "Reading progress",

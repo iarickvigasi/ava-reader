@@ -332,7 +332,9 @@ export async function saveBookOffline(
     const stillMissing = ordered.filter((id) => !covered.has(id));
     for (const chapterId of stillMissing) {
       if (controller.signal.aborted) {
-        return { kind: "cancelled" };
+        // Funnel through the catch so partial rows are cleaned up and status is
+        // reset to idle — same as every other cancellation path.
+        throw new DOMException("Aborted", "AbortError");
       }
       if (covered.has(chapterId)) {
         continue;

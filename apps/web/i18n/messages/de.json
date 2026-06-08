@@ -57,6 +57,12 @@
       "title": "Öffne dieses Buch online, um es zu speichern",
       "body": "Du kannst dieses Buch speichern, indem du seine Infoseite öffnest und auf „Für offline speichern“ tippst, sobald du eine Internetverbindung hast.",
       "dismiss": "Verstanden"
+    },
+    "primeConsent": {
+      "title": "Bücher für die Offline-Lektüre speichern?",
+      "body": "Du bist möglicherweise über Mobilfunk verbunden. Die für offline markierten Bücher – mit ihren Markierungen und Notizen – herunterladen, damit sie ohne Verbindung bereitstehen?",
+      "confirm": "Herunterladen",
+      "cancel": "Jetzt nicht"
     }
   },
   "legal": {
@@ -386,15 +392,25 @@
           "title": "Wird offline gespeichert",
           "description": "{current} / {total} Kapitel"
         },
-        "saved": {
-          "title": "Aus Downloads entfernen",
-          "description": "Das Buch bleibt online verfügbar"
+        "pending": {
+          "title": "Download geplant",
+          "description": "Wir laden es herunter, sobald du wieder online bist – zum Abbrechen tippen"
         },
-        "confirm": {
-          "title": "Aus Downloads entfernen?",
-          "body": "Du kannst dieses Buch dann nicht mehr offline lesen.",
-          "confirm": "Entfernen",
-          "cancel": "Abbrechen"
+        "aborting": {
+          "title": "Download wird abgebrochen",
+          "description": "Wird gestoppt und bereinigt…"
+        },
+        "keep": {
+          "title": "Offline behalten",
+          "description": "Beim Lesen zwischengespeichert – tippe, um es dauerhaft zu behalten"
+        },
+        "saved": {
+          "title": "Offline gespeichert",
+          "description": "Tippen, um es nicht mehr offline zu behalten"
+        },
+        "remove": {
+          "title": "Aus Downloads entfernen",
+          "description": "Gibt Speicher frei, das Buch bleibt online verfügbar"
         }
       },
       "readingProgressLabel": "Lesefortschritt",

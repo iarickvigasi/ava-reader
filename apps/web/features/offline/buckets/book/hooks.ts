@@ -15,12 +15,13 @@
 
 import { useAuth } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
-import { useCallback, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 
 import { fetchReaderPayload } from "@/components/app/reader/reader-screen/data/reader-client";
 import { emitAppToast } from "@/components/app/core/app-toast";
 
 import {
+  abortSaveAndWait,
   getBookSaveSnapshot,
   getServerSnapshot,
   setStatus,
@@ -32,7 +33,7 @@ import {
   type SaveOutcome,
 } from "./download";
 import { checkStorageQuota } from "./quota";
-import { deleteBookContent } from "./storage";
+import { deleteBookContent, readOfflineState, type OfflineState } from "./storage";
 
 export function useBookSaveStatus(libraryItemId: string): BookSaveSnapshot {
   // We re-derive a fresh "thunked" subscribe + snapshot per id so different
@@ -101,8 +102,10 @@ export function useSaveBook(libraryItemId: string) {
       });
 
       // Toast on a genuine failure (not on cancellation — that's a user
-      // action, not an error).
-      if (outcome.kind === "failed") {
+      // action — and not when we're simply offline: the intent is queued and
+      // the download resumes on reconnect, so an error toast would be wrong).
+      const offline = typeof navigator !== "undefined" && !navigator.onLine;
+      if (outcome.kind === "failed" && !offline) {
         emitAppToast({ message: t("saveFailed"), tone: "error" });
       }
 
@@ -115,5 +118,47 @@ export function useSaveBook(libraryItemId: string) {
     await deleteBookContent(libraryItemId);
   }, [libraryItemId]);
 
-  return { save, remove };
+  // Aborts an in-flight save for this book and resolves once the orchestrator
+  // has torn down its partial rows (returning the book to "not saved").
+  const cancel = useCallback(
+    () => abortSaveAndWait(libraryItemId),
+    [libraryItemId],
+  );
+
+  return { save, remove, cancel };
+}
+
+// Reactive offline state for the book-info card: "loading" until Dexie
+// resolves, then "absent" | "auto" | "explicit". Re-reads whenever the save
+// status changes (a finished save / removal flips it) and exposes `refresh`
+// for actions that mutate the row without touching the save bucket — promoting
+// an auto-save to explicit, for example.
+export function useBookOfflineState(
+  libraryItemId: string,
+  saveStatus: string,
+): {
+  state: OfflineState | "loading";
+  fromAutoSave: boolean;
+  refresh: () => void;
+} {
+  const [detail, setDetail] = useState<{
+    state: OfflineState | "loading";
+    fromAutoSave: boolean;
+  }>({ state: "loading", fromAutoSave: false });
+  const [tick, setTick] = useState(0);
+  const refresh = useCallback(() => setTick((n) => n + 1), []);
+
+  useEffect(() => {
+    let cancelled = false;
+    void readOfflineState(libraryItemId).then((next) => {
+      if (!cancelled) {
+        setDetail(next);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [libraryItemId, saveStatus, tick]);
+
+  return { state: detail.state, fromAutoSave: detail.fromAutoSave, refresh };
 }

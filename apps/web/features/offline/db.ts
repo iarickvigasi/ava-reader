@@ -48,6 +48,11 @@ export type LibraryItemRow = LibraryCardBook & {
   savedOffline: boolean;
   savedAutomatically: boolean;
   savedAt: string | null;
+  // Offline-capable mutation bookkeeping for the server-synced "keep this book
+  // offline" intent. `offlineRequestedDirty` marks a local toggle not yet
+  // PATCHed to the server; the sync flush drains it and a revalidation
+  // preserves the local value while it's still dirty.
+  offlineRequestedDirty?: boolean;
   // Server-side updatedAt of the LibraryItem row, used to short-circuit
   // unchanged revalidations.
   serverUpdatedAt: string | null;

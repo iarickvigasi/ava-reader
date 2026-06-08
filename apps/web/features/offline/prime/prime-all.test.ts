@@ -3,7 +3,9 @@ import { describe, expect, it, vi } from "vitest";
 import type { LibraryBookView, LibraryView } from "../buckets/library/types";
 
 import {
+  CONTENT_CONSENT_GRANTED,
   META_KEY_COMPLETED,
+  META_KEY_CONTENT_CONSENT,
   META_KEY_CONTENT_DONE,
   META_KEY_METADATA_DONE,
 } from "./meta";
@@ -14,10 +16,13 @@ import {
   type PrimeRuntime,
 } from "./prime-all";
 
-function book(id: string, slug = id): LibraryBookView {
+function book(
+  id: string,
+  opts: { slug?: string; offlineRequested?: boolean } = {},
+): LibraryBookView {
   return {
     libraryItemId: id,
-    slug,
+    slug: opts.slug ?? id,
     title: id,
     authors: [],
     coverImageUrl: null,
@@ -25,6 +30,7 @@ function book(id: string, slug = id): LibraryBookView {
     primaryFormat: "EPUB",
     lastReadAt: null,
     savedOffline: false,
+    offlineRequested: opts.offlineRequested ?? false,
   };
 }
 
@@ -68,6 +74,10 @@ type Harness = {
   saveBook: ReturnType<typeof vi.fn>;
   revalidateBookInfo: ReturnType<typeof vi.fn>;
   revalidateLibrary: ReturnType<typeof vi.fn>;
+  revalidateCollection: ReturnType<typeof vi.fn>;
+  revalidatePreferences: ReturnType<typeof vi.fn>;
+  revalidateHighlights: ReturnType<typeof vi.fn>;
+  revalidateAiComments: ReturnType<typeof vi.fn>;
 };
 
 function setup(overrides: Partial<PrimeInternals> = {}): Harness {
@@ -75,19 +85,33 @@ function setup(overrides: Partial<PrimeInternals> = {}): Harness {
   const saveBook = vi.fn(async () => ({ kind: "saved" }) as const);
   const revalidateBookInfo = vi.fn(async () => {});
   const revalidateLibrary = vi.fn(async () => {});
+  const revalidateCollection = vi.fn(async () => {});
+  const revalidatePreferences = vi.fn(async () => {});
+  const revalidateHighlights = vi.fn(async () => {});
+  const revalidateAiComments = vi.fn(async () => {});
 
   const internals: PrimeInternals = {
-    shouldPrime: () => true,
+    canPrimeMetadata: () => true,
+    isSaveDataOn: () => false,
     isOnline: () => true,
     hasInFlightSaves: () => false,
-    readLibraryView: async () => view([book("a"), book("b")]),
+    readLibraryView: async () =>
+      view([
+        book("a", { offlineRequested: true }),
+        book("b", { offlineRequested: true }),
+      ]),
     readHome: async () => ({}),
     readBookInfo: async () => ({}),
     revalidateHome: async () => {},
     revalidateLibrary,
+    revalidateCollection,
     revalidateBookInfo,
+    revalidatePreferences,
+    revalidateHighlights,
+    revalidateAiComments,
     hasBookContent: async () => false,
     checkStorageQuota: async () => ({ ok: true }),
+    getMetaFlag: async (key) => flags.get(key) ?? null,
     hasMetaFlag: async (key) => flags.has(key),
     setMetaFlag: async (key, value) => {
       flags.set(key, value);
@@ -103,6 +127,10 @@ function setup(overrides: Partial<PrimeInternals> = {}): Harness {
     saveBook,
     revalidateBookInfo,
     revalidateLibrary,
+    revalidateCollection,
+    revalidatePreferences,
+    revalidateHighlights,
+    revalidateAiComments,
   };
 }
 
@@ -118,8 +146,8 @@ describe("collectSmartBooks", () => {
 });
 
 describe("primeAllCaches", () => {
-  it("does nothing when shouldPrime is false", async () => {
-    const h = setup({ shouldPrime: () => false });
+  it("does nothing when the connection can't prime metadata", async () => {
+    const h = setup({ canPrimeMetadata: () => false });
     await primeAllCaches(h.runtime, h.internals);
     expect(h.revalidateLibrary).not.toHaveBeenCalled();
     expect(h.saveBook).not.toHaveBeenCalled();
@@ -134,23 +162,46 @@ describe("primeAllCaches", () => {
     expect(h.saveBook).not.toHaveBeenCalled();
   });
 
-  it("happy path: primes metadata + content and sets all flags", async () => {
+  it("happy path: primes metadata, preferences, content + annotations", async () => {
     const h = setup();
-    await primeAllCaches(h.runtime, h.internals);
+    const result = await primeAllCaches(h.runtime, h.internals);
 
+    expect(h.revalidatePreferences).toHaveBeenCalledTimes(1);
     expect(h.revalidateLibrary).toHaveBeenCalledTimes(1);
+    // Each smart collection is hydrated in full before enumerating books.
+    expect(h.revalidateCollection).toHaveBeenCalledWith("imported", expect.any(Function));
     expect(h.revalidateBookInfo).toHaveBeenCalledTimes(2);
-    expect(h.saveBook).toHaveBeenCalledTimes(2);
     expect(h.saveBook).toHaveBeenCalledWith("a");
     expect(h.saveBook).toHaveBeenCalledWith("b");
+    expect(h.revalidateHighlights).toHaveBeenCalledTimes(2);
+    expect(h.revalidateAiComments).toHaveBeenCalledTimes(2);
     expect(h.flags.has(META_KEY_METADATA_DONE)).toBe(true);
     expect(h.flags.has(META_KEY_CONTENT_DONE)).toBe(true);
     expect(h.flags.has(META_KEY_COMPLETED)).toBe(true);
+    expect(result.contentConsentNeeded).toBe(false);
+  });
+
+  it("content tier targets only offline-marked books (metadata covers all)", async () => {
+    const h = setup({
+      readLibraryView: async () =>
+        view([
+          book("a", { offlineRequested: true }),
+          book("b", { offlineRequested: false }),
+        ]),
+    });
+    await primeAllCaches(h.runtime, h.internals);
+    // book-info primed for both smart books...
+    expect(h.revalidateBookInfo).toHaveBeenCalledTimes(2);
+    // ...but content + annotations only for the offline-marked one.
+    expect(h.saveBook).toHaveBeenCalledTimes(1);
+    expect(h.saveBook).toHaveBeenCalledWith("a");
+    expect(h.revalidateHighlights).toHaveBeenCalledTimes(1);
   });
 
   it("only enumerates books from smart collections", async () => {
     const h = setup({
-      readLibraryView: async () => view([book("a")], [book("custom")]),
+      readLibraryView: async () =>
+        view([book("a", { offlineRequested: true })], [book("custom")]),
     });
     await primeAllCaches(h.runtime, h.internals);
     expect(h.revalidateBookInfo).toHaveBeenCalledTimes(1);
@@ -172,7 +223,6 @@ describe("primeAllCaches", () => {
     await primeAllCaches(h.runtime, h.internals);
     expect(h.saveBook).not.toHaveBeenCalled();
     expect(h.flags.has(META_KEY_CONTENT_DONE)).toBe(false);
-    // Metadata tier still completes independently.
     expect(h.flags.has(META_KEY_METADATA_DONE)).toBe(true);
     expect(h.flags.has(META_KEY_COMPLETED)).toBe(false);
   });
@@ -182,7 +232,7 @@ describe("primeAllCaches", () => {
     const h = setup();
     h.runtime.saveBook = saveBook;
     await primeAllCaches(h.runtime, h.internals);
-    expect(saveBook).toHaveBeenCalledTimes(1); // stopped after the first
+    expect(saveBook).toHaveBeenCalledTimes(1);
     expect(h.flags.has(META_KEY_CONTENT_DONE)).toBe(false);
   });
 
@@ -194,13 +244,14 @@ describe("primeAllCaches", () => {
     expect(h.flags.has(META_KEY_COMPLETED)).toBe(true);
   });
 
-  it("skips books whose content is already cached", async () => {
+  it("skips books whose content is already cached but still backfills annotations", async () => {
     const h = setup({
       hasBookContent: async (id: string) => id === "a",
     });
     await primeAllCaches(h.runtime, h.internals);
     expect(h.saveBook).toHaveBeenCalledTimes(1);
     expect(h.saveBook).toHaveBeenCalledWith("b");
+    expect(h.revalidateHighlights).toHaveBeenCalledTimes(2);
   });
 
   it("does not re-run the metadata tier when already done", async () => {
@@ -208,7 +259,6 @@ describe("primeAllCaches", () => {
     h.flags.set(META_KEY_METADATA_DONE, "T");
     await primeAllCaches(h.runtime, h.internals);
     expect(h.revalidateLibrary).not.toHaveBeenCalled();
-    // ...but content still runs.
     expect(h.saveBook).toHaveBeenCalledTimes(2);
     expect(h.flags.has(META_KEY_COMPLETED)).toBe(true);
   });
@@ -218,5 +268,44 @@ describe("primeAllCaches", () => {
     await primeAllCaches(h.runtime, h.internals);
     expect(h.flags.has(META_KEY_METADATA_DONE)).toBe(false);
     expect(h.saveBook).not.toHaveBeenCalled();
+  });
+
+  describe("Save-Data consent gating (content tier)", () => {
+    it("flags consent needed and skips content when Save-Data is on and unanswered", async () => {
+      const h = setup({ isSaveDataOn: () => true });
+      const result = await primeAllCaches(h.runtime, h.internals);
+      expect(result.contentConsentNeeded).toBe(true);
+      expect(h.saveBook).not.toHaveBeenCalled();
+      expect(h.flags.has(META_KEY_CONTENT_DONE)).toBe(false);
+      // Metadata still primes on Save-Data.
+      expect(h.flags.has(META_KEY_METADATA_DONE)).toBe(true);
+    });
+
+    it("runs content when Save-Data is on but consent was granted", async () => {
+      const h = setup({ isSaveDataOn: () => true });
+      h.flags.set(META_KEY_CONTENT_CONSENT, CONTENT_CONSENT_GRANTED);
+      const result = await primeAllCaches(h.runtime, h.internals);
+      expect(result.contentConsentNeeded).toBe(false);
+      expect(h.saveBook).toHaveBeenCalledTimes(2);
+      expect(h.flags.has(META_KEY_CONTENT_DONE)).toBe(true);
+    });
+
+    it("re-offers (does not remember a decline) — asks again while unanswered", async () => {
+      // A decline isn't persisted, so a later run under Save-Data still asks.
+      const h = setup({ isSaveDataOn: () => true });
+      const first = await primeAllCaches(h.runtime, h.internals);
+      const second = await primeAllCaches(h.runtime, h.internals);
+      expect(first.contentConsentNeeded).toBe(true);
+      expect(second.contentConsentNeeded).toBe(true);
+      expect(h.saveBook).not.toHaveBeenCalled();
+    });
+
+    it("adds a storage-full callback path (terminal) without throwing", async () => {
+      const onStorageFull = vi.fn();
+      const h = setup({ checkStorageQuota: async () => ({ ok: false }) });
+      h.runtime.onStorageFull = onStorageFull;
+      await primeAllCaches(h.runtime, h.internals);
+      expect(onStorageFull).toHaveBeenCalledTimes(1);
+    });
   });
 });

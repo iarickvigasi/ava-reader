@@ -40,6 +40,10 @@ type BucketState = {
   // In-flight AbortControllers, one per libraryItemId. Used to cancel a save
   // that's still running when a new one starts.
   inFlight: Map<string, AbortController>;
+  // Resolvers waiting for a specific book's save to finish cleaning up after an
+  // abort — fired from clearInFlight (the orchestrator's finally). Lets callers
+  // await "the save has fully stopped" regardless of who started it.
+  settleWaiters: Map<string, Array<() => void>>;
   listeners: Set<Listener>;
   // Bumped on every mutation; drives the stable-selector memo.
   version: number;
@@ -48,6 +52,7 @@ type BucketState = {
 const state: BucketState = {
   byBook: new Map(),
   inFlight: new Map(),
+  settleWaiters: new Map(),
   listeners: new Set(),
   version: 0,
 };
@@ -109,6 +114,31 @@ export function registerInFlight(
 
 export function clearInFlight(libraryItemId: string): void {
   state.inFlight.delete(libraryItemId);
+  const waiters = state.settleWaiters.get(libraryItemId);
+  if (waiters) {
+    state.settleWaiters.delete(libraryItemId);
+    for (const resolve of waiters) {
+      resolve();
+    }
+  }
+}
+
+// Aborts the in-flight save for one book and resolves once the orchestrator has
+// finished cleaning up its partial rows (i.e. clearInFlight ran). Resolves
+// immediately when nothing is in flight. Used by the offline-save UI so the
+// "cancelling…" state can wait for the real teardown before returning to idle.
+export function abortSaveAndWait(libraryItemId: string): Promise<void> {
+  const controller = state.inFlight.get(libraryItemId);
+  if (!controller) {
+    return Promise.resolve();
+  }
+  const settled = new Promise<void>((resolve) => {
+    const waiters = state.settleWaiters.get(libraryItemId) ?? [];
+    waiters.push(resolve);
+    state.settleWaiters.set(libraryItemId, waiters);
+  });
+  controller.abort();
+  return settled;
 }
 
 // True when any book save is currently in flight. The background primer reads
@@ -138,6 +168,12 @@ export function __resetBookBucketForTests(): void {
     c.abort();
   }
   state.inFlight.clear();
+  for (const waiters of state.settleWaiters.values()) {
+    for (const resolve of waiters) {
+      resolve();
+    }
+  }
+  state.settleWaiters.clear();
   state.listeners.clear();
   state.version = 0;
 }

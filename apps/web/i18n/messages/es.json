@@ -57,6 +57,12 @@
       "title": "Abre este libro en línea para guardarlo",
       "body": "Puedes guardar este libro abriendo su página de información y tocando «Guardar para leer sin conexión» cuando tengas conexión a internet.",
       "dismiss": "Entendido"
+    },
+    "primeConsent": {
+      "title": "¿Guardar tus libros para leer sin conexión?",
+      "body": "Puede que estés usando datos móviles. ¿Descargar los libros marcados para sin conexión, con sus subrayados y notas, para tenerlos listos sin conexión?",
+      "confirm": "Descargar",
+      "cancel": "Ahora no"
     }
   },
   "legal": {
@@ -386,15 +392,25 @@
           "title": "Guardando sin conexión",
           "description": "{current} / {total} capítulos"
         },
-        "saved": {
-          "title": "Quitar de las descargas",
-          "description": "El libro seguirá disponible en línea"
+        "pending": {
+          "title": "Descarga en cola",
+          "description": "Lo descargaremos cuando vuelvas a estar en línea: toca para cancelar"
         },
-        "confirm": {
-          "title": "¿Quitar de las descargas?",
-          "body": "Ya no podrás leer este libro sin conexión.",
-          "confirm": "Quitar",
-          "cancel": "Cancelar"
+        "aborting": {
+          "title": "Cancelando la descarga",
+          "description": "Deteniendo y limpiando…"
+        },
+        "keep": {
+          "title": "Guardar sin conexión",
+          "description": "En caché mientras lees: toca para conservarlo"
+        },
+        "saved": {
+          "title": "Guardado sin conexión",
+          "description": "Toca para dejar de guardarlo sin conexión"
+        },
+        "remove": {
+          "title": "Quitar de las descargas",
+          "description": "Libera espacio, el libro seguirá disponible en línea"
         }
       },
       "readingProgressLabel": "Progreso de lectura",

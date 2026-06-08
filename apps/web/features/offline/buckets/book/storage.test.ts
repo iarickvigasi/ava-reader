@@ -18,6 +18,7 @@ import {
   readBookContent,
   readCachedChapterIds,
   readChapter,
+  readOfflineState,
 } from "./storage";
 
 function seedLibraryItem(
@@ -227,5 +228,71 @@ describe("book bucket storage", () => {
       blocks: [],
     });
     expect(await hasBookContent("lib-1")).toBe(true);
+  });
+
+  it("readOfflineState distinguishes absent / auto / explicit + origin", async () => {
+    const db = getDb();
+    // Not cached.
+    expect(await readOfflineState("lib-1")).toEqual({
+      state: "absent",
+      fromAutoSave: false,
+    });
+
+    // Cache content + an auto-saved library row → "auto".
+    await applyBookContent({
+      libraryItemId: "lib-1",
+      toc: [],
+      chapterIds: ["ch-1"],
+      metadata: {
+        libraryItemId: "lib-1",
+        slug: "book-a",
+        title: "Book A",
+        authors: ["A"],
+        primaryFormat: "EPUB",
+      },
+    });
+    await applyChapter({
+      libraryItemId: "lib-1",
+      chapterId: "ch-1",
+      index: 0,
+      blocks: [],
+    });
+    await db.libraryItems.put(
+      seedLibraryItem({
+        libraryItemId: "lib-1",
+        savedOffline: false,
+        savedAutomatically: true,
+      }),
+    );
+    expect(await readOfflineState("lib-1")).toEqual({
+      state: "auto",
+      fromAutoSave: true,
+    });
+
+    // Explicit save that originated from an auto-save (kept) → fromAutoSave true.
+    await db.libraryItems.put(
+      seedLibraryItem({
+        libraryItemId: "lib-1",
+        savedOffline: true,
+        savedAutomatically: true,
+      }),
+    );
+    expect(await readOfflineState("lib-1")).toEqual({
+      state: "explicit",
+      fromAutoSave: true,
+    });
+
+    // Explicit save downloaded from scratch (never auto) → fromAutoSave false.
+    await db.libraryItems.put(
+      seedLibraryItem({
+        libraryItemId: "lib-1",
+        savedOffline: true,
+        savedAutomatically: false,
+      }),
+    );
+    expect(await readOfflineState("lib-1")).toEqual({
+      state: "explicit",
+      fromAutoSave: false,
+    });
   });
 });

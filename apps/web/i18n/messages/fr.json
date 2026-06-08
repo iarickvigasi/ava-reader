@@ -57,6 +57,12 @@
       "title": "Ouvrez ce livre en ligne pour l'enregistrer",
       "body": "Vous pouvez enregistrer ce livre en ouvrant sa page d'informations et en appuyant sur « Enregistrer hors ligne » lorsque vous avez une connexion internet.",
       "dismiss": "Compris"
+    },
+    "primeConsent": {
+      "title": "Enregistrer vos livres pour la lecture hors ligne ?",
+      "body": "Vous êtes peut-être sur une connexion mobile. Télécharger les livres marqués pour la lecture hors ligne — avec leurs surlignages et notes — afin qu’ils soient prêts sans connexion ?",
+      "confirm": "Télécharger",
+      "cancel": "Plus tard"
     }
   },
   "legal": {
@@ -386,15 +392,25 @@
           "title": "Enregistrement hors ligne",
           "description": "{current} / {total} chapitres"
         },
-        "saved": {
-          "title": "Retirer des téléchargements",
-          "description": "Le livre restera disponible en ligne"
+        "pending": {
+          "title": "Téléchargement en attente",
+          "description": "Nous le téléchargerons dès que vous serez en ligne — appuyez pour annuler"
         },
-        "confirm": {
-          "title": "Retirer des téléchargements ?",
-          "body": "Vous ne pourrez plus lire ce livre hors ligne.",
-          "confirm": "Retirer",
-          "cancel": "Annuler"
+        "aborting": {
+          "title": "Annulation du téléchargement",
+          "description": "Arrêt et nettoyage en cours…"
+        },
+        "keep": {
+          "title": "Conserver hors ligne",
+          "description": "Mis en cache pendant la lecture — appuyez pour le conserver"
+        },
+        "saved": {
+          "title": "Enregistré hors ligne",
+          "description": "Appuyez pour ne plus le conserver hors ligne"
+        },
+        "remove": {
+          "title": "Retirer des téléchargements",
+          "description": "Libère de l'espace, le livre restera disponible en ligne"
         }
       },
       "readingProgressLabel": "Progression de lecture",

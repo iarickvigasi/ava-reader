@@ -29,9 +29,11 @@ function readConnection(): NetworkInformationLike | null {
   return nav.connection ?? nav.mozConnection ?? nav.webkitConnection ?? null;
 }
 
-// True when it's appropriate to start priming. Checked once before a run and
-// again is cheap — callers may re-check between heavy steps.
-export function shouldPrime(): boolean {
+// True when the cheap metadata tier may run: a live connection that isn't
+// painfully slow. Deliberately ignores Save-Data — metadata is a few small
+// JSON payloads and is essential for offline home/library, so we prime it even
+// on Data Saver. The heavy content tier is what Save-Data actually gates.
+export function canPrimeMetadata(): boolean {
   if (typeof window === "undefined") {
     return false;
   }
@@ -40,11 +42,7 @@ export function shouldPrime(): boolean {
   }
   const connection = readConnection();
   if (!connection) {
-    // No Network Information API → assume an unmetered connection.
-    return true;
-  }
-  if (connection.saveData === true) {
-    return false;
+    return true; // no Network Information API → assume a usable connection
   }
   if (
     typeof connection.effectiveType === "string" &&
@@ -53,4 +51,10 @@ export function shouldPrime(): boolean {
     return false;
   }
   return true;
+}
+
+// True when the user has Data Saver on. The content tier requires explicit
+// consent (a modal) in this case; an off signal lets it run automatically.
+export function isSaveDataOn(): boolean {
+  return readConnection()?.saveData === true;
 }

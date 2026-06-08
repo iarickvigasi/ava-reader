@@ -57,6 +57,12 @@
       "title": "Abra este livro on-line para salvá-lo",
       "body": "Você pode salvar este livro abrindo a página de informações e tocando em \"Salvar para leitura offline\" quando estiver com conexão à internet.",
       "dismiss": "Entendi"
+    },
+    "primeConsent": {
+      "title": "Salvar seus livros para leitura off-line?",
+      "body": "Você pode estar usando dados móveis. Baixar os livros marcados para off-line — com seus destaques e notas — para que fiquem prontos sem conexão?",
+      "confirm": "Baixar",
+      "cancel": "Agora não"
     }
   },
   "legal": {
@@ -386,15 +392,25 @@
           "title": "Salvando para leitura offline",
           "description": "{current} / {total} capítulos"
         },
-        "saved": {
-          "title": "Remover dos downloads",
-          "description": "O livro continuará disponível on-line"
+        "pending": {
+          "title": "Download na fila",
+          "description": "Vamos baixar quando você estiver on-line novamente — toque para cancelar"
         },
-        "confirm": {
-          "title": "Remover dos downloads?",
-          "body": "Você não poderá mais ler este livro sem conexão.",
-          "confirm": "Remover",
-          "cancel": "Cancelar"
+        "aborting": {
+          "title": "Cancelando download",
+          "description": "Parando e limpando…"
+        },
+        "keep": {
+          "title": "Manter off-line",
+          "description": "Salvo no cache durante a leitura — toque para mantê-lo"
+        },
+        "saved": {
+          "title": "Salvo off-line",
+          "description": "Toque para parar de mantê-lo off-line"
+        },
+        "remove": {
+          "title": "Remover dos downloads",
+          "description": "Libera espaço, o livro continuará disponível on-line"
         }
       },
       "readingProgressLabel": "Progresso de leitura",

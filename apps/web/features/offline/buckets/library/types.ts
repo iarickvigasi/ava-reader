@@ -30,6 +30,7 @@ export type LibraryBookView = {
   primaryFormat: string;
   lastReadAt: string | null;
   savedOffline: boolean;
+  offlineRequested: boolean;
 };
 
 export type LibraryBucketState = {

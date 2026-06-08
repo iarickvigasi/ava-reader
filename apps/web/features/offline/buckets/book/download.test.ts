@@ -14,7 +14,11 @@ import {
   getDb,
   type LibraryItemRow,
 } from "../../db";
-import { __resetBookBucketForTests, getBookSaveSnapshot } from "./bucket";
+import {
+  __resetBookBucketForTests,
+  abortSaveAndWait,
+  getBookSaveSnapshot,
+} from "./bucket";
 import {
   pickStrideTargets,
   saveBookOffline,
@@ -398,6 +402,46 @@ describe("saveBookOffline — cancellation", () => {
     const row = await db.libraryItems.get("lib-1");
     expect(row?.savedOffline).toBe(false);
     expect(row?.savedAutomatically).toBe(false);
+  });
+
+  it("abortSaveAndWait stops an in-flight save and resolves after cleanup", async () => {
+    const db = getDb();
+    await db.libraryItems.put(seedLibraryItem({ libraryItemId: "lib-1" }));
+    const ids = ["ch-1", "ch-2", "ch-3", "ch-4", "ch-5"];
+
+    // Discovery returns immediately; later chapter fetches hang until the
+    // orchestrator's own (bucket-registered) signal aborts.
+    const fetcher: ChapterFetcher = (id, chapterId, signal) => {
+      if (chapterId === undefined) {
+        return buildFetcher(id, ids)(id, chapterId, signal);
+      }
+      return new Promise((_resolve, reject) => {
+        signal.addEventListener(
+          "abort",
+          () => reject(new DOMException("Aborted", "AbortError")),
+          { once: true },
+        );
+      });
+    };
+
+    const savePromise = saveBookOffline({
+      libraryItemId: "lib-1",
+      saveKind: "explicit",
+      fetchChapter: fetcher,
+    });
+
+    // Let the orchestrator register in-flight and reach the hanging fetch.
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    await abortSaveAndWait("lib-1"); // resolves once teardown has run
+    expect(await savePromise).toEqual({ kind: "cancelled" });
+
+    // Partial rows cleaned up and status back to idle.
+    expect(await readBookContent("lib-1")).toBeUndefined();
+    expect(getBookSaveSnapshot("lib-1").status).toBe("idle");
+
+    // A no-op when nothing is in flight — resolves immediately.
+    await expect(abortSaveAndWait("lib-1")).resolves.toBeUndefined();
   });
 });
 

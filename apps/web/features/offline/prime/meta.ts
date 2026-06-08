@@ -12,6 +12,14 @@ export const META_KEY_CONTENT_DONE = "prime:content:doneAt";
 // Both tiers reached their terminal state; the primer never runs again on
 // this device.
 export const META_KEY_COMPLETED = "prime:completed";
+// Whether the user has agreed to download content on a Data Saver connection.
+// Set to "granted" once they accept the modal, so we don't ask again. A decline
+// is deliberately NOT persisted: it only suppresses the current run. Next time
+// the connection may no longer be metered (so content runs with no prompt), or
+// the user may decide differently — so we re-offer. Only consulted when
+// Save-Data is on; off connections never need consent.
+export const META_KEY_CONTENT_CONSENT = "prime:content:consent";
+export const CONTENT_CONSENT_GRANTED = "granted";
 
 export async function getMetaFlag(key: string): Promise<string | null> {
   const db = getDb();

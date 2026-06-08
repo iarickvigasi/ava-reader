@@ -31,6 +31,7 @@ import {
   revalidateCollection,
   revalidateLibrary,
 } from "./revalidate";
+import { flushOfflineIntents } from "./offline-intent-sync";
 import type { CollectionView, LibraryView } from "./types";
 
 // Read the current library view. Returns null until the bucket finishes
@@ -65,6 +66,7 @@ export function useHydrateLibrary(initial: LibraryPayload) {
     if (!isLoaded || !online) {
       return;
     }
+    void flushOfflineIntents(getToken);
     void revalidateLibrary(getToken);
   }, [getToken, isLoaded, online]);
 }
@@ -91,6 +93,9 @@ export function useHydrateCollection(initial: LibraryCollection) {
     if (!isLoaded || !online) {
       return;
     }
+    // Sync any offline "keep" toggles made on this page before flowing fresh
+    // data back in.
+    void flushOfflineIntents(getToken);
     void revalidateCollection(slug, getToken);
   }, [slug, getToken, isLoaded, online]);
 }
@@ -128,6 +133,9 @@ export function useHydrateBookInfo(initial: LibraryBookInfo) {
     if (!isLoaded || !online) {
       return;
     }
+    // Sync any offline "keep" / "release" toggle made on this page once we're
+    // back online, even if the user never visits the library list.
+    void flushOfflineIntents(getToken);
     void revalidateBookInfo(slug, getToken);
   }, [slug, getToken, isLoaded, online]);
 }

@@ -86,6 +86,20 @@ export class LibraryController {
     );
   }
 
+  @Patch(':libraryItemId/offline')
+  @UseGuards(ClerkAuthGuard)
+  setOfflineRequested(
+    @Req() request: AuthenticatedRequest,
+    @Param('libraryItemId') libraryItemId: string,
+    @Body() body: { requested: boolean },
+  ) {
+    return this.libraryService.setOfflineRequested(
+      request.auth.clerkUserId,
+      libraryItemId,
+      body.requested === true,
+    );
+  }
+
   @Patch('collections/:collectionId')
   @UseGuards(ClerkAuthGuard)
   renameCollection(

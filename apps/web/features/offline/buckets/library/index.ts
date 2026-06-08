@@ -27,6 +27,13 @@ export {
   revalidateCollection,
   revalidateLibrary,
 } from "./revalidate";
+export {
+  setBookOfflineIntent,
+  promoteBookOffline,
+  releaseBookOffline,
+  flushOfflineIntents,
+  __resetOfflineIntentSyncForTests,
+} from "./offline-intent-sync";
 export type {
   CollectionView,
   LibraryBookView,

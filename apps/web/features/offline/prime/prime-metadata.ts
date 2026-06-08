@@ -1,6 +1,12 @@
-// Tier 1 of the primer: the cheap metadata caches — home, the library list,
-// and per-book info for every smart-collection book. Reuses the existing
-// `revalidate*` functions, so no new endpoints.
+// Tier 1 of the primer: the cheap metadata caches — home, user preferences,
+// the library list, every smart collection in full, and per-book info for
+// every smart-collection book. Reuses the existing `revalidate*` functions, so
+// no new endpoints.
+//
+// Why hydrate each smart collection: `/api/library` only returns a 4-book
+// preview per collection, so the library view alone can't enumerate every
+// book. `/api/library/collections/:slug` returns the full list, so we hydrate
+// each smart collection before enumerating book-info targets.
 
 import { mapWithConcurrency } from "./concurrency";
 import { collectSmartBooks } from "./smart-books";
@@ -18,16 +24,33 @@ export async function primeMetadata(
   runtime: PrimeRuntime,
   d: PrimeInternals,
 ): Promise<boolean> {
-  const guard = () => d.isOnline() && d.shouldPrime();
+  const guard = () => d.isOnline() && d.canPrimeMetadata();
 
   await d.revalidateHome(runtime.getToken);
+  await d.revalidatePreferences(runtime.getToken);
   await d.revalidateLibrary(runtime.getToken);
 
-  const view = await d.readLibraryView();
-  if (!view) {
+  const listView = await d.readLibraryView();
+  if (!listView) {
     return false; // library never landed — nothing to enumerate
   }
 
+  // Hydrate each default smart collection in full so the view holds every book,
+  // not just the 4-book preview the library list returns.
+  const smartSlugs = listView.collections
+    .filter((c) => c.kind === "SMART")
+    .map((c) => c.slug);
+  for (const slug of smartSlugs) {
+    if (!guard()) {
+      return false;
+    }
+    await d.revalidateCollection(slug, runtime.getToken);
+  }
+
+  const view = await d.readLibraryView();
+  if (!view) {
+    return false;
+  }
   const slugs = collectSmartBooks(view).map((b) => b.slug);
   const { aborted } = await mapWithConcurrency(
     slugs,

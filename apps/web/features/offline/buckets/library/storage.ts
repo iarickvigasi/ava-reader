@@ -149,6 +149,15 @@ export async function applyLibraryPayload(payload: LibraryPayload) {
           savedOffline: prior.savedOffline,
           savedAutomatically: prior.savedAutomatically,
           savedAt: prior.savedAt,
+          // A locally-toggled offline intent that hasn't synced yet wins over
+          // the server payload; otherwise the server value (already in `row`)
+          // stands.
+          ...(prior.offlineRequestedDirty
+            ? {
+                offlineRequested: prior.offlineRequested,
+                offlineRequestedDirty: true,
+              }
+            : {}),
           // Preserve any book-info details already cached. A library list
           // payload doesn't carry these, so re-hydrating from one must not
           // wipe them.
@@ -210,6 +219,15 @@ export async function applyCollectionPayload(
           savedOffline: prior.savedOffline,
           savedAutomatically: prior.savedAutomatically,
           savedAt: prior.savedAt,
+          // A locally-toggled offline intent that hasn't synced yet wins over
+          // the server payload; otherwise the server value (already in `row`)
+          // stands.
+          ...(prior.offlineRequestedDirty
+            ? {
+                offlineRequested: prior.offlineRequested,
+                offlineRequestedDirty: true,
+              }
+            : {}),
           // Preserve any book-info details already cached. A library list
           // payload doesn't carry these, so re-hydrating from one must not
           // wipe them.
@@ -229,6 +247,95 @@ export async function applyCollectionPayload(
   );
 }
 
+// ----- offline-save intent (server-synced) -----------------------------------
+
+// Optimistically toggles the "keep offline" intent on a library row and marks
+// it dirty so the sync flush PATCHes it. Returns false if the row isn't cached
+// yet (the caller hasn't hydrated the book) — nothing to toggle.
+export async function setOfflineRequestedLocal(
+  libraryItemId: string,
+  requested: boolean,
+): Promise<boolean> {
+  const db = getDb();
+  const row = await db.libraryItems.get(libraryItemId);
+  if (!row) {
+    return false;
+  }
+  await db.libraryItems.put({
+    ...row,
+    offlineRequested: requested,
+    offlineRequestedDirty: true,
+  });
+  return true;
+}
+
+// Promotes an already-cached (auto-saved) book to an explicit, sticky offline
+// save: flips `savedOffline` so the eviction pass stops treating it as the
+// evictable auto-slot, and sets the synced `offlineRequested` intent (dirty,
+// for the next flush). Content is already on disk, so no download is needed —
+// this takes effect immediately, even offline. Returns false if not cached.
+export async function markOfflineKeptLocal(
+  libraryItemId: string,
+): Promise<boolean> {
+  const db = getDb();
+  const row = await db.libraryItems.get(libraryItemId);
+  if (!row) {
+    return false;
+  }
+  await db.libraryItems.put({
+    ...row,
+    savedOffline: true,
+    offlineRequested: true,
+    offlineRequestedDirty: true,
+  });
+  return true;
+}
+
+// Releases an explicitly-kept book back to an evictable auto-cache WITHOUT
+// deleting its content: clears the synced `offlineRequested` intent (dirty, for
+// the next flush) and `savedOffline`, and marks it `savedAutomatically` so the
+// normal eviction pass can reclaim it later. The chapters/cover stay on disk,
+// so it's still readable offline until eviction. Returns false if not cached.
+export async function markOfflineReleasedLocal(
+  libraryItemId: string,
+): Promise<boolean> {
+  const db = getDb();
+  const row = await db.libraryItems.get(libraryItemId);
+  if (!row) {
+    return false;
+  }
+  await db.libraryItems.put({
+    ...row,
+    savedOffline: false,
+    savedAutomatically: true,
+    offlineRequested: false,
+    offlineRequestedDirty: true,
+  });
+  return true;
+}
+
+// Rows with an offline-intent toggle that hasn't reached the server yet.
+export async function listOfflineIntentDirty(): Promise<LibraryItemRow[]> {
+  const db = getDb();
+  return db.libraryItems
+    .filter((row) => row.offlineRequestedDirty === true)
+    .toArray();
+}
+
+// Clears the dirty flag after a successful PATCH — but only if the local value
+// still matches what we synced (a newer toggle during the request stays dirty).
+export async function markOfflineIntentClean(
+  libraryItemId: string,
+  syncedValue: boolean,
+): Promise<void> {
+  const db = getDb();
+  const row = await db.libraryItems.get(libraryItemId);
+  if (!row || row.offlineRequested !== syncedValue) {
+    return;
+  }
+  await db.libraryItems.put({ ...row, offlineRequestedDirty: false });
+}
+
 // ----- conversions -----------------------------------------------------------
 
 function bookToItemRow(
@@ -244,6 +351,8 @@ function bookToItemRow(
     completionPercent: book.completionPercent,
     primaryFormat: book.primaryFormat,
     lastReadAt: book.lastReadAt ?? null,
+    offlineRequested: book.offlineRequested ?? false,
+    offlineRequestedDirty: false,
     coverBlob: null,
     savedOffline: false,
     savedAutomatically: false,
@@ -366,6 +475,7 @@ function toBookView(row: LibraryItemRow): LibraryBookView {
     primaryFormat: row.primaryFormat,
     lastReadAt: row.lastReadAt,
     savedOffline: row.savedOffline,
+    offlineRequested: row.offlineRequested ?? false,
   };
 }
 

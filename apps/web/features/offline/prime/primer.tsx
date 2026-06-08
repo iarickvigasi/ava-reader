@@ -1,25 +1,34 @@
 "use client";
 
 // Client island that kicks off the background cache primer on home load.
-// Rendered once, on the home page, alongside the home hydrator. It does no
-// rendering — it just schedules `primeAllCaches` during idle time, supplying
-// the Clerk-authenticated fetchers the book-content tier needs.
+// Rendered once, on the home page, alongside the home hydrator. It schedules
+// `primeAllCaches` during idle time, supplying the Clerk-authenticated fetchers
+// the book-content tier needs, and surfaces the Save-Data consent modal when
+// the content tier is blocked waiting for the user's answer.
 //
-// A module-level guard makes the kick-off run at most once per page lifetime,
-// so React strict-mode's double-invoke (and any incidental remount) doesn't
-// start two passes. `primeAllCaches` is itself idempotent, so this is belt and
-// braces.
+// A module-level guard makes the initial kick-off run at most once per page
+// lifetime, so React strict-mode's double-invoke doesn't start two passes.
+// `primeAllCaches` is itself idempotent, so this is belt and braces.
 
 import { useAuth } from "@clerk/nextjs";
-import { useEffect } from "react";
+import { useTranslations } from "next-intl";
+import { useCallback, useEffect, useState } from "react";
 
+import { emitAppToast } from "@/components/app/core/app-toast";
 import { fetchReaderPayload } from "@/components/app/reader/reader-screen/data/reader-client";
 
 import { getDb } from "../db";
 import { saveBookOffline } from "../buckets/book/download";
 import { useNetworkState } from "../use-network-state";
 
-import { primeAllCaches, type SaveBookFn } from "./prime-all";
+import {
+  CONTENT_CONSENT_GRANTED,
+  META_KEY_CONTENT_CONSENT,
+  setMetaFlag,
+} from "./meta";
+import { primeAllCaches } from "./prime-all";
+import { PrimeConsentModal } from "./prime-consent-modal";
+import type { SaveBookFn } from "./types";
 
 let kickedOff = false;
 
@@ -36,20 +45,17 @@ function scheduleIdle(run: () => void): void {
   }
 }
 
-export function BackgroundPrimer(): null {
+export function BackgroundPrimer(): React.ReactElement | null {
   const { getToken, isLoaded, isSignedIn } = useAuth();
   const online = useNetworkState();
+  const t = useTranslations("offline.toast");
+  const [consentOpen, setConsentOpen] = useState(false);
 
-  useEffect(() => {
-    if (kickedOff || !isLoaded || !isSignedIn || !online) {
-      return;
-    }
-    kickedOff = true;
-
-    // Saves one book's full content offline. Explicit kind → sticky, so a
-    // proactively-cached book isn't auto-evicted the moment the user opens a
-    // different one. Quota is enforced by the primer before each call.
-    const saveBook: SaveBookFn = (libraryItemId) =>
+  // Saves one book's full content offline. Explicit kind → sticky, so a
+  // proactively-cached book isn't auto-evicted the moment the user opens a
+  // different one. Quota is enforced by the primer before each call.
+  const saveBook: SaveBookFn = useCallback(
+    (libraryItemId) =>
       saveBookOffline({
         libraryItemId,
         saveKind: "explicit",
@@ -70,15 +76,49 @@ export function BackgroundPrimer(): null {
             return null;
           }
         },
-      });
+      }),
+    [getToken, isLoaded, isSignedIn],
+  );
 
-    scheduleIdle(() => {
-      // Touch the db once up front so the singleton is initialised on the
-      // same tick the primer starts reading/writing.
-      getDb();
-      void primeAllCaches({ getToken, saveBook });
+  const run = useCallback(async () => {
+    getDb();
+    const result = await primeAllCaches({
+      getToken,
+      saveBook,
+      onStorageFull: () =>
+        emitAppToast({ message: t("quotaLow"), tone: "warning" }),
     });
-  }, [getToken, isLoaded, isSignedIn, online]);
+    if (result.contentConsentNeeded) {
+      setConsentOpen(true);
+    }
+  }, [getToken, saveBook, t]);
 
-  return null;
+  useEffect(() => {
+    if (kickedOff || !isLoaded || !isSignedIn || !online) {
+      return;
+    }
+    kickedOff = true;
+    scheduleIdle(() => void run());
+  }, [isLoaded, isSignedIn, online, run]);
+
+  if (!consentOpen) {
+    return null;
+  }
+
+  return (
+    <PrimeConsentModal
+      onConfirm={() => {
+        setConsentOpen(false);
+        void (async () => {
+          await setMetaFlag(META_KEY_CONTENT_CONSENT, CONTENT_CONSENT_GRANTED);
+          await run();
+        })();
+      }}
+      onCancel={() => {
+        // Not persisted — we re-offer next session (Save-Data may be off by
+        // then, or the user may decide differently).
+        setConsentOpen(false);
+      }}
+    />
+  );
 }

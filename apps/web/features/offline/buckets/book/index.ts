@@ -9,6 +9,9 @@ export {
   readBookContent,
   readCachedChapterIds,
   readChapter,
+  readOfflineState,
+  type OfflineDetail,
+  type OfflineState,
   type SaveKind,
   type SavedBookContent,
 } from "./storage";
@@ -22,6 +25,7 @@ export {
 
 export {
   abortInFlightExcept,
+  abortSaveAndWait,
   getBookSaveSnapshot,
   getServerSnapshot,
   subscribeToBookSave,
@@ -30,6 +34,10 @@ export {
   type BookSaveStatus,
 } from "./bucket";
 
-export { useBookSaveStatus, useSaveBook } from "./hooks";
+export {
+  useBookSaveStatus,
+  useSaveBook,
+  useBookOfflineState,
+} from "./hooks";
 
 export { loadReaderPayloadFromCache } from "./reader-cache";
