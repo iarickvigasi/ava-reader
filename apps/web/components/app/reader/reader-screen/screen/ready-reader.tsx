@@ -25,8 +25,10 @@ import {
   READER_VISIBILITY_HIDDEN,
 } from "../shared/constants";
 import type { ReadyReaderProps } from "../shared/types";
+import { countTocChapterIds } from "@/features/offline/buckets/book/partial-offline";
 import { useReaderPagination } from "../pagination/use-reader-pagination";
 import { useHighlightSelectionBridge } from "./use-highlight-selection-bridge";
+import { usePartialOfflineNotice } from "./use-partial-offline-notice";
 import { useReaderTextSelection } from "./use-reader-text-selection";
 
 export function ReadyReader({
@@ -154,6 +156,14 @@ export function ReadyReader({
     // would surface stale text — skip those windows.
     disabled: shouldMaskArticle,
   });
+
+  // Warn (via the global modal) when reading offline a book whose chapters are
+  // only partially cached, so the user knows to Save offline for the whole book.
+  const totalChapterCount = useMemo(
+    () => countTocChapterIds(payload.toc),
+    [payload.toc],
+  );
+  usePartialOfflineNotice({ libraryItemId, totalChapterCount });
 
   useEffect(() => {
     if (!isPanelOpen) {

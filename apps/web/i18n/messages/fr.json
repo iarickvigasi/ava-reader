@@ -63,6 +63,12 @@
       "body": "Vous êtes peut-être sur une connexion mobile. Télécharger les livres marqués pour la lecture hors ligne — avec leurs surlignages et notes — afin qu’ils soient prêts sans connexion ?",
       "confirm": "Télécharger",
       "cancel": "Plus tard"
+    },
+    "partialBook": {
+      "title": "{cached} chapitres sur {total} enregistrés hors ligne",
+      "body": "Vous êtes hors ligne et seule une partie de ce livre est enregistrée. Appuyez sur Enregistrer hors ligne pour télécharger le reste dès votre reconnexion.",
+      "save": "Enregistrer hors ligne",
+      "dismiss": "Compris"
     }
   },
   "legal": {
@@ -287,10 +293,6 @@
         "emptyStream": "La réponse de l'IA était vide.",
         "generic": "Une erreur est survenue."
       }
-    },
-    "progressSync": {
-      "offline": "Vous semblez être hors ligne. Votre progression de lecture se synchronisera dès la reconnexion.",
-      "generic": "Impossible d'enregistrer votre progression de lecture. Nous continuerons d'essayer pendant que vous lisez."
     },
     "status": {
       "label": "Lecteur",

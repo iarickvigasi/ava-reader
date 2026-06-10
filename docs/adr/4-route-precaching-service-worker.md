@@ -17,6 +17,7 @@ Keep the hand-rolled SW; add two pieces:
 
 ## Consequences
 - Any app route loads offline after one online visit, incl. hard reload, with no page side effects.
-- Reuses the SW key scheme, version stamping, and the prime trigger / once-per-device machinery — no parallel mechanism. See [[14-route-precaching]].
-- Cost: a new build step; SW grows a message handler + precache logic; per-slug docs/RSC are fetched live, so a book added on another device isn't precached until a later online prime.
+- Reuses the SW key scheme and version stamping — no parallel mechanism. See [[14-route-precaching]].
+- Stateless trigger (no persisted "done" flag): the island re-runs per session and on `controllerchange`, and the SW skips already-cached routes. An optimistic flag was tried first and rejected — a single pass that raced the SW update set it and locked out every later pass (incl. new builds), so precaching never ran again.
+- Cost: a new build step; SW grows a message handler + precache logic; per-slug docs/RSC are fetched live, so a book added on another device isn't precached until a later session once it lands in the library view.
 - Reversible-ish: purely additive to the SW — removing it leaves reactive caching intact, and adopting Serwist later stays possible.

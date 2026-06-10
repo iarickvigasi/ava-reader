@@ -1,4 +1,3 @@
-import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, type Dispatch, type SetStateAction } from "react";
 import type {
   ReaderLocator,
@@ -24,7 +23,6 @@ import {
   markProgressSynced,
   writeProgress,
 } from "@/features/offline/buckets/progress";
-import { emitAppToast } from "@/components/app/core/app-toast";
 import {
   evaluatePersistEligibility,
   shouldClearPendingAfterAck,
@@ -53,15 +51,6 @@ export function useReaderProgressSync({
   setPayload,
   visibleLocator,
 }: UseReaderProgressSyncInput) {
-  const t = useTranslations("reader.progressSync");
-  const notifyProgressSaveFailure = useCallback(() => {
-    const isOffline =
-      typeof navigator !== "undefined" && !navigator.onLine;
-    emitAppToast({
-      message: isOffline ? t("offline") : t("generic"),
-      tone: "warning",
-    });
-  }, [t]);
   const lastServerAckKeyRef = useRef<string | null>(
     createLocatorKey(initialServerLocator),
   );
@@ -154,10 +143,9 @@ export function useReaderProgressSync({
           console.warn("Reader progress save failed", error);
         }
 
-        if (!keepalive) {
-          notifyProgressSaveFailure();
-        }
-
+        // No toast: progress was already written to Dexie (dirty) before this
+        // PATCH and the sync runner flushes it on reconnect, so a failed server
+        // save is a non-event for the user.
         return null;
       }
     },
@@ -166,7 +154,6 @@ export function useReaderProgressSync({
       isLoaded,
       isSignedIn,
       libraryItemId,
-      notifyProgressSaveFailure,
       remotePersistenceEnabled,
       setPayload,
     ],

@@ -19,6 +19,9 @@ import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 
 import { fetchReaderPayload } from "@/components/app/reader/reader-screen/data/reader-client";
 import { emitAppToast } from "@/components/app/core/app-toast";
+import { isOnline } from "@/features/offline/net-state";
+
+import { shouldToastSaveFailure } from "./save-toast";
 
 import {
   abortSaveAndWait,
@@ -101,11 +104,11 @@ export function useSaveBook(libraryItemId: string) {
         },
       });
 
-      // Toast on a genuine failure (not on cancellation — that's a user
-      // action — and not when we're simply offline: the intent is queued and
-      // the download resumes on reconnect, so an error toast would be wrong).
-      const offline = typeof navigator !== "undefined" && !navigator.onLine;
-      if (outcome.kind === "failed" && !offline) {
+      // Only an explicit, user-initiated save that fails while genuinely
+      // online warrants a toast. Auto-saves (every book-open) stay silent, and
+      // offline failures are queued to resume on reconnect. Uses net-state, not
+      // navigator.onLine (unreliably true when offline).
+      if (shouldToastSaveFailure(outcome, kind, isOnline())) {
         emitAppToast({ message: t("saveFailed"), tone: "error" });
       }
 

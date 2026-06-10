@@ -63,6 +63,12 @@
       "body": "Puede que estés usando datos móviles. ¿Descargar los libros marcados para sin conexión, con sus subrayados y notas, para tenerlos listos sin conexión?",
       "confirm": "Descargar",
       "cancel": "Ahora no"
+    },
+    "partialBook": {
+      "title": "{cached} de {total} capítulos guardados sin conexión",
+      "body": "Estás sin conexión y solo se ha guardado parte de este libro. Toca Guardar sin conexión para descargar el resto en cuanto vuelvas a tener conexión.",
+      "save": "Guardar sin conexión",
+      "dismiss": "Entendido"
     }
   },
   "legal": {
@@ -287,10 +293,6 @@
         "emptyStream": "La respuesta de la IA llegó vacía.",
         "generic": "Algo salió mal."
       }
-    },
-    "progressSync": {
-      "offline": "Parece que estás sin conexión. Tu progreso de lectura se sincronizará cuando vuelvas a estar en línea.",
-      "generic": "No se pudo guardar tu progreso de lectura. Seguiremos intentándolo mientras lees."
     },
     "status": {
       "label": "Lector",

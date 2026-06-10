@@ -6,6 +6,7 @@ import { AppNavigation } from "@/components/app/core/app-navigation";
 import { AppToast } from "@/components/app/core/app-toast";
 import { LegacyLocalStorageCleanupRunner } from "@/components/app/core/legacy-localstorage-cleanup-runner";
 import { MissingBookOfflineModal } from "@/components/app/core/missing-book-offline-modal";
+import { PartialBookOfflineModal } from "@/components/app/core/partial-book-offline-modal";
 import { OfflineModalProvider } from "@/components/app/core/offline-modal-context";
 import { RoutePrecacheRunner } from "@/components/app/core/route-precache-runner";
 import { ServiceWorkerRegistrar } from "@/components/app/core/service-worker-registrar";
@@ -47,6 +48,7 @@ export function AppShell({ children, currentUser: initialUser }: AppShellProps) 
         <PreferencesSyncRunner />
         <AppToast />
         <MissingBookOfflineModal />
+        <PartialBookOfflineModal />
         <ReaderUiProvider>
           <div className="flex h-dvh flex-col overflow-hidden">
             <AppNavigation currentUser={currentUser} />

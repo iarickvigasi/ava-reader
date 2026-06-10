@@ -94,16 +94,19 @@ function isRscRequest(request) {
   );
 }
 
-// Build a stable cache key for a navigation/RSC request.
-// - Strips Next's `_rsc=<hash>` cache-buster, which varies between the online
-//   visit and the offline navigation and would otherwise cause a cache miss.
+// Build a stable cache key for a navigation/RSC request, keyed on pathname only.
+// - Drops ALL query params: Next's `_rsc=<hash>` cache-buster, plus client-only
+//   hydration hints the app appends when linking to a book (`?title=…&author=…&
+//   fromCollection=…`). Those hints don't change the cached shell — the page
+//   re-derives them — but if kept they'd make a real click miss the precached
+//   bare route and fail offline ("site can't be reached").
 // - Tags the key with the content kind ("doc" vs "rsc") so a cached HTML
 //   document and a cached Flight payload for the same route don't overwrite
 //   or get served in place of one another (different content types).
 // The result is a real URL string, which Cache Storage accepts as a key.
 function navigationCacheKey(request, kind) {
   const url = new URL(request.url);
-  url.searchParams.delete("_rsc");
+  url.search = "";
   url.searchParams.set("__sw", kind);
   return url.toString();
 }

@@ -1,26 +1,28 @@
-// Orchestrates route-shell precaching (see [[14-route-precaching]]). Runs once
-// per device on a full pass, but stays Dexie/SW-free behind injected seams so
-// the control flow is unit-testable. Wiring (the AppShell island) supplies the
-// real implementations.
+// Orchestrates route-shell precaching (see [[14-route-precaching]]). Stays
+// Dexie/SW-free behind injected seams so the control flow is unit-testable;
+// the AppShell island supplies the real implementations.
+//
+// Deliberately stateless — no persisted "done" flag. Posting the route list is
+// idempotent and cheap (the SW skips routes it has already cached), so the
+// island re-runs once per page-session and on SW takeover. That self-heals the
+// SW-update race (a post that landed on a worker whose cache was then evicted)
+// and picks up newly-added books, instead of locking out forever on a flag that
+// a single failed pass set optimistically.
 
 import type { LibraryView } from "../buckets/library/types";
 
-import { META_KEY_ROUTES_DONE } from "./meta";
 import { collectAppRoutes } from "./routes";
 
 export type PrimeRoutesDeps = {
   isOnline: () => boolean;
-  hasMetaFlag: (key: string) => Promise<boolean>;
-  setMetaFlag: (key: string, value: string) => Promise<void>;
   readLibraryView: () => Promise<LibraryView | null>;
   requestRoutePrecache: (routes: string[]) => Promise<void>;
-  now: () => string;
 };
 
-// "done" — full pass, flag set, never runs again on this device.
-// "partial" — static routes precached but the library view wasn't hydrated yet,
-//   so per-entity routes are deferred to the next navigation (flag NOT set).
-// "skipped" — offline, or a full pass already completed.
+// "done" — full pass: the library view was present, so every route was posted.
+// "partial" — the view wasn't hydrated yet, so only static routes went; the
+//   next navigation (or SW takeover) fills in the per-entity routes.
+// "skipped" — offline.
 export type PrimeRoutesResult = "done" | "partial" | "skipped";
 
 export async function primeRoutes(
@@ -29,14 +31,7 @@ export async function primeRoutes(
   if (!deps.isOnline()) {
     return "skipped";
   }
-  if (await deps.hasMetaFlag(META_KEY_ROUTES_DONE)) {
-    return "skipped";
-  }
   const view = await deps.readLibraryView();
   await deps.requestRoutePrecache(collectAppRoutes(view));
-  if (view) {
-    await deps.setMetaFlag(META_KEY_ROUTES_DONE, deps.now());
-    return "done";
-  }
-  return "partial";
+  return view ? "done" : "partial";
 }

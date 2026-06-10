@@ -63,6 +63,12 @@
       "body": "Você pode estar usando dados móveis. Baixar os livros marcados para off-line — com seus destaques e notas — para que fiquem prontos sem conexão?",
       "confirm": "Baixar",
       "cancel": "Agora não"
+    },
+    "partialBook": {
+      "title": "{cached} de {total} capítulos salvos offline",
+      "body": "Você está offline e apenas parte deste livro foi salva. Toque em Salvar offline para baixar o restante assim que você se reconectar.",
+      "save": "Salvar offline",
+      "dismiss": "Entendi"
     }
   },
   "legal": {
@@ -287,10 +293,6 @@
         "emptyStream": "A resposta da IA chegou vazia.",
         "generic": "Algo deu errado."
       }
-    },
-    "progressSync": {
-      "offline": "Parece que você está offline. Seu progresso de leitura será sincronizado quando você reconectar.",
-      "generic": "Não foi possível salvar o seu progresso de leitura. Continuaremos tentando enquanto você lê."
     },
     "status": {
       "label": "Leitor",
