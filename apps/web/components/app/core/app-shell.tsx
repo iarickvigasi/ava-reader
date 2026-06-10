@@ -7,6 +7,7 @@ import { AppToast } from "@/components/app/core/app-toast";
 import { LegacyLocalStorageCleanupRunner } from "@/components/app/core/legacy-localstorage-cleanup-runner";
 import { MissingBookOfflineModal } from "@/components/app/core/missing-book-offline-modal";
 import { OfflineModalProvider } from "@/components/app/core/offline-modal-context";
+import { RoutePrecacheRunner } from "@/components/app/core/route-precache-runner";
 import { ServiceWorkerRegistrar } from "@/components/app/core/service-worker-registrar";
 import { PreferencesSyncRunner } from "@/components/app/preferences/preferences-sync-runner";
 import { ReaderUiProvider } from "@/components/app/core/reader-ui-context";
@@ -41,6 +42,7 @@ export function AppShell({ children, currentUser: initialUser }: AppShellProps) 
     return (
       <OfflineModalProvider>
         <ServiceWorkerRegistrar />
+        <RoutePrecacheRunner />
         <LegacyLocalStorageCleanupRunner />
         <PreferencesSyncRunner />
         <AppToast />
@@ -58,6 +60,7 @@ export function AppShell({ children, currentUser: initialUser }: AppShellProps) 
   return (
     <OfflineModalProvider>
       <ServiceWorkerRegistrar />
+      <RoutePrecacheRunner />
       <div className="min-h-screen">
         <AppNavigation currentUser={currentUser} />
         <div className={cn(!isReaderRoute && "pb-24 md:pb-10")}>{children}</div>

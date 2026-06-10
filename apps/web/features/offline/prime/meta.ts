@@ -20,6 +20,11 @@ export const META_KEY_COMPLETED = "prime:completed";
 // Save-Data is on; off connections never need consent.
 export const META_KEY_CONTENT_CONSENT = "prime:content:consent";
 export const CONTENT_CONSENT_GRANTED = "granted";
+// Route-shell precaching (see [[14-route-precaching]]) finished a full pass:
+// the library view was present, so every static + per-entity route was handed
+// to the SW. Set only on full success, so a partial (library not yet hydrated)
+// run retries on the next app navigation.
+export const META_KEY_ROUTES_DONE = "prime:routes:doneAt";
 
 export async function getMetaFlag(key: string): Promise<string | null> {
   const db = getDb();

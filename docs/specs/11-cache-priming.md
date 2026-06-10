@@ -1,6 +1,6 @@
 # Background cache priming
 
-> Status: active · Updated: 2026-06-07 · ADRs: [[1-offline-first-dexie-buckets]] · Related: [[12-offline-save-sync]] · Code: apps/web/features/offline/prime
+> Status: active · Updated: 2026-06-07 · ADRs: [[3-offline-first-dexie-buckets]] · Related: [[12-offline-save-sync]] · Code: apps/web/features/offline/prime
 
 ## Summary
 On home load, proactively fill offline caches in the background so the home, library, and the user's offline-marked books work with no network — without visiting each screen first. Serves the offline-first job (product.md).

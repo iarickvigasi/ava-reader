@@ -41,9 +41,48 @@ self.addEventListener("activate", (event) => {
           .map((name) => caches.delete(name)),
       );
       await self.clients.claim();
+      // Precache every build asset (hashed JS/CSS) so any route's chunks are
+      // present offline even if the user never visited that route online.
+      await precacheBuildAssets();
     })(),
   );
 });
+
+// Reads the build-time manifest (regenerated each `next build`) and caches all
+// listed `/_next/static` assets cache-first. A SW's own fetch() bypasses the
+// fetch handler, so this always hits the network for the fresh manifest. Best
+// effort: a failure (e.g. offline during activate) leaves assets to be cached
+// reactively on first use.
+async function precacheBuildAssets() {
+  try {
+    const response = await fetch("/precache-assets.json", { cache: "no-store" });
+    if (!response.ok) {
+      return;
+    }
+    const assets = await response.json();
+    if (!Array.isArray(assets)) {
+      return;
+    }
+    const cache = await caches.open(CACHE_NAME);
+    await Promise.all(
+      assets.map(async (url) => {
+        if (typeof url !== "string" || (await cache.match(url))) {
+          return;
+        }
+        try {
+          const assetResponse = await fetch(url);
+          if (assetResponse && assetResponse.ok) {
+            await cache.put(url, assetResponse);
+          }
+        } catch {
+          // Skip a single asset that fails; the rest still cache.
+        }
+      }),
+    );
+  } catch {
+    // No manifest / offline — reactive caching covers it later.
+  }
+}
 
 function isRscRequest(request) {
   // Next.js soft navigations request the React Flight payload. They carry an
@@ -138,3 +177,62 @@ self.addEventListener("fetch", (event) => {
     })(),
   );
 });
+
+// How many route shells we fetch at once during a precache pass — enough to
+// hide round-trips, low enough not to swamp the origin on a large library.
+const PRECACHE_CONCURRENCY = 4;
+
+// The client (AppShell island) hands us the route list once the library view is
+// known. For each route we fetch and cache the HTML document and the RSC/Flight
+// payload under the same keys real navigations use, so an offline hard reload or
+// direct-URL entry is served from cache. Pages are fetched, never executed — no
+// reader auto-save or reading-session side effects.
+self.addEventListener("message", (event) => {
+  const data = event.data;
+  if (!data || data.type !== "PRECACHE_ROUTES" || !Array.isArray(data.routes)) {
+    return;
+  }
+  event.waitUntil(precacheRoutes(data.routes));
+});
+
+async function precacheRoutes(routes) {
+  const cache = await caches.open(CACHE_NAME);
+  const queue = routes.filter((route) => typeof route === "string");
+  const worker = async () => {
+    let route;
+    while ((route = queue.shift()) !== undefined) {
+      await cacheRouteShell(cache, route);
+    }
+  };
+  await Promise.all(
+    Array.from({ length: PRECACHE_CONCURRENCY }, () => worker()),
+  );
+}
+
+async function cacheRouteShell(cache, route) {
+  await Promise.all([
+    storeRouteResponse(cache, new Request(route), "doc"),
+    storeRouteResponse(
+      cache,
+      new Request(route, { headers: { RSC: "1" } }),
+      "rsc",
+    ),
+  ]);
+}
+
+async function storeRouteResponse(cache, request, kind) {
+  const key = navigationCacheKey(request, kind);
+  if (await cache.match(key)) {
+    return; // already cached (e.g. visited online) — don't refetch.
+  }
+  try {
+    const response = await fetch(request);
+    // Only cache a real 200 — a Clerk handshake 3xx is not `ok`, so auth
+    // redirects never poison the cache.
+    if (response && response.ok) {
+      await cache.put(key, response);
+    }
+  } catch {
+    // Offline or a transient failure — skip; the next pass retries.
+  }
+}

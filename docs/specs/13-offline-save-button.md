@@ -1,6 +1,6 @@
 # Offline-save button (book-info card)
 
-> Status: active · Updated: 2026-06-09 · ADRs: [[1-offline-first-dexie-buckets]] · Related: [[6-offline-reading]], [[12-offline-save-sync]] · Code: apps/web/components/app/library/book-info/download-offline-card.tsx
+> Status: active · Updated: 2026-06-09 · ADRs: [[3-offline-first-dexie-buckets]] · Related: [[6-offline-reading]], [[12-offline-save-sync]] · Code: apps/web/components/app/library/book-info/download-offline-card.tsx
 
 ## Summary
 The single control on the book-info screen for making a book available offline. Its label + action are derived entirely from local Dexie state (`DownloadOfflineCard` via `useBookOfflineState`), so it reads correctly online and offline.
