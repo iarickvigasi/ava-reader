@@ -464,6 +464,16 @@ export async function readBookInfoBySlug(
   };
 }
 
+// Resolves a book slug to its libraryItemId from the cached library. Used by
+// the reader shell loader (ADR 4) before touching the per-book content tables.
+export async function readLibraryItemIdBySlug(
+  slug: string,
+): Promise<string | null> {
+  const db = getDb();
+  const row = await db.libraryItems.where("slug").equals(slug).first();
+  return row?.libraryItemId ?? null;
+}
+
 function toBookView(row: LibraryItemRow): LibraryBookView {
   return {
     libraryItemId: row.libraryItemId,

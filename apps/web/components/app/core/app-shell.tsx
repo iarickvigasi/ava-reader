@@ -15,7 +15,6 @@ import { ReaderUiProvider } from "@/components/app/core/reader-ui-context";
 import { useInterfaceLang } from "@/components/app/preferences/use-interface-lang";
 import { useCurrentUserCached } from "@/features/offline/buckets/me";
 import type { CurrentUserPayload } from "@/lib/api-types";
-import { cn } from "@/lib/cn";
 
 type AppShellProps = {
   children: ReactNode;
@@ -35,38 +34,35 @@ export function AppShell({ children, currentUser: initialUser }: AppShellProps) 
   // soft-refreshes when they disagree.
   useInterfaceLang();
 
-  // OfflineModalProvider wraps everything so the modal can fire from any
-  // route (home, library, reader, …) and the offline chip in the header
-  // can call `open()`. The provider also auto-opens the modal on cold boot
-  // when offline and on connection drop while reading.
-  if (isReaderRoute) {
-    return (
-      <OfflineModalProvider>
-        <ServiceWorkerRegistrar />
-        <RoutePrecacheRunner />
-        <LegacyLocalStorageCleanupRunner />
-        <PreferencesSyncRunner />
-        <AppToast />
-        <MissingBookOfflineModal />
-        <PartialBookOfflineModal />
+  // The global islands below must live on EVERY app route, not just the
+  // reader: AppToast surfaces save/quota toasts from library + home, the sync
+  // / cleanup runners are app-wide, and the offline modals are dispatched from
+  // non-reader surfaces too (ReadBookLink on book-info / home fires the
+  // missing-book modal). Only the page chrome differs by route, so just the
+  // layout branches. OfflineModalProvider wraps everything so the offline
+  // modal can fire from any route and the header chip's `open()` works.
+  return (
+    <OfflineModalProvider>
+      <ServiceWorkerRegistrar />
+      <RoutePrecacheRunner />
+      <LegacyLocalStorageCleanupRunner />
+      <PreferencesSyncRunner />
+      <AppToast />
+      <MissingBookOfflineModal />
+      <PartialBookOfflineModal />
+      {isReaderRoute ? (
         <ReaderUiProvider>
           <div className="flex h-dvh flex-col overflow-hidden">
             <AppNavigation currentUser={currentUser} />
             <div className="min-h-0 flex-1">{children}</div>
           </div>
         </ReaderUiProvider>
-      </OfflineModalProvider>
-    );
-  }
-
-  return (
-    <OfflineModalProvider>
-      <ServiceWorkerRegistrar />
-      <RoutePrecacheRunner />
-      <div className="min-h-screen">
-        <AppNavigation currentUser={currentUser} />
-        <div className={cn(!isReaderRoute && "pb-24 md:pb-10")}>{children}</div>
-      </div>
+      ) : (
+        <div className="min-h-screen">
+          <AppNavigation currentUser={currentUser} />
+          <div className="pb-24 md:pb-10">{children}</div>
+        </div>
+      )}
     </OfflineModalProvider>
   );
 }

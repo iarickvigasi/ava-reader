@@ -1,13 +1,10 @@
-// Enumerates the app routes whose shells should be precached for offline use
-// (see [[14-route-precaching]]). Pure: given the cached library view, returns
-// the bare route paths (no query) the SW should cache as documents + RSC.
-// Static routes need no data; per-entity routes come from the library view.
+// The fixed route list whose shells the SW precaches for offline use (see
+// [[14-route-precaching]]). Per-entity routes (reader, book-info, collection)
+// are generic shells (ADR 4) — any slug returns the same document — so one
+// `__shell__` sentinel per family covers every book/collection, with no
+// library enumeration.
 
-import type { LibraryView } from "../buckets/library/types";
-
-import { collectSmartBooks } from "./smart-books";
-
-// Fixed, always-available app routes. Admin is intentionally excluded — it's
+// Always-available app routes. Admin is intentionally excluded — it's
 // role-gated and tracked as an open question in the spec.
 export const STATIC_APP_ROUTES = [
   "/app",
@@ -16,15 +13,15 @@ export const STATIC_APP_ROUTES = [
   "/app/explore",
 ] as const;
 
-export function collectAppRoutes(view: LibraryView | null): string[] {
-  const routes: string[] = [...STATIC_APP_ROUTES];
-  if (view) {
-    for (const collection of view.collections) {
-      routes.push(`/app/library/collections/${collection.slug}`);
-    }
-    for (const book of collectSmartBooks(view)) {
-      routes.push(`/app/library/books/${book.slug}`, `/app/read/${book.slug}`);
-    }
-  }
-  return [...new Set(routes)];
+// One sentinel per generic-shell family. The SW stores their documents under
+// the family `__shell__` key and serves them as the offline fallback for any
+// slug in that family.
+export const SHELL_ROUTE_SENTINELS = [
+  "/app/read/__shell__",
+  "/app/library/books/__shell__",
+  "/app/library/collections/__shell__",
+] as const;
+
+export function collectAppRoutes(): string[] {
+  return [...STATIC_APP_ROUTES, ...SHELL_ROUTE_SENTINELS];
 }

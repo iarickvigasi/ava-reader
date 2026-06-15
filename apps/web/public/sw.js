@@ -111,6 +111,76 @@ function navigationCacheKey(request, kind) {
   return url.toString();
 }
 
+// Per-entity routes are generic shells (ADR 4): every slug returns the same
+// document, so each family keeps one extra cache entry under a `__shell__`
+// key. Offline, a never-visited slug falls back to it; the shell hydrates the
+// right book client-side from location.pathname + Dexie. Docs only — serving
+// a mismatched RSC payload could make Next rewrite the URL, so RSC stays
+// strictly per-URL and a failed RSC fetch hard-navigates into the doc path.
+const SHELL_ROUTE_PREFIXES = [
+  "/app/read/",
+  "/app/library/books/",
+  "/app/library/collections/",
+];
+
+function shellDocKey(request) {
+  const url = new URL(request.url);
+  for (const prefix of SHELL_ROUTE_PREFIXES) {
+    if (url.pathname.startsWith(prefix) && url.pathname.length > prefix.length) {
+      url.pathname = `${prefix}__shell__`;
+      url.search = "";
+      url.searchParams.set("__sw", "doc");
+      return url.toString();
+    }
+  }
+  return null;
+}
+
+// Store a successful document response under its exact per-URL key and, for
+// shell families, refresh the family `__shell__` entry too.
+function putDocResponse(cache, request, response) {
+  cache.put(navigationCacheKey(request, "doc"), response.clone());
+  const shellKey = shellDocKey(request);
+  if (shellKey && shellKey !== navigationCacheKey(request, "doc")) {
+    cache.put(shellKey, response.clone());
+  }
+}
+
+async function matchDocFallback(request, cache) {
+  const exact = await cache.match(navigationCacheKey(request, "doc"));
+  if (exact) {
+    return exact;
+  }
+  const shellKey = shellDocKey(request);
+  if (shellKey) {
+    const shell = await cache.match(shellKey);
+    if (shell) {
+      return shell;
+    }
+  }
+  return null;
+}
+
+async function networkFirstDoc(request, cache) {
+  try {
+    const response = await fetch(request);
+    if (response && response.ok) {
+      putDocResponse(cache, request, response);
+      return response;
+    }
+    // Server reachable but erroring (4xx/5xx): prefer the last good cached
+    // document (exact, then family shell) over an error page.
+    const cached = await matchDocFallback(request, cache);
+    return cached ?? response;
+  } catch (error) {
+    const cached = await matchDocFallback(request, cache);
+    if (cached) {
+      return cached;
+    }
+    throw error;
+  }
+}
+
 async function networkFirst(request, cache, kind) {
   const key = navigationCacheKey(request, kind);
   try {
@@ -119,8 +189,13 @@ async function networkFirst(request, cache, kind) {
     // redirects never poison the cache).
     if (response && response.ok) {
       cache.put(key, response.clone());
+      return response;
     }
-    return response;
+    // Server reachable but erroring (4xx/5xx — e.g. wifi-off against a local
+    // server whose auth/data deps are unreachable): prefer the last good
+    // cached copy over an error page; fall through to the response otherwise.
+    const cached = await cache.match(key);
+    return cached ?? response;
   } catch (error) {
     const cached = await cache.match(key);
     if (cached) {
@@ -173,7 +248,7 @@ self.addEventListener("fetch", (event) => {
         return networkFirst(request, cache, "rsc");
       }
       if (isNavigation) {
-        return networkFirst(request, cache, "doc");
+        return networkFirstDoc(request, cache);
       }
       // Fonts, icons, other /public assets.
       return cacheFirst(request, cache);
@@ -185,11 +260,12 @@ self.addEventListener("fetch", (event) => {
 // hide round-trips, low enough not to swamp the origin on a large library.
 const PRECACHE_CONCURRENCY = 4;
 
-// The client (AppShell island) hands us the route list once the library view is
-// known. For each route we fetch and cache the HTML document and the RSC/Flight
-// payload under the same keys real navigations use, so an offline hard reload or
-// direct-URL entry is served from cache. Pages are fetched, never executed — no
-// reader auto-save or reading-session side effects.
+// The client (AppShell island) hands us the fixed route list (static routes +
+// per-family __shell__ sentinels). For each route we fetch and cache the HTML
+// document and the RSC/Flight payload under the same keys real navigations
+// use, so an offline hard reload or direct-URL entry is served from cache.
+// Pages are fetched, never executed — no reader auto-save or reading-session
+// side effects.
 self.addEventListener("message", (event) => {
   const data = event.data;
   if (!data || data.type !== "PRECACHE_ROUTES" || !Array.isArray(data.routes)) {
@@ -233,7 +309,11 @@ async function storeRouteResponse(cache, request, kind) {
     // Only cache a real 200 — a Clerk handshake 3xx is not `ok`, so auth
     // redirects never poison the cache.
     if (response && response.ok) {
-      await cache.put(key, response);
+      if (kind === "doc") {
+        putDocResponse(cache, request, response);
+      } else {
+        await cache.put(key, response);
+      }
     }
   } catch {
     // Offline or a transient failure — skip; the next pass retries.

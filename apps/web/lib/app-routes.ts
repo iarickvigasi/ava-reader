@@ -1,8 +1,25 @@
 import type { LibraryCardBook } from "./api-types";
-import type { BookFileFormat } from
-    "@/lib/api-types";
 
 export const APP_LIBRARY_HREF = "/app/library";
+
+// Extracts the single-segment slug after `prefix` from a pathname. Used by the
+// generic-shell client loaders (ADR 4), which must read the slug from
+// `window.location.pathname` — never `useParams()`, whose value is baked into
+// a fallback-served shell document and can belong to a different slug.
+export function slugFromPath(pathname: string, prefix: string): string | null {
+  if (!pathname.startsWith(prefix)) {
+    return null;
+  }
+  const rest = pathname.slice(prefix.length).replace(/\/$/, "");
+  if (rest.length === 0 || rest.includes("/")) {
+    return null;
+  }
+  try {
+    return decodeURIComponent(rest);
+  } catch {
+    return rest;
+  }
+}
 
 export function getReaderHref(slug: string) {
   return `/app/read/${slug}`;
@@ -47,46 +64,3 @@ export function getLibraryBookInfoHref(
   return qs ? `${baseHref}?${qs}` : baseHref;
 }
 
-// Read a LibraryCardBook back from URL search params. Returns null if any
-// required field is missing — direct navigation or refresh has no hints and
-// the page falls back to fetching everything from the server.
-export function parseLibraryCardFromSearch(
-  search: Record<string, string | string[] | undefined>,
-  slug: string,
-): LibraryCardBook | null {
-  const title = pickOne(search.title);
-  const authors = pickMany(search.author);
-  const libraryItemId = pickOne(search.liid);
-  const progress = pickOne(search.progress);
-  const format = pickOne(search.format);
-  if (!title || !libraryItemId || !progress || !format) {
-    return null;
-  }
-  const completionPercent = Number.parseInt(progress, 10);
-  if (Number.isNaN(completionPercent)) {
-    return null;
-  }
-  return {
-    authors,
-    completionPercent,
-    coverImageUrl: pickOne(search.cover) ?? null,
-    libraryItemId,
-    primaryFormat: format as BookFileFormat,
-    slug,
-    title,
-  };
-}
-
-function pickOne(value: string | string[] | undefined): string | null {
-  if (Array.isArray(value)) {
-    return value[0] ?? null;
-  }
-  return value ?? null;
-}
-
-function pickMany(value: string | string[] | undefined): string[] {
-  if (Array.isArray(value)) {
-    return value;
-  }
-  return value ? [value] : [];
-}

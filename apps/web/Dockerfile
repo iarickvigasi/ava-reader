@@ -11,6 +11,11 @@ ARG GIT_SHA
 ENV NEXT_PUBLIC_API_BASE_URL="$NEXT_PUBLIC_API_BASE_URL"
 ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY"
 ENV GIT_SHA="$GIT_SHA"
+# Keep auth redirects same-origin: without these the Clerk middleware falls
+# back to the hosted Account Portal, which strands offline tabs in a redirect
+# loop when the session can't refresh.
+ENV NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+ENV NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 
 WORKDIR /app
 

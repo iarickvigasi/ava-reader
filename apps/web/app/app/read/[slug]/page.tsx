@@ -1,26 +1,11 @@
-import { ReaderScreen } from "@/components/app/reader/reader-screen";
-import type { ReaderStatusPayload } from "@/lib/api-types";
-import { fetchServerApi } from "@/lib/server-api";
+import { ReaderScreenLoader } from "@/components/app/reader/reader-screen-loader";
 
+// Generic shell (ADR 4): no server data fetch and no params read, so the
+// document is identical for every slug — the SW keeps one cached shell per
+// family and the client loader hydrates the right book from
+// location.pathname + Dexie.
 export const dynamic = "force-dynamic";
 
-export default async function ReaderPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-  const reader = await fetchServerApi<ReaderStatusPayload>(
-    `/api/library/${slug}/reader`,
-    {
-      returnBackUrl: `/app/read/${slug}`,
-    },
-  );
-
-  return (
-    <ReaderScreen
-      initialPayload={reader}
-      libraryItemId={reader.book.libraryItemId}
-    />
-  );
+export default function ReaderPage() {
+  return <ReaderScreenLoader />;
 }
