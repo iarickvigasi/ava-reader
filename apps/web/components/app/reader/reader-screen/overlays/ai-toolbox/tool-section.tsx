@@ -28,7 +28,7 @@ export function ToolSection({
   const isExpandable = variant === "expandable";
 
   return (
-    <section className="overflow-hidden rounded-[10px] bg-soft-tone-fill">
+    <section className="overflow-hidden rounded-control bg-soft-tone-fill">
       <button
         type="button"
         aria-expanded={isExpandable ? isExpanded : undefined}
@@ -39,7 +39,7 @@ export function ToolSection({
           <span className="inline-flex size-4 items-center justify-center text-copy">
             {icon}
           </span>
-          <span className="font-(--font-ui) text-[0.78rem] uppercase tracking-[0.16em] text-copy">
+          <span className="font-ui text-[0.78rem] uppercase tracking-[0.16em] text-copy">
             {label}
           </span>
         </span>

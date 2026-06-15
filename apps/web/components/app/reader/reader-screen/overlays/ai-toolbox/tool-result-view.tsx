@@ -21,14 +21,14 @@ export function ToolResultView({
   if (error) {
     return (
       <div className="flex flex-col gap-3">
-        <p className="font-(--font-display) text-[0.95rem] leading-normal text-ink/80">
+        <p className="font-display text-[0.95rem] leading-normal text-ink/80">
           {error}
         </p>
         {onRetry ? (
           <button
             type="button"
             onClick={onRetry}
-            className="inline-flex w-fit items-center rounded-full bg-paper-strong/70 px-3 py-1.5 font-(--font-ui) text-[0.7rem] uppercase tracking-[0.16em] text-ink transition hover:bg-paper-strong"
+            className="inline-flex w-fit items-center rounded-full bg-paper-strong/70 px-3 py-1.5 font-ui text-[0.7rem] uppercase tracking-[0.16em] text-ink transition hover:bg-paper-strong"
           >
             {t("tryAgain")}
           </button>
@@ -49,7 +49,7 @@ export function ToolResultView({
       <p
         aria-hidden={!isWaiting}
         className={cn(
-          "col-start-1 row-start-1 font-(--font-display) text-[1.05rem] leading-[1.4] text-ink/55 transition-opacity duration-300",
+          "col-start-1 row-start-1 font-display text-[1.05rem] leading-[1.4] text-ink/55 transition-opacity duration-300",
           isWaiting ? "animate-pulse opacity-100" : "opacity-0",
         )}
       >
@@ -57,7 +57,7 @@ export function ToolResultView({
       </p>
       <p
         className={cn(
-          "col-start-1 row-start-1 font-(--font-display) text-[1.05rem] leading-[1.4] text-ink transition-opacity duration-300",
+          "col-start-1 row-start-1 font-display text-[1.05rem] leading-[1.4] text-ink transition-opacity duration-300",
           text.length === 0 ? "opacity-0" : "opacity-100",
           isStreaming &&
             text.length > 0 &&

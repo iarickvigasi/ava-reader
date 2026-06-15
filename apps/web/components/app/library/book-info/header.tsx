@@ -15,7 +15,7 @@ export function BookHeader({ book }: BookHeaderProps) {
         {tags.map((tag) => (
           <span
             key={tag}
-            className="rounded-[11px] bg-paper-strong px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-ink/80"
+            className="rounded-control bg-paper-strong px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-ink/80"
           >
             {tag}
           </span>

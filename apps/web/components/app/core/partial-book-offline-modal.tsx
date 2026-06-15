@@ -9,6 +9,7 @@ import { useAuth } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
+import { Button } from "@/components/ui/button";
 import { setBookOfflineIntent } from "@/features/offline/buckets/library";
 import {
   PARTIAL_BOOK_EVENT,
@@ -62,7 +63,7 @@ export function PartialBookOfflineModal() {
       onClick={dismiss}
     >
       <div
-        className="relative w-full max-w-lg rounded-3xl bg-paper p-6 shadow-2xl"
+        className="relative w-full max-w-lg rounded-modal bg-paper p-6 shadow-(--shadow-card)"
         onClick={(event) => event.stopPropagation()}
       >
         <h2
@@ -76,20 +77,12 @@ export function PartialBookOfflineModal() {
         </h2>
         <p className="mt-4 text-base leading-7 text-copy">{t("body")}</p>
         <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <button
-            type="button"
-            onClick={dismiss}
-            className="inline-flex h-11 items-center justify-center rounded-pl border border-line px-5 text-sm font-semibold uppercase tracking-[0.14em] text-ink transition hover:bg-paper-strong"
-          >
+          <Button type="button" size="sm" variant="soft" onClick={dismiss}>
             {t("dismiss")}
-          </button>
-          <button
-            type="button"
-            onClick={saveOffline}
-            className="inline-flex h-11 items-center justify-center rounded-pl bg-brand-fill px-5 text-sm font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-brand-fill-strong"
-          >
+          </Button>
+          <Button type="button" size="sm" onClick={saveOffline}>
             {t("save")}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -46,7 +46,7 @@ export function RowCard({
       onClick={onSelect}
       onKeyDown={onSelect ? handleKeyDown : undefined}
       className={cn(
-        `group/${group} relative flex flex-col gap-2 rounded-[10px] px-3 py-2 text-left transition`,
+        `group/${group} relative flex flex-col gap-2 rounded-control px-3 py-2 text-left transition`,
         onSelect &&
           "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-line/60",
         isMenuOpen ? "bg-soft-tone-fill/60" : "hover:bg-soft-tone-fill/45",

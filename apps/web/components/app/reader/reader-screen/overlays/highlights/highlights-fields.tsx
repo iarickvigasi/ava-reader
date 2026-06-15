@@ -21,7 +21,7 @@ export function SearchField({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={t("searchPlaceholder")}
-        className="block h-9 w-full rounded-lg bg-soft-tone-fill px-3 font-(--font-ui) text-[0.78rem] uppercase tracking-[0.16em] text-muted placeholder:text-muted/70 focus:outline-none focus:ring-2 focus:ring-ink/15"
+        className="block h-9 w-full rounded-lg bg-soft-tone-fill px-3 font-ui text-[0.78rem] uppercase tracking-[0.16em] text-muted placeholder:text-muted/70 focus:outline-none focus:ring-2 focus:ring-ink/15"
       />
     </label>
   );
@@ -53,7 +53,7 @@ export function ColorFilterChip({
           : "bg-soft-tone-fill text-muted hover:bg-soft-tone-fill/80",
       )}
     >
-      <span className="font-(--font-ui) text-[0.72rem] uppercase tracking-[0.14em]">
+      <span className="font-ui text-[0.72rem] uppercase tracking-[0.14em]">
         {filter.label}
       </span>
       <span

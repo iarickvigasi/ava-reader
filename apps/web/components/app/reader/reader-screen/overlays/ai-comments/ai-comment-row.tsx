@@ -45,7 +45,7 @@ export function AiCommentRow({
       className={cn(isPending && "opacity-80", isFailed && "opacity-50")}
     >
       <div className="flex items-center justify-between gap-2">
-        <span className="font-(--font-ui) text-[0.65rem] uppercase tracking-[0.18em] text-muted">
+        <span className="font-ui text-[0.65rem] uppercase tracking-[0.18em] text-muted">
           {kindLabel} · {comment.chapterLabel}
         </span>
       </div>
@@ -53,7 +53,7 @@ export function AiCommentRow({
       <div className="flex items-start gap-2">
         <p
           className={cn(
-            "min-w-0 flex-1 font-(--font-display) text-[1rem] leading-[1.3] text-title",
+            "min-w-0 flex-1 font-display text-[1rem] leading-[1.3] text-title",
             !isExpanded && "line-clamp-2",
           )}
         >
@@ -79,7 +79,7 @@ export function AiCommentRow({
           className="rounded-md border-l-2 border-brand-fill/70 bg-soft-tone-fill/45 px-3 py-2"
           onClick={(event) => event.stopPropagation()}
         >
-          <p className="font-(--font-ui) text-[0.85rem] leading-[1.45] text-copy">
+          <p className="font-ui text-[0.85rem] leading-[1.45] text-copy">
             {comment.body || t("emptyBody")}
           </p>
         </div>

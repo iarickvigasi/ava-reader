@@ -29,7 +29,7 @@ export function InsightsPlaceholderPage() {
   const t = useTranslations("insights");
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-10">
-      <section className="rounded-[28px] bg-surface px-6 py-8 sm:px-8 sm:py-10">
+      <section className="rounded-modal bg-surface px-6 py-8 sm:px-8 sm:py-10">
         <div className="max-w-3xl space-y-5">
           <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em] text-muted">
             <ChartIcon className="size-4" />
@@ -55,7 +55,7 @@ export function InsightsPlaceholderPage() {
           return (
             <article
               key={metric.id}
-              className="rounded-3xl border border-line/60 bg-paper-strong/70 px-5 py-5"
+              className="rounded-3xl bg-paper-strong/70 px-5 py-5"
             >
               <p className="inline-flex size-10 items-center justify-center rounded-2xl bg-soft-fill text-ink">
                 <Icon className="size-5" />

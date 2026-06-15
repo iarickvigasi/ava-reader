@@ -97,7 +97,7 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
               {isAdmin ? (
                 <Link
                   href="/app/admin/catalog"
-                  className="inline-flex min-h-10 items-center rounded-pl border border-line px-3 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-ink"
+                  className="inline-flex min-h-10 items-center rounded-control bg-soft-fill px-3 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-ink transition hover:bg-soft-tone-fill"
                 >
                   {t("admin.short")}
                 </Link>
@@ -135,7 +135,7 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
               {isAdmin ? (
                 <Link
                   href="/app/admin/catalog"
-                  className="inline-flex min-h-11 items-center rounded-[14px] border border-line bg-white/60 px-4 text-xs font-semibold uppercase tracking-[0.16em] text-ink transition hover:bg-white"
+                  className="inline-flex min-h-11 items-center rounded-control bg-white/60 px-4 text-xs font-semibold uppercase tracking-[0.16em] text-ink transition hover:bg-white"
                 >
                   {t("admin.long")}
                 </Link>
@@ -217,7 +217,7 @@ function ReaderNavigation() {
             <a
               href="/app"
               className={cn(
-                "absolute inset-x-0 top-0 flex h-8 w-full items-center justify-center overflow-hidden font-(--font-display) text-[1.25rem] leading-8 text-ink transition-opacity duration-300 ease-out",
+                "absolute inset-x-0 top-0 flex h-8 w-full items-center justify-center overflow-hidden font-display text-[1.25rem] leading-8 text-ink transition-opacity duration-300 ease-out",
                 isLeftPanelOpen
                   ? "pointer-events-none opacity-0"
                   : "opacity-100",
@@ -236,7 +236,7 @@ function ReaderNavigation() {
             >
               <a
                 href="/app"
-                className="truncate text-center font-(--font-display) text-[1.25rem] leading-none text-ink"
+                className="truncate text-center font-display text-[1.25rem] leading-none text-ink"
               >
                 AVA
               </a>
@@ -276,7 +276,7 @@ function ReaderNavigation() {
           <div className="flex items-center gap-2">
             <a
               href="/app"
-              className="font-(--font-display) text-xl leading-none text-ink"
+              className="font-display text-xl leading-none text-ink"
             >
               AVA
             </a>
@@ -341,7 +341,7 @@ function ReaderNavItem({
   );
 
   const className = cn(
-    "flex items-center overflow-hidden rounded-[8px] text-title transition-colors duration-300",
+    "flex items-center overflow-hidden rounded-control text-title transition-colors duration-300",
     compact
       ? "size-9 shrink-0 justify-center"
       : "w-full justify-start py-0",

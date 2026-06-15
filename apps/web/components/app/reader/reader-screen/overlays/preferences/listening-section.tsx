@@ -33,11 +33,11 @@ function NarratorSpeedSlider({
       <SpeakerSmallIcon className="size-3.5 shrink-0 text-title/70" />
       <div className="relative h-0.5 flex-1 rounded-full bg-line/45">
         <div
-          className="absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border border-title bg-paper"
+          className="absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-paper"
           style={{ left: `${position}%` }}
         />
       </div>
-      <span className="font-(--font-ui) text-[0.65rem] text-title">
+      <span className="font-ui text-[0.65rem] text-title">
         {value}
       </span>
       <SpeakerLargeIcon className="size-4 shrink-0 text-title/70" />

@@ -48,7 +48,7 @@ function resolveEntryLabelClassName({
   isCurrentSection: boolean;
 }) {
   return cn(
-    "min-w-0 font-(--font-reader) leading-6 transition",
+    "min-w-0 font-reader leading-6 transition",
     depth === 0 ? "text-[0.98rem]" : "text-[0.92rem]",
     isCurrentSection
       ? "font-semibold text-title"
@@ -100,7 +100,7 @@ export function ReaderContentsTreeNode({
             >
               {entry.label}
             </span>
-            <span className="shrink-0 pt-1 font-(--font-ui) text-[0.62rem] uppercase tracking-[0.16em] text-ink/35">
+            <span className="shrink-0 pt-1 font-ui text-[0.62rem] uppercase tracking-[0.16em] text-ink/35">
               {(() => {
                 const stateKey = resolveEntryStateKey({
                   entry,
@@ -116,7 +116,7 @@ export function ReaderContentsTreeNode({
           <div className="flex items-start justify-between gap-3">
             <span
               className={cn(
-                "min-w-0 font-(--font-ui) text-[0.72rem] uppercase tracking-[0.14em]",
+                "min-w-0 font-ui text-[0.72rem] uppercase tracking-[0.14em]",
                 isActivePath ? "text-title/72" : "text-ink/42",
               )}
             >

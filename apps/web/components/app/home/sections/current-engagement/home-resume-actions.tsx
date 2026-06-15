@@ -23,7 +23,7 @@ export function HomeResumeActions({
         <ReadBookLink
           href={readerHref}
           libraryItemId={libraryItemId}
-          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[14px] border border-brand-fill bg-brand-fill px-5 text-sm font-semibold uppercase tracking-[0.14em] text-brand-foreground shadow-(--shadow-card) transition hover:bg-brand-fill-strong"
+          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-control bg-brand-fill px-5 text-sm font-semibold uppercase tracking-[0.14em] text-brand-foreground shadow-(--shadow-card) transition hover:bg-brand-fill-strong"
         >
           {t("resumeReading")}
         </ReadBookLink>

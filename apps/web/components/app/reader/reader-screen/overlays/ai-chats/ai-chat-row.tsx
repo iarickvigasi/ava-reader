@@ -31,13 +31,13 @@ export function AiChatRow({
     <div
       ref={rowRef}
       className={cn(
-        "group/ai-chat-row relative flex items-center justify-between gap-2 rounded-[10px] px-3 py-2 transition",
+        "group/ai-chat-row relative flex items-center justify-between gap-2 rounded-control px-3 py-2 transition",
         isMenuOpen ? "bg-soft-tone-fill/60" : "hover:bg-soft-tone-fill/45",
       )}
     >
       <button
         type="button"
-        className="flex-1 truncate text-left font-(--font-display) text-[1.15rem] leading-tight text-title"
+        className="flex-1 truncate text-left font-display text-[1.15rem] leading-tight text-title"
       >
         {chat.title}
       </button>

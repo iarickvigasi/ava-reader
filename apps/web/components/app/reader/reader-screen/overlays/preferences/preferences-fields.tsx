@@ -3,7 +3,7 @@ import { ChevronDownIcon } from "./preferences-icons";
 
 export function FieldLabel({ children }: { children: ReactNode }) {
   return (
-    <span className="font-(--font-ui) text-[0.78rem] uppercase tracking-[0.14em] text-title/85">
+    <span className="font-ui text-[0.78rem] uppercase tracking-[0.14em] text-title/85">
       {children}
     </span>
   );
@@ -65,7 +65,7 @@ export function SelectField({
           aria-label={ariaLabel}
           value={hasValue ? value : ""}
           onChange={(event) => onChange(event.target.value)}
-          className="absolute inset-0 size-full cursor-pointer appearance-none rounded-lg bg-soft-tone-fill px-3 pr-9 font-(--font-reader) text-base text-copy-strong transition hover:bg-soft-tone-fill/80"
+          className="absolute inset-0 size-full cursor-pointer appearance-none rounded-lg bg-soft-tone-fill px-3 pr-9 font-reader text-base text-copy-strong transition hover:bg-soft-tone-fill/80"
         >
           {!hasValue && (
             <option value="" disabled>
@@ -86,7 +86,7 @@ export function SelectField({
   return (
     <button
       type="button"
-      className="flex h-9.5 w-full items-center justify-between gap-2 rounded-lg bg-soft-tone-fill px-3 font-(--font-reader) text-base text-copy-strong transition hover:bg-soft-tone-fill/80"
+      className="flex h-9.5 w-full items-center justify-between gap-2 rounded-lg bg-soft-tone-fill px-3 font-reader text-base text-copy-strong transition hover:bg-soft-tone-fill/80"
     >
       <span className="truncate">{value}</span>
       <ChevronDownIcon className="size-4 shrink-0 text-ink/60" />
@@ -96,7 +96,7 @@ export function SelectField({
 
 export function NumberField({ value }: { value: string }) {
   return (
-    <div className="flex h-9.5 w-full items-center rounded-lg bg-soft-tone-fill px-3 font-(--font-reader) text-base text-copy-strong hover:bg-soft-tone-fill/80">
+    <div className="flex h-9.5 w-full items-center rounded-lg bg-soft-tone-fill px-3 font-reader text-base text-copy-strong hover:bg-soft-tone-fill/80">
       <span className="truncate">{value}</span>
     </div>
   );

@@ -43,7 +43,7 @@ export function AiChatGroup({
 
   return (
     <section className="space-y-2">
-      <p className="px-2 font-(--font-ui) text-[0.62rem] uppercase tracking-[0.18em] text-ink/60">
+      <p className="px-2 font-ui text-[0.62rem] uppercase tracking-[0.18em] text-ink/60">
         {label}
       </p>
       <ul className="space-y-1">

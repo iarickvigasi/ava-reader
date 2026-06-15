@@ -49,7 +49,7 @@ export function ActionCard({
   title: string;
 }) {
   return (
-    <div className="flex h-full flex-col rounded-[22px] bg-soft-fill p-6">
+    <div className="flex h-full flex-col rounded-card bg-soft-fill p-6">
       <div className="flex h-full flex-col gap-5">
         <div className="space-y-3">
           <h2 className="font-display text-4xl leading-tight text-ink">{title}</h2>
@@ -76,9 +76,9 @@ export function LinkAction({
     <Link
       href={href}
       className={cn(
-        "inline-flex min-h-12 items-center justify-center gap-2 rounded-[14px] px-5 text-sm font-semibold uppercase tracking-[0.14em] transition",
+        "inline-flex min-h-12 items-center justify-center gap-2 rounded-control px-5 text-sm font-semibold uppercase tracking-[0.14em] transition",
         emphasis
-          ? "border border-brand-fill bg-brand-fill text-brand-foreground shadow-(--shadow-card) hover:bg-brand-fill-strong"
+          ? "bg-brand-fill text-brand-foreground shadow-(--shadow-card) hover:bg-brand-fill-strong"
           : "bg-white/40 text-ink hover:bg-white/50",
         className,
       )}
@@ -93,7 +93,7 @@ export function SparkIconLink({ href }: { href: string }) {
   return (
     <Link
       href={href}
-      className="text-[#264B5F] transition hover:opacity-80"
+      className="text-ink transition hover:opacity-80"
       aria-label={t("openInsights")}
     >
       <NowListeningHeaderIcon className="h-[11.667px] w-auto" />

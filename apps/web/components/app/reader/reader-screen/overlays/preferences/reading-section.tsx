@@ -45,7 +45,7 @@ function FontSizeControls({
     <div className="flex flex-1 items-center gap-2">
       <FontSizeButton label="A-" onClick={onDecreaseFont} />
       <FontSizeButton label="A+" onClick={onIncreaseFont} />
-      <p className="ml-2 font-(--font-ui) text-[0.72rem] uppercase tracking-[0.16em] text-ink/45">
+      <p className="ml-2 font-ui text-[0.72rem] uppercase tracking-[0.16em] text-ink/45">
         {t("typePercent", { percent: Math.round(fontScale * 100) })}
       </p>
     </div>
@@ -62,7 +62,7 @@ function FontSizeButton({
   return (
     <button
       type="button"
-      className="inline-flex size-10 items-center justify-center rounded-full bg-soft-tone-fill font-(--font-ui) text-sm text-ink transition hover:bg-soft-tone-fill/80"
+      className="inline-flex size-10 items-center justify-center rounded-full bg-soft-tone-fill font-ui text-sm text-ink transition hover:bg-soft-tone-fill/80"
       onClick={onClick}
     >
       {label}

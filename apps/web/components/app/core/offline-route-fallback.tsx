@@ -6,10 +6,10 @@
 // at what *does* work offline (their library + saved books), and offers a
 // retry that re-runs the route once a connection is back.
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
+import { Button, ButtonLink } from "@/components/ui/button";
 import { useNetworkState } from "@/features/offline/use-network-state";
 
 export type OfflineRouteKey = "admin" | "insights" | "home" | "generic";
@@ -25,7 +25,7 @@ export function OfflineRouteFallback({ routeKey }: OfflineRouteFallbackProps) {
 
   return (
     <div className="mx-auto flex min-h-[60vh] w-full max-w-xl flex-col items-center justify-center px-6 py-16 text-center">
-      <div className="w-full rounded-3xl bg-paper p-8 shadow-2xl">
+      <div className="w-full rounded-modal bg-paper p-8 shadow-(--shadow-card)">
         <span
           className="inline-flex items-center gap-2 rounded-full bg-soft-fill px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-copy-strong"
         >
@@ -48,22 +48,20 @@ export function OfflineRouteFallback({ routeKey }: OfflineRouteFallbackProps) {
         </p>
 
         <div className="mt-7 flex flex-col items-stretch gap-3 sm:flex-row sm:justify-center">
-          <Link
-            href="/app/library"
-            className="inline-flex h-11 items-center justify-center rounded-pl bg-brand-fill px-5 text-sm font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-brand-fill-strong"
-          >
+          <ButtonLink href="/app/library" size="sm">
             {t("openLibrary")}
-          </Link>
-          <button
+          </ButtonLink>
+          <Button
             type="button"
+            size="sm"
+            variant="soft"
             // When online again, router.refresh() re-runs the server
             // component so the real data renders in place.
             onClick={() => router.refresh()}
             disabled={!online}
-            className="inline-flex h-11 items-center justify-center rounded-pl border border-line px-5 text-sm font-semibold uppercase tracking-[0.14em] text-ink transition hover:bg-paper-strong disabled:cursor-not-allowed disabled:opacity-50"
           >
             {t("retry")}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

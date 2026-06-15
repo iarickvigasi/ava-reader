@@ -30,11 +30,11 @@ export function HighlightRow({
       onMenuClose={onMenuClose}
       onSelect={onSelect}
     >
-      <p className="min-w-0 font-(--font-display) text-[1rem] leading-[1.3] text-title">
+      <p className="min-w-0 font-display text-[1rem] leading-[1.3] text-title">
         {highlight.text}
       </p>
       <div className="flex items-center justify-between gap-2">
-        <span className="font-(--font-ui) text-[0.72rem] text-muted">
+        <span className="font-ui text-[0.72rem] text-muted">
           {highlight.chapterLabel}
         </span>
         <RowActionsMenuTrigger

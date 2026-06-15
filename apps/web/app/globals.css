@@ -30,8 +30,6 @@
   --shadow-soft: 0 30px 80px -46px rgba(38, 43, 58, 0.28);
   --shadow-card: 0 28px 60px -38px rgba(72, 43, 21, 0.24);
   --shadow-nav: 0 12px 30px -20px rgba(38, 43, 58, 0.22);
-  --radius-shell: 32px;
-  --radius-card: 18px;
 
   /* Highlight palette — light theme uses soft pastels that read against
      dark body text. The matching dark-theme values below preserve the hue
@@ -132,6 +130,16 @@
   --font-display: var(--font-abhaya);
   --font-ui: var(--font-inter);
   --font-reader: var(--font-reader-serif);
+}
+
+/* Radius scale — static (not theme-switched). These tokens generate the
+   rounded-control/card/modal/shell utilities and emit the vars to :root, so
+   any remaining var(--radius-*) references keep resolving. See docs/styles.md. */
+@theme {
+  --radius-control: 14px;
+  --radius-card: 18px;
+  --radius-modal: 28px;
+  --radius-shell: 32px;
 }
 
 @layer base {

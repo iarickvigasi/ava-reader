@@ -29,8 +29,8 @@ export default function LibraryBookInfoLoading() {
 
           <div className="space-y-6">
             <div className="flex gap-2">
-              <div className="h-6 w-20 animate-pulse rounded-[11px] bg-paper-strong" />
-              <div className="h-6 w-24 animate-pulse rounded-[11px] bg-paper-strong" />
+              <div className="h-6 w-20 animate-pulse rounded-control bg-paper-strong" />
+              <div className="h-6 w-24 animate-pulse rounded-control bg-paper-strong" />
             </div>
             {title ? (
               <div className="space-y-2">
@@ -49,7 +49,7 @@ export default function LibraryBookInfoLoading() {
                 <div className="h-8 w-2/5 animate-pulse rounded bg-paper-strong" />
               </>
             )}
-            <div className="h-14 w-64 animate-pulse rounded-[10px] bg-paper-strong" />
+            <div className="h-14 w-64 animate-pulse rounded-control bg-paper-strong" />
             <div className="space-y-3 border-y border-line/45 py-5">
               <div className="h-4 w-48 animate-pulse rounded bg-paper-strong" />
               <div className="h-2 w-full animate-pulse rounded bg-paper-strong" />

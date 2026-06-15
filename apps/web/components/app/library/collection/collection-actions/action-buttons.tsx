@@ -16,7 +16,7 @@ export function CollectionActionButtons({
       {onEditClick ? (
         <button
           type="button"
-          className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-[10px] bg-soft-fill px-3 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-ink transition hover:bg-soft-tone-fill"
+          className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-control bg-soft-fill px-3 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-ink transition hover:bg-soft-tone-fill"
           onClick={onEditClick}
         >
           <EditIcon className="size-3.5" />
@@ -25,7 +25,7 @@ export function CollectionActionButtons({
       ) : null}
       <button
         type="button"
-        className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-[10px] bg-danger/10 px-3 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-danger transition hover:bg-danger/20"
+        className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-control bg-danger/10 px-3 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-danger transition hover:bg-danger/20"
         onClick={onDeleteClick}
       >
         <TrashIcon className="size-3.5" />

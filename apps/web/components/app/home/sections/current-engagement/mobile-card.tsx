@@ -24,9 +24,9 @@ export function EngagementMobileCard({
     <ReadBookLink
       href={readerHref}
       libraryItemId={engagement.libraryItemId}
-      className="relative block overflow-hidden rounded-md bg-soft-fill px-5 py-6 sm:grid sm:gap-5 sm:rounded-[22px] sm:p-6 sm:grid-cols-[auto_1px_1fr] sm:items-center md:hidden"
+      className="relative block overflow-hidden rounded-md bg-soft-fill px-5 py-6 sm:grid sm:gap-5 sm:rounded-card sm:p-6 sm:grid-cols-[auto_1px_1fr] sm:items-center md:hidden"
     >
-      <div className="absolute inset-y-0 left-0 w-0.5 bg-[#eae1db]">
+      <div className="absolute inset-y-0 left-0 w-0.5 bg-sand">
         <div
           className="w-full bg-ink"
           style={{ height: `${railHeightPercent}%` }}

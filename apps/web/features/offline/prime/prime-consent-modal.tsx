@@ -8,6 +8,8 @@
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 
+import { Button } from "@/components/ui/button";
+
 export function PrimeConsentModal({
   onConfirm,
   onCancel,
@@ -36,7 +38,7 @@ export function PrimeConsentModal({
       onClick={onCancel}
     >
       <div
-        className="relative w-full max-w-lg rounded-3xl bg-paper p-6 shadow-2xl"
+        className="relative w-full max-w-lg rounded-modal bg-paper p-6 shadow-(--shadow-card)"
         onClick={(event) => event.stopPropagation()}
       >
         <h2
@@ -47,20 +49,12 @@ export function PrimeConsentModal({
         </h2>
         <p className="mt-4 text-base leading-7 text-copy">{t("body")}</p>
         <div className="mt-6 flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="inline-flex h-11 items-center rounded-[11px] px-5 text-sm font-semibold uppercase tracking-[0.14em] text-copy transition hover:bg-ink/5"
-          >
+          <Button type="button" size="sm" variant="ghost" onClick={onCancel}>
             {t("cancel")}
-          </button>
-          <button
-            type="button"
-            onClick={onConfirm}
-            className="inline-flex h-11 items-center rounded-[11px] bg-brand-fill px-5 text-sm font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-brand-fill-strong"
-          >
+          </Button>
+          <Button type="button" size="sm" onClick={onConfirm}>
             {t("confirm")}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

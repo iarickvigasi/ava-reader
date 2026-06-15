@@ -35,7 +35,7 @@ export function BookCover({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-md border border-line/40 bg-white/60",
+        "relative overflow-hidden rounded-md bg-white/60",
         className,
       )}
     >
@@ -64,7 +64,7 @@ function BookCoverFallback({
   return (
     <div
       className={cn(
-        "flex items-center justify-center overflow-hidden rounded-md border border-line/40 bg-soft-fill p-4 text-center",
+        "flex items-center justify-center overflow-hidden rounded-md bg-soft-fill p-4 text-center",
         className,
       )}
     >

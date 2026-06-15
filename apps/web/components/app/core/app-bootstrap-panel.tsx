@@ -74,7 +74,7 @@ export function AppBootstrapPanel() {
   }, [isLoaded, isSignedIn]);
 
   return (
-    <section className="rounded-[var(--radius-shell)] bg-surface px-6 py-7 sm:px-8 sm:py-9">
+    <section className="rounded-shell bg-surface px-6 py-7 sm:px-8 sm:py-9">
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <p className="text-sm uppercase tracking-[0.28em] text-muted">
@@ -86,7 +86,7 @@ export function AppBootstrapPanel() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-[1.2fr_0.8fr]">
-          <article className="rounded-[var(--radius-card)] bg-white/65 p-5">
+          <article className="rounded-card bg-white/65 p-5">
             <p className="text-sm uppercase tracking-[0.22em] text-muted">
               API bootstrap
             </p>
@@ -144,12 +144,12 @@ export function AppBootstrapPanel() {
             ) : null}
           </article>
 
-          <article className="rounded-[var(--radius-card)] bg-white/65 p-5">
+          <article className="rounded-card bg-white/65 p-5">
             <p className="text-sm uppercase tracking-[0.22em] text-muted">
               Session
             </p>
             <div className="mt-4 flex items-center gap-4">
-              <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-line bg-paper-strong">
+              <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-paper-strong">
                 {user?.imageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img

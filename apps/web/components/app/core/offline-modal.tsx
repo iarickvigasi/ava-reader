@@ -3,6 +3,8 @@
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 
+import { Button } from "@/components/ui/button";
+
 import { useOfflineModal } from "./offline-modal-context";
 
 export function OfflineModal() {
@@ -34,7 +36,7 @@ export function OfflineModal() {
       onClick={close}
     >
       <div
-        className="relative w-full max-w-lg rounded-3xl bg-paper p-6 shadow-2xl"
+        className="relative w-full max-w-lg rounded-modal bg-paper p-6 shadow-(--shadow-card)"
         onClick={(event) => event.stopPropagation()}
       >
         <h2
@@ -47,13 +49,9 @@ export function OfflineModal() {
           {t("body")}
         </p>
         <div className="mt-6 flex justify-end">
-          <button
-            type="button"
-            onClick={close}
-            className="inline-flex h-11 items-center rounded-[11px] bg-brand-fill px-5 text-sm font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-brand-fill-strong"
-          >
+          <Button type="button" size="sm" onClick={close}>
             {t("dismiss")}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

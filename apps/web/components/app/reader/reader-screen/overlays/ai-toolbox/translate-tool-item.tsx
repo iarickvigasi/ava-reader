@@ -57,7 +57,7 @@ export function TranslateToolItem({
       onToggle={onToggle}
     >
       <div className="flex flex-col gap-2">
-        <p className="font-(--font-ui) text-[0.78rem] uppercase tracking-[0.14em] text-ink/70">
+        <p className="font-ui text-[0.78rem] uppercase tracking-[0.14em] text-ink/70">
           {language}
         </p>
         <div className="flex items-start gap-3">

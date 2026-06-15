@@ -15,7 +15,7 @@ export function ReadyReaderHeader({
 
   return (
     <header className="min-w-0 flex-1 pt-1">
-      <h1 className="min-w-0 flex items-center gap-1 font-(--font-ui) text-[1.05rem] leading-none tracking-[0.01em] text-title sm:text-[1.2rem]">
+      <h1 className="min-w-0 flex items-center gap-1 font-ui text-[1.05rem] leading-none tracking-[0.01em] text-title sm:text-[1.2rem]">
 
         <span className="min-w-0 truncate max-w-[25ch]">
           {title}
@@ -53,7 +53,7 @@ export function ReadyReaderActivityStatus({
   const t = useTranslations("reader.activity");
   if (isBootstrapping) {
     return (
-      <p className="font-(--font-ui) text-xs uppercase tracking-[0.16em] text-ink/45">
+      <p className="font-ui text-xs uppercase tracking-[0.16em] text-ink/45">
         {t("restoringPage")}
       </p>
     );
@@ -61,7 +61,7 @@ export function ReadyReaderActivityStatus({
 
   if (isLoadingChapter) {
     return (
-      <p className="font-(--font-ui) text-xs uppercase tracking-[0.16em] text-ink/45">
+      <p className="font-ui text-xs uppercase tracking-[0.16em] text-ink/45">
         {t("loadingChapter")}
       </p>
     );
@@ -69,7 +69,7 @@ export function ReadyReaderActivityStatus({
 
   if (isRefreshingWindow) {
     return (
-      <p className="font-(--font-ui) text-xs uppercase tracking-[0.16em] text-ink/35">
+      <p className="font-ui text-xs uppercase tracking-[0.16em] text-ink/35">
         {t("preloadingChapter")}
       </p>
     );
@@ -90,7 +90,7 @@ export function ReadyReaderProgress({
   const t = useTranslations("reader.progress");
   return (
     <div className="flex flex-wrap items-center justify-end gap-3 pt-1 pb-1 sm:pt-4 sm:pb-4">
-      <div className="flex flex-wrap items-center gap-3 font-(--font-ui) text-[0.7rem] uppercase tracking-[0.16em] text-ink/45">
+      <div className="flex flex-wrap items-center gap-3 font-ui text-[0.7rem] uppercase tracking-[0.16em] text-ink/45">
         <span>{t("percentComplete", { percent: completionPercent })}</span>
         <span>
           {t("pageOfInChapter", {

@@ -30,7 +30,7 @@ export function RowActionsMenu({ actions }: { actions: RowAction[] }) {
   return (
     <div
       role="menu"
-      className="absolute right-2 top-full z-10 mt-1 w-36 rounded-[10px] border border-line/40 bg-paper-strong p-2 shadow-[-6px_6px_18px_rgba(31,27,24,0.10)]"
+      className="absolute right-2 top-full z-10 mt-1 w-36 rounded-control bg-paper-strong p-2 shadow-[-6px_6px_18px_rgba(31,27,24,0.10)]"
     >
       {actions.map((action) => {
         const preset = ACTION_PRESET[action.kind];
@@ -65,7 +65,7 @@ function RowActionsMenuItem({
       role="menuitem"
       onClick={onClick}
       className={cn(
-        "flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left font-(--font-ui) text-[0.72rem] uppercase tracking-[0.16em] transition",
+        "flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left font-ui text-[0.72rem] uppercase tracking-[0.16em] transition",
         "hover:bg-soft-tone-fill/80",
         tone === "danger" ? "text-danger" : "text-copy",
       )}

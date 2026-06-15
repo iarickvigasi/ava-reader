@@ -94,7 +94,7 @@ export function AdminCatalogManager({
 
   return (
     <div className="space-y-10">
-      <section className="rounded-[28px] bg-surface px-6 py-6 sm:px-8">
+      <section className="rounded-modal bg-surface px-6 py-6 sm:px-8">
         <div className="space-y-6">
           <div className="space-y-2">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted">
@@ -150,7 +150,7 @@ export function AdminCatalogManager({
             <div className="sm:col-span-2">
               <button
                 type="submit"
-                className="inline-flex min-h-12 items-center justify-center rounded-[14px] border border-brand-fill bg-brand-fill px-6 text-xs font-bold uppercase tracking-[0.16em] text-brand-foreground shadow-[var(--shadow-card)] transition hover:bg-brand-fill-strong disabled:opacity-60"
+                className="inline-flex min-h-12 items-center justify-center rounded-control bg-brand-fill px-6 text-xs font-bold uppercase tracking-[0.16em] text-brand-foreground shadow-(--shadow-card) transition hover:bg-brand-fill-strong disabled:opacity-60"
                 disabled={isPending}
               >
                 {isPending ? "Saving..." : "Create Entry"}
@@ -175,14 +175,14 @@ export function AdminCatalogManager({
 
         <div className="space-y-4">
           {entries.length === 0 ? (
-            <div className="rounded-[24px] bg-white/45 px-6 py-6 text-copy">
+            <div className="rounded-modal bg-white/45 px-6 py-6 text-copy">
               The catalog is empty. Create the first title above.
             </div>
           ) : (
             entries.map((entry) => (
               <details
                 key={entry.id}
-                className="rounded-[24px] bg-white/45 px-6 py-5"
+                className="rounded-modal bg-white/45 px-6 py-5"
               >
                 <summary className="cursor-pointer list-none">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -283,7 +283,7 @@ export function AdminCatalogManager({
                   <div className="sm:col-span-2">
                     <button
                       type="submit"
-                      className="inline-flex min-h-11 items-center justify-center rounded-[14px] border border-line bg-white/70 px-5 text-xs font-bold uppercase tracking-[0.16em] text-ink transition hover:bg-white"
+                      className="inline-flex min-h-11 items-center justify-center rounded-control bg-white/70 px-5 text-xs font-bold uppercase tracking-[0.16em] text-ink transition hover:bg-white"
                       disabled={isPending}
                     >
                       {isPending ? "Saving..." : "Update Entry"}
@@ -320,7 +320,7 @@ function Field({
         {label}
       </span>
       <input
-        className="min-h-12 rounded-[14px] border border-line bg-white/70 px-4 text-base text-copy-strong outline-none transition focus:border-line-strong"
+        className="min-h-12 rounded-control bg-white/70 px-4 text-base text-copy-strong outline-none transition focus:border-line-strong"
         defaultValue={defaultValue}
         name={name}
         required={required}
@@ -347,7 +347,7 @@ function TextAreaField({
         {label}
       </span>
       <textarea
-        className="min-h-28 rounded-[14px] border border-line bg-white/70 px-4 py-3 text-base text-copy-strong outline-none transition focus:border-line-strong"
+        className="min-h-28 rounded-control bg-white/70 px-4 py-3 text-base text-copy-strong outline-none transition focus:border-line-strong"
         defaultValue={defaultValue}
         name={name}
       />
@@ -372,7 +372,7 @@ function SelectField({
         {label}
       </span>
       <select
-        className="min-h-12 rounded-[14px] border border-line bg-white/70 px-4 text-base text-copy-strong outline-none transition focus:border-line-strong"
+        className="min-h-12 rounded-control bg-white/70 px-4 text-base text-copy-strong outline-none transition focus:border-line-strong"
         defaultValue={defaultValue}
         name={name}
       >
@@ -399,7 +399,7 @@ function FileField({
         {label}
       </span>
       <input
-        className="min-h-12 rounded-[14px] border border-dashed border-line bg-white/55 px-4 py-3 text-sm text-copy"
+        className="min-h-12 rounded-control border border-dashed border-line bg-white/55 px-4 py-3 text-sm text-copy"
         accept={accept}
         name={name}
         required={required}
@@ -411,7 +411,7 @@ function FileField({
 
 function Badge({ children }: { children: ReactNode }) {
   return (
-    <span className="rounded-full border border-line/60 bg-white/70 px-3 py-1">
+    <span className="rounded-full bg-white/70 px-3 py-1">
       {children}
     </span>
   );
@@ -426,7 +426,7 @@ function CoverPreview({
 }) {
   if (src) {
     return (
-      <div className="size-16 overflow-hidden rounded-[10px] border border-line/40 bg-white/60">
+      <div className="size-16 overflow-hidden rounded-control bg-white/60">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img alt={`${title} cover`} className="size-full object-cover" src={src} />
       </div>
@@ -434,7 +434,7 @@ function CoverPreview({
   }
 
   return (
-    <div className="flex size-16 items-end rounded-[10px] border border-line/40 bg-[linear-gradient(180deg,#efe1d5_0%,#d9cabc_100%)] p-2">
+    <div className="flex size-16 items-end rounded-control bg-[linear-gradient(180deg,#efe1d5_0%,#d9cabc_100%)] p-2">
       <p className="line-clamp-3 text-[0.58rem] font-semibold uppercase tracking-[0.12em] text-olive">
         {title}
       </p>

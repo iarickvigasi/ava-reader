@@ -24,7 +24,7 @@ export function BookActions({ slug, libraryItemId }: BookActionsProps) {
       <ReadBookLink
         href={`/app/read/${slug}`}
         libraryItemId={libraryItemId}
-        className="relative inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] bg-brand-fill px-6 text-sm font-semibold uppercase tracking-[0.12em] text-white transition duration-200 hover:bg-brand-fill-strong"
+        className="relative inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-control bg-brand-fill px-6 text-sm font-semibold uppercase tracking-[0.12em] text-white transition duration-200 hover:bg-brand-fill-strong"
       >
         <StackBooksIcon className="size-4" />
         {t("read")}
@@ -32,7 +32,7 @@ export function BookActions({ slug, libraryItemId }: BookActionsProps) {
       <Button
         type="button"
         variant="soft"
-        className="min-h-12 w-full gap-2 rounded-[10px] px-6 text-sm font-semibold uppercase tracking-[0.12em]"
+        className="min-h-12 w-full gap-2 rounded-control px-6 text-sm font-semibold uppercase tracking-[0.12em]"
       >
         <ReaderListeningIcon className="size-4" />
         {t("listen")}

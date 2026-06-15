@@ -24,7 +24,7 @@ export function ActionCard({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="w-full rounded-[15px] bg-paper-strong/80 px-4 py-3 text-left transition hover:bg-paper-strong disabled:cursor-default disabled:hover:bg-paper-strong/80"
+      className="w-full rounded-control bg-paper-strong/80 px-4 py-3 text-left transition hover:bg-paper-strong disabled:cursor-default disabled:hover:bg-paper-strong/80"
     >
       <span className="flex items-start gap-3">
         <span

@@ -19,11 +19,11 @@ type ImportButtonProps = {
 
 const styles = {
   ghost:
-    "border border-line bg-white/40 text-ink hover:bg-white/70",
+    "bg-white/40 text-ink hover:bg-white/70",
   icon:
-    "size-11 rounded-[14px] border border-line bg-white/55 text-ink hover:bg-white",
+    "size-11 rounded-control bg-white/55 text-ink hover:bg-white",
   primary:
-    "border border-brand-fill bg-brand-fill text-brand-foreground shadow-[var(--shadow-card)] hover:bg-brand-fill-strong",
+    "bg-brand-fill text-brand-foreground shadow-(--shadow-card) hover:bg-brand-fill-strong",
   soft:
     "bg-soft-fill text-soft-foreground hover:bg-soft-tone-fill",
 } as const;
@@ -110,7 +110,7 @@ export function ImportButton({
       <button
         type="button"
         className={cn(
-          "inline-flex items-center justify-center gap-2 rounded-[14px] px-4 py-3 text-sm font-semibold uppercase tracking-[0.14em] transition disabled:cursor-not-allowed disabled:opacity-60",
+          "inline-flex items-center justify-center gap-2 rounded-control px-4 py-3 text-sm font-semibold uppercase tracking-[0.14em] transition disabled:cursor-not-allowed disabled:opacity-60",
           variant === "icon" ? styles.icon : styles[variant],
           variant === "icon" ? "" : "min-h-12",
           className,
