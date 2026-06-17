@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import { Button, ButtonLink } from "@/components/ui/button";
-import { useNetworkState } from "@/features/offline/use-network-state";
+import { useNetworkState } from "@/features/offline/net/use-network-state";
 
 export type OfflineRouteKey = "admin" | "insights" | "home" | "generic";
 

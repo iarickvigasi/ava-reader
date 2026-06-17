@@ -19,7 +19,7 @@ import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 
 import { fetchReaderPayload } from "@/components/app/reader/reader-screen/data/reader-client";
 import { emitAppToast } from "@/components/app/core/app-toast";
-import { isOnline } from "@/features/offline/net-state";
+import { isOnline } from "@/features/offline/net/net-state";
 
 import { shouldToastSaveFailure } from "./save-toast";
 

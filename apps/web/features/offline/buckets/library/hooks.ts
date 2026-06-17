@@ -14,7 +14,7 @@ import type {
   LibraryPayload,
 } from "@/lib/api-types/library";
 
-import { useNetworkState } from "../../use-network-state";
+import { useNetworkState } from "../../net/use-network-state";
 
 import {
   getLibrarySnapshot,

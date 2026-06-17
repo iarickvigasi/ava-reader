@@ -18,8 +18,8 @@ import {
 import { readCollectionViewBySlug } from "@/features/offline/buckets/library/storage";
 import { readWithRevalidate } from "@/features/offline/buckets/library/read-with-revalidate";
 import { collectionViewToLibraryCollection } from "@/features/offline/buckets/library/view-to-collection";
-import { isOnline } from "@/features/offline/net-state";
-import { useNetworkState } from "@/features/offline/use-network-state";
+import { isOnline } from "@/features/offline/net/net-state";
+import { useNetworkState } from "@/features/offline/net/use-network-state";
 import type { LibraryCollection } from "@/lib/api-types";
 import { slugFromPath } from "@/lib/app-routes";
 

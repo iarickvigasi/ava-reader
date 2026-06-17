@@ -14,7 +14,7 @@ import { setBookOfflineIntent } from "@/features/offline/buckets/library";
 import {
   PARTIAL_BOOK_EVENT,
   type PartialBookEventDetail,
-} from "@/features/offline/partial-book-bus";
+} from "@/features/offline/notices/partial-book-bus";
 
 export function PartialBookOfflineModal() {
   const [detail, setDetail] = useState<PartialBookEventDetail | null>(null);

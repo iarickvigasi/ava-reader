@@ -22,8 +22,8 @@ import {
 } from "react";
 
 import { hasBookContent } from "@/features/offline/buckets/book";
-import { emitMissingBookOfflineModal } from "@/features/offline/missing-book-bus";
-import { useNetworkState } from "@/features/offline/use-network-state";
+import { emitMissingBookOfflineModal } from "@/features/offline/notices/missing-book-bus";
+import { useNetworkState } from "@/features/offline/net/use-network-state";
 
 type LinkProps = Omit<
   AnchorHTMLAttributes<HTMLAnchorElement>,

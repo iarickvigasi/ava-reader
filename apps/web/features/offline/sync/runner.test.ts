@@ -19,7 +19,7 @@ function stubGlobals() {
 
 beforeEach(async () => {
   stubGlobals();
-  const netState = await import("../net-state");
+  const netState = await import("../net/net-state");
   netState.__resetNetStateForTests();
   const runner = await import("./runner");
   runner.__resetSyncRunnerForTests();
@@ -56,7 +56,7 @@ describe("sync runner", () => {
 
   it("does nothing while offline", async () => {
     const { flushAll, registerSyncBucket } = await import("./runner");
-    const { __setNetStateForTests } = await import("../net-state");
+    const { __setNetStateForTests } = await import("../net/net-state");
     let calls = 0;
     registerSyncBucket({
       id: "a",

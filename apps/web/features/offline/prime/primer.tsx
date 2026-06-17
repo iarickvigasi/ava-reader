@@ -20,8 +20,8 @@ import { fetchReaderPayload } from "@/components/app/reader/reader-screen/data/r
 
 import { getDb } from "../db";
 import { saveBookOffline } from "../buckets/book/download";
-import { getPrimeProgress, setPrimeProgress } from "../prime-progress";
-import { useNetworkState } from "../use-network-state";
+import { getPrimeProgress, setPrimeProgress } from "../status/prime-progress";
+import { useNetworkState } from "../net/use-network-state";
 
 import {
   CONTENT_CONSENT_GRANTED,

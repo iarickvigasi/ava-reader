@@ -1,6 +1,6 @@
 # Partial offline reading notice
 
-> Status: active · Updated: 2026-06-10 · ADRs: [[3-offline-first-dexie-buckets]] · Related: [[6-offline-reading]], [[12-offline-save-sync]] · Code: apps/web/components/app/core/partial-book-offline-modal.tsx, apps/web/features/offline/buckets/book/partial-offline.ts, apps/web/features/offline/partial-book-bus.ts
+> Status: active · Updated: 2026-06-10 · ADRs: [[3-offline-first-dexie-buckets]] · Related: [[6-offline-reading]], [[12-offline-save-sync]] · Code: apps/web/components/app/core/partial-book-offline-modal.tsx, apps/web/features/offline/buckets/book/partial-offline.ts, apps/web/features/offline/notices/partial-book-bus.ts
 
 ## Summary
 When a reader opens a book **offline** that is only partially cached (some chapters from a prior auto-save, not explicitly saved), a modal tells them how many chapters are available and offers **Save offline** — so they know to expect a wall and how to get the whole book. Serves the offline-first job (product.md).

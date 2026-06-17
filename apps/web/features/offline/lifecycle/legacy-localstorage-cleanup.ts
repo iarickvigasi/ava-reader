@@ -8,7 +8,7 @@
 // page navigation). The flag is per-prefix so a future migration can be
 // added without re-running prior cleanups.
 
-import { LEGACY_LOCALSTORAGE_PREFIX as HIGHLIGHTS_PREFIX } from "./buckets/highlights";
+import { LEGACY_LOCALSTORAGE_PREFIX as HIGHLIGHTS_PREFIX } from "../buckets/highlights";
 
 type LegacyCleanupSpec = {
   // Key in window.sessionStorage that marks the cleanup as run for this

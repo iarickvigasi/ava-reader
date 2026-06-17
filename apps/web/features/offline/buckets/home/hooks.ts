@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 
 import type { HomePayload } from "@/lib/api-types/home";
 
-import { useNetworkState } from "../../use-network-state";
+import { useNetworkState } from "../../net/use-network-state";
 
 import { revalidateHome } from "./revalidate";
 import { applyHome, readHome } from "./storage";

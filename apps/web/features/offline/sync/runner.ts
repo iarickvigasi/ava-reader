@@ -6,7 +6,7 @@
 // phase plugs its bucket in via `registerSyncBucket()`. The same triggers
 // then start flushing it for free.
 
-import { isOnline, subscribeToNetworkState } from "../net-state";
+import { isOnline, subscribeToNetworkState } from "../net/net-state";
 
 export type SyncBucket = {
   // Stable id for logging + dedupe.

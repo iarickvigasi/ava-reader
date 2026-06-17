@@ -14,8 +14,8 @@ import { ReaderShellSkeleton } from "@/components/app/reader/reader-shell-skelet
 import { fetchReaderPayload } from "@/components/app/reader/reader-screen/data/reader-client";
 import { loadReaderPayloadFromCache } from "@/features/offline/buckets/book";
 import { readLibraryItemIdBySlug } from "@/features/offline/buckets/library/storage";
-import { emitMissingBookOfflineModal } from "@/features/offline/missing-book-bus";
-import { isOnline, subscribeToNetworkState } from "@/features/offline/net-state";
+import { emitMissingBookOfflineModal } from "@/features/offline/notices/missing-book-bus";
+import { isOnline, subscribeToNetworkState } from "@/features/offline/net/net-state";
 import {
   loadReaderForSlug,
   type ReaderLoadResult,

@@ -1,7 +1,7 @@
 import "fake-indexeddb/auto";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { DB_NAME, __resetDbForTests, clearAllDexieUserData, getDb } from "./db";
+import { DB_NAME, __resetDbForTests, clearAllDexieUserData, getDb } from "../db";
 
 beforeEach(() => {
   __resetDbForTests();

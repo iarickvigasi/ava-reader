@@ -11,8 +11,8 @@ import {
   readOfflineState,
 } from "@/features/offline/buckets/book/storage";
 import { shouldShowPartialOfflineNotice } from "@/features/offline/buckets/book/partial-offline";
-import { emitPartialBookOfflineModal } from "@/features/offline/partial-book-bus";
-import { useNetworkState } from "@/features/offline/use-network-state";
+import { emitPartialBookOfflineModal } from "@/features/offline/notices/partial-book-bus";
+import { useNetworkState } from "@/features/offline/net/use-network-state";
 
 export function usePartialOfflineNotice(input: {
   libraryItemId: string;

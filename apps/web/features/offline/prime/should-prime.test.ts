@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { __setNetStateForTests } from "../net-state";
+import { __setNetStateForTests } from "../net/net-state";
 
 import { canPrimeMetadata, isSaveDataOn } from "./should-prime";
 

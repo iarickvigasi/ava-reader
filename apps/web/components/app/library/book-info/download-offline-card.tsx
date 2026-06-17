@@ -15,7 +15,7 @@ import {
   releaseBookOffline,
   setBookOfflineIntent,
 } from "@/features/offline/buckets/library";
-import { useNetworkState } from "@/features/offline/use-network-state";
+import { useNetworkState } from "@/features/offline/net/use-network-state";
 
 import { ActionCard } from "./action-card";
 

@@ -7,7 +7,7 @@
 
 import { useTranslations } from "next-intl";
 
-import { useNetworkState } from "@/features/offline/use-network-state";
+import { useNetworkState } from "@/features/offline/net/use-network-state";
 
 import { useOfflineModal } from "./offline-modal-context";
 

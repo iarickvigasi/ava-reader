@@ -8,8 +8,8 @@
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useRef, useState, } from "react";
 import { usePathname } from "next/navigation";
 
-import { isOnline, subscribeToNetworkState, } from "@/features/offline/net-state";
-import { hasSeenOfflineModal, markOfflineModalSeen, } from "@/features/offline/seen-modal";
+import { isOnline, subscribeToNetworkState, } from "@/features/offline/net/net-state";
+import { hasSeenOfflineModal, markOfflineModalSeen, } from "@/features/offline/notices/seen-modal";
 import { OfflineModal } from "./offline-modal";
 
 type OfflineModalCtx = {

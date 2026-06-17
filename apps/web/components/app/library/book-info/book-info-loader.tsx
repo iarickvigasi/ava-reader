@@ -17,8 +17,8 @@ import {
 } from "@/features/offline/buckets/library";
 import { readBookInfoBySlug } from "@/features/offline/buckets/library/storage";
 import { readWithRevalidate } from "@/features/offline/buckets/library/read-with-revalidate";
-import { isOnline } from "@/features/offline/net-state";
-import { useNetworkState } from "@/features/offline/use-network-state";
+import { isOnline } from "@/features/offline/net/net-state";
+import { useNetworkState } from "@/features/offline/net/use-network-state";
 import type { LibraryBookInfo } from "@/lib/api-types";
 import { APP_LIBRARY_HREF, getCollectionHref, slugFromPath } from "@/lib/app-routes";
 

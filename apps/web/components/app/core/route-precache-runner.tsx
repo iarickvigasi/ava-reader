@@ -9,10 +9,10 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { isOnline } from "@/features/offline/net-state";
+import { isOnline } from "@/features/offline/net/net-state";
 import { primeRoutes } from "@/features/offline/prime/prime-routes";
 import { requestRoutePrecache } from "@/features/offline/sw/precache-routes";
-import { useNetworkState } from "@/features/offline/use-network-state";
+import { useNetworkState } from "@/features/offline/net/use-network-state";
 
 // Session guard: once a pass posts the route list, don't re-post on every
 // render. Reset on SW takeover so the new version's cache is filled.

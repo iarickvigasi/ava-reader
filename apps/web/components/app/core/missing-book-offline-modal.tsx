@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import {
   MISSING_BOOK_EVENT,
   type MissingBookEventDetail,
-} from "@/features/offline/missing-book-bus";
+} from "@/features/offline/notices/missing-book-bus";
 
 export function MissingBookOfflineModal() {
   // Open state is keyed by libraryItemId so a fresh emit for a different

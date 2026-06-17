@@ -1,6 +1,6 @@
 # Background cache priming
 
-> Status: active · Updated: 2026-06-16 · ADRs: [[3-offline-first-dexie-buckets]] · Related: [[12-offline-save-sync]], [[14-route-precaching]] · Code: apps/web/features/offline/{prime,prime-progress,use-prime-progress,header-chip-state,use-header-chip}, apps/web/components/app/core/{header-status-chip,caching-indicator}.tsx
+> Status: active · Updated: 2026-06-16 · ADRs: [[3-offline-first-dexie-buckets]] · Related: [[12-offline-save-sync]], [[14-route-precaching]] · Code: apps/web/features/offline/{prime,status}, apps/web/components/app/core/{header-status-chip,caching-indicator}.tsx
 
 ## Summary
 On the first load of any `/app` route (the primer island lives in AppShell, not just home — a fresh device may enter via a deep link), proactively fill offline caches in the background so the home, library, and the user's offline-marked books work with no network — without visiting each screen first. Serves the offline-first job (product.md).

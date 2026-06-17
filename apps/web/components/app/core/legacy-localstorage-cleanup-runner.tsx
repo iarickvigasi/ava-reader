@@ -6,7 +6,7 @@
 
 import { useEffect } from "react";
 
-import { runLegacyLocalStorageCleanup } from "@/features/offline/legacy-localstorage-cleanup";
+import { runLegacyLocalStorageCleanup } from "@/features/offline/lifecycle/legacy-localstorage-cleanup";
 
 export function LegacyLocalStorageCleanupRunner() {
   useEffect(() => {

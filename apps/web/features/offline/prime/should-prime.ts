@@ -6,7 +6,7 @@
 // freely. We only *suppress* priming on an explicit Save-Data signal or a
 // clearly slow effective connection type.
 
-import { isOnline } from "../net-state";
+import { isOnline } from "../net/net-state";
 
 // `navigator.connection` isn't in the DOM lib's typings everywhere; describe
 // just the bits we read.

@@ -5,7 +5,7 @@
 // wins over priming. Drop-in replacement for the old direct <OfflineIndicator/>
 // mounts in the page + reader headers.
 
-import { useHeaderChip } from "@/features/offline/use-header-chip";
+import { useHeaderChip } from "@/features/offline/status/use-header-chip";
 
 import { CachingIndicator } from "./caching-indicator";
 import { OfflineIndicator } from "./offline-indicator";

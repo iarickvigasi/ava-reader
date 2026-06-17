@@ -16,10 +16,10 @@
 import { useAuth } from "@clerk/nextjs";
 import { useEffect, useRef } from "react";
 
-import { clearAllAiCommentsBuckets } from "./buckets/ai-comments";
-import { clearAllHighlightsBuckets } from "./buckets/highlights";
-import { clearAllDexieUserData } from "./db";
-import { clearOfflineModalSeen } from "./seen-modal";
+import { clearAllAiCommentsBuckets } from "../buckets/ai-comments";
+import { clearAllHighlightsBuckets } from "../buckets/highlights";
+import { clearAllDexieUserData } from "../db";
+import { clearOfflineModalSeen } from "../notices/seen-modal";
 
 export function ClearOfflineOnSignOut() {
   const { isLoaded, userId } = useAuth();

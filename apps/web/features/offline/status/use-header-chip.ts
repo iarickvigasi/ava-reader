@@ -8,7 +8,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { resolveHeaderChip, type ChipState } from "./header-chip-state";
-import { useNetworkState } from "./use-network-state";
+import { useNetworkState } from "../net/use-network-state";
 import { usePrimeProgress } from "./use-prime-progress";
 
 // Hold the chip this long after priming finishes — a brief "done" beat (and all

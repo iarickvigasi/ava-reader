@@ -16,7 +16,7 @@ import { revalidateAiComments } from "../buckets/ai-comments/revalidate";
 import { hasInFlightSaves } from "../buckets/book/bucket";
 import { checkStorageQuota } from "../buckets/book/quota";
 import { hasBookContent } from "../buckets/book/storage";
-import { isOnline } from "../net-state";
+import { isOnline } from "../net/net-state";
 
 import { getMetaFlag, hasMetaFlag, setMetaFlag } from "./meta";
 import { canPrimeMetadata, isSaveDataOn } from "./should-prime";

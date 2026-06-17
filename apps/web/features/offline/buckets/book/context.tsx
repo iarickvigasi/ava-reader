@@ -23,8 +23,8 @@ import {
   type ReactNode,
 } from "react";
 
-import { emitMissingBookOfflineModal } from "@/features/offline/missing-book-bus";
-import { useNetworkState } from "@/features/offline/use-network-state";
+import { emitMissingBookOfflineModal } from "@/features/offline/notices/missing-book-bus";
+import { useNetworkState } from "@/features/offline/net/use-network-state";
 
 import { useBookSaveStatus, useSaveBook } from "./hooks";
 import { hasBookContent } from "./storage";
