@@ -11,6 +11,7 @@ import { OfflineModalProvider } from "@/components/app/core/offline-modal-contex
 import { RoutePrecacheRunner } from "@/components/app/core/route-precache-runner";
 import { ServiceWorkerRegistrar } from "@/components/app/core/service-worker-registrar";
 import { PreferencesSyncRunner } from "@/components/app/preferences/preferences-sync-runner";
+import { BackgroundPrimer } from "@/features/offline/prime";
 import { ReaderUiProvider } from "@/components/app/core/reader-ui-context";
 import { useInterfaceLang } from "@/components/app/preferences/use-interface-lang";
 import { useCurrentUserCached } from "@/features/offline/buckets/me";
@@ -45,6 +46,7 @@ export function AppShell({ children, currentUser: initialUser }: AppShellProps) 
     <OfflineModalProvider>
       <ServiceWorkerRegistrar />
       <RoutePrecacheRunner />
+      <BackgroundPrimer />
       <LegacyLocalStorageCleanupRunner />
       <PreferencesSyncRunner />
       <AppToast />

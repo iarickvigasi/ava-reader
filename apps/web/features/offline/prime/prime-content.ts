@@ -30,7 +30,15 @@ export async function primeBookContent(
   // cached lazily when opened.
   const books = collectSmartBooks(view).filter((b) => b.offlineRequested);
 
-  for (const b of books) {
+  // Progress for the header chip (see [[11-cache-priming]]): total known up
+  // front, one tick per book handled. Reported even for already-cached books,
+  // so a resumed/warm device climbs straight to total and the chip's "done"
+  // dwell still fires.
+  const total = books.length;
+  runtime.onProgress?.(0, total);
+
+  for (let i = 0; i < books.length; i++) {
+    const b = books[i];
     if (!d.isOnline()) {
       return false; // resumable — connection went away
     }
@@ -40,6 +48,7 @@ export async function primeBookContent(
       return false;
     }
 
+    let hasContent = true;
     if (!(await d.hasBookContent(b.libraryItemId))) {
       if (!(await d.checkStorageQuota(BACKGROUND_QUOTA_FLOOR_BYTES)).ok) {
         // Out of polite headroom. Terminal: we've cached as much as the device
@@ -47,9 +56,8 @@ export async function primeBookContent(
         // free space if they want the rest offline.
         runtime.onStorageFull?.();
         if (process.env.NODE_ENV !== "production") {
-          const remaining = books.length - books.indexOf(b);
           console.info(
-            `[prime] storage floor reached — leaving ${remaining} book(s) uncached`,
+            `[prime] storage floor reached — leaving ${total - i} book(s) uncached`,
           );
         }
         return true;
@@ -58,16 +66,18 @@ export async function primeBookContent(
       if (outcome.kind === "cancelled") {
         return false; // user opened a book mid-save — yield and resume
       }
-      if (outcome.kind === "failed") {
-        continue; // best-effort: skip this book, keep going
-      }
+      hasContent = outcome.kind !== "failed"; // best-effort: skip this book
     }
 
-    // Cache the book's annotations + AI comments so they render offline. Done
-    // for every offline-marked book (not just newly-saved ones) so a resumed
-    // device backfills them even when content was already present.
-    await d.revalidateHighlights(b.libraryItemId, runtime.getToken);
-    await d.revalidateAiComments(b.libraryItemId, runtime.getToken);
+    if (hasContent) {
+      // Cache the book's annotations + AI comments so they render offline. Done
+      // for every offline-marked book (not just newly-saved ones) so a resumed
+      // device backfills them even when content was already present.
+      await d.revalidateHighlights(b.libraryItemId, runtime.getToken);
+      await d.revalidateAiComments(b.libraryItemId, runtime.getToken);
+    }
+
+    runtime.onProgress?.(i + 1, total);
   }
 
   return true;

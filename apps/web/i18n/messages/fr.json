@@ -21,6 +21,8 @@
   "offline": {
     "chip": "Hors ligne",
     "chipAria": "Vous êtes hors ligne. Touchez pour plus de détails.",
+    "cachingStatus": "Préparation de l'accès hors ligne",
+    "cachingCount": "{done}/{total} livres",
     "modal": {
       "title": "Vous êtes hors ligne",
       "body": "Pas de connexion ? Aucun problème. Tous les livres que vous avez enregistrés sont prêts à être lus. Vos surlignages, signets, réglages et votre progression de lecture sont tous conservés en sécurité sur votre appareil et se mettront à jour dès que vous serez de nouveau connecté. Tout ce qui nécessite l'IA s'exécutera une fois que vous serez de nouveau en ligne.",

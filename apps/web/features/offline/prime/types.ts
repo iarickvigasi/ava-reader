@@ -19,6 +19,10 @@ export type PrimeRuntime = {
   // so the island can surface a toast. Optional — omitted in tests that don't
   // assert on it.
   onStorageFull?: () => void;
+  // Reports book-content priming progress: `done` of `total` offline-marked
+  // books handled this pass. Fired with (0, total) up front, then once per book.
+  // Drives the header progress chip. Optional — omitted in tests/SSR.
+  onProgress?: (done: number, total: number) => void;
 };
 
 // Seams for tests — default to the real implementations (see ./internals.ts).

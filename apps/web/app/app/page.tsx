@@ -1,7 +1,6 @@
 import { HomeScreen } from "@/components/app/home/home-screen";
 import { HomeScreenFromCache } from "@/components/app/home/home-screen-from-cache";
 import { HomeHydrator } from "@/features/offline/buckets/home";
-import { BackgroundPrimer } from "@/features/offline/prime";
 import type { HomePayload } from "@/lib/api-types";
 import { fetchServerApiTolerant } from "@/lib/server-api";
 
@@ -18,7 +17,6 @@ export default async function AppPage() {
   return (
     <>
       <HomeHydrator initial={home} />
-      <BackgroundPrimer />
       {home ? <HomeScreen home={home} /> : <HomeScreenFromCache />}
     </>
   );

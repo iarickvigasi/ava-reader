@@ -405,6 +405,15 @@ export async function applyBookInfoPayload(
       savedOffline: prior?.savedOffline ?? false,
       savedAutomatically: prior?.savedAutomatically ?? false,
       savedAt: prior?.savedAt ?? null,
+      // Preserve the server-synced "keep offline" intent. A local unsynced
+      // toggle (dirty) wins; otherwise take this payload's value, then the
+      // prior cached value. Without this, a book-info re-hydration wipes the
+      // flag the library/collection writes set — which silently starves the
+      // cache primer of its targets (see [[12-offline-save-sync]]).
+      offlineRequested: prior?.offlineRequestedDirty
+        ? prior.offlineRequested ?? false
+        : book.offlineRequested ?? prior?.offlineRequested ?? false,
+      offlineRequestedDirty: prior?.offlineRequestedDirty ?? false,
       serverUpdatedAt: prior?.serverUpdatedAt ?? nowIso,
       details: {
         addedAt: book.addedAt,

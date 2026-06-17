@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { AppHeaderBrand } from "@/components/brand/app-header-brand";
-import { OfflineIndicator } from "@/components/app/core/offline-indicator";
+import { HeaderStatusChip } from "@/components/app/core/header-status-chip";
 import {
   useReaderUi,
   type ReaderPanel,
@@ -88,7 +88,7 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
           <div className="flex h-16 items-center justify-between gap-3 md:hidden">
             <div className="flex items-center gap-2">
               <ThemeToggle />
-              <OfflineIndicator compact />
+              <HeaderStatusChip compact />
             </div>
             <Link href="/app" className="min-w-0">
               <AppHeaderBrand className="justify-center gap-2" />
@@ -140,7 +140,7 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
                   {t("admin.long")}
                 </Link>
               ) : null}
-              <OfflineIndicator />
+              <HeaderStatusChip />
               <ThemeToggle />
               <div className="flex items-center gap-3 rounded-2xl bg-soft-fill px-4 py-2">
                 <div className="hidden text-right lg:block">
@@ -280,7 +280,7 @@ function ReaderNavigation() {
             >
               AVA
             </a>
-            <OfflineIndicator compact />
+            <HeaderStatusChip compact />
           </div>
           <div className="flex items-center gap-2 overflow-x-auto">
             {readerNavItems.slice(0, 5).map((item) => (

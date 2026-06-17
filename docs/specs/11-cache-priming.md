@@ -1,9 +1,9 @@
 # Background cache priming
 
-> Status: active · Updated: 2026-06-07 · ADRs: [[3-offline-first-dexie-buckets]] · Related: [[12-offline-save-sync]] · Code: apps/web/features/offline/prime
+> Status: active · Updated: 2026-06-16 · ADRs: [[3-offline-first-dexie-buckets]] · Related: [[12-offline-save-sync]], [[14-route-precaching]] · Code: apps/web/features/offline/{prime,prime-progress,use-prime-progress,header-chip-state,use-header-chip}, apps/web/components/app/core/{header-status-chip,caching-indicator}.tsx
 
 ## Summary
-On home load, proactively fill offline caches in the background so the home, library, and the user's offline-marked books work with no network — without visiting each screen first. Serves the offline-first job (product.md).
+On the first load of any `/app` route (the primer island lives in AppShell, not just home — a fresh device may enter via a deep link), proactively fill offline caches in the background so the home, library, and the user's offline-marked books work with no network — without visiting each screen first. Serves the offline-first job (product.md).
 
 ## Scope
 - In: a client island on /app that, while online, primes two tiers — (1) cheap metadata for every book, (2) heavy content only for books the user marked offline.
@@ -15,6 +15,7 @@ On home load, proactively fill offline caches in the background so the home, lib
 3. **Save-Data gate (content tier only):** Save-Data OFF → run automatically. Save-Data ON → show a Yes/No modal ("Save your books for offline reading?"). A grant is remembered (`prime:content:consent=granted`); a decline is **not** persisted — we re-offer next session (Save-Data may be off by then). Metadata tier ignores Save-Data (negligible).
 4. Yields to the user: an in-flight save or a cancelled outcome pauses the content tier; resumes next home load.
 5. **Low storage:** when the content tier stops at the quota floor, a warning toast tells the user the device is low on space (so they can free some and let the rest cache).
+6. **Progress chip:** while the content tier runs, the page/reader header shows a non-interactive pill "Caching for offline access {done}/{total} books" (`done` = books handled, `total` = offline-marked books). Reported per book to a client store (no SW), held ~2s after the last book, then hidden. It owns the one header status slot: offline → Offline chip wins; else priming → this chip; else nothing. A warm device (already `prime:completed`) never primes, so it never shows.
 
 ## Data & sync
 Reuses home/library/book/preferences/highlights/ai-comments buckets — no parallel mechanism. Bookkeeping (`prime:*` flags, `prime:content:consent`) in the Dexie `meta` table (per-device). Content target = `offlineRequested && !hasBookContent`.
@@ -27,6 +28,7 @@ Offline mid-pass / page closed → done-flag unset, resumes. Save-Data ON + decl
 - [ ] Content + highlights + AI comments prime only for `offlineRequested` books, gated by the Save-Data modal.
 - [ ] Content tier never aborts a user-initiated save and stops at the quota floor with a toast.
 - [ ] A declined modal skips content without being remembered; interrupted passes resume.
+- [ ] During content priming the header shows "Caching for offline access n/m books" climbing to completion; it yields to the Offline chip when offline and never shows on a warm (completed) device.
 
 ## Open questions
 Freshness of never-revisited offline content (no background pull-refresh today).

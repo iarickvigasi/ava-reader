@@ -21,6 +21,8 @@
   "offline": {
     "chip": "Offline",
     "chipAria": "Du bist offline. Tippe für Details.",
+    "cachingStatus": "Offlinezugriff wird vorbereitet",
+    "cachingCount": "{done}/{total} Bücher",
     "modal": {
       "title": "Du bist offline",
       "body": "Kein Internet? Kein Problem. Jedes Buch, das du gespeichert hast, ist zum Lesen bereit. Deine Markierungen, Lesezeichen, Einstellungen und dein Lesefortschritt sind alle sicher auf deinem Gerät gespeichert und werden synchronisiert, sobald du wieder verbunden bist. Alles, was KI benötigt, wird ausgeführt, sobald du wieder online bist.",

@@ -1,7 +1,8 @@
 "use client";
 
-// Client island that kicks off the background cache primer on home load.
-// Rendered once, on the home page, alongside the home hydrator. It schedules
+// Client island that kicks off the background cache primer. Mounted in AppShell
+// so it runs on the first load of ANY /app route — a fresh device may enter via
+// a deep link (a book, the library), not home. It schedules
 // `primeAllCaches` during idle time, supplying the Clerk-authenticated fetchers
 // the book-content tier needs, and surfaces the Save-Data consent modal when
 // the content tier is blocked waiting for the user's answer.
@@ -19,6 +20,7 @@ import { fetchReaderPayload } from "@/components/app/reader/reader-screen/data/r
 
 import { getDb } from "../db";
 import { saveBookOffline } from "../buckets/book/download";
+import { getPrimeProgress, setPrimeProgress } from "../prime-progress";
 import { useNetworkState } from "../use-network-state";
 
 import {
@@ -87,7 +89,15 @@ export function BackgroundPrimer(): React.ReactElement | null {
       saveBook,
       onStorageFull: () =>
         emitAppToast({ message: t("quotaLow"), tone: "warning" }),
+      onProgress: (done, total) => setPrimeProgress({ done, total }),
     });
+    // A full pass leaves {total,total} for the header chip's done-dwell to show,
+    // then it auto-hides. A pass that ended early (offline / user took over /
+    // storage floor) would otherwise leave a stuck partial chip — clear it.
+    const final = getPrimeProgress();
+    if (!final || final.done < final.total) {
+      setPrimeProgress(null);
+    }
     if (result.contentConsentNeeded) {
       setConsentOpen(true);
     }

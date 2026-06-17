@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import type { ReaderChapterPayload } from "@/lib/api-types";
-import { OfflineIndicator } from "@/components/app/core/offline-indicator";
+import { HeaderStatusChip } from "@/components/app/core/header-status-chip";
 import type { ReadyReaderPayload } from "../shared/types";
 import { formatReaderHeaderParts } from "../shared/utils";
 
@@ -34,7 +34,7 @@ export function ReadyReaderHeader({
         </span>
 
         <span className="ml-2 hidden md:inline-flex">
-          <OfflineIndicator />
+          <HeaderStatusChip />
         </span>
       </h1>
     </header>

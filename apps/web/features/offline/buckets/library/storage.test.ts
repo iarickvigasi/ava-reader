@@ -203,6 +203,64 @@ describe("library bucket storage", () => {
     expect(round?.minutesRead).toBe(12);
   });
 
+  it("preserves the server-synced offline intent when book-info re-hydrates", async () => {
+    const db = getDb();
+    // A library payload marks book-a as offlineRequested.
+    await applyLibraryPayload({
+      summary: { booksCount: 1, collectionsCount: 1 },
+      collections: [
+        {
+          id: "col-1",
+          slug: "imported",
+          kind: "SMART",
+          name: "Imported",
+          description: null,
+          smartKey: "imported-library",
+          itemCount: 1,
+          unreadCount: 0,
+          books: [
+            {
+              libraryItemId: "lib-1",
+              slug: "book-a",
+              title: "Book A",
+              authors: ["A"],
+              coverImageUrl: null,
+              completionPercent: 0,
+              primaryFormat: "EPUB",
+              lastReadAt: "2026-01-01T00:00:00Z",
+              offlineRequested: true,
+            },
+          ],
+        },
+      ],
+    });
+    expect((await db.libraryItems.get("lib-1"))?.offlineRequested).toBe(true);
+
+    // A book-info revalidation must NOT wipe the offline intent.
+    await applyBookInfoPayload({
+      libraryItemId: "lib-1",
+      slug: "book-a",
+      title: "Book A",
+      authors: ["A"],
+      coverImageUrl: null,
+      completionPercent: 0,
+      primaryFormat: "EPUB",
+      offlineRequested: true,
+      addedAt: "2026-01-01T00:00:00Z",
+      approximatePageCount: null,
+      chapterLabel: null,
+      collections: [],
+      description: null,
+      genres: [],
+      language: null,
+      lastReadAt: null,
+      minutesRead: 0,
+      publishedYear: null,
+      source: "IMPORTED",
+    });
+    expect((await db.libraryItems.get("lib-1"))?.offlineRequested).toBe(true);
+  });
+
   it("readBookInfoBySlug returns null when details have never been fetched", async () => {
     // Listing alone (no book-info visit) doesn't populate details.
     await applyLibraryPayload(payload());

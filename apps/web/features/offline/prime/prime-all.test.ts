@@ -181,6 +181,18 @@ describe("primeAllCaches", () => {
     expect(result.contentConsentNeeded).toBe(false);
   });
 
+  it("reports content progress 0/total then one tick per book", async () => {
+    const h = setup(); // two offline-marked books: a, b
+    const ticks: Array<[number, number]> = [];
+    const onProgress = (done: number, total: number) => ticks.push([done, total]);
+    await primeAllCaches({ ...h.runtime, onProgress }, h.internals);
+    expect(ticks).toEqual([
+      [0, 2],
+      [1, 2],
+      [2, 2],
+    ]);
+  });
+
   it("content tier targets only offline-marked books (metadata covers all)", async () => {
     const h = setup({
       readLibraryView: async () =>
