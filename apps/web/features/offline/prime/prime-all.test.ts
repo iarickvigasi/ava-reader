@@ -154,12 +154,34 @@ describe("primeAllCaches", () => {
     expect(h.flags.size).toBe(0);
   });
 
-  it("does nothing when already completed", async () => {
-    const h = setup();
+  it("does nothing when completed and every offline book is already cached", async () => {
+    const h = setup({ hasBookContent: async () => true });
     h.flags.set(META_KEY_COMPLETED, "T");
     await primeAllCaches(h.runtime, h.internals);
     expect(h.revalidateLibrary).not.toHaveBeenCalled();
     expect(h.saveBook).not.toHaveBeenCalled();
+  });
+
+  it("reconciles outstanding offline content when completed, without re-running metadata", async () => {
+    // Warm device (already primed), but the user marked two books offline
+    // afterwards (e.g. tapped Save while disconnected): their content is
+    // missing, so a reconnect pass must download it.
+    const h = setup(); // a, b offlineRequested; hasBookContent=false → outstanding
+    h.flags.set(META_KEY_COMPLETED, "T");
+    await primeAllCaches(h.runtime, h.internals);
+    expect(h.saveBook).toHaveBeenCalledWith("a");
+    expect(h.saveBook).toHaveBeenCalledWith("b");
+    // The bulk metadata tier does NOT re-run on a warm device.
+    expect(h.revalidateLibrary).not.toHaveBeenCalled();
+    expect(h.revalidateBookInfo).not.toHaveBeenCalled();
+  });
+
+  it("reconcile is consent-exempt: downloads requested books under Save-Data with no prompt", async () => {
+    const h = setup({ isSaveDataOn: () => true });
+    h.flags.set(META_KEY_COMPLETED, "T");
+    const result = await primeAllCaches(h.runtime, h.internals);
+    expect(result.contentConsentNeeded).toBe(false);
+    expect(h.saveBook).toHaveBeenCalledTimes(2);
   });
 
   it("happy path: primes metadata, preferences, content + annotations", async () => {

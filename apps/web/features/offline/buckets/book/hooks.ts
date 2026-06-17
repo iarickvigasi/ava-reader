@@ -15,7 +15,7 @@
 
 import { useAuth } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 
 import { fetchReaderPayload } from "@/components/app/reader/reader-screen/data/reader-client";
 import { emitAppToast } from "@/components/app/core/app-toast";
@@ -36,7 +36,7 @@ import {
   type SaveOutcome,
 } from "./download";
 import { checkStorageQuota } from "./quota";
-import { deleteBookContent, readOfflineState, type OfflineState } from "./storage";
+import { deleteBookContent } from "./storage";
 
 export function useBookSaveStatus(libraryItemId: string): BookSaveSnapshot {
   // We re-derive a fresh "thunked" subscribe + snapshot per id so different
@@ -129,39 +129,4 @@ export function useSaveBook(libraryItemId: string) {
   );
 
   return { save, remove, cancel };
-}
-
-// Reactive offline state for the book-info card: "loading" until Dexie
-// resolves, then "absent" | "auto" | "explicit". Re-reads whenever the save
-// status changes (a finished save / removal flips it) and exposes `refresh`
-// for actions that mutate the row without touching the save bucket — promoting
-// an auto-save to explicit, for example.
-export function useBookOfflineState(
-  libraryItemId: string,
-  saveStatus: string,
-): {
-  state: OfflineState | "loading";
-  fromAutoSave: boolean;
-  refresh: () => void;
-} {
-  const [detail, setDetail] = useState<{
-    state: OfflineState | "loading";
-    fromAutoSave: boolean;
-  }>({ state: "loading", fromAutoSave: false });
-  const [tick, setTick] = useState(0);
-  const refresh = useCallback(() => setTick((n) => n + 1), []);
-
-  useEffect(() => {
-    let cancelled = false;
-    void readOfflineState(libraryItemId).then((next) => {
-      if (!cancelled) {
-        setDetail(next);
-      }
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [libraryItemId, saveStatus, tick]);
-
-  return { state: detail.state, fromAutoSave: detail.fromAutoSave, refresh };
 }

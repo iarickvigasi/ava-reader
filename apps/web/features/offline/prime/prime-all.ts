@@ -13,14 +13,14 @@
 // modal. When consent is needed we return `contentConsentNeeded` so the island
 // can show it; the metadata tier always runs (it's negligible).
 
+import { resolveContentConsent } from "./consent";
 import { DEFAULT_INTERNALS } from "./internals";
 import {
-  CONTENT_CONSENT_GRANTED,
   META_KEY_COMPLETED,
-  META_KEY_CONTENT_CONSENT,
   META_KEY_CONTENT_DONE,
   META_KEY_METADATA_DONE,
 } from "./meta";
+import { hasOutstandingOfflineContent } from "./outstanding";
 import { primeBookContent } from "./prime-content";
 import { primeMetadata } from "./prime-metadata";
 import type { PrimeInternals, PrimeResult, PrimeRuntime } from "./types";
@@ -47,6 +47,14 @@ export async function primeAllCaches(
     return NO_CONSENT_NEEDED;
   }
   if (await d.hasMetaFlag(META_KEY_COMPLETED)) {
+    // The once-per-device prime is done, but the user can still mark a NEW book
+    // offline later (e.g. tapped Save while disconnected). Reconcile any such
+    // book whose content isn't cached yet — page-independent, and consent-exempt
+    // since an explicit request is the user's consent even under Save-Data. A
+    // cheap no-op when nothing is outstanding.
+    if (await hasOutstandingOfflineContent(d)) {
+      await primeBookContent(runtime, d);
+    }
     return NO_CONSENT_NEEDED;
   }
 
@@ -75,21 +83,4 @@ export async function primeAllCaches(
     await d.setMetaFlag(META_KEY_COMPLETED, d.now());
   }
   return { contentConsentNeeded };
-}
-
-// Decides whether the content tier may run now. Save-Data off → always allowed.
-// Save-Data on → needs an explicit "granted" consent; anything else means we
-// ask (the island shows the modal). A decline isn't persisted, so we re-offer
-// next session rather than remembering "no" forever.
-async function resolveContentConsent(
-  d: PrimeInternals,
-): Promise<{ allowed: boolean; consentNeeded: boolean }> {
-  if (!d.isSaveDataOn()) {
-    return { allowed: true, consentNeeded: false };
-  }
-  const consent = await d.getMetaFlag(META_KEY_CONTENT_CONSENT);
-  if (consent === CONTENT_CONSENT_GRANTED) {
-    return { allowed: true, consentNeeded: false };
-  }
-  return { allowed: false, consentNeeded: true };
 }

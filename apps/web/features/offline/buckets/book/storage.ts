@@ -212,21 +212,28 @@ export type OfflineState = "absent" | "auto" | "explicit";
 // auto-saved (so "stop keeping" preserves the cached content and drops back to
 // the evictable auto-cache) versus explicitly downloaded from scratch (so
 // "remove" deletes it and returns to "Save for offline").
+// `offlineRequested` is the server-synced "keep this book offline" intent
+// (see [[12-offline-save-sync]]). It is reported even when state is "absent"
+// (no content cached yet) so the book-info card can show "Download queued" —
+// a request made offline must survive leaving and reopening the page.
 export type OfflineDetail = {
   state: OfflineState;
   fromAutoSave: boolean;
+  offlineRequested: boolean;
 };
 
 export async function readOfflineState(
   libraryItemId: string,
 ): Promise<OfflineDetail> {
-  if (!(await hasBookContent(libraryItemId))) {
-    return { state: "absent", fromAutoSave: false };
-  }
   const db = getDb();
   const row = await db.libraryItems.get(libraryItemId);
+  const offlineRequested = row?.offlineRequested === true;
+  if (!(await hasBookContent(libraryItemId))) {
+    return { state: "absent", fromAutoSave: false, offlineRequested };
+  }
   return {
     state: row?.savedOffline ? "explicit" : "auto",
     fromAutoSave: row?.savedAutomatically === true,
+    offlineRequested,
   };
 }

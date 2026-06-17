@@ -37,6 +37,8 @@ function seedLibraryItem(
     savedOffline: overrides.savedOffline ?? false,
     savedAutomatically: overrides.savedAutomatically ?? false,
     savedAt: overrides.savedAt ?? null,
+    offlineRequested: overrides.offlineRequested ?? false,
+    offlineRequestedDirty: overrides.offlineRequestedDirty,
     serverUpdatedAt: overrides.serverUpdatedAt ?? null,
     details: overrides.details,
     detailsFetchedAt: overrides.detailsFetchedAt,
@@ -236,6 +238,7 @@ describe("book bucket storage", () => {
     expect(await readOfflineState("lib-1")).toEqual({
       state: "absent",
       fromAutoSave: false,
+      offlineRequested: false,
     });
 
     // Cache content + an auto-saved library row → "auto".
@@ -267,6 +270,7 @@ describe("book bucket storage", () => {
     expect(await readOfflineState("lib-1")).toEqual({
       state: "auto",
       fromAutoSave: true,
+      offlineRequested: false,
     });
 
     // Explicit save that originated from an auto-save (kept) → fromAutoSave true.
@@ -280,6 +284,7 @@ describe("book bucket storage", () => {
     expect(await readOfflineState("lib-1")).toEqual({
       state: "explicit",
       fromAutoSave: true,
+      offlineRequested: false,
     });
 
     // Explicit save downloaded from scratch (never auto) → fromAutoSave false.
@@ -293,6 +298,29 @@ describe("book bucket storage", () => {
     expect(await readOfflineState("lib-1")).toEqual({
       state: "explicit",
       fromAutoSave: false,
+      offlineRequested: false,
+    });
+  });
+
+  it("reports offlineRequested even when content is absent (queued save)", async () => {
+    const db = getDb();
+    await db.libraryItems.put(
+      seedLibraryItem({ libraryItemId: "lib-q", offlineRequested: true }),
+    );
+    // No content cached → still "absent", but the queued intent is visible so
+    // the book-info card can show "Download queued" after a remount.
+    expect(await readOfflineState("lib-q")).toEqual({
+      state: "absent",
+      fromAutoSave: false,
+      offlineRequested: true,
+    });
+  });
+
+  it("offlineRequested defaults to false when the row is missing", async () => {
+    expect(await readOfflineState("missing")).toEqual({
+      state: "absent",
+      fromAutoSave: false,
+      offlineRequested: false,
     });
   });
 });

@@ -34,10 +34,7 @@ export {
   type BookSaveStatus,
 } from "./bucket";
 
-export {
-  useBookSaveStatus,
-  useSaveBook,
-  useBookOfflineState,
-} from "./hooks";
+export { useBookSaveStatus, useSaveBook } from "./hooks";
+export { useBookOfflineState } from "./use-book-offline-state";
 
 export { loadReaderPayloadFromCache } from "./reader-cache";
