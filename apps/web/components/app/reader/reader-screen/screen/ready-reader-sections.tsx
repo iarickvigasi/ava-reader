@@ -15,7 +15,7 @@ export function ReadyReaderHeader({
 
   return (
     <header className="min-w-0 flex-1 pt-1">
-      <h1 className="min-w-0 flex items-center gap-1 font-ui text-[1.05rem] leading-none tracking-[0.01em] text-title sm:text-[1.2rem]">
+      <h1 className="min-w-0 flex items-center gap-1 font-ui text-[1.05rem] leading-[1.35] tracking-[0.01em] text-title sm:text-[1.2rem] md:min-h-9">
 
         <span className="min-w-0 truncate max-w-[25ch]">
           {title}
