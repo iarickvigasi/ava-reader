@@ -98,6 +98,60 @@ describe("ai-comments bucket — mutations", () => {
     expect(rows[0]?.kind).toBe("generate.translate");
   });
 
+  it("coalesces a repeated identical generate (same content, fresh id) into one queued comment", async () => {
+    // Reproduces the offline duplication bug: re-mounting the AI toolbox while
+    // offline re-runs its enqueue effect, each time with a brand-new client id
+    // (generateAiCommentId) but the same selection + kind. These must collapse
+    // to a single queued comment, not pile up placeholders.
+    enqueueGenerate(LIBRARY_ID, API, {
+      kind: "generate.explain",
+      id: "client-a",
+      payload: { text: "lorem ipsum" },
+      locator: null,
+      queuedAt: "2026-04-12T11:00:00.000Z",
+    });
+    enqueueGenerate(LIBRARY_ID, API, {
+      kind: "generate.explain",
+      id: "client-b",
+      payload: { text: "lorem ipsum" },
+      locator: null,
+      queuedAt: "2026-04-12T11:00:01.000Z",
+    });
+
+    const view = selectStableAiComments(getAiCommentsBucket(LIBRARY_ID, API));
+    expect(view).toHaveLength(1);
+
+    await drain();
+    const rows = await getDb()
+      .aiCommentMutations.where("scopeId")
+      .equals(LIBRARY_ID)
+      .toArray();
+    expect(rows).toHaveLength(1);
+  });
+
+  it("does not coalesce generates that differ by target language", async () => {
+    // Guard against over-coalescing: same source text, different target lang
+    // are distinct comments (the server's sourceHash includes targetLang).
+    enqueueGenerate(LIBRARY_ID, API, {
+      kind: "generate.translate",
+      id: "client-c",
+      payload: { text: "hola", targetLang: "English" },
+      locator: null,
+      queuedAt: "2026-04-12T11:00:00.000Z",
+    });
+    enqueueGenerate(LIBRARY_ID, API, {
+      kind: "generate.translate",
+      id: "client-d",
+      payload: { text: "hola", targetLang: "French" },
+      locator: null,
+      queuedAt: "2026-04-12T11:00:01.000Z",
+    });
+
+    const view = selectStableAiComments(getAiCommentsBucket(LIBRARY_ID, API));
+    expect(view).toHaveLength(2);
+    await drain();
+  });
+
   it("enqueueDelete on a never-synced queued generate collapses both — nothing to send", async () => {
     enqueueGenerate(LIBRARY_ID, API, {
       kind: "generate.etymology",
