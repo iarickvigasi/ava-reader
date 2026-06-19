@@ -288,6 +288,7 @@
       "askAi": "Ask AI",
       "generating": "Generating…",
       "tryAgain": "Try again",
+      "queued": "Waiting for connection… we'll finish this once you're back online.",
       "errors": {
         "signIn": "You need to be signed in to use AI tools.",
         "noToken": "No session token was available.",

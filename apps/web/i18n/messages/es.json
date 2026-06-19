@@ -288,6 +288,7 @@
       "askAi": "Preguntar a la IA",
       "generating": "Generando…",
       "tryAgain": "Intentar de nuevo",
+      "queued": "Esperando conexión… lo completaremos en cuanto vuelvas a estar en línea.",
       "errors": {
         "signIn": "Inicia sesión para usar las herramientas de IA.",
         "noToken": "No había un token de sesión disponible.",

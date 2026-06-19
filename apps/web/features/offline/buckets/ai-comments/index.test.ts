@@ -268,7 +268,7 @@ describe("ai-comments bucket — sync streaming", () => {
     expect(queue).toHaveLength(1);
   });
 
-  it("drops + marks failed on 422", async () => {
+  it("drops + marks failed on 422 and stashes the reason for inline display", async () => {
     const fetchMock = vi.fn(async () => ({
       ok: false,
       status: 422,
@@ -287,10 +287,16 @@ describe("ai-comments bucket — sync streaming", () => {
     await drain();
 
     const view = selectStableAiComments(getAiCommentsBucket(LIBRARY_ID, API));
-    // Placeholder row is kept but marked failed (matches the user spec —
-    // failed comments show in the panel dimmed, not hidden).
+    // Placeholder row is kept, marked failed, and carries the server reason so
+    // the panel can show it inline (the generate drop no longer raises a toast).
     expect(view).toHaveLength(1);
     expect(view[0]?.status).toBe("failed");
+    expect(view[0]?.error).toBe("bad shape");
+    const dexieRows = await getDb()
+      .aiComments.where("libraryItemId")
+      .equals(LIBRARY_ID)
+      .toArray();
+    expect(dexieRows[0]?.error).toBe("bad shape");
     const queue = await getDb()
       .aiCommentMutations.where("scopeId")
       .equals(LIBRARY_ID)
@@ -312,6 +318,7 @@ describe("ai-comments bucket — hydrate from Dexie", () => {
       locator: null,
       createdAt: "2026-04-12T10:00:00.000Z",
       status: "ready",
+      error: null,
     });
     await db.aiCommentMutations.put({
       mutationId: "pending-1",

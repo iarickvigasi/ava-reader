@@ -91,6 +91,21 @@ export async function patchCommentStatus(
   });
 }
 
+// Marks a row failed and stashes the server's rejection reason so the panel
+// can render it inline (in place of the old drop toast).
+export async function markCommentFailed(
+  libraryItemId: string,
+  id: string,
+  error: string,
+): Promise<void> {
+  const db = getDb();
+  const row = await db.aiComments.get([libraryItemId, id]);
+  if (!row) {
+    return;
+  }
+  await db.aiComments.put({ ...row, status: "failed", error });
+}
+
 export async function removeCommentRow(
   libraryItemId: string,
   id: string,
@@ -128,6 +143,7 @@ function rowToRecord(row: AiCommentRow): AiCommentRecord {
     locator: row.locator,
     createdAt: row.createdAt,
     status: row.status,
+    error: row.error ?? null,
   };
 }
 
@@ -145,6 +161,7 @@ function recordToRow(
     locator: record.locator,
     createdAt: record.createdAt,
     status: record.status,
+    error: record.error,
   };
 }
 

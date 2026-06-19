@@ -3,6 +3,7 @@ import {
   ReaderTranslationIcon,
   SpeakerIcon,
 } from "@/components/app/shared/app-icons";
+import type { SavedComment } from "./saved-comments";
 import { ToolResultView } from "./tool-result-view";
 import { ToolSection } from "./tool-section";
 import type { AiToolPayload } from "./use-ai-tool";
@@ -16,7 +17,7 @@ type TranslateToolItemProps = {
   libraryItemId: string;
   selection: string;
   locator: string | undefined;
-  savedText?: string;
+  saved?: SavedComment;
 };
 
 export function TranslateToolItem({
@@ -27,7 +28,7 @@ export function TranslateToolItem({
   libraryItemId,
   selection,
   locator,
-  savedText,
+  saved,
 }: TranslateToolItemProps) {
   const payload = useMemo<AiToolPayload | null>(
     () =>
@@ -41,13 +42,14 @@ export function TranslateToolItem({
         : null,
     [selection, language, locator],
   );
-  const { text, isStreaming, error, retry } = useAiToolBinding({
-    libraryItemId,
-    isOpen,
-    selection,
-    payload,
-    savedText,
-  });
+  const { text, isStreaming, error, phase, failureReason, retry } =
+    useAiToolBinding({
+      libraryItemId,
+      isOpen,
+      selection,
+      payload,
+      saved,
+    });
 
   return (
     <ToolSection
@@ -73,6 +75,8 @@ export function TranslateToolItem({
               text={text}
               isStreaming={isStreaming}
               error={error}
+              phase={phase}
+              failureReason={failureReason}
               onRetry={retry}
             />
           </div>

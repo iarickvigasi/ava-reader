@@ -77,5 +77,6 @@ function generatePlaceholder(
     locator: mutation.locator,
     createdAt: mutation.queuedAt,
     status: "queued",
+    error: null,
   };
 }

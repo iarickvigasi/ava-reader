@@ -161,8 +161,11 @@ export type AiCommentRow = {
   // generation intent replays successfully.
   // `streaming`: generation in flight (transient — only while the tab is open).
   // `ready`: terminal success.
-  // `failed`: permanent failure; surfaced as a toast + dimmed in the panel.
+  // `failed`: permanent failure; the reason is shown inline in the panel.
   status: "queued" | "streaming" | "ready" | "failed";
+  // Server rejection reason, set only when status is "failed". Not indexed,
+  // so adding it needs no schema version bump.
+  error: string | null;
 };
 
 // ----- Reading sessions + progress + stats (phase 4) -------------------------

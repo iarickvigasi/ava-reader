@@ -13,7 +13,8 @@ export type AiCommentStatus = "queued" | "streaming" | "ready" | "failed";
 
 // Single comment as the UI consumes it. Mirrors the AiCommentRecord type
 // the in-memory hook used to expose, plus a `status` so the UI can render
-// queued / streaming rows distinctly.
+// queued / streaming rows distinctly and, on a permanent failure, an
+// `error` carrying the server's reason so the panel can show it inline.
 export type AiCommentRecord = {
   id: string;
   kind: AiCommentKind;
@@ -23,6 +24,9 @@ export type AiCommentRecord = {
   locator: ReaderRangeLocator | null;
   createdAt: string;
   status: AiCommentStatus;
+  // Populated only when status is "failed" — the server's rejection reason,
+  // surfaced inline in the panel (replaces the old drop toast for generates).
+  error: string | null;
 };
 
 // Shape returned by GET /api/library/:libraryItemId/ai-comments. Locator

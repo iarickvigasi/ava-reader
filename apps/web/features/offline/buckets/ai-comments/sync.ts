@@ -25,6 +25,7 @@ import {
 } from "../shared/http";
 import { getOrCreateBucket } from "./bucket";
 import {
+  markCommentFailed,
   patchCommentStatus,
   removePendingMutation,
   replaceSnapshot,
@@ -55,6 +56,7 @@ export function applyServerSnapshot(
   const records: AiCommentRecord[] = snapshot.map((row) => ({
     ...row,
     status: "ready",
+    error: null,
   }));
   bucket.state = {
     snapshot: records,
@@ -126,19 +128,24 @@ async function doFlush(
         // The streaming handler already updated Dexie + the snapshot row.
         // Nothing extra to do here.
       } else if (result.kind === "drop") {
-        notifyDrop(bucket, {
-          mutationKind: head.kind,
-          commentId: head.id,
-          reason: result.reason,
-        });
-        // On generate drop: mark the placeholder row as failed so the UI
-        // can dim it. On delete drop: leave the snapshot as-is.
-        if (head.kind !== "delete") {
+        if (head.kind === "delete") {
+          // Deletes have no inline surface — the toast is their only feedback.
+          notifyDrop(bucket, {
+            mutationKind: head.kind,
+            commentId: head.id,
+            reason: result.reason,
+          });
+        } else {
+          // Generate drop: keep the placeholder row, mark it failed and stash
+          // the reason on it. The panel renders that reason inline (with a
+          // Try again button), so we deliberately don't also fire a toast.
           trackPersist(bucket, () =>
-            patchCommentStatus(libraryItemId, head.id, "failed"),
+            markCommentFailed(libraryItemId, head.id, result.reason),
           );
           nextSnapshot = nextSnapshot.map((row) =>
-            row.id === head.id ? { ...row, status: "failed" as const } : row,
+            row.id === head.id
+              ? { ...row, status: "failed" as const, error: result.reason }
+              : row,
           );
         }
       }
@@ -231,6 +238,7 @@ async function sendGenerate(
     locator: mutation.locator,
     createdAt: mutation.queuedAt,
     status: "streaming",
+    error: null,
   };
   bucket.state = {
     ...bucket.state,

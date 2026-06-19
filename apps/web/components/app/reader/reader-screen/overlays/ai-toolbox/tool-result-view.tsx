@@ -1,28 +1,46 @@
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/cn";
 
+// Offline-derived view state, layered on top of the live streaming state:
+//   "queued"  — request is waiting for a connection (placeholder shown)
+//   "failed"  — a permanent server rejection (reason shown inline + retry)
+//   null      — neither; render the live streaming / saved body
+export type ToolPhase = "queued" | "failed" | null;
+
 type ToolResultViewProps = {
   text: string;
   isStreaming: boolean;
   error: string | null;
+  phase?: ToolPhase;
+  // Reason for a permanently-failed offline replay (shown when phase is
+  // "failed"); replaces the old drop toast.
+  failureReason?: string | null;
   onRetry?: () => void;
 };
 
 // Shared body for the three AI Comments accordion library-sections. Handles
-// the streaming / error / done states so the per-tool wrappers only need to
-// pass props.
+// the queued / streaming / failed / done states so the per-tool wrappers only
+// need to pass props.
 export function ToolResultView({
   text,
   isStreaming,
   error,
+  phase = null,
+  failureReason = null,
   onRetry,
 }: ToolResultViewProps) {
   const t = useTranslations("reader.aiTools");
-  if (error) {
+
+  // A live request error, or a permanently-failed offline replay — both render
+  // the same "couldn't complete" layout with a retry. The failed comment's
+  // stored reason stands in for the (now removed) drop toast.
+  const failureMessage =
+    error ?? (phase === "failed" ? failureReason || t("errors.generic") : null);
+  if (failureMessage) {
     return (
       <div className="flex flex-col gap-3">
         <p className="font-display text-[0.95rem] leading-normal text-ink/80">
-          {error}
+          {failureMessage}
         </p>
         {onRetry ? (
           <button
@@ -34,6 +52,17 @@ export function ToolResultView({
           </button>
         ) : null}
       </div>
+    );
+  }
+
+  // Queued offline: nothing is streaming and there's no body yet. Show a calm
+  // placeholder; the streamed body replaces it automatically once the queued
+  // request replays on reconnect (the selector-merged body wins below).
+  if (phase === "queued" && text.length === 0) {
+    return (
+      <p className="font-display text-[1.05rem] leading-[1.4] text-ink/55">
+        {t("queued")}
+      </p>
     );
   }
 

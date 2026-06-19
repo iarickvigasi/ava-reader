@@ -9,16 +9,9 @@ import { useReaderSelectionContext } from "../../screen/reader-selection-context
 import { useAiCommentsContext } from "../ai-comments/ai-comments-context";
 import { EtymologyIcon, LightbulbIcon } from "./ai-toolbox-icons";
 import { AiToolItem } from "./ai-tool-item";
+import { type ToolKey, selectSavedComments } from "./saved-comments";
 import { ToolSection } from "./tool-section";
 import { TranslateToolItem } from "./translate-tool-item";
-
-type ToolKey = "translate" | "etymology" | "explain";
-
-const KIND_TO_TOOL: Record<"TRANSLATE" | "ETYMOLOGY" | "EXPLAIN", ToolKey> = {
-  TRANSLATE: "translate",
-  ETYMOLOGY: "etymology",
-  EXPLAIN: "explain",
-};
 
 type AiToolsSectionProps = {
   libraryItemId: string;
@@ -40,31 +33,12 @@ export function AiToolsSection({ libraryItemId }: AiToolsSectionProps) {
   );
   const language = targetLang || DEFAULT_TRANSLATE_TARGET_LANG;
 
-  // Match saved comments against the current selection's locator (same
-  // start/end as the highlight bridge uses). One body per kind — the server
-  // upserts on (libraryItem, locator, kind) so there's at most one row per
-  // tool for a given fragment.
-  const savedBodies = useMemo<Partial<Record<ToolKey, string>>>(() => {
-    if (!selectedLocator) return {};
-    const result: Partial<Record<ToolKey, string>> = {};
-    for (const comment of comments) {
-      const commentLocator = comment.locator;
-      if (!commentLocator) continue;
-      if (
-        commentLocator.startBlockId !== selectedLocator.startBlockId ||
-        commentLocator.startOffset !== selectedLocator.startOffset ||
-        commentLocator.endBlockId !== selectedLocator.endBlockId ||
-        commentLocator.endOffset !== selectedLocator.endOffset
-      ) {
-        continue;
-      }
-      const toolKey = KIND_TO_TOOL[comment.kind];
-      if (toolKey && !result[toolKey]) {
-        result[toolKey] = comment.body;
-      }
-    }
-    return result;
-  }, [comments, selectedLocator]);
+  // Keep the whole matched record per tool (body + status + error), not just
+  // the body, so the panel can render queued / failed placeholders.
+  const savedComments = useMemo(
+    () => selectSavedComments(comments, selectedLocator ?? null),
+    [comments, selectedLocator],
+  );
 
   // Multi-open accordion: each tool has its own open/closed state. Opening
   // one does NOT collapse the others. On first sight of a selection we
@@ -85,7 +59,7 @@ export function AiToolsSection({ libraryItemId }: AiToolsSectionProps) {
   if (locator !== autoExpandedLocator) {
     setAutoExpandedLocator(locator);
     const next = new Set<ToolKey>();
-    for (const key of Object.keys(savedBodies) as ToolKey[]) {
+    for (const key of Object.keys(savedComments) as ToolKey[]) {
       next.add(key);
     }
     setOpenTools(next);
@@ -113,7 +87,7 @@ export function AiToolsSection({ libraryItemId }: AiToolsSectionProps) {
         language={language}
         isOpen={openTools.has("translate")}
         onToggle={() => toggle("translate")}
-        savedText={savedBodies.translate}
+        saved={savedComments.translate}
       />
       <AiToolItem
         {...common}
@@ -122,7 +96,7 @@ export function AiToolsSection({ libraryItemId }: AiToolsSectionProps) {
         label={t("etymology")}
         isOpen={openTools.has("etymology")}
         onToggle={() => toggle("etymology")}
-        savedText={savedBodies.etymology}
+        saved={savedComments.etymology}
       />
       <AiToolItem
         {...common}
@@ -131,7 +105,7 @@ export function AiToolsSection({ libraryItemId }: AiToolsSectionProps) {
         label={t("explain")}
         isOpen={openTools.has("explain")}
         onToggle={() => toggle("explain")}
-        savedText={savedBodies.explain}
+        saved={savedComments.explain}
       />
       <ToolSection
         variant="link"

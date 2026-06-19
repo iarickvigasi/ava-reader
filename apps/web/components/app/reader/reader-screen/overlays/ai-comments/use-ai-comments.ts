@@ -144,12 +144,15 @@ export function useAiComments(libraryItemId: string): UseAiCommentsResult {
     };
   }, [apiBaseUrl, isLoaded, isSignedIn, libraryItemId]);
 
-  // Surface DropEvents as toasts. Same pattern as highlights.
+  // Surface delete DropEvents as toasts. Generate failures are shown inline
+  // in the toolbox panel (the failed comment carries the reason), so they no
+  // longer raise a toast — deletes have no inline surface and still do.
   useEffect(() => {
     return subscribeToDrops(libraryItemId, apiBaseUrl, (event) => {
-      const message =
-        event.mutationKind === "delete" ? t("deleteFailed") : event.reason;
-      emitAppToast({ message, tone: "warning" });
+      if (event.mutationKind !== "delete") {
+        return;
+      }
+      emitAppToast({ message: t("deleteFailed"), tone: "warning" });
     });
   }, [apiBaseUrl, libraryItemId, t]);
 
