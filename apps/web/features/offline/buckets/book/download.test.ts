@@ -466,3 +466,64 @@ describe("saveBookOffline — failure path", () => {
     expect(await readBookContent("lib-1")).toBeUndefined();
   });
 });
+
+// ----- concurrent same-book saves -------------------------------------------
+
+describe("saveBookOffline — concurrent same-book saves", () => {
+  it("a superseded save tearing down late does not delete the winner's book", async () => {
+    const db = getDb();
+    await db.libraryItems.put(seedLibraryItem({ libraryItemId: "lib-1" }));
+    const ids = ["ch-1", "ch-2", "ch-3", "ch-4", "ch-5"];
+
+    // Predecessor P: discovery succeeds (persists the first window), then its
+    // next chapter fetch parks until we release it — modelling a fetch that
+    // hasn't yet honoured the abort signal. When released it rejects, sending P
+    // down its teardown (cancel) path.
+    let releaseP: () => void = () => {};
+    const pParked = new Promise<ReaderStatusPayload>((_, reject) => {
+      releaseP = () => reject(new DOMException("Aborted", "AbortError"));
+    });
+    const pFetcher: ChapterFetcher = (id, chapterId, signal) => {
+      if (chapterId === undefined) {
+        return buildFetcher(id, ids)(id, chapterId, signal);
+      }
+      return pParked;
+    };
+
+    const pPromise = saveBookOffline({
+      libraryItemId: "lib-1",
+      saveKind: "explicit",
+      fetchChapter: pFetcher,
+    });
+
+    // Wait until P has registered, persisted its first window, and parked on
+    // the next fetch (several async Dexie writes — poll rather than guess ticks).
+    for (let i = 0; i < 200; i++) {
+      if (await readChapter("lib-1", "ch-1")) {
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 5));
+    }
+    expect(await readChapter("lib-1", "ch-1")).toBeDefined();
+
+    // Successor S takes over (registerInFlight aborts P) and completes fully.
+    const sOutcome = await saveBookOffline({
+      libraryItemId: "lib-1",
+      saveKind: "explicit",
+      fetchChapter: buildFetcher("lib-1", ids),
+    });
+    expect(sOutcome).toEqual({ kind: "saved" });
+
+    // P's parked fetch finally rejects → P runs teardown. Because S superseded
+    // it, P no longer owns the book and must NOT delete the now-complete book.
+    releaseP();
+    await pPromise;
+
+    expect(await hasBookContent("lib-1")).toBe(true);
+    for (const id of ids) {
+      expect(await readChapter("lib-1", id), `chapter ${id}`).toBeDefined();
+    }
+    const row = await db.libraryItems.get("lib-1");
+    expect(row?.savedOffline).toBe(true);
+  });
+});

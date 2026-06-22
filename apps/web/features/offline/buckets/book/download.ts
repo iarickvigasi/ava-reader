@@ -18,6 +18,7 @@ import { getDb } from "../../db";
 import {
   abortInFlightExcept,
   clearInFlight,
+  isCurrentInFlight,
   registerInFlight,
   setStatus,
 } from "./bucket";
@@ -406,33 +407,47 @@ export async function saveBookOffline(
     });
     return { kind: "saved" };
   } catch (error) {
-    // Cancelled — clean up partial rows so the user doesn't end up with a
-    // ghost half-saved book in their cache. Status returns to idle.
-    if (
+    // Ownership fence: if a newer save for this same book superseded us
+    // (registerInFlight aborted us and took the in-flight slot), we no longer
+    // own the book's rows — the newer save does. Tearing down here would delete
+    // chapters it is actively writing, or wipe a download it already completed
+    // (see [[6-offline-reading]]). A superseded run exits without touching
+    // shared state and lets its successor own the outcome.
+    const stillOwner = isCurrentInFlight(libraryItemId, controller);
+
+    const aborted =
       controller.signal.aborted ||
       (error instanceof DOMException && error.name === "AbortError") ||
-      (error instanceof Error && error.name === "AbortError")
-    ) {
-      await deleteBookContent(libraryItemId).catch(() => {
-        // Cleanup is best-effort.
-      });
-      setStatus(libraryItemId, {
-        status: "idle",
-        currentChapters: 0,
-        totalChapters: 0,
-        error: null,
-      });
+      (error instanceof Error && error.name === "AbortError");
+
+    if (aborted) {
+      // Cancelled — clean up partial rows so the user doesn't end up with a
+      // ghost half-saved book in their cache. Status returns to idle. Only when
+      // we still own the book (genuine user cancel / different-book switch).
+      if (stillOwner) {
+        await deleteBookContent(libraryItemId).catch(() => {
+          // Cleanup is best-effort.
+        });
+        setStatus(libraryItemId, {
+          status: "idle",
+          currentChapters: 0,
+          totalChapters: 0,
+          error: null,
+        });
+      }
       return { kind: "cancelled" };
     }
 
     // Real failure (network, malformed payload, …). Also clean up so a
-    // retry starts from a clean slate.
-    await deleteBookContent(libraryItemId).catch(() => {});
+    // retry starts from a clean slate — but only if we still own the book.
     const reason =
       error instanceof Error ? error.message : "Unknown save error";
-    setStatus(libraryItemId, { status: "failed", error: reason });
+    if (stillOwner) {
+      await deleteBookContent(libraryItemId).catch(() => {});
+      setStatus(libraryItemId, { status: "failed", error: reason });
+    }
     return { kind: "failed", reason };
   } finally {
-    clearInFlight(libraryItemId);
+    clearInFlight(libraryItemId, controller);
   }
 }

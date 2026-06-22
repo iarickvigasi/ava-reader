@@ -112,7 +112,27 @@ export function registerInFlight(
   state.inFlight.set(libraryItemId, controller);
 }
 
-export function clearInFlight(libraryItemId: string): void {
+// Ownership fence: true only while `controller` is still the registered save
+// for this book. A run superseded by a newer save (registerInFlight replaced
+// its controller) returns false — it must not tear down state the newer save
+// now owns. See [[6-offline-reading]] (concurrent same-book saves).
+export function isCurrentInFlight(
+  libraryItemId: string,
+  controller: AbortController,
+): boolean {
+  return state.inFlight.get(libraryItemId) === controller;
+}
+
+export function clearInFlight(
+  libraryItemId: string,
+  controller?: AbortController,
+): void {
+  // Don't evict a successor's registration: a superseded run (its controller
+  // already replaced in the map) must leave the slot to whoever owns it now.
+  // Clear only when we still hold it (or when no controller is supplied).
+  if (controller && state.inFlight.get(libraryItemId) !== controller) {
+    return;
+  }
   state.inFlight.delete(libraryItemId);
   const waiters = state.settleWaiters.get(libraryItemId);
   if (waiters) {
