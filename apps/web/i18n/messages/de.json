@@ -65,12 +65,6 @@
       "body": "Du bist möglicherweise über Mobilfunk verbunden. Die für offline markierten Bücher – mit ihren Markierungen und Notizen – herunterladen, damit sie ohne Verbindung bereitstehen?",
       "confirm": "Herunterladen",
       "cancel": "Jetzt nicht"
-    },
-    "partialBook": {
-      "title": "{cached} von {total} Kapiteln offline gespeichert",
-      "body": "Du bist offline und nur ein Teil dieses Buchs ist gespeichert. Tippe auf „Offline speichern“, um den Rest herunterzuladen, sobald du wieder online bist.",
-      "save": "Offline speichern",
-      "dismiss": "Verstanden"
     }
   },
   "legal": {

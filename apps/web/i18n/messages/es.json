@@ -65,12 +65,6 @@
       "body": "Puede que estés usando datos móviles. ¿Descargar los libros marcados para sin conexión, con sus subrayados y notas, para tenerlos listos sin conexión?",
       "confirm": "Descargar",
       "cancel": "Ahora no"
-    },
-    "partialBook": {
-      "title": "{cached} de {total} capítulos guardados sin conexión",
-      "body": "Estás sin conexión y solo se ha guardado parte de este libro. Toca Guardar sin conexión para descargar el resto en cuanto vuelvas a tener conexión.",
-      "save": "Guardar sin conexión",
-      "dismiss": "Entendido"
     }
   },
   "legal": {

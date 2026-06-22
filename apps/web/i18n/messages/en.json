@@ -65,12 +65,6 @@
       "body": "You're on a connection that may use mobile data. Download the books you've marked for offline — with their highlights and notes — so they're ready without a connection?",
       "confirm": "Download",
       "cancel": "Not now"
-    },
-    "partialBook": {
-      "title": "{cached} of {total} chapters saved offline",
-      "body": "You’re offline and only part of this book is saved. Tap Save offline to download the rest as soon as you’re back online.",
-      "save": "Save offline",
-      "dismiss": "Got it"
     }
   },
   "legal": {

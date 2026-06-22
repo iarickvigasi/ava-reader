@@ -65,12 +65,6 @@
       "body": "Você pode estar usando dados móveis. Baixar os livros marcados para off-line — com seus destaques e notas — para que fiquem prontos sem conexão?",
       "confirm": "Baixar",
       "cancel": "Agora não"
-    },
-    "partialBook": {
-      "title": "{cached} de {total} capítulos salvos offline",
-      "body": "Você está offline e apenas parte deste livro foi salva. Toque em Salvar offline para baixar o restante assim que você se reconectar.",
-      "save": "Salvar offline",
-      "dismiss": "Entendi"
     }
   },
   "legal": {
