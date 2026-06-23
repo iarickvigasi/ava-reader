@@ -12,7 +12,7 @@ import {
   applyChapter,
   attachCoverBlob,
   deleteBookContent,
-  findPreviousAutoSavedId,
+  findEvictableAutoSavedIds,
   hasBookContent,
   markBookSaved,
   readBookContent,
@@ -176,7 +176,7 @@ describe("book bucket storage", () => {
     expect(row?.coverBlob).toBeInstanceOf(Blob);
   });
 
-  it("findPreviousAutoSavedId returns only auto-only rows other than the exception", async () => {
+  it("findEvictableAutoSavedIds returns auto-only rows other than the current book", async () => {
     const db = getDb();
     await db.libraryItems.bulkPut([
       seedLibraryItem({
@@ -202,8 +202,8 @@ describe("book bucket storage", () => {
       }),
     ]);
 
-    const result = await findPreviousAutoSavedId("current");
-    expect(result).toBe("auto-prev");
+    const result = await findEvictableAutoSavedIds("current");
+    expect(result).toEqual(["auto-prev"]);
   });
 
   it("hasBookContent is true only when both BookRow and the first chapter exist", async () => {

@@ -28,6 +28,7 @@ import { useNetworkState } from "@/features/offline/net/use-network-state";
 
 import { useBookSaveStatus, useSaveBook } from "./hooks";
 import { hasBookContent } from "./storage";
+import { useEvictStaleAutoSaves } from "./use-evict-stale-auto-saves";
 
 export type BookContextStatus =
   | "hydrating" // Dexie check in flight
@@ -109,6 +110,11 @@ export function BookContextProvider({
     }
     void save("auto");
   }, [hasCached, online, saveSnapshot.status, save]);
+
+  // Opening this book evicts every *other* auto-cache. Gated on online + this
+  // book being cached so we never strand the user mid-download and an offline
+  // switch waits for reconnect; the open book is exempt. See ./evict.
+  useEvictStaleAutoSaves(libraryItemId, online && hasCached === true);
 
   const status = deriveStatus({
     hasCached,

@@ -7,9 +7,6 @@
 //     disk; safe to call multiple times)
 //   - dependency-light (the chapter fetcher is injected so this module can
 //     be unit-tested without Clerk or the reader-client)
-//
-// Eviction policy lives here too: a successful auto-save drops the previous
-// auto-saved book (max one auto-save at a time). Explicit saves are sticky.
 
 import type { ReaderStatusPayload } from "@/lib/api-types/reader";
 
@@ -27,7 +24,6 @@ import {
   applyChapter,
   attachCoverBlob,
   deleteBookContent,
-  findPreviousAutoSavedId,
   markBookSaved,
   readCachedChapterIds,
   type SaveKind,
@@ -389,17 +385,6 @@ export async function saveBookOffline(
 
     // Step 5 — flip the LibraryItem flags.
     await markBookSaved(libraryItemId, saveKind);
-
-    // Step 6 — evict the previous auto-saved book (if any and we're auto).
-    // Explicit saves never trigger eviction; explicit-saved books are never
-    // candidates for eviction either (findPreviousAutoSavedId filters them
-    // out via the `savedAutomatically && !savedOffline` predicate).
-    if (saveKind === "auto") {
-      const prior = await findPreviousAutoSavedId(libraryItemId);
-      if (prior) {
-        await deleteBookContent(prior);
-      }
-    }
 
     setStatus(libraryItemId, {
       status: "saved",

@@ -3,7 +3,7 @@ export {
   applyChapter,
   attachCoverBlob,
   deleteBookContent,
-  findPreviousAutoSavedId,
+  findEvictableAutoSavedIds,
   hasBookContent,
   markBookSaved,
   readBookContent,
@@ -15,6 +15,9 @@ export {
   type SaveKind,
   type SavedBookContent,
 } from "./storage";
+
+export { evictStaleAutoSaves } from "./evict";
+export { useEvictStaleAutoSaves } from "./use-evict-stale-auto-saves";
 
 export {
   saveBookOffline,

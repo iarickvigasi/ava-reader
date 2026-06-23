@@ -3,10 +3,10 @@
 // Two flags on the LibraryItemRow drive eviction semantics:
 //   - savedOffline      → explicit user save. Sticky; never auto-evicted.
 //   - savedAutomatically → set when the user just opened the book and we
-//                          auto-saved it. At most one row in the DB has this
-//                          flag without `savedOffline`; opening another book
-//                          will evict the previous one (only after the new
-//                          one finishes downloading — never offline).
+//                          auto-saved it. In steady state at most one row has
+//                          this flag without `savedOffline`; opening another
+//                          book evicts it (reader-driven, online only — never
+//                          offline). See ./evict.
 
 import type {
   ReaderBookPayload,
@@ -158,20 +158,21 @@ export async function attachCoverBlob(
   await db.libraryItems.put({ ...row, coverBlob: blob });
 }
 
-// Returns the libraryItemId of the current "auto-saved, not explicit" book
-// — there's at most one of these by policy. Used at the end of a successful
-// new auto-save to evict the previous one.
-export async function findPreviousAutoSavedId(
-  exceptLibraryItemId: string,
-): Promise<string | null> {
+// Returns the libraryItemIds of every "auto-saved, not explicit" book other
+// than the one currently open. In steady state there's at most one, but a
+// release ([[13-offline-save-button]]) can briefly leave a second, so this
+// returns all of them. The reader uses it to drop stale auto-caches when the
+// user opens another book (see ./evict).
+export async function findEvictableAutoSavedIds(
+  currentLibraryItemId: string,
+): Promise<string[]> {
   const db = getDb();
-  const candidates = await db.libraryItems
+  const rows = await db.libraryItems
     .filter((row) => row.savedAutomatically && !row.savedOffline)
     .toArray();
-  const other = candidates.find(
-    (row) => row.libraryItemId !== exceptLibraryItemId,
-  );
-  return other?.libraryItemId ?? null;
+  return rows
+    .filter((row) => row.libraryItemId !== currentLibraryItemId)
+    .map((row) => row.libraryItemId);
 }
 
 // True when the book has its full content (book row + at least one chapter)
