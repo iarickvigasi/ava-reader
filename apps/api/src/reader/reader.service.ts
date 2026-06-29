@@ -7,6 +7,7 @@ import {
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
@@ -62,6 +63,10 @@ type ReaderSessionPayload = {
 
 const SESSION_PARTICIPANT_IDLE_TIMEOUT_MS = 90_000;
 const SESSION_SECONDS_PER_DAY = 86_400;
+// Upper bound for a single replayed offline session. A span longer than this is
+// almost certainly a buggy/skewed client clock; we clamp to it (and log) so a
+// replay can't inflate reading-hour totals.
+const MAX_REPLAY_SESSION_SECONDS = 86_400;
 
 // In-process LRU cache for parsed reader packages. Each package can be tens of
 // MB once parsed into JS objects; without caching, every chapter navigation
@@ -129,6 +134,8 @@ type LockedSessionRecord = Prisma.ReadingSessionGetPayload<{
 
 @Injectable()
 export class ReaderService {
+  private readonly logger = new Logger(ReaderService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly usersService: UsersService,
@@ -319,10 +326,6 @@ export class ReaderService {
     } = { clientSessionId: null, startedAt: null, endedAt: null },
   ) {
     validateClientInstanceId(clientInstanceId);
-    const libraryItem = await this.getOwnedLibraryItem(
-      clerkUserId,
-      libraryItemId,
-    );
     const now = new Date();
     const replayStart = offlineReplay.startedAt
       ? new Date(offlineReplay.startedAt)
@@ -330,13 +333,52 @@ export class ReaderService {
     const replayEnd = offlineReplay.endedAt
       ? new Date(offlineReplay.endedAt)
       : null;
+    // A completed-session replay is identified by all three offline fields
+    // being present. clientSessionId alone (no timestamps) is a live session
+    // with a stable id and stays on the participant-tracked path below.
+    const isReplay = Boolean(
+      offlineReplay.clientSessionId && replayStart && replayEnd,
+    );
+    let replayDurationSeconds = 0;
+    if (isReplay) {
+      validateReplayTimestamps(replayStart, replayEnd);
+      replayDurationSeconds = computeElapsedSeconds(
+        replayStart as Date,
+        replayEnd as Date,
+      );
+      if (replayDurationSeconds > MAX_REPLAY_SESSION_SECONDS) {
+        this.logger.warn(
+          `Clamping offline replay session ${offlineReplay.clientSessionId} duration ` +
+            `${replayDurationSeconds}s to ${MAX_REPLAY_SESSION_SECONDS}s`,
+        );
+        replayDurationSeconds = MAX_REPLAY_SESSION_SECONDS;
+      }
+    }
+    const libraryItem = await this.getOwnedLibraryItem(
+      clerkUserId,
+      libraryItemId,
+    );
     const sessionStartedAt = replayStart ?? now;
     const session = await this.prisma.$transaction(async (tx) => {
-      // Offline replay path: if the client supplied a stable id, look it
-      // up first. A second POST with the same id is a no-op-ish: returns
-      // the existing row. Distinct from the "active session" lookup below
-      // because a replayed session may already be `endedAt` and so isn't
-      // "active."
+      // Offline replay of a completed session: record it with its original
+      // timestamps and real duration, immutably (a retry returns the existing
+      // row). Kept entirely off the live 'start' action, which would reopen and
+      // re-date the row to "now."
+      if (isReplay) {
+        return this.replayCompletedSessionTx(
+          tx,
+          libraryItem.userId,
+          libraryItemId,
+          offlineReplay.clientSessionId as string,
+          replayStart as Date,
+          replayEnd as Date,
+          replayDurationSeconds,
+        );
+      }
+
+      // Live session with a stable client id: a second POST with the same id
+      // resumes the existing row. Distinct from the "active session" lookup
+      // below because a resumed session may already be `endedAt`.
       if (offlineReplay.clientSessionId) {
         const existing = await tx.readingSession.findFirst({
           where: {
@@ -642,6 +684,70 @@ export class ReaderService {
     `);
 
     return rows[0] ?? null;
+  }
+
+  // Records a completed offline session at replay time. Persists the original
+  // startedAt/endedAt and the real duration, splits it into per-UTC-day
+  // segments so reading-hour totals stay accurate, and is idempotent on retry.
+  private async replayCompletedSessionTx(
+    tx: Prisma.TransactionClient,
+    userId: string,
+    libraryItemId: string,
+    clientSessionId: string,
+    startedAt: Date,
+    endedAt: Date,
+    durationSeconds: number,
+  ): Promise<LockedSessionRecord> {
+    const existing = await tx.readingSession.findFirst({
+      where: { userId, clientSessionId },
+      select: lockedSessionSelect,
+    });
+    if (existing) {
+      // Already recorded — return as-is. Never re-route through 'start', which
+      // would reopen (endedAt: null) and re-date (trackedDay: today) the row.
+      return existing;
+    }
+
+    let session: LockedSessionRecord;
+    try {
+      session = await tx.readingSession.create({
+        data: {
+          clientSessionId,
+          durationMinutes: Math.floor(durationSeconds / 60),
+          durationSeconds,
+          endedAt,
+          lastTrackedAt: endedAt,
+          libraryItemId,
+          startedAt,
+          trackedDay: startOfUtcDay(startedAt),
+          userId,
+        },
+        select: lockedSessionSelect,
+      });
+    } catch (error) {
+      // Concurrent replay of the same (userId, clientSessionId) lost the
+      // unique-constraint race — return the row the winner created.
+      const recovered = await tx.readingSession.findFirst({
+        where: { userId, clientSessionId },
+        select: lockedSessionSelect,
+      });
+      if (!recovered) {
+        throw error;
+      }
+      return recovered;
+    }
+
+    if (durationSeconds > 0) {
+      await this.incrementSessionSegmentsTx(
+        tx,
+        session,
+        startedAt,
+        durationSeconds,
+      );
+      await this.syncReadingProgressMinutesTx(tx, userId, libraryItemId);
+    }
+
+    return session;
   }
 
   private async applySessionActionTx(
@@ -996,6 +1102,27 @@ function validateLocator(locator: ReaderLocator) {
 function validateSessionId(sessionId: string) {
   if (!sessionId?.trim()) {
     throw new BadRequestException('A valid reader session id is required.');
+  }
+}
+
+function validateReplayTimestamps(
+  startedAt: Date | null,
+  endedAt: Date | null,
+) {
+  if (
+    !startedAt ||
+    !endedAt ||
+    Number.isNaN(startedAt.getTime()) ||
+    Number.isNaN(endedAt.getTime())
+  ) {
+    throw new BadRequestException(
+      'Replayed session timestamps must be valid dates.',
+    );
+  }
+  if (endedAt.getTime() < startedAt.getTime()) {
+    throw new BadRequestException(
+      'A replayed session cannot end before it started.',
+    );
   }
 }
 
