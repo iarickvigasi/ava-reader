@@ -1,4 +1,5 @@
-// Single Dexie database for everything that needs to work offline:
+// Per-user Dexie database (`ava-reader-<userId>`; adr/5) for everything that
+// needs to work offline:
 // library/collection summaries, full book content for saved books, highlights,
 // AI comments, reading sessions, reading progress + stats, and user preferences.
 // Each domain gets its own table so
@@ -280,8 +281,27 @@ export type MetaRow = {
   updatedAt: string;
 };
 
-export const SCHEMA_VERSION = 2;
-export const DB_NAME = "ava-reader";
+// Bumped only for structural changes WITHIN one user's database. The database
+// NAME is per-user (`ava-reader-<userId>`), so different accounts on one browser
+// profile never share an object store — see adr/5.
+export const SCHEMA_VERSION = 1;
+export const DB_NAME_PREFIX = "ava-reader-";
+// The pre-per-user single database; swept once by purgeOtherUserDbs (adr/5).
+export const LEGACY_DB_NAME = "ava-reader";
+// Stand-in user id for the window before any identity is known on a fresh
+// device (no persisted active user yet); its DB is purged on first login.
+export const ANONYMOUS_DB_USER = "anonymous";
+// localStorage marker: who getDb() opens before Clerk boots (instant offline
+// read). Always correct offline — identity can only change online.
+export const ACTIVE_USER_STORAGE_KEY = "ava-reader:active-user";
+
+export function dbNameForUser(userId: string): string {
+  return `${DB_NAME_PREFIX}${userId}`;
+}
+
+// The database getDb() opens before any user is active: the anonymous pre-login
+// window, and tests (which run without setActiveUser).
+export const DB_NAME = dbNameForUser(ANONYMOUS_DB_USER);
 
 export class AvaReaderDB extends Dexie {
   libraryItems!: Table<LibraryItemRow, string>;
@@ -309,8 +329,8 @@ export class AvaReaderDB extends Dexie {
 
   meta!: Table<MetaRow, string>;
 
-  constructor() {
-    super(DB_NAME);
+  constructor(name: string) {
+    super(name);
 
     // v1 — initial schema. Indexes:
     // - libraryItems: primary `libraryItemId`, secondary `slug` for slug
@@ -341,6 +361,8 @@ export class AvaReaderDB extends Dexie {
       progress: "libraryItemId, dirty",
       statsSnapshot: "id",
       preferences: "id",
+      me: "id",
+      home: "id",
 
       highlightMutations: "mutationId, scopeId, queuedAt, highlightId",
       aiCommentMutations: "mutationId, scopeId, queuedAt, commentId",
@@ -349,61 +371,130 @@ export class AvaReaderDB extends Dexie {
 
       meta: "key",
     });
-
-    // v2 — adds the single-row `me` (current user) and `home` (home payload)
-    // tables so the app layout + home screen can render offline. Purely
-    // additive: no existing table changed, so the upgrade is a no-op (Dexie
-    // creates the new object stores automatically). Existing rows in every
-    // other table carry over untouched.
-    this.version(2).stores({
-      me: "id",
-      home: "id",
-    });
   }
 }
 
-// Module-level singleton. Dexie holds an open IDB connection so we want
-// exactly one per page; tests reset it with `__resetDbForTests` below.
+// ----- Active user + per-user database resolution (adr/5) --------------------
+
+// Module-level singleton. Dexie holds an open IDB connection so we want exactly
+// one per page; it's reopened under a new name when the active user changes.
 let dbInstance: AvaReaderDB | null = null;
+let activeUserId: string | null = null;
+
+// Sets whose database getDb() opens, and persists the choice so the next cold
+// start reopens the same DB before Clerk boots. Closes the previous instance so
+// the next getDb() reopens under the new name.
+export function setActiveUser(userId: string): void {
+  if (activeUserId === userId) {
+    return;
+  }
+  activeUserId = userId;
+  if (typeof window !== "undefined") {
+    try {
+      window.localStorage.setItem(ACTIVE_USER_STORAGE_KEY, userId);
+    } catch {
+      // Private mode / storage disabled — fall back to the in-memory value.
+    }
+  }
+  if (dbInstance) {
+    dbInstance.close();
+    dbInstance = null;
+  }
+}
+
+// The active user: the in-memory value, else the persisted marker (instant
+// offline read before Clerk resolves). Null only on a fresh device.
+export function getActiveUserId(): string | null {
+  if (activeUserId) {
+    return activeUserId;
+  }
+  if (typeof window !== "undefined") {
+    try {
+      const stored = window.localStorage.getItem(ACTIVE_USER_STORAGE_KEY);
+      if (stored) {
+        activeUserId = stored;
+        return stored;
+      }
+    } catch {
+      // ignore — treat as no active user
+    }
+  }
+  return null;
+}
+
+// Forgets the active user (sign-out). The next getDb() falls back to the
+// anonymous database until a new user is set.
+export function clearActiveUser(): void {
+  activeUserId = null;
+  if (dbInstance) {
+    dbInstance.close();
+    dbInstance = null;
+  }
+  if (typeof window !== "undefined") {
+    try {
+      window.localStorage.removeItem(ACTIVE_USER_STORAGE_KEY);
+    } catch {
+      // ignore
+    }
+  }
+}
 
 export function getDb(): AvaReaderDB {
-  if (!dbInstance) {
-    dbInstance = new AvaReaderDB();
+  const name = dbNameForUser(getActiveUserId() ?? ANONYMOUS_DB_USER);
+  if (!dbInstance || dbInstance.name !== name) {
+    dbInstance = new AvaReaderDB(name);
   }
   return dbInstance;
 }
 
-// Wipes every row from every table in one transaction. Called from the
-// sign-out handler so a different user signing in on the same browser
-// profile can't see any of the previous user's cached data. We clear
-// rather than delete-the-database so the next read sees an empty store
-// instead of having to wait for `new AvaReaderDB()` to re-create the
-// schema (which can race with concurrent reads from React effects).
-export async function clearAllDexieUserData(): Promise<void> {
-  const db = getDb();
-  const tables = [
-    db.libraryItems,
-    db.collections,
-    db.collectionMembership,
-    db.me,
-    db.home,
-    db.books,
-    db.bookChapters,
-    db.highlights,
-    db.aiComments,
-    db.sessions,
-    db.progress,
-    db.statsSnapshot,
-    db.preferences,
-    db.highlightMutations,
-    db.aiCommentMutations,
-    db.sessionMutations,
-    db.preferenceMutations,
-    db.meta,
-  ];
-  await db.transaction("rw", tables, async () => {
-    await Promise.all(tables.map((table) => table.clear()));
-  });
+// Deletes one user's database (sign-out wipe). Closes the cached instance first
+// if it points at that DB so the delete isn't blocked by an open connection.
+export async function deleteUserDb(userId: string): Promise<void> {
+  const name = dbNameForUser(userId);
+  if (dbInstance && dbInstance.name === name) {
+    dbInstance.close();
+    dbInstance = null;
+  }
+  await Dexie.delete(name);
+}
+
+// Deletes every offline database that isn't `keepUserId`'s — other accounts'
+// DBs plus the legacy single DB. Best effort: one failed delete doesn't reject
+// the rest. Engines without indexedDB.databases() (Firefox) can't enumerate, so
+// purge is incomplete there, but isolation (separate DB per user) still holds.
+export async function purgeOtherUserDbs(keepUserId: string): Promise<void> {
+  const keepName = dbNameForUser(keepUserId);
+  const names = (await listOfflineDbNames()).filter(
+    (name) =>
+      name !== keepName &&
+      (name === LEGACY_DB_NAME || name.startsWith(DB_NAME_PREFIX)),
+  );
+  // If the cached connection points at a DB we're about to delete, close it
+  // first so the delete isn't blocked and we don't keep a stale instance.
+  if (dbInstance && names.includes(dbInstance.name)) {
+    dbInstance.close();
+    dbInstance = null;
+  }
+  await Promise.all(
+    names.map((name) => Dexie.delete(name).catch(() => undefined)),
+  );
+}
+
+async function listOfflineDbNames(): Promise<string[]> {
+  const names = new Set<string>([LEGACY_DB_NAME]);
+  if (typeof indexedDB !== "undefined" && "databases" in indexedDB) {
+    try {
+      const dbs = await indexedDB.databases();
+      for (const db of dbs) {
+        if (db.name) {
+          names.add(db.name);
+        }
+      }
+    } catch {
+      // ignore — return what we know
+    }
+  }
+  return [...names];
 }
 
 // Test-only: lets a vitest suite drop the singleton between cases so each
@@ -413,4 +504,5 @@ export function __resetDbForTests() {
     dbInstance.close();
     dbInstance = null;
   }
+  activeUserId = null;
 }

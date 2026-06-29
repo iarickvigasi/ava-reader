@@ -5,12 +5,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 // IDBKeyRange, …) before Dexie touches them.
 import "fake-indexeddb/auto";
 
-import {
-  __resetDbForTests,
-  DB_NAME,
-  getDb,
-  SCHEMA_VERSION,
-} from "./db";
+import { __resetDbForTests, DB_NAME, getDb, SCHEMA_VERSION } from "./db";
 
 beforeEach(async () => {
   __resetDbForTests();

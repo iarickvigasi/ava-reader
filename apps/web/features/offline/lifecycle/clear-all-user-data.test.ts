@@ -1,100 +1,81 @@
 import "fake-indexeddb/auto";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { DB_NAME, __resetDbForTests, clearAllDexieUserData, getDb } from "../db";
+import {
+  __resetDbForTests,
+  dbNameForUser,
+  getActiveUserId,
+  getDb,
+  setActiveUser,
+} from "../db";
+import { adoptUser, wipeUserData } from "./clear-all-user-data";
 
-beforeEach(() => {
+const anyUser = () => ({
+  id: "u",
+  clerkUserId: "c",
+  email: "x@y.z",
+  displayName: "X",
+  avatarUrl: null,
+  role: "USER" as const,
+});
+
+async function deleteAllOfflineDbs() {
+  const dbs = await indexedDB.databases();
+  await Promise.all(
+    dbs
+      .map((d) => d.name)
+      .filter((n): n is string => Boolean(n))
+      .map(
+        (n) =>
+          new Promise<void>((resolve) => {
+            const req = indexedDB.deleteDatabase(n);
+            req.onsuccess = () => resolve();
+            req.onerror = () => resolve();
+            req.onblocked = () => resolve();
+          }),
+      ),
+  );
+}
+
+async function seedUser(userId: string) {
+  setActiveUser(userId);
+  await getDb().me.put({ id: "me", user: anyUser(), fetchedAt: "t" });
+}
+
+beforeEach(async () => {
   __resetDbForTests();
+  await deleteAllOfflineDbs();
 });
 
 afterEach(async () => {
   __resetDbForTests();
-  await new Promise<void>((resolve) => {
-    const req = indexedDB.deleteDatabase(DB_NAME);
-    req.onsuccess = () => resolve();
-    req.onerror = () => resolve();
-    req.onblocked = () => resolve();
+  await deleteAllOfflineDbs();
+});
+
+describe("wipeUserData (sign-out)", () => {
+  it("deletes the user's database and forgets the active user", async () => {
+    await seedUser("user-a");
+
+    await wipeUserData("user-a");
+
+    const names = (await indexedDB.databases()).map((d) => d.name);
+    expect(names).not.toContain(dbNameForUser("user-a"));
+    expect(getActiveUserId()).toBeNull();
   });
 });
 
-describe("clearAllDexieUserData", () => {
-  it("wipes every user-scoped table in one transaction", async () => {
-    const db = getDb();
-    // Seed at least one row in every table so the wipe has work to do.
-    await db.me.put({
-      id: "me",
-      user: {
-        id: "u1",
-        clerkUserId: "c1",
-        email: "x@y.z",
-        displayName: "X",
-        avatarUrl: null,
-        role: "USER",
-      },
-      fetchedAt: "2026-04-12T10:00:00Z",
-    });
-    await db.libraryItems.put({
-      libraryItemId: "lib-1",
-      slug: "x",
-      title: "X",
-      authors: [],
-      coverImageUrl: null,
-      completionPercent: 0,
-      primaryFormat: "EPUB",
-      lastReadAt: null,
-      coverBlob: null,
-      savedOffline: false,
-      savedAutomatically: false,
-      savedAt: null,
-      serverUpdatedAt: null,
-    });
-    await db.highlights.put({
-      libraryItemId: "lib-1",
-      id: "h1",
-      excerpt: "x",
-      color: "apricot",
-      locator: null,
-      createdAt: "2026-04-12T10:00:00Z",
-      updatedAt: "2026-04-12T10:00:00Z",
-    });
-    await db.preferences.put({
-      id: "me",
-      values: { theme: "dark" },
-      dirtyFields: ["theme"],
-      serverUpdatedAt: null,
-    });
-    await db.sessions.put({
-      clientSessionId: "cs-1",
-      serverSessionId: null,
-      libraryItemId: "lib-1",
-      startedAt: "2026-04-12T10:00:00.000Z",
-      endedAt: "2026-04-12T10:10:00.000Z",
-      lastHeartbeatAt: "2026-04-12T10:10:00.000Z",
-      state: "closed",
-      syncedAt: null,
-    });
+describe("adoptUser (account switch / cold start)", () => {
+  it("keeps the adopted user's DB, purges the others, and sets it active", async () => {
+    await seedUser("user-a");
+    await seedUser("user-b");
 
-    // Sanity check — seeds landed.
-    expect(await db.me.count()).toBe(1);
-    expect(await db.libraryItems.count()).toBe(1);
-    expect(await db.highlights.count()).toBe(1);
-    expect(await db.preferences.count()).toBe(1);
-    expect(await db.sessions.count()).toBe(1);
+    await adoptUser("user-b");
 
-    await clearAllDexieUserData();
-
-    // Every table empty.
-    expect(await db.me.count()).toBe(0);
-    expect(await db.libraryItems.count()).toBe(0);
-    expect(await db.highlights.count()).toBe(0);
-    expect(await db.preferences.count()).toBe(0);
-    expect(await db.sessions.count()).toBe(0);
-    expect(await db.highlightMutations.count()).toBe(0);
-    expect(await db.aiCommentMutations.count()).toBe(0);
-  });
-
-  it("is a no-op when the DB is already empty", async () => {
-    await clearAllDexieUserData();
-    expect(await getDb().me.count()).toBe(0);
+    const names = (await indexedDB.databases()).map((d) => d.name);
+    expect(names).toContain(dbNameForUser("user-b"));
+    expect(names).not.toContain(dbNameForUser("user-a"));
+    expect(getActiveUserId()).toBe("user-b");
+    // The adopted user's data survives.
+    expect(await getDb().me.count()).toBe(1);
   });
 });
