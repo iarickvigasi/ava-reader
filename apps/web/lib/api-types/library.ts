@@ -49,8 +49,8 @@ export type LibraryCollectionPayload = {
 };
 
 // Detail-only fields — what the book-info screen needs ON TOP of the card.
-// These are the fields the `GET /api/library/:slug/details` endpoint returns;
-// composed with `LibraryCardBook` they reconstitute `LibraryBookInfo`.
+// Composed with `LibraryCardBook` they reconstitute `LibraryBookInfo`; the
+// book-info payload (`GET /api/library/:slug`) carries both halves together.
 //
 // `lastReadAt` here is the strict ReadingProgress.lastReadAt (nullable if the
 // user has never opened the book) — distinct from the card's "engagement"
@@ -78,13 +78,6 @@ export type LibraryBookInfo = LibraryCardBook & LibraryBookInfoDetails;
 
 export type LibraryBookInfoPayload = {
   book: LibraryBookInfo;
-};
-
-// Returned by `GET /api/library/:slug/details`. The client composes this with
-// card data it already has (URL hints from the originating list screen) to
-// form a `LibraryBookInfo` without re-sending fields it already knows.
-export type LibraryBookInfoDetailsPayload = {
-  details: LibraryBookInfoDetails;
 };
 
 export type LibraryCollectionRenamePayload = {

@@ -68,9 +68,6 @@ export async function revalidateBookInfo(
   slug: string,
   getToken: GetToken,
 ): Promise<void> {
-  // Always use the full payload endpoint here — the details-delta endpoint
-  // assumes we already have card hints from the originating list. A
-  // background revalidation doesn't have that context.
   const payload = await fetchJson<LibraryBookInfoPayload>(
     `/api/library/${encodeURIComponent(slug)}`,
     getToken,
