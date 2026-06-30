@@ -268,6 +268,50 @@ describe("ai-comments bucket — sync streaming", () => {
     expect(queue).toHaveLength(1);
   });
 
+  it("reschedules instead of stalling when the stream drops mid-read", async () => {
+    // Regression: a connection drop mid-stream threw straight out of the flush
+    // loop, which scheduled no retry — the queue stalled until an
+    // online/visibility event and the re-flush re-billed the LLM. A mid-stream
+    // throw must be caught and turned into a retry.
+    const reader = {
+      _i: 0,
+      async read() {
+        this._i++;
+        if (this._i === 1) {
+          return { done: false, value: new TextEncoder().encode("Hel") };
+        }
+        // Connection drops mid-stream.
+        throw new TypeError("network error");
+      },
+    };
+    const fetchMock = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      body: { getReader: () => reader },
+    }));
+    vi.stubGlobal("fetch", fetchMock);
+    setBucketAuth(LIBRARY_ID, API, async () => "token");
+
+    enqueueGenerate(LIBRARY_ID, API, {
+      kind: "generate.translate",
+      id: "client-x",
+      payload: { text: "hola", targetLang: "English" },
+      locator: null,
+      queuedAt: "2026-04-12T11:00:00.000Z",
+    });
+    await drain();
+
+    const bucket = getAiCommentsBucket(LIBRARY_ID, API);
+    // The mutation must survive a mid-stream drop and be retried, not stranded.
+    expect(bucket.state.pending).toHaveLength(1);
+    expect(bucket.retryHandle).not.toBeNull();
+    const queue = await getDb()
+      .aiCommentMutations.where("scopeId")
+      .equals(LIBRARY_ID)
+      .toArray();
+    expect(queue).toHaveLength(1);
+  });
+
   it("drops + marks failed on 422 and stashes the reason for inline display", async () => {
     const fetchMock = vi.fn(async () => ({
       ok: false,

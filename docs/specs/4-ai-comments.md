@@ -1,6 +1,6 @@
 # AI Comments
 
-> Status: shipped · Updated: 2026-06-06 · ADRs: [[3-offline-first-dexie-buckets]], [[2-openrouter-and-byo-key]] · Code: apps/web/components/app/reader/reader-screen/overlays/ai-comments, apps/web/features/offline/buckets/ai-comments
+> Status: shipped · Updated: 2026-06-30 · ADRs: [[3-offline-first-dexie-buckets]], [[2-openrouter-and-byo-key]] · Code: apps/web/components/app/reader/reader-screen/overlays/ai-comments, apps/web/features/offline/buckets/ai-comments
 
 ## Summary
 Persisted AI annotations (translate, explain, etymology) anchored to passages, listed in a panel and marked in-text. The durable record of toolbox investigations.
@@ -18,7 +18,7 @@ Persisted AI annotations (translate, explain, etymology) anchored to passages, l
 ai-comments bucket; AiCommentRecord status queued→ready. Dedup by (user, sourceHash). Mutations: generate.*, delete — flushed idempotently to /library/:itemId/ai-comments.
 
 ## Edge cases
-Offline generate stays queued (empty body) until sync; a repeated identical request (same kind + source text + target lang) coalesces into the single queued comment at enqueue — re-mounting the toolbox while offline can't pile up duplicate placeholders, even though each carries a fresh client id; locator unresolved after re-import; permanent failure → DropEvent toast.
+Offline generate stays queued (empty body) until sync; a repeated identical request (same kind + source text + target lang) coalesces into the single queued comment at enqueue — re-mounting the toolbox while offline can't pile up duplicate placeholders, even though each carries a fresh client id; locator unresolved after re-import; permanent failure → DropEvent toast. A connection drop mid-stream reschedules the generate rather than stalling the queue; the re-flush re-streams from scratch and the server's sourceHash dedup prevents a duplicate or a double bill. The replay loop is shared with highlights, so the same identity-pop and token-refresh-retry guarantees apply.
 
 ## Acceptance criteria
 - [ ] A generated comment appears in the panel and underlines its phrase.

@@ -1,6 +1,7 @@
 // Server sync: applies a fresh GET snapshot and drains the pending queue
-// against the API. Mirrors the highlights sync layer but with two extra
-// concerns:
+// against the API. The queue-drain loop, backoff, and snapshot-apply live in
+// ../shared/sync-core; this module supplies the ai-comments-specific network
+// calls and result-application. Two extra concerns vs highlights:
 //   - Generation calls stream their response — we read the body chunk by
 //     chunk and append into the Dexie row + in-memory state as it arrives
 //     so the user sees text "typing in." Status flips queued → streaming
@@ -11,18 +12,9 @@
 //
 // Retry / drop classification matches highlights.
 
-import {
-  cancelRetry,
-  notifyDrop,
-  persist,
-  scheduleRetry,
-  trackPersist,
-} from "../shared/bucket-core";
-import {
-  extractReason,
-  isPermanentStatus,
-  isTransientStatus,
-} from "../shared/http";
+import { notifyDrop, persist, trackPersist } from "../shared/bucket-core";
+import { classifyFailure } from "../shared/http";
+import { createSyncRuntime } from "../shared/sync-core";
 import { getOrCreateBucket } from "./bucket";
 import {
   markCommentFailed,
@@ -45,122 +37,62 @@ type SendResult =
   | { kind: "drop"; reason: string }
   | { kind: "generated" };
 
-// Replace the server snapshot from a fresh GET. Pending mutations are kept
-// — they may not have been acked yet.
-export function applyServerSnapshot(
-  libraryItemId: string,
-  apiBaseUrl: string,
-  snapshot: ServerAiComment[],
-) {
-  const bucket = getOrCreateBucket(libraryItemId, apiBaseUrl);
-  const records: AiCommentRecord[] = snapshot.map((row) => ({
-    ...row,
-    status: "ready",
-    error: null,
-  }));
-  bucket.state = {
-    snapshot: records,
-    pending: bucket.state.pending,
-  };
-  persist(bucket);
-  trackPersist(bucket, () => replaceSnapshot(libraryItemId, records));
-}
+const runtime = createSyncRuntime<
+  AiCommentRecord,
+  PendingMutation,
+  SendResult,
+  ServerAiComment,
+  StorageBucket
+>({
+  getOrCreateBucket,
+  send: (bucket, libraryItemId, head, token) =>
+    sendMutation(bucket.apiBaseUrl, libraryItemId, head, token, bucket),
+  applyTerminal,
+  removePendingMutation,
+  // Server rows arrive without a status — they're all confirmed/ready.
+  toRecords: (snapshot) =>
+    snapshot.map((row) => ({ ...row, status: "ready" as const, error: null })),
+  replaceSnapshot,
+});
 
-export async function flushBucket(
-  libraryItemId: string,
-  apiBaseUrl: string,
-): Promise<void> {
-  const bucket = getOrCreateBucket(libraryItemId, apiBaseUrl);
-  if (bucket.flushing) {
-    return;
-  }
-  if (typeof navigator !== "undefined" && !navigator.onLine) {
-    return;
-  }
-  if (!bucket.getToken) {
-    return;
-  }
-  bucket.flushing = true;
-  const work = doFlush(libraryItemId, bucket);
-  bucket.flushPromise = work.finally(() => {
-    bucket.flushPromise = null;
-  });
-  return bucket.flushPromise;
-}
+export const { applyServerSnapshot, flushBucket } = runtime;
 
-async function doFlush(
-  libraryItemId: string,
+function applyTerminal(
   bucket: StorageBucket,
-): Promise<void> {
-  await bucket.hydratedPromise;
-  cancelRetry(bucket);
-  const getToken = bucket.getToken;
-  if (!getToken) {
-    bucket.flushing = false;
-    return;
-  }
-  try {
-    while (bucket.state.pending.length > 0) {
-      const head = bucket.state.pending[0]!;
-      const token = await getToken();
-      if (!token) {
-        return;
-      }
-      const result = await sendMutation(
-        bucket.apiBaseUrl,
-        libraryItemId,
-        head,
-        token,
-        bucket,
+  libraryItemId: string,
+  head: PendingMutation,
+  result: SendResult,
+): AiCommentRecord[] {
+  let nextSnapshot = bucket.state.snapshot;
+  if (result.kind === "deleted") {
+    nextSnapshot = nextSnapshot.filter((row) => row.id !== head.id);
+    trackPersist(bucket, () => removeCommentRow(libraryItemId, head.id));
+  } else if (result.kind === "generated") {
+    // The streaming handler already updated Dexie + the snapshot row.
+    // Nothing extra to do here.
+  } else if (result.kind === "drop") {
+    if (head.kind === "delete") {
+      // Deletes have no inline surface — the toast is their only feedback.
+      notifyDrop(bucket, {
+        mutationKind: head.kind,
+        commentId: head.id,
+        reason: result.reason,
+      });
+    } else {
+      // Generate drop: keep the placeholder row, mark it failed and stash
+      // the reason on it. The panel renders that reason inline (with a
+      // Try again button), so we deliberately don't also fire a toast.
+      trackPersist(bucket, () =>
+        markCommentFailed(libraryItemId, head.id, result.reason),
       );
-      if (result.kind === "retry") {
-        scheduleRetry(bucket, () =>
-          void flushBucket(libraryItemId, bucket.apiBaseUrl),
-        );
-        return;
-      }
-      const popped = bucket.state.pending.slice(1);
-      let nextSnapshot = bucket.state.snapshot;
-      if (result.kind === "deleted") {
-        nextSnapshot = nextSnapshot.filter((row) => row.id !== head.id);
-        trackPersist(bucket, () => removeCommentRow(libraryItemId, head.id));
-      } else if (result.kind === "generated") {
-        // The streaming handler already updated Dexie + the snapshot row.
-        // Nothing extra to do here.
-      } else if (result.kind === "drop") {
-        if (head.kind === "delete") {
-          // Deletes have no inline surface — the toast is their only feedback.
-          notifyDrop(bucket, {
-            mutationKind: head.kind,
-            commentId: head.id,
-            reason: result.reason,
-          });
-        } else {
-          // Generate drop: keep the placeholder row, mark it failed and stash
-          // the reason on it. The panel renders that reason inline (with a
-          // Try again button), so we deliberately don't also fire a toast.
-          trackPersist(bucket, () =>
-            markCommentFailed(libraryItemId, head.id, result.reason),
-          );
-          nextSnapshot = nextSnapshot.map((row) =>
-            row.id === head.id
-              ? { ...row, status: "failed" as const, error: result.reason }
-              : row,
-          );
-        }
-      }
-      trackPersist(bucket, () => removePendingMutation(head.id));
-      bucket.state = {
-        ...bucket.state,
-        snapshot: nextSnapshot,
-        pending: popped,
-      };
-      persist(bucket);
-      bucket.retryDelayMs = 0;
+      nextSnapshot = nextSnapshot.map((row) =>
+        row.id === head.id
+          ? { ...row, status: "failed" as const, error: result.reason }
+          : row,
+      );
     }
-  } finally {
-    bucket.flushing = false;
   }
+  return nextSnapshot;
 }
 
 async function sendMutation(
@@ -275,26 +207,34 @@ async function sendGenerate(
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let accumulated = "";
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) {
-      accumulated += decoder.decode();
-      break;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        accumulated += decoder.decode();
+        break;
+      }
+      const chunk = decoder.decode(value, { stream: true });
+      accumulated += chunk;
+      // Patch the in-memory + Dexie row as the body grows. The UI sees the
+      // text "type in" character by character on every render.
+      bucket.state = {
+        ...bucket.state,
+        snapshot: bucket.state.snapshot.map((row) =>
+          row.id === mutation.id ? { ...row, body: accumulated } : row,
+        ),
+      };
+      persist(bucket);
+      trackPersist(bucket, () =>
+        patchCommentStatus(libraryItemId, mutation.id, "streaming", chunk),
+      );
     }
-    const chunk = decoder.decode(value, { stream: true });
-    accumulated += chunk;
-    // Patch the in-memory + Dexie row as the body grows. The UI sees the
-    // text "type in" character by character on every render.
-    bucket.state = {
-      ...bucket.state,
-      snapshot: bucket.state.snapshot.map((row) =>
-        row.id === mutation.id ? { ...row, body: accumulated } : row,
-      ),
-    };
-    persist(bucket);
-    trackPersist(bucket, () =>
-      patchCommentStatus(libraryItemId, mutation.id, "streaming", chunk),
-    );
+  } catch {
+    // Connection dropped mid-stream. Retry rather than letting the throw
+    // escape the flush loop (which would stall the queue with no reschedule).
+    // The next attempt re-streams from scratch — the placeholder re-write
+    // resets the row, and the server's sourceHash dedupe avoids a duplicate.
+    return { kind: "retry" };
   }
 
   // Mark ready in both stores.
@@ -311,16 +251,4 @@ async function sendGenerate(
     patchCommentStatus(libraryItemId, mutation.id, "ready"),
   );
   return { kind: "generated" };
-}
-
-async function classifyFailure(response: Response): Promise<SendResult> {
-  if (isTransientStatus(response.status)) {
-    return { kind: "retry" };
-  }
-  if (isPermanentStatus(response.status)) {
-    const reason = await extractReason(response);
-    return { kind: "drop", reason };
-  }
-  // Conservatively retry anything we don't recognize.
-  return { kind: "retry" };
 }

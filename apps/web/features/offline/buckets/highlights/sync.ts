@@ -2,22 +2,17 @@
 // against the API, the on-the-wire shape conversion, and the retry/backoff
 // policy for transient failures.
 //
+// The queue-drain loop, backoff, and snapshot-apply live in
+// ../shared/sync-core; this module supplies the highlights-specific network
+// call (`sendMutation`) and result-application (`applyTerminal`).
+//
 // Each in-memory state change is mirrored to Dexie immediately so a tab
 // crash or reload doesn't lose the post-ack snapshot or leave a flushed
 // mutation in the queue.
 
-import {
-  cancelRetry,
-  notifyDrop,
-  persist,
-  scheduleRetry,
-  trackPersist,
-} from "../shared/bucket-core";
-import {
-  extractReason,
-  isPermanentStatus,
-  isTransientStatus,
-} from "../shared/http";
+import { notifyDrop, trackPersist } from "../shared/bucket-core";
+import { classifyFailure } from "../shared/http";
+import { createSyncRuntime } from "../shared/sync-core";
 import { getOrCreateBucket } from "./bucket";
 import {
   removePendingMutation,
@@ -26,7 +21,6 @@ import {
   upsertSnapshotRow,
 } from "./storage";
 import {
-  STORAGE_VERSION,
   type DropEvent,
   type HighlightColor,
   type HighlightRecord,
@@ -41,25 +35,6 @@ type SendResult =
   | { kind: "deleted" }
   | { kind: "drop"; reason: string };
 
-// Replaces the server snapshot from a fresh GET. Pending mutations are kept
-// — they may not have been acked yet.
-export function applyServerSnapshot(
-  libraryItemId: string,
-  apiBaseUrl: string,
-  snapshot: HighlightRecord[],
-) {
-  const bucket = getOrCreateBucket(libraryItemId, apiBaseUrl);
-  bucket.state = {
-    version: STORAGE_VERSION,
-    snapshot,
-    pending: bucket.state.pending,
-  };
-  persist(bucket);
-  // Mirror the new authoritative snapshot to Dexie. Async; the in-memory
-  // state is already current for any synchronous read.
-  trackPersist(bucket, () => replaceSnapshot(libraryItemId, snapshot));
-}
-
 // Tries to drain the pending queue head-first. One in-flight at a time per
 // bucket so the server sees mutations in order.
 //
@@ -71,107 +46,54 @@ export function applyServerSnapshot(
 //   mutation is popped from the queue and a DropEvent fires so the hook
 //   can toast a user-facing message.
 // - 2xx → success. Snapshot updates, backoff resets, loop continues.
-export async function flushBucket(
-  libraryItemId: string,
-  apiBaseUrl: string,
-): Promise<void> {
-  const bucket = getOrCreateBucket(libraryItemId, apiBaseUrl);
-  if (bucket.flushing) {
-    return;
-  }
-  if (typeof navigator !== "undefined" && !navigator.onLine) {
-    return;
-  }
-  if (!bucket.getToken) {
-    return;
-  }
-  // Claim the in-flight slot *synchronously* before any await — otherwise a
-  // second flushBucket call (e.g. the implicit one inside enqueueUpsert)
-  // would pass the early-return above and we'd send the same head twice.
-  bucket.flushing = true;
-  // Expose the in-flight promise on the bucket so tests can await it
-  // deterministically. Production code never reads it.
-  const work = doFlush(libraryItemId, bucket);
-  bucket.flushPromise = work.finally(() => {
-    bucket.flushPromise = null;
-  });
-  return bucket.flushPromise;
-}
+const runtime = createSyncRuntime<
+  HighlightRecord,
+  PendingMutation,
+  SendResult,
+  HighlightRecord,
+  StorageBucket
+>({
+  getOrCreateBucket,
+  send: (bucket, libraryItemId, head, token) =>
+    sendMutation(bucket.apiBaseUrl, libraryItemId, head, token),
+  applyTerminal,
+  removePendingMutation,
+  // Highlights store the server snapshot rows as-is.
+  toRecords: (snapshot) => snapshot,
+  replaceSnapshot,
+});
 
-async function doFlush(
-  libraryItemId: string,
+export const { applyServerSnapshot, flushBucket } = runtime;
+
+// Applies a terminal (non-retry) send result to the snapshot. We *don't* roll
+// back the optimistic local change on a drop — the user already sees it and
+// re-applying a delete to "undo" their action would be more surprising than
+// showing the toast. They can retry by clicking again.
+function applyTerminal(
   bucket: StorageBucket,
-): Promise<void> {
-  // Now safe to await Dexie hydrate: a restored queue + an in-memory
-  // enqueue can't be double-sent because the only path into this block is
-  // gated by `flushing = true` set above.
-  await bucket.hydratedPromise;
-  cancelRetry(bucket);
-  const getToken = bucket.getToken;
-  if (!getToken) {
-    bucket.flushing = false;
-    return;
+  libraryItemId: string,
+  head: PendingMutation,
+  result: SendResult,
+): HighlightRecord[] {
+  let nextSnapshot = bucket.state.snapshot;
+  if (result.kind === "upserted" && result.row) {
+    const filtered = nextSnapshot.filter((row) => row.id !== head.id);
+    nextSnapshot = [...filtered, result.row];
+    // Mirror the post-ack snapshot row to Dexie.
+    trackPersist(bucket, () => upsertSnapshotRow(libraryItemId, result.row!));
+  } else if (result.kind === "deleted") {
+    nextSnapshot = nextSnapshot.filter((row) => row.id !== head.id);
+    trackPersist(bucket, () => removeSnapshotRow(libraryItemId, head.id));
+  } else if (result.kind === "drop") {
+    // Permanent failure. Surface to the hook so the UI can toast why.
+    const event: DropEvent = {
+      mutationKind: head.kind,
+      highlightId: head.id,
+      reason: result.reason,
+    };
+    notifyDrop(bucket, event);
   }
-  try {
-    while (bucket.state.pending.length > 0) {
-      const head = bucket.state.pending[0];
-      const token = await getToken();
-      if (!token) {
-        return;
-      }
-      const result = await sendMutation(
-        bucket.apiBaseUrl,
-        libraryItemId,
-        head,
-        token,
-      );
-      if (result.kind === "retry") {
-        scheduleRetry(bucket, () =>
-          void flushBucket(libraryItemId, bucket.apiBaseUrl),
-        );
-        return;
-      }
-      const popped = bucket.state.pending.slice(1);
-      let nextSnapshot = bucket.state.snapshot;
-      if (result.kind === "upserted" && result.row) {
-        const filtered = nextSnapshot.filter((row) => row.id !== head.id);
-        nextSnapshot = [...filtered, result.row];
-        // Mirror the post-ack snapshot row to Dexie.
-        trackPersist(bucket, () =>
-          upsertSnapshotRow(libraryItemId, result.row!),
-        );
-      } else if (result.kind === "deleted") {
-        nextSnapshot = nextSnapshot.filter((row) => row.id !== head.id);
-        trackPersist(bucket, () => removeSnapshotRow(libraryItemId, head.id));
-      } else if (result.kind === "drop") {
-        // Permanent failure. Surface to the hook so the UI can toast why,
-        // then drop the mutation from the queue. We *don't* roll back the
-        // optimistic local change — the user already sees it and re-applying
-        // a delete to "undo" their action would be more surprising than
-        // showing the toast. They can retry by clicking again.
-        const event: DropEvent = {
-          mutationKind: head.kind,
-          highlightId: head.id,
-          reason: result.reason,
-        };
-        notifyDrop(bucket, event);
-      }
-      // Whatever the outcome (success / drop), the head mutation leaves
-      // the queue. Mirror that to Dexie.
-      trackPersist(bucket, () => removePendingMutation(head.id));
-      bucket.state = {
-        ...bucket.state,
-        snapshot: nextSnapshot,
-        pending: popped,
-      };
-      persist(bucket);
-      // We made progress (or cleanly discarded) — reset backoff so the next
-      // transient blip doesn't inherit the previous run's long delay.
-      bucket.retryDelayMs = 0;
-    }
-  } finally {
-    bucket.flushing = false;
-  }
+  return nextSnapshot;
 }
 
 async function sendMutation(
@@ -221,23 +143,6 @@ async function sendMutation(
     // Network failure (offline, DNS, etc.). Always retryable.
     return { kind: "retry" };
   }
-}
-
-// Decide whether a 4xx/5xx response is transient (retry forever) or
-// permanent (drop and tell the user). We treat unknown statuses as
-// retryable: silently losing data is the worst outcome, and the queue is
-// idempotent so retrying a "should have been dropped" mutation just hits
-// the same error again.
-async function classifyFailure(response: Response): Promise<SendResult> {
-  if (isTransientStatus(response.status)) {
-    return { kind: "retry" };
-  }
-  if (isPermanentStatus(response.status)) {
-    const reason = await extractReason(response);
-    return { kind: "drop", reason };
-  }
-  // Conservatively retry anything we don't recognize.
-  return { kind: "retry" };
 }
 
 export function toHighlightRecord(

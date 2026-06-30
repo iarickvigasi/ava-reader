@@ -280,6 +280,100 @@ describe("highlights bucket — sync semantics", () => {
   });
 });
 
+describe("highlights bucket — replay queue integrity", () => {
+  it("does not drop a queued sibling when the in-flight head is re-coalesced mid-flight", async () => {
+    // Regression: the loop used to pop the acked head positionally
+    // (pending.slice(1)). If a coalescing edit to the in-flight head landed
+    // during the await, the head moved to the tail and slice(1) discarded a
+    // *different*, never-sent mutation. Pop by identity instead.
+    let releaseFirst!: () => void;
+    const firstInFlight = new Promise<void>((resolve) => {
+      releaseFirst = resolve;
+    });
+    const calls: string[] = [];
+    const fetchMock = vi.fn(async (url: string) => {
+      calls.push(url);
+      if (calls.length === 1) {
+        // Hold h1's PUT open so we can mutate the queue underneath it.
+        await firstInFlight;
+      }
+      return { ok: true, status: 200, json: async () => ({}) };
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    setBucketAuth(LIBRARY_ID, API, async () => "token");
+
+    // h1 starts flushing immediately and blocks on firstInFlight.
+    enqueueUpsert(LIBRARY_ID, API, {
+      id: "h1",
+      excerpt: "h1",
+      color: "jade",
+      locator: null,
+    });
+    // The flush awaits the bucket's Dexie hydrate (real IndexedDB IO) before
+    // sending — wait that out, then spin microtasks until h1's PUT is issued.
+    const bucket = getHighlightsBucket(LIBRARY_ID, API);
+    await bucket.hydratedPromise;
+    for (let i = 0; i < 50 && calls.length < 1; i++) {
+      await Promise.resolve();
+    }
+    expect(calls).toHaveLength(1);
+
+    // While h1 is in flight: queue a *different* highlight h2, then re-edit h1
+    // (coalesce moves h1 to the tail of the queue → [h2, h1']).
+    enqueueUpsert(LIBRARY_ID, API, {
+      id: "h2",
+      excerpt: "h2",
+      color: "rose",
+      locator: null,
+    });
+    enqueueUpsert(LIBRARY_ID, API, {
+      id: "h1",
+      excerpt: "h1-edited",
+      color: "sky",
+      locator: null,
+    });
+
+    // Let h1's PUT resolve; the loop should then drain h2 and h1'.
+    releaseFirst();
+    await drain();
+
+    // h2 must have reached the server — the positional pop silently dropped it.
+    expect(calls.some((u) => u.includes("/annotations/h2"))).toBe(true);
+    expect(bucket.state.pending).toEqual([]);
+  });
+
+  it("schedules a retry when the token getter transiently returns null", async () => {
+    // Regression: a transient null token (Clerk refresh in flight) returned out
+    // of the loop without scheduling a retry, stalling the queue until an
+    // online/visibility event. It must reschedule.
+    const fetchMock = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({}),
+    }));
+    vi.stubGlobal("fetch", fetchMock);
+    let tokenCalls = 0;
+    setBucketAuth(LIBRARY_ID, API, async () =>
+      ++tokenCalls === 1 ? null : "token",
+    );
+
+    enqueueUpsert(LIBRARY_ID, API, {
+      id: "h1",
+      excerpt: "x",
+      color: "jade",
+      locator: null,
+    });
+    await drain();
+
+    const bucket = getHighlightsBucket(LIBRARY_ID, API);
+    expect(bucket.state.pending).toHaveLength(1);
+    // Never got a token, so nothing was sent...
+    expect(fetchMock).not.toHaveBeenCalled();
+    // ...but a retry must be queued so the mutation isn't stranded.
+    expect(bucket.retryHandle).not.toBeNull();
+  });
+});
+
 describe("highlights bucket — hydrate from Dexie", () => {
   it("a fresh bucket reads its initial state from Dexie", async () => {
     // Seed Dexie directly without going through the bucket.

@@ -1,97 +1,35 @@
 // Per-book bucket registry. One bucket holds the in-memory state, the
-// pending-mutation queue, the listener set, and the
-// latest token-getter for background flushes.
+// pending-mutation queue, the listener set, and the latest token-getter for
+// background flushes. The registry machinery (create, hydrate-from-Dexie,
+// subscribe, drain) is shared with the other offline buckets in
+// ../shared/bucket-registry; this module just wires it to the highlights
+// state shape and re-exports under the highlights-specific names.
 
-import {
-  addDropListener,
-  addListener,
-  awaitPersistDrain,
-  persist,
-  setBucketAuth as applyBucketAuth,
-} from "../shared/bucket-core";
+import { createBucketRegistry } from "../shared/bucket-registry";
 import { readStorage } from "./storage";
 import {
   STORAGE_VERSION,
+  type DropEvent,
   type DropListener,
+  type HighlightsState,
   type Listener,
   type StorageBucket,
 } from "./types";
 
 export { notifyDrop, persist, trackPersist } from "../shared/bucket-core";
 
-const buckets = new Map<string, StorageBucket>();
-
-export function getOrCreateBucket(
-  libraryItemId: string,
-  apiBaseUrl: string,
-): StorageBucket {
-  let bucket = buckets.get(libraryItemId);
-  if (!bucket) {
-    bucket = {
-      // Start empty; Dexie hydrate runs in the background and fills the
-      // state once available. The bucket's `version` bumps on hydrate so
-      // subscribers re-read through the stable selector.
-      state: { version: STORAGE_VERSION, snapshot: [], pending: [] },
-      listeners: new Set(),
-      dropListeners: new Set(),
-      flushing: false,
-      getToken: null,
-      apiBaseUrl,
-      version: 1,
-      derived: [],
-      derivedVersion: 0,
-      retryDelayMs: 0,
-      retryHandle: null,
-      hydratedPromise: Promise.resolve(),
-      pendingPersist: Promise.resolve(),
-      flushPromise: null,
-    };
-    buckets.set(libraryItemId, bucket);
-    bucket.hydratedPromise = hydrate(libraryItemId, bucket);
-  }
-  // The apiBaseUrl can shift between server-render and client-render in
-  // dev — always keep the latest so flushes target the right host.
-  bucket.apiBaseUrl = apiBaseUrl;
-  return bucket;
-}
-
-async function hydrate(
-  libraryItemId: string,
-  bucket: StorageBucket,
-): Promise<void> {
-  try {
-    const loaded = await readStorage(libraryItemId);
-    // If the caller already mutated the bucket in the brief window before
-    // hydrate resolved (e.g. a useHighlights effect dispatched applyServerSnapshot
-    // while we were reading Dexie), splice the Dexie pending queue in front
-    // of any in-memory pending; deduplicate by highlight id so the in-memory
-    // version (newer) wins.
-    const inMemoryPendingById = new Map(
-      bucket.state.pending.map((mutation) => [mutation.id, mutation] as const),
-    );
-    const mergedPending = [
-      ...loaded.pending.filter(
-        (mutation) => !inMemoryPendingById.has(mutation.id),
-      ),
-      ...bucket.state.pending,
-    ];
-    // Snapshot: same logic, but the *in-memory* one is preferred when both
-    // exist — applyServerSnapshot would have replaced state.snapshot with
-    // the freshest server view.
-    const snapshot = bucket.state.snapshot.length
-      ? bucket.state.snapshot
-      : loaded.snapshot;
-    bucket.state = {
+const registry = createBucketRegistry<HighlightsState, DropEvent, StorageBucket>(
+  {
+    createInitialState: () => ({
       version: STORAGE_VERSION,
-      snapshot,
-      pending: mergedPending,
-    };
-    persist(bucket);
-  } catch {
-    // Dexie unavailable (private mode quirks, quota, …). The bucket keeps
-    // working in-memory for this session; we just don't have offline replay.
-  }
-}
+      snapshot: [],
+      pending: [],
+    }),
+    readStorage,
+  },
+);
+
+export const getOrCreateBucket = registry.getOrCreateBucket;
 
 // Public alias — callers outside the folder shouldn't see the
 // `getOrCreate` name (it sounds like it might mutate when they only want
@@ -100,7 +38,7 @@ export function getHighlightsBucket(
   libraryItemId: string,
   apiBaseUrl: string,
 ): StorageBucket {
-  return getOrCreateBucket(libraryItemId, apiBaseUrl);
+  return registry.getOrCreateBucket(libraryItemId, apiBaseUrl);
 }
 
 export function subscribeToHighlights(
@@ -108,7 +46,7 @@ export function subscribeToHighlights(
   apiBaseUrl: string,
   listener: Listener,
 ): () => void {
-  return addListener(getOrCreateBucket(libraryItemId, apiBaseUrl), listener);
+  return registry.subscribe(libraryItemId, apiBaseUrl, listener);
 }
 
 export function subscribeToDrops(
@@ -116,10 +54,7 @@ export function subscribeToDrops(
   apiBaseUrl: string,
   listener: DropListener,
 ): () => void {
-  return addDropListener(
-    getOrCreateBucket(libraryItemId, apiBaseUrl),
-    listener,
-  );
+  return registry.subscribeToDrops(libraryItemId, apiBaseUrl, listener);
 }
 
 export function setBucketAuth(
@@ -127,7 +62,7 @@ export function setBucketAuth(
   apiBaseUrl: string,
   getToken: () => Promise<string | null>,
 ) {
-  applyBucketAuth(getOrCreateBucket(libraryItemId, apiBaseUrl), getToken);
+  registry.setBucketAuth(libraryItemId, apiBaseUrl, getToken);
 }
 
 // Test-only helper that waits for every in-flight async piece kicked off
@@ -136,15 +71,10 @@ export function setBucketAuth(
 export async function awaitHighlightsPersistDrain(
   libraryItemId: string,
 ): Promise<void> {
-  return awaitPersistDrain(buckets.get(libraryItemId));
+  return registry.awaitDrain(libraryItemId);
 }
 
 // Test-only — clears module-level state without nuking Dexie.
 export function __resetHighlightsBucketsForTests() {
-  for (const bucket of buckets.values()) {
-    if (bucket.retryHandle) {
-      clearTimeout(bucket.retryHandle);
-    }
-  }
-  buckets.clear();
+  registry.reset();
 }

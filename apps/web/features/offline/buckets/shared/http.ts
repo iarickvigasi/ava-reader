@@ -28,6 +28,28 @@ export function isPermanentStatus(status: number): boolean {
   );
 }
 
+// Outcome of classifying a non-OK response: retry transient/unknown statuses
+// forever, drop permanent ones with a user-readable reason. Both buckets'
+// richer SendResult unions are supersets of this, so it composes directly.
+export type FailureResult = { kind: "retry" } | { kind: "drop"; reason: string };
+
+// Decide whether a 4xx/5xx response is transient (retry forever) or permanent
+// (drop and tell the user). Unknown statuses are treated as retryable:
+// silently losing data is the worst outcome, and the queue is idempotent so
+// retrying a "should have been dropped" mutation just hits the same error.
+export async function classifyFailure(
+  response: Response,
+): Promise<FailureResult> {
+  if (isTransientStatus(response.status)) {
+    return { kind: "retry" };
+  }
+  if (isPermanentStatus(response.status)) {
+    const reason = await extractReason(response);
+    return { kind: "drop", reason };
+  }
+  return { kind: "retry" };
+}
+
 // Pulls a user-readable reason out of an error response. Nest's HttpException
 // emits { statusCode, message, error } where `message` is a string or a
 // string[]; fall back to the raw body, then to `HTTP <status>`.

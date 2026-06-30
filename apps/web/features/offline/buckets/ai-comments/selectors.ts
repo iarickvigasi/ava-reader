@@ -9,6 +9,10 @@
 //     row (if no snapshot row with the same id) or are ignored (the
 //     snapshot already has the post-ack content).
 
+import {
+  createStableSelector,
+  mergeSnapshotAndPending,
+} from "../shared/selectors-core";
 import type {
   AiCommentKind,
   AiCommentRecord,
@@ -17,37 +21,22 @@ import type {
 } from "./types";
 
 export function selectAiComments(bucket: StorageBucket): AiCommentRecord[] {
-  const byId = new Map<string, AiCommentRecord>();
-  for (const row of bucket.state.snapshot) {
-    byId.set(row.id, row);
-  }
-  for (const mutation of bucket.state.pending) {
-    if (mutation.kind === "delete") {
-      byId.delete(mutation.id);
-      continue;
-    }
-    if (byId.has(mutation.id)) {
-      // Server snapshot already reflects this id — the pending generate is
-      // stale (e.g. we hydrated faster than we drained). Ignore.
-      continue;
-    }
-    byId.set(mutation.id, generatePlaceholder(mutation));
-  }
-  return Array.from(byId.values()).sort((a, b) =>
-    b.createdAt.localeCompare(a.createdAt),
+  return mergeSnapshotAndPending(
+    bucket.state.snapshot,
+    bucket.state.pending,
+    (byId, mutation) => {
+      if (byId.has(mutation.id)) {
+        // Server snapshot already reflects this id — the pending generate is
+        // stale (e.g. we hydrated faster than we drained). Ignore.
+        return;
+      }
+      byId.set(mutation.id, generatePlaceholder(mutation));
+    },
   );
 }
 
-export function selectStableAiComments(
-  bucket: StorageBucket,
-): AiCommentRecord[] {
-  if (bucket.derivedVersion === bucket.version) {
-    return bucket.derived;
-  }
-  bucket.derived = selectAiComments(bucket);
-  bucket.derivedVersion = bucket.version;
-  return bucket.derived;
-}
+export const selectStableAiComments =
+  createStableSelector<AiCommentRecord, StorageBucket>(selectAiComments);
 
 function generatePlaceholder(
   mutation: Extract<
