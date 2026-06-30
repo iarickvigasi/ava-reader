@@ -14,3 +14,29 @@ export function shouldKickPrimer(s: {
 }): boolean {
   return s.isLoaded && s.isSignedIn === true && s.online && !s.wasOnline;
 }
+
+type KickInputs = {
+  isLoaded: boolean;
+  isSignedIn: boolean | undefined;
+  online: boolean;
+};
+
+// Pure reducer wrapping the `wasOnline` edge so the primer island doesn't have
+// to manage the ref by hand. The subtlety it encodes: the edge (`lastOnline`)
+// only advances once auth is READY. Clerk's `isLoaded` is false on the first
+// render(s); if those pre-auth renders advanced the edge to `true`, the very
+// first online transition would be consumed before the auth gate ever passes,
+// and the cold-load kick would be lost — priming would then run only on a later
+// reconnect. (That was the bug behind book-info details never caching offline.)
+// While not ready, we return the edge unchanged and never kick.
+export function reduceKick(
+  lastOnline: boolean,
+  s: KickInputs,
+): { lastOnline: boolean; kick: boolean } {
+  const ready = s.isLoaded && s.isSignedIn === true;
+  if (!ready) {
+    return { lastOnline, kick: false };
+  }
+  const kick = shouldKickPrimer({ ...s, wasOnline: lastOnline });
+  return { lastOnline: s.online, kick };
+}

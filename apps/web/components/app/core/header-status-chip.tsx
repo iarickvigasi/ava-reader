@@ -24,15 +24,15 @@ export function HeaderStatusChip({
   if (chip.kind === "offline") {
     return <OfflineIndicator compact={compact} className={className} />;
   }
-  if (chip.kind === "caching") {
-    return (
-      <CachingIndicator
-        done={chip.done}
-        total={chip.total}
-        compact={compact}
-        className={className}
-      />
-    );
+  if (chip.kind === "none") {
+    return null;
   }
-  return null;
+  // caching | ready — one pill.
+  const state =
+    chip.kind === "ready"
+      ? ({ kind: "ready" } as const)
+      : ({ kind: chip.kind, done: chip.done, total: chip.total } as const);
+  return (
+    <CachingIndicator state={state} compact={compact} className={className} />
+  );
 }

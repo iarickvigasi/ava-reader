@@ -30,7 +30,7 @@ import {
 import { primeAllCaches } from "./prime-all";
 import { PrimeConsentModal } from "./prime-consent-modal";
 import { scheduleIdle } from "./schedule-idle";
-import { shouldKickPrimer } from "./trigger";
+import { reduceKick } from "./trigger";
 import type { SaveBookFn } from "./types";
 
 let running = false;
@@ -82,13 +82,14 @@ export function BackgroundPrimer(): React.ReactElement | null {
         saveBook,
         onStorageFull: () =>
           emitAppToast({ message: t("quotaLow"), tone: "warning" }),
-        onProgress: (done, total) => setPrimeProgress({ done, total }),
+        onProgress: (progress) => setPrimeProgress(progress),
       });
-      // A full pass leaves {total,total} for the header chip's done-dwell to
-      // show, then auto-hides. A pass that ended early (offline / user took over
-      // / storage floor) would otherwise leave a stuck partial chip — clear it.
+      // A completed pass leaves `{ phase: "ready" }` for the chip's done-dwell
+      // to show, then auto-hides. Any other leftover (a partial metadata/content
+      // count from a pass that ended early — offline, blocked on consent, user
+      // took over) would otherwise stick, so clear it.
       const final = getPrimeProgress();
-      if (!final || final.done < final.total) {
+      if (final?.phase !== "ready") {
         setPrimeProgress(null);
       }
       if (result.contentConsentNeeded) {
@@ -101,11 +102,16 @@ export function BackgroundPrimer(): React.ReactElement | null {
 
   // Re-kick on each offline→online transition (not just the first online
   // render); a redundant kick is a cheap no-op via `running` + idempotency.
-  const wasOnlineRef = useRef(false);
+  // The `wasOnline` edge only advances once auth is ready — see reduceKick.
+  const lastOnlineRef = useRef(false);
   useEffect(() => {
-    const wasOnline = wasOnlineRef.current;
-    wasOnlineRef.current = online;
-    if (shouldKickPrimer({ isLoaded, isSignedIn, wasOnline, online })) {
+    const { lastOnline, kick } = reduceKick(lastOnlineRef.current, {
+      isLoaded,
+      isSignedIn,
+      online,
+    });
+    lastOnlineRef.current = lastOnline;
+    if (kick) {
       scheduleIdle(() => void run());
     }
   }, [isLoaded, isSignedIn, online, run]);

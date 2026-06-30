@@ -53,7 +53,10 @@ export async function primeAllCaches(
     // since an explicit request is the user's consent even under Save-Data. A
     // cheap no-op when nothing is outstanding.
     if (await hasOutstandingOfflineContent(d)) {
-      await primeBookContent(runtime, d);
+      const reconciled = await primeBookContent(runtime, d);
+      if (reconciled) {
+        runtime.onProgress?.({ phase: "ready" });
+      }
     }
     return NO_CONSENT_NEEDED;
   }
@@ -80,7 +83,10 @@ export async function primeAllCaches(
   }
 
   if (metadataDone && contentDone) {
+    // First-ever completion (warm devices early-return above): a brief "ready"
+    // beat for the header chip. The dwell + hide live in header-chip-state.
     await d.setMetaFlag(META_KEY_COMPLETED, d.now());
+    runtime.onProgress?.({ phase: "ready" });
   }
   return { contentConsentNeeded };
 }

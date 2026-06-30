@@ -23,6 +23,7 @@
     "chipAria": "You are offline. Tap for details.",
     "cachingStatus": "Caching for offline access",
     "cachingCount": "{done}/{total} books",
+    "readyStatus": "Ready for offline work",
     "modal": {
       "title": "You're offline",
       "body": "No internet? No problem. Any book you've saved is ready to read. Your highlights, bookmarks, settings, and reading progress are all kept safe on your device and will catch up the moment you reconnect. Anything that needs AI will run once you're online again.",

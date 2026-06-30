@@ -1,15 +1,16 @@
 // Pure decision for the single header status slot (see [[11-cache-priming]]):
-// offline beats priming-progress beats nothing. Once priming completes
-// (done === total) the chip dwells for `dwellMs` before hiding — a brief
-// "finished" beat, and incidentally all the anti-flicker a fast prime needs.
-// Kept pure (explicit `now`/`completedAt` in, next `completedAt` + any pending
-// timer out) so every branch is testable without a clock or a renderer.
+// offline beats priming-progress beats nothing. The content tier shows live;
+// only the `ready` beat dwells for `dwellMs` before hiding — a brief "finished"
+// confirmation, and the anti-flicker tail. Kept pure (explicit `now`/
+// `completedAt` in, next `completedAt` + any pending timer out) so every branch
+// is testable without a clock or a renderer.
 
 import type { PrimeProgress } from "./prime-progress";
 
 export type ChipState =
   | { kind: "offline" }
-  | { kind: "caching"; done: number; total: number }
+  | { kind: "caching"; done: number; total: number } // content tier
+  | { kind: "ready" }
   | { kind: "none" };
 
 export type HeaderChipInput = {
@@ -32,6 +33,12 @@ const NONE: HeaderChipResult = {
   timerMs: null,
 };
 
+// A live phase shows immediately and carries no dwell — the next phase (or the
+// primer clearing the store) replaces it.
+function live(state: ChipState): HeaderChipResult {
+  return { state, completedAt: null, timerMs: null };
+}
+
 export function resolveHeaderChip(input: HeaderChipInput): HeaderChipResult {
   const { online, progress, completedAt, now, dwellMs } = input;
 
@@ -41,28 +48,22 @@ export function resolveHeaderChip(input: HeaderChipInput): HeaderChipResult {
   }
 
   // Nothing to prime (idle, or a warm device that never reported).
-  if (progress === null || progress.total === 0) {
+  if (progress === null) {
     return NONE;
   }
 
-  // Still priming — show progress, clear any prior completion stamp.
-  if (progress.done < progress.total) {
-    return {
-      state: { kind: "caching", done: progress.done, total: progress.total },
-      completedAt: null,
-      timerMs: null,
-    };
+  if (progress.phase === "content") {
+    // total 0 → no marked books; superseded by `ready` momentarily.
+    return progress.total === 0
+      ? NONE
+      : live({ kind: "caching", done: progress.done, total: progress.total });
   }
 
-  // Completed (done === total) — dwell from when it first completed, then hide.
+  // Ready — dwell from when it first completed, then hide.
   const since = completedAt ?? now;
   const remaining = dwellMs - (now - since);
   if (remaining <= 0) {
     return NONE;
   }
-  return {
-    state: { kind: "caching", done: progress.done, total: progress.total },
-    completedAt: since,
-    timerMs: remaining,
-  };
+  return { state: { kind: "ready" }, completedAt: since, timerMs: remaining };
 }

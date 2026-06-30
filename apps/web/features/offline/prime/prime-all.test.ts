@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import type { LibraryBookView, LibraryView } from "../buckets/library/types";
+import type { PrimeProgress } from "../status/prime-progress";
 
 import {
   CONTENT_CONSENT_GRANTED,
@@ -203,16 +204,56 @@ describe("primeAllCaches", () => {
     expect(result.contentConsentNeeded).toBe(false);
   });
 
-  it("reports content progress 0/total then one tick per book", async () => {
-    const h = setup(); // two offline-marked books: a, b
-    const ticks: Array<[number, number]> = [];
-    const onProgress = (done: number, total: number) => ticks.push([done, total]);
+  it("reports content progress only, ending with ready (metadata not surfaced)", async () => {
+    const h = setup(); // two smart books, both offline-marked: a, b
+    const ticks: PrimeProgress[] = [];
+    const onProgress = (p: PrimeProgress) => ticks.push(p);
     await primeAllCaches({ ...h.runtime, onProgress }, h.internals);
     expect(ticks).toEqual([
-      [0, 2],
-      [1, 2],
-      [2, 2],
+      { phase: "content", done: 0, total: 2 },
+      { phase: "content", done: 1, total: 2 },
+      { phase: "content", done: 2, total: 2 },
+      { phase: "ready" },
     ]);
+  });
+
+  it("emits ready only on the first completion, not on a warm re-run", async () => {
+    const h = setup();
+    const first: PrimeProgress[] = [];
+    await primeAllCaches(
+      { ...h.runtime, onProgress: (p) => first.push(p) },
+      h.internals,
+    );
+    expect(first.at(-1)).toEqual({ phase: "ready" });
+    expect(h.flags.has(META_KEY_COMPLETED)).toBe(true);
+
+    // Warm device (completed + everything cached): early-returns, no ready.
+    const warm = setup({ hasBookContent: async () => true });
+    warm.flags.set(META_KEY_COMPLETED, "T");
+    const second: PrimeProgress[] = [];
+    await primeAllCaches(
+      { ...warm.runtime, onProgress: (p) => second.push(p) },
+      warm.internals,
+    );
+    expect(second).toEqual([]);
+  });
+
+  it("still signals ready when no book is marked offline", async () => {
+    const h = setup({
+      readLibraryView: async () =>
+        view([
+          book("a", { offlineRequested: false }),
+          book("b", { offlineRequested: false }),
+        ]),
+    });
+    const ticks: PrimeProgress[] = [];
+    await primeAllCaches(
+      { ...h.runtime, onProgress: (p) => ticks.push(p) },
+      h.internals,
+    );
+    // Metadata isn't surfaced; the content tier has nothing to do (total 0),
+    // then the run signals ready — the user's "safe to browse offline" cue.
+    expect(ticks).toEqual([{ phase: "content", done: 0, total: 0 }, { phase: "ready" }]);
   });
 
   it("content tier targets only offline-marked books (metadata covers all)", async () => {

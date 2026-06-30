@@ -9,11 +9,12 @@ import { useEffect, useRef, useState } from "react";
 
 import { resolveHeaderChip, type ChipState } from "./header-chip-state";
 import { useNetworkState } from "../net/use-network-state";
+import { setPrimeProgress } from "./prime-progress";
 import { usePrimeProgress } from "./use-prime-progress";
 
-// Hold the chip this long after priming finishes — a brief "done" beat (and all
-// the anti-flicker a fast prime needs).
-const DWELL_MS = 2_000;
+// Hold the "Ready offline" chip this long after priming finishes — a brief
+// "done" beat (and all the anti-flicker a fast prime needs).
+const DWELL_MS = 5_000;
 
 export function useHeaderChip(): ChipState {
   const online = useNetworkState();
@@ -37,6 +38,11 @@ export function useHeaderChip(): ChipState {
         dwellMs: DWELL_MS,
       });
       completedAtRef.current = result.completedAt;
+      // The "ready" beat is one-shot: once its dwell elapses, consume it so a
+      // later reconnect in the same session doesn't re-flash "Ready offline".
+      if (result.state.kind === "none" && progress?.phase === "ready") {
+        setPrimeProgress(null);
+      }
       setState(result.state);
       return result.timerMs;
     };

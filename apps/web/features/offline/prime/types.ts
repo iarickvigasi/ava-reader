@@ -4,6 +4,7 @@
 
 import type { LibraryView } from "../buckets/library/types";
 import type { SaveOutcome } from "../buckets/book/download";
+import type { PrimeProgress } from "../status/prime-progress";
 
 export type GetToken = () => Promise<string | null>;
 
@@ -19,10 +20,11 @@ export type PrimeRuntime = {
   // so the island can surface a toast. Optional — omitted in tests that don't
   // assert on it.
   onStorageFull?: () => void;
-  // Reports book-content priming progress: `done` of `total` offline-marked
-  // books handled this pass. Fired with (0, total) up front, then once per book.
-  // Drives the header progress chip. Optional — omitted in tests/SSR.
-  onProgress?: (done: number, total: number) => void;
+  // Reports priming progress to the header chip (see [[11-cache-priming]]):
+  // the metadata tier ticks per book-info cached, the content tier per book
+  // saved, and the orchestrator emits `{ phase: "ready" }` on first completion.
+  // Optional — omitted in tests/SSR.
+  onProgress?: (progress: PrimeProgress) => void;
 };
 
 // Seams for tests — default to the real implementations (see ./internals.ts).

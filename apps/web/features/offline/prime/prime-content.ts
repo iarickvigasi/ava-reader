@@ -35,7 +35,7 @@ export async function primeBookContent(
   // so a resumed/warm device climbs straight to total and the chip's "done"
   // dwell still fires.
   const total = books.length;
-  runtime.onProgress?.(0, total);
+  runtime.onProgress?.({ phase: "content", done: 0, total });
 
   for (let i = 0; i < books.length; i++) {
     const b = books[i];
@@ -77,7 +77,7 @@ export async function primeBookContent(
       await d.revalidateAiComments(b.libraryItemId, runtime.getToken);
     }
 
-    runtime.onProgress?.(i + 1, total);
+    runtime.onProgress?.({ phase: "content", done: i + 1, total });
   }
 
   return true;

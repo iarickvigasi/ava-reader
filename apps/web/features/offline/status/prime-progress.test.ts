@@ -18,18 +18,22 @@ describe("prime-progress", () => {
   it("records progress and notifies subscribers", async () => {
     const { getPrimeProgress, setPrimeProgress, subscribeToPrimeProgress } =
       await import("./prime-progress");
-    const seen: Array<{ done: number; total: number } | null> = [];
+    const seen: unknown[] = [];
     subscribeToPrimeProgress(() => seen.push(getPrimeProgress()));
-    setPrimeProgress({ done: 3, total: 12 });
-    expect(getPrimeProgress()).toEqual({ done: 3, total: 12 });
-    expect(seen).toEqual([{ done: 3, total: 12 }]);
+    setPrimeProgress({ phase: "content", done: 3, total: 12 });
+    expect(getPrimeProgress()).toEqual({
+      phase: "content",
+      done: 3,
+      total: 12,
+    });
+    expect(seen).toEqual([{ phase: "content", done: 3, total: 12 }]);
   });
 
   it("clears progress and notifies when set back to null", async () => {
     const { getPrimeProgress, setPrimeProgress, subscribeToPrimeProgress } =
       await import("./prime-progress");
-    setPrimeProgress({ done: 3, total: 12 });
-    const seen: Array<{ done: number; total: number } | null> = [];
+    setPrimeProgress({ phase: "content", done: 3, total: 12 });
+    const seen: unknown[] = [];
     subscribeToPrimeProgress(() => seen.push(getPrimeProgress()));
     setPrimeProgress(null);
     expect(getPrimeProgress()).toBeNull();
@@ -40,10 +44,32 @@ describe("prime-progress", () => {
     const { setPrimeProgress, subscribeToPrimeProgress } = await import(
       "./prime-progress"
     );
-    setPrimeProgress({ done: 5, total: 12 });
+    setPrimeProgress({ phase: "content", done: 5, total: 12 });
     const seen: unknown[] = [];
     subscribeToPrimeProgress(() => seen.push(1));
-    setPrimeProgress({ done: 5, total: 12 });
+    setPrimeProgress({ phase: "content", done: 5, total: 12 });
+    expect(seen).toEqual([]);
+  });
+
+  it("notifies on a phase change even at the same counts", async () => {
+    const { setPrimeProgress, subscribeToPrimeProgress } = await import(
+      "./prime-progress"
+    );
+    setPrimeProgress({ phase: "content", done: 5, total: 12 });
+    const seen: unknown[] = [];
+    subscribeToPrimeProgress(() => seen.push(1));
+    setPrimeProgress({ phase: "ready" });
+    expect(seen).toEqual([1]);
+  });
+
+  it("treats two ready snapshots as unchanged", async () => {
+    const { setPrimeProgress, subscribeToPrimeProgress } = await import(
+      "./prime-progress"
+    );
+    setPrimeProgress({ phase: "ready" });
+    const seen: unknown[] = [];
+    subscribeToPrimeProgress(() => seen.push(1));
+    setPrimeProgress({ phase: "ready" });
     expect(seen).toEqual([]);
   });
 
@@ -51,11 +77,11 @@ describe("prime-progress", () => {
     const { getPrimeProgress, setPrimeProgress } = await import(
       "./prime-progress"
     );
-    setPrimeProgress({ done: 5, total: 12 });
+    setPrimeProgress({ phase: "content", done: 5, total: 12 });
     const first = getPrimeProgress();
-    setPrimeProgress({ done: 5, total: 12 });
+    setPrimeProgress({ phase: "content", done: 5, total: 12 });
     expect(getPrimeProgress()).toBe(first);
-    setPrimeProgress({ done: 6, total: 12 });
+    setPrimeProgress({ phase: "content", done: 6, total: 12 });
     expect(getPrimeProgress()).not.toBe(first);
   });
 });

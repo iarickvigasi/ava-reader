@@ -1,10 +1,16 @@
-// Single source of truth for "how far along is background book-content priming
-// right now" (see [[11-cache-priming]]). The primer runs client-side, so it
-// writes here directly via setPrimeProgress — no service-worker messaging. The
-// header chip reads it through use-prime-progress. Plain JS so the (non-React)
-// primer can write it. Mirrors net-state.ts.
+// Single source of truth for "how far along is background priming right now"
+// (see [[11-cache-priming]]). The primer runs client-side, so it writes here
+// directly via setPrimeProgress — no service-worker messaging. The header chip
+// reads it through use-prime-progress. Plain JS so the (non-React) primer can
+// write it. Mirrors net-state.ts.
 
-export type PrimeProgress = { done: number; total: number };
+// The content tier reports per-book progress; the orchestrator emits `ready` on
+// first completion. The metadata tier is NOT surfaced — it's a fast handful of
+// small JSON fetches, and the "ready" beat already signals when offline browsing
+// is prepared (see [[11-cache-priming]]). `ready` carries no counts.
+export type PrimeProgress =
+  | { phase: "content"; done: number; total: number }
+  | { phase: "ready" };
 
 type Listener = () => void;
 
@@ -23,7 +29,13 @@ function sameProgress(
   if (a === b) {
     return true;
   }
-  return a !== null && b !== null && a.done === b.done && a.total === b.total;
+  if (a === null || b === null || a.phase !== b.phase) {
+    return false;
+  }
+  if (a.phase === "ready" || b.phase === "ready") {
+    return true; // same phase, and ready carries no counts
+  }
+  return a.done === b.done && a.total === b.total;
 }
 
 export function getPrimeProgress(): PrimeProgress | null {

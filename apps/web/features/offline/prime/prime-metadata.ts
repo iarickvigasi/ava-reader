@@ -52,6 +52,10 @@ export async function primeMetadata(
     return false;
   }
   const slugs = collectSmartBooks(view).map((b) => b.slug);
+
+  // Per-book-info is the dominant cost and what gates offline book-info/details
+  // pages. Not surfaced in the header chip (it's a fast handful of small JSON
+  // fetches; the "Ready offline" beat signals completion). Bounded concurrency.
   const { aborted } = await mapWithConcurrency(
     slugs,
     BOOKINFO_CONCURRENCY,
@@ -62,7 +66,10 @@ export async function primeMetadata(
     return false;
   }
 
-  // Verify presence before declaring the pass clean.
+  // Verify presence before declaring the pass clean. A book missing here on
+  // every pass means metadata never goes clean (its `/api/library/[slug]`
+  // persistently fails) and its details page falls back offline — see
+  // [[11-cache-priming]].
   if (!(await d.readHome())) {
     return false;
   }
