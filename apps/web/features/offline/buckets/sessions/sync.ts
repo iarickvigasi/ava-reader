@@ -45,7 +45,7 @@ export async function syncPendingSessions(
     }
     await markSessionSynced({
       clientSessionId: row.clientSessionId,
-      serverSessionId: result.kind === "ok" ? null : null,
+      serverSessionId: null,
       syncedAt: new Date().toISOString(),
     });
     synced += 1;

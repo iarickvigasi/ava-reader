@@ -8,8 +8,6 @@ import {
   listUnsyncedClosedSessions,
   markSessionActive,
   markSessionSynced,
-  sumReadingSecondsByBook,
-  sumReadingSecondsTotal,
 } from "./storage";
 
 beforeEach(() => {
@@ -103,39 +101,5 @@ describe("sessions storage", () => {
     expect(pending.map((row) => row.clientSessionId)).toEqual([
       "closed-unsynced",
     ]);
-  });
-
-  it("sumReadingSeconds totals only count closed sessions", async () => {
-    // 10-minute session on lib-1
-    await createLocalSession({
-      clientSessionId: "cs-1",
-      libraryItemId: "lib-1",
-      startedAt: "2026-04-12T10:00:00.000Z",
-    });
-    await closeLocalSession({
-      clientSessionId: "cs-1",
-      endedAt: "2026-04-12T10:10:00.000Z",
-    });
-    // 5-minute session on lib-2
-    await createLocalSession({
-      clientSessionId: "cs-2",
-      libraryItemId: "lib-2",
-      startedAt: "2026-04-12T11:00:00.000Z",
-    });
-    await closeLocalSession({
-      clientSessionId: "cs-2",
-      endedAt: "2026-04-12T11:05:00.000Z",
-    });
-    // Open session — doesn't count yet.
-    await createLocalSession({
-      clientSessionId: "cs-3",
-      libraryItemId: "lib-1",
-      startedAt: "2026-04-12T12:00:00.000Z",
-    });
-
-    const byBook = await sumReadingSecondsByBook();
-    expect(byBook.get("lib-1")).toBe(600);
-    expect(byBook.get("lib-2")).toBe(300);
-    expect(await sumReadingSecondsTotal()).toBe(900);
   });
 });

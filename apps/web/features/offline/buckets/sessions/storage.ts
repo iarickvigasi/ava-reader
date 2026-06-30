@@ -97,39 +97,3 @@ export async function listUnsyncedClosedSessions(): Promise<SessionRow[]> {
     .filter((row) => row.state === "closed" && row.syncedAt === null)
     .toArray();
 }
-
-// Reading-time helpers — sum the closed session durations per book. The
-// home screen / stats bucket (phase 4 future work) will read from these
-// when the server endpoint isn't reachable yet.
-export async function sumReadingSecondsByBook(): Promise<
-  Map<string, number>
-> {
-  const db = getDb();
-  const rows = await db.sessions
-    .filter((row) => row.state === "closed" && !!row.endedAt)
-    .toArray();
-  const totals = new Map<string, number>();
-  for (const row of rows) {
-    if (!row.endedAt) {
-      continue;
-    }
-    const seconds = Math.max(
-      0,
-      Math.round(
-        (new Date(row.endedAt).getTime() - new Date(row.startedAt).getTime()) /
-          1000,
-      ),
-    );
-    totals.set(row.libraryItemId, (totals.get(row.libraryItemId) ?? 0) + seconds);
-  }
-  return totals;
-}
-
-export async function sumReadingSecondsTotal(): Promise<number> {
-  const totals = await sumReadingSecondsByBook();
-  let sum = 0;
-  for (const value of totals.values()) {
-    sum += value;
-  }
-  return sum;
-}

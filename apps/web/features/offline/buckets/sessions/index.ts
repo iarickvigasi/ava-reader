@@ -4,8 +4,6 @@ export {
   listUnsyncedClosedSessions,
   markSessionActive,
   markSessionSynced,
-  sumReadingSecondsByBook,
-  sumReadingSecondsTotal,
 } from "./storage";
 
 export { generateClientSessionId } from "./id";
