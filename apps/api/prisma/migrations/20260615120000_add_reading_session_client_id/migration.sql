@@ -6,8 +6,7 @@
 
 ALTER TABLE "ReadingSession" ADD COLUMN "clientSessionId" TEXT;
 
--- Partial unique index so we only enforce uniqueness across rows that
--- carry an id; historical NULL rows can coexist freely.
+-- Composite unique index matching the schema's @@unique([userId,
+-- clientSessionId]). Postgres treats NULLs as distinct in a unique index
 CREATE UNIQUE INDEX "ReadingSession_userId_clientSessionId_key"
-  ON "ReadingSession"("userId", "clientSessionId")
-  WHERE "clientSessionId" IS NOT NULL;
+  ON "ReadingSession"("userId", "clientSessionId");
