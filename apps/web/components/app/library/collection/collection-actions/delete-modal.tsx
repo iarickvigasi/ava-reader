@@ -1,5 +1,7 @@
 import { useTranslations } from "next-intl";
 
+import { Button } from "@/components/ui/button";
+
 type DeleteCollectionModalProps = {
   collectionName: string;
   error: null | string;
@@ -17,11 +19,11 @@ export function DeleteCollectionModal({
 }: DeleteCollectionModalProps) {
   const t = useTranslations("library.collectionActions.deleteModal");
   return (
-    <div className="relative w-full max-w-md rounded-[28px] bg-surface/95 p-5 shadow-(--shadow-card) backdrop-blur sm:p-6">
-      <p className="font-(--font-ui) text-[0.7rem] uppercase tracking-[0.15em] text-danger/80">
+    <div className="relative w-full max-w-md rounded-modal bg-surface/95 p-5 shadow-(--shadow-card) backdrop-blur sm:p-6">
+      <p className="font-ui text-[0.7rem] uppercase tracking-[0.15em] text-danger/80">
         {t("eyebrow")}
       </p>
-      <h2 className="mt-2 font-display text-3xl leading-none text-title sm:text-[2rem]">
+      <h2 className="mt-2 font-reader text-[1.75rem] leading-[1.1] text-title">
         {t("title")}
       </h2>
       <p className="mt-4 text-base leading-7 text-copy">
@@ -36,22 +38,24 @@ export function DeleteCollectionModal({
       {error ? <p className="mt-3 text-sm text-danger">{error}</p> : null}
 
       <div className="mt-5 flex items-center justify-end gap-2">
-        <button
-          className="inline-flex min-h-10 items-center justify-center rounded-[11px] bg-soft-fill px-4 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-ink transition hover:bg-soft-tone-fill disabled:cursor-not-allowed disabled:opacity-60"
+        <Button
+          size="sm"
+          variant="soft"
           disabled={isPending}
           onClick={onClose}
           type="button"
         >
           {t("cancel")}
-        </button>
-        <button
-          className="inline-flex min-h-10 items-center justify-center rounded-[11px] bg-danger px-4 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+        </Button>
+        <Button
+          size="sm"
+          variant="danger"
           disabled={isPending}
           onClick={onConfirmDelete}
           type="button"
         >
           {isPending ? t("deleting") : t("confirm")}
-        </button>
+        </Button>
       </div>
     </div>
   );

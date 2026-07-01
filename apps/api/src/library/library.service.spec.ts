@@ -12,6 +12,7 @@ describe('LibraryService', () => {
   const findManyLibraryItems = jest.fn();
   const findFirst = jest.fn();
   const findFirstLibraryItem = jest.fn();
+  const updateLibraryItem = jest.fn();
   const update = jest.fn();
   const deleteManyCollections = jest.fn();
   const prisma = {
@@ -24,6 +25,7 @@ describe('LibraryService', () => {
     libraryItem: {
       findFirst: findFirstLibraryItem,
       findMany: findManyLibraryItems,
+      update: updateLibraryItem,
     },
   };
   const usersService = {
@@ -43,6 +45,7 @@ describe('LibraryService', () => {
     getCurrentUserRecord.mockReset();
     findFirst.mockReset();
     findFirstLibraryItem.mockReset();
+    updateLibraryItem.mockReset();
     findManyCollections.mockReset();
     findManyLibraryItems.mockReset();
     update.mockReset();
@@ -146,6 +149,7 @@ describe('LibraryService', () => {
       select: {
         id: true,
         slug: true,
+        offlineRequested: true,
         book: {
           select: {
             authors: true,
@@ -467,6 +471,7 @@ describe('LibraryService', () => {
             id: 'collection-b',
             kind: 'CUSTOM',
             name: 'Night Reads',
+            smartKey: null,
             sortOrder: 2,
           },
         },
@@ -475,6 +480,7 @@ describe('LibraryService', () => {
             id: 'collection-a',
             kind: 'SMART',
             name: 'Imported Books',
+            smartKey: 'imported',
             sortOrder: 1,
           },
         },
@@ -538,11 +544,13 @@ describe('LibraryService', () => {
             id: 'collection-a',
             kind: 'SMART',
             name: 'Imported Books',
+            smartKey: 'imported',
           },
           {
             id: 'collection-b',
             kind: 'CUSTOM',
             name: 'Night Reads',
+            smartKey: null,
           },
         ],
         completionPercent: 44,
@@ -803,6 +811,58 @@ describe('LibraryService', () => {
     await expect(
       libraryService.deleteCollection('clerk_123', 'missing-collection'),
     ).rejects.toThrow('Collection not found.');
+  });
+
+  it('sets the offline-requested intent and stamps the timestamp', async () => {
+    findFirstLibraryItem.mockResolvedValue({ id: 'item-1' });
+    updateLibraryItem.mockResolvedValue({
+      id: 'item-1',
+      slug: 'a-book',
+      offlineRequested: true,
+    });
+
+    const payload = await libraryService.setOfflineRequested(
+      'clerk_123',
+      'a-book',
+      true,
+    );
+
+    expect(updateLibraryItem).toHaveBeenCalledWith({
+      where: { id: 'item-1' },
+      data: { offlineRequested: true },
+      select: { id: true, slug: true, offlineRequested: true },
+    });
+    expect(payload).toEqual({
+      libraryItemId: 'item-1',
+      offlineRequested: true,
+      slug: 'a-book',
+    });
+  });
+
+  it('clears the offline-requested timestamp when unsetting', async () => {
+    findFirstLibraryItem.mockResolvedValue({ id: 'item-1' });
+    updateLibraryItem.mockResolvedValue({
+      id: 'item-1',
+      slug: 'a-book',
+      offlineRequested: false,
+    });
+
+    await libraryService.setOfflineRequested('clerk_123', 'item-1', false);
+
+    expect(updateLibraryItem).toHaveBeenCalledWith({
+      where: { id: 'item-1' },
+      data: { offlineRequested: false },
+      select: { id: true, slug: true, offlineRequested: true },
+    });
+  });
+
+  it('throws not found when toggling offline on a missing item', async () => {
+    findFirstLibraryItem.mockResolvedValue(null);
+
+    await expect(
+      libraryService.setOfflineRequested('clerk_123', 'missing', true),
+    ).rejects.toBeInstanceOf(NotFoundException);
+    expect(updateLibraryItem).not.toHaveBeenCalled();
   });
 });
 

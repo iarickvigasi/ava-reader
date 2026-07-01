@@ -22,7 +22,7 @@ export function HighlightsListSection({
   if (highlights.length === 0) {
     return (
       <div className="flex flex-1 items-center justify-center pb-8">
-        <p className="font-(--font-ui) text-[0.78rem] uppercase tracking-[0.16em] text-muted">
+        <p className="font-ui text-[0.78rem] uppercase tracking-[0.16em] text-muted">
           {t("empty")}
         </p>
       </div>

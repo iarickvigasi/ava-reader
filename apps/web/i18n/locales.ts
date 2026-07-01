@@ -1,5 +1,5 @@
 // Supported UI locales. Adding a new locale = add the BCP-47 tag here, ship a
-// matching messages/<tag>.json, and add a label below.
+// matching i18n/messages/<tag>.json, and add a label below.
 //
 // This is intentionally separate from the 92-language list used for AI
 // content translation (see reader/.../translate-languages.ts) — those

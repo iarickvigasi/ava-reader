@@ -10,7 +10,7 @@ export function SelectionSection() {
   return (
     <section className="flex flex-col gap-3">
       <SectionLabel>{t("selection")}</SectionLabel>
-      <div className="flex items-center gap-3 rounded-[10px] bg-soft-tone-fill px-4 py-3">
+      <div className="flex items-center gap-3 rounded-control bg-soft-tone-fill px-4 py-3">
         <button
           type="button"
           aria-label={t("selectionReadAloud")}
@@ -18,7 +18,7 @@ export function SelectionSection() {
         >
           <SpeakerIcon className="size-4" />
         </button>
-        <p className="min-w-0 flex-1 truncate font-(--font-display) text-[1.05rem] leading-[1.4] text-ink">
+        <p className="min-w-0 flex-1 truncate font-display text-[1.05rem] leading-[1.4] text-ink">
           {`“${displayText}”`}
         </p>
         <button

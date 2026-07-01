@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { AppHeaderBrand } from "@/components/brand/app-header-brand";
+import { HeaderStatusChip } from "@/components/app/core/header-status-chip";
 import {
   useReaderUi,
   type ReaderPanel,
@@ -63,14 +64,18 @@ const items = [
 ] as const;
 
 type AppNavigationProps = {
-  currentUser: CurrentUserPayload;
+  // Nullable to cover the offline cold-start window: if the app is opened
+  // offline and Dexie has no cached user yet, we still render the nav shell
+  // (brand, links, theme/offline controls) with the admin entry + display
+  // name hidden until a user is available.
+  currentUser: CurrentUserPayload | null;
 };
 
 export function AppNavigation({ currentUser }: AppNavigationProps) {
   const t = useTranslations("nav");
   const pathname = usePathname();
   const isReaderRoute = pathname.startsWith("/app/read/");
-  void currentUser;
+  const isAdmin = currentUser?.role === "ADMIN";
 
   if (isReaderRoute) {
     return <ReaderNavigation />;
@@ -81,15 +86,18 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
       <header className="sticky top-0 z-40 bg-paper/92 backdrop-blur">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10">
           <div className="flex h-16 items-center justify-between gap-3 md:hidden">
-            <ThemeToggle />
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <HeaderStatusChip compact />
+            </div>
             <Link href="/app" className="min-w-0">
               <AppHeaderBrand className="justify-center gap-2" />
             </Link>
             <div className="flex items-center gap-2">
-              {currentUser.role === "ADMIN" ? (
+              {isAdmin ? (
                 <Link
                   href="/app/admin/catalog"
-                  className="inline-flex min-h-10 items-center rounded-pl border border-line px-3 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-ink"
+                  className="inline-flex min-h-10 items-center rounded-control bg-soft-fill px-3 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-ink transition hover:bg-soft-tone-fill"
                 >
                   {t("admin.short")}
                 </Link>
@@ -124,19 +132,20 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
             </nav>
 
             <div className="flex items-center gap-3">
-              {currentUser.role === "ADMIN" ? (
+              {isAdmin ? (
                 <Link
                   href="/app/admin/catalog"
-                  className="inline-flex min-h-11 items-center rounded-[14px] border border-line bg-white/60 px-4 text-xs font-semibold uppercase tracking-[0.16em] text-ink transition hover:bg-white"
+                  className="inline-flex min-h-11 items-center rounded-control bg-white/60 px-4 text-xs font-semibold uppercase tracking-[0.16em] text-ink transition hover:bg-white"
                 >
                   {t("admin.long")}
                 </Link>
               ) : null}
+              <HeaderStatusChip />
               <ThemeToggle />
               <div className="flex items-center gap-3 rounded-2xl bg-soft-fill px-4 py-2">
                 <div className="hidden text-right lg:block">
                   <p className="text-sm font-semibold text-copy-strong">
-                    {currentUser.displayName ?? t("userFallbackName")}
+                    {currentUser?.displayName ?? t("userFallbackName")}
                   </p>
                 </div>
                 <UserMenuButton />
@@ -208,7 +217,7 @@ function ReaderNavigation() {
             <a
               href="/app"
               className={cn(
-                "absolute inset-x-0 top-0 flex h-8 w-full items-center justify-center overflow-hidden font-(--font-display) text-[1.25rem] leading-8 text-ink transition-opacity duration-300 ease-out",
+                "absolute inset-x-0 top-0 flex h-8 w-full items-center justify-center overflow-hidden font-display text-[1.25rem] leading-8 text-ink transition-opacity duration-300 ease-out",
                 isLeftPanelOpen
                   ? "pointer-events-none opacity-0"
                   : "opacity-100",
@@ -227,7 +236,7 @@ function ReaderNavigation() {
             >
               <a
                 href="/app"
-                className="truncate text-center font-(--font-display) text-[1.25rem] leading-none text-ink"
+                className="truncate text-center font-display text-[1.25rem] leading-none text-ink"
               >
                 AVA
               </a>
@@ -264,12 +273,15 @@ function ReaderNavigation() {
 
       <div className="sticky top-0 z-40 border-b border-line/40 bg-paper/95 px-4 py-3 backdrop-blur md:hidden">
         <div className="flex items-center justify-between gap-4">
-          <a
-            href="/app"
-            className="font-(--font-display) text-xl leading-none text-ink"
-          >
-            AVA
-          </a>
+          <div className="flex items-center gap-2">
+            <a
+              href="/app"
+              className="font-display text-xl leading-none text-ink"
+            >
+              AVA
+            </a>
+            <HeaderStatusChip compact />
+          </div>
           <div className="flex items-center gap-2 overflow-x-auto">
             {readerNavItems.slice(0, 5).map((item) => (
               <ReaderNavItem
@@ -329,7 +341,7 @@ function ReaderNavItem({
   );
 
   const className = cn(
-    "flex items-center overflow-hidden rounded-[8px] text-title transition-colors duration-300",
+    "flex items-center overflow-hidden rounded-control text-title transition-colors duration-300",
     compact
       ? "size-9 shrink-0 justify-center"
       : "w-full justify-start py-0",

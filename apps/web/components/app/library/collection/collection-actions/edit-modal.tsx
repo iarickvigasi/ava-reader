@@ -1,5 +1,7 @@
 import { useTranslations } from "next-intl";
 
+import { Button } from "@/components/ui/button";
+
 type EditCollectionModalProps = {
   collectionDescription: string;
   collectionName: string;
@@ -24,13 +26,13 @@ export function EditCollectionModal({
   const t = useTranslations("library.collectionActions.editModal");
   return (
     <form
-      className="relative w-full max-w-2xl rounded-[28px] bg-surface/95 p-5 shadow-(--shadow-card) backdrop-blur sm:p-6"
+      className="relative w-full max-w-2xl rounded-modal bg-surface/95 p-5 shadow-(--shadow-card) backdrop-blur sm:p-6"
       onSubmit={onSubmit}
     >
-      <p className="font-(--font-ui) text-[0.7rem] uppercase tracking-[0.15em] text-ink/50">
+      <p className="font-ui text-[0.7rem] uppercase tracking-[0.15em] text-ink/50">
         {t("eyebrow")}
       </p>
-      <h2 className="mt-2 font-display text-3xl leading-none text-title sm:text-[2rem]">
+      <h2 className="mt-2 font-reader text-[1.75rem] leading-[1.1] text-title">
         {t("title")}
       </h2>
 
@@ -41,7 +43,7 @@ export function EditCollectionModal({
           </span>
           <input
             aria-label={t("titleAria")}
-            className="h-11 w-full rounded-[11px] bg-paper-strong/90 px-3 text-[0.96rem] text-title outline-none placeholder:text-muted"
+            className="h-11 w-full rounded-control bg-paper-strong/90 px-3 text-[0.96rem] text-title outline-none transition focus-visible:ring-2 focus-visible:ring-line-strong placeholder:text-muted"
             disabled={isPending}
             onChange={(event) => onNameChange(event.target.value)}
             value={collectionName}
@@ -54,7 +56,7 @@ export function EditCollectionModal({
           </span>
           <textarea
             aria-label={t("descriptionAria")}
-            className="h-28 w-full resize-none rounded-[11px] bg-paper-strong/90 px-3 py-2.5 text-sm leading-6 text-copy outline-none placeholder:text-muted"
+            className="h-28 w-full resize-none rounded-control bg-paper-strong/90 px-3 py-2.5 text-sm leading-6 text-copy outline-none transition focus-visible:ring-2 focus-visible:ring-line-strong placeholder:text-muted"
             disabled={isPending}
             onChange={(event) => onDescriptionChange(event.target.value)}
             placeholder={t("descriptionPlaceholder")}
@@ -66,21 +68,18 @@ export function EditCollectionModal({
       {error ? <p className="mt-3 text-sm text-danger">{error}</p> : null}
 
       <div className="mt-5 flex items-center justify-end gap-2">
-        <button
-          className="inline-flex min-h-10 items-center justify-center rounded-[11px] bg-soft-fill px-4 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-ink transition hover:bg-soft-tone-fill disabled:cursor-not-allowed disabled:opacity-60"
+        <Button
+          size="sm"
+          variant="soft"
           disabled={isPending}
           onClick={onClose}
           type="button"
         >
           {t("cancel")}
-        </button>
-        <button
-          className="inline-flex min-h-10 items-center justify-center rounded-[11px] bg-brand-fill px-4 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-brand-foreground transition hover:bg-brand-fill-strong disabled:cursor-not-allowed disabled:opacity-60"
-          disabled={isPending}
-          type="submit"
-        >
+        </Button>
+        <Button size="sm" disabled={isPending} type="submit">
           {isPending ? t("saving") : t("save")}
-        </button>
+        </Button>
       </div>
     </form>
   );

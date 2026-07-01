@@ -6,6 +6,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { SiteFrame } from "@/components/layout/site-frame";
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import { OfflineIdentityReconciler } from "@/features/offline/lifecycle/offline-identity-reconciler";
 import "./globals.css";
 
 const display = Abhaya_Libre({
@@ -55,6 +56,7 @@ export default async function RootLayout({
       <body className="min-h-full">
         <NextIntlClientProvider>
           <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">
+            <OfflineIdentityReconciler />
             <ThemeProvider initialTheme={initialTheme}>
               <SiteFrame>{children}</SiteFrame>
             </ThemeProvider>

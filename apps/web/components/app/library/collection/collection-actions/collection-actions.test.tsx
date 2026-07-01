@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import { LibraryCollectionActions } from "./collection-actions";
+import { withIntl } from "@/lib/test-utils/intl";
 
 vi.mock("@clerk/nextjs", () => ({
   useAuth: () => ({
@@ -20,12 +21,12 @@ vi.mock("next/navigation", () => ({
 describe("library collection actions", () => {
   it("renders edit and delete buttons for custom collections", () => {
     const markup = renderToStaticMarkup(
-      <LibraryCollectionActions
+      withIntl(<LibraryCollectionActions
         collectionDescription="Your personal uploads."
         collectionId="collection-1"
         collectionKind="CUSTOM"
         collectionName="Imported Books"
-      />,
+      />),
     );
 
     expect(markup).toContain("Edit");
@@ -34,12 +35,12 @@ describe("library collection actions", () => {
 
   it("renders only delete button for smart collections", () => {
     const markup = renderToStaticMarkup(
-      <LibraryCollectionActions
+      withIntl(<LibraryCollectionActions
         collectionDescription="Auto-generated collection."
         collectionId="smart-collection-1"
         collectionKind="SMART"
         collectionName="Imported Books"
-      />,
+      />),
     );
 
     expect(markup).not.toContain("Edit");
@@ -48,13 +49,13 @@ describe("library collection actions", () => {
 
   it("renders edit modal controls in editing mode", () => {
     const markup = renderToStaticMarkup(
-      <LibraryCollectionActions
+      withIntl(<LibraryCollectionActions
         collectionDescription="Your personal uploads."
         collectionId="collection-1"
         collectionKind="CUSTOM"
         collectionName="Imported Books"
         initialModalMode="edit"
-      />,
+      />),
     );
 
     expect(markup).toContain("Edit details");
@@ -66,13 +67,13 @@ describe("library collection actions", () => {
 
   it("renders delete confirmation modal controls", () => {
     const markup = renderToStaticMarkup(
-      <LibraryCollectionActions
+      withIntl(<LibraryCollectionActions
         collectionDescription="Your personal uploads."
         collectionId="collection-1"
         collectionKind="CUSTOM"
         collectionName="Imported Books"
         initialModalMode="delete"
-      />,
+      />),
     );
 
     expect(markup).toContain("Delete collection?");

@@ -6,10 +6,12 @@ import { EmptyHomeState } from "./sections/empty-home-state";
 import { FeaturedBooksSection } from "./sections/featured-books/featured-books-section";
 import { FeedbackSection } from "./sections/feedback/feedback-section";
 import { ListeningSection } from "./sections/listening/listening-section";
-import { MasteryPanel } from "./sections/mastery/mastery-panel";
+import {
+  MasteryPanelWithDeltas,
+  StatsPanelWithDeltas,
+} from "./sections/home-stats-with-deltas";
 import { QuoteSection } from "./sections/quote-section";
 import { RecentAnnotationsPanel } from "./sections/recent-annotations-panel";
-import { StatsPanel } from "./sections/stats-panel";
 
 type HomeScreenProps = {
   home: HomePayload;
@@ -62,8 +64,12 @@ function PopulatedHome({
       ) : null}
 
       <section className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-        <MasteryPanel mastery={home.mastery} />
-        <StatsPanel stats={home.stats} />
+        {/* WithDeltas wrappers augment the server payload with live
+            offline deltas (unsynced sessions / pending highlights /
+            locally-completed books) before handing them to the panels.
+            The panels themselves are dumb and unchanged. */}
+        <MasteryPanelWithDeltas home={home} />
+        <StatsPanelWithDeltas home={home} />
       </section>
     </>
   );

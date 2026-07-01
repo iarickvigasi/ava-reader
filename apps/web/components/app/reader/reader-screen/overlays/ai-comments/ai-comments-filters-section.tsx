@@ -68,7 +68,7 @@ function AiCommentsFilterChip({
           : "bg-soft-tone-fill text-muted hover:bg-soft-tone-fill/80",
       )}
     >
-      <span className="font-(--font-ui) text-[0.72rem] uppercase tracking-[0.14em]">
+      <span className="font-ui text-[0.72rem] uppercase tracking-[0.14em]">
         {filter.label}
       </span>
       <span

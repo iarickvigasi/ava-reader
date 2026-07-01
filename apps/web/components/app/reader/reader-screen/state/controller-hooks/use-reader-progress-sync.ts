@@ -1,4 +1,3 @@
-import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, type Dispatch, type SetStateAction } from "react";
 import type {
   ReaderLocator,
@@ -20,7 +19,10 @@ import {
   writeLocalReaderResumeSnapshot,
   type ReaderResumeSnapshot,
 } from "@/features/reader/resume";
-import { emitReaderToast } from "../../overlays/reader-toast";
+import {
+  markProgressSynced,
+  writeProgress,
+} from "@/features/offline/buckets/progress";
 import {
   evaluatePersistEligibility,
   shouldClearPendingAfterAck,
@@ -49,15 +51,6 @@ export function useReaderProgressSync({
   setPayload,
   visibleLocator,
 }: UseReaderProgressSyncInput) {
-  const t = useTranslations("reader.progressSync");
-  const notifyProgressSaveFailure = useCallback(() => {
-    const isOffline =
-      typeof navigator !== "undefined" && !navigator.onLine;
-    emitReaderToast({
-      message: isOffline ? t("offline") : t("generic"),
-      tone: "warning",
-    });
-  }, [t]);
   const lastServerAckKeyRef = useRef<string | null>(
     createLocatorKey(initialServerLocator),
   );
@@ -107,6 +100,18 @@ export function useReaderProgressSync({
         const ackKey = createLocatorKey(nextProgress.locator);
         lastServerAckKeyRef.current = ackKey;
 
+        // Phase 4: server ack — refresh the Dexie row with the server's
+        // canonical completionPercent and mark it clean. If we never got
+        // here (offline), the row stays dirty for a future runner to flush.
+        void writeProgress({
+          libraryItemId,
+          locator: nextProgress.locator,
+          completionPercent: nextProgress.completionPercent,
+          dirty: false,
+        }).then(() => {
+          void markProgressSynced(libraryItemId);
+        });
+
         if (
           shouldClearPendingAfterAck({
             ackKey,
@@ -138,10 +143,9 @@ export function useReaderProgressSync({
           console.warn("Reader progress save failed", error);
         }
 
-        if (!keepalive) {
-          notifyProgressSaveFailure();
-        }
-
+        // No toast: progress was already written to Dexie (dirty) before this
+        // PATCH and the sync runner flushes it on reconnect, so a failed server
+        // save is a non-event for the user.
         return null;
       }
     },
@@ -150,11 +154,18 @@ export function useReaderProgressSync({
       isLoaded,
       isSignedIn,
       libraryItemId,
-      notifyProgressSaveFailure,
       remotePersistenceEnabled,
       setPayload,
     ],
   );
+
+  // Cached completionPercent from the current reader payload — extracted so
+  // the useEffect dep list below can name a stable value rather than a
+  // conditional expression (which the exhaustive-deps lint rejects).
+  const readyCompletionPercent =
+    payload.status === READER_STATUS_READY
+      ? payload.progress.completionPercent
+      : 0;
 
   useEffect(() => {
     if (
@@ -171,6 +182,18 @@ export function useReaderProgressSync({
       version: 2,
     } satisfies ReaderResumeSnapshot;
     writeLocalReaderResumeSnapshot(libraryItemId, nextSnapshot);
+
+    // Phase 4: mirror to Dexie so library cards / book-info / home pick up
+    // the latest progress offline. The localStorage write above stays as
+    // the fast synchronous path the reader's first-paint resume reads from.
+    void writeProgress({
+      libraryItemId,
+      locator: visibleLocator,
+      completionPercent: readyCompletionPercent,
+      // Marked dirty pre-emptively; flipped to clean after the server PATCH
+      // acks below in the persist flow.
+      dirty: true,
+    });
 
     if (!remotePersistenceEnabled) {
       return;
@@ -219,6 +242,9 @@ export function useReaderProgressSync({
     initialResumePhase,
     libraryItemId,
     payload.status,
+    // Captured for the Dexie mirror write — keeps the cached
+    // completionPercent in sync with what the reader is rendering.
+    readyCompletionPercent,
     persistPendingProgress,
     remotePersistenceEnabled,
     visibleLocator,

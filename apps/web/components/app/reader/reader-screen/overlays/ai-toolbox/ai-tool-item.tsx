@@ -1,4 +1,5 @@
 import { type ReactNode, useMemo } from "react";
+import type { SavedComment } from "./saved-comments";
 import { ToolResultView } from "./tool-result-view";
 import { ToolSection } from "./tool-section";
 import type { AiToolPayload } from "./use-ai-tool";
@@ -18,7 +19,7 @@ type AiToolItemProps = {
   libraryItemId: string;
   selection: string;
   locator: string | undefined;
-  savedText?: string;
+  saved?: SavedComment;
 };
 
 export function AiToolItem({
@@ -30,19 +31,20 @@ export function AiToolItem({
   libraryItemId,
   selection,
   locator,
-  savedText,
+  saved,
 }: AiToolItemProps) {
   const payload = useMemo<AiToolPayload | null>(
     () => (selection ? { kind, text: selection, locator } : null),
     [kind, selection, locator],
   );
-  const { text, isStreaming, error, retry } = useAiToolBinding({
-    libraryItemId,
-    isOpen,
-    selection,
-    payload,
-    savedText,
-  });
+  const { text, isStreaming, error, phase, failureReason, retry } =
+    useAiToolBinding({
+      libraryItemId,
+      isOpen,
+      selection,
+      payload,
+      saved,
+    });
 
   return (
     <ToolSection
@@ -55,6 +57,8 @@ export function AiToolItem({
         text={text}
         isStreaming={isStreaming}
         error={error}
+        phase={phase}
+        failureReason={failureReason}
         onRetry={retry}
       />
     </ToolSection>

@@ -43,7 +43,7 @@ export function SsoCallbackHandler() {
         />
       ) : null}
       <AuthShell title="Just a moment" subtitle={message}>
-        <div className="rounded-[var(--radius-card)] bg-white/68 px-5 py-8 text-center">
+        <div className="rounded-card bg-white/68 px-5 py-8 text-center">
           <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-line border-t-ink" />
           <div id="clerk-captcha" />
         </div>

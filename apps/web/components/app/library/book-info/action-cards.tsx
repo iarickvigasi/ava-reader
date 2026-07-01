@@ -1,30 +1,36 @@
+"use client";
+
 import { useTranslations } from "next-intl";
-import type { ReactElement, SVGProps } from "react";
+
 import {
   CheckIcon,
-  ReaderDownloadIcon,
   ReaderLibraryIcon,
   TrashIcon,
 } from "@/components/app/shared/app-icons";
 import type { LibraryBookInfo } from "@/lib/api-types";
-import { useBookInfoFormatters } from "./formatters";
 
-type IconComponent = (props: SVGProps<SVGSVGElement>) => ReactElement;
+import { ActionCard } from "./action-card";
+import { DownloadOfflineCard } from "./download-offline-card";
+import { useBookInfoFormatters } from "./formatters";
 
 type BookActionCardsProps = {
   collections: LibraryBookInfo["collections"];
+  libraryItemId: string;
 };
 
-export function BookActionCards({ collections }: BookActionCardsProps) {
+export function BookActionCards({
+  collections,
+  libraryItemId,
+}: BookActionCardsProps) {
   const t = useTranslations("library.bookInfo.actionCards");
   const fmt = useBookInfoFormatters();
   return (
     <aside className="space-y-4">
-      <ActionCard
-        description={t("downloadOffline.description")}
-        icon={ReaderDownloadIcon}
-        title={t("downloadOffline.title")}
-      />
+      {/* Download for offline — tri-state action card. Title + description
+          and onClick all flip based on whether the book is saved, currently
+          downloading, or untouched. The card replaces the old static
+          placeholder; same icon and visual treatment, just wired up. */}
+      <DownloadOfflineCard libraryItemId={libraryItemId} />
       <ActionCard
         description={t("markAsFinished.description")}
         icon={CheckIcon}
@@ -42,49 +48,5 @@ export function BookActionCards({ collections }: BookActionCardsProps) {
         title={t("deleteBook.title")}
       />
     </aside>
-  );
-}
-
-type ActionCardProps = {
-  danger?: boolean;
-  description: string;
-  icon: IconComponent;
-  title: string;
-};
-
-function ActionCard({
-  danger = false,
-  description,
-  icon: Icon,
-  title,
-}: ActionCardProps) {
-  return (
-    <button
-      type="button"
-      className="w-full rounded-[15px] bg-paper-strong/80 px-4 py-3 text-left transition hover:bg-paper-strong"
-    >
-      <span className="flex items-start gap-3">
-        <span
-          className={danger ? "pt-1 text-danger" : "pt-1 text-brand-fill"}
-          aria-hidden
-        >
-          <Icon className="size-4.5" />
-        </span>
-        <span className="min-w-0">
-          <span
-            className={
-              danger
-                ? "block font-reader text-[1.55rem] leading-[1.1] text-danger"
-                : "block font-reader text-[1.55rem] leading-[1.1] text-title"
-            }
-          >
-            {title}
-          </span>
-          <span className="mt-1 block text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-muted">
-            {description}
-          </span>
-        </span>
-      </span>
-    </button>
   );
 }

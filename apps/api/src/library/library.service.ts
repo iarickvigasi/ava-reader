@@ -272,6 +272,7 @@ export class LibraryService {
           select: {
             id: true,
             slug: true,
+            offlineRequested: true,
             book: {
               select: {
                 authors: true,
@@ -425,21 +426,7 @@ export class LibraryService {
       item.book.files.find((file) => file.isPrimary) ??
       null;
 
-    const collections = item.collectionItems
-      .map((collectionItem) => collectionItem.collection)
-      .sort((left, right) => {
-        if (left.sortOrder === right.sortOrder) {
-          return left.name.localeCompare(right.name);
-        }
-
-        return left.sortOrder - right.sortOrder;
-      })
-      .map((collection) => ({
-        id: collection.id,
-        kind: collection.kind,
-        name: collection.name,
-        smartKey: collection.smartKey,
-      }));
+    const collections = sortAndSerializeCollections(item.collectionItems);
 
     return {
       book: {
@@ -458,12 +445,46 @@ export class LibraryService {
         lastReadAt: item.progress?.lastReadAt?.toISOString() ?? null,
         libraryItemId: item.id,
         minutesRead: item.progress?.minutesRead ?? 0,
+        offlineRequested: item.offlineRequested,
         primaryFormat: primarySource?.format ?? BookFileFormat.UNKNOWN,
         publishedYear: item.book.publishedYear,
         slug: item.slug,
         source: item.source,
         title: item.book.title,
       },
+    };
+  }
+
+  // Sets the per-user "keep this book available offline" intent. Synced across
+  // devices: a new device reads this on its next library load and the cache
+  // primer downloads the content (see specs/12-offline-save-sync). Idempotent;
+  // accepts either a libraryItemId or a slug like the read endpoints.
+  async setOfflineRequested(
+    clerkUserId: string,
+    libraryItemId: string,
+    requested: boolean,
+  ) {
+    const user = await this.usersService.getCurrentUserRecord(clerkUserId);
+    const item = await this.prisma.libraryItem.findFirst({
+      where: {
+        userId: user.id,
+        isArchived: false,
+        OR: [{ id: libraryItemId }, { slug: libraryItemId }],
+      },
+      select: { id: true },
+    });
+    if (!item) {
+      throw new NotFoundException('Book not found in library.');
+    }
+    const updated = await this.prisma.libraryItem.update({
+      where: { id: item.id },
+      data: { offlineRequested: requested },
+      select: { id: true, slug: true, offlineRequested: true },
+    });
+    return {
+      libraryItemId: updated.id,
+      offlineRequested: updated.offlineRequested,
+      slug: updated.slug,
     };
   }
 
@@ -776,6 +797,7 @@ function serializeCollection(collection: LibraryCollectionRecord) {
         : null,
       lastReadAt: getMostRecentLibraryItemEngagementDate(item).toISOString(),
       libraryItemId: item.id,
+      offlineRequested: item.offlineRequested,
       primaryFormat: primarySource?.format ?? BookFileFormat.UNKNOWN,
       slug: item.slug,
       title: item.book.title,
@@ -801,6 +823,7 @@ type LibraryPreviewBookRecord = Prisma.LibraryItemGetPayload<{
   select: {
     id: true;
     slug: true;
+    offlineRequested: true;
     book: {
       select: {
         authors: true;
@@ -832,6 +855,7 @@ function serializePreviewBook(
       : null,
     lastReadAt: getEngagementDateFromLite(lite).toISOString(),
     libraryItemId: item.id,
+    offlineRequested: item.offlineRequested,
     primaryFormat: primarySource?.format ?? BookFileFormat.UNKNOWN,
     slug: item.slug,
     title: item.book.title,
@@ -842,6 +866,35 @@ function buildCoverImageUrl(bookId: string) {
   // The Nest app mounts under a global `/api` prefix (see app.config.ts), so
   // the public-facing URL must include it.
   return `/api/library/covers/${bookId}`;
+}
+
+type CollectionItemForSerialize = {
+  collection: {
+    id: string;
+    kind: 'SMART' | 'CUSTOM';
+    name: string;
+    smartKey: null | string;
+    sortOrder: number;
+  };
+};
+
+function sortAndSerializeCollections(
+  collectionItems: CollectionItemForSerialize[],
+) {
+  return collectionItems
+    .map((collectionItem) => collectionItem.collection)
+    .sort((left, right) => {
+      if (left.sortOrder === right.sortOrder) {
+        return left.name.localeCompare(right.name);
+      }
+      return left.sortOrder - right.sortOrder;
+    })
+    .map((collection) => ({
+      id: collection.id,
+      kind: collection.kind,
+      name: collection.name,
+      smartKey: collection.smartKey,
+    }));
 }
 
 function compareLightweightItemsByEngagement(

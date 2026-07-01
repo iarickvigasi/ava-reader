@@ -255,8 +255,8 @@ function serializeCurrentEngagement(item: LibraryItemRecord) {
     coverImageUrl: item.book.coverBlob
       ? buildCoverImageUrl(item.book.id)
       : null,
-    id: item.id,
     lastReadAt: getMostRecentEngagementDate(item).toISOString(),
+    libraryItemId: item.id,
     nextMilestone: item.progress?.chapterLabel ?? 'Continue where you left off',
     primaryFormat: primarySource?.format ?? 'UNKNOWN',
     slug: item.slug,

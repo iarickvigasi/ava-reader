@@ -26,7 +26,10 @@ export function CurrentEngagementSection({
         <EngagementMobileCard engagement={engagement} readerHref={readerHref} />
         <EngagementDesktopMeta engagement={engagement} />
         <EngagementImportButtons />
-        <HomeResumeActions readerHref={readerHref} />
+        <HomeResumeActions
+          readerHref={readerHref}
+          libraryItemId={engagement.libraryItemId}
+        />
       </div>
     </section>
   );

@@ -1,5 +1,5 @@
 import type { ReaderRangeLocator } from "@/lib/api-types";
-import type { HighlightColor } from "@/features/highlights";
+import type { HighlightColor } from "@/features/offline/buckets/highlights";
 import { HIGHLIGHT_COLOR_BG } from "../overlays/highlights/highlights-data";
 import {
   buildRangeFromLocator,

@@ -1,5 +1,8 @@
+"use client";
+
 import { useTranslations } from "next-intl";
 import type { LibraryBookInfo } from "@/lib/api-types";
+import { useComposedBookMinutesRead } from "@/features/offline/stats";
 import { useBookInfoFormatters } from "./formatters";
 
 type BookMetadataProps = {
@@ -15,6 +18,13 @@ type MetadataEntry = {
 export function BookMetadata({ book }: BookMetadataProps) {
   const t = useTranslations("library.bookInfo.metadata");
   const fmt = useBookInfoFormatters();
+  // Augment server-confirmed minutes-read with the user's unsynced
+  // offline reading time for this book. Falls back to baseline when no
+  // local data exists.
+  const minutesRead = useComposedBookMinutesRead(
+    book.libraryItemId,
+    book.minutesRead,
+  );
   const entries: MetadataEntry[] = [
     {
       id: "language",
@@ -39,7 +49,7 @@ export function BookMetadata({ book }: BookMetadataProps) {
     {
       id: "readingTime",
       label: t("readingTime"),
-      value: fmt.formatReadingTime(book.minutesRead, book.approximatePageCount),
+      value: fmt.formatReadingTime(minutesRead, book.approximatePageCount),
     },
     {
       id: "pageCount",

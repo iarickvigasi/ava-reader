@@ -14,7 +14,6 @@ import {
   applyServerSnapshot,
   enqueueDelete,
   enqueueUpsert,
-  flushAllPendingPersists,
   flushBucket,
   generateHighlightId,
   getHighlightsBucket,
@@ -25,8 +24,8 @@ import {
   toHighlightRecord,
   type HighlightColor,
   type HighlightRecord,
-} from "@/features/highlights";
-import { emitReaderToast } from "../reader-toast";
+} from "@/features/offline/buckets/highlights";
+import { emitAppToast } from "@/components/app/core/app-toast";
 
 type UseHighlightsResult = {
   highlights: HighlightRecord[];
@@ -103,7 +102,7 @@ export function useHighlights(libraryItemId: string): UseHighlightsResult {
         },
       );
       if (!response.ok) {
-        emitReaderToast({
+        emitAppToast({
           message: t("loadFailed"),
           tone: "warning",
         });
@@ -121,7 +120,7 @@ export function useHighlights(libraryItemId: string): UseHighlightsResult {
     };
     run().catch(() => {
       if (!controller.signal.aborted) {
-        emitReaderToast({
+        emitAppToast({
           message: t("loadFailed"),
           tone: "warning",
         });
@@ -149,15 +148,13 @@ export function useHighlights(libraryItemId: string): UseHighlightsResult {
         tryFlush();
       }
     };
-    const handlePageHide = () => {
-      flushAllPendingPersists();
-    };
+    // No more `pagehide` flush — Dexie writes happen in lockstep with each
+    // mutation, so there's no debounced state that could be lost when the
+    // tab closes inside a write window.
     window.addEventListener("online", tryFlush);
-    window.addEventListener("pagehide", handlePageHide);
     document.addEventListener("visibilitychange", tryFlushWhenVisible);
     return () => {
       window.removeEventListener("online", tryFlush);
-      window.removeEventListener("pagehide", handlePageHide);
       document.removeEventListener("visibilitychange", tryFlushWhenVisible);
     };
   }, [apiBaseUrl, libraryItemId]);
@@ -168,7 +165,7 @@ export function useHighlights(libraryItemId: string): UseHighlightsResult {
   // re-attempt the action.
   useEffect(() => {
     return subscribeToDrops(libraryItemId, apiBaseUrl, (event) => {
-      emitReaderToast({
+      emitAppToast({
         tone: "warning",
         message: t("saveFailed", { reason: event.reason }),
       });

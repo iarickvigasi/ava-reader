@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { ReaderUiProvider } from "@/components/app/core/reader-ui-context";
 import type { ReaderStatusPayload } from "@/lib/api-types";
 import { createReaderResumeFixturePayload } from "@/features/reader/test-fixture";
+import { withIntl } from "@/lib/test-utils/intl";
 import {
   READER_PERSISTENCE_MODE_LOCAL_ONLY,
   READER_STATUS_PROCESSING,
@@ -39,7 +40,9 @@ describe("reader screen", () => {
     };
 
     const markup = renderToStaticMarkup(
-      <ReaderScreen initialPayload={payload} libraryItemId="library-1" />,
+      withIntl(
+        <ReaderScreen initialPayload={payload} libraryItemId="library-1" />,
+      ),
     );
 
     expect(markup).toContain("Pending Reader");
@@ -51,13 +54,15 @@ describe("reader screen", () => {
     const payload = createReaderResumeFixturePayload();
 
     const markup = renderToStaticMarkup(
-      <WithReaderUi>
-        <ReaderScreen
-          initialPayload={payload}
-          libraryItemId={payload.book.libraryItemId}
-          persistenceMode={READER_PERSISTENCE_MODE_LOCAL_ONLY}
-        />
-      </WithReaderUi>,
+      withIntl(
+        <WithReaderUi>
+          <ReaderScreen
+            initialPayload={payload}
+            libraryItemId={payload.book.libraryItemId}
+            persistenceMode={READER_PERSISTENCE_MODE_LOCAL_ONLY}
+          />
+        </WithReaderUi>,
+      ),
     );
 
     expect(markup).toContain("Restoring your last page");

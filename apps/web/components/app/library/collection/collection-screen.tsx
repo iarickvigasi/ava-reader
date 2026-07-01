@@ -1,19 +1,38 @@
+"use client";
+
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import type { LibraryCollection } from "@/lib/api-types";
+import { useCollectionView } from "@/features/offline/buckets/library";
 import { LibraryCollectionActions } from "./collection-actions/collection-actions";
 import { useCollectionDisplay } from "../shared/collection-display";
 import { LibraryBookCard } from "../shared/book-card";
 
 type LibraryCollectionScreenProps = {
+  // Initial payload from the RSC page. Used as the SSR fallback until the
+  // bucket finishes hydrating from Dexie. Hydration itself runs in a
+  // sibling <CollectionHydrator> mounted by the page — this keeps the
+  // screen testable without a ClerkProvider in scope.
   collection: LibraryCollection;
 };
 
-export function LibraryCollectionScreen({ collection }: LibraryCollectionScreenProps) {
+export function LibraryCollectionScreen({
+  collection,
+}: LibraryCollectionScreenProps) {
   const t = useTranslations("library.collection");
   const collectionDisplay = useCollectionDisplay();
-  const displayName = collectionDisplay.name(collection);
-  const displayDescription = collectionDisplay.description(collection);
+
+  // Prefer the bucket view (kept in sync via revalidation + cross-feature
+  // updates); fall back to the RSC payload so the first paint matches what
+  // the server rendered.
+  const fromBucket = useCollectionView(collection.slug);
+  const effective = fromBucket
+    ? toLibraryCollection(fromBucket, collection)
+    : collection;
+
+  const displayName = collectionDisplay.name(effective);
+  const displayDescription = collectionDisplay.description(effective);
+
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col px-5 pb-10 pt-6 sm:px-6 md:pb-14 md:pt-8 lg:px-10">
       <div className="mx-auto w-full max-w-7xl space-y-8 md:space-y-10">
@@ -34,8 +53,8 @@ export function LibraryCollectionScreen({ collection }: LibraryCollectionScreenP
                 </h1>
                 <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-olive md:pb-1">
                   {t("itemsAndUnread", {
-                    items: collection.itemCount,
-                    unread: collection.unreadCount,
+                    items: effective.itemCount,
+                    unread: effective.unreadCount,
                   })}
                 </p>
               </div>
@@ -46,36 +65,36 @@ export function LibraryCollectionScreen({ collection }: LibraryCollectionScreenP
               ) : null}
             </div>
             <LibraryCollectionActions
-              collectionDescription={collection.description}
-              collectionId={collection.id}
-              collectionKind={collection.kind}
+              collectionDescription={effective.description}
+              collectionId={effective.id}
+              collectionKind={effective.kind}
               collectionName={displayName}
             />
           </div>
         </section>
 
-        {collection.books.length === 0 ? (
-          <div className="rounded-[22px] border border-line/30 bg-paper-strong/70 px-5 py-6 text-base leading-7 text-copy">
+        {effective.books.length === 0 ? (
+          <div className="rounded-card bg-paper-strong/70 px-5 py-6 text-base leading-7 text-copy">
             {t("noBooksYet")}
           </div>
         ) : (
           <>
             <div className="grid grid-cols-2 gap-x-4 gap-y-6 md:hidden">
-              {collection.books.map((book) => (
+              {effective.books.map((book) => (
                 <LibraryBookCard
                   key={book.libraryItemId}
                   book={book}
-                  collectionSlug={collection.slug}
+                  collectionSlug={effective.slug}
                 />
               ))}
             </div>
 
             <div className="hidden gap-x-8 gap-y-6 md:grid md:grid-cols-3 xl:grid-cols-4">
-              {collection.books.map((book) => (
+              {effective.books.map((book) => (
                 <LibraryBookCard
                   key={book.libraryItemId}
                   book={book}
-                  collectionSlug={collection.slug}
+                  collectionSlug={effective.slug}
                 />
               ))}
             </div>
@@ -84,4 +103,37 @@ export function LibraryCollectionScreen({ collection }: LibraryCollectionScreenP
       </div>
     </div>
   );
+}
+
+// Bridge bucket view → server payload shape. The downstream LibraryBookCard
+// only reads `LibraryCardBook` fields, all of which the bucket preserves.
+// Description/itemCount/etc. come straight off the bucket row.
+function toLibraryCollection(
+  view: ReturnType<typeof useCollectionView> & {},
+  initial: LibraryCollection,
+): LibraryCollection {
+  return {
+    ...initial,
+    id: view.id,
+    slug: view.slug,
+    kind: view.kind,
+    name: view.name,
+    description: view.description,
+    smartKey: view.smartKey,
+    itemCount: view.itemCount,
+    unreadCount: view.unreadCount,
+    books: view.books.map((book) => ({
+      libraryItemId: book.libraryItemId,
+      slug: book.slug,
+      title: book.title,
+      authors: book.authors,
+      coverImageUrl: book.coverImageUrl,
+      completionPercent: book.completionPercent,
+      // The bucket trims primaryFormat to string for storage; cast back to
+      // the BookFileFormat union. Values stored were always one of the
+      // valid enum members so the runtime is sound.
+      primaryFormat: book.primaryFormat as LibraryCollection["books"][number]["primaryFormat"],
+      lastReadAt: book.lastReadAt ?? "",
+    })),
+  };
 }

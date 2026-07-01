@@ -100,7 +100,7 @@ function FeaturedBookFull({ entry }: { entry: FeaturedEntry }) {
           {entry.description ?? t("fallback")}
         </p>
         <div className="flex flex-wrap items-center gap-3">
-          <span className="rounded-full border border-line/60 bg-white/55 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-olive">
+          <span className="rounded-full bg-white/55 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-olive">
             {entry.primaryFormat}
           </span>
           <CatalogAddButton entryId={entry.id} />

@@ -28,12 +28,12 @@ services:
     environment:
       NODE_ENV: production
       PORT: 4000
-      WEB_ORIGIN: http://localhost:${WEB_HOST_PORT:-3000}
+      WEB_ORIGIN: ${WEB_ORIGIN:-http://localhost:${WEB_HOST_PORT:-3000}}
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/ava_reader?schema=public
       CLERK_SECRET_KEY: ${CLERK_SECRET_KEY:-}
       CLERK_PUBLISHABLE_KEY: ${CLERK_PUBLISHABLE_KEY:-}
       CLERK_JWT_KEY: ${CLERK_JWT_KEY:-}
-      CLERK_AUTHORIZED_PARTIES: http://localhost:${WEB_HOST_PORT:-3000}
+      CLERK_AUTHORIZED_PARTIES: ${CLERK_AUTHORIZED_PARTIES:-http://localhost:${WEB_HOST_PORT:-3000}}
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
       OPENROUTER_MODEL: ${OPENROUTER_MODEL:-}
       OPENROUTER_BASE_URL: ${OPENROUTER_BASE_URL:-}
@@ -59,6 +59,7 @@ services:
       args:
         NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:4000}
         NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:-}
+        GIT_SHA: ${GIT_SHA:-}
     restart: unless-stopped
     depends_on:
       api:

@@ -211,6 +211,7 @@ model LibraryItem {
   addedAt                    DateTime                    @default(now())
   lastOpenedAt               DateTime?
   isArchived                 Boolean                     @default(false)
+  offlineRequested           Boolean                     @default(false)
   createdAt                  DateTime                    @default(now())
   updatedAt                  DateTime                    @updatedAt
   user                       User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -256,6 +257,13 @@ model ReadingSession {
   startedAt       DateTime
   lastTrackedAt   DateTime?
   endedAt         DateTime?
+  // Client-generated stable id for the session. Lets the offline-first
+  // client replay a completed session after reconnect: the start call
+  // upserts by (userId, clientSessionId), so a session created offline
+  // and posted later resolves to one server-side row, not a duplicate.
+  // Nullable so historical rows + the original online path (which didn't
+  // generate one) keep working unchanged.
+  clientSessionId String?
   createdAt       DateTime                    @default(now())
   updatedAt       DateTime                    @updatedAt
   user            User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -263,6 +271,7 @@ model ReadingSession {
   participants    ReadingSessionParticipant[]
   segments        ReadingSessionSegment[]
 
+  @@unique([userId, clientSessionId])
   @@index([userId, trackedDay])
   @@index([userId, libraryItemId, endedAt])
 }

@@ -19,6 +19,10 @@ jobs:
             set -e
             cd /opt/ava-reader
             git pull origin main
+            # Pass the freshly-pulled commit to the web build so the service
+            # worker cache is versioned by commit (stable + traceable). The
+            # build falls back to a timestamp if this is ever unset.
+            export GIT_SHA="$(git rev-parse HEAD)"
             docker compose pull
             docker compose up -d --build
             docker image prune -f

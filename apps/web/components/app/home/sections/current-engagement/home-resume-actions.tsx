@@ -1,27 +1,32 @@
 "use client";
 
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { ReadBookLink } from "@/components/app/core/read-book-link";
 import { ImportButton } from "@/components/app/shared/import-button";
 
 type HomeResumeActionsProps = {
   readerHref: string;
+  libraryItemId: string;
 };
 
-export function HomeResumeActions({ readerHref }: HomeResumeActionsProps) {
+export function HomeResumeActions({
+  readerHref,
+  libraryItemId,
+}: HomeResumeActionsProps) {
   const t = useTranslations("home.engagement");
   const [notice, setNotice] = useState<string | null>(null);
 
   return (
     <div className="hidden md:flex md:flex-col md:items-start md:gap-2">
       <div className="flex items-center gap-3">
-        <Link
+        <ReadBookLink
           href={readerHref}
-          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[14px] border border-brand-fill bg-brand-fill px-5 text-sm font-semibold uppercase tracking-[0.14em] text-brand-foreground shadow-(--shadow-card) transition hover:bg-brand-fill-strong"
+          libraryItemId={libraryItemId}
+          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-control bg-brand-fill px-5 text-sm font-semibold uppercase tracking-[0.14em] text-brand-foreground shadow-(--shadow-card) transition hover:bg-brand-fill-strong"
         >
           {t("resumeReading")}
-        </Link>
+        </ReadBookLink>
         <ImportButton
           variant="soft"
           label={t("importAnother")}

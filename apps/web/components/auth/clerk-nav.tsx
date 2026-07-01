@@ -9,10 +9,10 @@ import { UserMenuButton } from "@/components/auth/clerk-user-button";
 
 function navButtonClassName(tone: "primary" | "soft") {
   if (tone === "primary") {
-    return "inline-flex min-h-11 items-center justify-center rounded-[14px] border border-brand-fill bg-brand-fill px-4 text-sm font-medium text-brand-foreground shadow-[var(--shadow-card)] transition hover:bg-brand-fill-strong";
+    return "inline-flex min-h-11 items-center justify-center rounded-control bg-brand-fill px-4 text-sm font-medium text-brand-foreground shadow-(--shadow-card) transition hover:bg-brand-fill-strong";
   }
 
-  return "inline-flex min-h-11 items-center justify-center rounded-[14px] border border-line bg-white/70 px-4 text-sm font-medium text-ink transition hover:bg-white";
+  return "inline-flex min-h-11 items-center justify-center rounded-control bg-white/70 px-4 text-sm font-medium text-ink transition hover:bg-white";
 }
 
 export function ClerkNav() {

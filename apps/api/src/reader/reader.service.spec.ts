@@ -1,4 +1,5 @@
 import { BookFileFormat, BookFileKind, ProcessingStatus } from '@prisma/client';
+import { BadRequestException, Logger } from '@nestjs/common';
 import {
   ReaderService,
   __resetReaderPackageCacheForTesting,
@@ -19,6 +20,7 @@ describe('ReaderService', () => {
   const updateReadingProgress = jest.fn();
   const updateManyReadingProgress = jest.fn();
   const createReadingSession = jest.fn();
+  const findFirstReadingSession = jest.fn();
   const updateReadingSession = jest.fn();
   const updateManyReadingSessionParticipant = jest.fn();
   const countReadingSessionParticipant = jest.fn();
@@ -34,6 +36,7 @@ describe('ReaderService', () => {
     },
     readingSession: {
       create: createReadingSession,
+      findFirst: findFirstReadingSession,
       update: updateReadingSession,
     },
     readingSessionParticipant: {
@@ -88,6 +91,7 @@ describe('ReaderService', () => {
     updateReadingProgress.mockReset();
     updateManyReadingProgress.mockReset();
     createReadingSession.mockReset();
+    findFirstReadingSession.mockReset();
     updateReadingSession.mockReset();
     updateManyReadingSessionParticipant.mockReset();
     countReadingSessionParticipant.mockReset();
@@ -296,6 +300,202 @@ describe('ReaderService', () => {
       lastTrackedAt: '2026-04-12T10:00:00.000Z',
       sessionId: 'session-1',
       startedAt: '2026-04-12T10:00:00.000Z',
+    });
+  });
+
+  describe('offline session replay', () => {
+    const REPLAY = {
+      clientSessionId: 'csid-1',
+      // A 30-minute session that happened three days before "now".
+      startedAt: '2026-06-26T08:00:00.000Z',
+      endedAt: '2026-06-26T08:30:00.000Z',
+    };
+
+    function setNowAfterReplay() {
+      jest
+        .useFakeTimers()
+        .setSystemTime(new Date('2026-06-29T12:00:00.000Z').getTime());
+    }
+
+    it('persists original timestamps and real duration without reopening or re-dating', async () => {
+      setNowAfterReplay();
+      findFirstLibraryItem.mockResolvedValue(createLibraryItemRecord());
+      findFirstReadingSession.mockResolvedValue(null);
+      createReadingSession.mockResolvedValue(
+        createLockedSessionRecord({
+          durationSeconds: 1_800,
+          endedAt: new Date(REPLAY.endedAt),
+          lastTrackedAt: new Date(REPLAY.endedAt),
+          startedAt: new Date(REPLAY.startedAt),
+          trackedDay: new Date('2026-06-26T00:00:00.000Z'),
+        }),
+      );
+      upsertReadingSessionSegment.mockResolvedValue({});
+      aggregateReadingSessionSegment.mockResolvedValue({
+        _sum: { durationSeconds: 1_800 },
+      });
+      updateManyReadingProgress.mockResolvedValue({ count: 1 });
+
+      const session = await readerService.startSession(
+        'clerk_1',
+        'library-1',
+        'client-a',
+        REPLAY,
+      );
+
+      const createCall = getFirstCallArg<{
+        data: {
+          clientSessionId: string;
+          durationMinutes: number;
+          durationSeconds: number;
+          endedAt: Date;
+          lastTrackedAt: Date;
+          startedAt: Date;
+          trackedDay: Date;
+        };
+      }>(createReadingSession);
+      expect(createCall.data.durationSeconds).toBe(1_800);
+      expect(createCall.data.durationMinutes).toBe(30);
+      expect(createCall.data.clientSessionId).toBe('csid-1');
+      expect(createCall.data.endedAt.toISOString()).toBe(REPLAY.endedAt);
+      expect(createCall.data.startedAt.toISOString()).toBe(REPLAY.startedAt);
+      expect(createCall.data.lastTrackedAt.toISOString()).toBe(REPLAY.endedAt);
+      expect(createCall.data.trackedDay.toISOString()).toBe(
+        '2026-06-26T00:00:00.000Z',
+      );
+
+      // No 'start' action: the row is never reopened or re-dated to "now".
+      expect(updateReadingSession).not.toHaveBeenCalled();
+      expect(upsertReadingSessionParticipant).not.toHaveBeenCalled();
+
+      expect(session.endedAt).toBe(REPLAY.endedAt);
+      expect(session.durationSeconds).toBe(1_800);
+    });
+
+    it('writes per-UTC-day segments and syncs progress minutes', async () => {
+      setNowAfterReplay();
+      findFirstLibraryItem.mockResolvedValue(createLibraryItemRecord());
+      findFirstReadingSession.mockResolvedValue(null);
+      createReadingSession.mockResolvedValue(
+        createLockedSessionRecord({
+          durationSeconds: 1_800,
+          endedAt: new Date(REPLAY.endedAt),
+          startedAt: new Date(REPLAY.startedAt),
+        }),
+      );
+      upsertReadingSessionSegment.mockResolvedValue({});
+      aggregateReadingSessionSegment.mockResolvedValue({
+        _sum: { durationSeconds: 1_800 },
+      });
+      updateManyReadingProgress.mockResolvedValue({ count: 1 });
+
+      await readerService.startSession(
+        'clerk_1',
+        'library-1',
+        'client-a',
+        REPLAY,
+      );
+
+      expect(upsertReadingSessionSegment).toHaveBeenCalledTimes(1);
+      const segmentCall = getFirstCallArg<{
+        create: { durationSeconds: number; trackedDay: Date };
+      }>(upsertReadingSessionSegment);
+      expect(segmentCall.create.durationSeconds).toBe(1_800);
+      expect(segmentCall.create.trackedDay.toISOString()).toBe(
+        '2026-06-26T00:00:00.000Z',
+      );
+      expect(updateManyReadingProgress).toHaveBeenCalledWith({
+        data: { minutesRead: 30 },
+        where: { libraryItemId: 'library-1', userId: 'user-1' },
+      });
+    });
+
+    it('is idempotent: a retried replay returns the existing row unchanged', async () => {
+      setNowAfterReplay();
+      findFirstLibraryItem.mockResolvedValue(createLibraryItemRecord());
+      findFirstReadingSession.mockResolvedValue(
+        createLockedSessionRecord({
+          durationSeconds: 1_800,
+          endedAt: new Date(REPLAY.endedAt),
+          lastTrackedAt: new Date(REPLAY.endedAt),
+          startedAt: new Date(REPLAY.startedAt),
+          trackedDay: new Date('2026-06-26T00:00:00.000Z'),
+        }),
+      );
+
+      const session = await readerService.startSession(
+        'clerk_1',
+        'library-1',
+        'client-a',
+        REPLAY,
+      );
+
+      expect(createReadingSession).not.toHaveBeenCalled();
+      expect(updateReadingSession).not.toHaveBeenCalled();
+      expect(upsertReadingSessionSegment).not.toHaveBeenCalled();
+      expect(updateManyReadingProgress).not.toHaveBeenCalled();
+      expect(session.endedAt).toBe(REPLAY.endedAt);
+      expect(session.durationSeconds).toBe(1_800);
+    });
+
+    it('clamps an over-cap span to 24h and logs a warning', async () => {
+      setNowAfterReplay();
+      const warn = jest
+        .spyOn(Logger.prototype, 'warn')
+        .mockImplementation(() => undefined);
+      findFirstLibraryItem.mockResolvedValue(createLibraryItemRecord());
+      findFirstReadingSession.mockResolvedValue(null);
+      createReadingSession.mockResolvedValue(
+        createLockedSessionRecord({
+          durationSeconds: 86_400,
+          endedAt: new Date('2026-06-27T14:00:00.000Z'),
+          startedAt: new Date('2026-06-26T08:00:00.000Z'),
+        }),
+      );
+      upsertReadingSessionSegment.mockResolvedValue({});
+      aggregateReadingSessionSegment.mockResolvedValue({
+        _sum: { durationSeconds: 86_400 },
+      });
+      updateManyReadingProgress.mockResolvedValue({ count: 1 });
+
+      await readerService.startSession('clerk_1', 'library-1', 'client-a', {
+        clientSessionId: 'csid-2',
+        // 30 hours apart -> exceeds the 24h cap.
+        startedAt: '2026-06-26T08:00:00.000Z',
+        endedAt: '2026-06-27T14:00:00.000Z',
+      });
+
+      const createCall = getFirstCallArg<{
+        data: { durationMinutes: number; durationSeconds: number };
+      }>(createReadingSession);
+      expect(createCall.data.durationSeconds).toBe(86_400);
+      expect(createCall.data.durationMinutes).toBe(1_440);
+      expect(warn).toHaveBeenCalledTimes(1);
+      warn.mockRestore();
+    });
+
+    it('rejects an unparseable timestamp with a 400', async () => {
+      setNowAfterReplay();
+      await expect(
+        readerService.startSession('clerk_1', 'library-1', 'client-a', {
+          clientSessionId: 'csid-3',
+          startedAt: 'garbage',
+          endedAt: REPLAY.endedAt,
+        }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(createReadingSession).not.toHaveBeenCalled();
+    });
+
+    it('rejects endedAt before startedAt with a 400', async () => {
+      setNowAfterReplay();
+      await expect(
+        readerService.startSession('clerk_1', 'library-1', 'client-a', {
+          clientSessionId: 'csid-4',
+          startedAt: REPLAY.endedAt,
+          endedAt: REPLAY.startedAt,
+        }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(createReadingSession).not.toHaveBeenCalled();
     });
   });
 

@@ -70,7 +70,7 @@ export function FeedbackForm({ className }: FeedbackFormProps) {
 
   return (
     <div className={cn("flex flex-col gap-6", className)}>
-      <div className="rounded-[18px] bg-soft-fill px-5 py-5">
+      <div className="rounded-card bg-soft-fill px-5 py-5">
         <textarea
           className="min-h-40 w-full resize-none bg-transparent text-lg text-copy-strong outline-none placeholder:text-copy/50 sm:text-xl"
           placeholder={t("placeholder")}
@@ -93,7 +93,7 @@ export function FeedbackForm({ className }: FeedbackFormProps) {
       <div className="flex flex-col gap-3 sm:items-end">
         <button
           type="button"
-          className="inline-flex min-h-12 items-center justify-center rounded-xl border border-brand-fill bg-brand-fill px-8 text-xs font-bold uppercase tracking-[0.2em] text-brand-foreground shadow-(--shadow-card) transition hover:bg-brand-fill-strong disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex min-h-12 items-center justify-center rounded-xl bg-brand-fill px-8 text-xs font-bold uppercase tracking-[0.2em] text-brand-foreground shadow-(--shadow-card) transition hover:bg-brand-fill-strong disabled:cursor-not-allowed disabled:opacity-60"
           disabled={isPending || message.trim().length < 4}
           onClick={() =>
             startTransition(() => {

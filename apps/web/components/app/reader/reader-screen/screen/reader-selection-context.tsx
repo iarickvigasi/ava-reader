@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import type { ReaderRangeLocator } from "@/lib/api-types";
-import type { HighlightColor } from "@/features/highlights";
+import type { HighlightColor } from "@/features/offline/buckets/highlights";
 
 type ReaderSelectionContextValue = {
   text: string | null;

@@ -2,6 +2,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import { LibraryCollectionScreen } from "./collection-screen";
 import type { LibraryCollection } from "@/lib/api-types";
+import { withIntl } from "@/lib/test-utils/intl";
 
 vi.mock("@clerk/nextjs", () => ({
   useAuth: () => ({
@@ -36,18 +37,21 @@ vi.mock("next/navigation", () => ({
 describe("library collection detail UI", () => {
   it("renders all books in a collection and back navigation", () => {
     const markup = renderToStaticMarkup(
-      <LibraryCollectionScreen collection={createCollection()} />,
+      withIntl(<LibraryCollectionScreen collection={createCollection()} />),
     );
 
     expect(markup).toContain('href="/app/library"');
-    expect(markup).toContain(
-      'href="/app/library/books/meditations-by-marcus-aurelius?fromCollection=imported-books"',
+    // Hrefs include card snapshot params (title/author/cover/liid/…) so
+    // the next page can render from URL state. Assert correct slug +
+    // correct fromCollection rather than pinning the exact tail.
+    expect(markup).toMatch(
+      /href="\/app\/library\/books\/meditations-by-marcus-aurelius\?[^"]*fromCollection=imported-books/,
     );
-    expect(markup).toContain(
-      'href="/app/library/books/the-republic-by-plato?fromCollection=imported-books"',
+    expect(markup).toMatch(
+      /href="\/app\/library\/books\/the-republic-by-plato\?[^"]*fromCollection=imported-books/,
     );
-    expect(markup).toContain(
-      'href="/app/library/books/discourses-by-epictetus?fromCollection=imported-books"',
+    expect(markup).toMatch(
+      /href="\/app\/library\/books\/discourses-by-epictetus\?[^"]*fromCollection=imported-books/,
     );
     expect(markup).toContain("Imported Books");
     expect(markup).toContain("3 items • 2 unread");

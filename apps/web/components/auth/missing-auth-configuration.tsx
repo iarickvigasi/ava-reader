@@ -10,7 +10,7 @@ export function MissingAuthConfiguration() {
       subtitle={t("subtitle")}
       footer={<ButtonLink href="/">{t("returnToSplash")}</ButtonLink>}
     >
-      <div className="rounded-[var(--radius-card)] bg-white/68 p-5 text-left">
+      <div className="rounded-card bg-white/68 p-5 text-left">
         <p className="text-sm uppercase tracking-[0.22em] text-muted">
           {t("requiredVarsLabel")}
         </p>

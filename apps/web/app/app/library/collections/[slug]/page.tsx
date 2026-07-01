@@ -1,34 +1,11 @@
-import { notFound } from "next/navigation";
-import { LibraryCollectionScreen } from "@/components/app/library/collection/collection-screen";
-import type { LibraryCollectionPayload } from "@/lib/api-types";
-import { ServerApiError, fetchServerApi } from "@/lib/server-api";
+import { CollectionLoader } from "@/components/app/library/collection/collection-loader";
 
+// Generic shell (ADR 4): no server data fetch and no params read, so the
+// document is identical for every slug — the SW keeps one cached shell per
+// family and the client loader hydrates the right collection from
+// location.pathname + Dexie.
 export const dynamic = "force-dynamic";
 
-async function getLibraryCollection(slug: string) {
-  try {
-    return await fetchServerApi<LibraryCollectionPayload>(
-      `/api/library/collections/${slug}`,
-      {
-        returnBackUrl: `/app/library/collections/${slug}`,
-      },
-    );
-  } catch (error) {
-    if (error instanceof ServerApiError && error.status === 404) {
-      notFound();
-    }
-
-    throw error;
-  }
-}
-
-export default async function LibraryCollectionPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-  const payload = await getLibraryCollection(slug);
-
-  return <LibraryCollectionScreen collection={payload.collection} />;
+export default function LibraryCollectionPage() {
+  return <CollectionLoader />;
 }

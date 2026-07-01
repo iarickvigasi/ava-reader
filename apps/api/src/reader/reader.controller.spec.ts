@@ -82,6 +82,10 @@ describe('ReaderController', () => {
       'clerk_1',
       'library-1',
       'client-a',
+      // Phase 4: offline-replay payload, optional. When the client doesn't
+      // supply any of these, the controller passes nulls and the service
+      // falls back to the original "create with now()" behaviour.
+      { clientSessionId: null, startedAt: null, endedAt: null },
     );
   });
 

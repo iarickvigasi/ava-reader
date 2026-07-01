@@ -17,7 +17,7 @@ export function ThemeToggle() {
       aria-label={label}
       title={label}
       onClick={toggleTheme}
-      className="inline-flex size-11 items-center justify-center rounded-[14px] bg-soft-fill text-ink transition hover:bg-soft-tone-fill"
+      className="inline-flex size-11 items-center justify-center rounded-control bg-soft-fill text-ink transition hover:bg-soft-tone-fill"
     >
       <Icon className="size-5" />
     </button>

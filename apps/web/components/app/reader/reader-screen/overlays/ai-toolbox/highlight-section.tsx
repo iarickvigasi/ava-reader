@@ -4,7 +4,7 @@ import {
   ReaderFavoritesIcon,
 } from "@/components/app/shared/app-icons";
 import { cn } from "@/lib/cn";
-import type { HighlightColor } from "@/features/highlights";
+import type { HighlightColor } from "@/features/offline/buckets/highlights";
 import {
   HIGHLIGHT_COLOR_BG,
   HIGHLIGHT_COLOR_ORDER,
@@ -47,11 +47,11 @@ export function HighlightSection() {
   };
 
   return (
-    <section className="rounded-[10px]">
+    <section className="rounded-control">
       <div className="flex items-center justify-between gap-3 px-5 py-4">
         <div className="flex items-center gap-3">
           <ReaderFavoritesIcon className="size-4 text-copy" />
-          <span className="font-(--font-ui) text-[0.78rem] uppercase tracking-[0.16em] text-copy">
+          <span className="font-ui text-[0.78rem] uppercase tracking-[0.16em] text-copy">
             {t("highlight")}
           </span>
         </div>

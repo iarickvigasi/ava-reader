@@ -28,16 +28,16 @@ type WithSharedProps<TBlock> = {
 };
 
 const HEADING_CLASS =
-  "break-inside-avoid-column font-(--font-reader) text-[calc(1.7rem*var(--reader-font-scale)*var(--reader-block-scale,1))] leading-[1.15] font-bold tracking-[-0.03em] text-ink sm:text-[calc(2.15rem*var(--reader-font-scale)*var(--reader-block-scale,1))]";
+  "break-inside-avoid-column font-reader text-[calc(1.7rem*var(--reader-font-scale)*var(--reader-block-scale,1))] leading-[1.15] font-bold tracking-[-0.03em] text-ink sm:text-[calc(2.15rem*var(--reader-font-scale)*var(--reader-block-scale,1))]";
 
 const BLOCKQUOTE_CLASS =
-  "border-l border-line/60 pl-5 font-(--font-reader) text-[calc(1.18rem*var(--reader-font-scale)*var(--reader-block-scale,1))] leading-[1.9] italic text-ink/90 sm:text-[calc(1.3rem*var(--reader-font-scale)*var(--reader-block-scale,1))]";
+  "border-l border-line/60 pl-5 font-reader text-[calc(1.18rem*var(--reader-font-scale)*var(--reader-block-scale,1))] leading-[1.9] italic text-ink/90 sm:text-[calc(1.3rem*var(--reader-font-scale)*var(--reader-block-scale,1))]";
 
 const LIST_CLASS =
-  "space-y-1 pl-6 font-(--font-reader) text-[calc(1.12rem*var(--reader-font-scale)*var(--reader-block-scale,1))] leading-relaxed text-ink sm:text-[calc(1.28rem*var(--reader-font-scale)*var(--reader-block-scale,1))]";
+  "space-y-1 pl-6 font-reader text-[calc(1.12rem*var(--reader-font-scale)*var(--reader-block-scale,1))] leading-relaxed text-ink sm:text-[calc(1.28rem*var(--reader-font-scale)*var(--reader-block-scale,1))]";
 
 const PARAGRAPH_CLASS =
-  "font-(--font-reader) text-[calc(1.16rem*var(--reader-font-scale)*var(--reader-block-scale,1))] leading-loose tracking-[-0.01em] text-ink sm:text-[calc(1.34rem*var(--reader-font-scale)*var(--reader-block-scale,1))]";
+  "font-reader text-[calc(1.16rem*var(--reader-font-scale)*var(--reader-block-scale,1))] leading-loose tracking-[-0.01em] text-ink sm:text-[calc(1.34rem*var(--reader-font-scale)*var(--reader-block-scale,1))]";
 
 const FIGURE_MIN_HEIGHT_PX = 160;
 const FIGURE_RESERVED_HEIGHT_PX = 64;
@@ -209,15 +209,10 @@ function ImageBlock({
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         alt={block.alt ?? ""}
-        className="w-full rounded-[22px] border border-line/30 object-contain"
+        className="w-full rounded-card object-contain"
         src={block.src}
         style={{ maxHeight }}
       />
-      {block.alt ? (
-        <figcaption className="font-(--font-ui) text-sm text-ink/55">
-          {block.alt}
-        </figcaption>
-      ) : null}
     </figure>
   );
 }

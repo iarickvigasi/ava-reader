@@ -45,7 +45,7 @@ export function CollectionSection({ collection }: CollectionSectionProps) {
       </div>
 
       {collection.books.length === 0 ? (
-        <div className="rounded-[22px] border border-line/30 bg-paper-strong/70 px-5 py-6 text-base leading-7 text-copy">
+        <div className="rounded-card bg-paper-strong/70 px-5 py-6 text-base leading-7 text-copy">
           {t("noBooksYet")}
         </div>
       ) : (

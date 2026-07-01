@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
 import { AppShell } from "@/components/app/core/app-shell";
 import { MissingAuthConfiguration } from "@/components/auth/missing-auth-configuration";
+import { CurrentUserHydrator } from "@/features/offline/buckets/me";
 import type { CurrentUserPayload } from "@/lib/api-types";
-import { fetchServerApi } from "@/lib/server-api";
+import { fetchServerApiTolerant } from "@/lib/server-api";
 
 export const dynamic = "force-dynamic";
 
@@ -18,9 +19,18 @@ export default async function AppLayout({
     return <MissingAuthConfiguration />;
   }
 
-  const currentUser = await fetchServerApi<CurrentUserPayload>("/api/me", {
-    returnBackUrl: "/app",
-  });
+  // Tolerate an unreachable API (offline). A null return means we render
+  // with `currentUser = null`; AppShell recovers the last-known user from
+  // Dexie via the cache. Real HTTP errors (auth redirect, 5xx) still bubble.
+  const currentUser = await fetchServerApiTolerant<CurrentUserPayload>(
+    "/api/me",
+    { returnBackUrl: "/app" },
+  );
 
-  return <AppShell currentUser={currentUser}>{children}</AppShell>;
+  return (
+    <>
+      <CurrentUserHydrator initial={currentUser} />
+      <AppShell currentUser={currentUser}>{children}</AppShell>
+    </>
+  );
 }

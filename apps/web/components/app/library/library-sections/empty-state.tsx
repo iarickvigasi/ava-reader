@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 export function LibraryEmptyState() {
   const t = useTranslations("library.empty");
   return (
-    <section className="rounded-[28px] bg-paper-strong/75 px-6 py-10 sm:px-8">
+    <section className="rounded-modal bg-paper-strong/75 px-6 py-10 sm:px-8">
       <div className="max-w-2xl space-y-4">
         <p className="text-[0.78rem] font-semibold uppercase tracking-[0.18em] text-brand-fill">
           {t("eyebrow")}

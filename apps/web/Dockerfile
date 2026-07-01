@@ -4,8 +4,18 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 ARG NEXT_PUBLIC_API_BASE_URL=http://localhost:4000
 ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+# Commit being built — consumed by next.config.ts to version the service
+# worker cache (NEXT_PUBLIC_SW_VERSION). Falls back to a build timestamp when
+# unset, so this is optional but gives stable, traceable cache names.
+ARG GIT_SHA
 ENV NEXT_PUBLIC_API_BASE_URL="$NEXT_PUBLIC_API_BASE_URL"
 ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY"
+ENV GIT_SHA="$GIT_SHA"
+# Keep auth redirects same-origin: without these the Clerk middleware falls
+# back to the hosted Account Portal, which strands offline tabs in a redirect
+# loop when the session can't refresh.
+ENV NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+ENV NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 
 WORKDIR /app
 
