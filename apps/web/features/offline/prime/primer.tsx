@@ -41,14 +41,16 @@ export function BackgroundPrimer(): React.ReactElement | null {
   const t = useTranslations("offline.toast");
   const [consentOpen, setConsentOpen] = useState(false);
 
-  // Saves one book's full content offline. Explicit kind → sticky, so a
-  // proactively-cached book isn't auto-evicted the moment the user opens a
-  // different one. Quota is enforced by the primer before each call.
+  // Saves one book's full content offline. `saveKind` defaults to "explicit"
+  // (sticky) for offline-marked books, so a proactively-cached book isn't
+  // auto-evicted the moment the user opens a different one; the current
+  // continue-reading book is saved "auto" (evictable) so it isn't pinned
+  // forever. Quota is enforced by the primer before each call.
   const saveBook: SaveBookFn = useCallback(
-    (libraryItemId) =>
+    (libraryItemId, saveKind = "explicit") =>
       saveBookOffline({
         libraryItemId,
-        saveKind: "explicit",
+        saveKind,
         fetchChapter: (id, chapterId, signal) =>
           fetchReaderPayload({
             getToken,

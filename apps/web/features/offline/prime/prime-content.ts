@@ -5,7 +5,7 @@
 // Sequential (the save orchestrator is single-flight), quota-gated, and yields
 // to any save the user starts.
 
-import { collectSmartBooks } from "./smart-books";
+import { collectContentTargets } from "./smart-books";
 import type { PrimeInternals, PrimeRuntime } from "./types";
 
 // Background priming is more conservative about disk than an interactive save:
@@ -21,14 +21,18 @@ const BACKGROUND_QUOTA_FLOOR_BYTES = 500 * 1024 * 1024; // 500 MB
 export async function primeBookContent(
   runtime: PrimeRuntime,
   d: PrimeInternals,
+  includeCurrentBook: boolean,
 ): Promise<boolean> {
   const view = await d.readLibraryView();
   if (!view) {
     return false;
   }
-  // Only books the user explicitly chose to keep offline. Everything else is
-  // cached lazily when opened.
-  const books = collectSmartBooks(view).filter((b) => b.offlineRequested);
+  // Books the user explicitly chose to keep offline (sticky), plus — when
+  // allowed — the current continue-reading book (evictable auto-save) so the
+  // home "continue reading" CTA reads offline even if it was never opened this
+  // session. Everything else is cached lazily when opened.
+  const currentBookId = includeCurrentBook ? await d.readCurrentBookId() : null;
+  const books = collectContentTargets(view, currentBookId);
 
   // Progress for the header chip (see [[11-cache-priming]]): total known up
   // front, one tick per book handled. Reported even for already-cached books,
@@ -62,7 +66,10 @@ export async function primeBookContent(
         }
         return true;
       }
-      const outcome = await runtime.saveBook(b.libraryItemId);
+      // Offline-marked → explicit (sticky); current-book-only → auto (evictable).
+      const outcome = b.offlineRequested
+        ? await runtime.saveBook(b.libraryItemId)
+        : await runtime.saveBook(b.libraryItemId, "auto");
       if (outcome.kind === "cancelled") {
         return false; // user opened a book mid-save — yield and resume
       }

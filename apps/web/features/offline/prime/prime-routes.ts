@@ -4,14 +4,21 @@
 // and cheap (the SW skips routes it has already cached), so the island re-runs
 // once per page-session and on SW takeover without a persisted flag.
 
+import type { RoutePrecacheResult } from "../sw/precache-routes";
+
 import { collectAppRoutes } from "./routes";
 
 export type PrimeRoutesDeps = {
   isOnline: () => boolean;
-  requestRoutePrecache: (routes: string[]) => Promise<void>;
+  requestRoutePrecache: (
+    routes: string[],
+  ) => Promise<RoutePrecacheResult | null>;
 };
 
-export type PrimeRoutesResult = "done" | "skipped";
+// "done" only when the SW confirmed every shell is cached — the runner latches
+// on that. "incomplete" (partial cache, or no ack) means retry on reconnect;
+// "skipped" means we were offline.
+export type PrimeRoutesResult = "done" | "skipped" | "incomplete";
 
 export async function primeRoutes(
   deps: PrimeRoutesDeps,
@@ -19,6 +26,6 @@ export async function primeRoutes(
   if (!deps.isOnline()) {
     return "skipped";
   }
-  await deps.requestRoutePrecache(collectAppRoutes());
-  return "done";
+  const result = await deps.requestRoutePrecache(collectAppRoutes());
+  return result?.complete ? "done" : "incomplete";
 }

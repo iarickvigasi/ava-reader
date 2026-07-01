@@ -13,6 +13,7 @@ function resolve(
     completedAt: null,
     now: 1000,
     dwellMs: DWELL,
+    shellsReady: true,
     ...overrides,
   });
 }
@@ -62,6 +63,21 @@ describe("resolveHeaderChip", () => {
     expect(r.state).toEqual({ kind: "ready" });
     expect(r.completedAt).toBe(1000);
     expect(r.timerMs).toBe(DWELL);
+  });
+
+  it("holds (shows nothing) when priming is ready but route shells aren't cached yet", () => {
+    const r = resolve({ progress: { phase: "ready" }, shellsReady: false });
+    expect(r.state).toEqual({ kind: "none" });
+    expect(r.completedAt).toBeNull();
+    expect(r.timerMs).toBeNull();
+  });
+
+  it("still shows the Caching chip regardless of shell readiness", () => {
+    const r = resolve({
+      progress: { phase: "content", done: 2, total: 5 },
+      shellsReady: false,
+    });
+    expect(r.state).toEqual({ kind: "caching", done: 2, total: 5 });
   });
 
   it("keeps showing the ready chip during the dwell window", () => {

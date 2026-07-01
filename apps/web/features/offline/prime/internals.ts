@@ -28,6 +28,8 @@ export const DEFAULT_INTERNALS: PrimeInternals = {
   isOnline,
   hasInFlightSaves,
   readLibraryView,
+  readCurrentBookId: async () =>
+    (await readHome())?.currentEngagement?.libraryItemId ?? null,
   readHome,
   readBookInfo,
   revalidateHome,

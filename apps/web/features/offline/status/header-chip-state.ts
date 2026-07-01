@@ -19,6 +19,11 @@ export type HeaderChipInput = {
   completedAt: number | null;
   now: number;
   dwellMs: number;
+  // Whether the SW has confirmed the app's route shells are cached
+  // ([[14-route-precaching]]). The "ready" cue must wait for this, else it
+  // over-promises: priming can finish before the shells land, and a route
+  // (e.g. /app/library) would be a blank page offline.
+  shellsReady: boolean;
 };
 
 export type HeaderChipResult = {
@@ -40,7 +45,7 @@ function live(state: ChipState): HeaderChipResult {
 }
 
 export function resolveHeaderChip(input: HeaderChipInput): HeaderChipResult {
-  const { online, progress, completedAt, now, dwellMs } = input;
+  const { online, progress, completedAt, now, dwellMs, shellsReady } = input;
 
   // Offline wins, and ends any dwell so a later reconnect starts fresh.
   if (!online) {
@@ -59,7 +64,15 @@ export function resolveHeaderChip(input: HeaderChipInput): HeaderChipResult {
       : live({ kind: "caching", done: progress.done, total: progress.total });
   }
 
-  // Ready — dwell from when it first completed, then hide.
+  // Ready — but only once the route shells are cached too, else the cue
+  // over-promises (priming can finish before the shells land, leaving a route
+  // like /app/library a blank page offline). Hold as NONE until shellsReady;
+  // the hook keeps the "ready" progress un-consumed so this flips to the dwell
+  // once shells arrive.
+  if (!shellsReady) {
+    return NONE;
+  }
+  // Dwell from when it first completed, then hide.
   const since = completedAt ?? now;
   const remaining = dwellMs - (now - since);
   if (remaining <= 0) {

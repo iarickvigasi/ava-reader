@@ -12,11 +12,11 @@ import { useEffect, useRef, useState } from "react";
 import { isOnline } from "@/features/offline/net/net-state";
 import { primeRoutes } from "@/features/offline/prime/prime-routes";
 import { requestRoutePrecache } from "@/features/offline/sw/precache-routes";
+import {
+  getShellsReady,
+  setShellsReady,
+} from "@/features/offline/status/shells-ready";
 import { useNetworkState } from "@/features/offline/net/use-network-state";
-
-// Session guard: once a pass posts the route list, don't re-post on every
-// render. Reset on SW takeover so the new version's cache is filled.
-let completed = false;
 
 export function RoutePrecacheRunner() {
   const online = useNetworkState();
@@ -28,7 +28,10 @@ export function RoutePrecacheRunner() {
       return;
     }
     const onControllerChange = () => {
-      completed = false;
+      // The new version starts with an empty cache — the shells aren't ready
+      // again until its own pass confirms them. Clearing this also re-arms the
+      // precache pass below (its guard reads shells-ready).
+      setShellsReady(false);
       setSwEpoch((epoch) => epoch + 1);
     };
     navigator.serviceWorker.addEventListener(
@@ -42,8 +45,14 @@ export function RoutePrecacheRunner() {
       );
   }, []);
 
+  // The shells-ready signal is the single source of truth for "this session's
+  // precache is confirmed complete": it gates this pass (don't re-post once
+  // done) and drives the header chip. A pass that ends "incomplete" (offline
+  // mid-pass, partial cache) leaves it false, so a reconnect or SW takeover
+  // retries — never latched at post time, which used to strand the library
+  // shell.
   useEffect(() => {
-    if (completed || !online || running.current) {
+    if (getShellsReady() || !online || running.current) {
       return;
     }
     running.current = true;
@@ -51,7 +60,7 @@ export function RoutePrecacheRunner() {
       try {
         const result = await primeRoutes({ isOnline, requestRoutePrecache });
         if (result === "done") {
-          completed = true;
+          setShellsReady(true);
         }
       } finally {
         running.current = false;

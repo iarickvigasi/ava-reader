@@ -101,6 +101,7 @@ function setup(overrides: Partial<PrimeInternals> = {}): Harness {
         book("a", { offlineRequested: true }),
         book("b", { offlineRequested: true }),
       ]),
+    readCurrentBookId: async () => null,
     readHome: async () => ({}),
     readBookInfo: async () => ({}),
     revalidateHome: async () => {},
@@ -183,6 +184,37 @@ describe("primeAllCaches", () => {
     const result = await primeAllCaches(h.runtime, h.internals);
     expect(result.contentConsentNeeded).toBe(false);
     expect(h.saveBook).toHaveBeenCalledTimes(2);
+  });
+
+  it("reconcile also caches the current book when Save-Data allows (warm device)", async () => {
+    // A book started reading after the device finished priming (its content was
+    // never downloaded, and it isn't offline-marked) must still reconcile so
+    // "continue reading" reads offline. Save-Data off → allowed.
+    const h = setup({
+      readLibraryView: async () => view([book("a", { offlineRequested: false })]),
+      readCurrentBookId: async () => "a",
+      hasBookContent: async () => false,
+    });
+    h.flags.set(META_KEY_COMPLETED, "T");
+    await primeAllCaches(h.runtime, h.internals);
+    expect(h.saveBook).toHaveBeenCalledWith("a", "auto");
+  });
+
+  it("reconcile withholds the current book under Save-Data decline, but still reconciles offline-marked books", async () => {
+    const h = setup({
+      isSaveDataOn: () => true,
+      readLibraryView: async () =>
+        view([
+          book("a", { offlineRequested: true }), // consent-exempt
+          book("b", { offlineRequested: false }), // current, needs consent
+        ]),
+      readCurrentBookId: async () => "b",
+      hasBookContent: async () => false,
+    });
+    h.flags.set(META_KEY_COMPLETED, "T");
+    await primeAllCaches(h.runtime, h.internals);
+    expect(h.saveBook).toHaveBeenCalledWith("a"); // reconciled (consent-exempt)
+    expect(h.saveBook).not.toHaveBeenCalledWith("b", "auto"); // withheld
   });
 
   it("happy path: primes metadata, preferences, content + annotations", async () => {
@@ -271,6 +303,35 @@ describe("primeAllCaches", () => {
     expect(h.saveBook).toHaveBeenCalledTimes(1);
     expect(h.saveBook).toHaveBeenCalledWith("a");
     expect(h.revalidateHighlights).toHaveBeenCalledTimes(1);
+  });
+
+  it("also caches the current continue-reading book, evictably (auto), even when unmarked", async () => {
+    // The reported bug: the header says "Ready for offline work" but the book
+    // the user is actually reading isn't offline-marked, so tapping "continue
+    // reading" offline hit the missing-book modal. The primer must cache it.
+    const h = setup({
+      readLibraryView: async () =>
+        view([
+          book("a", { offlineRequested: true }),
+          book("b", { offlineRequested: false }), // current book, not marked
+        ]),
+      readCurrentBookId: async () => "b",
+    });
+    await primeAllCaches(h.runtime, h.internals);
+    expect(h.saveBook).toHaveBeenCalledWith("a"); // offline-marked → explicit
+    expect(h.saveBook).toHaveBeenCalledWith("b", "auto"); // current → evictable
+    expect(h.saveBook).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not double-save when the current book is also offline-marked (explicit wins)", async () => {
+    const h = setup({
+      readLibraryView: async () =>
+        view([book("a", { offlineRequested: true })]),
+      readCurrentBookId: async () => "a",
+    });
+    await primeAllCaches(h.runtime, h.internals);
+    expect(h.saveBook).toHaveBeenCalledTimes(1);
+    expect(h.saveBook).toHaveBeenCalledWith("a"); // explicit, not "auto"
   });
 
   it("only enumerates books from smart collections", async () => {

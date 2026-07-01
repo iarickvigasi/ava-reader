@@ -4,14 +4,21 @@
 
 import type { LibraryView } from "../buckets/library/types";
 import type { SaveOutcome } from "../buckets/book/download";
+import type { SaveKind } from "../buckets/book/storage";
 import type { PrimeProgress } from "../status/prime-progress";
 
 export type GetToken = () => Promise<string | null>;
 
 // A single book's offline-save, provided by the client island (it needs Clerk
 // auth for the reader fetcher). Returns the orchestrator's outcome so the
-// primer can tell "user took over" (cancelled) from a plain failure.
-export type SaveBookFn = (libraryItemId: string) => Promise<SaveOutcome>;
+// primer can tell "user took over" (cancelled) from a plain failure. `saveKind`
+// defaults to "explicit" (sticky) for offline-marked books; the current
+// continue-reading book is saved "auto" (evictable) since the user didn't
+// explicitly request it.
+export type SaveBookFn = (
+  libraryItemId: string,
+  saveKind?: SaveKind,
+) => Promise<SaveOutcome>;
 
 export type PrimeRuntime = {
   getToken: GetToken;
@@ -36,6 +43,10 @@ export type PrimeInternals = {
   isOnline: () => boolean;
   hasInFlightSaves: () => boolean;
   readLibraryView: () => Promise<LibraryView | null>;
+  // The current continue-reading book's libraryItemId (home resume target),
+  // or null when the user has none. Proactively cached so "continue reading"
+  // works offline even if the book was never opened this session.
+  readCurrentBookId: () => Promise<string | null>;
   readHome: () => Promise<unknown>;
   readBookInfo: (slug: string) => Promise<unknown>;
   revalidateHome: (getToken: GetToken) => Promise<void>;

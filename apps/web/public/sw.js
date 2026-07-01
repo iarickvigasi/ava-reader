@@ -271,12 +271,25 @@ self.addEventListener("message", (event) => {
   if (!data || data.type !== "PRECACHE_ROUTES" || !Array.isArray(data.routes)) {
     return;
   }
-  event.waitUntil(precacheRoutes(data.routes));
+  // The client transfers a MessagePort to hear the completion ack (which routes
+  // are now cached), so its "Ready for offline work" cue only fires once the
+  // shells are genuinely present. Older callers without a port still work.
+  const reply = event.ports && event.ports[0];
+  event.waitUntil(
+    precacheRoutes(data.routes).then((cached) => {
+      if (reply) {
+        reply.postMessage({ cached });
+      }
+    }),
+  );
 });
 
+// Precaches every route's shell, then reports back which routes now have a
+// cached document — the client uses that to know offline browsing is ready.
 async function precacheRoutes(routes) {
   const cache = await caches.open(CACHE_NAME);
-  const queue = routes.filter((route) => typeof route === "string");
+  const valid = routes.filter((route) => typeof route === "string");
+  const queue = valid.slice();
   const worker = async () => {
     let route;
     while ((route = queue.shift()) !== undefined) {
@@ -286,6 +299,13 @@ async function precacheRoutes(routes) {
   await Promise.all(
     Array.from({ length: PRECACHE_CONCURRENCY }, () => worker()),
   );
+  const cached = [];
+  for (const route of valid) {
+    if (await cache.match(navigationCacheKey(new Request(route), "doc"))) {
+      cached.push(route);
+    }
+  }
+  return cached;
 }
 
 async function cacheRouteShell(cache, route) {

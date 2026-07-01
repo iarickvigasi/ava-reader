@@ -48,12 +48,14 @@ export async function primeAllCaches(
   }
   if (await d.hasMetaFlag(META_KEY_COMPLETED)) {
     // The once-per-device prime is done, but the user can still mark a NEW book
-    // offline later (e.g. tapped Save while disconnected). Reconcile any such
-    // book whose content isn't cached yet — page-independent, and consent-exempt
-    // since an explicit request is the user's consent even under Save-Data. A
-    // cheap no-op when nothing is outstanding.
-    if (await hasOutstandingOfflineContent(d)) {
-      const reconciled = await primeBookContent(runtime, d);
+    // offline later (e.g. tapped Save while disconnected), or start reading a
+    // different book. Reconcile any such target whose content isn't cached yet
+    // — page-independent. Offline-marked books are consent-exempt (an explicit
+    // request is the user's consent even under Save-Data); the current book is
+    // not, so it's gated by the same Save-Data consent the content tier uses.
+    const { allowed } = await resolveContentConsent(d);
+    if (await hasOutstandingOfflineContent(d, allowed)) {
+      const reconciled = await primeBookContent(runtime, d, allowed);
       if (reconciled) {
         runtime.onProgress?.({ phase: "ready" });
       }
@@ -75,7 +77,7 @@ export async function primeAllCaches(
     const { allowed, consentNeeded } = await resolveContentConsent(d);
     contentConsentNeeded = consentNeeded;
     if (allowed) {
-      contentDone = await primeBookContent(runtime, d);
+      contentDone = await primeBookContent(runtime, d, true);
       if (contentDone) {
         await d.setMetaFlag(META_KEY_CONTENT_DONE, d.now());
       }
