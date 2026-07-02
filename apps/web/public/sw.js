@@ -12,6 +12,8 @@
  *   offline. Freshness wins online (no stale-while-revalidate flash); the
  *   cache is only a safety net for offline.
  * - other same-origin GET (fonts, /public assets) → cache-first.
+ * - Next link prefetches (next-router-prefetch) → bypass entirely; their
+ *   partial "loading" stubs must never poison the navigation cache.
  * - /api/*, cross-origin, non-GET → bypass entirely (network passthrough).
  *
  * Cache versioning: the registrar appends ?v=<build-version> to the worker
@@ -91,6 +93,18 @@ function isRscRequest(request) {
   return (
     request.headers.get("RSC") === "1" ||
     (request.headers.get("Accept") || "").includes("text/x-component")
+  );
+}
+
+// Next marks link prefetches with one of these headers; a real navigation
+// carries `next-router-state-tree` instead and never these. A dynamic route
+// with a `loading.tsx` (e.g. /app/library) prefetches to a partial "loading"
+// stub, not the full page — so prefetch responses must never be cached or
+// served under the shared navigation key (see route-precaching spec).
+function isPrefetchRequest(request) {
+  return (
+    request.headers.get("next-router-prefetch") !== null ||
+    request.headers.get("next-router-segment-prefetch") !== null
   );
 }
 
@@ -232,6 +246,16 @@ self.addEventListener("fetch", (event) => {
   // Never intercept the data/auth layer — Dexie + Clerk own these and caching
   // them would serve stale or unauthorized data.
   if (url.pathname.startsWith("/api/")) {
+    return;
+  }
+
+  // Let Next's prefetches pass straight through to the network — never cache or
+  // serve them. A dynamic route's prefetch is a partial "loading" stub; caching
+  // it under the shared navigation key overwrites the full payload and, served
+  // offline, hangs the navigation (a valid 200 that Next neither completes nor
+  // hard-falls-back from). The full RSC from the precache / a real navigation
+  // stays the offline payload. See route-precaching spec.
+  if (isPrefetchRequest(request)) {
     return;
   }
 
