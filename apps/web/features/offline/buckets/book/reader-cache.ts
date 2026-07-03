@@ -11,6 +11,7 @@ import type {
 } from "@/lib/api-types/reader";
 
 import { getDb } from "../../db";
+import { readProgress } from "../progress/storage";
 
 export async function loadReaderPayloadFromCache(
   libraryItemId: string,
@@ -76,10 +77,13 @@ export async function loadReaderPayloadFromCache(
   const toc = (book.toc ?? []) as ReaderTocNode[];
   const metadata = book.metadata as ReaderBookPayload;
 
-  // Progress is per-user reading state; it isn't cached at the book level.
-  // The reader's resume layer (features/reader/resume) reads it from
-  // localStorage, so we return a neutral progress payload here and let the
-  // resume system overlay it.
+  // Overlay the resume position from the progress bucket so a cached book
+  // resumes on the right page even on a fresh/offline device that never wrote a
+  // localStorage snapshot — the primer fills the bucket from the server (see
+  // specs/11-cache-priming, specs/1-reader/5-resume). Neutral when this device
+  // has no row yet (never read + never primed → the reader starts at chapter 1).
+  const progressRow = await readProgress(libraryItemId);
+
   return {
     status: "READY",
     activeChapterId: activeId,
@@ -87,9 +91,9 @@ export async function loadReaderPayloadFromCache(
     chapters,
     progress: {
       chapterLabel: null,
-      completionPercent: 0,
-      lastReadAt: null,
-      locator: null,
+      completionPercent: progressRow?.completionPercent ?? 0,
+      lastReadAt: progressRow?.lastReadAt ?? null,
+      locator: progressRow?.locator ?? null,
     },
     toc,
   };

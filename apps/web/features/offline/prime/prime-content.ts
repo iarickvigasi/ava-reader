@@ -77,11 +77,15 @@ export async function primeBookContent(
     }
 
     if (hasContent) {
-      // Cache the book's annotations + AI comments so they render offline. Done
-      // for every offline-marked book (not just newly-saved ones) so a resumed
-      // device backfills them even when content was already present.
+      // Cache the book's annotations, AI comments + reading progress so they
+      // render offline and the reader resumes on the right page. Done for every
+      // offline-marked book (not just newly-saved ones) so a resumed device
+      // backfills them — and refreshes a cross-device position — even when
+      // content was already present. revalidateProgress leaves a dirty (unsynced
+      // local-ahead) row untouched.
       await d.revalidateHighlights(b.libraryItemId, runtime.getToken);
       await d.revalidateAiComments(b.libraryItemId, runtime.getToken);
+      await d.revalidateProgress(b.libraryItemId, runtime.getToken);
     }
 
     runtime.onProgress?.({ phase: "content", done: i + 1, total });

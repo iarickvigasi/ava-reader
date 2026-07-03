@@ -56,6 +56,7 @@ export type PrimeInternals = {
   revalidatePreferences: (getToken: GetToken) => Promise<void>;
   revalidateHighlights: (libraryItemId: string, getToken: GetToken) => Promise<void>;
   revalidateAiComments: (libraryItemId: string, getToken: GetToken) => Promise<void>;
+  revalidateProgress: (libraryItemId: string, getToken: GetToken) => Promise<void>;
   hasBookContent: (libraryItemId: string) => Promise<boolean>;
   checkStorageQuota: (floorBytes?: number) => Promise<{ ok: boolean }>;
   getMetaFlag: (key: string) => Promise<string | null>;

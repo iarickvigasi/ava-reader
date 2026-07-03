@@ -245,6 +245,21 @@ export class ReaderService {
     };
   }
 
+  // Lightweight resume-position read for the offline primer's progress-bucket
+  // revalidation (see specs/11-cache-priming): just the progress summary, no
+  // chapter loading. The online reader gets the same summary inside the full
+  // reader payload (getReaderPayload).
+  async getProgress(
+    clerkUserId: string,
+    libraryItemId: string,
+  ): Promise<ReaderProgressSummary> {
+    const libraryItem = await this.getOwnedLibraryItem(
+      clerkUserId,
+      libraryItemId,
+    );
+    return createProgressSummary(libraryItem.progress);
+  }
+
   async updateProgress(
     clerkUserId: string,
     libraryItemId: string,

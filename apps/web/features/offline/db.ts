@@ -188,6 +188,10 @@ export type ProgressRow = {
   libraryItemId: string;
   locator: ReaderLocator | null;
   completionPercent: number;
+  // Server's reading timestamp (ReaderProgressPayload.lastReadAt) — the recency
+  // key the resume layer compares against the local snapshot. Null when never
+  // read. Non-indexed, so no schema-version bump.
+  lastReadAt: string | null;
   // `dirty` when we have local progress that hasn't synced; clears once the
   // server acks it. Used to pick the winner during merge.
   lastLocalUpdateAt: string;

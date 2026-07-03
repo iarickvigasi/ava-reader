@@ -171,6 +171,23 @@ describe('ReaderService', () => {
     expect(updateLibraryItemCall.data.lastOpenedAt).toBeInstanceOf(Date);
   });
 
+  it('returns the current reading progress summary for an owned item', async () => {
+    findFirstLibraryItem.mockResolvedValue(createLibraryItemRecord());
+
+    const progress = await readerService.getProgress('clerk_1', 'library-1');
+
+    expect(progress).toEqual({
+      chapterLabel: 'Chapter Two',
+      completionPercent: 50,
+      lastReadAt: '2026-04-07T10:00:00.000Z',
+      locator: {
+        blockId: 'chapter-2::b1',
+        chapterId: 'chapter-2',
+        textOffset: 0,
+      },
+    });
+  });
+
   it('lazily back-fills the progress index for legacy derived-reader rows', async () => {
     findFirstLibraryItem.mockResolvedValue(createLibraryItemRecord());
     updateReadingProgress.mockResolvedValue({

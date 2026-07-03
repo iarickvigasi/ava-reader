@@ -69,6 +69,39 @@ describe("progress storage", () => {
     );
   });
 
+  it("writeProgress stores the server lastReadAt when provided", async () => {
+    await writeProgress({
+      libraryItemId: "lib-1",
+      locator: { chapterId: "ch-1", blockId: "b1", textOffset: 0 },
+      completionPercent: 30,
+      lastReadAt: "2026-04-07T10:00:00.000Z",
+      dirty: false,
+    });
+    const row = await readProgress("lib-1");
+    expect(row?.lastReadAt).toBe("2026-04-07T10:00:00.000Z");
+  });
+
+  it("writeProgress preserves lastReadAt when a later local write omits it", async () => {
+    await writeProgress({
+      libraryItemId: "lib-1",
+      locator: null,
+      completionPercent: 10,
+      lastReadAt: "2026-04-07T10:00:00.000Z",
+      dirty: false,
+    });
+    // The reader advances locally (no server timestamp to hand) — the server
+    // baseline timestamp must survive so resume recency stays comparable.
+    await writeProgress({
+      libraryItemId: "lib-1",
+      locator: { chapterId: "ch-2", blockId: "b2", textOffset: 0 },
+      completionPercent: 20,
+      dirty: true,
+    });
+    const row = await readProgress("lib-1");
+    expect(row?.lastReadAt).toBe("2026-04-07T10:00:00.000Z");
+    expect(row?.dirty).toBe(true);
+  });
+
   it("markProgressSynced sets lastServerUpdateAt and clears dirty", async () => {
     await writeProgress({
       libraryItemId: "lib-1",

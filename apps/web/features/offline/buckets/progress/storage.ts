@@ -13,6 +13,10 @@ export async function writeProgress(input: {
   libraryItemId: string;
   locator: ReaderLocator | null;
   completionPercent: number;
+  // Server reading timestamp. Server-sourced writes (progress PATCH ack,
+  // primer revalidate) pass it; a local reader write omits it and the prior
+  // baseline is preserved so resume-recency comparisons stay meaningful.
+  lastReadAt?: string | null;
   // True when the local view is ahead of the server (a pending PATCH).
   // Used by a future runner to send PATCH for any dirty row.
   dirty?: boolean;
@@ -24,6 +28,10 @@ export async function writeProgress(input: {
     libraryItemId: input.libraryItemId,
     locator: input.locator,
     completionPercent: input.completionPercent,
+    lastReadAt:
+      input.lastReadAt !== undefined
+        ? input.lastReadAt
+        : (prior?.lastReadAt ?? null),
     lastLocalUpdateAt: nowIso,
     lastServerUpdateAt: prior?.lastServerUpdateAt ?? null,
     dirty: input.dirty ?? prior?.dirty ?? false,

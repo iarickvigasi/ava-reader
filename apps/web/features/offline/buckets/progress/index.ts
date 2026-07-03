@@ -4,3 +4,4 @@ export {
   readProgress,
   writeProgress,
 } from "./storage";
+export { revalidateProgress } from "./revalidate";

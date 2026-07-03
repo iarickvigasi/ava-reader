@@ -2,6 +2,7 @@ import "fake-indexeddb/auto";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { DB_NAME, __resetDbForTests } from "../../db";
+import { writeProgress } from "../progress/storage";
 import { loadReaderPayloadFromCache } from "./reader-cache";
 import { applyBookContent, applyChapter } from "./storage";
 
@@ -92,6 +93,42 @@ describe("loadReaderPayloadFromCache", () => {
       return;
     }
     expect(payload.activeChapterId).toBe("a");
+  });
+
+  it("overlays reading progress from the progress bucket so resume works offline", async () => {
+    await seedBook("lib-1", ["a", "b", "c"]);
+    await writeProgress({
+      libraryItemId: "lib-1",
+      locator: { chapterId: "b", blockId: "blk", textOffset: 7 },
+      completionPercent: 40,
+      lastReadAt: "2026-04-07T10:00:00.000Z",
+      dirty: false,
+    });
+
+    const payload = await loadReaderPayloadFromCache("lib-1");
+    expect(payload?.status).toBe("READY");
+    if (payload?.status !== "READY") {
+      return;
+    }
+    expect(payload.progress.locator).toEqual({
+      chapterId: "b",
+      blockId: "blk",
+      textOffset: 7,
+    });
+    expect(payload.progress.completionPercent).toBe(40);
+    expect(payload.progress.lastReadAt).toBe("2026-04-07T10:00:00.000Z");
+  });
+
+  it("returns neutral progress when the bucket has no row (never read here)", async () => {
+    await seedBook("lib-1", ["a", "b"]);
+    const payload = await loadReaderPayloadFromCache("lib-1");
+    expect(payload?.status).toBe("READY");
+    if (payload?.status !== "READY") {
+      return;
+    }
+    expect(payload.progress.locator).toBeNull();
+    expect(payload.progress.completionPercent).toBe(0);
+    expect(payload.progress.lastReadAt).toBeNull();
   });
 
   it("returns null when BookRow exists but chapterIds is empty", async () => {

@@ -32,6 +32,18 @@ export class ReaderController {
     );
   }
 
+  @Get('progress')
+  @UseGuards(ClerkAuthGuard)
+  getProgress(
+    @Req() request: AuthenticatedRequest,
+    @Param('libraryItemId') libraryItemId: string,
+  ) {
+    return this.readerService.getProgress(
+      request.auth.clerkUserId,
+      libraryItemId,
+    );
+  }
+
   @Patch('progress')
   @UseGuards(ClerkAuthGuard)
   updateProgress(

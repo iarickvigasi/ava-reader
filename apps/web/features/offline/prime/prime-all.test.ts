@@ -79,6 +79,7 @@ type Harness = {
   revalidatePreferences: ReturnType<typeof vi.fn>;
   revalidateHighlights: ReturnType<typeof vi.fn>;
   revalidateAiComments: ReturnType<typeof vi.fn>;
+  revalidateProgress: ReturnType<typeof vi.fn>;
 };
 
 function setup(overrides: Partial<PrimeInternals> = {}): Harness {
@@ -90,6 +91,7 @@ function setup(overrides: Partial<PrimeInternals> = {}): Harness {
   const revalidatePreferences = vi.fn(async () => {});
   const revalidateHighlights = vi.fn(async () => {});
   const revalidateAiComments = vi.fn(async () => {});
+  const revalidateProgress = vi.fn(async () => {});
 
   const internals: PrimeInternals = {
     canPrimeMetadata: () => true,
@@ -111,6 +113,7 @@ function setup(overrides: Partial<PrimeInternals> = {}): Harness {
     revalidatePreferences,
     revalidateHighlights,
     revalidateAiComments,
+    revalidateProgress,
     hasBookContent: async () => false,
     checkStorageQuota: async () => ({ ok: true }),
     getMetaFlag: async (key) => flags.get(key) ?? null,
@@ -133,6 +136,7 @@ function setup(overrides: Partial<PrimeInternals> = {}): Harness {
     revalidatePreferences,
     revalidateHighlights,
     revalidateAiComments,
+    revalidateProgress,
   };
 }
 
@@ -230,6 +234,10 @@ describe("primeAllCaches", () => {
     expect(h.saveBook).toHaveBeenCalledWith("b");
     expect(h.revalidateHighlights).toHaveBeenCalledTimes(2);
     expect(h.revalidateAiComments).toHaveBeenCalledTimes(2);
+    // Progress is revalidated per offline book too, so a fresh device resumes
+    // on the right page (not chapter 1) once the "Ready offline" cue shows.
+    expect(h.revalidateProgress).toHaveBeenCalledTimes(2);
+    expect(h.revalidateProgress).toHaveBeenCalledWith("a", expect.any(Function));
     expect(h.flags.has(META_KEY_METADATA_DONE)).toBe(true);
     expect(h.flags.has(META_KEY_CONTENT_DONE)).toBe(true);
     expect(h.flags.has(META_KEY_COMPLETED)).toBe(true);

@@ -13,6 +13,7 @@ import { readLibraryView } from "../buckets/library/storage";
 import { revalidatePreferences } from "../buckets/preferences/revalidate";
 import { revalidateHighlights } from "../buckets/highlights/revalidate";
 import { revalidateAiComments } from "../buckets/ai-comments/revalidate";
+import { revalidateProgress } from "../buckets/progress/revalidate";
 import { hasInFlightSaves } from "../buckets/book/bucket";
 import { checkStorageQuota } from "../buckets/book/quota";
 import { hasBookContent } from "../buckets/book/storage";
@@ -39,6 +40,7 @@ export const DEFAULT_INTERNALS: PrimeInternals = {
   revalidatePreferences,
   revalidateHighlights,
   revalidateAiComments,
+  revalidateProgress,
   hasBookContent,
   checkStorageQuota,
   getMetaFlag,
