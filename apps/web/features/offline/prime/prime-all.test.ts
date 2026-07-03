@@ -323,6 +323,69 @@ describe("primeAllCaches", () => {
     expect(h.saveBook).toHaveBeenCalledTimes(2);
   });
 
+  it("withholds the ready cue when the current book's content isn't actually cached", async () => {
+    // Regression: the header showed "Ready for offline work" while the current
+    // book's background auto-save had failed, so going offline and tapping
+    // continue-reading hit the missing-book modal. The cue must wait for the
+    // current book's content to be present (see [[11-cache-priming]]).
+    const saveBook = vi.fn(async (_id: string, kind?: string) =>
+      kind === "auto"
+        ? ({ kind: "failed", reason: "network" } as const)
+        : ({ kind: "saved" } as const),
+    );
+    const h = setup({
+      readLibraryView: async () =>
+        view([book("b", { offlineRequested: false })]),
+      readCurrentBookId: async () => "b",
+      hasBookContent: async () => false, // b's save failed → never cached
+    });
+    h.runtime.saveBook = saveBook;
+    const ticks: PrimeProgress[] = [];
+    await primeAllCaches(
+      { ...h.runtime, onProgress: (p) => ticks.push(p) },
+      h.internals,
+    );
+    expect(saveBook).toHaveBeenCalledWith("b", "auto");
+    expect(ticks.some((t) => t.phase === "ready")).toBe(false);
+  });
+
+  it("signals ready once the current book's content is present", async () => {
+    const h = setup({
+      readLibraryView: async () =>
+        view([book("b", { offlineRequested: false })]),
+      readCurrentBookId: async () => "b",
+      hasBookContent: async () => true, // already cached
+    });
+    const ticks: PrimeProgress[] = [];
+    await primeAllCaches(
+      { ...h.runtime, onProgress: (p) => ticks.push(p) },
+      h.internals,
+    );
+    expect(ticks.at(-1)).toEqual({ phase: "ready" });
+  });
+
+  it("reconcile withholds ready when the current book still fails to cache", async () => {
+    // Warm device: the current book is outstanding but its auto-save keeps
+    // failing. The reconcile pass runs, but "Ready" must not fire until the
+    // content is genuinely present.
+    const saveBook = vi.fn(async () => ({ kind: "failed", reason: "x" }) as const);
+    const h = setup({
+      readLibraryView: async () =>
+        view([book("b", { offlineRequested: false })]),
+      readCurrentBookId: async () => "b",
+      hasBookContent: async () => false,
+    });
+    h.runtime.saveBook = saveBook;
+    h.flags.set(META_KEY_COMPLETED, "T");
+    const ticks: PrimeProgress[] = [];
+    await primeAllCaches(
+      { ...h.runtime, onProgress: (p) => ticks.push(p) },
+      h.internals,
+    );
+    expect(saveBook).toHaveBeenCalledWith("b", "auto");
+    expect(ticks.some((t) => t.phase === "ready")).toBe(false);
+  });
+
   it("does not double-save when the current book is also offline-marked (explicit wins)", async () => {
     const h = setup({
       readLibraryView: async () =>

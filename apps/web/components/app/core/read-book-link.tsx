@@ -2,28 +2,22 @@
 
 // Drop-in replacement for `<Link href={getReaderHref(slug)}>` on any surface
 // that opens the reader (book-info Read button, home "continue reading",
-// engagement cover, …). Behaves identically online; when the user is
-// offline AND the book hasn't been saved to Dexie, we intercept the click
-// and surface the missing-book modal instead of letting the user land on
-// an empty reader page.
+// engagement cover, …). Behaves identically online; when the user is offline
+// AND the book isn't saved to Dexie, we intercept the click and surface the
+// missing-book modal instead of letting the user land on an empty reader page.
 //
-// Cache state is read on mount + on libraryItemId change, so by the time
-// the user clicks the link the answer is already in memory and the click
-// handler stays synchronous. While the very first cache check is in flight
-// we fall through to normal navigation; the reader's BookContextProvider
-// will then emit the same modal as a fallback.
+// The offline cache state is read FRESH on each click (see
+// read-book-link-action)
 
 import Link from "next/link";
-import {
-  useEffect,
-  useState,
-  type AnchorHTMLAttributes,
-  type ReactNode,
-} from "react";
+import { useRouter } from "next/navigation";
+import { type AnchorHTMLAttributes, type ReactNode } from "react";
 
 import { hasBookContent } from "@/features/offline/buckets/book";
 import { emitMissingBookOfflineModal } from "@/features/offline/notices/missing-book-bus";
 import { useNetworkState } from "@/features/offline/net/use-network-state";
+
+import { resolveOfflineReadAction } from "./read-book-link-action";
 
 type LinkProps = Omit<
   AnchorHTMLAttributes<HTMLAnchorElement>,
@@ -49,26 +43,36 @@ export function ReadBookLink({
   ...rest
 }: Props) {
   const online = useNetworkState();
-  const [cached, setCached] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    void hasBookContent(libraryItemId).then((present) => {
-      if (!cancelled) {
-        setCached(present);
-      }
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [libraryItemId]);
+  const router = useRouter();
 
   const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    if (!online && cached === false) {
-      event.preventDefault();
-      emitMissingBookOfflineModal({ libraryItemId });
-    }
     onClickExtra?.(event);
+    // Let the browser/Next handle online navigation and modified clicks
+    // (new tab, etc.) natively; only guard a plain offline left-click.
+    if (
+      event.defaultPrevented ||
+      online ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+    // Offline: block the native navigation and decide against the CURRENT
+    // cache state. If the book is cached (possibly cached by the primer after
+    // this link mounted), navigate; otherwise show the missing-book modal.
+    event.preventDefault();
+    void resolveOfflineReadAction(libraryItemId, hasBookContent).then(
+      (action) => {
+        if (action === "navigate") {
+          router.push(href);
+        } else {
+          emitMissingBookOfflineModal({ libraryItemId });
+        }
+      },
+    );
   };
 
   return (
