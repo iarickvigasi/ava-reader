@@ -9,6 +9,7 @@ import { MissingBookOfflineModal } from "@/components/app/core/missing-book-offl
 import { OfflineModalProvider } from "@/components/app/core/offline-modal-context";
 import { RoutePrecacheRunner } from "@/components/app/core/route-precache-runner";
 import { ServiceWorkerRegistrar } from "@/components/app/core/service-worker-registrar";
+import { ProgressSyncRunner } from "@/components/app/core/progress-sync-runner";
 import { PreferencesSyncRunner } from "@/components/app/preferences/preferences-sync-runner";
 import { BackgroundPrimer } from "@/features/offline/prime";
 import { ReaderUiProvider } from "@/components/app/core/reader-ui-context";
@@ -48,6 +49,7 @@ export function AppShell({ children, currentUser: initialUser }: AppShellProps) 
       <BackgroundPrimer />
       <LegacyLocalStorageCleanupRunner />
       <PreferencesSyncRunner />
+      <ProgressSyncRunner />
       <AppToast />
       <MissingBookOfflineModal />
       {isReaderRoute ? (

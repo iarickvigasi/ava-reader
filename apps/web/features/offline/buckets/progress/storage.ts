@@ -1,9 +1,7 @@
-// Dexie I/O for per-book reading progress. Mirrors the reader's
-// localStorage resume snapshot but lives in the same store as the rest of
-// the offline data so library cards / book-info can show the correct
-// completion percent + last-read chapter offline without going through
-// localStorage. The localStorage substrate stays in place as the fast
-// synchronous read path for the reader's first-paint resume.
+// Dexie I/O for per-book reading progress. Lives alongside the rest of the
+// offline data so cards / book-info / the reader can read completion % + the
+// resume locator offline. The reader's localStorage snapshot stays as the fast
+// synchronous first-paint path; this bucket is the durable, syncable copy.
 
 import type { ReaderLocator } from "@/lib/api-types";
 
@@ -13,12 +11,10 @@ export async function writeProgress(input: {
   libraryItemId: string;
   locator: ReaderLocator | null;
   completionPercent: number;
-  // Server reading timestamp. Server-sourced writes (progress PATCH ack,
-  // primer revalidate) pass it; a local reader write omits it and the prior
-  // baseline is preserved so resume-recency comparisons stay meaningful.
+  // Server reading timestamp; server-sourced writes (PATCH ack, primer
+  // revalidate) pass it, a local reader write omits it and keeps the prior.
   lastReadAt?: string | null;
-  // True when the local view is ahead of the server (a pending PATCH).
-  // Used by a future runner to send PATCH for any dirty row.
+  // Local view ahead of the server (a pending PATCH). Drained by sync.ts.
   dirty?: boolean;
 }): Promise<void> {
   const db = getDb();
@@ -38,9 +34,7 @@ export async function writeProgress(input: {
   });
 }
 
-export async function markProgressSynced(
-  libraryItemId: string,
-): Promise<void> {
+export async function markProgressSynced(libraryItemId: string): Promise<void> {
   const db = getDb();
   const row = await db.progress.get(libraryItemId);
   if (!row) {
@@ -53,6 +47,38 @@ export async function markProgressSynced(
   });
 }
 
+// Dirty rows with a real position to push — the sync runner's work list.
+// `dirty` is a boolean (not IndexedDB-indexable) so we scan+filter; the table
+// holds one row per book, so it's cheap. Null-locator rows have nothing to send.
+export async function listDirtyProgress(): Promise<ProgressRow[]> {
+  const db = getDb();
+  return db.progress
+    .filter((row) => row.dirty && row.locator !== null)
+    .toArray();
+}
+
+// Clears dirty after a successful PATCH and folds in the server's canonical
+// completion % + lastReadAt — but only if the row still holds the locator we
+// synced (a newer local write mid-request stays dirty; compare-and-clear).
+export async function markProgressSyncedIfUnchanged(
+  libraryItemId: string,
+  syncedLocator: ReaderLocator,
+  server: { completionPercent: number; lastReadAt: string | null },
+): Promise<void> {
+  const db = getDb();
+  const row = await db.progress.get(libraryItemId);
+  if (!row || !sameLocator(row.locator, syncedLocator)) {
+    return;
+  }
+  await db.progress.put({
+    ...row,
+    completionPercent: server.completionPercent,
+    lastReadAt: server.lastReadAt,
+    lastServerUpdateAt: new Date().toISOString(),
+    dirty: false,
+  });
+}
+
 export async function readProgress(
   libraryItemId: string,
 ): Promise<ProgressRow | undefined> {
@@ -60,11 +86,21 @@ export async function readProgress(
   return db.progress.get(libraryItemId);
 }
 
-// Convenience read used by library cards and book-info to render the
-// completion percent offline. Returns 0 when there's no cached row.
+// Completion % for cards / book-info offline. 0 when there's no cached row.
 export async function readCompletionPercent(
   libraryItemId: string,
 ): Promise<number> {
   const row = await readProgress(libraryItemId);
   return row?.completionPercent ?? 0;
+}
+
+function sameLocator(a: ReaderLocator | null, b: ReaderLocator | null): boolean {
+  if (!a || !b) {
+    return a === b;
+  }
+  return (
+    a.chapterId === b.chapterId &&
+    a.blockId === b.blockId &&
+    a.textOffset === b.textOffset
+  );
 }
