@@ -10,7 +10,8 @@
  * - /_next/static/*  → cache-first (hashed, immutable filenames).
  * - navigations + RSC payloads → network-first, fall back to cache when
  *   offline. Freshness wins online (no stale-while-revalidate flash); the
- *   cache is only a safety net for offline.
+ *   cache is only a safety net for offline. Redirects (Clerk handshake /
+ *   sign-in) pass through untouched — see isRedirectResponse.
  * - other same-origin GET (fonts, /public assets) → cache-first.
  * - Next link prefetches (next-router-prefetch) → bypass entirely; their
  *   partial "loading" stubs must never poison the navigation cache.
@@ -175,11 +176,30 @@ async function matchDocFallback(request, cache) {
   return null;
 }
 
+// A redirect must reach the browser untouched. Navigations carry redirect
+// mode "manual", so a Clerk handshake/sign-in 307 surfaces here as an
+// `opaqueredirect` (status 0, ok false) — substituting the cached shell for
+// it swallows the auth flow: the session cookie never refreshes and every
+// SSR render stays tokenless (the "offline fallback while online" bug).
+function isRedirectResponse(response) {
+  return (
+    response.type === "opaqueredirect" ||
+    (response.status >= 300 && response.status < 400)
+  );
+}
+
 async function networkFirstDoc(request, cache) {
   try {
     const response = await fetch(request);
+    if (isRedirectResponse(response)) {
+      return response;
+    }
     if (response && response.ok) {
-      putDocResponse(cache, request, response);
+      // A followed redirect (response.redirected) means this body belongs to
+      // another URL (e.g. the sign-in page) — serve it, never cache it.
+      if (!response.redirected) {
+        putDocResponse(cache, request, response);
+      }
       return response;
     }
     // Server reachable but erroring (4xx/5xx): prefer the last good cached
@@ -199,10 +219,15 @@ async function networkFirst(request, cache, kind) {
   const key = navigationCacheKey(request, kind);
   try {
     const response = await fetch(request);
-    // Only cache successful responses (a Clerk handshake 3xx is not `ok`, so
-    // redirects never poison the cache).
+    if (isRedirectResponse(response)) {
+      return response;
+    }
+    // Only cache successful, non-redirected responses — a followed redirect's
+    // body belongs to another URL and must never become this route's entry.
     if (response && response.ok) {
-      cache.put(key, response.clone());
+      if (!response.redirected) {
+        cache.put(key, response.clone());
+      }
       return response;
     }
     // Server reachable but erroring (4xx/5xx — e.g. wifi-off against a local
@@ -333,11 +358,15 @@ async function precacheRoutes(routes) {
 }
 
 async function cacheRouteShell(cache, route) {
+  // redirect: "manual" — a stale session answers with a Clerk handshake /
+  // sign-in redirect; following it would cache the *sign-in page* under this
+  // route's key. Manual mode surfaces it as an opaqueredirect (not ok) that
+  // storeRouteResponse skips.
   await Promise.all([
-    storeRouteResponse(cache, new Request(route), "doc"),
+    storeRouteResponse(cache, new Request(route, { redirect: "manual" }), "doc"),
     storeRouteResponse(
       cache,
-      new Request(route, { headers: { RSC: "1" } }),
+      new Request(route, { headers: { RSC: "1" }, redirect: "manual" }),
       "rsc",
     ),
   ]);
