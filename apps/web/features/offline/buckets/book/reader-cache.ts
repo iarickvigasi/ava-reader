@@ -80,7 +80,7 @@ export async function loadReaderPayloadFromCache(
   // Overlay the resume position from the progress bucket so a cached book
   // resumes on the right page even on a fresh/offline device that never wrote a
   // localStorage snapshot — the primer fills the bucket from the server (see
-  // specs/11-cache-priming, specs/1-reader/5-resume). Neutral when this device
+  // specs/11-cache-priming, specs/1-reader/1.5-resume). Neutral when this device
   // has no row yet (never read + never primed → the reader starts at chapter 1).
   const progressRow = await readProgress(libraryItemId);
 
