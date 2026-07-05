@@ -15,6 +15,15 @@ vi.mock("@clerk/nextjs", () => ({
   }),
 }));
 
+// ReadBookLink (the Read button) calls useRouter for its offline click
+// interception; renderToStaticMarkup mounts no app router, so mock it.
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    refresh: vi.fn(),
+  }),
+}));
+
 vi.mock("next/link", () => ({
   default: ({
     children,
