@@ -371,19 +371,10 @@ export function ReaderShareIcon(props: IconProps) {
 
 export function ReaderDownloadIcon(props: IconProps) {
   return (
-    <svg viewBox="1.5 1.5 17 17" fill="none" stroke="currentColor" {...props}>
-      <path d="M10 2.5v10" strokeWidth="1.7" strokeLinecap="round" />
+    <svg viewBox="0 0 20 20" fill="none" {...props}>
       <path
-        d="m5.5 8.5 4.5 4.5 4.5-4.5"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M3 14.5v2a1.5 1.5 0 0 0 1.5 1.5h11a1.5 1.5 0 0 0 1.5-1.5v-2"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        d="M10 15L3.75 8.75L5.5 6.9375L8.75 10.1875V0H11.25V10.1875L14.5 6.9375L16.25 8.75L10 15V15M2.5 20C1.8125 20 1.224 19.7552 0.7344 19.2656C0.2448 18.776 0 18.1875 0 17.5V13.75H2.5V17.5H17.5V13.75H20V17.5C20 18.1875 19.7552 18.776 19.2656 19.2656C18.776 19.7552 18.1875 20 17.5 20H2.5V20"
+        fill="currentColor"
       />
     </svg>
   );
