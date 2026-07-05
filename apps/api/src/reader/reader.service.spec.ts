@@ -171,6 +171,60 @@ describe('ReaderService', () => {
     expect(updateLibraryItemCall.data.lastOpenedAt).toBeInstanceOf(Date);
   });
 
+  it('applies a progress write and stamps the client readAt as lastReadAt', async () => {
+    findFirstLibraryItem.mockResolvedValue(createLibraryItemRecord());
+    updateReadingProgress.mockResolvedValue({
+      chapterLabel: 'Chapter Two',
+      completionPercent: 50,
+      currentLocator: JSON.stringify({
+        blockId: 'chapter-2::b1',
+        chapterId: 'chapter-2',
+        textOffset: 214,
+      }),
+      lastReadAt: new Date('2026-04-08T09:00:00.000Z'),
+    });
+    updateLibraryItem.mockResolvedValue({});
+
+    // readAt (2026-04-08) is newer than the stored lastReadAt (2026-04-07).
+    const progress = await readerService.updateProgress(
+      'clerk_1',
+      'library-1',
+      { blockId: 'chapter-2::b1', chapterId: 'chapter-2', textOffset: 214 },
+      '2026-04-08T09:00:00.000Z',
+    );
+
+    const call = getFirstCallArg<{
+      data: { currentLocator: string; lastReadAt: Date };
+    }>(updateReadingProgress);
+    expect(call.data.lastReadAt).toEqual(new Date('2026-04-08T09:00:00.000Z'));
+    expect(progress.lastReadAt).toBe('2026-04-08T09:00:00.000Z');
+  });
+
+  it('ignores a stale progress write and returns the stored (newer) position', async () => {
+    findFirstLibraryItem.mockResolvedValue(createLibraryItemRecord());
+
+    // readAt (2026-04-06) is older than the stored lastReadAt (2026-04-07):
+    // another device already read further, so this write must not win.
+    const progress = await readerService.updateProgress(
+      'clerk_1',
+      'library-1',
+      { blockId: 'chapter-9::b1', chapterId: 'chapter-9', textOffset: 5 },
+      '2026-04-06T00:00:00.000Z',
+    );
+
+    expect(updateReadingProgress).not.toHaveBeenCalled();
+    expect(progress).toEqual({
+      chapterLabel: 'Chapter Two',
+      completionPercent: 50,
+      lastReadAt: '2026-04-07T10:00:00.000Z',
+      locator: {
+        blockId: 'chapter-2::b1',
+        chapterId: 'chapter-2',
+        textOffset: 0,
+      },
+    });
+  });
+
   it('returns the current reading progress summary for an owned item', async () => {
     findFirstLibraryItem.mockResolvedValue(createLibraryItemRecord());
 

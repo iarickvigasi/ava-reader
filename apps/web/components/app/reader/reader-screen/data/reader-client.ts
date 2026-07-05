@@ -107,6 +107,9 @@ export async function persistReaderProgress(
       keepalive: input.keepalive,
       body: JSON.stringify({
         locator: input.locator,
+        // Client read moment — drives the server's most-recent-reading-wins
+        // resolution so a stale write can't rewind another device's position.
+        readAt: new Date().toISOString(),
       }),
     },
   );

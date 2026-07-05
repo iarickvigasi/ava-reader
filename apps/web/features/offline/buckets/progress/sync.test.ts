@@ -100,6 +100,62 @@ describe("flushDirtyProgress", () => {
     expect((await readProgress("lib-1"))?.dirty).toBe(true);
   });
 
+  it("sends the row's local read time as readAt for most-recent-wins", async () => {
+    await seedDirty("lib-1", "c1", 20);
+    const seeded = await readProgress("lib-1");
+    const fetchMock = vi.fn(async () =>
+      jsonOk({
+        chapterLabel: null,
+        completionPercent: 20,
+        lastReadAt: "2026-04-07T10:00:00.000Z",
+        locator: { chapterId: "c1", blockId: "c1-b", textOffset: 0 },
+      }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await flushDirtyProgress(TOKEN);
+
+    const call = fetchMock.mock.calls[0] as unknown as [
+      string,
+      { body: string },
+    ];
+    const body = JSON.parse(call[1].body) as {
+      locator: unknown;
+      readAt: string;
+    };
+    expect(body.readAt).toBe(seeded?.lastLocalUpdateAt);
+    expect(body.locator).toEqual({
+      chapterId: "c1",
+      blockId: "c1-b",
+      textOffset: 0,
+    });
+  });
+
+  it("adopts the server's newer position when our stale write is rejected", async () => {
+    await seedDirty("lib-1", "c1", 20);
+    const fetchMock = vi.fn(async () =>
+      jsonOk({
+        chapterLabel: null,
+        completionPercent: 80,
+        lastReadAt: "2026-04-09T10:00:00.000Z",
+        // Another device's newer position — the server kept this, ignored ours.
+        locator: { chapterId: "c9", blockId: "c9-b", textOffset: 3 },
+      }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await flushDirtyProgress(TOKEN);
+
+    const row = await readProgress("lib-1");
+    expect(row?.dirty).toBe(false);
+    expect(row?.locator).toEqual({
+      chapterId: "c9",
+      blockId: "c9-b",
+      textOffset: 3,
+    });
+    expect(row?.completionPercent).toBe(80);
+  });
+
   it("is single-flight across concurrent calls", async () => {
     await seedDirty("lib-1", "c1", 20);
     const fetchMock = vi.fn(async () =>

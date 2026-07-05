@@ -44,7 +44,14 @@ async function doFlush(getToken: GetToken): Promise<{ synced: number }> {
     if (!token) {
       break; // no auth right now — leave the rest dirty for the next tick
     }
-    const ok = await patchProgress(token, row.libraryItemId, row.locator);
+    const ok = await patchProgress(
+      token,
+      row.libraryItemId,
+      row.locator,
+      // The offline read moment, not the flush time — so the server's
+      // most-recent-reading-wins compare uses when the user actually read.
+      row.lastLocalUpdateAt,
+    );
     if (ok) {
       synced += 1;
     }
@@ -57,6 +64,7 @@ async function patchProgress(
   token: string,
   libraryItemId: string,
   locator: ReaderLocator,
+  readAt: string,
 ): Promise<boolean> {
   try {
     const response = await fetch(
@@ -70,14 +78,17 @@ async function patchProgress(
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify({ locator }),
+        body: JSON.stringify({ locator, readAt }),
       },
     );
     if (!response.ok) {
       return false;
     }
     const server = (await response.json()) as ReaderProgressPayload;
+    // Adopt the server's canonical position — under most-recent-wins it may be
+    // another device's newer locator (our stale write was rejected).
     await markProgressSyncedIfUnchanged(libraryItemId, locator, {
+      locator: server.locator,
       completionPercent: server.completionPercent,
       lastReadAt: server.lastReadAt,
     });

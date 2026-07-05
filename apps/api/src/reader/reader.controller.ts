@@ -49,12 +49,13 @@ export class ReaderController {
   updateProgress(
     @Req() request: AuthenticatedRequest,
     @Param('libraryItemId') libraryItemId: string,
-    @Body() body: { locator?: ReaderLocator },
+    @Body() body: { locator?: ReaderLocator; readAt?: string },
   ) {
     return this.readerService.updateProgress(
       request.auth.clerkUserId,
       libraryItemId,
       body.locator as ReaderLocator,
+      body.readAt,
     );
   }
 

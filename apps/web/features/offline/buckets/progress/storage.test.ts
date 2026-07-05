@@ -143,32 +143,36 @@ describe("progress sync helpers", () => {
     expect(dirty.map((r) => r.libraryItemId)).toEqual(["dirty-with-locator"]);
   });
 
-  it("markProgressSyncedIfUnchanged clears dirty + stores server truth when the locator still matches", async () => {
-    const locator = { chapterId: "c2", blockId: "b2", textOffset: 1 };
+  it("markProgressSyncedIfUnchanged adopts the server position + clears dirty when the local locator still matches", async () => {
+    const sent = { chapterId: "c2", blockId: "b2", textOffset: 1 };
     await writeProgress({
       libraryItemId: "lib-1",
-      locator,
+      locator: sent,
       completionPercent: 20,
       dirty: true,
     });
 
-    await markProgressSyncedIfUnchanged("lib-1", locator, {
-      completionPercent: 25,
-      lastReadAt: "2026-04-07T10:00:00.000Z",
+    // The server had a newer position from another device and rejected our
+    // write; reconcile adopts whatever the server returned as canonical.
+    await markProgressSyncedIfUnchanged("lib-1", sent, {
+      locator: { chapterId: "c5", blockId: "b5", textOffset: 9 },
+      completionPercent: 55,
+      lastReadAt: "2026-04-08T10:00:00.000Z",
     });
 
     const row = await readProgress("lib-1");
     expect(row?.dirty).toBe(false);
-    expect(row?.completionPercent).toBe(25);
-    expect(row?.lastReadAt).toBe("2026-04-07T10:00:00.000Z");
+    expect(row?.locator).toEqual({ chapterId: "c5", blockId: "b5", textOffset: 9 });
+    expect(row?.completionPercent).toBe(55);
+    expect(row?.lastReadAt).toBe("2026-04-08T10:00:00.000Z");
     expect(row?.lastServerUpdateAt).not.toBeNull();
   });
 
   it("markProgressSyncedIfUnchanged leaves the row dirty when a newer local write changed the locator", async () => {
-    const synced = { chapterId: "c2", blockId: "b2", textOffset: 1 };
+    const sent = { chapterId: "c2", blockId: "b2", textOffset: 1 };
     await writeProgress({
       libraryItemId: "lib-1",
-      locator: synced,
+      locator: sent,
       completionPercent: 20,
       dirty: true,
     });
@@ -180,7 +184,8 @@ describe("progress sync helpers", () => {
       dirty: true,
     });
 
-    await markProgressSyncedIfUnchanged("lib-1", synced, {
+    await markProgressSyncedIfUnchanged("lib-1", sent, {
+      locator: sent,
       completionPercent: 25,
       lastReadAt: "2026-04-07T10:00:00.000Z",
     });

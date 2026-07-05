@@ -57,13 +57,20 @@ export async function listDirtyProgress(): Promise<ProgressRow[]> {
     .toArray();
 }
 
-// Clears dirty after a successful PATCH and folds in the server's canonical
-// completion % + lastReadAt — but only if the row still holds the locator we
-// synced (a newer local write mid-request stays dirty; compare-and-clear).
+// Reconciles a dirty row after a successful PATCH: adopts the server's
+// canonical position (locator + completion % + lastReadAt) and clears dirty —
+// but only if the row still holds the locator we synced. A newer local write
+// mid-request stays dirty (compare-and-clear). Adopting the server locator
+// matters under most-recent-reading-wins: the server may have rejected our
+// (stale) write and returned another device's newer position, which we take.
 export async function markProgressSyncedIfUnchanged(
   libraryItemId: string,
   syncedLocator: ReaderLocator,
-  server: { completionPercent: number; lastReadAt: string | null },
+  server: {
+    locator: ReaderLocator | null;
+    completionPercent: number;
+    lastReadAt: string | null;
+  },
 ): Promise<void> {
   const db = getDb();
   const row = await db.progress.get(libraryItemId);
@@ -72,6 +79,7 @@ export async function markProgressSyncedIfUnchanged(
   }
   await db.progress.put({
     ...row,
+    locator: server.locator,
     completionPercent: server.completionPercent,
     lastReadAt: server.lastReadAt,
     lastServerUpdateAt: new Date().toISOString(),

@@ -264,6 +264,12 @@ export class ReaderService {
     clerkUserId: string,
     libraryItemId: string,
     locator: ReaderLocator,
+    // Client's reading timestamp (when the user was at this locator on their
+    // device). Drives most-recent-reading-wins across devices: a write older
+    // than the stored position is ignored so a late offline sync can't rewind a
+    // position another device already advanced. Optional for back-compat — a
+    // missing/invalid readAt applies unconditionally, stamped with server time.
+    readAt?: string,
   ): Promise<ReaderProgressSummary> {
     validateLocator(locator);
 
@@ -282,6 +288,24 @@ export class ReaderService {
       throw new BadRequestException('The reader package is not ready yet.');
     }
 
+    const parsedReadAt =
+      readAt && !Number.isNaN(new Date(readAt).getTime())
+        ? new Date(readAt)
+        : null;
+    const stored = libraryItem.progress;
+    // Most-recent-reading wins: a client read strictly older than what we've
+    // already stored loses, so we return the stored (newer) position unchanged
+    // and let the client adopt it. Guards against a late offline sync rewinding
+    // a position another device advanced. Not fully atomic against a same-book
+    // write racing within the request window — acceptable for reading progress.
+    if (
+      parsedReadAt &&
+      stored?.lastReadAt &&
+      parsedReadAt.getTime() < stored.lastReadAt.getTime()
+    ) {
+      return createProgressSummary(stored);
+    }
+
     const index = await this.loadReadingProgressIndex(derivedReader);
     const metrics = computeProgressMetricsFromIndex(index, locator);
 
@@ -293,7 +317,7 @@ export class ReaderService {
         chapterLabel: metrics.chapterLabel,
         completionPercent: metrics.completionPercent,
         currentLocator: JSON.stringify(locator),
-        lastReadAt: new Date(),
+        lastReadAt: parsedReadAt ?? new Date(),
       },
     });
 
