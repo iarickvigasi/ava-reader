@@ -1,43 +1,129 @@
 # Background cache priming
 
-> Status: active · Updated: 2026-07-03 · ADRs: [[3-offline-first-dexie-buckets]] · Related: [[12-offline-save-sync]], [[14-route-precaching]], [[5-reading-sessions-progress]] · Code: apps/web/features/offline/{prime,status}, apps/web/features/offline/buckets/progress, apps/web/components/app/core/{header-status-chip,caching-indicator}.tsx, apps/api/src/reader (GET reader/progress)
+> Status: active · Updated: 2026-07-03 · ADRs: [[3-offline-first-dexie-buckets]] · Related:
+> [[12-offline-save-sync]], [[14-route-precaching]], [[5-reading-sessions-progress]] · Code:
+> apps/web/features/offline/{prime,status}, apps/web/features/offline/buckets/progress,
+> apps/web/components/app/core/{header-status-chip,caching-indicator}.tsx, apps/api/src/reader (GET
+> reader/progress)
 
 ## Summary
-On the first load of any `/app` route (the primer island lives in AppShell, not just home — a fresh device may enter via a deep link), proactively fill offline caches in the background so the home, library, the current book, and the user's offline-marked books work with no network — without visiting each screen first. Serves the offline-first job (product.md).
+On the first load of any `/app` route (the primer island lives in AppShell, not just home — a fresh
+device may enter via a deep link), proactively fill offline caches in the background so the home,
+library, the current book, and the user's offline-marked books work with no network — without
+visiting each screen first. Serves the offline-first job (product.md).
 
 ## Scope
-- In: a client island on /app that, while online, primes two tiers — (1) cheap metadata for every book, (2) heavy content for the books the user marked offline plus the current continue-reading book.
-- Non-goals: downloading content for un-marked books other than the current continue-reading book (the rest load when opened); ongoing freshness (per-route `revalidate*` owns that); new list endpoints.
+- In: a client island on /app that, while online, primes two tiers — (1) cheap metadata for every
+  book, (2) heavy content for the books the user marked offline plus the current continue-reading
+  book.
+- Non-goals: downloading content for un-marked books other than the current continue-reading book
+  (the rest load when opened); ongoing freshness (per-route `revalidate*` owns that); new list
+  endpoints.
 
 ## Behaviour (tiers)
-1. **Metadata (always when online):** home (incl. stats), library + collections, per-book info for all smart-collection books, and user **preferences** (`GET /api/me/preferences`). Skipped only on slow-2g/2g.
-2. **Content (offline-marked books + current book):** for each book with `offlineRequested` ([[12-offline-save-sync]]) and the current continue-reading book (the home resume target), not yet cached locally — save chapters + cover (`saveBookOffline`, sequential), plus its **highlights** (`/annotations`), **AI comments** (`/ai-comments`), and **reading progress** (`GET /reader/progress` → progress bucket) so a fresh device resumes on the last-read page instead of chapter 1. Stats need nothing extra (home payload covers them).
-3. **Save-Data gate (content tier only):** Save-Data OFF → run automatically. Save-Data ON → show a Yes/No modal ("Save your books for offline reading?"). A grant is remembered (`prime:content:consent=granted`); a decline is **not** persisted — we re-offer next session (Save-Data may be off by then). Metadata tier ignores Save-Data (negligible).
-4. Yields to the user: an in-flight save or a cancelled outcome pauses the content tier; resumes on the next reconnect or app load.
-5. **Low storage:** when the content tier stops at the quota floor, a warning toast tells the user the device is low on space (so they can free some and let the rest cache).
-6. **Progress chip:** the page/reader header shows a non-interactive pill with two states, reported to a client store (no SW):
-   - **Content** — "Caching for offline access {done}/{total} books" while offline-marked content downloads (`done` = books handled, `total` = offline-marked books). Skipped (no pill) when nothing is marked offline.
-   - **Ready** — the honest "safe to read offline" cue: shown only once **all three offline substrates are confirmed present** — metadata, the route shells ([[14-route-precaching]], via the SW ack), and the current book's content — held ~5s (`DWELL_MS` in `use-header-chip`), then hidden. It must **never** appear while a static route would fail offline or the current book would hit the missing-book modal. With no current book (fresh user) metadata + shells suffice. First completion only (a warm device early-returns); re-shown after a reconcile download finishes.
-   The pill owns the one header status slot (which reserves its chip height, so going offline/priming never reflows the header or shifts reader content): offline → Offline chip wins; else content → ready → nothing. A run that ends without completing (offline mid-pass, blocked on Save-Data consent) clears the pill rather than leaving a stuck count.
-7. **Reconcile (after completion):** once `prime:completed`, the primer skips the bulk passes but on every reconnect / app load still downloads missing content for any `offlineRequested` book (e.g. one marked offline later, possibly while disconnected) — consent-exempt (the explicit request is the consent) — **and for the current continue-reading book as it changes** (under the Save-Data gate, since that's not an explicit request). Keeps the current-book guarantee true even for a book started after priming finished. Page-independent; a no-op when nothing is outstanding ([[12-offline-save-sync]]).
+1. **Metadata (always when online):** home (incl. stats), library + collections, per-book info for
+   all smart-collection books, and user **preferences** (`GET /api/me/preferences`). Skipped only on
+   slow-2g/2g.
+2. **Content (offline-marked books + current book):** for each book with `offlineRequested`
+   ([[12-offline-save-sync]]) and the current continue-reading book (the home resume target), not
+   yet cached locally — save chapters + cover (`saveBookOffline`, sequential), plus its
+   **highlights** (`/annotations`), **AI comments** (`/ai-comments`), and **reading progress** (`GET
+   /reader/progress` → progress bucket) so a fresh device resumes on the last-read page instead of
+   chapter 1. Stats need nothing extra (home payload covers them).
+3. **Save-Data gate (content tier only):** Save-Data OFF → run automatically. Save-Data ON → show a
+   Yes/No modal ("Save your books for offline reading?"). A grant is remembered
+   (`prime:content:consent=granted`); a decline is **not** persisted — we re-offer next session
+   (Save-Data may be off by then). Metadata tier ignores Save-Data (negligible).
+4. Yields to the user: an in-flight save or a cancelled outcome pauses the content tier; resumes on
+   the next reconnect or app load.
+5. **Low storage:** when the content tier stops at the quota floor, a warning toast tells the user
+   the device is low on space (so they can free some and let the rest cache).
+6. **Progress chip:** the page/reader header shows a non-interactive pill with two states, reported
+   to a client store (no SW):
+   - **Content** — "Caching for offline access {done}/{total} books" while offline-marked content
+     downloads (`done` = books handled, `total` = offline-marked books). Skipped (no pill) when
+     nothing is marked offline.
+   - **Ready** — the honest "safe to read offline" cue: shown only once **all three offline
+     substrates are confirmed present** — metadata, the route shells ([[14-route-precaching]], via
+     the SW ack), and the current book's content — held ~5s (`DWELL_MS` in `use-header-chip`), then
+     hidden. It must **never** appear while a static route would fail offline or the current book
+     would hit the missing-book modal. With no current book (fresh user) metadata + shells suffice.
+     First completion only (a warm device early-returns); re-shown after a reconcile download
+     finishes.
+   The pill owns the one header status slot (which reserves its chip height, so going
+   offline/priming never reflows the header or shifts reader content): offline → Offline chip wins;
+   else content → ready → nothing. A run that ends without completing (offline mid-pass, blocked on
+   Save-Data consent) clears the pill rather than leaving a stuck count.
+7. **Reconcile (after completion):** once `prime:completed`, the primer skips the bulk passes but on
+   every reconnect / app load still downloads missing content for any `offlineRequested` book (e.g.
+   one marked offline later, possibly while disconnected) — consent-exempt (the explicit request is
+   the consent) — **and for the current continue-reading book as it changes** (under the Save-Data
+   gate, since that's not an explicit request). Keeps the current-book guarantee true even for a
+   book started after priming finished. Page-independent; a no-op when nothing is outstanding
+   ([[12-offline-save-sync]]).
 
 ## Data & sync
-Reuses home/library/book/preferences/highlights/ai-comments/progress buckets — no parallel mechanism. Bookkeeping (`prime:*` flags, `prime:content:consent`) in the Dexie `meta` table (per-device). Content target = (`offlineRequested` ∪ current continue-reading book) `&& !hasBookContent`. Reading progress is revalidated for that same set on every pass once content is present (server truth into the progress bucket) — but a **dirty** local row (unsynced offline reading) is left untouched, so a reconcile never clobbers a position the user is ahead on (that dirty position flushes **up** to the server via the progress sync runner, not the primer — [[5-reading-sessions-progress]]). The offline reader reads its resume position from the progress bucket ([[1-reader/1.5-resume]]).
+Reuses home/library/book/preferences/highlights/ai-comments/progress buckets — no parallel
+mechanism. Bookkeeping (`prime:*` flags, `prime:content:consent`) in the Dexie `meta` table
+(per-device). Content target = (`offlineRequested` ∪ current continue-reading book) `&&
+!hasBookContent`. Reading progress is revalidated for that same set on every pass once content is
+present (server truth into the progress bucket) — but a **dirty** local row (unsynced offline
+reading) is left untouched, so a reconcile never clobbers a position the user is ahead on (that
+dirty position flushes **up** to the server via the progress sync runner, not the primer —
+[[5-reading-sessions-progress]]). The offline reader reads its resume position from the progress
+bucket ([[1-reader/1.5-resume]]).
 
 ## Edge cases
-**Cold-load kick vs. auth timing:** the kick edge (`wasOnline`, in `reduceKick`) only advances once Clerk is ready (`isLoaded && isSignedIn`). Clerk's `isLoaded` is false on the first render(s), so advancing the edge there would consume the first-online transition before the auth gate passes — the cold-load kick would be lost and the primer would run only on a later offline→online flip, which is why book-info details never cached on a normal online load. While not ready, the edge holds and nothing kicks; the first ready render is the transition. Offline mid-pass / page closed → done-flag unset, resumes. Save-Data ON + declined → content skipped this run, re-offered next session. Library fetch fails → no enumeration, retry. Quota floor reached → terminal + warning toast. User opens a book mid-prime → that save wins. **Metadata never goes clean** (one book's `/api/library/[slug]` persistently fails — deleted server-side but still in the cached library view, slug mismatch, endpoint bug) → `prime:metadata:doneAt` is never set, so the primer re-fetches every book-info on each load and that book's details never cache offline, surfacing as the offline route fallback on its details page. **Save-Data ON + content declined** → the current book isn't cached, so the Ready cue is withheld rather than over-promising; metadata + shells still prime. **Current book already in the evictable auto-slot** → priming leaves it, but opening a different book can evict it (spec 6), so the next pass re-caches whatever the current book then is. **Current book's background save fails transiently** (Clerk token not booted during the idle pass, a network blip) → the content tier is best-effort and still marks completion, but the Ready cue is **withheld** — `signalReadyIfCurrentBookCached` (prime-all) gates the `ready` beat on `hasBookContent(currentBook)`, so it never fires while continue-reading would hit the missing-book modal. The next reconnect's reconcile re-attempts the save and emits the cue once the content genuinely lands. (This is enforced, not merely promised by the chip: the chip trusts the `ready` beat, so the beat itself must be honest.)
+**Cold-load kick vs. auth timing:** the kick edge (`wasOnline`, in `reduceKick`) only advances once
+Clerk is ready (`isLoaded && isSignedIn`). Clerk's `isLoaded` is false on the first render(s), so
+advancing the edge there would consume the first-online transition before the auth gate passes — the
+cold-load kick would be lost and the primer would run only on a later offline→online flip, which is
+why book-info details never cached on a normal online load. While not ready, the edge holds and
+nothing kicks; the first ready render is the transition. Offline mid-pass / page closed → done-flag
+unset, resumes. Save-Data ON + declined → content skipped this run, re-offered next session. Library
+fetch fails → no enumeration, retry. Quota floor reached → terminal + warning toast. User opens a
+book mid-prime → that save wins. **Metadata never goes clean** (one book's `/api/library/[slug]`
+persistently fails — deleted server-side but still in the cached library view, slug mismatch,
+endpoint bug) → `prime:metadata:doneAt` is never set, so the primer re-fetches every book-info on
+each load and that book's details never cache offline, surfacing as the offline route fallback on
+its details page. **Save-Data ON + content declined** → the current book isn't cached, so the Ready
+cue is withheld rather than over-promising; metadata + shells still prime. **Current book already in
+the evictable auto-slot** → priming leaves it, but opening a different book can evict it (spec 6),
+so the next pass re-caches whatever the current book then is. **Current book's background save fails
+transiently** (Clerk token not booted during the idle pass, a network blip) → the content tier is
+best-effort and still marks completion, but the Ready cue is **withheld** —
+`signalReadyIfCurrentBookCached` (prime-all) gates the `ready` beat on
+`hasBookContent(currentBook)`, so it never fires while continue-reading would hit the missing-book
+modal. The next reconnect's reconcile re-attempts the save and emits the cue once the content
+genuinely lands. (This is enforced, not merely promised by the chip: the chip trusts the `ready`
+beat, so the beat itself must be honest.)
 
 ## Acceptance criteria
-- [ ] Metadata for all smart-collection books — plus user preferences — primes on first home load (even under Save-Data).
-- [ ] Content + highlights + AI comments prime for `offlineRequested` books and the current continue-reading book, gated by the Save-Data modal.
+- [ ] Metadata for all smart-collection books — plus user preferences — primes on first home load
+  (even under Save-Data).
+- [ ] Content + highlights + AI comments prime for `offlineRequested` books and the current
+  continue-reading book, gated by the Save-Data modal.
 - [ ] Content tier never aborts a user-initiated save and stops at the quota floor with a toast.
 - [ ] A declined modal skips content without being remembered; interrupted passes resume.
-- [ ] "Ready for offline work" appears only once metadata, route shells (SW-acked), and the current book's content are all cached (with no current book, metadata + shells suffice) — never while a route or the current book would fail offline.
-- [ ] After the cue, tapping "continue reading" opens and reads the current book offline, and home/library/insights/explore load offline with no black page.
-- [ ] A book primed on a new device opens at the last-read page offline (not chapter 1). On reconnect the primer re-pulls the server position but **skips** any book with unsynced local reading (a dirty row) so it never rewinds a page read offline; that local position syncs **up** separately via the progress sync runner ([[5-reading-sessions-progress]]).
-- [ ] During content priming the header shows "Caching for offline access n/m books" climbing to completion; it yields to the Offline chip when offline and, on a warm (completed) device, appears only while a reconcile download runs.
-- [ ] A run that ends blocked on Save-Data consent or by going offline clears the pill instead of leaving a stuck count.
-- [ ] A book marked offline after the device has completed priming downloads on the next reconnect (reconcile), without re-running the metadata tier or re-prompting Save-Data consent.
+- [ ] "Ready for offline work" appears only once metadata, route shells (SW-acked), and the current
+  book's content are all cached (with no current book, metadata + shells suffice) — never while a
+  route or the current book would fail offline.
+- [ ] After the cue, tapping "continue reading" opens and reads the current book offline, and
+  home/library/insights/explore load offline with no black page.
+- [ ] A book primed on a new device opens at the last-read page offline (not chapter 1). On
+  reconnect the primer re-pulls the server position but **skips** any book with unsynced local
+  reading (a dirty row) so it never rewinds a page read offline; that local position syncs **up**
+  separately via the progress sync runner ([[5-reading-sessions-progress]]).
+- [ ] During content priming the header shows "Caching for offline access n/m books" climbing to
+  completion; it yields to the Offline chip when offline and, on a warm (completed) device, appears
+  only while a reconcile download runs.
+- [ ] A run that ends blocked on Save-Data consent or by going offline clears the pill instead of
+  leaving a stuck count.
+- [ ] A book marked offline after the device has completed priming downloads on the next reconnect
+  (reconcile), without re-running the metadata tier or re-prompting Save-Data consent.
 
 ## Open questions
-Freshness of never-revisited offline content (no background pull-refresh today). Proactive caching currently covers just the current continue-reading book (evictable auto-slot, Save-Data-gated); extending to the top-N in-progress books is deferred. Whether the current book should bypass the Save-Data gate given its high value (today it's withheld under decline).
+Freshness of never-revisited offline content (no background pull-refresh today). Proactive caching
+currently covers just the current continue-reading book (evictable auto-slot, Save-Data-gated);
+extending to the top-N in-progress books is deferred. Whether the current book should bypass the
+Save-Data gate given its high value (today it's withheld under decline).

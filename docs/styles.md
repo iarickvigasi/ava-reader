@@ -10,8 +10,10 @@ Tailwind token. **Never hardcode a color** — no `#hex`/`rgb()` in `className`.
 Tune with `/NN` opacity (`text-ink/55`, `bg-ink/40`).
 - Surfaces — `paper`, `paper-strong`, `surface`, `surface-strong`
 - Text — `title` headings · `copy`/`copy-strong` body · `ink` UI · `muted` meta
-- Action — `brand-fill`(+`-strong`, `brand-foreground`) primary · `soft-fill`/`soft-tone-fill`/`soft-foreground` secondary
-- Status `success`/`danger` · accents `plum`/`olive`/`sand` · dividers `line`/`line-strong` · `highlight-*`(+`-inverse`)
+- Action — `brand-fill`(+`-strong`, `brand-foreground`) primary ·
+  `soft-fill`/`soft-tone-fill`/`soft-foreground` secondary
+- Status `success`/`danger` · accents `plum`/`olive`/`sand` · dividers `line`/`line-strong` ·
+  `highlight-*`(+`-inverse`)
 
 ## Type
 | Utility | Font | Use |
