@@ -18,6 +18,7 @@ import {
   resolveRestorePhase,
 } from "../use-reader-pagination.helpers";
 import type { ReaderRestorePhase } from "../use-reader-pagination.helpers";
+import { shouldKeepStickyRestorePinned } from "./restore-pin";
 
 export function useRestoreController({
   activePaginationLayoutKey,
@@ -146,6 +147,16 @@ export function useRestoreController({
     const effectiveConsumedRestoreIntentKey = userStillOnRestoredPage
       ? null
       : consumedRestoreIntentKeyRef.current;
+
+    // Release the sticky edge pin once the reader has paged away from where the
+    // restore placed them, so this effect re-running on a relayout/re-measure
+    // (e.g. a mobile viewport change) preserves their position instead of
+    // snapping back to the chapter edge.
+    keepCommittedRestorePinnedRef.current = shouldKeepStickyRestorePinned({
+      currentPageIndex: currentPageIndexRef.current,
+      isStickyRestorePinned: keepCommittedRestorePinnedRef.current,
+      lastAppliedRestorePageIndex: lastAppliedRestorePageIndexRef.current,
+    });
 
     const decision = resolvePaginationDecision({
       activeChapterId: activeChapter.chapterId,

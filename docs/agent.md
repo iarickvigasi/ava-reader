@@ -18,6 +18,8 @@ product.md, and the relevant docs/specs/*.md. For consequential decisions, read 
 
 ## Rules
 - Spec is source of truth for behaviour, ADR for decisions; code follows them.
+- A fix never gets its own spec — edit the existing spec that owns the behaviour (Workflow §1);
+  never add a new docs/specs/N file for a bug fix.
 - Offline-first is non-negotiable: user data flows through a bucket, not a raw fetch.
 - Next.js 16 here differs from training data — see apps/web/AGENTS.md before touching the web app.
 - Respect the size limits in conventions.md (docs ≤60, specs ≤60, code files ≤100). Edit the right
