@@ -19,7 +19,7 @@ every authenticated feature.
 1. Unauthenticated users hit /sign-in or /sign-up (Clerk flows).
 2. On success, a session token authorizes API calls; the User row links to clerkUserId.
 3. Sign-out and account-switch clear every offline substrate (per-user Dexie DB, SW caches,
-   localStorage) so no data leaks between accounts — see [[16-offline-data-isolation]].
+   localStorage) so no data leaks between accounts — see [[15-offline-data-isolation]].
 4. **Client-side signed-out guard** (signed-out-redirect-runner, an AppShell island): when the
    network is online **and** clerk-js has loaded **and** reports signed-out, redirect to the local
    /sign-in. This is the *only* stale-session redirect — the middleware can't distinguish "stale
@@ -56,7 +56,7 @@ degraded/redirected shells ([[14-route-precaching]]).
   Dexie.
 - [ ] API rejects requests without a valid Clerk token.
 - [ ] Sign-out and account-switch leave no prior user's offline data
-  ([[16-offline-data-isolation]]).
+  ([[15-offline-data-isolation]]).
 
 ## Open questions
 Pending-mutation handling on sign-out; future roles for authors/curators.

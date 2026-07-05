@@ -39,8 +39,12 @@ data still comes from Dexie buckets. Serves the offline-first job (product.md).
    interrupted by going offline is retried, never latched done at post time. A confirmed pass sets
    the in-session **shells-ready** signal the readiness cue consumes ([[11-cache-priming]]).
 4. **SW handling:** for each route the SW fetches the document (plain GET) and the RSC payload
-   (`RSC:1` header), storing them under the existing `__sw=doc` / `__sw=rsc` keys, query params
-   stripped. Per-entity-family docs are *additionally* stored under the family's `__shell__` key
+   (`RSC:1` header), storing them under the existing `__sw=doc` / `__sw=rsc` keys. Keys drop *all*
+   query params — Next's `_rsc` cache-buster and the client-only hydration hints the app appends to
+   book links (`?title=…&author=…&fromCollection=…`) — else a real click on a hinted link would
+   miss the precached bare route offline. The reactive handler classifies a request as RSC by the
+   `RSC: 1` header or `Accept: text/x-component`. Per-entity-family docs are *additionally* stored
+   under the family's `__shell__` key
    (every successful doc fetch refreshes it). Bounded concurrency; 3xx/redirects not cached —
    precache fetches use `redirect:"manual"` so a Clerk handshake/sign-in redirect can never be
    *followed* into a 200 that poisons a route key (redirect-follow was how a stale session cached

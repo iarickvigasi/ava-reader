@@ -1,4 +1,4 @@
-// Orchestrates the per-user offline data lifecycle (adr/5, spec 16) across all
+// Orchestrates the per-user offline data lifecycle (adr/5, spec 15) across all
 // three client substrates — the per-user Dexie DB, the service-worker caches,
 // and global localStorage/cookies — plus the in-memory bucket registries.
 

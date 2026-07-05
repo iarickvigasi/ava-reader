@@ -1,6 +1,6 @@
 "use client";
 
-// Render-less root island (adr/5, spec 16). Watches the Clerk session and keeps
+// Render-less root island (adr/5, spec 15). Watches the Clerk session and keeps
 // offline data isolated per user on a shared browser profile:
 // - sets the active user so getDb() opens THEIR database (`ava-reader-<userId>`);
 // - on sign-out, wipes their data across every substrate (DB + SW caches +

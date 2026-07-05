@@ -1,5 +1,5 @@
 // User-scoped client storage (localStorage + cookies) cleared on sign-out and
-// account switch (adr/5, spec 16). These keys are GLOBAL (not per-user), so they
+// account switch (adr/5, spec 15). These keys are GLOBAL (not per-user), so they
 // carry the previous account's data until cleared. Keep in sync with the owners:
 // preference hooks (`ava.*`), theme-provider (`ava-theme` + cookie),
 // interface-lang (`ava-locale` cookie), resume (`ava-reader:resume:*`),

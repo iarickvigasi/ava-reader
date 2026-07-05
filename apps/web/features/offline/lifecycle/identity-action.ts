@@ -1,4 +1,4 @@
-// Pure decision for the offline identity reconciler (adr/5, spec 16): given the
+// Pure decision for the offline identity reconciler (adr/5, spec 15): given the
 // device's last active user and the user Clerk currently reports, decide what
 // should happen to the offline data.
 
