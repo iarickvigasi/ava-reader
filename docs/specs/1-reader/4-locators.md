@@ -1,0 +1,31 @@
+# Reader · locators (anchoring)
+
+> Status: shipped · Updated: 2026-06-07 · Parent: [[_overview]] · Code: apps/web/features/reader/locator-dom.ts, apps/web/lib/api-types/reader.ts, .../screen/compute-ai-comment-locator.ts
+
+## Summary
+The durable addressing system for positions and selections in a book. Foundation shared by resume, progress, highlights, and AI comments — so anchors survive re-import and format drift.
+
+## Scope
+- In: the locator types, primary (blockId + offset) anchoring, text-quote fallback, resolving an offset to a DOM node, finding the first visible block.
+- Non-goals: who navigates/resumes (see navigation, resume); who annotates (highlights, ai-comments specs).
+
+## Behaviour
+1. **ReaderLocator** {chapterId, blockId, textOffset} addresses a point (reading position).
+2. **ReaderRangeLocator** addresses a selection: chapterId + block/offset range plus contextBefore/contextAfter — a text-quote-selector fallback when blockIds drift after a re-import.
+3. resolveTextOffsetTarget maps a textOffset across inline segments to {nodeIndex, offsetInNode}, clamped to valid range.
+4. findFirstVisibleBlockIndex picks the anchor block for the current viewport.
+5. Locators serialize as JSON into ReadingProgress, Annotation.locator, and AiComment.locator.
+
+## Data & sync
+Pure DOM/geometry helpers + shared types. No I/O; consumed by every position/annotation feature.
+
+## Edge cases
+blockId missing after re-import → resolve via contextBefore/After; offset past content → clamp; empty/whitespace-only blocks; duplicated quote text; image-only blocks.
+
+## Acceptance criteria
+- [ ] A locator resolves to the correct text node, or clamps without error.
+- [ ] When blockId no longer exists, the text-quote fallback re-anchors.
+- [ ] The same locator round-trips through JSON persistence unchanged.
+
+## Open questions
+Versioning locators across major content reprocessing; collision handling for repeated quotes.

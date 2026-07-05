@@ -1,0 +1,30 @@
+# Reader · content rendering
+
+> Status: shipped · Updated: 2026-06-07 · Parent: [[_overview]] · Code: apps/web/components/app/reader/reader-screen/content
+
+## Summary
+Turns a chapter's structured blocks into styled, readable DOM — the visible page content.
+
+## Scope
+- In: rendering ReaderBlock types (paragraph, heading, list, image, …), ReaderInline runs (text | image), list items, block alignment, reader typography, applying font scale and theme to the content.
+- Non-goals: how content is split into pages (see pagination), where it scrolls to (see navigation/resume), selection handling (see selection-bridge).
+
+## Behaviour
+1. reader-article renders the active chapter's blocks in order; reader-block-view styles each block by type and align (left|center|right|justify).
+2. Inlines render as text or inline images; images resolve from cached blobs.
+3. Font scale and theme (data-theme + CSS vars) apply live without re-fetching content.
+4. Each block carries its stable blockId so locators and marks can target it.
+
+## Data & sync
+Input: ReaderChapterPayload.blocks (api-types/reader.ts). Read-only; no mutations. Reader serif typography via CSS font vars.
+
+## Edge cases
+Unknown/empty block type → skip gracefully; missing image blob (offline) → placeholder; very long block; mixed-direction text; extreme font scale.
+
+## Acceptance criteria
+- [ ] Each block type renders with correct structure and alignment.
+- [ ] Font scale and theme changes restyle content instantly, no refetch.
+- [ ] Every rendered block exposes its blockId for anchoring.
+
+## Open questions
+Footnotes/tables/code blocks; RTL and vertical scripts; image zoom.

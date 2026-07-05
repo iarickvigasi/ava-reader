@@ -1,0 +1,31 @@
+# Reader · selection bridge
+
+> Status: shipped · Updated: 2026-06-07 · Parent: [[_overview]] · Code: apps/web/components/app/reader/reader-screen/screen/{reader-selection-context,use-reader-text-selection,use-highlight-selection-bridge,compute-ai-comment-locator}.tsx
+
+## Summary
+Turns a raw DOM text selection into a structured, anchored intent that the highlight and AI overlays can act on.
+
+## Scope
+- In: capturing the active selection, holding it in context, deriving a range locator from it, exposing it to highlight and AI-toolbox overlays.
+- Non-goals: persisting highlights (see 2-highlights), generating AI output (see 3-ai-toolbox / 4-ai-comments), locator internals (see 4-locators).
+
+## Behaviour
+1. use-reader-text-selection observes the browser Selection and normalizes it to a reader range (chapter, blocks, offsets, text).
+2. reader-selection-context publishes the current selection so overlays render relative to it.
+3. compute-ai-comment-locator derives a ReaderRangeLocator (with contextBefore/After) from the selection for AI tools.
+4. use-highlight-selection-bridge converts the selection into a highlight intent (excerpt + locator) for the highlights bucket.
+5. Selection clears on dismiss, navigation, or empty re-select.
+
+## Data & sync
+No persistence of its own; produces ReaderRangeLocator (spec 4) consumed by highlights and ai-comments buckets. Pure client state via context.
+
+## Edge cases
+Empty/collapsed selection; selection spanning blocks or chapters; selection over an image; selection lost on reflow/resize; touch vs mouse selection.
+
+## Acceptance criteria
+- [ ] A text selection yields a correct range locator with usable context fallback.
+- [ ] Both highlight and AI overlays anchor to the same selection.
+- [ ] Selection clears on navigation/dismiss without leaking stale state.
+
+## Open questions
+Multi-range selections; selection persistence across page turns; mobile selection ergonomics.
