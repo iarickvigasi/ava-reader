@@ -128,9 +128,19 @@ export function resolveVisibleLocatorPublishDecision(input: {
 export function resolveSwipeNavigationOutcome(input: {
   deltaX: number;
   deltaY: number;
+  // True when a non-empty text selection is active inside the reader. A
+  // selection drag on touch clears the swipe threshold trivially, so without
+  // this guard the gesture would be read as a page turn — turning the page out
+  // from under the reader's selection. Selecting and swiping are mutually
+  // exclusive on touch (see spec 1.6-selection-bridge).
+  hasActiveSelection: boolean;
   swipeMaxOffAxis: number;
   swipeThreshold: number;
 }): SwipeNavigationOutcome {
+  if (input.hasActiveSelection) {
+    return "none";
+  }
+
   if (
     Math.abs(input.deltaX) < input.swipeThreshold ||
     Math.abs(input.deltaY) > input.swipeMaxOffAxis ||

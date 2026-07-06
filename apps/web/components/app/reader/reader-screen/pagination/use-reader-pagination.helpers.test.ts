@@ -202,6 +202,7 @@ describe("useReaderPagination helpers", () => {
         resolveSwipeNavigationOutcome({
           deltaX: 12,
           deltaY: 2,
+          hasActiveSelection: false,
           swipeMaxOffAxis: 42,
           swipeThreshold: 30,
         }),
@@ -211,6 +212,7 @@ describe("useReaderPagination helpers", () => {
         resolveSwipeNavigationOutcome({
           deltaX: 40,
           deltaY: 50,
+          hasActiveSelection: false,
           swipeMaxOffAxis: 42,
           swipeThreshold: 30,
         }),
@@ -220,6 +222,7 @@ describe("useReaderPagination helpers", () => {
         resolveSwipeNavigationOutcome({
           deltaX: 40,
           deltaY: 41,
+          hasActiveSelection: false,
           swipeMaxOffAxis: 42,
           swipeThreshold: 30,
         }),
@@ -229,6 +232,7 @@ describe("useReaderPagination helpers", () => {
         resolveSwipeNavigationOutcome({
           deltaX: -46,
           deltaY: 5,
+          hasActiveSelection: false,
           swipeMaxOffAxis: 42,
           swipeThreshold: 30,
         }),
@@ -238,10 +242,36 @@ describe("useReaderPagination helpers", () => {
         resolveSwipeNavigationOutcome({
           deltaX: 46,
           deltaY: 5,
+          hasActiveSelection: false,
           swipeMaxOffAxis: 42,
           swipeThreshold: 30,
         }),
       ).toBe("previous-page");
+    });
+
+    it("suppresses swipe navigation while a text selection is active", () => {
+      // A selection drag on mobile easily clears the swipe threshold. Without
+      // this guard it would be classified as a page swipe (previous/next),
+      // turning the page out from under the reader's selection.
+      expect(
+        resolveSwipeNavigationOutcome({
+          deltaX: -80,
+          deltaY: 5,
+          hasActiveSelection: true,
+          swipeMaxOffAxis: 42,
+          swipeThreshold: 30,
+        }),
+      ).toBe("none");
+
+      expect(
+        resolveSwipeNavigationOutcome({
+          deltaX: 80,
+          deltaY: 5,
+          hasActiveSelection: true,
+          swipeMaxOffAxis: 42,
+          swipeThreshold: 30,
+        }),
+      ).toBe("none");
     });
 
     it("resolves page-step outcomes for loading, neighbor pages, and chapter boundaries", () => {

@@ -3,7 +3,7 @@ import {
   useEffect,
   useRef,
 } from "react";
-import type { TouchEvent as ReactTouchEvent } from "react";
+import type { RefObject, TouchEvent as ReactTouchEvent } from "react";
 import type { ReaderChapterPayload } from "@/lib/api-types";
 import type { ReaderNavigationTarget } from "@/features/reader/navigation";
 import {
@@ -12,7 +12,11 @@ import {
   SWIPE_MAX_OFF_AXIS,
   SWIPE_THRESHOLD,
 } from "../../shared/constants";
-import { clamp, isInteractiveTarget } from "../../shared/utils";
+import {
+  clamp,
+  hasActiveSelectionWithin,
+  isInteractiveTarget,
+} from "../../shared/utils";
 import {
   PAGE_DIRECTION_BACKWARD,
   PAGE_DIRECTION_FORWARD,
@@ -36,6 +40,7 @@ export function usePageNavigation({
   isPanelOpen,
   activeChapter,
   onSelectChapter,
+  containerRef,
 }: {
   currentPageIndex: number;
   setCurrentPageIndex: (update: number | ((prev: number) => number)) => void;
@@ -44,6 +49,9 @@ export function usePageNavigation({
   isPanelOpen: boolean;
   activeChapter: ReaderChapterPayload;
   onSelectChapter: (chapterId: string, target?: ReaderNavigationTarget) => void;
+  // The reader's selectable content box. A touch that leaves a text selection
+  // inside it is a selection gesture, not a swipe — so navigation is skipped.
+  containerRef: RefObject<HTMLElement | null>;
 }) {
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
@@ -174,6 +182,10 @@ export function usePageNavigation({
     const swipeOutcome = resolveSwipeNavigationOutcome({
       deltaX,
       deltaY,
+      // Read synchronously here: the selection is still live at touchend (the
+      // selection listener only clears it on a later tick), so a drag that
+      // produced a selection is recognised and never turns the page.
+      hasActiveSelection: hasActiveSelectionWithin(containerRef.current),
       swipeMaxOffAxis: SWIPE_MAX_OFF_AXIS,
       swipeThreshold: SWIPE_THRESHOLD,
     });

@@ -205,6 +205,7 @@ export function useReaderPagination({
     isPanelOpen,
     activeChapter,
     onSelectChapter,
+    containerRef: pageBoxRef,
   });
 
   // Spillover: active chapter is single-page → flow next chapter into
