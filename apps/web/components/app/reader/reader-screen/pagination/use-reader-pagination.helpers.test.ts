@@ -1,17 +1,18 @@
 import { describe, expect, it, vi } from "vitest";
 import type { ReaderMeasurementEntry } from "@/features/reader/measurement";
 import {
+  READER_RESTORE_PHASE_RESTORING,
+  READER_RESTORE_PHASE_SETTLED,
+} from "./use-reader-pagination/use-restore-controller/restore-phase";
+import {
   PAGE_DIRECTION_BACKWARD,
   PAGE_DIRECTION_FORWARD,
   READER_MEASUREMENT_STATUS_PENDING,
-  READER_RESTORE_PHASE_RESTORING,
-  READER_RESTORE_PHASE_SETTLED,
   areLocatorsEqual,
   resolveMeasurementStatus,
   resolvePageResolutionForLocator,
   resolvePageStepOutcome,
   resolveReadyMeasurementEntry,
-  resolveRestorePhase,
   resolveSwipeNavigationOutcome,
   resolveVisibleLocatorPublishDecision,
 } from "./use-reader-pagination.helpers";
@@ -83,25 +84,7 @@ describe("useReaderPagination helpers", () => {
     });
   });
 
-  describe("restore phase and locator publishing", () => {
-    it("resolves restore phase from settled key and measurement status", () => {
-      expect(
-        resolveRestorePhase({
-          activeMeasurementStatus: "ready",
-          activeRestoreCycleKey: "restore:key",
-          settledRestoreCycleKey: "restore:key",
-        }),
-      ).toBe(READER_RESTORE_PHASE_SETTLED);
-
-      expect(
-        resolveRestorePhase({
-          activeMeasurementStatus: "pending",
-          activeRestoreCycleKey: "restore:key",
-          settledRestoreCycleKey: "restore:key",
-        }),
-      ).toBe(READER_RESTORE_PHASE_RESTORING);
-    });
-
+  describe("locator publishing", () => {
     it("publishes only when restore is settled and locator changed", () => {
       const readyEntry = createReadyMeasurementEntry({
         resolveLocator: vi.fn(() => ({

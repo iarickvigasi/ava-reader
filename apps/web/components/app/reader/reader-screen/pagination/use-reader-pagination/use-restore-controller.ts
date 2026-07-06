@@ -1,231 +1,27 @@
 import {
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
-import type { ReaderChapterPayload, ReaderLocator } from "@/lib/api-types";
-import type { RestoreIntent } from "@/features/reader/navigation";
-import { isStickyRestoreIntent } from "@/features/reader/navigation";
-import { resolvePaginationDecision } from "@/features/reader/pagination";
-import type { ReaderMeasurementEntry } from "@/features/reader/measurement";
-import type { ReaderMeasurementPageResolution } from "@/features/reader/measurement";
-import { createLocatorFromRestoreIntent } from "../../shared/utils";
-import {
-  READER_MEASUREMENT_STATUS_PENDING,
-  resolvePageResolutionForLocator,
-  resolveReadyMeasurementEntry,
   resolveRestorePhase,
-} from "../use-reader-pagination.helpers";
-import type { ReaderRestorePhase } from "../use-reader-pagination.helpers";
-import { shouldKeepStickyRestorePinned } from "./restore-pin";
+  type ReaderRestorePhase,
+} from "./use-restore-controller/restore-phase";
+import { useRestoreDecision } from "./use-restore-controller/use-restore-decision";
+import { useSettleRestoreCycle } from "./use-restore-controller/use-settle-restore-cycle";
+import type { UseRestoreControllerInput } from "./use-restore-controller/use-restore-controller.types";
 
-export function useRestoreController({
-  activePaginationLayoutKey,
-  activeMeasurementEntry,
-  activeChapter,
-  prefixPageCount,
-  restoreIntent,
-  pageCount,
-  currentPageIndex,
-  setCurrentPageIndex,
-  warnFailedMeasurement,
-  activeRestoreCycleKey,
-  visibleLocator,
-}: {
-  activePaginationLayoutKey: string | null;
-  activeMeasurementEntry: ReaderMeasurementEntry | null;
-  activeChapter: ReaderChapterPayload;
-  // Number of preloader spreads that sit BEFORE the active chapter's first
-  // visible spread (= 1 when a single-page previous chapter occupies column
-  // 1 of spread 0, otherwise 0). Used to translate preloader-space page
-  // resolutions to the user's visible page when active-chapter content is
-  // shifted by one column.
-  prefixPageCount: number;
-  restoreIntent: RestoreIntent | null;
-  pageCount: number;
-  currentPageIndex: number;
-  setCurrentPageIndex: (update: number | ((prev: number) => number)) => void;
-  warnFailedMeasurement: (layoutKey: string) => void;
-  activeRestoreCycleKey: string;
-  visibleLocator: ReaderLocator | null;
-}): ReaderRestorePhase {
-  const consumedRestoreIntentKeyRef = useRef<string | null>(null);
-  const keepCommittedRestorePinnedRef = useRef(false);
-  const settleRestoreFrameRef = useRef<number | null>(null);
-  // Page the last restore put the user on — used to detect whether the user
-  // has since navigated away. Reset on intent/chapter change.
-  const lastAppliedRestorePageIndexRef = useRef<number | null>(null);
-  const [settledRestoreCycleKey, setSettledRestoreCycleKey] = useState<
-    string | null
-  >(null);
+/**
+ * Orchestrates restore: runs the decision machinery (useRestoreDecision) and
+ * exposes the restore phase (restoring → settled) that gates locator publishing
+ * and article masking.
+ */
+export function useRestoreController(
+  input: UseRestoreControllerInput,
+): ReaderRestorePhase {
+  const { cancelSettle, scheduleSettle, settledRestoreCycleKey } =
+    useSettleRestoreCycle();
 
-  /**
-   * These refs mirror the latest prop/state values so the decision
-   * `useLayoutEffect` below can read them without adding them to its
-   * dependency array (which would cause it to re-run on every page step and
-   * fight against user-driven page navigation).
-   *
-   * They MUST be updated during render — not in a `useEffect` — because the
-   * decision effect runs BEFORE paint on the same commit. A `useEffect`-based
-   * sync only runs after paint, which would leave the refs holding the
-   * previous render's values and cause the controller to make decisions
-   * against stale inputs (producing a one-frame flash of the wrong page on
-   * chapter changes).
-   */
-  const restoreIntentRef = useRef(restoreIntent);
-  // eslint-disable-next-line react-hooks/refs
-  restoreIntentRef.current = restoreIntent;
-  const visibleLocatorRef = useRef(visibleLocator);
-  // eslint-disable-next-line react-hooks/refs
-  visibleLocatorRef.current = visibleLocator;
-  const currentPageIndexRef = useRef(currentPageIndex);
-  // eslint-disable-next-line react-hooks/refs
-  currentPageIndexRef.current = currentPageIndex;
+  useRestoreDecision({ ...input, cancelSettle, scheduleSettle });
 
-  useEffect(() => {
-    return () => {
-      if (settleRestoreFrameRef.current !== null) {
-        window.cancelAnimationFrame(settleRestoreFrameRef.current);
-      }
-    };
-  }, []);
-
-  const restorePhase = resolveRestorePhase({
-    activeMeasurementStatus: activeMeasurementEntry?.status ?? "pending",
-    activeRestoreCycleKey,
+  return resolveRestorePhase({
+    activeMeasurementStatus: input.activeMeasurementEntry?.status ?? "pending",
+    activeRestoreCycleKey: input.activeRestoreCycleKey,
     settledRestoreCycleKey,
   });
-
-  useLayoutEffect(() => {
-    if (settleRestoreFrameRef.current !== null) {
-      window.cancelAnimationFrame(settleRestoreFrameRef.current);
-      settleRestoreFrameRef.current = null;
-    }
-
-    consumedRestoreIntentKeyRef.current = null;
-    keepCommittedRestorePinnedRef.current = isStickyRestoreIntent(restoreIntent);
-    lastAppliedRestorePageIndexRef.current = null;
-  }, [activeChapter.chapterId, restoreIntent]);
-
-  useLayoutEffect(() => {
-    if (!activePaginationLayoutKey || !activeMeasurementEntry) {
-      return;
-    }
-
-    if (activeMeasurementEntry.status === READER_MEASUREMENT_STATUS_PENDING) {
-      return;
-    }
-
-    const currentRestoreIntent = restoreIntentRef.current;
-    const readyMeasurementEntry =
-      resolveReadyMeasurementEntry(activeMeasurementEntry);
-    const visibleLocator = visibleLocatorRef.current;
-
-    const restorePageResolution = applyPrefixColumnShift(
-      resolvePageResolutionForLocator({
-        activeChapterId: activeChapter.chapterId,
-        locator: createLocatorFromRestoreIntent(currentRestoreIntent),
-        measurementEntry: readyMeasurementEntry,
-      }),
-      prefixPageCount,
-    );
-    const visiblePageResolution = applyPrefixColumnShift(
-      resolvePageResolutionForLocator({
-        activeChapterId: activeChapter.chapterId,
-        locator: visibleLocator,
-        measurementEntry: readyMeasurementEntry,
-      }),
-      prefixPageCount,
-    );
-    // While the user is still on the page the last restore produced, treat
-    // the intent as unconsumed so a corrected measurement (e.g. after fonts
-    // load and layout shifts) can re-place them.
-    const userStillOnRestoredPage =
-      lastAppliedRestorePageIndexRef.current !== null &&
-      currentPageIndexRef.current === lastAppliedRestorePageIndexRef.current;
-    const effectiveConsumedRestoreIntentKey = userStillOnRestoredPage
-      ? null
-      : consumedRestoreIntentKeyRef.current;
-
-    // Release the sticky edge pin once the reader has paged away from where the
-    // restore placed them, so this effect re-running on a relayout/re-measure
-    // (e.g. a mobile viewport change) preserves their position instead of
-    // snapping back to the chapter edge.
-    keepCommittedRestorePinnedRef.current = shouldKeepStickyRestorePinned({
-      currentPageIndex: currentPageIndexRef.current,
-      isStickyRestorePinned: keepCommittedRestorePinnedRef.current,
-      lastAppliedRestorePageIndex: lastAppliedRestorePageIndexRef.current,
-    });
-
-    const decision = resolvePaginationDecision({
-      activeChapterId: activeChapter.chapterId,
-      consumedRestoreIntentKey: effectiveConsumedRestoreIntentKey,
-      currentPageIndex: currentPageIndexRef.current,
-      keepRestorePinned: keepCommittedRestorePinnedRef.current,
-      measurementStatus: activeMeasurementEntry.status,
-      pageCount,
-      restoreIntent: currentRestoreIntent,
-      restorePageResolution,
-      visibleLocatorChapterId: visibleLocator?.chapterId ?? null,
-      visiblePageResolution,
-    });
-
-    if (decision.shouldWarnFailedMeasurement) {
-      warnFailedMeasurement(activeMeasurementEntry.layoutKey);
-    }
-
-    setCurrentPageIndex((current) =>
-      current === decision.nextPageIndex ? current : decision.nextPageIndex,
-    );
-
-    if (currentRestoreIntent && decision.shouldConsumeRestoreIntent) {
-      consumedRestoreIntentKeyRef.current = currentRestoreIntent.key;
-      lastAppliedRestorePageIndexRef.current = decision.nextPageIndex;
-    }
-
-    if (settleRestoreFrameRef.current !== null) {
-      window.cancelAnimationFrame(settleRestoreFrameRef.current);
-    }
-
-    settleRestoreFrameRef.current = window.requestAnimationFrame(() => {
-      settleRestoreFrameRef.current = null;
-      setSettledRestoreCycleKey(activeRestoreCycleKey);
-    });
-  }, [
-    activeChapter.chapterId,
-    activeMeasurementEntry,
-    activePaginationLayoutKey,
-    activeRestoreCycleKey,
-    pageCount,
-    prefixPageCount,
-    setCurrentPageIndex,
-    warnFailedMeasurement,
-  ]);
-
-  return restorePhase;
-}
-
-// The preloader measures each chapter standalone, so its pageIndex is in
-// "preloader spread" space. When the visible reader prepends a single-page
-// previous chapter (prefixPageCount > 0), the active chapter's first block
-// is forced into column 2 of the first visible spread. Active-chapter
-// content that lives in column 1 of a preloader spread therefore ends up
-// on the user's previous visible page; column-2 content stays put.
-function applyPrefixColumnShift(
-  resolution: ReaderMeasurementPageResolution | null,
-  prefixPageCount: number,
-): ReaderMeasurementPageResolution | null {
-  if (
-    !resolution ||
-    resolution.status === "missing-block" ||
-    prefixPageCount === 0 ||
-    resolution.column !== 1
-  ) {
-    return resolution;
-  }
-  return {
-    ...resolution,
-    pageIndex: Math.max(0, resolution.pageIndex - prefixPageCount),
-  };
 }

@@ -3,8 +3,10 @@ import type { CSSProperties } from "react";
 import { PAGE_GAP } from "../../shared/constants";
 import type { PageBoxSize } from "../../shared/types";
 import { createReaderColumnLayoutStyle } from "../../shared/utils";
-import { READER_RESTORE_PHASE_SETTLED } from "../use-reader-pagination.helpers";
-import type { ReaderRestorePhase } from "../use-reader-pagination.helpers";
+import {
+  READER_RESTORE_PHASE_SETTLED,
+  type ReaderRestorePhase,
+} from "./use-restore-controller/restore-phase";
 
 export function useArticleStyle({
   pageBoxSize,

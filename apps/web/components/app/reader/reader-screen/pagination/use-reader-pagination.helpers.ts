@@ -3,17 +3,16 @@ import type {
   ReaderMeasurementEntry,
   ReaderMeasurementPageResolution,
 } from "@/features/reader/measurement";
+import {
+  READER_RESTORE_PHASE_SETTLED,
+  type ReaderRestorePhase,
+} from "./use-reader-pagination/use-restore-controller/restore-phase";
 
 export const READER_MEASUREMENT_STATUS_PENDING = "pending";
 export const READER_MEASUREMENT_STATUS_READY = "ready";
-export const READER_RESTORE_PHASE_RESTORING = "restoring";
-export const READER_RESTORE_PHASE_SETTLED = "settled";
 export const PAGE_DIRECTION_FORWARD = 1;
 export const PAGE_DIRECTION_BACKWARD = -1;
 
-export type ReaderRestorePhase =
-  | typeof READER_RESTORE_PHASE_RESTORING
-  | typeof READER_RESTORE_PHASE_SETTLED;
 export type PaginationPageDirection =
   | typeof PAGE_DIRECTION_BACKWARD
   | typeof PAGE_DIRECTION_FORWARD;
@@ -55,21 +54,6 @@ export function resolveReadyMeasurementEntry(
   return measurementEntry?.status === READER_MEASUREMENT_STATUS_READY
     ? measurementEntry
     : null;
-}
-
-export function resolveRestorePhase(input: {
-  activeMeasurementStatus: ReaderMeasurementEntry["status"];
-  activeRestoreCycleKey: string;
-  settledRestoreCycleKey: string | null;
-}): ReaderRestorePhase {
-  if (
-    input.settledRestoreCycleKey === input.activeRestoreCycleKey &&
-    input.activeMeasurementStatus !== READER_MEASUREMENT_STATUS_PENDING
-  ) {
-    return READER_RESTORE_PHASE_SETTLED;
-  }
-
-  return READER_RESTORE_PHASE_RESTORING;
 }
 
 export function resolvePageResolutionForLocator(input: {
