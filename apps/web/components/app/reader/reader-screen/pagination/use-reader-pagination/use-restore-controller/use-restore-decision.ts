@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef } from "react";
 import { isStickyRestoreIntent } from "@/features/reader/navigation";
-import { READER_MEASUREMENT_STATUS_PENDING } from "../../use-reader-pagination.helpers";
+import { READER_MEASUREMENT_STATUS_PENDING } from "../../resolve-measurement";
 import { resolveRestoreStep } from "./resolve-restore-step";
 import { useRenderSyncedRef } from "./use-render-synced-ref";
 import type { UseRestoreDecisionInput } from "./use-restore-controller.types";

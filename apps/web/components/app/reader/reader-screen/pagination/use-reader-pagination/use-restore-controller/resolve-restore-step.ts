@@ -9,7 +9,7 @@ import { createLocatorFromRestoreIntent } from "../../../shared/utils";
 import {
   resolvePageResolutionForLocator,
   resolveReadyMeasurementEntry,
-} from "../../use-reader-pagination.helpers";
+} from "../../resolve-measurement";
 import { applyPrefixColumnShift } from "./apply-prefix-column-shift";
 import { shouldKeepStickyRestorePinned } from "./restore-pin";
 

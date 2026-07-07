@@ -3,7 +3,7 @@ import type { ReaderMeasurementEntry } from "@/features/reader/measurement";
 import {
   resolveMeasurementStatus,
   resolveReadyMeasurementEntry,
-} from "../use-reader-pagination.helpers";
+} from "../resolve-measurement";
 
 export function useMeasurementCache({
   activePaginationLayoutKey,
