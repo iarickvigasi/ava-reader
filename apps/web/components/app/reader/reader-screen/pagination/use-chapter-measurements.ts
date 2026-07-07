@@ -1,18 +1,15 @@
 import { useCallback, useLayoutEffect } from "react";
 import type { ReaderChapterPayload } from "@/lib/api-types";
 import {
-  createFailedReaderMeasurementEntry,
   createPendingReaderMeasurementEntry,
-  createReadyReaderMeasurementEntry,
   type ReaderMeasurementEntry,
 } from "@/features/reader/measurement";
 import { createPaginationLayoutKey } from "@/features/reader/pagination";
 import { PAGE_GAP } from "../shared/constants";
 import { resolveReaderColumnCount } from "../shared/utils";
-
-type ChapterRefReader<T extends Element> = {
-  get: (chapterId: string) => T | null;
-};
+import type { ChapterRefReader } from "./use-chapter-ref-map";
+import { measureChapterEntry } from "./measure-chapter-entry";
+import { observeMeasurementTriggers } from "./observe-measurement-triggers";
 
 // Drives the offscreen preloader's measurement loop:
 //   1. emit a "pending" entry for every chapter,
@@ -51,29 +48,16 @@ export function useChapterMeasurements({
 
   const measureChapter = useCallback(
     (chapterId: string) => {
-      const article = articleRefs.get(chapterId);
-      const pageBox = pageBoxRefs.get(chapterId);
-      const layoutKey = createLayoutKey(chapterId);
-
-      if (!article || !pageBox) {
-        onMeasurement(createPendingReaderMeasurementEntry({ chapterId, layoutKey }));
-        return;
-      }
-
-      try {
-        onMeasurement(
-          createReadyReaderMeasurementEntry({
-            article,
-            chapterId,
-            columnCount: resolveReaderColumnCount(pageBoxWidth),
-            layoutKey,
-            pageBox,
-            pageGap: PAGE_GAP,
-          }),
-        );
-      } catch {
-        onMeasurement(createFailedReaderMeasurementEntry({ chapterId, layoutKey }));
-      }
+      onMeasurement(
+        measureChapterEntry({
+          article: articleRefs.get(chapterId),
+          pageBox: pageBoxRefs.get(chapterId),
+          chapterId,
+          layoutKey: createLayoutKey(chapterId),
+          columnCount: resolveReaderColumnCount(pageBoxWidth),
+          pageGap: PAGE_GAP,
+        }),
+      );
     },
     [articleRefs, createLayoutKey, onMeasurement, pageBoxRefs, pageBoxWidth],
   );
@@ -112,44 +96,4 @@ export function useChapterMeasurements({
     pageBoxRefs,
     publishPendingMeasurements,
   ]);
-}
-
-// Observes article/pageBox size changes and image loads for every
-// chapter, calling `onTrigger` whenever the layout could change.
-function observeMeasurementTriggers({
-  articleRefs,
-  chapters,
-  onTrigger,
-  pageBoxRefs,
-}: {
-  articleRefs: ChapterRefReader<HTMLElement>;
-  chapters: ReaderChapterPayload[];
-  onTrigger: () => void;
-  pageBoxRefs: ChapterRefReader<HTMLDivElement>;
-}): () => void {
-  const resizeObserver = new ResizeObserver(onTrigger);
-  const trackedImages: HTMLImageElement[] = [];
-
-  for (const chapter of chapters) {
-    const article = articleRefs.get(chapter.chapterId);
-    const pageBox = pageBoxRefs.get(chapter.chapterId);
-
-    if (article) {
-      resizeObserver.observe(article);
-      for (const image of article.querySelectorAll<HTMLImageElement>("img")) {
-        image.addEventListener("load", onTrigger);
-        trackedImages.push(image);
-      }
-    }
-    if (pageBox) {
-      resizeObserver.observe(pageBox);
-    }
-  }
-
-  return () => {
-    resizeObserver.disconnect();
-    for (const image of trackedImages) {
-      image.removeEventListener("load", onTrigger);
-    }
-  };
 }
