@@ -3,7 +3,7 @@ import type { ReaderMeasurementEntry } from "@/features/reader/measurement";
 import {
   resolveMeasurementStatus,
   resolveReadyMeasurementEntry,
-} from "../resolve-measurement";
+} from "./resolve-measurement";
 
 export function useMeasurementCache({
   activePaginationLayoutKey,

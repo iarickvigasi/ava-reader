@@ -6,7 +6,7 @@ import { createReaderColumnLayoutStyle } from "../../shared/utils";
 import {
   READER_RESTORE_PHASE_SETTLED,
   type ReaderRestorePhase,
-} from "./use-restore-controller/restore-phase";
+} from "../restore/restore-phase";
 
 export function useArticleStyle({
   pageBoxSize,

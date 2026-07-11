@@ -5,11 +5,11 @@ import {
   resolvePaginationDecision,
   type PaginationDecision,
 } from "@/features/reader/pagination";
-import { createLocatorFromRestoreIntent } from "../../../shared/utils";
+import { createLocatorFromRestoreIntent } from "../../shared/utils";
 import {
   resolvePageResolutionForLocator,
   resolveReadyMeasurementEntry,
-} from "../../resolve-measurement";
+} from "../measurement/resolve-measurement";
 import { applyPrefixColumnShift } from "./apply-prefix-column-shift";
 import { shouldKeepStickyRestorePinned } from "./restore-pin";
 

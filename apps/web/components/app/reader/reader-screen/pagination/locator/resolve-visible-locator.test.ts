@@ -2,12 +2,12 @@ import { describe, expect, it, vi } from "vitest";
 import {
   READER_RESTORE_PHASE_RESTORING,
   READER_RESTORE_PHASE_SETTLED,
-} from "./use-reader-pagination/use-restore-controller/restore-phase";
+} from "../restore/restore-phase";
 import {
   areLocatorsEqual,
   resolveVisibleLocatorPublishDecision,
 } from "./resolve-visible-locator";
-import { createReadyMeasurementEntry } from "./measurement-test-fixture";
+import { createReadyMeasurementEntry } from "../measurement/measurement-test-fixture";
 
 describe("visible locator publishing", () => {
   it("publishes only when restore is settled and locator changed", () => {

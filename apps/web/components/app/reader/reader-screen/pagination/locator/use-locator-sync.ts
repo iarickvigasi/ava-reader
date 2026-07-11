@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 import type { ReaderLocator } from "@/lib/api-types";
 import type { ReaderMeasurementEntry } from "@/features/reader/measurement";
-import type { ReaderRestorePhase } from "./use-restore-controller/restore-phase";
-import { resolveVisibleLocatorPublishDecision } from "../resolve-visible-locator";
+import type { ReaderRestorePhase } from "../restore/restore-phase";
+import { resolveVisibleLocatorPublishDecision } from "./resolve-visible-locator";
 
 export function useLocatorSync({
   currentPageIndex,

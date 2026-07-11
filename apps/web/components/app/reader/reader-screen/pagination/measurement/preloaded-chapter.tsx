@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 import { useCallback } from "react";
 import type { ReaderChapterPayload } from "@/lib/api-types";
-import { ReaderArticle } from "../content/reader-article";
+import { ReaderArticle } from "../../content/reader-article";
 import type { ChapterRefMap } from "./use-chapter-ref-map";
 
 // One chapter rendered offscreen for measurement. Registers its article and

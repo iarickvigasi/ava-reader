@@ -4,8 +4,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { getBrowserViewportHeight } from "../../shared/utils";
-import type { PageBoxSize } from "../../shared/types";
+import { getBrowserViewportHeight } from "../shared/utils";
+import type { PageBoxSize } from "../shared/types";
 
 export function useViewportSize() {
   const rootRef = useRef<HTMLDivElement | null>(null);

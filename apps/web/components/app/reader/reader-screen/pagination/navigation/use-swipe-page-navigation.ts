@@ -2,7 +2,7 @@ import { useRef } from "react";
 import type { RefObject, TouchEvent as ReactTouchEvent } from "react";
 import { SWIPE_MAX_OFF_AXIS, SWIPE_THRESHOLD } from "../../shared/constants";
 import { hasActiveSelectionWithin } from "../../shared/utils";
-import { resolveSwipeNavigationOutcome } from "../resolve-navigation";
+import { resolveSwipeNavigationOutcome } from "./resolve-navigation";
 import type { PageStepControls } from "./use-page-stepper";
 
 // Touch swipe page turning. handleTouchStart records the first touch point (or

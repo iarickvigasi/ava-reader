@@ -2,8 +2,8 @@ import type { ReaderLocator } from "@/lib/api-types";
 import {
   READER_RESTORE_PHASE_SETTLED,
   type ReaderRestorePhase,
-} from "./use-reader-pagination/use-restore-controller/restore-phase";
-import type { ReadyReaderMeasurementEntry } from "./resolve-measurement";
+} from "../restore/restore-phase";
+import type { ReadyReaderMeasurementEntry } from "../measurement/resolve-measurement";
 
 export function areLocatorsEqual(
   left: ReaderLocator | null,

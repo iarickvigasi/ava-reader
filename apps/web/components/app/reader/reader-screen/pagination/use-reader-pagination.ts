@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { useViewportSize } from "./use-reader-pagination/use-viewport-size";
-import { useMeasurementCache } from "./use-reader-pagination/use-measurement-cache";
-import { useRestoreController } from "./use-reader-pagination/use-restore-controller";
-import { useLocatorSync } from "./use-reader-pagination/use-locator-sync";
-import { usePageNavigation } from "./use-reader-pagination/use-page-navigation";
-import { useArticleStyle } from "./use-reader-pagination/use-article-style";
-import { usePaginationLayoutKeys } from "./use-reader-pagination/use-pagination-layout-keys";
-import { useSpreadBlocks } from "./use-reader-pagination/use-spread-blocks";
+import { useViewportSize } from "./use-viewport-size";
+import { useMeasurementCache } from "./measurement/use-measurement-cache";
+import { useRestoreController } from "./restore/use-restore-controller";
+import { useLocatorSync } from "./locator/use-locator-sync";
+import { usePageNavigation } from "./navigation/use-page-navigation";
+import { useArticleStyle } from "./layout/use-article-style";
+import { usePaginationLayoutKeys } from "./layout/use-pagination-layout-keys";
+import { useSpreadBlocks } from "./layout/use-spread-blocks";
 import type {
   UseReaderPaginationInput,
   UseReaderPaginationResult,

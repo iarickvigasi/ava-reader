@@ -10,8 +10,8 @@ import {
   PAGE_DIRECTION_BACKWARD,
   PAGE_DIRECTION_FORWARD,
   resolvePageStepOutcome,
-} from "../resolve-navigation";
-import type { PaginationPageDirection } from "../resolve-navigation";
+} from "./resolve-navigation";
+import type { PaginationPageDirection } from "./resolve-navigation";
 
 export type PageStepControls = {
   goToNextPage: () => void;

@@ -1,10 +1,10 @@
 import {
   resolveRestorePhase,
   type ReaderRestorePhase,
-} from "./use-restore-controller/restore-phase";
-import { useRestoreDecision } from "./use-restore-controller/use-restore-decision";
-import { useSettleRestoreCycle } from "./use-restore-controller/use-settle-restore-cycle";
-import type { UseRestoreControllerInput } from "./use-restore-controller/use-restore-controller.types";
+} from "./restore-phase";
+import { useRestoreDecision } from "./use-restore-decision";
+import { useSettleRestoreCycle } from "./use-settle-restore-cycle";
+import type { UseRestoreControllerInput } from "./use-restore-controller.types";
 
 /**
  * Orchestrates restore: runs the decision machinery (useRestoreDecision) and

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo } from "react";
 import { useReaderUi } from "@/components/app/core/reader-ui-context";
 import { ReaderArticle } from "../content/reader-article";
-import { ReaderPaginationPreloader } from "../pagination/reader-pagination-preloader";
+import { ReaderPaginationPreloader } from "../pagination/measurement/reader-pagination-preloader";
 import {
   ReadyReaderActivityStatus,
   ReadyReaderHeader,
