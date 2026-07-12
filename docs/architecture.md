@@ -28,8 +28,8 @@ Monorepo: pnpm workspaces + Turbo (lint/typecheck/test/build), Node ≥22.
   `/app/explore` · `/app/insights` · `/app/admin/catalog`.
 - **components/** — ui (primitives), auth, theme, brand, and app/ (reader, home, library, admin,
   core contexts, preferences, shared).
-- **features/reader/** — pure logic: pagination, navigation, toc, resume, locator-dom, measurement
-  (each with co-located tests).
+- **features/reader/** — pure logic: pagination-decision, navigation, toc, resume, selection-locator,
+  measurement (each with co-located tests).
 - **lib/api-types/** — typed API contracts (reader, home, library, user, admin, shared);
   lib/server-api.ts fetches initial payloads, lib/api.ts is the browser client.
 

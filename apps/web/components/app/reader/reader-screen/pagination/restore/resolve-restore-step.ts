@@ -4,7 +4,7 @@ import type { ReaderMeasurementEntry } from "@/features/reader/measurement";
 import {
   resolvePaginationDecision,
   type PaginationDecision,
-} from "@/features/reader/pagination";
+} from "@/features/reader/pagination-decision";
 import { createLocatorFromRestoreIntent } from "../../shared/utils";
 import {
   resolvePageResolutionForLocator,

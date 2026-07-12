@@ -4,7 +4,7 @@ import {
   createPendingReaderMeasurementEntry,
   type ReaderMeasurementEntry,
 } from "@/features/reader/measurement";
-import { createPaginationLayoutKey } from "@/features/reader/pagination";
+import { createPaginationLayoutKey } from "@/features/reader/pagination-decision";
 import { PAGE_GAP } from "../../shared/constants";
 import { resolveReaderColumnCount } from "../../shared/utils";
 import type { ChapterRefReader } from "./use-chapter-ref-map";

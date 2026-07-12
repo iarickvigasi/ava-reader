@@ -5,7 +5,7 @@ import type { ReaderLocator } from "@/lib/api-types";
 import {
   findFirstVisibleBlockIndex,
   resolveTextOffsetTarget,
-} from "../locator-dom";
+} from "../selection-locator";
 import {
   type PageMetrics,
   type PageWindow,

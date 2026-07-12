@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   findFirstVisibleBlockIndex,
   resolveTextOffsetTarget,
-} from "./locator-dom";
+} from "./selection-locator";
 
 describe("reader locator dom helpers", () => {
   it("maps cumulative text offsets across mixed text-node segments", () => {

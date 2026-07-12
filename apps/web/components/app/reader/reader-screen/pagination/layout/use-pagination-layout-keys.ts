@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import type { ReaderChapterPayload } from "@/lib/api-types";
-import { createPaginationLayoutKey } from "@/features/reader/pagination";
+import { createPaginationLayoutKey } from "@/features/reader/pagination-decision";
 import type { PageBoxSize } from "../../shared/types";
 
 // Derives the measurement-cache keys for the active chapter and (when present)

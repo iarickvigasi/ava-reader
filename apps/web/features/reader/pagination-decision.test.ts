@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import type { PaginationDecisionInput } from "./pagination";
+import type { PaginationDecisionInput } from "./pagination-decision";
 import {
   createPaginationLayoutKey,
   resolvePaginationDecision,
-} from "./pagination";
+} from "./pagination-decision";
 import { createRestoreIntent } from "./navigation";
 
 describe("reader pagination", () => {

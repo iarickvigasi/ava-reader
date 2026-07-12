@@ -2,7 +2,7 @@
 // ranges, and the rect picker. The bridge between locator coordinates
 // (blockId + textOffset) and on-screen rectangles.
 
-import { resolveTextOffsetTarget } from "../locator-dom";
+import { resolveTextOffsetTarget } from "../selection-locator";
 
 export type TextNodeSegment = {
   length: number;
