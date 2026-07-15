@@ -1,14 +1,17 @@
 import { XMLParser } from 'fast-xml-parser';
+import { createXmlEntityDecoder } from '../../shared/xml-entities';
 
 export type OrderedNode = Record<string, unknown>;
 
 export const xmlParser = new XMLParser({
+  entityDecoder: createXmlEntityDecoder(),
   ignoreAttributes: false,
   removeNSPrefix: false,
   trimValues: true,
 });
 
 export const orderedXmlParser = new XMLParser({
+  entityDecoder: createXmlEntityDecoder(),
   ignoreAttributes: false,
   preserveOrder: true,
   removeNSPrefix: false,

@@ -11,6 +11,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { decodeXmlEntities } from '../shared/xml-entities';
 import { UsersService } from '../users/users.service';
 import type {
   ReaderChapter,
@@ -1046,7 +1047,9 @@ function createProgressSummary(
   } | null,
 ): ReaderProgressSummary {
   return {
-    chapterLabel: progress?.chapterLabel ?? null,
+    chapterLabel: progress?.chapterLabel
+      ? decodeXmlEntities(progress.chapterLabel)
+      : null,
     completionPercent: progress?.completionPercent ?? 0,
     lastReadAt: progress?.lastReadAt?.toISOString() ?? null,
     locator: parseLocator(progress?.currentLocator ?? null),
@@ -1256,7 +1259,9 @@ function parseStoredReadingProgressIndex(
       return null;
     }
   }
-  return candidate as ReadingProgressIndex;
+  return normalizeReadingProgressIndexDisplayText(
+    candidate as ReadingProgressIndex,
+  );
 }
 
 type LegacyReaderTocEntry = {
@@ -1313,11 +1318,40 @@ function normalizeReaderPackageManifestAuthors(
 
   return {
     ...readerPackage,
+    chapters: readerPackage.chapters.map((chapter) => ({
+      ...chapter,
+      label: decodeXmlEntities(chapter.label),
+      title: decodeXmlEntities(chapter.title),
+    })),
     manifest: {
       ...readerPackage.manifest,
-      authors,
+      authors: authors.map((author) => decodeXmlEntities(author)),
+      title: decodeXmlEntities(readerPackage.manifest.title),
     },
+    toc: normalizeTocDisplayText(readerPackage.toc),
   };
+}
+
+function normalizeReadingProgressIndexDisplayText(
+  index: ReadingProgressIndex,
+): ReadingProgressIndex {
+  return {
+    ...index,
+    chapters: index.chapters.map((chapter) => ({
+      ...chapter,
+      label: decodeXmlEntities(chapter.label),
+      title: decodeXmlEntities(chapter.title),
+    })),
+    toc: normalizeTocDisplayText(index.toc),
+  };
+}
+
+function normalizeTocDisplayText(nodes: ReaderTocNode[]): ReaderTocNode[] {
+  return nodes.map((node) => ({
+    ...node,
+    children: normalizeTocDisplayText(node.children),
+    label: decodeXmlEntities(node.label),
+  }));
 }
 
 function findBestTocLabel(

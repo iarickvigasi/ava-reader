@@ -129,6 +129,45 @@ describe('ReaderService', () => {
     ]);
   });
 
+  it('decodes persisted display labels without changing block text or ids', async () => {
+    const storedPackage = createReaderPackage({
+      tocMode: 'nested',
+      version: 2,
+    });
+    storedPackage.toc[0].label = 'Chapter One&#8217;s Story';
+    storedPackage.chapters[0].label = 'Chapter One&#8217;s Story';
+    storedPackage.chapters[0].title = 'Chapter One&#8217;s Story';
+    storedPackage.chapters[0].blocks[0].text = 'Literal &#8217; body text';
+    findUniqueOrThrowStoredBlob.mockResolvedValue({
+      bytes: Buffer.from(JSON.stringify(storedPackage), 'utf8'),
+    });
+    const libraryItem = createLibraryItemRecord();
+    libraryItem.progress.chapterLabel = 'Chapter Two&#8217;s Story';
+    findFirstLibraryItem.mockResolvedValue(libraryItem);
+
+    const payload = await readerService.getReaderPayload(
+      'clerk_1',
+      'library-1',
+    );
+
+    expect(payload.status).toBe('READY');
+    if (payload.status !== 'READY') {
+      throw new Error('Expected READY payload');
+    }
+
+    expect(payload.toc[0]?.label).toBe('Chapter One’s Story');
+    expect(payload.progress.chapterLabel).toBe('Chapter Two’s Story');
+    expect(payload.chapters[0]).toMatchObject({
+      chapterId: 'chapter-1',
+      label: 'Chapter One’s Story',
+      title: 'Chapter One’s Story',
+    });
+    expect(payload.chapters[0]?.blocks[0]).toMatchObject({
+      id: 'chapter-1::b1',
+      text: 'Literal &#8217; body text',
+    });
+  });
+
   it('updates progress from a structured locator and recomputes chapter metadata', async () => {
     findFirstLibraryItem.mockResolvedValue(createLibraryItemRecord());
     updateReadingProgress.mockResolvedValue({

@@ -26,7 +26,7 @@ describe('buildReaderPackageFromEpub', () => {
 
     expect(firstTocEntry.chapterId).toMatch(/^chapter-1-/);
     expect(firstTocEntry.id).toBe('toc:0');
-    expect(firstTocEntry.label).toBe('Chapter One');
+    expect(firstTocEntry.label).toBe('Chapter One’s Story');
     expect(firstNestedTocEntry.anchorId).toBe('part-one');
     // The Part One segment is now its own chapter, so its anchor block is the
     // chapter's first block (b1).
@@ -45,7 +45,7 @@ describe('buildReaderPackageFromEpub', () => {
     expect(readerPackage.chapters[0].blocks).toHaveLength(1);
     expect(readerPackage.chapters[0].blocks[0]).toMatchObject({
       kind: 'heading',
-      text: 'Chapter One',
+      text: 'Chapter One’s Story',
     });
     expect(readerPackage.chapters[1].chapterId).toMatch(/^chapter-2-/);
     expect(readerPackage.chapters[1].href).toBe(
@@ -58,7 +58,7 @@ describe('buildReaderPackageFromEpub', () => {
     });
     expect(readerPackage.chapters[1].blocks[1]).toMatchObject({
       kind: 'paragraph',
-      text: 'Hello brave reader.',
+      text: 'Hello brave reader’s guide.',
     });
     expect(readerPackage.chapters[1].blocks[2]).toMatchObject({
       kind: 'image',
@@ -94,7 +94,7 @@ describe('buildReaderPackageFromEpub', () => {
 
     expect(firstTocEntry.chapterId).toMatch(/^chapter-1-/);
     expect(firstTocEntry.id).toBe('toc:0');
-    expect(firstTocEntry.label).toBe('Chapter One');
+    expect(firstTocEntry.label).toBe('Chapter One’s Story');
     // chapter-1.xhtml is split at #part-one, so Part One becomes the second
     // chapter overall and Chapter Two becomes the third.
     expect(firstNestedTocEntry.chapterId).toMatch(/^chapter-2-/);
@@ -538,7 +538,7 @@ async function createReaderEpubBuffer() {
     <nav epub:type="toc">
       <ol>
         <li>
-          <a href="text/chapter-1.xhtml">Chapter One</a>
+          <a href="text/chapter-1.xhtml">Chapter One&#x2019;s Story</a>
           <ol>
             <li><a href="text/chapter-1.xhtml#part-one">Part One</a></li>
           </ol>
@@ -560,9 +560,9 @@ async function createReaderEpubBuffer() {
     `<?xml version="1.0" encoding="UTF-8"?>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
-    <h1>Chapter One</h1>
+    <h1>Chapter One&#8217;s Story</h1>
     <h2 id="part-one">Part One</h2>
-    <p>Hello <strong>brave</strong> reader.</p>
+    <p>Hello <strong>brave</strong> reader&#8217;s guide.</p>
     <img src="../images/scene.png" alt="Scene" />
   </body>
 </html>`,
@@ -622,7 +622,7 @@ async function createReaderEpubBufferWithNcx() {
 <ncx version="2005-1">
   <navMap>
     <navPoint id="nav-1" playOrder="1">
-      <navLabel><text>Chapter One</text></navLabel>
+      <navLabel><text>Chapter One&#8217;s Story</text></navLabel>
       <content src="text/chapter-1.xhtml"/>
       <navPoint id="nav-1-1" playOrder="2">
         <navLabel><text>Part One</text></navLabel>

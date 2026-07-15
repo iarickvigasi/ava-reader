@@ -29,6 +29,20 @@ describe('extractBookMetadata', () => {
     });
   });
 
+  it('decodes numeric character references in EPUB metadata', async () => {
+    const epubBuffer = await createEpubBuffer({
+      title: 'It&#8217;s &#x201C;Fine&#x201D;',
+    });
+
+    const metadata = await extractBookMetadata({
+      buffer: epubBuffer,
+      mimetype: 'application/epub+zip',
+      originalname: 'example.epub',
+    });
+
+    expect(metadata.title).toBe('It’s “Fine”');
+  });
+
   it('extracts EPUB subjects as normalized, deduplicated genres', async () => {
     const epubBuffer = await createEpubBuffer({
       dcSubjects: ['Science Fiction', ' Gothic ', 'Science Fiction'],
@@ -151,6 +165,7 @@ async function createEpubBuffer(input: {
   creators?: Array<{ name: string; role?: string }>;
   dcSubjects?: string[];
   subjects?: string[];
+  title?: string;
 }) {
   const zip = new JSZip();
   zip.file(
@@ -192,7 +207,7 @@ async function createEpubBuffer(input: {
     `<?xml version="1.0" encoding="UTF-8"?>
 <package xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf" version="2.0">
   <metadata>
-    <dc:title>Example Title</dc:title>
+    <dc:title>${input.title ?? 'Example Title'}</dc:title>
     ${creatorTags}
     <dc:description>Example Description</dc:description>
     <dc:language>en</dc:language>

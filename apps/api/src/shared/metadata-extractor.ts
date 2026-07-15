@@ -5,6 +5,7 @@ import JSZip from 'jszip';
 import mime from 'mime-types';
 import { resolveZipPath } from './zip-utils';
 import { titleFromFilename } from './blob-utils';
+import { createXmlEntityDecoder } from './xml-entities';
 
 type UploadedFileLike = {
   buffer: Buffer;
@@ -32,6 +33,7 @@ export type ExtractedBookMetadata = {
 };
 
 const xmlParser = new XMLParser({
+  entityDecoder: createXmlEntityDecoder(),
   ignoreAttributes: false,
   removeNSPrefix: false,
   trimValues: true,
