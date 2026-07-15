@@ -1,11 +1,9 @@
 import { useAuth } from "@clerk/nextjs";
-import { useEffect, useMemo, useReducer, useState } from "react";
-import type { ReaderChapterPayload, ReaderLocator } from "@/lib/api-types";
+import { useReducer, useState } from "react";
+import type { ReaderLocator } from "@/lib/api-types";
 import {
   createInitialTraversalState,
   readerTraversalReducer,
-  resolveRequestedChapterId,
-  resolveVisibleChapterId,
 } from "@/features/reader/navigation";
 import type {
   InitialResumeBootstrapState,
@@ -13,23 +11,17 @@ import type {
   ReaderScreenControllerResult,
 } from "../shared/types";
 import {
-  READER_PERSISTENCE_MODE_REMOTE,
   READER_RESUME_PHASE_APPLIED,
   READER_RESUME_PHASE_SELECTING,
-  READER_STATUS_POLL_INTERVAL_MS,
-  READER_STATUS_PROCESSING,
 } from "../shared/constants";
-import { fetchReaderPayload } from "../data/reader-client";
-import {
-  createLocatorFromRestoreIntent,
-  isReadyReaderPayload,
-  normalizeReaderStatusPayload,
-} from "../shared/utils";
-import { useReaderChapterNavigation } from "./controller-hooks/use-reader-chapter-navigation";
+import { normalizeReaderStatusPayload } from "../shared/utils";
+import { useReaderChapterNavigation } from "./controller-hooks/chapter-navigation/use-reader-chapter-navigation";
 import { useReaderOpenEvent } from "./controller-hooks/use-reader-open-event";
-import { useReaderProgressSync } from "./controller-hooks/use-reader-progress-sync";
+import { useReaderProcessingPoll } from "./controller-hooks/use-reader-processing-poll";
+import { useReaderProgressSync } from "./controller-hooks/progress-sync/use-reader-progress-sync";
 import { useReaderResumeBootstrap } from "./controller-hooks/use-reader-resume-bootstrap";
-import { useReaderSessionTracking } from "./controller-hooks/use-reader-session-tracking";
+import { useReaderSessionTracking } from "./controller-hooks/session-tracking/use-reader-session-tracking";
+import { useReaderViewState } from "./controller-hooks/use-reader-view-state";
 
 export function useReaderScreenController({
   initialPayload,
@@ -51,29 +43,21 @@ export function useReaderScreenController({
     createInitialTraversalState,
   );
 
-  const readyPayload = isReadyReaderPayload(payload) ? payload : null;
-  const loadedChaptersById = useMemo(
-    () =>
-      readyPayload
-        ? new Map(
-            readyPayload.chapters.map((chapter) => [chapter.chapterId, chapter]),
-          )
-        : new Map<string, ReaderChapterPayload>(),
-    [readyPayload],
-  );
-  const activeChapterId = readyPayload
-    ? resolveVisibleChapterId(readyPayload, traversal.visibleChapterId)
-    : null;
-  const activeChapter = activeChapterId
-    ? loadedChaptersById.get(activeChapterId) ?? null
-    : null;
-  const currentReadyChapterId = activeChapterId;
-  const requestedChapterId = resolveRequestedChapterId({
-    pendingChapterId: traversal.pendingChapterId,
-    visibleChapterId: traversal.visibleChapterId,
+  const {
+    activeChapter,
+    activeChapterId: currentReadyChapterId,
+    displayLocator,
+    loadedChaptersById,
+    readyPayload,
+    remotePersistenceEnabled,
+    requestedChapterId,
+  } = useReaderViewState({
+    initialResume,
+    payload,
+    persistenceMode,
+    traversal,
+    visibleLocator,
   });
-  const remotePersistenceEnabled =
-    persistenceMode === READER_PERSISTENCE_MODE_REMOTE;
 
   const { backgroundChapterId, commitVisibleChapter, loadChapterWindow, navigateToChapter } =
     useReaderChapterNavigation({
@@ -131,54 +115,15 @@ export function useReaderScreenController({
     remotePersistenceEnabled,
   });
 
-  /**
-   * Loading book that is first opened in reader
-   */
-  useEffect(() => {
-    if (payload.status !== READER_STATUS_PROCESSING) {
-      return;
-    }
-
-    const interval = window.setInterval(() => {
-      void fetchReaderPayload({
-        chapterId: requestedChapterId ?? undefined,
-        getToken,
-        isLoaded,
-        isSignedIn,
-        libraryItemId,
-      }).then((nextPayload) => {
-        const normalizedPayload = normalizeReaderStatusPayload(nextPayload);
-        setPayload(normalizedPayload);
-      });
-    }, READER_STATUS_POLL_INTERVAL_MS);
-
-    return () => {
-      window.clearInterval(interval);
-    };
-  }, [
+  useReaderProcessingPoll({
     getToken,
     isLoaded,
     isSignedIn,
     libraryItemId,
-    payload.status,
+    payloadStatus: payload.status,
     requestedChapterId,
-  ]);
-
-  const displayLocator = useMemo(() => {
-    if (visibleLocator) {
-      return visibleLocator;
-    }
-
-    const restoreLocator = createLocatorFromRestoreIntent(traversal.restoreIntent);
-    return (
-      restoreLocator ?? initialResume.snapshot?.locator ?? payload.progress.locator
-    );
-  }, [
-    initialResume.snapshot,
-    payload.progress.locator,
-    traversal.restoreIntent,
-    visibleLocator,
-  ]);
+    setPayload,
+  });
 
   const isLoadingChapter = traversal.pendingChapterId !== null;
   const isRefreshingWindow = backgroundChapterId !== null;

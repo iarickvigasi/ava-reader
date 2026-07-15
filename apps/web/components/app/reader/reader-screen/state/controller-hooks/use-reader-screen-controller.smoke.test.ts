@@ -5,7 +5,7 @@ import {
   readerTraversalReducer,
   resolveVisibleChapterId,
 } from "@/features/reader/navigation";
-import { createRestoreIntentKey } from "./use-reader-chapter-navigation.helpers";
+import { createRestoreIntentKey } from "./chapter-navigation/use-reader-chapter-navigation.helpers";
 
 describe("useReaderScreenController smoke", () => {
   it("keeps unloaded-chapter navigation lifecycle stable", () => {

@@ -1,4 +1,4 @@
-# Agent guide — how Claude works here
+# Agent guide — how AI works here
 
 Read first, every task: this file, conventions.md, styles.md, glossary.md, architecture.md,
 product.md, and the relevant docs/specs/*.md. For consequential decisions, read docs/adr/*.
@@ -26,4 +26,9 @@ product.md, and the relevant docs/specs/*.md. For consequential decisions, read 
   file instead of duplicating.
 - Clean code: one function/component per file; split large components; logic in hooks + pure
   functions. Refactor toward the limits, never add to a violation.
+- Relocating a file (splitting a folder, renaming) → `git mv` it, then edit the moved file in
+  place. Never `rm`/delete the old path and `Write` a fresh file at the new one — that severs git's
+  rename tracking and history. A 1-to-many split (one file's logic spread across several new ones)
+  still starts with `git mv` for whichever new file keeps most of the original; the rest are
+  legitimately new files.
 - Verify before declaring done: pnpm typecheck, lint, test.
