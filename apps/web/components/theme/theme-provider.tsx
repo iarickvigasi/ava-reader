@@ -1,80 +1,41 @@
 "use client";
 
-import { useAuth } from "@clerk/nextjs";
 import {
   createContext,
   useCallback,
   useContext,
   useEffect,
-  useRef,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
 import {
-  fetchPreferences,
-  patchPreference,
-} from "@/components/app/preferences/preferences-store";
-
-type Theme = "light" | "dark";
+  isOverrideActive,
+  resolveTheme,
+  toggleOverride,
+  type Theme,
+} from "./resolve-theme";
+import {
+  applyTheme,
+  persistResolvedTheme,
+  readDeviceScheme,
+  readOverride,
+  subscribeTheme,
+  THEME_EVENT,
+  writeOverride,
+} from "./theme-storage";
 
 type ThemeContextValue = {
   theme: Theme;
   toggleTheme: () => void;
 };
 
-const STORAGE_KEY = "ava-theme";
-const THEME_EVENT = "ava-theme-change";
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
-
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-function persistTheme(theme: Theme) {
-  window.localStorage.setItem(STORAGE_KEY, theme);
-  document.cookie = `${STORAGE_KEY}=${theme}; path=/; max-age=${COOKIE_MAX_AGE}; samesite=lax`;
-}
-
-function getStoredTheme(initialTheme: Theme): Theme {
+function getThemeSnapshot(initialTheme: Theme): Theme {
   if (typeof window === "undefined") {
     return initialTheme;
   }
-
-  const storedTheme = window.localStorage.getItem(STORAGE_KEY);
-
-  if (storedTheme === "dark" || storedTheme === "light") {
-    return storedTheme;
-  }
-
-  return initialTheme;
-}
-
-function applyTheme(theme: Theme) {
-  document.documentElement.dataset.theme = theme;
-}
-
-function subscribe(onStoreChange: () => void) {
-  if (typeof window === "undefined") {
-    return () => {};
-  }
-
-  const handleThemeChange = () => {
-    onStoreChange();
-  };
-
-  window.addEventListener(THEME_EVENT, handleThemeChange);
-  window.addEventListener("storage", handleThemeChange);
-
-  return () => {
-    window.removeEventListener(THEME_EVENT, handleThemeChange);
-    window.removeEventListener("storage", handleThemeChange);
-  };
-}
-
-function getThemeSnapshot(initialTheme: Theme): Theme {
-  return getStoredTheme(initialTheme);
-}
-
-function getServerThemeSnapshot(initialTheme: Theme): Theme {
-  return initialTheme;
+  return resolveTheme(readDeviceScheme(), readOverride());
 }
 
 export function ThemeProvider({
@@ -84,57 +45,38 @@ export function ThemeProvider({
   children: ReactNode;
   initialTheme: Theme;
 }) {
-  const { getToken, isLoaded, isSignedIn } = useAuth();
   const theme = useSyncExternalStore(
-    subscribe,
+    subscribeTheme,
     () => getThemeSnapshot(initialTheme),
-    () => getServerThemeSnapshot(initialTheme),
+    () => initialTheme,
   );
-  // We optimistically updated the API on the last toggle — don't echo that
-  // change back into the cookie/localStorage on the next reconciliation.
-  const lastWrittenRef = useRef<Theme | null>(null);
 
+  // Keep the DOM attribute and the SSR/cross-tab baselines in step with the
+  // resolved theme — on mount and on every device shift or override change.
   useEffect(() => {
     applyTheme(theme);
-    persistTheme(theme);
+    persistResolvedTheme(theme);
   }, [theme]);
 
-  // Cross-device reconciliation. After hydration, GET /me/preferences and
-  // adopt the server's theme if it differs from what the cookie carried in.
-  // The cookie still drives the *first* paint, so this can't cause a
-  // hydration mismatch — only a one-shot transition after mount.
+  // On load, discard an override left over from a segment that has since ended
+  // (the device shifted while the app was closed), so a later shift back to
+  // that scheme can't resurrect it.
   useEffect(() => {
-    if (!isLoaded || !isSignedIn) return;
-    let cancelled = false;
-    fetchPreferences(getToken)
-      .then((prefs) => {
-        if (cancelled) return;
-        const apiTheme = prefs.theme;
-        if (apiTheme !== "light" && apiTheme !== "dark") return;
-        if (apiTheme === lastWrittenRef.current) return;
-        const currentTheme = getStoredTheme(initialTheme);
-        if (apiTheme === currentTheme) return;
-        applyTheme(apiTheme);
-        persistTheme(apiTheme);
-        window.dispatchEvent(new Event(THEME_EVENT));
-      })
-      .catch(() => {
-        // Best effort.
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [getToken, isLoaded, isSignedIn, initialTheme]);
+    const override = readOverride();
+    if (override && !isOverrideActive(readDeviceScheme(), override)) {
+      writeOverride(null);
+    }
+  }, []);
 
   const toggleTheme = useCallback(() => {
-    const nextTheme: Theme = theme === "light" ? "dark" : "light";
-
-    applyTheme(nextTheme);
-    persistTheme(nextTheme);
+    const device = readDeviceScheme();
+    const next = toggleOverride(device, readOverride());
+    writeOverride(next);
+    const resolved = resolveTheme(device, next);
+    applyTheme(resolved);
+    persistResolvedTheme(resolved);
     window.dispatchEvent(new Event(THEME_EVENT));
-    lastWrittenRef.current = nextTheme;
-    void patchPreference(getToken, "theme", nextTheme);
-  }, [theme, getToken]);
+  }, []);
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>

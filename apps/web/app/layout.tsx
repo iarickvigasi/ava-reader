@@ -36,6 +36,12 @@ export const metadata: Metadata = {
   description: "Investigate deeper meaning of books without breaking focus.",
 };
 
+// Runs before first paint to set `data-theme` from the device scheme and any
+// stored override — so the theme is correct even when the device shifted while
+// the app was closed (the cookie baseline may be stale). Mirrors resolveTheme +
+// isOverrideActive in components/theme/resolve-theme.ts; keep the two in sync.
+const themeBootstrap = `(function(){try{var d=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";var t=d;var raw=window.localStorage.getItem("ava-theme-override");if(raw){var o=JSON.parse(raw);if(o&&(o.theme==="light"||o.theme==="dark")&&o.setAgainst===d){t=o.theme;}}document.documentElement.dataset.theme=t;}catch(e){}})();`;
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -54,6 +60,7 @@ export default async function RootLayout({
       className={`${display.variable} ${body.variable} ${ui.variable} ${readerSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full">
+        <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
         <NextIntlClientProvider>
           <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">
             <OfflineIdentityReconciler />
