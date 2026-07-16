@@ -3,7 +3,6 @@ import type { ReaderMeasurementEntry } from "@/features/reader/measurement";
 // Builds a ready measurement entry for helper tests. Override resolveLocator /
 // resolvePageIndex to script the behaviour a given assertion needs.
 export function createReadyMeasurementEntry(input?: {
-  pageCount?: number;
   resolveLocator?: (pageIndex: number) => {
     blockId: string;
     chapterId: string;
@@ -18,7 +17,7 @@ export function createReadyMeasurementEntry(input?: {
   return {
     chapterId: "chapter-a",
     layoutKey: "layout:chapter-a",
-    pageCount: input?.pageCount ?? 12,
+    pageCount: 12,
     resolveLocator:
       input?.resolveLocator ??
       (() => ({

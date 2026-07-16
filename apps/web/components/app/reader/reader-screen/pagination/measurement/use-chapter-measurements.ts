@@ -82,18 +82,13 @@ export function useChapterMeasurements({
   useLayoutEffect(() => {
     publishPendingMeasurements();
     measureAllChapters();
-    const animationFrame = window.requestAnimationFrame(measureAllChapters);
-    const stopObserving = observeMeasurementTriggers({
+
+    return observeMeasurementTriggers({
       articleRefs,
       chapters,
       onTrigger: measureAllChapters,
       pageBoxRefs,
     });
-
-    return () => {
-      window.cancelAnimationFrame(animationFrame);
-      stopObserving();
-    };
   }, [
     articleRefs,
     chapters,

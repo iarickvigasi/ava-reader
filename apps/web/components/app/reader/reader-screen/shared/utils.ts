@@ -38,9 +38,20 @@ export function createReaderColumnLayoutStyle({
   height: number;
   width: number;
 }): CSSProperties {
+  const columnsPerPage = resolveReaderColumnCount(width);
+  const columnWidth =
+    width > 0
+      ? (width - PAGE_GAP * (columnsPerPage - 1)) / columnsPerPage
+      : 0;
+
   return {
-    columnCount: resolveReaderColumnCount(width),
+    // WebKit can treat column-count:1 as a single clipped column instead of
+    // creating horizontal overflow columns. A fixed column width with an
+    // automatic count produces the same one-column mobile / two-column desktop
+    // geometry while reliably continuing the content into later columns.
+    columnCount: "auto",
     columnGap: `${PAGE_GAP}px`,
+    columnWidth: columnWidth > 0 ? `${columnWidth}px` : undefined,
     height: height > 0 ? `${height}px` : undefined,
   };
 }

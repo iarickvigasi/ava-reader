@@ -7,6 +7,7 @@ import {
 } from "./constants";
 import {
   clamp,
+  createReaderColumnLayoutStyle,
   createLocatorFromRestoreIntent,
   formatReaderChapterLabel,
   normalizeReaderStatusPayload,
@@ -30,6 +31,21 @@ describe("reader screen utils", () => {
     expect(clamp(4, 1, 3)).toBe(3);
     expect(clamp(-2, 1, 3)).toBe(1);
     expect(clamp(2, 1, 3)).toBe(2);
+  });
+
+  it("uses fixed-width overflow columns for mobile and desktop readers", () => {
+    expect(createReaderColumnLayoutStyle({ height: 597, width: 346 })).toEqual({
+      columnCount: "auto",
+      columnGap: "48px",
+      columnWidth: "346px",
+      height: "597px",
+    });
+    expect(createReaderColumnLayoutStyle({ height: 640, width: 900 })).toEqual({
+      columnCount: "auto",
+      columnGap: "48px",
+      columnWidth: "426px",
+      height: "640px",
+    });
   });
 
   it("creates locators only for block restore intents", () => {
