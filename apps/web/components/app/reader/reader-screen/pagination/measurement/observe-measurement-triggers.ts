@@ -17,6 +17,12 @@ export function observeMeasurementTriggers({
 }): () => void {
   const resizeObserver = new ResizeObserver(onTrigger);
   const trackedImages: HTMLImageElement[] = [];
+  const handlePageShow = () => onTrigger();
+  const handleVisibilityChange = () => {
+    if (document.visibilityState === "visible") {
+      onTrigger();
+    }
+  };
 
   for (const chapter of chapters) {
     const article = articleRefs.get(chapter.chapterId);
@@ -34,8 +40,15 @@ export function observeMeasurementTriggers({
     }
   }
 
+  window.addEventListener("pageshow", handlePageShow);
+  document.addEventListener("visibilitychange", handleVisibilityChange);
+  document.fonts?.addEventListener("loadingdone", onTrigger);
+
   return () => {
     resizeObserver.disconnect();
+    window.removeEventListener("pageshow", handlePageShow);
+    document.removeEventListener("visibilitychange", handleVisibilityChange);
+    document.fonts?.removeEventListener("loadingdone", onTrigger);
     for (const image of trackedImages) {
       image.removeEventListener("load", onTrigger);
     }

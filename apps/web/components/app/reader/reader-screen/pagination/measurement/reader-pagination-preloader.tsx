@@ -2,7 +2,6 @@ import type { CSSProperties, ReactNode } from "react";
 import { useMemo } from "react";
 import type { ReaderChapterPayload } from "@/lib/api-types";
 import type { ReaderMeasurementEntry } from "@/features/reader/measurement";
-import { READER_VISIBILITY_HIDDEN } from "../../shared/constants";
 import { createReaderColumnLayoutStyle } from "../../shared/utils";
 import { useChapterMeasurements } from "./use-chapter-measurements";
 import { useChapterRefMap } from "./use-chapter-ref-map";
@@ -61,8 +60,7 @@ function OffscreenPreloaderRoot({ children }: { children: ReactNode }) {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none fixed left-[-200vw] top-0 z-[-1] overflow-hidden opacity-0"
-      style={{ visibility: READER_VISIBILITY_HIDDEN }}
+      className="pointer-events-none fixed left-0 top-0 z-[-1] opacity-0"
     >
       <div className="space-y-4">{children}</div>
     </div>

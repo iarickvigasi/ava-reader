@@ -119,17 +119,21 @@ export function resolvePageCount(article: HTMLElement, metrics: PageMetrics) {
   // is why the issue only reproduces on iPhones.
   //
   // Workaround: measure the rightmost edge among the article's direct
-  // children. In a multi-column flow each block lands inside some column
-  // fragment; getBoundingClientRect() reports each fragment's true x
-  // position even when it sits past the parent's overflow clip. The last
-  // overflow column shows up as the maximum right edge we observe.
+  // children. Use every client rect rather than getBoundingClientRect(): a
+  // block can be fragmented across several CSS columns, and WebKit can clamp
+  // the union rect to the visible fragment while still exposing the individual
+  // column fragments through getClientRects().
   const articleLeft = article.getBoundingClientRect().left;
   let measuredWidth = 0;
   for (const child of Array.from(article.children)) {
-    const right = child.getBoundingClientRect().right - articleLeft;
-    if (right > measuredWidth) {
-      measuredWidth = right;
+    for (const rect of Array.from(child.getClientRects())) {
+      measuredWidth = Math.max(measuredWidth, rect.right - articleLeft);
     }
+
+    measuredWidth = Math.max(
+      measuredWidth,
+      child.getBoundingClientRect().right - articleLeft,
+    );
   }
   // Defensive fallback: if no children produced a usable rect (empty
   // article, display:contents wrappers, etc.) degrade to scrollWidth so

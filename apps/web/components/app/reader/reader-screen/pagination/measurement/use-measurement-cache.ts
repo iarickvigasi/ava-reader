@@ -40,8 +40,15 @@ export function useMeasurementCache({
 
   const storeMeasurementEntry = useCallback((entry: ReaderMeasurementEntry) => {
     setMeasurementEntries((current) => {
+      const currentEntry = current.get(entry.layoutKey);
+      const entryToStore = selectMeasurementEntryToStore(currentEntry, entry);
+
+      if (entryToStore === currentEntry) {
+        return current;
+      }
+
       const next = new Map(current);
-      next.set(entry.layoutKey, entry);
+      next.set(entry.layoutKey, entryToStore);
       return next;
     });
   }, []);
@@ -66,4 +73,23 @@ export function useMeasurementCache({
     storeMeasurementEntry,
     warnFailedMeasurement,
   };
+}
+
+export function selectMeasurementEntryToStore(
+  currentEntry: ReaderMeasurementEntry | undefined,
+  incomingEntry: ReaderMeasurementEntry,
+) {
+  if (!currentEntry || currentEntry.status !== "ready") {
+    return incomingEntry;
+  }
+
+  if (incomingEntry.status !== "ready") {
+    return currentEntry;
+  }
+
+  if (currentEntry.pageCount > 1 && incomingEntry.pageCount === 1) {
+    return currentEntry;
+  }
+
+  return incomingEntry;
 }
