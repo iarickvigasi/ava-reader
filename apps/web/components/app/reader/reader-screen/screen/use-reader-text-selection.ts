@@ -1,4 +1,5 @@
 import { useEffect, useRef, type RefObject } from "react";
+import { resolveReaderSelection } from "./resolve-reader-selection";
 
 export type ReaderSelection = {
   text: string;
@@ -21,8 +22,8 @@ type UseReaderTextSelectionParams = {
 };
 
 // Listens for the user finishing a selection inside `containerRef` and reports
-// the selected text. Both mouse and touch are supported. The check is deferred
-// to the next tick so the selection has fully settled by the time we read it.
+// the selected text. Mouse capture runs on the next tick; touch capture also
+// follows touchcancel/selectionchange so native long-press takeover can settle.
 export function useReaderTextSelection({
   containerRef,
   onSelectText,
@@ -43,31 +44,27 @@ export function useReaderTextSelection({
       return;
     }
 
+    let touchStartedInside = false;
+    let lastReaderTouchStartedAt = Number.NEGATIVE_INFINITY;
+    let selectionSettleTimer: number | null = null;
+
+    const clearSelectionSettleTimer = () => {
+      if (selectionSettleTimer === null) {
+        return;
+      }
+      window.clearTimeout(selectionSettleTimer);
+      selectionSettleTimer = null;
+    };
+
     const checkSelection = (clearAfter: boolean) => {
       const selection = window.getSelection();
-      if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
-        return;
-      }
-
-      const text = selection.toString().trim();
-      if (text.length === 0) {
-        return;
-      }
-
       const container = containerRef.current;
-      if (!container) {
+      const readerSelection = resolveReaderSelection(selection, container);
+      if (!readerSelection) {
         return;
       }
 
-      const range = selection.getRangeAt(0);
-      // Both endpoints (and their common ancestor) must be inside the
-      // container. Without this guard a selection that begins in the article
-      // and drags into a sibling element would still trigger the panel.
-      if (!container.contains(range.commonAncestorContainer)) {
-        return;
-      }
-
-      onSelectRef.current({ text, range });
+      onSelectRef.current(readerSelection);
 
       // On touch, the live selection causes the browser's native callout
       // (Copy / Share / Look Up on iOS Safari, Copy / Translate on Chrome
@@ -75,15 +72,25 @@ export function useReaderTextSelection({
       // text and a locator, so we can drop the live selection without losing
       // anything — color picks and translations operate on the captured
       // values, not on window.getSelection().
-      if (clearAfter) {
+      if (clearAfter && selection) {
         selection.removeAllRanges();
       }
     };
 
-    // The selection isn't fully resolved yet at the moment mouseup/touchend
-    // fires on some browsers (especially when a double/triple click is
-    // expanding the range). A 0ms timeout pushes the read past the browser's
-    // own selection update.
+    const scheduleSelectionCheck = (clearAfter: boolean, delay: number) => {
+      clearSelectionSettleTimer();
+      selectionSettleTimer = window.setTimeout(() => {
+        selectionSettleTimer = null;
+        if (clearAfter && touchStartedInside) {
+          return;
+        }
+        checkSelection(clearAfter);
+      }, delay);
+    };
+
+    // The selection isn't fully resolved when mouseup/touchend fires on some
+    // browsers. Deferring the read lets the browser finish its own update;
+    // canceled touch gestures receive a longer settlement window below.
     //
     // We also gate on the event target: mouseups whose release point is
     // outside the container (e.g., a click on the AI Comments backdrop, a
@@ -91,25 +98,79 @@ export function useReaderTextSelection({
     // gate, a backdrop click would fire onClose and *also* see the lingering
     // DOM selection on the deferred tick — re-opening the panel a moment
     // after closing it.
-    const handlePointerEnd = (event: Event) => {
+    const isInsideReader = (target: EventTarget | null) => {
       const container = containerRef.current;
       if (!container) {
-        return;
+        return false;
       }
-      const target = event.target;
-      if (!(target instanceof Node) || !container.contains(target)) {
-        return;
-      }
-      const isTouch = event.type === "touchend";
-      window.setTimeout(() => checkSelection(isTouch), 0);
+      return target instanceof Node && container.contains(target);
     };
 
-    document.addEventListener("mouseup", handlePointerEnd);
-    document.addEventListener("touchend", handlePointerEnd);
+    const handleMouseUp = (event: MouseEvent) => {
+      if (!isInsideReader(event.target)) {
+        return;
+      }
+      scheduleSelectionCheck(false, 0);
+    };
+
+    const handleTouchStart = (event: TouchEvent) => {
+      touchStartedInside = isInsideReader(event.target);
+      if (touchStartedInside) {
+        lastReaderTouchStartedAt = Date.now();
+      }
+    };
+
+    const handleTouchEnd = () => {
+      if (!touchStartedInside) {
+        return;
+      }
+      touchStartedInside = false;
+      scheduleSelectionCheck(true, 0);
+    };
+
+    const handleTouchCancel = () => {
+      if (!touchStartedInside) {
+        return;
+      }
+      touchStartedInside = false;
+      scheduleSelectionCheck(true, 80);
+    };
+
+    const handleSelectionChange = () => {
+      const followsReaderTouch =
+        touchStartedInside || Date.now() - lastReaderTouchStartedAt <= 2_500;
+      if (!followsReaderTouch) {
+        return;
+      }
+      scheduleSelectionCheck(true, 80);
+    };
+
+    const handleContextMenu = (event: MouseEvent) => {
+      if (!isInsideReader(event.target)) {
+        return;
+      }
+      const followsReaderTouch =
+        touchStartedInside || Date.now() - lastReaderTouchStartedAt <= 2_500;
+      if (followsReaderTouch) {
+        event.preventDefault();
+      }
+    };
+
+    document.addEventListener("contextmenu", handleContextMenu);
+    document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("selectionchange", handleSelectionChange);
+    document.addEventListener("touchcancel", handleTouchCancel);
+    document.addEventListener("touchend", handleTouchEnd);
+    document.addEventListener("touchstart", handleTouchStart, { passive: true });
 
     return () => {
-      document.removeEventListener("mouseup", handlePointerEnd);
-      document.removeEventListener("touchend", handlePointerEnd);
+      clearSelectionSettleTimer();
+      document.removeEventListener("contextmenu", handleContextMenu);
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("selectionchange", handleSelectionChange);
+      document.removeEventListener("touchcancel", handleTouchCancel);
+      document.removeEventListener("touchend", handleTouchEnd);
+      document.removeEventListener("touchstart", handleTouchStart);
     };
   }, [containerRef, disabled]);
 }
