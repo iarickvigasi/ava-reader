@@ -17,7 +17,7 @@ import { useAuth } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
 import { useCallback, useSyncExternalStore } from "react";
 
-import { fetchReaderPayload } from "@/components/app/reader/reader-screen/data/reader-client";
+import { fetchReaderPayload } from "@/components/app/reader/data/reader-client";
 import { emitAppToast } from "@/components/app/core/app-toast";
 import { isOnline } from "@/features/offline/net/net-state";
 

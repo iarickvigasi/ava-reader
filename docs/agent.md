@@ -31,4 +31,6 @@ product.md, and the relevant docs/specs/*.md. For consequential decisions, read 
   rename tracking and history. A 1-to-many split (one file's logic spread across several new ones)
   still starts with `git mv` for whichever new file keeps most of the original; the rest are
   legitimately new files.
+- After a `git mv`/rename, grep docs for the old path too — spec "Code:" headers and prose
+  reference source files, and stale paths there are as broken as a stale import. Update every hit.
 - Verify before declaring done: pnpm typecheck, lint, test.

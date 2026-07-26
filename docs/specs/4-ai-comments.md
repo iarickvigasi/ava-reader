@@ -2,7 +2,7 @@
 
 > Status: shipped · Updated: 2026-06-30 · ADRs: [[3-offline-first-dexie-buckets]],
 > [[2-openrouter-and-byo-key]] · Code:
-> apps/web/components/app/reader/reader-screen/overlays/ai-comments,
+> apps/web/components/app/reader/overlays/ai-comments,
 > apps/web/features/offline/buckets/ai-comments
 
 ## Summary

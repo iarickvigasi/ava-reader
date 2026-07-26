@@ -1,7 +1,7 @@
 # Highlights
 
 > Status: shipped · Updated: 2026-06-30 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
-> apps/web/components/app/reader/reader-screen/overlays/highlights,
+> apps/web/components/app/reader/overlays/highlights,
 > apps/web/features/offline/buckets/highlights
 
 ## Summary

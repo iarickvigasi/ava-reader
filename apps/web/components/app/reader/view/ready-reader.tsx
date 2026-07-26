@@ -26,8 +26,8 @@ import {
 } from "../shared/constants";
 import type { ReadyReaderProps } from "../shared/types";
 import { useReaderPagination } from "../pagination/use-reader-pagination";
-import { useHighlightSelectionBridge } from "./use-highlight-selection-bridge";
-import { useReaderTextSelection } from "./use-reader-text-selection";
+import { useHighlightSelectionBridge } from "../selection/use-highlight-selection-bridge";
+import { useReaderTextSelection } from "../selection/use-reader-text-selection";
 
 const readerTouchSelectionStyle: CSSProperties & {
   WebkitTouchCallout: "none";

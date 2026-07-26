@@ -5,7 +5,7 @@ import type { HomePayload } from "@/lib/api-types";
 import {
   HIGHLIGHT_COLOR_BG_INVERSE,
   isHighlightColor,
-} from "@/components/app/reader/reader-screen/overlays/highlights/highlights-data";
+} from "@/components/app/reader/overlays/highlights/highlights-data";
 import { Panel, SectionHeader } from "../shared/home-shared";
 
 type Annotation = HomePayload["recentAnnotations"]["items"][number];

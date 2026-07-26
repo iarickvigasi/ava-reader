@@ -1,7 +1,7 @@
 # AI Toolbox
 
 > Status: shipped · Updated: 2026-06-06 · ADRs: [[2-openrouter-and-byo-key]] · Code:
-> apps/web/components/app/reader/reader-screen/overlays/ai-toolbox
+> apps/web/components/app/reader/overlays/ai-toolbox
 
 ## Summary
 On-selection AI tools — translate, explain, etymology — that stream an answer about the selected

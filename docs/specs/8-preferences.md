@@ -1,7 +1,7 @@
 # Reading preferences
 
 > Status: shipped · Updated: 2026-07-15 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
-> apps/web/components/theme, apps/web/components/app/reader/reader-screen/overlays/preferences,
+> apps/web/components/theme, apps/web/components/app/reader/overlays/preferences,
 > apps/web/features/offline/buckets/me
 
 ## Summary

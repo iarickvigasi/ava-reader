@@ -15,7 +15,7 @@ import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { emitAppToast } from "@/components/app/core/app-toast";
-import { fetchReaderPayload } from "@/components/app/reader/reader-screen/data/reader-client";
+import { fetchReaderPayload } from "@/components/app/reader/data/reader-client";
 
 import { getDb } from "../db";
 import { saveBookOffline } from "../buckets/book/download";

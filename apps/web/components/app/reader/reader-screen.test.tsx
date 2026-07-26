@@ -8,7 +8,7 @@ import { withIntl } from "@/lib/test-utils/intl";
 import {
   READER_PERSISTENCE_MODE_LOCAL_ONLY,
   READER_STATUS_PROCESSING,
-} from "./reader-screen/shared/constants";
+} from "./shared/constants";
 import { ReaderScreen } from "./reader-screen";
 
 vi.mock("@clerk/nextjs", () => ({

@@ -10,7 +10,7 @@ import {
   HIGHLIGHT_COLOR_ORDER,
 } from "../highlights/highlights-data";
 import { useHighlightsContext } from "../highlights/highlights-context";
-import { useReaderSelectionContext } from "../../screen/reader-selection-context";
+import { useReaderSelectionContext } from "../../selection/reader-selection-context";
 
 export function HighlightSection() {
   const t = useTranslations("reader.aiToolbox");

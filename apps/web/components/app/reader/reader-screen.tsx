@@ -8,18 +8,18 @@ import {
   useFontScale,
 } from "@/components/app/preferences/use-font-scale";
 import { BookContextProvider } from "@/features/offline/buckets/book/context";
-import { AiCommentsProvider } from "./reader-screen/overlays/ai-comments/ai-comments-context";
-import { HighlightsProvider } from "./reader-screen/overlays/highlights/highlights-context";
-import { ReadyReader } from "./reader-screen/screen/ready-reader";
-import { ReaderSelectionProvider } from "./reader-screen/screen/reader-selection-context";
-import { ReaderStatusState } from "./reader-screen/screen/reader-status-state";
+import { AiCommentsProvider } from "./overlays/ai-comments/ai-comments-context";
+import { HighlightsProvider } from "./overlays/highlights/highlights-context";
+import { ReadyReader } from "./view/ready-reader";
+import { ReaderSelectionProvider } from "./selection/reader-selection-context";
+import { ReaderStatusState } from "./view/reader-status-state";
 import {
   READER_PERSISTENCE_MODE_REMOTE,
   READER_STATUS_READY,
-} from "./reader-screen/shared/constants";
-import type { ReaderScreenProps } from "./reader-screen/shared/types";
-import { roundFontScale } from "./reader-screen/shared/utils";
-import { useReaderScreenController } from "./reader-screen/state/use-reader-screen-controller";
+} from "./shared/constants";
+import type { ReaderScreenProps } from "./shared/types";
+import { roundFontScale } from "./shared/utils";
+import { useReaderScreenController } from "./state/use-reader-screen-controller";
 
 export function ReaderScreen({
   initialPayload,

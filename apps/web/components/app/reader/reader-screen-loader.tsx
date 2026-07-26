@@ -11,7 +11,7 @@ import { useEffect, useRef, useState } from "react";
 import { OfflineRouteFallback } from "@/components/app/core/offline-route-fallback";
 import { ReaderScreen } from "@/components/app/reader/reader-screen";
 import { ReaderShellSkeleton } from "@/components/app/reader/reader-shell-skeleton";
-import { fetchReaderPayload } from "@/components/app/reader/reader-screen/data/reader-client";
+import { fetchReaderPayload } from "@/components/app/reader/data/reader-client";
 import { loadReaderPayloadFromCache } from "@/features/offline/buckets/book";
 import { readLibraryItemIdBySlug } from "@/features/offline/buckets/library/storage";
 import { emitMissingBookOfflineModal } from "@/features/offline/notices/missing-book-bus";
