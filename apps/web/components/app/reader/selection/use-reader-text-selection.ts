@@ -1,5 +1,6 @@
 import { useEffect, useRef, type RefObject } from "react";
 import { resolveReaderSelection } from "./resolve-reader-selection";
+import { createSettleScheduler } from "./settle-scheduler";
 import {
   IMMEDIATE_SETTLE_MS,
   TOUCH_RECENCY_MS,
@@ -44,15 +45,7 @@ export function useReaderTextSelection({
 
     let touchStartedInside = false;
     let lastReaderTouchStartedAt = Number.NEGATIVE_INFINITY;
-    let selectionSettleTimer: number | null = null;
-
-    const clearSelectionSettleTimer = () => {
-      if (selectionSettleTimer === null) {
-        return;
-      }
-      window.clearTimeout(selectionSettleTimer);
-      selectionSettleTimer = null;
-    };
+    const scheduler = createSettleScheduler(window);
 
     const checkSelection = (dropLiveSelection: boolean) => {
       const selection = window.getSelection();
@@ -79,24 +72,20 @@ export function useReaderTextSelection({
     // and skip if a fresh touch has started in the meantime — otherwise we'd
     // read a selection the user is still building.
     const scheduleTouchCheck = (delay: number) => {
-      clearSelectionSettleTimer();
-      selectionSettleTimer = window.setTimeout(() => {
-        selectionSettleTimer = null;
+      scheduler.schedule(delay, () => {
         if (touchStartedInside) {
           return;
         }
         checkSelection(true);
-      }, delay);
+      });
     };
 
     // Mouse-origin checks keep the live selection (desktop has no native
     // callout collision) and always run once settled.
     const scheduleMouseCheck = () => {
-      clearSelectionSettleTimer();
-      selectionSettleTimer = window.setTimeout(() => {
-        selectionSettleTimer = null;
+      scheduler.schedule(IMMEDIATE_SETTLE_MS, () => {
         checkSelection(false);
-      }, IMMEDIATE_SETTLE_MS);
+      });
     };
 
     // The selection isn't fully resolved when mouseup/touchend fires on some
@@ -178,7 +167,7 @@ export function useReaderTextSelection({
     document.addEventListener("touchstart", handleTouchStart, { passive: true });
 
     return () => {
-      clearSelectionSettleTimer();
+      scheduler.cancel();
       document.removeEventListener("contextmenu", handleContextMenu);
       document.removeEventListener("mouseup", handleMouseUp);
       document.removeEventListener("selectionchange", handleSelectionChange);

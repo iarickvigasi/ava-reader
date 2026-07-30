@@ -42,6 +42,22 @@
 - **Visible locator** — locator of the page currently on screen, published as the reader pages;
   feeds progress and preserves position across reflows.
 
+## Reader — text selection
+- **Selection check** — a deferred read of `window.getSelection()`, gated to the reader; on success
+  it opens the AI Toolbox pre-bound to the fragment. *Touch* checks drop the live selection; *mouse*
+  checks keep it.
+- **Settle scheduler** — single-slot debounce timer (`settle-scheduler.ts`): the storm of events one
+  gesture emits (`touchend` → `selectionchange`, or a synthetic `mouseup`) collapses to one check.
+- **Touch-started-inside gate** — flag for whether the current finger-down began on the book text;
+  blocks checks from taps on the panel/backdrop and re-entrant reads while a finger is still down.
+- **Touch-recency window** — the span after a reader `touchstart` in which a `selectionchange` /
+  `contextmenu` still counts as that gesture's (`TOUCH_RECENCY_MS`, ~2.5s).
+- **Compatibility (synthetic) mouse events** — `mousedown` / `mouseup` / `click` the browser
+  *fabricates* after a touch so legacy mouse-only code still works; may echo a real selection gesture
+  and must not override its touch check.
+- **Native callout** — the OS text menu (iOS Copy/Look-Up, Android Copy/Translate); touch checks drop
+  the live selection to keep it from covering the panel.
+
 ## Reader — UI & annotations
 - **Panel** — reader sidebar drawer (contents, preferences, highlights, ai-comments, ai-toolbox,
   ai-chats); toggled via ReaderUiContext.
