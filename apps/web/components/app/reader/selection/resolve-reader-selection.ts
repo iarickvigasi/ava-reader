@@ -1,4 +1,4 @@
-import type { ReaderSelection } from "./use-reader-text-selection";
+import type { ReaderSelection } from "./types";
 
 export function resolveReaderSelection(
   selection: Selection | null,

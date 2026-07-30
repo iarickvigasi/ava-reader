@@ -7,7 +7,7 @@ import { useHighlightsContext } from "../overlays/highlights/highlights-context"
 import { READER_PANEL_AI_TOOLBOX } from "../shared/constants";
 import { computeAiCommentLocator } from "./compute-ai-comment-locator";
 import { useReaderSelectionContext } from "./reader-selection-context";
-import type { ReaderSelection } from "./use-reader-text-selection";
+import type { ReaderSelection } from "./types";
 
 // Wires the highlight store into the reader's selection flow. Returns the
 // callbacks the page-box and ReaderArticle should fire on a fresh selection

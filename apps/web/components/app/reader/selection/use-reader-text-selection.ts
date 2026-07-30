@@ -1,26 +1,11 @@
 import { useEffect, useRef, type RefObject } from "react";
 import { resolveReaderSelection } from "./resolve-reader-selection";
-
-// How long after a reader touchstart a selectionchange/contextmenu still counts
-// as "driven by that touch". Covers the gap between the gesture finishing and
-// the browser settling the selection (and firing its native callout).
-const TOUCH_RECENCY_MS = 2_500;
-
-// Settle delay for touch-origin checks. Gives the browser time to finish its
-// own selection update (and lets a canceled long-press take over) before we
-// read window.getSelection().
-const TOUCH_SETTLE_MS = 80;
-
-// Mouse and touchend checks read on the next tick; no extra settle needed.
-const IMMEDIATE_SETTLE_MS = 0;
-
-export type ReaderSelection = {
-  text: string;
-  // The live DOM range. The caller may inspect it synchronously (e.g., to
-  // compute an offset locator) but must not retain it past the current tick —
-  // browsers reuse selection objects and the underlying nodes can re-render.
-  range: Range;
-};
+import {
+  IMMEDIATE_SETTLE_MS,
+  TOUCH_RECENCY_MS,
+  TOUCH_SETTLE_MS,
+} from "./timing";
+import type { ReaderSelection } from "./types";
 
 type UseReaderTextSelectionParams = {
   // The element whose contents count as "selectable text" for the panel. Only
