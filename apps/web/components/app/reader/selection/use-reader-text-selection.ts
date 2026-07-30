@@ -1,9 +1,8 @@
-import { useEffect, useRef, type RefObject } from "react";
-import { resolveReaderSelection } from "./resolve-reader-selection";
-import { createSettleScheduler } from "./settle-scheduler";
-import { createTouchActivity } from "./touch-activity";
-import { IMMEDIATE_SETTLE_MS, TOUCH_SETTLE_MS } from "./timing";
+import { useRef, type RefObject } from "react";
+import { createTouchActivity, type TouchActivity } from "./touch-activity";
 import type { ReaderSelection } from "./types";
+import { useReaderSelectionCapture } from "./use-reader-selection-capture";
+import { useSuppressNativeMenu } from "./use-suppress-native-menu";
 
 type UseReaderTextSelectionParams = {
   // The element whose contents count as "selectable text" for the panel. Only
@@ -17,153 +16,26 @@ type UseReaderTextSelectionParams = {
   disabled?: boolean;
 };
 
-// Listens for the user finishing a selection inside `containerRef` and reports
-// the selected text. Mouse capture runs on the next tick; touch capture also
-// follows touchcancel/selectionchange so native long-press takeover can settle.
+// Reports the text the user selects inside `containerRef`. Composes two
+// concerns over a single touch-activity tracker: capturing the settled
+// selection, and suppressing the native touch callout so it can't cover the
+// panel. The tracker is shared so the menu hook can tell whether a contextmenu
+// followed a reader touch (mobile) or a desktop right-click.
 export function useReaderTextSelection({
   containerRef,
   onSelectText,
   disabled = false,
 }: UseReaderTextSelectionParams) {
-  // Keep the latest callback in a ref so the listeners don't need to be torn
-  // down and re-bound on every render.
-  const onSelectRef = useRef(onSelectText);
-  useEffect(() => {
-    onSelectRef.current = onSelectText;
-  }, [onSelectText]);
+  const touchActivityRef = useRef<TouchActivity | null>(null);
+  touchActivityRef.current ??= createTouchActivity();
+  const touchActivity = touchActivityRef.current;
 
-  useEffect(() => {
-    if (disabled) {
-      return;
-    }
-    if (typeof window === "undefined" || typeof document === "undefined") {
-      return;
-    }
+  useReaderSelectionCapture({
+    containerRef,
+    touchActivity,
+    onSelectText,
+    disabled,
+  });
 
-    const touchActivity = createTouchActivity();
-    const scheduler = createSettleScheduler(window);
-
-    const checkSelection = (dropLiveSelection: boolean) => {
-      const selection = window.getSelection();
-      const container = containerRef.current;
-      const readerSelection = resolveReaderSelection(selection, container);
-      if (!readerSelection) {
-        return;
-      }
-
-      onSelectRef.current(readerSelection);
-
-      // On touch, the live selection causes the browser's native callout
-      // (Copy / Share / Look Up on iOS Safari, Copy / Translate on Chrome
-      // Android) to render on top of our panel. We've already captured the
-      // text and a locator, so we can drop the live selection without losing
-      // anything — color picks and translations operate on the captured
-      // values, not on window.getSelection().
-      if (dropLiveSelection && selection) {
-        selection.removeAllRanges();
-      }
-    };
-
-    // Touch-origin checks drop the live selection (to hide the native callout)
-    // and skip if a fresh touch has started in the meantime — otherwise we'd
-    // read a selection the user is still building.
-    const scheduleTouchCheck = (delay: number) => {
-      scheduler.schedule(delay, () => {
-        if (touchActivity.isActive()) {
-          return;
-        }
-        checkSelection(true);
-      });
-    };
-
-    // Mouse-origin checks keep the live selection (desktop has no native
-    // callout collision) and always run once settled.
-    const scheduleMouseCheck = () => {
-      scheduler.schedule(IMMEDIATE_SETTLE_MS, () => {
-        checkSelection(false);
-      });
-    };
-
-    // The selection isn't fully resolved when mouseup/touchend fires on some
-    // browsers. Deferring the read lets the browser finish its own update;
-    // canceled touch gestures receive a longer settlement window below.
-    //
-    // We also gate on the event target: mouseups whose release point is
-    // outside the container (e.g., a click on the AI Comments backdrop, a
-    // panel button, or the side rail) must not run the check. Without this
-    // gate, a backdrop click would fire onClose and *also* see the lingering
-    // DOM selection on the deferred tick — re-opening the panel a moment
-    // after closing it.
-    const isInsideReader = (target: EventTarget | null) => {
-      const container = containerRef.current;
-      if (!container) {
-        return false;
-      }
-      return target instanceof Node && container.contains(target);
-    };
-
-    const handleMouseUp = (event: MouseEvent) => {
-      if (!isInsideReader(event.target)) {
-        return;
-      }
-      scheduleMouseCheck();
-    };
-
-    const handleTouchStart = (event: TouchEvent) => {
-      if (isInsideReader(event.target)) {
-        touchActivity.start();
-      } else {
-        touchActivity.end();
-      }
-    };
-
-    const handleTouchEnd = () => {
-      if (!touchActivity.isActive()) {
-        return;
-      }
-      touchActivity.end();
-      scheduleTouchCheck(IMMEDIATE_SETTLE_MS);
-    };
-
-    const handleTouchCancel = () => {
-      if (!touchActivity.isActive()) {
-        return;
-      }
-      touchActivity.end();
-      scheduleTouchCheck(TOUCH_SETTLE_MS);
-    };
-
-    const handleSelectionChange = () => {
-      if (!touchActivity.followsRecentTouch()) {
-        return;
-      }
-      scheduleTouchCheck(TOUCH_SETTLE_MS);
-    };
-
-    const handleContextMenu = (event: MouseEvent) => {
-      if (!isInsideReader(event.target)) {
-        return;
-      }
-      if (touchActivity.followsRecentTouch()) {
-        event.preventDefault();
-      }
-    };
-
-    document.addEventListener("contextmenu", handleContextMenu);
-    document.addEventListener("mouseup", handleMouseUp);
-    document.addEventListener("selectionchange", handleSelectionChange);
-    document.addEventListener("touchcancel", handleTouchCancel);
-    document.addEventListener("touchend", handleTouchEnd);
-    document.addEventListener("touchstart", handleTouchStart, { passive: true });
-
-    return () => {
-      scheduler.cancel();
-      document.removeEventListener("contextmenu", handleContextMenu);
-      document.removeEventListener("mouseup", handleMouseUp);
-      document.removeEventListener("selectionchange", handleSelectionChange);
-      document.removeEventListener("touchcancel", handleTouchCancel);
-      document.removeEventListener("touchend", handleTouchEnd);
-      document.removeEventListener("touchstart", handleTouchStart);
-    };
-  }, [containerRef, disabled]);
+  useSuppressNativeMenu({ containerRef, touchActivity, disabled });
 }
