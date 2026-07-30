@@ -1,11 +1,8 @@
 import { useEffect, useRef, type RefObject } from "react";
 import { resolveReaderSelection } from "./resolve-reader-selection";
 import { createSettleScheduler } from "./settle-scheduler";
-import {
-  IMMEDIATE_SETTLE_MS,
-  TOUCH_RECENCY_MS,
-  TOUCH_SETTLE_MS,
-} from "./timing";
+import { createTouchActivity } from "./touch-activity";
+import { IMMEDIATE_SETTLE_MS, TOUCH_SETTLE_MS } from "./timing";
 import type { ReaderSelection } from "./types";
 
 type UseReaderTextSelectionParams = {
@@ -43,8 +40,7 @@ export function useReaderTextSelection({
       return;
     }
 
-    let touchStartedInside = false;
-    let lastReaderTouchStartedAt = Number.NEGATIVE_INFINITY;
+    const touchActivity = createTouchActivity();
     const scheduler = createSettleScheduler(window);
 
     const checkSelection = (dropLiveSelection: boolean) => {
@@ -73,7 +69,7 @@ export function useReaderTextSelection({
     // read a selection the user is still building.
     const scheduleTouchCheck = (delay: number) => {
       scheduler.schedule(delay, () => {
-        if (touchStartedInside) {
+        if (touchActivity.isActive()) {
           return;
         }
         checkSelection(true);
@@ -106,13 +102,6 @@ export function useReaderTextSelection({
       return target instanceof Node && container.contains(target);
     };
 
-    // A selectionchange/contextmenu counts as reader-driven while a reader
-    // touch is in progress, or briefly after one ended (the browser settles
-    // the selection asynchronously).
-    const followsRecentReaderTouch = () =>
-      touchStartedInside ||
-      Date.now() - lastReaderTouchStartedAt <= TOUCH_RECENCY_MS;
-
     const handleMouseUp = (event: MouseEvent) => {
       if (!isInsideReader(event.target)) {
         return;
@@ -121,30 +110,31 @@ export function useReaderTextSelection({
     };
 
     const handleTouchStart = (event: TouchEvent) => {
-      touchStartedInside = isInsideReader(event.target);
-      if (touchStartedInside) {
-        lastReaderTouchStartedAt = Date.now();
+      if (isInsideReader(event.target)) {
+        touchActivity.start();
+      } else {
+        touchActivity.end();
       }
     };
 
     const handleTouchEnd = () => {
-      if (!touchStartedInside) {
+      if (!touchActivity.isActive()) {
         return;
       }
-      touchStartedInside = false;
+      touchActivity.end();
       scheduleTouchCheck(IMMEDIATE_SETTLE_MS);
     };
 
     const handleTouchCancel = () => {
-      if (!touchStartedInside) {
+      if (!touchActivity.isActive()) {
         return;
       }
-      touchStartedInside = false;
+      touchActivity.end();
       scheduleTouchCheck(TOUCH_SETTLE_MS);
     };
 
     const handleSelectionChange = () => {
-      if (!followsRecentReaderTouch()) {
+      if (!touchActivity.followsRecentTouch()) {
         return;
       }
       scheduleTouchCheck(TOUCH_SETTLE_MS);
@@ -154,7 +144,7 @@ export function useReaderTextSelection({
       if (!isInsideReader(event.target)) {
         return;
       }
-      if (followsRecentReaderTouch()) {
+      if (touchActivity.followsRecentTouch()) {
         event.preventDefault();
       }
     };
