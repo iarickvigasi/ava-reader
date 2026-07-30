@@ -1,6 +1,19 @@
 import { useEffect, useRef, type RefObject } from "react";
 import { resolveReaderSelection } from "./resolve-reader-selection";
 
+// How long after a reader touchstart a selectionchange/contextmenu still counts
+// as "driven by that touch". Covers the gap between the gesture finishing and
+// the browser settling the selection (and firing its native callout).
+const TOUCH_RECENCY_MS = 2_500;
+
+// Settle delay for touch-origin checks. Gives the browser time to finish its
+// own selection update (and lets a canceled long-press take over) before we
+// read window.getSelection().
+const TOUCH_SETTLE_MS = 80;
+
+// Mouse and touchend checks read on the next tick; no extra settle needed.
+const IMMEDIATE_SETTLE_MS = 0;
+
 export type ReaderSelection = {
   text: string;
   // The live DOM range. The caller may inspect it synchronously (e.g., to
@@ -56,7 +69,7 @@ export function useReaderTextSelection({
       selectionSettleTimer = null;
     };
 
-    const checkSelection = (clearAfter: boolean) => {
+    const checkSelection = (dropLiveSelection: boolean) => {
       const selection = window.getSelection();
       const container = containerRef.current;
       const readerSelection = resolveReaderSelection(selection, container);
@@ -72,20 +85,33 @@ export function useReaderTextSelection({
       // text and a locator, so we can drop the live selection without losing
       // anything — color picks and translations operate on the captured
       // values, not on window.getSelection().
-      if (clearAfter && selection) {
+      if (dropLiveSelection && selection) {
         selection.removeAllRanges();
       }
     };
 
-    const scheduleSelectionCheck = (clearAfter: boolean, delay: number) => {
+    // Touch-origin checks drop the live selection (to hide the native callout)
+    // and skip if a fresh touch has started in the meantime — otherwise we'd
+    // read a selection the user is still building.
+    const scheduleTouchCheck = (delay: number) => {
       clearSelectionSettleTimer();
       selectionSettleTimer = window.setTimeout(() => {
         selectionSettleTimer = null;
-        if (clearAfter && touchStartedInside) {
+        if (touchStartedInside) {
           return;
         }
-        checkSelection(clearAfter);
+        checkSelection(true);
       }, delay);
+    };
+
+    // Mouse-origin checks keep the live selection (desktop has no native
+    // callout collision) and always run once settled.
+    const scheduleMouseCheck = () => {
+      clearSelectionSettleTimer();
+      selectionSettleTimer = window.setTimeout(() => {
+        selectionSettleTimer = null;
+        checkSelection(false);
+      }, IMMEDIATE_SETTLE_MS);
     };
 
     // The selection isn't fully resolved when mouseup/touchend fires on some
@@ -106,11 +132,18 @@ export function useReaderTextSelection({
       return target instanceof Node && container.contains(target);
     };
 
+    // A selectionchange/contextmenu counts as reader-driven while a reader
+    // touch is in progress, or briefly after one ended (the browser settles
+    // the selection asynchronously).
+    const followsRecentReaderTouch = () =>
+      touchStartedInside ||
+      Date.now() - lastReaderTouchStartedAt <= TOUCH_RECENCY_MS;
+
     const handleMouseUp = (event: MouseEvent) => {
       if (!isInsideReader(event.target)) {
         return;
       }
-      scheduleSelectionCheck(false, 0);
+      scheduleMouseCheck();
     };
 
     const handleTouchStart = (event: TouchEvent) => {
@@ -125,7 +158,7 @@ export function useReaderTextSelection({
         return;
       }
       touchStartedInside = false;
-      scheduleSelectionCheck(true, 0);
+      scheduleTouchCheck(IMMEDIATE_SETTLE_MS);
     };
 
     const handleTouchCancel = () => {
@@ -133,25 +166,21 @@ export function useReaderTextSelection({
         return;
       }
       touchStartedInside = false;
-      scheduleSelectionCheck(true, 80);
+      scheduleTouchCheck(TOUCH_SETTLE_MS);
     };
 
     const handleSelectionChange = () => {
-      const followsReaderTouch =
-        touchStartedInside || Date.now() - lastReaderTouchStartedAt <= 2_500;
-      if (!followsReaderTouch) {
+      if (!followsRecentReaderTouch()) {
         return;
       }
-      scheduleSelectionCheck(true, 80);
+      scheduleTouchCheck(TOUCH_SETTLE_MS);
     };
 
     const handleContextMenu = (event: MouseEvent) => {
       if (!isInsideReader(event.target)) {
         return;
       }
-      const followsReaderTouch =
-        touchStartedInside || Date.now() - lastReaderTouchStartedAt <= 2_500;
-      if (followsReaderTouch) {
+      if (followsRecentReaderTouch()) {
         event.preventDefault();
       }
     };
