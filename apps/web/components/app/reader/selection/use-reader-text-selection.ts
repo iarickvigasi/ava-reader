@@ -1,8 +1,8 @@
 import { useRef, type RefObject } from "react";
-import { createTouchActivity, type TouchActivity } from "./touch-activity";
+import { createTouchActivity, type TouchActivity } from "./capture/touch-activity";
 import type { ReaderSelection } from "./types";
-import { useReaderSelectionCapture } from "./use-reader-selection-capture";
-import { useSuppressNativeMenu } from "./use-suppress-native-menu";
+import { useReaderSelectionCapture } from "./capture/use-reader-selection-capture";
+import { useSuppressNativeMenu } from "./capture/use-suppress-native-menu";
 
 type UseReaderTextSelectionParams = {
   // The element whose contents count as "selectable text" for the panel. Only

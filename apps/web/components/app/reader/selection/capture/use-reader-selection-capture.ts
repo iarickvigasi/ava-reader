@@ -4,7 +4,7 @@ import { resolveReaderSelection } from "./resolve-reader-selection";
 import { createSettleScheduler } from "./settle-scheduler";
 import type { TouchActivity } from "./touch-activity";
 import { IMMEDIATE_SETTLE_MS, TOUCH_SETTLE_MS } from "./timing";
-import type { ReaderSelection } from "./types";
+import type { ReaderSelection } from "../types";
 
 type UseReaderSelectionCaptureParams = {
   containerRef: RefObject<HTMLElement | null>;
