@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, type CSSProperties } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useReaderUi } from "@/components/app/core/reader-ui-context";
 import { ReaderArticle } from "../content/reader-article";
 import { ReaderPaginationPreloader } from "../pagination/measurement/reader-pagination-preloader";
@@ -28,12 +28,6 @@ import type { ReadyReaderProps } from "../shared/types";
 import { useReaderPagination } from "../pagination/use-reader-pagination";
 import { useHighlightSelectionBridge } from "../selection/use-highlight-selection-bridge";
 import { useReaderTextSelection } from "../selection/use-reader-text-selection";
-
-const readerTouchSelectionStyle: CSSProperties & {
-  WebkitTouchCallout: "none";
-} = {
-  WebkitTouchCallout: "none",
-};
 
 export function ReadyReader({
   activeChapter,
@@ -203,11 +197,7 @@ export function ReadyReader({
               onTouchEnd={handleTouchEnd}
               onTouchStart={handleTouchStart}
             >
-              <div
-                ref={pageBoxRef}
-                className="h-full w-full overflow-hidden"
-                style={readerTouchSelectionStyle}
-              >
+              <div ref={pageBoxRef} className="h-full w-full overflow-hidden">
                 <ReaderArticle
                   applyAiComments
                   blocks={activeChapter.blocks}
