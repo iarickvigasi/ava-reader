@@ -33,6 +33,11 @@ Always the utility — never `font-(--font-x)`. **Eyebrow/overline** (ubiquitous
 - `rounded-shell` 32px — page shells
 - `rounded-full` circles & icon-pills · `rounded-[3px]` book covers (special-case)
 
+## Book covers → `components/app/shared/book-cover.tsx`
+Every cover renders through `<BookCover>`. It owns ratio (`ratio="book"` 2:3, `"square"` for the
+audio tile), radius and the `object-contain` fit — covers are letterboxed on the frame, never
+cropped. Call sites pass width/shadow/margins only; never an `aspect-*`, radius or background.
+
 ## Borders
 No **decorative** borders — shape comes from fill + shadow. Keep only
 **structural** hairline dividers: directional `border-t/b/x/y` in `border-line(/NN)`,

@@ -35,7 +35,7 @@ export function EngagementCover({
       >
         <BookCover
           alt={`${engagement.title} cover`}
-          className="mx-auto aspect-[0.72] w-full max-w-72 rounded-xs shadow-(--shadow-card) md:mx-0 md:max-w-80"
+          className="mx-auto w-full max-w-72 shadow-(--shadow-card) md:mx-0 md:max-w-80"
           src={resolveApiAssetUrl(engagement.coverImageUrl)}
           title={engagement.title}
         />

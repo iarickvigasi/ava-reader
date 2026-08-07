@@ -26,7 +26,8 @@ export function ListeningSection({
         <div className="grid gap-6 md:grid-cols-[192px_1fr] md:items-center">
           <BookCover
             alt={`${listening.title} listening placeholder`}
-            className="aspect-square w-32 rounded-xs shadow-(--shadow-card) sm:w-40"
+            className="w-32 shadow-(--shadow-card) sm:w-40"
+            ratio="square"
             src={resolveApiAssetUrl(coverImageUrl)}
             title={listening.title}
           />

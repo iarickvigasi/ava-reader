@@ -61,7 +61,7 @@ function FeaturedBookCompact({ entry }: { entry: FeaturedEntry }) {
     <div className="space-y-3">
       <BookCover
         alt={`${entry.title} cover`}
-        className="aspect-[0.72] w-full rounded-xs"
+        className="w-full"
         src={resolveApiAssetUrl(entry.coverImageUrl)}
         title={entry.title}
       />
@@ -83,7 +83,7 @@ function FeaturedBookFull({ entry }: { entry: FeaturedEntry }) {
     <Panel className="grid gap-5 p-5 sm:grid-cols-[120px_1fr] sm:items-start sm:p-6">
       <BookCover
         alt={`${entry.title} cover`}
-        className="aspect-[0.76] w-28"
+        className="w-28"
         src={resolveApiAssetUrl(entry.coverImageUrl)}
         title={entry.title}
       />

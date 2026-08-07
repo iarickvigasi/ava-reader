@@ -55,7 +55,7 @@ export function ExplorePlaceholderPage() {
           >
             <BookCover
               alt={`${entry.title} placeholder cover`}
-              className="aspect-[0.72] w-full rounded-sm"
+              className="w-full"
               src={null}
               title={entry.title}
             />

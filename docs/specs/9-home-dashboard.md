@@ -29,6 +29,8 @@ current book.
 - [ ] Home renders offline from the cached payload.
 - [ ] Stats reflect local deltas without double-counting after sync.
 - [ ] Resume card opens the current book at the last position.
+- [ ] Covers render whole (never cropped) whatever the source image ratio — one shared
+      `<BookCover>` owns ratio and fit app-wide, see [styles.md](../styles.md).
 
 ## Open questions
 Personalized recommendations source; insights page scope.

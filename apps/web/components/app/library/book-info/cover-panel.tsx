@@ -15,7 +15,7 @@ export function BookCoverPanel({
       <div className="absolute inset-[10px_-10px_-10px_10px] aspect-2/3 rounded-sm bg-ink/6" />
       <BookCover
         alt={`${title} cover`}
-        className="relative aspect-2/3 w-full rounded-sm border-0 bg-paper-strong shadow-(--shadow-card)"
+        className="relative w-full shadow-(--shadow-card)"
         src={resolveApiAssetUrl(coverImageUrl)}
         title={title}
       />

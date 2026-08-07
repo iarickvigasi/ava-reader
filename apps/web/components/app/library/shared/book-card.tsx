@@ -32,7 +32,7 @@ export function LibraryBookCard({
         <BookCover
           alt={`${book.title} cover`}
           className={cn(
-            "aspect-[0.666] w-full rounded-[3px] border-0 bg-paper-strong",
+            "w-full",
             book.coverImageUrl ? "shadow-(--shadow-card)" : "",
             mobile ? "max-w-43.5" : "max-w-61.5",
           )}
@@ -69,7 +69,7 @@ export function BookCardSkeleton({ mobile = false }: BookCardSkeletonProps) {
       <div className="space-y-3">
         <div
           className={cn(
-            "aspect-[0.666] w-full animate-pulse rounded-[3px] bg-paper-strong",
+            "aspect-2/3 w-full animate-pulse rounded-[3px] bg-paper-strong",
             mobile ? "max-w-43.5" : "max-w-61.5",
           )}
         />
