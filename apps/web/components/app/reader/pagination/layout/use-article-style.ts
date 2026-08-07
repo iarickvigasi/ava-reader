@@ -37,7 +37,18 @@ export function useArticleStyle({
           height: pageBoxSize.height,
           width: pageBoxSize.width,
         }),
-        transform: `translate3d(-${pageTranslate}px, 0, 0)`,
+        // Offset the current page with relative positioning, not a transform.
+        // A translate3d promotes the article to a GPU-composited layer whose
+        // raster tiles mobile WebKit fails to repaint when only the text
+        // selection changes, so a selection highlight drawn mid-drag can be
+        // stranded on a stale tile and stay invisible (see 1.2-pagination
+        // "Page positioning" / 1.6-selection-bridge). `left` is a paint-only
+        // offset on the normal paint path: geometry is identical (same width
+        // and column count) and the selection always repaints. A page-turn
+        // animation will re-introduce a transform transiently, only while the
+        // slide is running.
+        position: "relative",
+        left: `-${pageTranslate}px`,
       }) as CSSProperties,
     [pageBoxSize.height, pageBoxSize.width, pageTranslate],
   );
