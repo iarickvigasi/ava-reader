@@ -12,7 +12,9 @@ export function BookCoverPanel({
 }: BookCoverPanelProps) {
   return (
     <div className="relative mx-auto w-full max-w-80 md:max-w-96 lg:mx-0">
-      <div className="absolute inset-[10px_-10px_-10px_10px] aspect-2/3 rounded-sm bg-ink/6" />
+      {/* Offset backing layer — insets alone size it to the cover, so it keeps
+          tracking the frame now that the frame hugs each cover's own ratio. */}
+      <div className="absolute inset-[10px_-10px_-10px_10px] rounded-cover bg-ink/6" />
       <BookCover
         alt={`${title} cover`}
         className="relative w-full shadow-(--shadow-card)"

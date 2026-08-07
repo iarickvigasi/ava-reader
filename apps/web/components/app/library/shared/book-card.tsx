@@ -69,7 +69,7 @@ export function BookCardSkeleton({ mobile = false }: BookCardSkeletonProps) {
       <div className="space-y-3">
         <div
           className={cn(
-            "aspect-2/3 w-full animate-pulse rounded-[3px] bg-paper-strong",
+            "aspect-2/3 w-full animate-pulse rounded-cover bg-paper-strong",
             mobile ? "max-w-43.5" : "max-w-61.5",
           )}
         />

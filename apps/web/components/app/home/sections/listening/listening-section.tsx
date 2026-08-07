@@ -27,7 +27,7 @@ export function ListeningSection({
           <BookCover
             alt={`${listening.title} listening placeholder`}
             className="w-32 shadow-(--shadow-card) sm:w-40"
-            ratio="square"
+            ratio="audiobook"
             src={resolveApiAssetUrl(coverImageUrl)}
             title={listening.title}
           />

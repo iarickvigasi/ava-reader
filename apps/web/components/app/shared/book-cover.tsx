@@ -7,22 +7,26 @@ import { BookCoverFallback } from "./book-cover-fallback";
 
 // The single cover primitive — every cover in the app renders through it.
 //
-// The frame owns ratio and radius (call sites pass width, shadow, margins only)
-// and the image is `object-contain`, so a cover whose intrinsic ratio differs
-// from the frame is letterboxed on the frame's surface. The previous
-// `object-cover` filled the frame instead and sliced the overflow off, which cut
-// the top and bottom from any cover taller than its hardcoded per-call-site box.
+// The frame hugs the artwork: `ratio` only reserves space until the image
+// reports its natural size, then the frame adopts that exact ratio. So the
+// rounded clip and the shadow trace the cover itself, and there is no
+// letterboxing — a fixed frame plus `object-contain` left cream bars around
+// off-ratio covers, and the rounded corners were cut into those bars rather
+// than into the artwork. (The older `object-cover` had no bars but cropped the
+// top and bottom off any cover taller than its box.)
 //
-// No state on success: the decoded image paints over the empty frame in the same
-// frame as mount, so cached covers never flicker (an opacity-0 → opacity-100
-// fade did, when the book-info skeleton swapped to the rendered page). On a load
-// *failure* (offline, dead URL) the browser would paint its broken-image icon
-// and alt text, so swap in the designed fallback instead.
+// The fallback fills the frame until the image has fully decoded, then
+// unmounts. A cached cover neither flashes it nor shifts the layout: the ref
+// callback measures during commit, before the browser paints. Both flags are
+// tracked per-src, so swapping src (a re-import, a different book in the same
+// slot) re-arms the placeholder instead of showing a stale one.
 
 const RATIO_CLASS = {
+  audiobook: "aspect-square",
   book: "aspect-2/3",
-  square: "aspect-square",
 } as const;
+
+type Artwork = { ratio: number; src: string };
 
 export function BookCover({
   alt,
@@ -37,27 +41,58 @@ export function BookCover({
   src: string | null;
   title: string;
 }) {
-  const [failed, setFailed] = useState(false);
+  const [measured, setMeasured] = useState<Artwork | null>(null);
+  const [failedSrc, setFailedSrc] = useState<null | string>(null);
+
+  const artwork = measured?.src === src ? measured : null;
 
   const frame = cn(
-    "overflow-hidden rounded-[3px]",
-    RATIO_CLASS[ratio],
+    "overflow-hidden rounded-cover",
+    !artwork && RATIO_CLASS[ratio],
     className,
   );
 
-  if (!src || failed) {
+  // No src, or the browser would paint its broken-image icon (offline, dead URL).
+  if (!src || failedSrc === src) {
     return <BookCoverFallback className={frame} title={title} />;
   }
 
+  const measure = (node: HTMLImageElement) => {
+    setMeasured((current) =>
+      current?.src === src ? current : toArtwork(node, src),
+    );
+  };
+
   return (
-    <div className={cn("bg-paper-strong", frame)}>
+    <div
+      className={cn("relative bg-paper-strong", frame)}
+      style={artwork ? { aspectRatio: artwork.ratio } : undefined}
+    >
+      {!artwork && (
+        <BookCoverFallback className="absolute inset-0 size-full" title={title} />
+      )}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         alt={alt}
-        className="size-full object-contain"
-        onError={() => setFailed(true)}
+        className="relative size-full object-contain"
+        onError={() => setFailedSrc(src)}
+        onLoad={(event) => measure(event.currentTarget)}
+        ref={(node) => {
+          if (node?.complete) {
+            measure(node);
+          }
+        }}
         src={src}
       />
     </div>
   );
+}
+
+// A decode failure reports 0×0 — keep the reserved ratio rather than collapsing
+// the frame; onError swaps in the fallback anyway.
+function toArtwork(node: HTMLImageElement, src: string): Artwork | null {
+  if (!node.naturalWidth || !node.naturalHeight) {
+    return null;
+  }
+  return { ratio: node.naturalWidth / node.naturalHeight, src };
 }

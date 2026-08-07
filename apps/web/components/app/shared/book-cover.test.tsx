@@ -16,13 +16,22 @@ describe("BookCover", () => {
     const book = renderToStaticMarkup(
       <BookCover alt="cover" className="w-28" src="/covers/a.jpg" title="A" />,
     );
-    const square = renderToStaticMarkup(
-      <BookCover alt="cover" ratio="square" src="/covers/a.jpg" title="A" />,
+    const audiobook = renderToStaticMarkup(
+      <BookCover alt="cover" ratio="audiobook" src="/covers/a.jpg" title="A" />,
     );
 
     expect(book).toContain("aspect-2/3");
     expect(book).toContain("w-28");
-    expect(square).toContain("aspect-square");
+    expect(audiobook).toContain("aspect-square");
+  });
+
+  it("shows the placeholder behind the image until it has decoded", () => {
+    const markup = renderToStaticMarkup(
+      <BookCover alt="cover" src="/covers/a.jpg" title="Matrescence" />,
+    );
+
+    expect(markup).toContain("Matrescence");
+    expect(markup).toContain("absolute inset-0");
   });
 
   it("keeps the frame ratio when falling back to the placeholder", () => {

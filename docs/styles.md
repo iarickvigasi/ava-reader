@@ -27,16 +27,19 @@ Always the utility — never `font-(--font-x)`. **Eyebrow/overline** (ubiquitous
 `font-ui text-xs uppercase tracking-[0.16em] text-muted`.
 
 ## Radius — tokens; map any ad-hoc value to the nearest
+- `rounded-cover` 6px — book covers (applied by `<BookCover>`, never by a call site).
+  The value lives in `globals.css` `@theme`; this line only documents it.
 - `rounded-control` 14px — buttons, inputs, chips
 - `rounded-card` 18px — cards, tiles, panels
 - `rounded-modal` 28px — dialogs, overlays
 - `rounded-shell` 32px — page shells
-- `rounded-full` circles & icon-pills · `rounded-[3px]` book covers (special-case)
+- `rounded-full` circles & icon-pills
 
 ## Book covers → `components/app/shared/book-cover.tsx`
-Every cover renders through `<BookCover>`. It owns ratio (`ratio="book"` 2:3, `"square"` for the
-audio tile), radius and the `object-contain` fit — covers are letterboxed on the frame, never
-cropped. Call sites pass width/shadow/margins only; never an `aspect-*`, radius or background.
+Every cover renders through `<BookCover>`. The frame hugs the artwork — `ratio` (`"book"` 2:3 ·
+`"audiobook"` square) only reserves space until the image reports its natural size — so the rounded
+clip and shadow trace the cover, never a letterbox bar. The placeholder fills the frame until the
+image decodes. Call sites pass width/shadow/margins only; never an `aspect-*`, radius or background.
 
 ## Borders
 No **decorative** borders — shape comes from fill + shadow. Keep only

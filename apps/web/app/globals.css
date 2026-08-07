@@ -136,6 +136,7 @@
    rounded-control/card/modal/shell utilities and emit the vars to :root, so
    any remaining var(--radius-*) references keep resolving. See docs/styles.md. */
 @theme {
+  --radius-cover: 6px;
   --radius-control: 14px;
   --radius-card: 18px;
   --radius-modal: 28px;
