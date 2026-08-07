@@ -50,7 +50,9 @@ export function CollectionSection({ collection }: CollectionSectionProps) {
         </div>
       ) : (
         <>
-          <div className="flex gap-4 overflow-x-auto pb-2 md:hidden">
+          {/* Column-flow grid rather than a flex row: the cards are two-row
+              subgrids, so they need real tracks to share a shelf line. */}
+          <div className="grid grid-flow-col auto-cols-max grid-rows-[auto_auto] gap-x-4 overflow-x-auto pb-2 md:hidden">
             {collection.books.map((book) => (
               <LibraryBookCard
                 key={book.libraryItemId}
@@ -90,7 +92,7 @@ export function CollectionSectionSkeleton() {
         <div className="hidden h-4 w-16 animate-pulse rounded bg-paper-strong md:block" />
       </div>
 
-      <div className="flex gap-4 overflow-x-auto pb-2 md:hidden">
+      <div className="grid grid-flow-col auto-cols-max grid-rows-[auto_auto] gap-x-4 overflow-x-auto pb-2 md:hidden">
         {Array.from({ length: 4 }, (_, index) => (
           <BookCardSkeleton key={index} mobile />
         ))}
