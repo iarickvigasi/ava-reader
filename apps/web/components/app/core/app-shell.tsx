@@ -14,6 +14,7 @@ import { ProgressSyncRunner } from "@/components/app/core/progress-sync-runner";
 import { PreferencesSyncRunner } from "@/components/app/preferences/preferences-sync-runner";
 import { BackgroundPrimer } from "@/features/offline/prime";
 import { ReaderUiProvider } from "@/components/app/core/reader-ui-context";
+import { useLockDocumentOverscroll } from "@/components/app/core/use-lock-document-overscroll";
 import { useInterfaceLang } from "@/components/app/preferences/use-interface-lang";
 import { useCurrentUserCached } from "@/features/offline/buckets/me";
 import type { CurrentUserPayload } from "@/lib/api-types";
@@ -35,6 +36,9 @@ export function AppShell({ children, currentUser: initialUser }: AppShellProps) 
   // preferences panel is open). The hook reconciles the cookie +
   // soft-refreshes when they disagree.
   useInterfaceLang();
+  // Reader only: its shell is a non-scrolling h-dvh box, so any vertical drag
+  // is pure rubber-band — and that viewport travel re-paginates mid-swipe.
+  useLockDocumentOverscroll(isReaderRoute);
 
   // The global islands below must live on EVERY app route, not just the
   // reader: AppToast surfaces save/quota toasts from library + home, the sync
