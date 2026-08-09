@@ -1,8 +1,8 @@
 # Offline reading (save for offline)
 
-> Status: shipped · Updated: 2026-06-09 · ADRs: [[3-offline-first-dexie-buckets]] · Related:
+> Status: shipped · Updated: 2026-08-09 · ADRs: [[3-offline-first-dexie-buckets]] · Related:
 > [[12-offline-save-sync]], [[13-offline-save-button]] · Code:
-> apps/web/features/offline/buckets/book
+> apps/web/features/offline/buckets/book, apps/web/features/offline/lifecycle/persist-storage.ts
 
 ## Summary
 Downloads a book's full content (chapters + cover) into Dexie so it can be read with no network.
@@ -26,6 +26,12 @@ Underpins the offline-first promise.
    auto-cache left by a release is reclaimed on the next open. Re-running a save skips cached
    chapters. The book-info card's full state machine (keep / release / remove / cancel / abort)
    lives in [[13-offline-save-button]].
+4. Before a save starts, the app asks the browser to mark the origin's storage **persistent**
+   (`navigator.storage.persist()`). Default best-effort storage is the first thing evicted when the
+   device runs low on disk; persistent storage is only cleared by the user. The request is
+   fire-and-forget — a denial or an unsupported browser never blocks the save — and an origin that
+   already holds the grant is never re-asked. Browsers weigh engagement, so the ask rides the save
+   (an explicit user intent) rather than app start, where it is usually refused.
 
 ## Data & sync
 book bucket + reader-cache (chapter blobs), quota.ts enforcement. Read path prefers Dexie; the
@@ -41,6 +47,15 @@ book. Two saves of the same book overlapping (e.g. the primer and the book-info 
 reconnect) → the newer save takes over (single-flight); the superseded one must NOT delete the
 book's rows or clear the new save's in-flight slot (ownership fence).
 
+**iOS storage cap (known limitation, not fixable in code).** iOS/iPadOS Safari deletes *all*
+script-writable storage for an origin — Dexie, Cache Storage, and the service-worker registration
+alike — after **7 consecutive days without a visit** to the site (WebKit ITP). A lapsed iOS user
+therefore returns to an empty library and an uncached shell; the app falls back to its online path
+and re-downloads. The clock resets on every visit, so regular readers never hit it — the exposure is
+the "save a few books, fly three weeks later" case. `navigator.storage.persist()` does **not** lift
+this cap; only a home-screen (installed) web app is exempt, and we ship no web-app manifest yet (see
+Open questions). Other platforms evict only under genuine disk pressure, which persistence covers.
+
 ## Acceptance criteria
 - [ ] A saved book reads fully offline, including cover.
 - [ ] Download resumes after interruption without re-fetching cached chapters.
@@ -50,6 +65,9 @@ book's rows or clear the new save's in-flight slot (ownership fence).
 - [ ] Opening another book offline keeps the previous auto-cache until reconnect; the book currently
   open is never evicted.
 - [ ] Overlapping saves of the same book never delete or corrupt a completed download.
+- [ ] A save requests persistent storage once; a granted or denied result never changes the save's
+  outcome, and an already-persistent origin is not re-asked.
 
 ## Open questions
-Per-user storage budget UI; whole-collection save; cache expiry policy.
+Per-user storage budget UI; whole-collection save; cache expiry policy; a web-app manifest + install
+prompt, the only way to exempt iOS users from the 7-day storage cap (Edge cases).

@@ -19,6 +19,7 @@ import { useCallback, useSyncExternalStore } from "react";
 
 import { fetchReaderPayload } from "@/components/app/reader/data/reader-client";
 import { emitAppToast } from "@/components/app/core/app-toast";
+import { ensurePersistentStorage } from "@/features/offline/lifecycle/persist-storage";
 import { isOnline } from "@/features/offline/net/net-state";
 
 import { shouldToastSaveFailure } from "./save-toast";
@@ -62,6 +63,12 @@ export function useSaveBook(libraryItemId: string) {
       kind: "auto" | "explicit",
       signal?: AbortSignal,
     ): Promise<SaveOutcome> => {
+      // Ask the browser to keep this origin's storage out of the eviction
+      // pool before we write a book into it (spec 6). Browsers grant on
+      // engagement, so a save is the moment most likely to succeed. Not
+      // awaited: a denial is normal and must never delay or fail the save.
+      void ensurePersistentStorage();
+
       // Quota guard. Cheap probe (navigator.storage.estimate) — fail fast
       // with a toast before we start fetching chapters and writing to disk.
       const quota = await checkStorageQuota();

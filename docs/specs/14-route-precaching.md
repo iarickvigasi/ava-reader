@@ -95,7 +95,9 @@ routes; only its content needs priming. Online link prefetch of a `loading.tsx` 
 (`/app/library`) → bypassed, so its partial "loading" stub can't poison the navigation key; the
 precache's full `rsc:1` fetch stays the offline payload. (This was the bug behind "URL flips to
 `/app/library` but the page stays on home": the poisoned stub was served, so the navigation neither
-completed nor hard-fell-back to the cached doc.)
+completed nor hard-fell-back to the cached doc.) iOS Safari drops the whole registration + cache
+after 7 visit-free days, so a lapsed iOS user precaches from scratch on the next online visit —
+platform-imposed, see [[6-offline-reading]] Edge cases.
 
 ## Acceptance criteria
 - [ ] After one online visit to any app route, a hard reload or direct-URL entry of *any*
