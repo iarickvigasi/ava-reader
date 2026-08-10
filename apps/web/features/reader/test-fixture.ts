@@ -120,6 +120,24 @@ function createFixtureChapter(input: {
       kind: "paragraph",
       text: `This shorter closing paragraph belongs to fixture chapter ${chapterNumber}.`,
     },
+    // A word too wide for a mobile column, and a bare-URL citation list: the
+    // two shapes that used to paint across the column gap onto the next page
+    // (see spec 1.1-content-rendering). Kept so /dev/reader-resume-fixture
+    // stays a repro for it.
+    {
+      anchorId: `${input.chapterId}-overflow-heading`,
+      id: `${input.chapterId}::heading-unbreakable`,
+      inlines: [{ kind: "text", text: UNBREAKABLE_HEADING_TEXT }],
+      kind: "heading",
+      level: 2,
+      text: UNBREAKABLE_HEADING_TEXT,
+    },
+    {
+      id: `${input.chapterId}::paragraph-citations`,
+      inlines: [{ kind: "text", text: CITATIONS_TEXT }],
+      kind: "paragraph",
+      text: CITATIONS_TEXT,
+    },
   ];
 
   return {
@@ -133,6 +151,14 @@ function createFixtureChapter(input: {
     title: `Fixture Chapter ${chapterNumber}`,
   };
 }
+
+const UNBREAKABLE_HEADING_TEXT = "Kernschmelzenüberwachungsverordnung";
+
+const CITATIONS_TEXT =
+  "4 NASA, ‘Slime mold simulations used to map dark matter holding universe " +
+  "together’; <https://www.nasa.gov/feature/goddard/2020/nasa-slime-mold-simulations-used-to-map-dark-matter-holding-universe-together/> " +
+  "5 T. Nakagaki, ‘Maze-solving by an amoeboid organism’, Nature 407 (470), " +
+  "2000; <https://www.nature.com/articles/35035159?error=cookies_not_supported&code=1234-5678>";
 
 function createLongFixtureParagraph(chapterNumber: number) {
   return Array.from({ length: 220 }, (_, index) => {

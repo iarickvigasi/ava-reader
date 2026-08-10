@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import type { ReaderInline } from "@/lib/api-types";
 import { cn } from "@/lib/cn";
+import { ReaderBreakableText } from "./reader-breakable-text";
 
 const READER_INLINE_KIND_IMAGE = "image";
 
@@ -27,7 +28,9 @@ export function ReaderInlineContent({ inlines }: { inlines: ReaderInline[] }) {
             // eslint-disable-next-line @next/next/no-img-element
             <img
               alt={inline.alt ?? ""}
-              className="mx-1 inline-block max-h-32 align-middle"
+              // max-w-full: an inline image wider than the column would
+              // overflow into the next page exactly as a long word does.
+              className="mx-1 inline-block max-h-32 max-w-full align-middle"
               src={inline.src}
             />
           );
@@ -56,7 +59,7 @@ export function ReaderInlineContent({ inlines }: { inlines: ReaderInline[] }) {
             )}
             style={inlineStyle}
           >
-            {inline.text}
+            <ReaderBreakableText text={inline.text} />
           </span>
         );
 
