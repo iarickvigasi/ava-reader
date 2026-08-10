@@ -357,6 +357,11 @@
     "public-domain-library": {
       "name": "Public Domain",
       "description": "Books added from the AVA public catalog."
+    },
+    "offline-books": {
+      "name": "Offline Books",
+      "description": "Books you've saved to read without a connection.",
+      "empty": "Books you save for offline reading appear here."
     }
   },
   "library": {

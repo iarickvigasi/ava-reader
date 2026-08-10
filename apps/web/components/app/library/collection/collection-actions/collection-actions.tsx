@@ -197,13 +197,18 @@ export function LibraryCollectionActions({
     });
   }, [deleteCollection, startTransition]);
 
+  // Smart collections are system-owned: the API rejects both renaming and
+  // deleting them, so neither control is offered. Deleting one only made it
+  // reappear on the next import.
+  if (collectionKind === "SMART") {
+    return null;
+  }
+
   return (
     <>
       <CollectionActionButtons
         onDeleteClick={openDeleteModal}
-        onEditClick={
-          collectionKind === "CUSTOM" ? openEditModal : undefined
-        }
+        onEditClick={openEditModal}
       />
 
       {modalMode ? (

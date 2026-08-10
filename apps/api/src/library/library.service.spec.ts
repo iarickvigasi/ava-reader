@@ -14,13 +14,26 @@ describe('LibraryService', () => {
   const findFirstLibraryItem = jest.fn();
   const updateLibraryItem = jest.fn();
   const update = jest.fn();
-  const deleteManyCollections = jest.fn();
+  const deleteCollection = jest.fn();
+  const findUniqueCollection = jest.fn();
+  const upsertCollectionItem = jest.fn();
+  const deleteManyCollectionItems = jest.fn();
+  // Interactive transactions run against the same mock surface, so the tests
+  // assert on the calls exactly as they would outside one. Annotated rather
+  // than inferred: inlining it would make `prisma`'s type reference itself.
+  const runInTransaction = <T>(run: (tx: unknown) => T): T => run(prisma);
   const prisma = {
+    $transaction: runInTransaction,
     collection: {
-      deleteMany: deleteManyCollections,
+      delete: deleteCollection,
       findFirst,
       findMany: findManyCollections,
+      findUnique: findUniqueCollection,
       update,
+    },
+    collectionItem: {
+      deleteMany: deleteManyCollectionItems,
+      upsert: upsertCollectionItem,
     },
     libraryItem: {
       findFirst: findFirstLibraryItem,
@@ -49,7 +62,10 @@ describe('LibraryService', () => {
     findManyCollections.mockReset();
     findManyLibraryItems.mockReset();
     update.mockReset();
-    deleteManyCollections.mockReset();
+    deleteCollection.mockReset();
+    findUniqueCollection.mockReset();
+    upsertCollectionItem.mockReset();
+    deleteManyCollectionItems.mockReset();
     for (const key of Object.keys(previewBooksById)) {
       delete previewBooksById[key];
     }
@@ -783,18 +799,23 @@ describe('LibraryService', () => {
   });
 
   it('deletes one owned collection, including non-empty collections', async () => {
-    deleteManyCollections.mockResolvedValue({ count: 1 });
+    findFirst.mockResolvedValue({ id: 'collection-filled', kind: 'CUSTOM' });
+    deleteCollection.mockResolvedValue({ id: 'collection-filled' });
 
     const payload = await libraryService.deleteCollection(
       'clerk_123',
       'collection-filled',
     );
 
-    expect(deleteManyCollections).toHaveBeenCalledWith({
+    expect(findFirst).toHaveBeenCalledWith({
       where: {
         id: 'collection-filled',
         userId: 'user-1',
       },
+      select: { id: true, kind: true },
+    });
+    expect(deleteCollection).toHaveBeenCalledWith({
+      where: { id: 'collection-filled' },
     });
     expect(payload).toEqual({
       collectionId: 'collection-filled',
@@ -803,7 +824,7 @@ describe('LibraryService', () => {
   });
 
   it('throws not found when deleting a missing or not-owned collection', async () => {
-    deleteManyCollections.mockResolvedValue({ count: 0 });
+    findFirst.mockResolvedValue(null);
 
     await expect(
       libraryService.deleteCollection('clerk_123', 'missing-collection'),
@@ -811,6 +832,19 @@ describe('LibraryService', () => {
     await expect(
       libraryService.deleteCollection('clerk_123', 'missing-collection'),
     ).rejects.toThrow('Collection not found.');
+    expect(deleteCollection).not.toHaveBeenCalled();
+  });
+
+  it('rejects deleting a smart collection', async () => {
+    findFirst.mockResolvedValue({ id: 'smart-collection-1', kind: 'SMART' });
+
+    await expect(
+      libraryService.deleteCollection('clerk_123', 'smart-collection-1'),
+    ).rejects.toBeInstanceOf(ForbiddenException);
+    await expect(
+      libraryService.deleteCollection('clerk_123', 'smart-collection-1'),
+    ).rejects.toThrow('Smart collections cannot be deleted.');
+    expect(deleteCollection).not.toHaveBeenCalled();
   });
 
   it('sets the offline-requested intent and stamps the timestamp', async () => {
@@ -854,6 +888,74 @@ describe('LibraryService', () => {
       data: { offlineRequested: false },
       select: { id: true, slug: true, offlineRequested: true },
     });
+  });
+
+  it('adds the book to the Offline Books shelf when requesting', async () => {
+    findFirstLibraryItem.mockResolvedValue({ id: 'item-1' });
+    updateLibraryItem.mockResolvedValue({
+      id: 'item-1',
+      slug: 'a-book',
+      offlineRequested: true,
+    });
+    findUniqueCollection.mockResolvedValue({ id: 'offline-collection' });
+
+    await libraryService.setOfflineRequested('clerk_123', 'a-book', true);
+
+    expect(findUniqueCollection).toHaveBeenCalledWith({
+      where: {
+        userId_smartKey: { userId: 'user-1', smartKey: 'offline-books' },
+      },
+      select: { id: true },
+    });
+    expect(upsertCollectionItem).toHaveBeenCalledWith({
+      where: {
+        collectionId_libraryItemId: {
+          collectionId: 'offline-collection',
+          libraryItemId: 'item-1',
+        },
+      },
+      update: {},
+      create: {
+        collectionId: 'offline-collection',
+        libraryItemId: 'item-1',
+      },
+    });
+    expect(deleteManyCollectionItems).not.toHaveBeenCalled();
+  });
+
+  it('removes the book from the Offline Books shelf when clearing', async () => {
+    findFirstLibraryItem.mockResolvedValue({ id: 'item-1' });
+    updateLibraryItem.mockResolvedValue({
+      id: 'item-1',
+      slug: 'a-book',
+      offlineRequested: false,
+    });
+    findUniqueCollection.mockResolvedValue({ id: 'offline-collection' });
+
+    await libraryService.setOfflineRequested('clerk_123', 'a-book', false);
+
+    expect(deleteManyCollectionItems).toHaveBeenCalledWith({
+      where: {
+        collectionId: 'offline-collection',
+        libraryItemId: 'item-1',
+      },
+    });
+    expect(upsertCollectionItem).not.toHaveBeenCalled();
+  });
+
+  it('skips membership when the user has no Offline Books shelf yet', async () => {
+    findFirstLibraryItem.mockResolvedValue({ id: 'item-1' });
+    updateLibraryItem.mockResolvedValue({
+      id: 'item-1',
+      slug: 'a-book',
+      offlineRequested: true,
+    });
+    findUniqueCollection.mockResolvedValue(null);
+
+    await libraryService.setOfflineRequested('clerk_123', 'a-book', true);
+
+    expect(upsertCollectionItem).not.toHaveBeenCalled();
+    expect(deleteManyCollectionItems).not.toHaveBeenCalled();
   });
 
   it('throws not found when toggling offline on a missing item', async () => {

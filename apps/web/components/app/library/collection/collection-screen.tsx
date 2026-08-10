@@ -75,7 +75,7 @@ export function LibraryCollectionScreen({
 
         {effective.books.length === 0 ? (
           <div className="rounded-card bg-paper-strong/70 px-5 py-6 text-base leading-7 text-copy">
-            {t("noBooksYet")}
+            {collectionDisplay.emptyMessage(effective)}
           </div>
         ) : (
           <>

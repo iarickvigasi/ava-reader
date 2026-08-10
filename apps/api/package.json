@@ -23,6 +23,7 @@
     "db:seed:home-demo": "ts-node src/scripts/seed-home-demo.ts",
     "db:backfill-book-slugs": "ts-node src/scripts/backfill-library-item-slugs.ts",
     "db:backfill-collection-slugs": "ts-node src/scripts/backfill-collection-slugs.ts",
+    "db:backfill-offline-books": "ts-node src/scripts/backfill-offline-books-collection.ts",
     "admin:grant": "ts-node src/scripts/grant-admin.ts",
     "test": "jest",
     "test:watch": "jest --watch",

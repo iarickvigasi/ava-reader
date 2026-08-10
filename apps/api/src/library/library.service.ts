@@ -19,6 +19,8 @@ import {
   DEFAULT_SMART_COLLECTIONS,
   getSmartCollectionKey,
 } from '../shared/default-collections';
+import { resolveUniqueCollectionName } from '../shared/collection-name';
+import { syncOfflineBooksMembership } from './offline-collection-membership';
 import {
   detectBookFileFormat,
   extractBookMetadata,
@@ -476,10 +478,20 @@ export class LibraryService {
     if (!item) {
       throw new NotFoundException('Book not found in library.');
     }
-    const updated = await this.prisma.libraryItem.update({
-      where: { id: item.id },
-      data: { offlineRequested: requested },
-      select: { id: true, slug: true, offlineRequested: true },
+    // The flag and the Offline Books membership it drives move together, so a
+    // partial write can't leave the shelf disagreeing with the flag.
+    const updated = await this.prisma.$transaction(async (tx) => {
+      const row = await tx.libraryItem.update({
+        where: { id: item.id },
+        data: { offlineRequested: requested },
+        select: { id: true, slug: true, offlineRequested: true },
+      });
+      await syncOfflineBooksMembership(tx, {
+        libraryItemId: row.id,
+        requested,
+        userId: user.id,
+      });
+      return row;
     });
     return {
       libraryItemId: updated.id,
@@ -562,16 +574,25 @@ export class LibraryService {
 
   async deleteCollection(clerkUserId: string, collectionId: string) {
     const user = await this.usersService.getCurrentUserRecord(clerkUserId);
-    const result = await this.prisma.collection.deleteMany({
+    const collection = await this.prisma.collection.findFirst({
       where: {
         id: collectionId,
         userId: user.id,
       },
+      select: { id: true, kind: true },
     });
 
-    if (result.count === 0) {
+    if (!collection) {
       throw new NotFoundException('Collection not found.');
     }
+
+    // System-owned shelves are recreated on the next import, so deleting one
+    // only makes it flicker out and back. Blocked here as well as in the UI.
+    if (collection.kind === 'SMART') {
+      throw new ForbiddenException('Smart collections cannot be deleted.');
+    }
+
+    await this.prisma.collection.delete({ where: { id: collection.id } });
 
     return {
       collectionId,
@@ -711,6 +732,16 @@ export class LibraryService {
         });
         return conflict !== null && conflict.smartKey !== collection.smartKey;
       });
+      const name = await resolveUniqueCollectionName(
+        collection.name,
+        async (candidate) => {
+          const conflict = await tx.collection.findUnique({
+            where: { userId_name: { userId, name: candidate } },
+            select: { smartKey: true },
+          });
+          return conflict !== null && conflict.smartKey !== collection.smartKey;
+        },
+      );
 
       await tx.collection.upsert({
         where: {
@@ -722,7 +753,7 @@ export class LibraryService {
         update: {
           description: collection.description,
           kind: 'SMART',
-          name: collection.name,
+          name,
           sortOrder: collection.sortOrder,
         },
         create: {
@@ -730,7 +761,7 @@ export class LibraryService {
           smartKey: collection.smartKey,
           description: collection.description,
           kind: 'SMART',
-          name: collection.name,
+          name,
           slug,
           sortOrder: collection.sortOrder,
         },

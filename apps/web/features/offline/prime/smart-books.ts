@@ -1,10 +1,11 @@
 import type { LibraryBookView, LibraryView } from "../buckets/library/types";
 
 // Collects the unique books that belong to the default smart collections
-// (`kind === "SMART"`). By design every book lands in exactly one of those
-// collections, so this is the whole library with custom-collection duplicates
-// removed. First-seen order is preserved (imported before catalog, per the
-// collections' sortOrder).
+// (`kind === "SMART"`). Every book lands in exactly one of the two *source*
+// shelves (imported / catalog), so this is the whole library with duplicates
+// removed — the third shelf, Offline Books, is a subset of those two and adds
+// nothing new past the `seen` filter. First-seen order is preserved (imported,
+// then catalog, then offline, per the collections' sortOrder).
 export function collectSmartBooks(view: LibraryView): LibraryBookView[] {
   const seen = new Set<string>();
   const out: LibraryBookView[] = [];

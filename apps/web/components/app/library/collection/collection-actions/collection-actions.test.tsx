@@ -33,7 +33,7 @@ describe("library collection actions", () => {
     expect(markup).toContain("Delete");
   });
 
-  it("renders only delete button for smart collections", () => {
+  it("renders no actions for smart collections", () => {
     const markup = renderToStaticMarkup(
       withIntl(<LibraryCollectionActions
         collectionDescription="Auto-generated collection."
@@ -44,7 +44,7 @@ describe("library collection actions", () => {
     );
 
     expect(markup).not.toContain("Edit");
-    expect(markup).toContain("Delete");
+    expect(markup).not.toContain("Delete");
   });
 
   it("renders edit modal controls in editing mode", () => {

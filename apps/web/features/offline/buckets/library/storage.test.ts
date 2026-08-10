@@ -12,6 +12,7 @@ import {
   readBookInfoBySlug,
   readCollectionViewBySlug,
   readLibraryView,
+  setOfflineRequestedLocal,
 } from "./storage";
 
 function payload(): LibraryPayload {
@@ -266,5 +267,103 @@ describe("library bucket storage", () => {
     await applyLibraryPayload(payload());
     const round = await readBookInfoBySlug("book-a");
     expect(round).toBeNull();
+  });
+});
+
+// A payload as the server sends it: the offline shelf carries the membership
+// that was true at sync time. The read layer deliberately ignores those rows and
+// derives from `offlineRequested` instead — see spec 17.
+function offlineShelfPayload(): LibraryPayload {
+  const [bookA, bookB] = payload().collections[0].books;
+  return {
+    summary: { booksCount: 2, collectionsCount: 2 },
+    collections: [
+      {
+        ...payload().collections[0],
+        books: [
+          { ...bookA, offlineRequested: true },
+          { ...bookB, offlineRequested: false },
+        ],
+      },
+      {
+        id: "col-offline",
+        slug: "offline-books",
+        kind: "SMART",
+        name: "Offline Books",
+        description: "Books you've saved to read without a connection.",
+        smartKey: "offline-books",
+        itemCount: 1,
+        unreadCount: 1,
+        books: [{ ...bookA, offlineRequested: true }],
+      },
+    ],
+  };
+}
+
+function readShelf(view: Awaited<ReturnType<typeof readLibraryView>>) {
+  return view!.collections.find(
+    (collection) => collection.smartKey === "offline-books",
+  )!;
+}
+
+describe("offline books shelf", () => {
+  it("lists the offlineRequested books, newest engagement first", async () => {
+    await applyLibraryPayload(offlineShelfPayload());
+    const shelf = readShelf(await readLibraryView());
+    expect(shelf.books.map((book) => book.libraryItemId)).toEqual(["lib-1"]);
+  });
+
+  it("picks up a save made offline before the PATCH flushes", async () => {
+    await applyLibraryPayload(offlineShelfPayload());
+    // The user saves Book B while disconnected: the flag flips locally and is
+    // marked dirty, but no membership row for it has arrived from the server.
+    await setOfflineRequestedLocal("lib-2", true);
+
+    const shelf = readShelf(await readLibraryView());
+    expect(shelf.books.map((book) => book.libraryItemId)).toEqual([
+      "lib-2",
+      "lib-1",
+    ]);
+  });
+
+  it("drops a book released offline while the cached rows still list it", async () => {
+    await applyLibraryPayload(offlineShelfPayload());
+    await setOfflineRequestedLocal("lib-1", false);
+
+    const shelf = readShelf(await readLibraryView());
+    expect(shelf.books).toHaveLength(0);
+  });
+
+  it("derives its counts rather than trusting the payload's", async () => {
+    await applyLibraryPayload(offlineShelfPayload());
+    await setOfflineRequestedLocal("lib-2", true);
+
+    const shelf = readShelf(await readLibraryView());
+    // Payload said 1/1; both books are now requested and neither is finished.
+    expect(shelf.itemCount).toBe(2);
+    expect(shelf.unreadCount).toBe(2);
+  });
+
+  it("derives the same set when read by slug", async () => {
+    await applyLibraryPayload(offlineShelfPayload());
+    await setOfflineRequestedLocal("lib-2", true);
+
+    const shelf = await readCollectionViewBySlug("offline-books");
+    expect(shelf!.books.map((book) => book.libraryItemId)).toEqual([
+      "lib-2",
+      "lib-1",
+    ]);
+  });
+
+  it("leaves other collections reading from their membership rows", async () => {
+    await applyLibraryPayload(offlineShelfPayload());
+    await setOfflineRequestedLocal("lib-2", true);
+
+    const view = await readLibraryView();
+    const favorites = view!.collections.find(
+      (collection) => collection.slug === "favs",
+    );
+    expect(favorites!.books).toHaveLength(2);
+    expect(favorites!.itemCount).toBe(2);
   });
 });

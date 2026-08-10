@@ -1,8 +1,9 @@
 # Offline-save sync (server-synced intent)
 
-> Status: active · Updated: 2026-06-17 · ADRs: [[3-offline-first-dexie-buckets]] · Related:
-> [[6-offline-reading]], [[11-cache-priming]], [[13-offline-save-button]] · Code:
-> apps/api/src/library, apps/web/features/offline/buckets/{library,book}
+> Status: active · Updated: 2026-08-10 · ADRs: [[3-offline-first-dexie-buckets]] · Related:
+> [[6-offline-reading]], [[11-cache-priming]], [[13-offline-save-button]],
+> [[17-offline-books-collection]] · Code: apps/api/src/library,
+> apps/web/features/offline/buckets/{library,book}
 
 ## Summary
 Persist "keep this book available offline" as a server-side, per-user intent so it follows the user
@@ -48,7 +49,8 @@ LibraryItem gains `offlineRequested Boolean @default(false)` — a plain boolean
 the boolean alone drives auto-download and concurrent PATCHes resolve by server arrival order.
 `PATCH /api/library/:slug/offline {requested}`. `LibraryCardBook.offlineRequested?: boolean`. The
 toggle goes through a per-row dirty flag flushed on reconnect (offline-capable), mirroring the
-preferences bucket.
+preferences bucket. The same transaction syncs the book's membership in the Offline Books smart
+collection ([[17-offline-books-collection]]).
 
 ## Edge cases
 Toggle while offline → queued (dirty), optimistic, flushed on reconnect; the content download

@@ -1,8 +1,8 @@
 # Library & collections
 
-> Status: shipped · Updated: 2026-06-11 · ADRs: [[3-offline-first-dexie-buckets]],
-> [[4-route-precaching-service-worker]] · Code: apps/web/components/app/library,
-> apps/web/features/offline/buckets/library
+> Status: shipped · Updated: 2026-08-10 · ADRs: [[3-offline-first-dexie-buckets]],
+> [[4-route-precaching-service-worker]] · Related: [[17-offline-books-collection]] · Code:
+> apps/web/components/app/library, apps/web/features/offline/buckets/library
 
 ## Summary
 The user's personal book collection plus curated reading lists, with a per-book info/detail page.
@@ -17,7 +17,9 @@ Serves the "organize a library, collections, reading lists" job.
 
 ## Behaviour
 1. Library lists the user's books with progress; clicking opens book-info or the reader.
-2. Collections group books into CUSTOM or SMART lists; user edits membership and order.
+2. Collections group books into CUSTOM or SMART lists; user edits membership and order. SMART
+   collections are system-owned: three defaults (Imported Books, Public Domain, and Offline Books —
+   [[17-offline-books-collection]]), none renameable or deletable.
 3. Metadata is cached for offline; revalidates against server updatedAt when online.
 
 ## Data & sync

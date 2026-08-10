@@ -9,6 +9,8 @@ import type {
   LibraryPayload,
 } from "@/lib/api-types/library";
 
+import { isOfflineBooksCollection } from "@/lib/smart-collections";
+
 import {
   getDb,
   type CollectionMembershipRow,
@@ -16,6 +18,10 @@ import {
   type LibraryItemRow,
 } from "../../db";
 
+import {
+  deriveOfflineCounts,
+  selectOfflineBookRows,
+} from "./offline-books-view";
 import type { CollectionView, LibraryBookView, LibraryView } from "./types";
 
 // Reads everything we need to render the library screen in one transaction.
@@ -46,6 +52,12 @@ export async function readLibraryView(): Promise<LibraryView | null> {
       }
 
       const views: CollectionView[] = collections.map((collection) => {
+        if (isOfflineBooksCollection(collection)) {
+          return collectionRowToView(
+            collection,
+            selectOfflineBookRows(items).map(toBookView),
+          );
+        }
         const rawLinks = byCollection.get(collection.id) ?? [];
         const sorted = [...rawLinks].sort((a, b) => a.order - b.order);
         const books: LibraryBookView[] = [];
@@ -81,6 +93,13 @@ export async function readCollectionViewBySlug(
       const collection = await db.collections.where("slug").equals(slug).first();
       if (!collection) {
         return null;
+      }
+      if (isOfflineBooksCollection(collection)) {
+        const rows = await db.libraryItems.toArray();
+        return collectionRowToView(
+          collection,
+          selectOfflineBookRows(rows).map(toBookView),
+        );
       }
       const links = await db.collectionMembership
         .where("collectionId")
@@ -502,6 +521,13 @@ function collectionRowToView(
   collection: CollectionRow,
   books: LibraryBookView[],
 ): CollectionView {
+  // The offline shelf's books are derived from `offlineRequested`, so its
+  // server-sent counts describe the last synced membership and must be
+  // recomputed to match what we're about to render.
+  const counts = isOfflineBooksCollection(collection)
+    ? deriveOfflineCounts(books)
+    : { itemCount: collection.itemCount, unreadCount: collection.unreadCount };
+
   return {
     id: collection.id,
     slug: collection.slug,
@@ -509,8 +535,7 @@ function collectionRowToView(
     name: collection.name,
     description: collection.description,
     smartKey: collection.smartKey,
-    itemCount: collection.itemCount,
-    unreadCount: collection.unreadCount,
+    ...counts,
     books,
   };
 }
