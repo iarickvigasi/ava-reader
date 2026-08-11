@@ -28,9 +28,9 @@ describe('resolveFontSizeScaleFromStyle', () => {
         'color: red; font-size: 0.8em; line-height: 1.4',
       ),
     ).toBe(0.8);
-    expect(
-      resolveFontSizeScaleFromStyle('FONT-SIZE: 75%; color: blue'),
-    ).toBe(0.75);
+    expect(resolveFontSizeScaleFromStyle('FONT-SIZE: 75%; color: blue')).toBe(
+      0.75,
+    );
   });
 
   it('drops absolute pixel/point sizes — we have no reliable base', () => {

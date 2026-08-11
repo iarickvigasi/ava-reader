@@ -59,9 +59,7 @@ describe('parseStylesheet', () => {
   it('keeps the simple selector when a comma list mixes simple and complex', () => {
     const rules = parseStylesheet(`.foo, .bar > p { color: red; }`);
     expect(rules).toHaveLength(1);
-    expect(rules[0].selectors).toEqual([
-      { kind: 'class', className: 'foo' },
-    ]);
+    expect(rules[0].selectors).toEqual([{ kind: 'class', className: 'foo' }]);
   });
 
   it('ignores comments', () => {
@@ -90,9 +88,7 @@ describe('parseStylesheet', () => {
       }
     `);
     expect(rules).toHaveLength(1);
-    expect(rules[0].selectors).toEqual([
-      { kind: 'class', className: 'wide' },
-    ]);
+    expect(rules[0].selectors).toEqual([{ kind: 'class', className: 'wide' }]);
   });
 
   it('returns an empty list for empty / blank input', () => {
