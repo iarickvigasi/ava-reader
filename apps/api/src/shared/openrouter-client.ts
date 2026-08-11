@@ -10,9 +10,10 @@ import {
 } from '@openrouter/ai-sdk-provider';
 import type { LanguageModel } from 'ai';
 
-// Thin wrapper around the OpenRouter ai-sdk provider. We init lazily so the
-// API service still boots without OPENROUTER_API_KEY — only the AI Comments
-// endpoints fail (with a 500) until it's configured.
+// Thin wrapper around the OpenRouter ai-sdk provider, shared by every AI
+// feature (ai-comments, book-analysis). We init lazily so the API service
+// still boots without OPENROUTER_API_KEY — only the AI code paths fail
+// (with a 500) until it's configured.
 @Injectable()
 export class OpenRouterClient implements OnModuleInit {
   private provider: OpenRouterProvider | null = null;
@@ -34,7 +35,7 @@ export class OpenRouterClient implements OnModuleInit {
   getModelId(): string {
     if (!this.modelId) {
       throw new InternalServerErrorException(
-        'OPENROUTER_MODEL is not configured. The AI Comments side panel cannot generate responses.',
+        'OPENROUTER_MODEL is not configured. AI features cannot run.',
       );
     }
     return this.modelId;
@@ -43,7 +44,7 @@ export class OpenRouterClient implements OnModuleInit {
   getModel(): LanguageModel {
     if (!this.provider) {
       throw new InternalServerErrorException(
-        'OPENROUTER_API_KEY is not configured. The AI Comments side panel cannot generate responses.',
+        'OPENROUTER_API_KEY is not configured. AI features cannot run.',
       );
     }
     return this.provider(this.getModelId());

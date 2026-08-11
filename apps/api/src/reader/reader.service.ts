@@ -11,6 +11,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { requestChapterPurposeAnalysis } from '../book-analysis/chapter-purpose/request-analysis';
 import { decodeXmlEntities } from '../shared/xml-entities';
 import { UsersService } from '../users/users.service';
 import type {
@@ -18,6 +19,7 @@ import type {
   ReaderLocator,
   ReaderPackage,
   ReadingProgressIndex,
+  ReadingProgressIndexChapter,
   ReaderTocNode,
 } from './reader-types';
 
@@ -212,6 +214,24 @@ export class ReaderService {
         status: 'PROCESSING',
       };
     }
+
+    // Lazily analyse on first read: a bulk import of forty EPUBs costs nothing,
+    // and only the books someone actually opens are ever paid for. Deliberately
+    // not awaited — the payload must not wait on it, and the helper swallows
+    // its own errors.
+    void requestChapterPurposeAnalysis({
+      bookId: libraryItem.book.id,
+      prisma: this.prisma,
+      readerFileId: derivedReader.id,
+    }).catch((error: unknown) => {
+      // Analysis is a refinement; a book opens with or without it. Logged
+      // rather than swallowed so a persistently failing enqueue is visible.
+      this.logger.warn(
+        `Could not queue chapter-purpose analysis for book ${libraryItem.book.id}: ${
+          error instanceof Error ? error.message : 'unknown error'
+        }`,
+      );
+    });
 
     const readerPackage = await this.loadReaderPackage(derivedReader.blobId);
     const selectedChapter =
@@ -982,7 +1002,10 @@ export class ReaderService {
   }
 }
 
-function parseReaderPackage(buffer: Buffer): ReaderPackage {
+// Exported so book-analysis reads packages through the same legacy
+// normalisation the reader uses, rather than growing a second parser that
+// could drift from it.
+export function parseReaderPackage(buffer: Buffer): ReaderPackage {
   const raw = JSON.parse(buffer.toString('utf8')) as unknown;
   const candidate =
     raw && typeof raw === 'object'
@@ -1176,7 +1199,7 @@ function validateClientInstanceId(clientInstanceId: string) {
   }
 }
 
-function computeProgressMetricsFromIndex(
+export function computeProgressMetricsFromIndex(
   index: ReadingProgressIndex,
   locator: ReaderLocator,
 ) {
@@ -1195,17 +1218,41 @@ function computeProgressMetricsFromIndex(
     throw new BadRequestException('The requested block does not exist.');
   }
 
-  const blocksBeforeChapter = index.chapters
+  // An index where nothing counts would zero both sides of the ratio and pin
+  // the reader at 0% forever. That means the labelling is degenerate, so ignore
+  // it entirely rather than trust it — the aggregate guard should already have
+  // caught this, and whole-book progress is the honest fallback.
+  const anyChapterCounts = index.chapters.some(isCountedChapter);
+  const counts = (candidate: ReadingProgressIndexChapter) =>
+    !anyChapterCounts || isCountedChapter(candidate);
+
+  // Only chapters that count contribute to either side of the ratio, so notes,
+  // references and contents pages no longer dilute progress. On a v1 index
+  // every chapter counts and this reduces to the original whole-book maths.
+  const countedBlocksBefore = index.chapters
     .slice(0, chapterIndex)
-    .reduce((sum, currentChapter) => sum + currentChapter.blockIds.length, 0);
-  const absoluteBlockIndex = blocksBeforeChapter + blockIndex + 1;
+    .reduce(
+      (sum, currentChapter) =>
+        counts(currentChapter) ? sum + currentChapter.blockIds.length : sum,
+      0,
+    );
+  // A locator inside an uncounted chapter contributes nothing of its own, which
+  // lands on exactly the right answer at both ends: front matter reads 0%, and
+  // back matter — where every counted block already lies behind the reader —
+  // reads 100%. Without this a novel trailing a long bibliography could never
+  // reach 100%, so it never left the "currently reading" shelf.
+  const absoluteBlockIndex =
+    countedBlocksBefore + (counts(chapter) ? blockIndex + 1 : 0);
+  const totalCountedBlocks = anyChapterCounts
+    ? (index.bodyBlocks ?? index.totalBlocks)
+    : index.totalBlocks;
   const completionPercent =
-    index.totalBlocks > 0
+    totalCountedBlocks > 0
       ? Math.min(
           100,
           Math.max(
             0,
-            Math.round((absoluteBlockIndex / index.totalBlocks) * 100),
+            Math.round((absoluteBlockIndex / totalCountedBlocks) * 100),
           ),
         )
       : 0;
@@ -1220,6 +1267,13 @@ function computeProgressMetricsFromIndex(
 // Builds the compact progress index from a fully-parsed reader package. Used
 // by the processing pipeline (eagerly) and by the reader service (as a lazy
 // back-fill for legacy DERIVED_READER rows that predate this column).
+// A chapter counts unless the analysis explicitly said otherwise. v1 indexes
+// carry no flag at all, so they count everything — identical to pre-analysis
+// behaviour.
+function isCountedChapter(chapter: ReadingProgressIndexChapter): boolean {
+  return chapter.counted !== false;
+}
+
 export function buildReadingProgressIndex(
   readerPackage: ReaderPackage,
 ): ReadingProgressIndex {
@@ -1238,8 +1292,8 @@ export function buildReadingProgressIndex(
 
 // Validates a stored JSON value as a ReadingProgressIndex. Returns null if the
 // shape doesn't match (e.g. legacy `null`, or a value written by an older
-// schema version).
-function parseStoredReadingProgressIndex(
+// schema version). Exported for book-analysis, which patches this same index.
+export function parseStoredReadingProgressIndex(
   value: unknown,
 ): ReadingProgressIndex | null {
   if (!value || typeof value !== 'object') {
@@ -1247,7 +1301,7 @@ function parseStoredReadingProgressIndex(
   }
   const candidate = value as Partial<ReadingProgressIndex>;
   if (
-    candidate.version !== 1 ||
+    (candidate.version !== 1 && candidate.version !== 2) ||
     typeof candidate.totalBlocks !== 'number' ||
     !Array.isArray(candidate.chapters) ||
     !Array.isArray(candidate.toc)

@@ -54,10 +54,11 @@ Monorepo: pnpm workspaces + Turbo (lint/typecheck/test/build), Node ≥22.
 
 ## API (apps/api/src)
 Modules: reader (EPUB→chapters/blocks, progress), library (import, items, blobs, collections),
-ai-comments (translate/explain/etymology generation + cache), home (dashboard aggregation), catalog
+ai-comments (translate/explain/etymology generation + cache), book-analysis (book-scoped AI
+analyses; chapter purpose → body-only reading time), home (dashboard aggregation), catalog
 (published books + curation), annotations (highlights; legacy path → buckets), users (profile,
 preferences, Clerk sync), feedback, auth (Clerk token verification), shared (slug/zip/blob/metadata
-utils).
+utils, OpenRouter client).
 Key routes: `/home`, `/library`, `/library/:libraryItemId/reader`,
 `/library/:libraryItemId/annotations`, `/library/:libraryItemId/ai-comments`, `/feedback`.
 

@@ -2,8 +2,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AiCommentsController } from './ai-comments/ai-comments.controller';
 import { AiCommentsService } from './ai-comments/ai-comments.service';
-import { OpenRouterClient } from './ai-comments/openrouter-client';
+import { OpenRouterClient } from './shared/openrouter-client';
 import { AnnotationsController } from './annotations/annotations.controller';
+import { BookAnalysisService } from './book-analysis/book-analysis.service';
 import { AnnotationsService } from './annotations/annotations.service';
 import { ClerkAuthGuard } from './auth/clerk-auth.guard';
 import { ClerkAuthService } from './auth/clerk-auth.service';
@@ -56,6 +57,7 @@ import { UsersService } from './users/users.service';
     AiCommentsService,
     OpenRouterClient,
     AnnotationsService,
+    BookAnalysisService,
   ],
 })
 export class AppModule {}

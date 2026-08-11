@@ -9,7 +9,7 @@ import { streamObject, type StreamObjectResult } from 'ai';
 import { z } from 'zod';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
-import { OpenRouterClient } from './openrouter-client';
+import { OpenRouterClient } from '../shared/openrouter-client';
 import { getOutputSpec, type AiToolOutputField } from './output-schemas';
 import {
   buildEtymologyPrompt,

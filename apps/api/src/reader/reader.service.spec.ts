@@ -28,6 +28,12 @@ describe('ReaderService', () => {
   const upsertReadingSessionSegment = jest.fn();
   const aggregateReadingSessionSegment = jest.fn();
   const queryRaw = jest.fn();
+  // Reading a book lazily enqueues its chapter-purpose analysis
+  // (see specs/18-chapter-purpose-analysis). Stubbed so the reader payload
+  // tests exercise that path instead of silently swallowing a mock failure.
+  const findUniqueBookAnalysis = jest.fn();
+  const findFirstBookProcessingRun = jest.fn();
+  const createBookProcessingRun = jest.fn();
 
   const tx = {
     $queryRaw: queryRaw,
@@ -55,8 +61,15 @@ describe('ReaderService', () => {
       async (callback: (transactionClient: typeof tx) => Promise<unknown>) =>
         callback(tx),
     ),
+    bookAnalysis: {
+      findUnique: findUniqueBookAnalysis,
+    },
     bookFile: {
       update: updateBookFile,
+    },
+    bookProcessingRun: {
+      create: createBookProcessingRun,
+      findFirst: findFirstBookProcessingRun,
     },
     libraryItem: {
       findFirst: findFirstLibraryItem,
@@ -79,6 +92,14 @@ describe('ReaderService', () => {
     __resetReaderPackageCacheForTesting();
     getCurrentUserRecord.mockReset();
     findFirstLibraryItem.mockReset();
+    // No analysis on record and no run in flight — the enqueue path's
+    // "this book needs analysing" case.
+    findUniqueBookAnalysis.mockReset();
+    findUniqueBookAnalysis.mockResolvedValue(null);
+    findFirstBookProcessingRun.mockReset();
+    findFirstBookProcessingRun.mockResolvedValue(null);
+    createBookProcessingRun.mockReset();
+    createBookProcessingRun.mockResolvedValue({ id: 'run-1' });
     findUniqueOrThrowStoredBlob.mockReset();
     findUniqueOrThrowStoredBlob.mockImplementation(() =>
       Promise.resolve({
@@ -106,6 +127,89 @@ describe('ReaderService', () => {
 
   afterEach(() => {
     jest.useRealTimers();
+  });
+
+  // Lazy analysis (specs/18-chapter-purpose-analysis): a bulk import costs
+  // nothing, only the books someone actually opens are analysed. The enqueue is
+  // fire-and-forget, hence the microtask flush.
+  describe('chapter-purpose analysis enqueue', () => {
+    const flush = () => new Promise((resolve) => setImmediate(resolve));
+
+    it('queues a run the first time a book is read', async () => {
+      findFirstLibraryItem.mockResolvedValue(createLibraryItemRecord());
+
+      await readerService.getReaderPayload('clerk_1', 'library-1');
+      await flush();
+
+      expect(createBookProcessingRun).toHaveBeenCalledTimes(1);
+      expect(
+        getFirstCallArg<{ data: unknown }>(createBookProcessingRun),
+      ).toEqual({ data: { bookId: 'book-1', pipeline: 'chapter-purpose-v1' } });
+    });
+
+    it('does not queue when a fresh analysis already exists', async () => {
+      findFirstLibraryItem.mockResolvedValue(createLibraryItemRecord());
+      findUniqueBookAnalysis.mockResolvedValue({
+        attempts: 0,
+        readerFileId: 'file-derived-reader',
+        status: ProcessingStatus.READY,
+      });
+
+      await readerService.getReaderPayload('clerk_1', 'library-1');
+      await flush();
+
+      expect(createBookProcessingRun).not.toHaveBeenCalled();
+    });
+
+    // A result tied to a superseded reader file is stale, not fresh:
+    // reprocessing shifted the chapter ids underneath it.
+    it('re-queues when the analysis belongs to a superseded reader file', async () => {
+      findFirstLibraryItem.mockResolvedValue(createLibraryItemRecord());
+      findUniqueBookAnalysis.mockResolvedValue({
+        attempts: 0,
+        readerFileId: 'file-from-a-previous-import',
+        status: ProcessingStatus.READY,
+      });
+
+      await readerService.getReaderPayload('clerk_1', 'library-1');
+      await flush();
+
+      expect(createBookProcessingRun).toHaveBeenCalledTimes(1);
+    });
+
+    it('stops queueing once the retry cap is reached', async () => {
+      findFirstLibraryItem.mockResolvedValue(createLibraryItemRecord());
+      findUniqueBookAnalysis.mockResolvedValue({
+        attempts: 3,
+        readerFileId: 'file-derived-reader',
+        status: ProcessingStatus.FAILED,
+      });
+
+      await readerService.getReaderPayload('clerk_1', 'library-1');
+      await flush();
+
+      expect(createBookProcessingRun).not.toHaveBeenCalled();
+    });
+
+    it('still serves the payload when queueing fails, and says so', async () => {
+      const warn = jest
+        .spyOn(Logger.prototype, 'warn')
+        .mockImplementation(() => undefined);
+      findFirstLibraryItem.mockResolvedValue(createLibraryItemRecord());
+      findUniqueBookAnalysis.mockRejectedValue(new Error('database is down'));
+
+      const payload = await readerService.getReaderPayload(
+        'clerk_1',
+        'library-1',
+      );
+      await flush();
+
+      expect(payload.status).toBe('READY');
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('database is down'),
+      );
+      warn.mockRestore();
+    });
   });
 
   it('returns the chapter from the saved locator when no chapter query is provided', async () => {
@@ -1247,6 +1351,7 @@ function createLibraryItemRecord() {
       lastReadAt: new Date('2026-04-07T10:00:00.000Z'),
     },
     book: {
+      id: 'book-1',
       authors: ['Example Author'],
       title: 'Example Title',
       files: [

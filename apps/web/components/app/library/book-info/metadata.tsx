@@ -48,8 +48,15 @@ export function BookMetadata({ book }: BookMetadataProps) {
     },
     {
       id: "readingTime",
+      // Estimate from body pages so notes, references and index pages don't
+      // inflate the time. Falls back to the full count until the book has been
+      // analysed. "Pages" below deliberately keeps showing the whole book —
+      // two numbers that are each true beats one that is wrong.
       label: t("readingTime"),
-      value: fmt.formatReadingTime(minutesRead, book.approximatePageCount),
+      value: fmt.formatReadingTime(
+        minutesRead,
+        book.approximateBodyPageCount ?? book.approximatePageCount,
+      ),
     },
     {
       id: "pageCount",

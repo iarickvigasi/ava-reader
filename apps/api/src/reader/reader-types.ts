@@ -122,15 +122,23 @@ export type ReaderPackage = {
 export type ReadingProgressIndexChapter = {
   blockIds: string[];
   chapterId: string;
+  // v2+: whether this chapter's blocks count toward completion, per the
+  // chapter-purpose analysis. Absent on v1 indexes, where every block counts.
+  counted?: boolean;
   label: string;
   title: string;
 };
 
+// v2 adds the body-only fields. They are a derived cache, exactly like
+// `blockIds` — `BookAnalysis.result` stays the source of truth, so a change to
+// the counting policy is a backfill from stored purposes, never an AI re-run.
 export type ReadingProgressIndex = {
+  // v2+: total blocks across counted chapters. Absent on v1.
+  bodyBlocks?: number;
   chapters: ReadingProgressIndexChapter[];
   toc: ReaderTocNode[];
   totalBlocks: number;
-  version: 1;
+  version: 1 | 2;
 };
 
 export type ReaderLocator = {

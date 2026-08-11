@@ -59,6 +59,10 @@ enum AiCommentKind {
   EXPLAIN
 }
 
+enum BookAnalysisKind {
+  CHAPTER_PURPOSE
+}
+
 model User {
   id                         String                      @id @default(cuid())
   clerkUserId                String                      @unique
@@ -118,23 +122,29 @@ model StoredBlob {
 }
 
 model Book {
-  id                 String              @id @default(cuid())
-  title              String
-  subtitle           String?
-  authors            String[]            @default([])
-  description        String?
-  genres             String[]            @default([])
-  language           String?
-  publishedYear      Int?
-  estimatedPageCount Int?
-  coverBlobId        String?
-  coverBlob          StoredBlob?         @relation("BookCover", fields: [coverBlobId], references: [id], onDelete: SetNull)
-  files              BookFile[]
-  processingRuns     BookProcessingRun[]
-  libraryItems       LibraryItem[]
-  catalogEntry       CatalogEntry?
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
+  id                     String              @id @default(cuid())
+  title                  String
+  subtitle               String?
+  authors                String[]            @default([])
+  description            String?
+  genres                 String[]            @default([])
+  language               String?
+  publishedYear          Int?
+  estimatedPageCount     Int?
+  // Body-only page estimate, derived from the CHAPTER_PURPOSE analysis.
+  // `estimatedPageCount` stays the whole book (the honest "Pages" value);
+  // this one drives reading-time, so notes/index/references don't inflate it.
+  // Null until a book has been analysed — callers fall back to the total.
+  estimatedBodyPageCount Int?
+  coverBlobId            String?
+  coverBlob              StoredBlob?         @relation("BookCover", fields: [coverBlobId], references: [id], onDelete: SetNull)
+  files                  BookFile[]
+  processingRuns         BookProcessingRun[]
+  analyses               BookAnalysis[]
+  libraryItems           LibraryItem[]
+  catalogEntry           CatalogEntry?
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime            @updatedAt
 
   @@index([title])
 }
@@ -178,6 +188,39 @@ model BookProcessingRun {
   sourceFile   BookFile?        @relation("ProcessingSourceFile", fields: [sourceFileId], references: [id], onDelete: SetNull)
   outputFile   BookFile?        @relation("ProcessingOutputFile", fields: [outputFileId], references: [id], onDelete: SetNull)
 
+  @@index([bookId, status])
+}
+
+// AI-derived, book-scoped analysis. Book-scoped rather than per-user so a
+// catalog title read by hundreds of people is analysed (and paid for) once.
+// Future analyses are new `kind` values, not new tables.
+model BookAnalysis {
+  id             String           @id @default(cuid())
+  bookId         String
+  kind           BookAnalysisKind
+  status         ProcessingStatus @default(PENDING)
+  // Shape of `result`; bumped when the stored JSON changes shape.
+  schemaVersion  Int              @default(1)
+  // Prompt revision that produced this result, so a prompt change can be
+  // identified and selectively re-run later.
+  promptVersion  Int
+  modelId        String?
+  // The primary DERIVED_READER file this was derived from. Reprocessing a book
+  // always creates a new BookFile row, so a changed id means the chapter ids
+  // shifted and these labels are stale — without it they would silently apply
+  // to the wrong chapters.
+  readerFileId String
+  // Failed attempts against `readerFileId`, so an unparseable book stops
+  // burning credits on every open. Reset to 0 when the file changes, so a
+  // re-imported book gets a fresh set of retries.
+  attempts     Int              @default(0)
+  result         Json?
+  errorMessage   String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  book           Book             @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([bookId, kind])
   @@index([bookId, status])
 }
 

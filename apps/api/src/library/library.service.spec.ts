@@ -552,6 +552,8 @@ describe('LibraryService', () => {
     expect(payload).toEqual({
       book: {
         addedAt: '2026-04-01T10:00:00.000Z',
+        // Null until the chapter-purpose analysis runs for this book.
+        approximateBodyPageCount: null,
         approximatePageCount: 163,
         authors: ['Mary Shelley'],
         chapterLabel: 'Chapter 7',

@@ -436,6 +436,9 @@ export async function applyBookInfoPayload(
       serverUpdatedAt: prior?.serverUpdatedAt ?? nowIso,
       details: {
         addedAt: book.addedAt,
+        // Rows cached before chapter-purpose analysis existed have no body
+        // count; null makes reading time fall back to the full page count.
+        approximateBodyPageCount: book.approximateBodyPageCount ?? null,
         approximatePageCount: book.approximatePageCount,
         chapterLabel: book.chapterLabel,
         collections: book.collections,
@@ -479,6 +482,9 @@ export async function readBookInfoBySlug(
     completionPercent: row.completionPercent,
     primaryFormat: row.primaryFormat,
     addedAt: row.details.addedAt,
+    // Rows persisted before this field existed read back as undefined; null
+    // keeps reading time on the whole-book fallback rather than crashing.
+    approximateBodyPageCount: row.details.approximateBodyPageCount ?? null,
     approximatePageCount: row.details.approximatePageCount,
     chapterLabel: row.details.chapterLabel,
     collections: row.details.collections,

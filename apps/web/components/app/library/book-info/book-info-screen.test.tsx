@@ -45,6 +45,7 @@ describe("library book info metadata", () => {
       withIntl(<LibraryBookInfoScreen
         backHref="/app/library"
         book={createBookInfo({
+          approximateBodyPageCount: null,
           approximatePageCount: 163,
           minutesRead: 195,
           publishedYear: 1818,
@@ -155,6 +156,7 @@ function createBookInfo(
 ): LibraryBookInfo {
   return {
     addedAt: "2026-04-01T10:00:00.000Z",
+    approximateBodyPageCount: null,
     approximatePageCount: 163,
     authors: ["Mary Shelley"],
     chapterLabel: "Chapter 7",

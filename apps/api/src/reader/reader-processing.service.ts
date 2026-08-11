@@ -14,12 +14,11 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { checksumBuffer, toPrismaBytes } from '../shared/blob-utils';
 import { buildReaderPackageFromEpub } from './epub-reader-package';
+import { estimatePageCount } from './page-estimate';
 import { buildReadingProgressIndex } from './reader.service';
-import type { ReaderPackage } from './reader-types';
 
 const READER_PACKAGE_MIME_TYPE = 'application/vnd.ava.reader-package+json';
 const READER_PROCESSING_TRANSACTION_TIMEOUT_MS = 30_000;
-const ESTIMATED_CHARACTERS_PER_PAGE = 1_800;
 
 @Injectable()
 export class ReaderProcessingService implements OnModuleInit, OnModuleDestroy {
@@ -234,28 +233,4 @@ export class ReaderProcessingService implements OnModuleInit, OnModuleDestroy {
       },
     });
   }
-}
-
-function estimatePageCount(readerPackage: ReaderPackage) {
-  const totalCharacters = readerPackage.chapters.reduce(
-    (chapterSum, chapter) => {
-      return (
-        chapterSum +
-        chapter.blocks.reduce(
-          (blockSum, block) => blockSum + block.text.length,
-          0,
-        )
-      );
-    },
-    0,
-  );
-
-  if (totalCharacters <= 0) {
-    return null;
-  }
-
-  return Math.max(
-    1,
-    Math.round(totalCharacters / ESTIMATED_CHARACTERS_PER_PAGE),
-  );
 }
