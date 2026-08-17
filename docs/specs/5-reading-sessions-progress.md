@@ -1,8 +1,8 @@
 # Reading sessions, progress & stats
 
-> Status: shipped · Updated: 2026-06-29 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
+> Status: shipped · Updated: 2026-08-11 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
 > apps/web/features/offline/buckets/{sessions,progress}, apps/web/features/offline/stats,
-> apps/web/components/app/home/sections/mastery, apps/api/src/reader/reader.service.ts
+> apps/web/components/app/home/sections/mastery, apps/api/src/reader/{sessions,progress}
 
 ## Summary
 Tracks reading position, time read, and reading streak/goal — fully offline — and composes the stats
@@ -15,8 +15,12 @@ shown on home. Serves the "track time spent/remaining, build a habit" job.
 
 ## Behaviour
 1. Opening a book starts a session; heartbeats accrue while reading; closing stops it.
-2. Position writes update the progress bucket (locator, completion %, minutes).
-3. Home shows totals (hours, highlights, volumes) and a per-day minutes-vs-goal chart, all correct
+2. Sessions are **multi-device**: each client sends a `clientInstanceId` and is tracked as a session
+   participant. Time accrues only while at least one participant is live (none seen for 90s → marked
+   stopped), and a `stop` ends the session only once no live participant remains — so reading one
+   book on a second device neither double-counts the time nor cuts the first device off.
+3. Position writes update the progress bucket (locator, completion %, minutes).
+4. Home shows totals (hours, highlights, volumes) and a per-day minutes-vs-goal chart, all correct
    offline.
 
 ## Data & sync
@@ -64,4 +68,5 @@ Offline across multiple days; multiple devices for one book; clock changes; sess
 - [ ] Daily mastery chart reflects per-day minutes against the goal.
 
 ## Open questions
-Time-remaining estimate model; multi-device session merge semantics.
+Time-remaining estimate model; merging sessions started independently on two offline devices (the
+participant mechanism above only reconciles clients that reach the same session row).

@@ -5,11 +5,11 @@ import {
 } from '@prisma/client';
 import type { LanguageModel } from 'ai';
 import type { PrismaService } from '../../prisma/prisma.service';
+import { parseReaderPackage } from '../../reader/package/parse-reader-package';
 import {
   buildReadingProgressIndex,
-  parseReaderPackage,
   parseStoredReadingProgressIndex,
-} from '../../reader/reader.service';
+} from '../../reader/progress/reading-progress-index';
 import type { ReaderPackage } from '../../reader/reader-types';
 import {
   analyseChapterPurposes,

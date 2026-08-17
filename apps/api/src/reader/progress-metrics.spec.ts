@@ -1,8 +1,6 @@
 import type { ReadingProgressIndex } from './reader-types';
-import {
-  computeProgressMetricsFromIndex,
-  parseStoredReadingProgressIndex,
-} from './reader.service';
+import { computeProgressMetricsFromIndex } from './progress/progress-metrics';
+import { parseStoredReadingProgressIndex } from './progress/reading-progress-index';
 
 type ChapterSpec = { blocks: number; chapterId: string; counted?: boolean };
 

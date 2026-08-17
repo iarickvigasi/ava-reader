@@ -1,10 +1,8 @@
 import { BookFileFormat, BookFileKind, ProcessingStatus } from '@prisma/client';
 import { BadRequestException, Logger } from '@nestjs/common';
-import {
-  ReaderService,
-  __resetReaderPackageCacheForTesting,
-  buildReadingProgressIndex,
-} from './reader.service';
+import { __resetReaderPackageCacheForTesting } from './package/reader-package-cache';
+import { buildReadingProgressIndex } from './progress/reading-progress-index';
+import { ReaderService } from './reader.service';
 import type { ReaderPackage } from './reader-types';
 
 function getFirstCallArg<T>(fn: { mock: { calls: unknown[] } }): T {

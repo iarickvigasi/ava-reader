@@ -1,7 +1,7 @@
 # Reader (overview)
 
-> Status: shipped · Updated: 2026-06-07 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
-> apps/web/components/app/reader, apps/web/features/reader
+> Status: shipped · Updated: 2026-08-11 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
+> apps/web/components/app/reader, apps/web/features/reader, apps/api/src/reader
 
 ## Summary
 The reading surface: renders a book's chapters as paginated blocks, lets the reader navigate and
@@ -16,6 +16,7 @@ below.
 - 1.4 locators — durable position/selection anchoring (shared foundation).
 - 1.5 resume — restore the last reading position on reopen.
 - 1.6 selection-bridge — DOM selection → overlay-anchored intent.
+- 1.7 reader-payload — server payload statuses, package format/versioning, chapter window.
 
 ## Shared data model (apps/web/lib/api-types/reader.ts)
 - **ReaderStatusPayload** — book + chapter window + progress + session, the reader's input.
@@ -28,7 +29,7 @@ below.
 - **ReaderProgressPayload** {locator, completionPercent, …}.
 
 ## Scope (whole feature)
-- In: everything in the six sub-specs.
+- In: everything in the seven sub-specs.
 - Non-goals: annotation logic (see 2-highlights, 3-ai-toolbox, 4-ai-comments), content download (see
   6-offline-reading), audio narration (roadmap).
 
