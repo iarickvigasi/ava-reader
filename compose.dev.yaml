@@ -4,11 +4,8 @@ services:
       NODE_ENV: development
       CHOKIDAR_USEPOLLING: "true"
       WATCHPACK_POLLING: "true"
-    command:
-      [
-        "sh",
-        "-c",
-        "cd /app/apps/api && /app/node_modules/.pnpm/node_modules/.bin/prisma migrate deploy && /app/node_modules/.pnpm/node_modules/.bin/prisma generate && /app/node_modules/.pnpm/node_modules/.bin/nest start --watch"
-      ]
+    # dev-server.sh = migrate deploy → prisma generate → nest --watch, plus schema.prisma
+    # watching (regenerate client + restart Nest on change) — see docs/dev.md.
+    command: ["sh", "/app/apps/api/scripts/dev-server.sh"]
     volumes:
       - ./apps/api:/app/apps/api

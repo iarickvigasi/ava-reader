@@ -124,9 +124,12 @@ keeping the backend database and API inside Docker.
 
 Notes:
 
-- The split workflow uses `compose.dev.yaml`, which mounts the repo into the API
-  container and runs `pnpm --filter api start:dev` so backend code changes are
-  picked up without rebuilding the image.
+- The split workflow uses `compose.dev.yaml`, which mounts `./apps/api` into the
+  API container and runs `apps/api/scripts/dev-server.sh` (migrate deploy →
+  prisma generate → `nest start --watch`). The script also watches
+  `prisma/schema.prisma`: on change it regenerates the Prisma client in the
+  container and restarts Nest, so schema edits are picked up without restarting
+  the container (docs/dev.md).
 - Frontend changes still come from the local Next dev server, so UI edits update
   immediately.
 - You still need to restart or rebuild when you change Docker-specific things
