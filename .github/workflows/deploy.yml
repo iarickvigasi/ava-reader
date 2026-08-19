@@ -25,4 +25,11 @@ jobs:
             export GIT_SHA="$(git rev-parse HEAD)"
             docker compose pull
             docker compose up -d --build
+            # TEMPORARY (2026-08-19): one-time backfill so users who imported
+            # books before the Offline Books shelf shipped get the collection
+            # without waiting for their next import. Idempotent (find-or-create
+            # by smartKey + createMany skipDuplicates), so re-running on every
+            # deploy is harmless — but delete this step once it has run in a
+            # green deploy.
+            docker compose exec -T api pnpm --filter api db:backfill-offline-books
             docker image prune -f
