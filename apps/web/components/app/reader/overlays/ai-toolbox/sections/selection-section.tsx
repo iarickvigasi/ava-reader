@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import { CopyIcon, SpeakerIcon } from "@/components/app/shared/app-icons";
-import { useReaderSelectionContext } from "../../selection/reader-selection-context";
-import { SectionLabel } from "../section-label";
+import { useReaderSelectionContext } from "../../../selection/reader-selection-context";
+import { SectionLabel } from "../../section-label";
 
 export function SelectionSection() {
   const t = useTranslations("reader.aiToolbox");

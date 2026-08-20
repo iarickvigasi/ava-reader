@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
 import { generateAiCommentId } from "@/features/offline/buckets/ai-comments";
-import { useAiCommentsContext } from "../ai-comments/ai-comments-context";
-import { buildGenerateIntent } from "./build-generate-intent";
+import { useAiCommentsContext } from "../../ai-comments/ai-comments-context";
+import { buildGenerateIntent } from "../generate/build-generate-intent";
 import type { SavedComment } from "./saved-comments";
 import { deriveToolView } from "./tool-view-model";
-import type { AiToolPayload } from "./ai-tool-payload";
-import { useAiTool } from "./use-ai-tool";
+import type { AiToolPayload } from "../generate/ai-tool-payload";
+import { useAiTool } from "../generate/use-ai-tool";
 
 type UseAiToolBindingInput = {
   libraryItemId: string;

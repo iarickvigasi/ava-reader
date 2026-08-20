@@ -6,15 +6,15 @@ import {
 } from "@/components/app/preferences/use-translate-target-lang";
 import { SparkIcon } from "@/components/app/shared/app-icons";
 import type { ReaderBookPayload, ReaderChapterPayload } from "@/lib/api-types";
-import { useReaderSelectionContext } from "../../selection/reader-selection-context";
-import { useAiCommentsContext } from "../ai-comments/ai-comments-context";
-import { EtymologyIcon, LightbulbIcon } from "./ai-toolbox-icons";
-import { AiToolItem } from "./ai-tool-item";
-import { selectSavedComments } from "./saved-comments";
-import { ToolSection } from "./tool-section";
-import { TranslateToolItem } from "./translate-tool-item";
+import { useReaderSelectionContext } from "../../../selection/reader-selection-context";
+import { useAiCommentsContext } from "../../ai-comments/ai-comments-context";
+import { EtymologyIcon, LightbulbIcon } from "../ai-toolbox-icons";
+import { AiToolItem } from "../tool-item/ai-tool-item";
+import { selectSavedComments } from "../tool-item/saved-comments";
+import { ToolSection } from "../tool-item/tool-section";
+import { TranslateToolItem } from "../tool-item/translate-tool-item";
 import { useToolAccordion } from "./use-tool-accordion";
-import { useToolRequestFields } from "./use-tool-request-fields";
+import { useToolRequestFields } from "../generate/use-tool-request-fields";
 
 type AiToolsSectionProps = {
   libraryItemId: string;

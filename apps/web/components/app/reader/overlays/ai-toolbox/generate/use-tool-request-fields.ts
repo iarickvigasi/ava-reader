@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { extractSelectionContext } from "@/features/reader/selection-context";
 import type { ReaderBookPayload, ReaderChapterPayload } from "@/lib/api-types";
-import { useReaderSelectionContext } from "../../selection/reader-selection-context";
+import { useReaderSelectionContext } from "../../../selection/reader-selection-context";
 
 // The server's Zod schemas reject (not truncate) oversized metadata, so cap
 // pathological titles/author lists client-side. Mirrors META_MAX_LENGTH in

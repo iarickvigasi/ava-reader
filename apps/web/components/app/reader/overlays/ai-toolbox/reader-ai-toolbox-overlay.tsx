@@ -3,9 +3,9 @@ import type { ReaderBookPayload, ReaderChapterPayload } from "@/lib/api-types";
 import { MobileCloseButton } from "../mobile-close-button";
 import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
-import { AiToolsSection } from "./ai-tools-section";
-import { HighlightSection } from "./highlight-section";
-import { SelectionSection } from "./selection-section";
+import { AiToolsSection } from "./sections/ai-tools-section";
+import { HighlightSection } from "./sections/highlight-section";
+import { SelectionSection } from "./sections/selection-section";
 
 type ReaderAiToolboxOverlayProps = {
   libraryItemId: string;

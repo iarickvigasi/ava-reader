@@ -6,7 +6,7 @@ import {
 import type { SavedComment } from "./saved-comments";
 import { ToolResultView } from "./tool-result-view";
 import { ToolSection } from "./tool-section";
-import type { AiToolPayload } from "./ai-tool-payload";
+import type { AiToolPayload } from "../generate/ai-tool-payload";
 import { useAiToolBinding } from "./use-ai-tool-binding";
 
 type TranslateToolItemProps = {

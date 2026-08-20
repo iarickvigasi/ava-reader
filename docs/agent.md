@@ -24,7 +24,7 @@ product.md, dev.md, and the relevant docs/specs/*.md. For consequential decision
   documented in dev.md plus comments in the tool itself — never in docs/specs.
 - Offline-first is non-negotiable: user data flows through a bucket, not a raw fetch.
 - Next.js 16 here differs from training data — see apps/web/AGENTS.md before touching the web app.
-- Respect the size limits in conventions.md (docs ≤60, specs ≤60, code files ≤100). Edit the right
+- Respect the size limits in conventions.md (docs ≤60, specs ≤130, code files ≤100). Edit the right
   file instead of duplicating.
 - Clean code: one function/component per file; split large components; logic in hooks + pure
   functions. Refactor toward the limits, never add to a violation.

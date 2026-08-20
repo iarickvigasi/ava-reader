@@ -1,6 +1,6 @@
 # Architecture — source of truth for HOW
 
-See product.md for what & why; conventions.md for idioms; adr/ for hard decisions. Keep ≤100 lines.
+See product.md for what & why; conventions.md for idioms; adr/ for hard decisions. Keep ≤150 lines.
 
 ## Principles
 - **Offline-first.** Every user action works offline and reconciles later. User data flows through a

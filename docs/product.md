@@ -1,6 +1,6 @@
 # Product — source of truth for WHAT & WHY
 
-See architecture.md for how; specs/ for per-feature behaviour. Keep ≤100 lines.
+See architecture.md for how; specs/ for per-feature behaviour. Keep ≤150 lines.
 
 ## Thesis
 AVA Reader (avareader.space) is a cross-platform reading app built around an integrated AI assistant

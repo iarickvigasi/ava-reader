@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { SavedComment, ToolKey } from "./saved-comments";
+import type { SavedComment, ToolKey } from "../tool-item/saved-comments";
 
 // Multi-open accordion: each tool has its own open/closed state. Opening one
 // does NOT collapse the others. On first sight of a selection we auto-expand
