@@ -34,10 +34,10 @@ export function CollectionSection({ collection }: CollectionSectionProps) {
             </p>
           ) : null}
         </div>
-        <div className="text-right">
+        <div className="shrink-0 text-right">
           <Link
             href={getCollectionHref(collection.slug)}
-            className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-brand-fill"
+            className="whitespace-nowrap text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-brand-fill"
           >
             {t("viewAll")}
           </Link>
