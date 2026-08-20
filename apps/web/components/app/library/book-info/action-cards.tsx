@@ -2,16 +2,14 @@
 
 import { useTranslations } from "next-intl";
 
-import {
-  CheckIcon,
-  ReaderLibraryIcon,
-  TrashIcon,
-} from "@/components/app/shared/app-icons";
 import type { LibraryBookInfo } from "@/lib/api-types";
 
 import { ActionCard } from "./action-card";
+import { CheckBoldIcon } from "./check-bold-icon";
 import { DownloadOfflineCard } from "./download-offline-card";
 import { useBookInfoFormatters } from "./formatters";
+import { LibraryBoldIcon } from "./library-bold-icon";
+import { TrashBoldIcon } from "./trash-bold-icon";
 
 type BookActionCardsProps = {
   collections: LibraryBookInfo["collections"];
@@ -33,18 +31,18 @@ export function BookActionCards({
       <DownloadOfflineCard libraryItemId={libraryItemId} />
       <ActionCard
         description={t("markAsFinished.description")}
-        icon={CheckIcon}
+        icon={CheckBoldIcon}
         title={t("markAsFinished.title")}
       />
       <ActionCard
         description={fmt.formatCollectionLabel(collections.length)}
-        icon={ReaderLibraryIcon}
+        icon={LibraryBoldIcon}
         title={t("manageCollections.title")}
       />
       <ActionCard
         danger
         description={t("deleteBook.description")}
-        icon={TrashIcon}
+        icon={TrashBoldIcon}
         title={t("deleteBook.title")}
       />
     </aside>

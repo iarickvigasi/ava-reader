@@ -26,9 +26,9 @@ export function ActionCard({
       disabled={disabled}
       className="w-full rounded-control bg-paper-strong/80 px-4 py-3 text-left transition hover:bg-paper-strong disabled:cursor-default disabled:hover:bg-paper-strong/80"
     >
-      <span className="flex items-start gap-3">
+      <span className="flex items-center gap-3">
         <span
-          className={danger ? "pt-1 text-danger" : "pt-1 text-brand-fill"}
+          className={danger ? "flex text-danger" : "flex text-brand-fill"}
           aria-hidden
         >
           <Icon className="size-4.5" />
