@@ -80,14 +80,10 @@ export class AiCommentsService {
     clerkUserId: string,
     libraryItemId: string,
   ): Promise<AiCommentListItem[]> {
-    const user = await this.users.getCurrentUserRecord(clerkUserId);
-    const libraryItem = await this.prisma.libraryItem.findFirst({
-      where: { id: libraryItemId, userId: user.id },
-      select: { id: true },
-    });
-    if (!libraryItem) {
-      throw new NotFoundException('Library item not found.');
-    }
+    const { user, libraryItem } = await this.requireOwnedLibraryItem(
+      clerkUserId,
+      libraryItemId,
+    );
 
     const rows = await this.prisma.aiComment.findMany({
       where: { userId: user.id, libraryItemId: libraryItem.id },
@@ -114,14 +110,10 @@ export class AiCommentsService {
     libraryItemId: string;
     id: string;
   }): Promise<void> {
-    const user = await this.users.getCurrentUserRecord(input.clerkUserId);
-    const libraryItem = await this.prisma.libraryItem.findFirst({
-      where: { id: input.libraryItemId, userId: user.id },
-      select: { id: true },
-    });
-    if (!libraryItem) {
-      throw new NotFoundException('Library item not found.');
-    }
+    const { user, libraryItem } = await this.requireOwnedLibraryItem(
+      input.clerkUserId,
+      input.libraryItemId,
+    );
 
     // deleteMany silently no-ops when the row is missing or owned by another
     // user — matches the annotations contract so a replayed delete from a
@@ -136,14 +128,10 @@ export class AiCommentsService {
   }
 
   async generate(input: GenerateInput): Promise<AiToolGenerationResult> {
-    const user = await this.users.getCurrentUserRecord(input.clerkUserId);
-    const libraryItem = await this.prisma.libraryItem.findFirst({
-      where: { id: input.libraryItemId, userId: user.id },
-      select: { id: true },
-    });
-    if (!libraryItem) {
-      throw new NotFoundException('Library item not found.');
-    }
+    const { user, libraryItem } = await this.requireOwnedLibraryItem(
+      input.clerkUserId,
+      input.libraryItemId,
+    );
 
     const normalizedText = normalizeSelectionText(input.text);
     if (normalizedText.length === 0) {
@@ -158,10 +146,13 @@ export class AiCommentsService {
       text: normalizedText,
       targetLang: input.targetLang ?? null,
       model: modelId,
+      context: input.context ?? null,
+      bookTitle: input.bookTitle ?? null,
+      author: input.author ?? null,
     });
 
-    // Per-user cache: identical selection + tool + targetLang + model means
-    // we can skip the model call entirely.
+    // Per-user cache: identical selection + tool + targetLang + model +
+    // selection context means we can skip the model call entirely.
     const cached = await this.prisma.aiComment.findUnique({
       where: { userId_sourceHash: { userId: user.id, sourceHash } },
     });
@@ -190,47 +181,87 @@ export class AiCommentsService {
       schema: widenedSchema,
       system: promptParts.system,
       prompt: promptParts.prompt,
-      // Persist the final field text after the model finishes streaming.
-      // Failures here must not crash the response (the user has already seen
-      // the text), so we log and swallow.
-      onFinish: async (event) => {
-        const finalObject = event.object;
-        const body =
-          typeof finalObject?.[fieldKey] === 'string'
-            ? finalObject[fieldKey].trim()
-            : '';
-        if (!body) {
-          return;
-        }
-        try {
-          await this.prisma.aiComment.upsert({
-            where: { userId_sourceHash: { userId: user.id, sourceHash } },
-            create: {
-              userId: user.id,
-              libraryItemId: libraryItem.id,
-              kind: input.kind,
-              sourceText: normalizedText,
-              sourceHash,
-              targetLang: input.targetLang ?? null,
-              model: modelId,
-              body,
-              locator: input.locator ?? null,
-            },
-            update: {
-              body,
-              locator: input.locator ?? null,
-            },
-          });
-        } catch (error: unknown) {
-          this.logger.error(
-            `Failed to persist generated body (kind=${input.kind})`,
-            error instanceof Error ? error.stack : String(error),
-          );
-        }
-      },
+      onFinish: (event) =>
+        this.persistGeneratedComment({
+          finalObject: event.object,
+          fieldKey,
+          input,
+          userId: user.id,
+          libraryItemId: libraryItem.id,
+          normalizedText,
+          sourceHash,
+          modelId,
+        }),
     });
 
     return { kind: 'stream', result, fieldKey, modelId };
+  }
+
+  // Resolves the caller's user record and asserts the library item belongs
+  // to them. Every public method starts here.
+  private async requireOwnedLibraryItem(
+    clerkUserId: string,
+    libraryItemId: string,
+  ) {
+    const user = await this.users.getCurrentUserRecord(clerkUserId);
+    const libraryItem = await this.prisma.libraryItem.findFirst({
+      where: { id: libraryItemId, userId: user.id },
+      select: { id: true },
+    });
+    if (!libraryItem) {
+      throw new NotFoundException('Library item not found.');
+    }
+    return { user, libraryItem };
+  }
+
+  // Persists the final field text after the model finishes streaming.
+  // Failures here must not crash the response (the user has already seen the
+  // text), so we log and swallow.
+  private async persistGeneratedComment(args: {
+    finalObject: Record<string, unknown> | undefined;
+    fieldKey: AiToolOutputField;
+    input: GenerateInput;
+    userId: string;
+    libraryItemId: string;
+    normalizedText: string;
+    sourceHash: string;
+    modelId: string;
+  }): Promise<void> {
+    const value = args.finalObject?.[args.fieldKey];
+    const body = typeof value === 'string' ? value.trim() : '';
+    if (!body) {
+      return;
+    }
+    try {
+      await this.prisma.aiComment.upsert({
+        where: {
+          userId_sourceHash: {
+            userId: args.userId,
+            sourceHash: args.sourceHash,
+          },
+        },
+        create: {
+          userId: args.userId,
+          libraryItemId: args.libraryItemId,
+          kind: args.input.kind,
+          sourceText: args.normalizedText,
+          sourceHash: args.sourceHash,
+          targetLang: args.input.targetLang ?? null,
+          model: args.modelId,
+          body,
+          locator: args.input.locator ?? null,
+        },
+        update: {
+          body,
+          locator: args.input.locator ?? null,
+        },
+      });
+    } catch (error: unknown) {
+      this.logger.error(
+        `Failed to persist generated body (kind=${args.input.kind})`,
+        error instanceof Error ? error.stack : String(error),
+      );
+    }
   }
 
   private buildPrompt(
@@ -253,9 +284,17 @@ export class AiCommentsService {
         return buildTranslatePrompt({
           text: input.text,
           targetLang: input.targetLang,
+          context: input.context,
+          bookTitle: input.bookTitle,
+          author: input.author,
         });
       case AiCommentKind.ETYMOLOGY:
-        return buildEtymologyPrompt({ text: input.text });
+        return buildEtymologyPrompt({
+          text: input.text,
+          context: input.context,
+          bookTitle: input.bookTitle,
+          author: input.author,
+        });
       case AiCommentKind.EXPLAIN:
         return buildExplainPrompt({
           text: input.text,

@@ -12,9 +12,15 @@ const META_MAX_LENGTH = 200;
 // side. 2 KB is a generous ceiling — typical payloads are 200–400 bytes.
 const LOCATOR_MAX_LENGTH = 2048;
 
+// Selection context (spec 3): the sentences around the selection plus book
+// metadata. Accepted by all three tools — prompts use it for disambiguation
+// and the source hash folds it in so cached answers stay location-specific.
 const baseSchema = z.object({
   text: z.string().min(1).max(SELECTION_MAX_LENGTH),
   locator: z.string().max(LOCATOR_MAX_LENGTH).optional(),
+  context: z.string().max(CONTEXT_MAX_LENGTH).optional(),
+  bookTitle: z.string().max(META_MAX_LENGTH).optional(),
+  author: z.string().max(META_MAX_LENGTH).optional(),
 });
 
 export const translateSchema = baseSchema.extend({
@@ -26,11 +32,7 @@ export const translateSchema = baseSchema.extend({
 
 export const etymologySchema = baseSchema;
 
-export const explainSchema = baseSchema.extend({
-  context: z.string().max(CONTEXT_MAX_LENGTH).optional(),
-  bookTitle: z.string().max(META_MAX_LENGTH).optional(),
-  author: z.string().max(META_MAX_LENGTH).optional(),
-});
+export const explainSchema = baseSchema;
 
 export type TranslateRequest = z.infer<typeof translateSchema>;
 export type EtymologyRequest = z.infer<typeof etymologySchema>;

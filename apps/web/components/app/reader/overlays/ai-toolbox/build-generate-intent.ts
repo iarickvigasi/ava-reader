@@ -1,6 +1,6 @@
 import type { PendingMutation } from "@/features/offline/buckets/ai-comments";
 import type { ReaderRangeLocator } from "@/lib/api-types";
-import type { AiToolPayload } from "./use-ai-tool";
+import type { AiToolPayload } from "./ai-tool-payload";
 
 // The bucket's generate-mutation envelope (the three streaming kinds).
 type GenerateIntent = Extract<
@@ -28,6 +28,12 @@ export function buildGenerateIntent(
   queuedAt: string,
 ): GenerateIntent {
   const locator = parseLocator(payload.locator);
+  const contextFields = {
+    context: payload.context,
+    bookTitle: payload.bookTitle,
+    author: payload.author,
+    locator: payload.locator,
+  };
   if (payload.kind === "translate") {
     return {
       kind: "generate.translate",
@@ -35,7 +41,7 @@ export function buildGenerateIntent(
       payload: {
         text: payload.text,
         targetLang: payload.targetLang,
-        locator: payload.locator,
+        ...contextFields,
       },
       locator,
       queuedAt,
@@ -45,7 +51,7 @@ export function buildGenerateIntent(
     return {
       kind: "generate.etymology",
       id,
-      payload: { text: payload.text, locator: payload.locator },
+      payload: { text: payload.text, ...contextFields },
       locator,
       queuedAt,
     };
@@ -53,13 +59,7 @@ export function buildGenerateIntent(
   return {
     kind: "generate.explain",
     id,
-    payload: {
-      text: payload.text,
-      context: payload.context,
-      bookTitle: payload.bookTitle,
-      author: payload.author,
-      locator: payload.locator,
-    },
+    payload: { text: payload.text, ...contextFields },
     locator,
     queuedAt,
   };

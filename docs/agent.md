@@ -28,6 +28,13 @@ product.md, dev.md, and the relevant docs/specs/*.md. For consequential decision
   file instead of duplicating.
 - Clean code: one function/component per file; split large components; logic in hooks + pure
   functions. Refactor toward the limits, never add to a violation.
+- Code reads as a sequence of named steps. A function that does several things is a short list of
+  calls to small, intent-named helpers (find → clamp → pick → compose), each doing one thing; the
+  helpers live below it in the same file, or in a use-*.ts hook / sibling module when they are a
+  separate concern. A ~50-line function mixing lookup, math, and formatting is a smell — extract
+  until the top level reads like text. Components stay layout-only: derivations move to hooks,
+  branching to pure functions. Duplicated blocks (e.g. the same ownership check in three service
+  methods) become one shared helper.
 - Relocating a file (splitting a folder, renaming) → `git mv` it, then edit the moved file in
   place. Never `rm`/delete the old path and `Write` a fresh file at the new one — that severs git's
   rename tracking and history. A 1-to-many split (one file's logic spread across several new ones)

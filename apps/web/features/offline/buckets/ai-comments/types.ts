@@ -44,21 +44,23 @@ export type ServerAiComment = {
 // Discriminated payloads matching the three streaming POST endpoints.
 // Carry everything the sync runner needs to replay the call without
 // holding onto a Locator object (which the API expects as a JSON string).
-export type GenerateTranslatePayload = {
-  text: string;
-  targetLang: string;
-  locator?: string;
-};
-export type GenerateEtymologyPayload = {
-  text: string;
-  locator?: string;
-};
-export type GenerateExplainPayload = {
-  text: string;
+// The selection-context fields (spec 3) are captured at enqueue time so a
+// replayed request sends exactly what a live one would have.
+type GenerateContextFields = {
   context?: string;
   bookTitle?: string;
   author?: string;
   locator?: string;
+};
+export type GenerateTranslatePayload = GenerateContextFields & {
+  text: string;
+  targetLang: string;
+};
+export type GenerateEtymologyPayload = GenerateContextFields & {
+  text: string;
+};
+export type GenerateExplainPayload = GenerateContextFields & {
+  text: string;
 };
 
 export type PendingMutation =

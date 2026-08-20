@@ -270,6 +270,8 @@ export function ReadyReader({
       {isAiToolboxOpen ? (
         <ReaderAiToolboxOverlay
           libraryItemId={libraryItemId}
+          book={payload.book}
+          chapters={payload.chapters}
           onClose={closePanel}
         />
       ) : null}

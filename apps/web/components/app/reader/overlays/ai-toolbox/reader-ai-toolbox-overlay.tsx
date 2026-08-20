@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import type { ReaderBookPayload, ReaderChapterPayload } from "@/lib/api-types";
 import { MobileCloseButton } from "../mobile-close-button";
 import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
@@ -8,11 +9,15 @@ import { SelectionSection } from "./selection-section";
 
 type ReaderAiToolboxOverlayProps = {
   libraryItemId: string;
+  book: ReaderBookPayload;
+  chapters: ReaderChapterPayload[];
   onClose: () => void;
 };
 
 export function ReaderAiToolboxOverlay({
   libraryItemId,
+  book,
+  chapters,
   onClose,
 }: ReaderAiToolboxOverlayProps) {
   useCloseOnEscape(onClose);
@@ -26,7 +31,11 @@ export function ReaderAiToolboxOverlay({
           <div className="relative z-10 flex h-full flex-col md:pt-24">
             <div className="pointer-events-auto flex min-h-0 flex-1 flex-col px-6 py-8 sm:px-8 md:animate-[reader-contents-enter_320ms_cubic-bezier(0.22,1,0.36,1)_140ms_both] md:px-8 md:py-0">
               <AiToolboxHeader onClose={onClose} />
-              <AiToolboxSections libraryItemId={libraryItemId} />
+              <AiToolboxSections
+                libraryItemId={libraryItemId}
+                book={book}
+                chapters={chapters}
+              />
             </div>
           </div>
         </div>
@@ -64,12 +73,24 @@ function AiToolboxHeader({ onClose }: { onClose: () => void }) {
   );
 }
 
-function AiToolboxSections({ libraryItemId }: { libraryItemId: string }) {
+function AiToolboxSections({
+  libraryItemId,
+  book,
+  chapters,
+}: {
+  libraryItemId: string;
+  book: ReaderBookPayload;
+  chapters: ReaderChapterPayload[];
+}) {
   return (
     <div className="mt-8 flex min-h-0 flex-1 flex-col gap-6 overflow-auto pb-8 pr-1">
       <SelectionSection />
       <HighlightSection />
-      <AiToolsSection libraryItemId={libraryItemId} />
+      <AiToolsSection
+        libraryItemId={libraryItemId}
+        book={book}
+        chapters={chapters}
+      />
     </div>
   );
 }

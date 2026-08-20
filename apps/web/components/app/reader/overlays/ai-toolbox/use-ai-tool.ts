@@ -2,24 +2,7 @@ import { useAuth } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getPublicApiBaseUrl } from "@/lib/api";
-
-// The three tools mounted in the AI Comments panel. Mirrors the
-// AiCommentKind enum in the API.
-export type AiToolKind = "translate" | "etymology" | "explain";
-
-// Payload shape per tool. `text` is always required; the rest depend on the
-// tool. Validation lives on the server.
-export type AiToolPayload =
-  | { kind: "translate"; text: string; targetLang: string; locator?: string }
-  | { kind: "etymology"; text: string; locator?: string }
-  | {
-      kind: "explain";
-      text: string;
-      context?: string;
-      bookTitle?: string;
-      author?: string;
-      locator?: string;
-    };
+import type { AiToolPayload } from "./ai-tool-payload";
 
 type State = {
   text: string;
@@ -87,66 +70,31 @@ export function useAiTool({ libraryItemId }: UseAiToolInput): UseAiToolResult {
           throw new Error(t("noToken"));
         }
 
-        const url = `${getPublicApiBaseUrl()}/api/library/${encodeURIComponent(
+        const response = await postToolRequest(
           libraryItemId,
-        )}/ai-comments/${payload.kind}`;
-
-        // Send the whole payload — the server's Zod schemas strip the
-        // extra `kind` discriminator silently.
-        const response = await fetch(url, {
-          method: "POST",
-          signal: controller.signal,
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            Accept: "text/plain",
-          },
-          body: JSON.stringify(payload),
-        });
-
+          payload,
+          token,
+          controller.signal,
+        );
         if (!response.ok) {
           const detail = await response.text().catch(() => "");
           throw new Error(
             detail || t("requestFailed", { status: response.status }),
           );
         }
-
         if (!response.body) {
           throw new Error(t("emptyStream"));
         }
 
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let accumulated = "";
-
-        // Read until the server closes the stream. Each iteration we decode
-        // the incoming bytes and append to the running text — the panel
-        // re-renders on every chunk, giving the typewriter effect.
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) {
-            // Flush any trailing bytes left in the decoder.
-            accumulated += decoder.decode();
-            break;
-          }
-          accumulated += decoder.decode(value, { stream: true });
-          // Bail out early if a newer call has aborted us between reads.
-          if (controller.signal.aborted) {
-            return;
-          }
-          setState({
-            text: accumulated,
-            isStreaming: true,
-            error: null,
-          });
-        }
-
-        if (!controller.signal.aborted) {
-          setState({
-            text: accumulated,
-            isStreaming: false,
-            error: null,
-          });
+        const text = await readTextStream(
+          response.body,
+          controller.signal,
+          (accumulated) =>
+            setState({ text: accumulated, isStreaming: true, error: null }),
+        );
+        // null means a newer call aborted us mid-stream — its own state wins.
+        if (text !== null) {
+          setState({ text, isStreaming: false, error: null });
         }
       };
 
@@ -154,8 +102,7 @@ export function useAiTool({ libraryItemId }: UseAiToolInput): UseAiToolResult {
         if (controller.signal.aborted) {
           return;
         }
-        const message =
-          error instanceof Error ? error.message : t("generic");
+        const message = error instanceof Error ? error.message : t("generic");
         setState((current) => ({
           ...current,
           isStreaming: false,
@@ -181,4 +128,55 @@ export function useAiTool({ libraryItemId }: UseAiToolInput): UseAiToolResult {
     abort,
     reset,
   };
+}
+
+// POSTs the whole payload to the tool's streaming endpoint — the server's
+// Zod schemas strip the extra `kind` discriminator silently.
+function postToolRequest(
+  libraryItemId: string,
+  payload: AiToolPayload,
+  token: string,
+  signal: AbortSignal,
+): Promise<Response> {
+  const url = `${getPublicApiBaseUrl()}/api/library/${encodeURIComponent(
+    libraryItemId,
+  )}/ai-comments/${payload.kind}`;
+  return fetch(url, {
+    method: "POST",
+    signal,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      Accept: "text/plain",
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
+// Reads the response stream to completion, reporting the accumulated text
+// after every chunk — the panel re-renders on each call, giving the
+// typewriter effect. Returns the full text, or null when `signal` aborted
+// between reads (the aborting caller owns the state from then on).
+async function readTextStream(
+  body: ReadableStream<Uint8Array>,
+  signal: AbortSignal,
+  onProgress: (accumulated: string) => void,
+): Promise<string | null> {
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
+  let accumulated = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) {
+      // Flush any trailing bytes left in the decoder.
+      accumulated += decoder.decode();
+      return signal.aborted ? null : accumulated;
+    }
+    accumulated += decoder.decode(value, { stream: true });
+    if (signal.aborted) {
+      return null;
+    }
+    onProgress(accumulated);
+  }
 }

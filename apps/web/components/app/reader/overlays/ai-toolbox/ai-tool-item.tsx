@@ -2,7 +2,7 @@ import { type ReactNode, useMemo } from "react";
 import type { SavedComment } from "./saved-comments";
 import { ToolResultView } from "./tool-result-view";
 import { ToolSection } from "./tool-section";
-import type { AiToolPayload } from "./use-ai-tool";
+import type { AiToolPayload } from "./ai-tool-payload";
 import { useAiToolBinding } from "./use-ai-tool-binding";
 
 // The simple-shape tools (etymology, explain) — single-string payload, plain
@@ -19,6 +19,9 @@ type AiToolItemProps = {
   libraryItemId: string;
   selection: string;
   locator: string | undefined;
+  context: string | undefined;
+  bookTitle: string | undefined;
+  author: string | undefined;
   saved?: SavedComment;
 };
 
@@ -31,11 +34,17 @@ export function AiToolItem({
   libraryItemId,
   selection,
   locator,
+  context,
+  bookTitle,
+  author,
   saved,
 }: AiToolItemProps) {
   const payload = useMemo<AiToolPayload | null>(
-    () => (selection ? { kind, text: selection, locator } : null),
-    [kind, selection, locator],
+    () =>
+      selection
+        ? { kind, text: selection, locator, context, bookTitle, author }
+        : null,
+    [kind, selection, locator, context, bookTitle, author],
   );
   const { text, isStreaming, error, phase, failureReason, retry } =
     useAiToolBinding({

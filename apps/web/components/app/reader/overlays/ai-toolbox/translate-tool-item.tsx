@@ -6,7 +6,7 @@ import {
 import type { SavedComment } from "./saved-comments";
 import { ToolResultView } from "./tool-result-view";
 import { ToolSection } from "./tool-section";
-import type { AiToolPayload } from "./use-ai-tool";
+import type { AiToolPayload } from "./ai-tool-payload";
 import { useAiToolBinding } from "./use-ai-tool-binding";
 
 type TranslateToolItemProps = {
@@ -17,6 +17,9 @@ type TranslateToolItemProps = {
   libraryItemId: string;
   selection: string;
   locator: string | undefined;
+  context: string | undefined;
+  bookTitle: string | undefined;
+  author: string | undefined;
   saved?: SavedComment;
 };
 
@@ -28,6 +31,9 @@ export function TranslateToolItem({
   libraryItemId,
   selection,
   locator,
+  context,
+  bookTitle,
+  author,
   saved,
 }: TranslateToolItemProps) {
   const payload = useMemo<AiToolPayload | null>(
@@ -38,9 +44,12 @@ export function TranslateToolItem({
             text: selection,
             targetLang: language,
             locator,
+            context,
+            bookTitle,
+            author,
           }
         : null,
-    [selection, language, locator],
+    [selection, language, locator, context, bookTitle, author],
   );
   const { text, isStreaming, error, phase, failureReason, retry } =
     useAiToolBinding({

@@ -88,4 +88,49 @@ describe('buildSourceHash', () => {
     });
     expect(a).toBe(b);
   });
+
+  it('changes when the selection context changes', () => {
+    const base = { kind: 'EXPLAIN', text: 'hello', model: 'm' };
+    const a = buildSourceHash({ ...base, context: 'He waved. Hello there.' });
+    const b = buildSourceHash({ ...base, context: 'She left. Hello again.' });
+    expect(a).not.toBe(b);
+  });
+
+  it('changes when the book title changes', () => {
+    const base = { kind: 'EXPLAIN', text: 'hello', model: 'm' };
+    const a = buildSourceHash({ ...base, bookTitle: 'Book A' });
+    const b = buildSourceHash({ ...base, bookTitle: 'Book B' });
+    expect(a).not.toBe(b);
+  });
+
+  it('changes when the author changes', () => {
+    const base = {
+      kind: 'TRANSLATE',
+      text: 'hello',
+      targetLang: 'fr',
+      model: 'm',
+    };
+    const a = buildSourceHash({ ...base, author: 'Author A' });
+    const b = buildSourceHash({ ...base, author: 'Author B' });
+    expect(a).not.toBe(b);
+  });
+
+  it('treats missing context fields the same as empty strings', () => {
+    const base = { kind: 'EXPLAIN', text: 'hello', model: 'm' };
+    const a = buildSourceHash({
+      ...base,
+      context: '',
+      bookTitle: '',
+      author: '',
+    });
+    const b = buildSourceHash(base);
+    expect(a).toBe(b);
+  });
+
+  it('normalizes context whitespace before hashing', () => {
+    const base = { kind: 'EXPLAIN', text: 'hello', model: 'm' };
+    const a = buildSourceHash({ ...base, context: 'He  waved.\nHello there.' });
+    const b = buildSourceHash({ ...base, context: 'He waved. Hello there.' });
+    expect(a).toBe(b);
+  });
 });

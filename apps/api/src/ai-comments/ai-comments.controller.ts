@@ -57,6 +57,9 @@ export class AiCommentsController {
       text: parsed.text,
       locator: parsed.locator,
       targetLang: parsed.targetLang,
+      context: parsed.context,
+      bookTitle: parsed.bookTitle,
+      author: parsed.author,
     });
     await sendStreamingResponse(response, result);
   }
@@ -76,6 +79,9 @@ export class AiCommentsController {
       kind: AiCommentKind.ETYMOLOGY,
       text: parsed.text,
       locator: parsed.locator,
+      context: parsed.context,
+      bookTitle: parsed.bookTitle,
+      author: parsed.author,
     });
     await sendStreamingResponse(response, result);
   }

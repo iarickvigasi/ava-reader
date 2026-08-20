@@ -1,7 +1,16 @@
+import {
+  buildContextSections,
+  type PromptContextInput,
+} from './context-sections';
+
 // Etymology prompt — short, prose-only origin sketch for the selected word.
 // Output is constrained to `{ etymology: string }` by the schema in
 // `output-schemas.ts`, so this prompt only describes the field contents.
-export function buildEtymologyPrompt(input: { text: string }) {
+// Optional selection context helps pick the right word sense before tracing
+// its origin.
+export function buildEtymologyPrompt(
+  input: PromptContextInput & { text: string },
+) {
   const system = [
     'You write concise etymological notes for a reading app.',
     'Given a word or short phrase, briefly trace its origin: ' +
@@ -13,7 +22,13 @@ export function buildEtymologyPrompt(input: { text: string }) {
     'Put plain prose in the `etymology` field. No headings, no bullet points, no lists, no markdown formatting.',
   ].join(' ');
 
-  const prompt = ['Word or phrase:', '"""', input.text, '"""'].join('\n');
+  const sections = [
+    ...buildContextSections(
+      input,
+      'use them only to pick the right sense of the word',
+    ),
+    `Word or phrase:\n"""\n${input.text}\n"""`,
+  ];
 
-  return { system, prompt };
+  return { system, prompt: sections.join('\n\n') };
 }
