@@ -261,7 +261,9 @@
       "selection": "Seleção",
       "highlight": "Destaque",
       "selectionReadAloud": "Ler a seleção em voz alta",
-      "selectionCopy": "Copiar a seleção"
+      "selectionCopy": "Copiar a seleção",
+      "selectionCopied": "Copiado",
+      "selectionCopyFailed": "Não foi possível copiar para a área de transferência"
     },
     "aiChats": {
       "title": "Chats com IA",

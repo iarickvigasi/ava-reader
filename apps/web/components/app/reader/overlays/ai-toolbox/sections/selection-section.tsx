@@ -1,11 +1,17 @@
 import { useTranslations } from "next-intl";
-import { CopyIcon, SpeakerIcon } from "@/components/app/shared/app-icons";
+import {
+  CheckIcon,
+  CopyIcon,
+  SpeakerIcon,
+} from "@/components/app/shared/app-icons";
 import { useReaderSelectionContext } from "../../../selection/reader-selection-context";
 import { SectionLabel } from "../../section-label";
+import { useCopySelection } from "./use-copy-selection";
 
 export function SelectionSection() {
   const t = useTranslations("reader.aiToolbox");
   const { text } = useReaderSelectionContext();
+  const { isCopied, copySelection } = useCopySelection();
   const displayText = text ?? "";
   return (
     <section className="flex flex-col gap-3">
@@ -23,11 +29,20 @@ export function SelectionSection() {
         </p>
         <button
           type="button"
-          aria-label={t("selectionCopy")}
+          aria-label={isCopied ? t("selectionCopied") : t("selectionCopy")}
+          onClick={copySelection}
           className="inline-flex size-7 shrink-0 items-center justify-center rounded-full text-ink/55 transition hover:bg-paper-strong/70 hover:text-ink"
         >
-          <CopyIcon className="size-4" />
+          {isCopied ? (
+            <CheckIcon className="size-4" />
+          ) : (
+            <CopyIcon className="size-4" />
+          )}
         </button>
+        {/* Polite live region so the visual icon swap is also announced. */}
+        <span role="status" className="sr-only">
+          {isCopied ? t("selectionCopied") : ""}
+        </span>
       </div>
     </section>
   );

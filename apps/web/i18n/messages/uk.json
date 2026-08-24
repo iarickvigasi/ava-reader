@@ -261,7 +261,9 @@
       "selection": "Виділення",
       "highlight": "Підсвітити",
       "selectionReadAloud": "Прочитати виділення вголос",
-      "selectionCopy": "Скопіювати виділення"
+      "selectionCopy": "Скопіювати виділення",
+      "selectionCopied": "Скопійовано",
+      "selectionCopyFailed": "Не вдалося скопіювати в буфер обміну"
     },
     "aiChats": {
       "title": "Чати з ШІ",

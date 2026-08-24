@@ -1,6 +1,6 @@
 # AI Toolbox
 
-> Status: shipped · Updated: 2026-08-19 · ADRs: [[2-openrouter-and-byo-key]] · Code:
+> Status: shipped · Updated: 2026-08-24 · ADRs: [[2-openrouter-and-byo-key]] · Code:
 > apps/web/components/app/reader/overlays/ai-toolbox
 
 ## Summary
@@ -10,7 +10,8 @@ text without leaving the page. The product's core "investigate in flow" job.
 ## Scope
 - In: translate (to user's target lang), explain, etymology; every tool's prompt is enriched with
   book context — the sentence(s) containing the selection plus the previous sentence, and the book
-  title + author; streaming output with typewriter effect, abort/retry, expand saved results.
+  title + author; streaming output with typewriter effect, abort/retry, expand saved results;
+  copy-selection action in the panel's selection strip.
 - Non-goals: free-form chat (future ai-chats), narration, generating standalone highlights.
 
 ## Behaviour
@@ -28,6 +29,9 @@ text without leaving the page. The product's core "investigate in flow" job.
    sentence survives, the previous sentence is sacrificed first. Book title and authors ride
    along. The model is instructed to use these for disambiguation only — it still
    translates/explains/analyzes just the selection.
+6. The selection strip's Copy button writes the exact selection text to the clipboard. Success is
+   confirmed inline — the copy icon swaps to a check for ~2s, announced to assistive tech — with
+   no toast; re-copying restarts the confirmation. Client-only, nothing persisted.
 
 ## Selection context derivation (web)
 Pure function over (chapter window, range locator, selected text) — no DOM. Sentences come from
@@ -63,7 +67,8 @@ comment failed and shows the server reason inline in the panel with a Try again 
 derivation degrades to none (request behaves as before) when: no locator, locator's chapter is
 outside the loaded window, the start block is missing or textless, or `Intl.Segmenter` is
 unavailable. Requests without context/bookTitle hash like legacy ones, so cross-book cache sharing
-can still occur only on that degraded path.
+can still occur only on that degraded path. Copy: clipboard API unavailable or the write rejects →
+error toast, icon unchanged; empty selection no-ops.
 
 ## Acceptance criteria
 - [ ] Each tool returns a streamed result for a selection and persists it.
@@ -78,6 +83,9 @@ can still occur only on that degraded path.
 - [ ] A selection with no derivable context still generates exactly as before (fields omitted).
 - [ ] The same phrase selected under different context or in a different book generates fresh
   instead of serving the other location's cached body.
+- [ ] Copy places the exact selection text on the clipboard and shows the transient check
+  confirmation (no toast on success).
+- [ ] A failed clipboard write shows an error toast and no check confirmation.
 
 ## Open questions
 Per-user key/credit enforcement; rate limiting; tool result versioning.

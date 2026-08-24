@@ -261,7 +261,9 @@
       "selection": "Sélection",
       "highlight": "Surligner",
       "selectionReadAloud": "Lire la sélection à voix haute",
-      "selectionCopy": "Copier la sélection"
+      "selectionCopy": "Copier la sélection",
+      "selectionCopied": "Copié",
+      "selectionCopyFailed": "Impossible de copier dans le presse-papiers"
     },
     "aiChats": {
       "title": "Discussions IA",

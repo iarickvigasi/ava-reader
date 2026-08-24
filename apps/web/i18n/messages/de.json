@@ -261,7 +261,9 @@
       "selection": "Auswahl",
       "highlight": "Markierung",
       "selectionReadAloud": "Auswahl vorlesen",
-      "selectionCopy": "Auswahl kopieren"
+      "selectionCopy": "Auswahl kopieren",
+      "selectionCopied": "Kopiert",
+      "selectionCopyFailed": "Kopieren in die Zwischenablage fehlgeschlagen"
     },
     "aiChats": {
       "title": "KI-Chats",
