@@ -28,7 +28,9 @@ and cached. GET /library snapshot; revalidation skips unchanged fetches.
 
 ## Edge cases
 Offline browse from cache; collection edits offline then sync; book in multiple collections; empty
-library/collection states. Book-info + collection pages are generic client shells
+library/collection states. Long titles clamp to two lines and never widen the card: the card's
+column track is minmax(0,1fr), so a title word wider than the column (e.g. "Communication:" on a
+phone-width grid) overflows hidden instead of pushing the cover past its grid column. Book-info + collection pages are generic client shells
 ([[4-route-precaching-service-worker]]) hydrated from Dexie by `location` slug. The library list
 tolerates an unreachable API or an unverifiable (stale, Clerk-offline) session —
 `fetchServerApiTolerant` returns null → renders `LibraryScreenFromCache` rather than the error

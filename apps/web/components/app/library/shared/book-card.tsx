@@ -12,7 +12,12 @@ import { getLibraryBookInfoHref } from "@/lib/app-routes";
 // one line. Both need the container's own tracks, hence subgrid rather than
 // per-card sizing; a fixed cover box would have to be tall enough for the
 // narrowest cover and would leave the rest floating in dead space.
-const CARD_LAYOUT = "row-span-2 grid grid-rows-subgrid gap-3";
+//
+// grid-cols-1 is load-bearing: without it the card's implicit column is
+// auto-sized, whose minimum is the title's longest word — one wide word
+// ("Communication:" at phone column widths) silently widens the track past the
+// card, and the cover (w-full) stretches with it over the neighbouring column.
+const CARD_LAYOUT = "row-span-2 grid grid-cols-1 grid-rows-subgrid gap-3";
 
 type LibraryBookCardProps = {
   book: LibraryPayload["collections"][number]["books"][number];
