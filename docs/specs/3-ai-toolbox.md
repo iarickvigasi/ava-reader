@@ -11,7 +11,8 @@ text without leaving the page. The product's core "investigate in flow" job.
 - In: translate (to user's target lang), explain, etymology; every tool's prompt is enriched with
   book context — the sentence(s) containing the selection plus the previous sentence, and the book
   title + author; streaming output with typewriter effect, abort/retry, expand saved results;
-  copy-selection action in the panel's selection strip.
+  copy-selection action in the panel's selection strip; click-to-expand of the truncated selection
+  strip text.
 - Non-goals: free-form chat (future ai-chats), narration, generating standalone highlights.
 
 ## Behaviour
@@ -32,6 +33,10 @@ text without leaving the page. The product's core "investigate in flow" job.
 6. The selection strip's Copy button writes the exact selection text to the clipboard. Success is
    confirmed inline — the copy icon swaps to a check for ~2s, announced to assistive tech — with
    no toast; re-copying restarts the confirmation. Client-only, nothing persisted.
+7. The selection strip shows the selection on one line, truncated with an ellipsis. Clicking the
+   text toggles the full fragment: it wraps (long unbroken words break) and the strip grows freely,
+   overflow absorbed by the panel's scroll; clicking again collapses. A new selection resets the
+   strip to collapsed. Client-only, no animation, `aria-expanded` reflects the state.
 
 ## Selection context derivation (web)
 Pure function over (chapter window, range locator, selected text) — no DOM. Sentences come from
@@ -86,6 +91,8 @@ error toast, icon unchanged; empty selection no-ops.
 - [ ] Copy places the exact selection text on the clipboard and shows the transient check
   confirmation (no toast on success).
 - [ ] A failed clipboard write shows an error toast and no check confirmation.
+- [ ] Clicking the truncated selection text expands it to the full wrapped fragment; clicking again
+  collapses it, and a new selection reopens the strip collapsed.
 
 ## Open questions
 Per-user key/credit enforcement; rate limiting; tool result versioning.

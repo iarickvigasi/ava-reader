@@ -6,17 +6,27 @@ import {
 } from "@/components/app/shared/app-icons";
 import { useReaderSelectionContext } from "../../../selection/reader-selection-context";
 import { SectionLabel } from "../../section-label";
+import { cn } from "@/lib/cn";
+import { SelectionQuote } from "./selection-quote";
 import { useCopySelection } from "./use-copy-selection";
+import { useSelectionExpand } from "./use-selection-expand";
 
 export function SelectionSection() {
   const t = useTranslations("reader.aiToolbox");
   const { text } = useReaderSelectionContext();
   const { isCopied, copySelection } = useCopySelection();
+  const { isExpanded, toggleExpanded } = useSelectionExpand();
   const displayText = text ?? "";
   return (
     <section className="flex flex-col gap-3">
       <SectionLabel>{t("selection")}</SectionLabel>
-      <div className="flex items-center gap-3 rounded-control bg-soft-tone-fill px-4 py-3">
+      <div
+        className={cn(
+          "flex gap-3 rounded-control bg-soft-tone-fill px-4 py-3",
+          // Icons ride the first line of a multi-line expanded fragment.
+          isExpanded ? "items-start" : "items-center",
+        )}
+      >
         <button
           type="button"
           aria-label={t("selectionReadAloud")}
@@ -24,9 +34,11 @@ export function SelectionSection() {
         >
           <SpeakerIcon className="size-4" />
         </button>
-        <p className="min-w-0 flex-1 truncate font-display text-[1.05rem] leading-[1.4] text-ink">
-          {`“${displayText}”`}
-        </p>
+        <SelectionQuote
+          text={displayText}
+          isExpanded={isExpanded}
+          onToggle={toggleExpanded}
+        />
         <button
           type="button"
           aria-label={isCopied ? t("selectionCopied") : t("selectionCopy")}
