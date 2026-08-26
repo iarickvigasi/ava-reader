@@ -1,6 +1,6 @@
 # AI Comments
 
-> Status: shipped · Updated: 2026-06-30 · ADRs: [[3-offline-first-dexie-buckets]],
+> Status: shipped · Updated: 2026-08-26 · ADRs: [[3-offline-first-dexie-buckets]],
 > [[2-openrouter-and-byo-key]] · Code:
 > apps/web/components/app/reader/overlays/ai-comments,
 > apps/web/features/offline/buckets/ai-comments
@@ -18,7 +18,8 @@ marked in-text. The durable record of toolbox investigations.
 1. A toolbox run creates an AI comment (kind, source text, body, target lang, locator).
 2. Panel lists comments per book; filter by kind; click jumps to the locator; annotated phrases are
    underlined in-text.
-3. Delete removes the comment instantly.
+3. Delete removes the comment instantly. Row actions (⋮ → delete) reveal on hover with a pointer;
+   on touch devices the trigger is always visible, at touch-target size.
 
 ## Data & sync
 ai-comments bucket; AiCommentRecord status queued→ready. Dedup by (user, sourceHash). Mutations:
@@ -39,6 +40,7 @@ shared with highlights, so the same identity-pop and token-refresh-retry guarant
 - [ ] Re-requesting the same generate offline (e.g. reopening the toolbox) adds no duplicate queued
   comments.
 - [ ] Delete persists; queued generation completes on reconnect.
+- [ ] On touch devices the row-actions trigger is visible without hover.
 
 ## Open questions
 Editing/regenerating a comment; surfacing model + cost per comment.

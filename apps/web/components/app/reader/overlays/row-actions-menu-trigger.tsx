@@ -35,6 +35,9 @@ export function RowActionsMenuTrigger({
         sizeClass,
         "hover:bg-soft-tone-fill hover:text-ink",
         "opacity-0 focus:opacity-100",
+        // Touch has no hover: coarse pointers always show the trigger, at
+        // touch-target size (pointer-coarse:size-8 overrides sizeClass).
+        "pointer-coarse:opacity-100 pointer-coarse:size-8",
         REVEAL_BY_GROUP[group],
         isOpen && "opacity-100 text-ink",
       )}

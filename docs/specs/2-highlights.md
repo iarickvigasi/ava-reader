@@ -1,6 +1,6 @@
 # Highlights
 
-> Status: shipped · Updated: 2026-06-30 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
+> Status: shipped · Updated: 2026-08-26 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
 > apps/web/components/app/reader/overlays/highlights,
 > apps/web/features/offline/buckets/highlights
 
@@ -16,7 +16,8 @@ Supports the deep-reading and revisit jobs.
 ## Behaviour
 1. Select text → color picker → highlight is painted instantly and added to the panel.
 2. Panel lists highlights per book; filter by color; click jumps to the locator.
-3. Recolor or delete updates instantly.
+3. Recolor or delete updates instantly. Row actions (⋮ → delete) reveal on hover with a pointer;
+   on touch devices the trigger is always visible, at touch-target size.
 
 ## Data & sync
 highlights bucket; HighlightRecord anchored by locator + color. enqueueUpsert/enqueueDelete,
@@ -34,6 +35,7 @@ reschedules instead of stranding the queue.
 - [ ] Creating a highlight offline paints it and syncs on reconnect.
 - [ ] Marks render at the correct text range across reloads.
 - [ ] Delete/recolor reflect instantly and persist.
+- [ ] On touch devices the row-actions trigger is visible without hover.
 
 ## Open questions
 Cross-highlight overlap rendering; export.
