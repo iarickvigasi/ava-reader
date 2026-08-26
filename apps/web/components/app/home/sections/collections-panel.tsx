@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 import { useCollectionDisplay } from "@/components/app/library/shared/collection-display";
 import { ArrowRightIcon } from "@/components/app/shared/app-icons";
 import type { HomePayload } from "@/lib/api-types";
-import { APP_LIBRARY_HREF } from "@/lib/app-routes";
+import { APP_LIBRARY_HREF, getCollectionHref } from "@/lib/app-routes";
 import { Panel, SectionHeader } from "../shared/home-shared";
 
 type Collection = HomePayload["collections"]["items"][number];
@@ -46,9 +46,14 @@ export function CollectionsPanel({
 function CollectionRow({ collection }: { collection: Collection }) {
   const t = useTranslations("home.collections");
   const collectionDisplay = useCollectionDisplay();
+  // Cached payloads written before the slug field existed lack it until the
+  // next online revalidation; those rows open the library instead.
+  const href = collection.slug
+    ? getCollectionHref(collection.slug)
+    : APP_LIBRARY_HREF;
   return (
     <Link
-      href={APP_LIBRARY_HREF}
+      href={href}
       className="flex items-center justify-between border-b border-line/40 py-4 transition hover:text-ink sm:py-5"
     >
       <div className="space-y-1">

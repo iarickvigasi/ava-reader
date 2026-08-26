@@ -138,6 +138,46 @@ describe('HomeService', () => {
     });
   });
 
+  it('includes each collection slug so the client can deep-link it', async () => {
+    prisma.libraryItem.findMany.mockResolvedValue([]);
+    prisma.catalogEntry.findMany.mockResolvedValue([]);
+    prisma.readingSessionSegment.findMany.mockResolvedValue([]);
+    prisma.annotation.findMany.mockResolvedValue([]);
+    prisma.collection.findMany.mockResolvedValue([
+      {
+        description: null,
+        id: 'collection-1',
+        items: [
+          { libraryItem: { progress: { completionPercent: 100 } } },
+          { libraryItem: { progress: null } },
+        ],
+        kind: 'CUSTOM',
+        name: 'Stoic Philosophy',
+        slug: 'stoic-philosophy',
+        smartKey: null,
+      },
+    ]);
+    prisma.readingSessionSegment.aggregate.mockResolvedValue({
+      _sum: {
+        durationSeconds: 0,
+      },
+    });
+    prisma.annotation.count.mockResolvedValue(0);
+    prisma.readingProgress.count.mockResolvedValue(0);
+    prisma.aiComment.count.mockResolvedValue(0);
+
+    const home = await homeService.getHome('clerk_1');
+
+    expect(home.collections.items).toEqual([
+      expect.objectContaining({
+        id: 'collection-1',
+        itemCount: 2,
+        slug: 'stoic-philosophy',
+        unreadCount: 1,
+      }),
+    ]);
+  });
+
   it('counts only full hours for hoursReading', async () => {
     prisma.libraryItem.findMany.mockResolvedValue([]);
     prisma.catalogEntry.findMany.mockResolvedValue([]);

@@ -174,6 +174,7 @@ export class HomeService {
           itemCount: collection.items.length,
           kind: collection.kind,
           name: collection.name,
+          slug: collection.slug,
           smartKey: collection.smartKey,
           unreadCount: collection.items.filter(
             (item) => (item.libraryItem.progress?.completionPercent ?? 0) < 100,
