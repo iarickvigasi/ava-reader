@@ -19,7 +19,12 @@ export function CollectionSection({ collection }: CollectionSectionProps) {
         <div className="space-y-2">
           <div className="flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-end sm:gap-3">
             <h2 className="font-sans text-[1.9rem] font-medium leading-[1.05] tracking-[-0.03em] text-title md:text-[2rem]">
-              {collectionDisplay.name(collection)}
+              <Link
+                href={getCollectionHref(collection.slug)}
+                className="transition duration-200 hover:text-ink"
+              >
+                {collectionDisplay.name(collection)}
+              </Link>
             </h2>
             <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-olive md:pb-1">
               {t("itemsAndUnread", {

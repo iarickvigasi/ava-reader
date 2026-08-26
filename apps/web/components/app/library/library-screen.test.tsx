@@ -30,6 +30,19 @@ describe("library and navigation UI", () => {
     expect(markup).toContain('href="/app/library/collections/late-night-reads"');
   });
 
+  it("renders collection titles as links to their collection screens", () => {
+    const markup = renderToStaticMarkup(
+      withIntl(<LibraryScreen library={createLibraryPayload()} />),
+    );
+
+    expect(markup).toMatch(
+      /<h2[^>]*><a[^>]*href="\/app\/library\/collections\/imported-books"[^>]*>Imported Books<\/a><\/h2>/,
+    );
+    expect(markup).toMatch(
+      /<h2[^>]*><a[^>]*href="\/app\/library\/collections\/late-night-reads"[^>]*>Late Night Reads<\/a><\/h2>/,
+    );
+  });
+
   it("renders collection preview books and empty collection messaging on the library screen", () => {
     const markup = renderToStaticMarkup(
       withIntl(<LibraryScreen library={createLibraryPayload()} />),

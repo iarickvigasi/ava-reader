@@ -50,6 +50,7 @@ plus dashed drop-zones. Focus shows a **ring**, never a border.
 Shadows are theme-switched vars: `shadow-(--shadow-soft|--shadow-card|--shadow-nav)`
 — use the `()` shorthand, not `[var(...)]`. Motion: `transition` +
 `duration-200`/`300` + `ease-out`; skeletons `animate-pulse`; named keyframes in globals.css.
+Interactive titles hover to `ink` (`hover:text-ink`; cards `group-hover:text-ink`) + `transition`.
 
 ## Buttons → `components/ui/button.tsx`
 `rounded-control`, fill-based, **no border**. Variants `primary` (brand-fill +

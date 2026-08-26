@@ -19,7 +19,9 @@ Serves the "organize a library, collections, reading lists" job.
 1. Library lists the user's books with progress; clicking opens book-info or the reader.
 2. Collections group books into CUSTOM or SMART lists; user edits membership and order. SMART
    collections are system-owned: three defaults (Imported Books, Public Domain, and Offline Books —
-   [[17-offline-books-collection]]), none renameable or deletable.
+   [[17-offline-books-collection]]), none renameable or deletable. On the library screen each
+   section's title links to its collection page (same target as its "View all" link), styled like
+   the plain heading; on hover it shifts to ink, matching the book-card title hover.
 3. Metadata is cached for offline; revalidates against server updatedAt when online.
 
 ## Data & sync
