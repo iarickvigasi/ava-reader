@@ -15,8 +15,8 @@ cd /app/apps/api
 
 nest_pid=
 
-# Nest runs in its own process group (setsid): the CLI spawns the app as a grandchild, so killing
-# only the CLI orphans the app on port 4000. dash's builtin kill silently no-ops on negative pids;
+# Nest runs in its own process group (setsid) so CLI and app die together: signalling only the
+# CLI would orphan the app on port 4000. dash's builtin kill silently no-ops on negative pids;
 # node's process.kill is the reliable group kill in this image.
 kill_nest_group() {
   [ -n "$nest_pid" ] || return 0
@@ -34,7 +34,12 @@ while :; do
   echo "[dev-server] prisma generate"
   "$BIN/prisma" generate
   stamp=$(cksum "$SCHEMA")
-  setsid "$BIN/nest" start --watch &
+  # --no-shell: on each watch recompile the CLI kills the old app via treeKillSync, which needs
+  # `ps` (absent here) to find child processes. With the v11 default (shell: true) the app is a
+  # /bin/sh grandchild, only the wrapper gets killed, and the orphaned app keeps port 4000 —
+  # every respawn then dies with EADDRINUSE while stale code keeps serving. As a direct child
+  # the app is killed by pid, and the respawn (on its exit event) cannot race the port.
+  setsid "$BIN/nest" start --watch --no-shell &
   nest_pid=$!
   while kill -0 "$nest_pid" 2>/dev/null; do
     sleep "$POLL_SECONDS"

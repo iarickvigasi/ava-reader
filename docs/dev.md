@@ -8,7 +8,15 @@ lives in specs/, architecture in architecture.md, setup commands in README.md. K
   the local Next dev server. Only ./apps/api is bind-mounted into the API container; node_modules
   and the generated Prisma client live in the image's pnpm store.
 - API container entrypoint: apps/api/scripts/dev-server.sh — prisma migrate deploy → prisma
-  generate → `nest start --watch`.
+  generate → `nest start --watch --no-shell`.
+- `--no-shell` is load-bearing: the CLI's watch-respawn kill (treeKillSync) needs `ps` — absent
+  from the image — to find children, so with the shell default (v11) the app is a /bin/sh
+  grandchild that survives the kill as an orphan holding :4000; every respawn then dies with
+  EADDRINUSE and stale code serves until a container restart. Direct child ⇒ killed by pid,
+  and the respawn (on its exit event) cannot race the port.
+- Replacing an API source file host-side (observed with `mv` onto it; anything inode-swapping)
+  can kill tsc watch's watcher for that file over the bind mount — later edits silently stop
+  triggering rebuilds until the container restarts. In-place writes (editor saves, `>>`) are fine.
 
 ## Prisma schema changes (dev API)
 - dev-server.sh polls prisma/schema.prisma (cksum, 2s); on change it regenerates the client
