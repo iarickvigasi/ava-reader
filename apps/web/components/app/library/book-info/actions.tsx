@@ -25,7 +25,7 @@ export function BookActions({ slug, libraryItemId }: BookActionsProps) {
       <ReadBookLink
         href={getReaderHref(slug)}
         libraryItemId={libraryItemId}
-        className="relative inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-control bg-brand-fill px-6 text-sm font-semibold uppercase tracking-[0.12em] text-white transition duration-200 hover:bg-brand-fill-strong"
+        className="relative inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-control bg-brand-fill px-6 text-sm font-semibold uppercase tracking-[0.12em] text-brand-foreground transition duration-200 hover:bg-brand-fill-strong"
       >
         <StackBooksIcon className="size-4" />
         {t("read")}
