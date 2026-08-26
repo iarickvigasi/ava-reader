@@ -33,8 +33,11 @@ const HEADING_CLASS =
 const BLOCKQUOTE_CLASS =
   "border-l border-line/60 pl-5 font-reader text-[calc(1.18rem*var(--reader-font-scale)*var(--reader-block-scale,1))] leading-[1.9] italic text-ink/90 sm:text-[calc(1.3rem*var(--reader-font-scale)*var(--reader-block-scale,1))]";
 
+// pl is em-based so ::marker numerals scale with the list font: two-digit
+// decimal markers (~1.63em incl. the marker gap) stay inside the column at
+// every font scale — fixed px padding clipped them at the page edge.
 const LIST_CLASS =
-  "space-y-1 pl-6 font-reader text-[calc(1.12rem*var(--reader-font-scale)*var(--reader-block-scale,1))] leading-relaxed text-ink sm:text-[calc(1.28rem*var(--reader-font-scale)*var(--reader-block-scale,1))]";
+  "space-y-1 pl-[1.8em] font-reader text-[calc(1.12rem*var(--reader-font-scale)*var(--reader-block-scale,1))] leading-relaxed text-ink sm:text-[calc(1.28rem*var(--reader-font-scale)*var(--reader-block-scale,1))]";
 
 const PARAGRAPH_CLASS =
   "font-reader text-[calc(1.16rem*var(--reader-font-scale)*var(--reader-block-scale,1))] leading-loose tracking-[-0.01em] text-ink sm:text-[calc(1.34rem*var(--reader-font-scale)*var(--reader-block-scale,1))]";

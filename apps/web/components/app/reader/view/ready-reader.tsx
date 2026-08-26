@@ -189,6 +189,12 @@ export function ReadyReader({
 
           <div className="flex min-h-0 flex-1 flex-col gap-0 sm:mt-8 sm:gap-4">
 
+            {/* overflow-hidden + px-* together form the page clip window:
+                the padding box clips 12-24px outside the column edges, so
+                line-end ink overhang (italic terminals, list markers) paints
+                into the margin instead of being amputated. Neighbouring
+                columns sit a full PAGE_GAP away, so the bleed ring can never
+                show another page (see 1.2-pagination "Page clip window"). */}
             <div
               className="relative min-h-0 flex-1 overflow-hidden px-3 py-2 sm:px-5 sm:py-6 md:px-6"
               style={{
@@ -197,7 +203,9 @@ export function ReadyReader({
               onTouchEnd={handleTouchEnd}
               onTouchStart={handleTouchStart}
             >
-              <div ref={pageBoxRef} className="h-full w-full overflow-hidden">
+              {/* Must NOT clip: its edge coincides exactly with the column
+                  edge, so any overflow-hidden here re-amputates edge ink. */}
+              <div ref={pageBoxRef} className="h-full w-full">
                 <ReaderArticle
                   applyAiComments
                   blocks={activeChapter.blocks}
