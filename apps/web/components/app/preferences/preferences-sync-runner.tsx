@@ -6,35 +6,23 @@
 // `preferences` row keyed by "me") so one mount per session is enough.
 
 import { useAuth } from "@clerk/nextjs";
-import { useEffect } from "react";
+import { useCallback } from "react";
 
 import { flushPreferences } from "@/features/offline/buckets/preferences";
+import { useSyncTriggers } from "@/features/offline/net/use-sync-triggers";
 
 export function PreferencesSyncRunner() {
   const { getToken, isLoaded, isSignedIn } = useAuth();
 
-  useEffect(() => {
-    if (!isLoaded || !isSignedIn) {
-      return;
-    }
-    const tryFlush = () => {
-      void flushPreferences(getToken);
-    };
-    const onVisible = () => {
-      if (document.visibilityState === "visible") {
-        tryFlush();
-      }
-    };
-    window.addEventListener("online", tryFlush);
-    document.addEventListener("visibilitychange", onVisible);
-    // Also kick a flush once on mount so unflushed-from-prior-session
-    // fields don't wait for the next event.
-    tryFlush();
-    return () => {
-      window.removeEventListener("online", tryFlush);
-      document.removeEventListener("visibilitychange", onVisible);
-    };
-  }, [getToken, isLoaded, isSignedIn]);
+  const tryFlush = useCallback(() => {
+    void flushPreferences(getToken);
+  }, [getToken]);
+
+  // Kick once on attach so unflushed-from-prior-session fields don't wait
+  // for the next event.
+  useSyncTriggers(isLoaded && isSignedIn ? tryFlush : null, {
+    kickOnAttach: true,
+  });
 
   return null;
 }

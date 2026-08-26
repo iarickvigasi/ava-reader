@@ -1,6 +1,7 @@
-import { useEffect, type MutableRefObject } from "react";
+import { useCallback, useEffect, type MutableRefObject } from "react";
 import type { ReaderStatusPayload } from "@/lib/api-types";
 import { syncPendingSessions } from "@/features/offline/buckets/sessions";
+import { useSyncTriggers } from "@/features/offline/net/use-sync-triggers";
 import {
   READER_STATUS_READY,
   READER_VISIBILITY_HIDDEN,
@@ -90,39 +91,17 @@ export function useSessionVisibilitySync({
   }, [stopReaderSessionTracking]);
 
   // Phase 4 sync trigger: drain queued (closed but unsynced) sessions on
-  // every online/visibility flip. Cheap when the queue is empty — one
-  // Dexie scan. We pass the reader's clientInstanceId so the replayed
-  // sessions land under the same participant on the server.
-  useEffect(() => {
-    if (!remotePersistenceEnabled || !isLoaded || !isSignedIn) {
+  // every online/visibility flip, plus once on attach. Cheap when the queue
+  // is empty — one Dexie scan. We pass the reader's clientInstanceId so the
+  // replayed sessions land under the same participant on the server.
+  const tryDrain = useCallback(() => {
+    if (!navigator.onLine) {
       return;
     }
-    const tryDrain = () => {
-      if (typeof navigator !== "undefined" && !navigator.onLine) {
-        return;
-      }
-      void syncPendingSessions(getToken, getSessionClientInstanceId());
-    };
-    tryDrain();
-    const onVisible = () => {
-      if (
-        typeof document !== "undefined" &&
-        document.visibilityState !== READER_VISIBILITY_HIDDEN
-      ) {
-        tryDrain();
-      }
-    };
-    window.addEventListener("online", tryDrain);
-    document.addEventListener("visibilitychange", onVisible);
-    return () => {
-      window.removeEventListener("online", tryDrain);
-      document.removeEventListener("visibilitychange", onVisible);
-    };
-  }, [
-    getSessionClientInstanceId,
-    getToken,
-    isLoaded,
-    isSignedIn,
-    remotePersistenceEnabled,
-  ]);
+    void syncPendingSessions(getToken, getSessionClientInstanceId());
+  }, [getSessionClientInstanceId, getToken]);
+  useSyncTriggers(
+    remotePersistenceEnabled && isLoaded && isSignedIn ? tryDrain : null,
+    { kickOnAttach: true },
+  );
 }

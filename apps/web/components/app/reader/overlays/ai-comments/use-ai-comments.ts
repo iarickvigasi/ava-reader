@@ -25,6 +25,7 @@ import {
   type PendingMutation,
   type ServerAiComment,
 } from "@/features/offline/buckets/ai-comments";
+import { useSyncTriggers } from "@/features/offline/net/use-sync-triggers";
 import { getPublicApiBaseUrl } from "@/lib/api";
 
 // Re-export so existing callers (ai-comments-data, etc.) keep working.
@@ -126,25 +127,10 @@ export function useAiComments(libraryItemId: string): UseAiCommentsResult {
   ]);
 
   // Drain queue + retry on `online` and on tab regaining visibility.
-  useEffect(() => {
-    if (!isLoaded || !isSignedIn) {
-      return;
-    }
-    const tryFlush = () => {
-      void flushBucket(libraryItemId, apiBaseUrl);
-    };
-    const tryFlushWhenVisible = () => {
-      if (document.visibilityState === "visible") {
-        tryFlush();
-      }
-    };
-    window.addEventListener("online", tryFlush);
-    document.addEventListener("visibilitychange", tryFlushWhenVisible);
-    return () => {
-      window.removeEventListener("online", tryFlush);
-      document.removeEventListener("visibilitychange", tryFlushWhenVisible);
-    };
-  }, [apiBaseUrl, isLoaded, isSignedIn, libraryItemId]);
+  const tryFlush = useCallback(() => {
+    void flushBucket(libraryItemId, apiBaseUrl);
+  }, [apiBaseUrl, libraryItemId]);
+  useSyncTriggers(isLoaded && isSignedIn ? tryFlush : null);
 
   // Surface delete DropEvents as toasts. Generate failures are shown inline
   // in the toolbox panel (the failed comment carries the reason), so they no

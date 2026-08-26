@@ -8,35 +8,23 @@
 // guarded, so firing it from several triggers is cheap.
 
 import { useAuth } from "@clerk/nextjs";
-import { useEffect } from "react";
+import { useCallback } from "react";
 
 import { flushDirtyProgress } from "@/features/offline/buckets/progress";
+import { useSyncTriggers } from "@/features/offline/net/use-sync-triggers";
 
 export function ProgressSyncRunner() {
   const { getToken, isLoaded, isSignedIn } = useAuth();
 
-  useEffect(() => {
-    if (!isLoaded || !isSignedIn) {
-      return;
-    }
-    const tryFlush = () => {
-      void flushDirtyProgress(getToken);
-    };
-    const onVisible = () => {
-      if (document.visibilityState === "visible") {
-        tryFlush();
-      }
-    };
-    window.addEventListener("online", tryFlush);
-    document.addEventListener("visibilitychange", onVisible);
-    // Kick once on mount so progress left dirty by a prior session (reader
-    // closed while offline) syncs without waiting for the next event.
-    tryFlush();
-    return () => {
-      window.removeEventListener("online", tryFlush);
-      document.removeEventListener("visibilitychange", onVisible);
-    };
-  }, [getToken, isLoaded, isSignedIn]);
+  const tryFlush = useCallback(() => {
+    void flushDirtyProgress(getToken);
+  }, [getToken]);
+
+  // Kick once on mount so progress left dirty by a prior session (reader
+  // closed while offline) syncs without waiting for the next event.
+  useSyncTriggers(isLoaded && isSignedIn ? tryFlush : null, {
+    kickOnAttach: true,
+  });
 
   return null;
 }

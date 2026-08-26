@@ -25,6 +25,7 @@ import {
   type HighlightColor,
   type HighlightRecord,
 } from "@/features/offline/buckets/highlights";
+import { useSyncTriggers } from "@/features/offline/net/use-sync-triggers";
 import { emitAppToast } from "@/components/app/core/app-toast";
 
 type UseHighlightsResult = {
@@ -131,33 +132,12 @@ export function useHighlights(libraryItemId: string): UseHighlightsResult {
     };
   }, [apiBaseUrl, getToken, isLoaded, isSignedIn, libraryItemId, t]);
 
-  // Background flush triggers. Re-attempts when the network comes back, the
-  // tab becomes visible (mobile suspends fetches in the background), or the
-  // user signs in. `pagehide` flushes the debounced localStorage write so
-  // we never lose a queued mutation because the user closed the tab inside
-  // the 100ms persist window.
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-    const tryFlush = () => {
-      void flushBucket(libraryItemId, apiBaseUrl);
-    };
-    const tryFlushWhenVisible = () => {
-      if (document.visibilityState === "visible") {
-        tryFlush();
-      }
-    };
-    // No more `pagehide` flush — Dexie writes happen in lockstep with each
-    // mutation, so there's no debounced state that could be lost when the
-    // tab closes inside a write window.
-    window.addEventListener("online", tryFlush);
-    document.addEventListener("visibilitychange", tryFlushWhenVisible);
-    return () => {
-      window.removeEventListener("online", tryFlush);
-      document.removeEventListener("visibilitychange", tryFlushWhenVisible);
-    };
+  // Background flush triggers. No mount kick — the initial-load effect above
+  // already flushes once the server snapshot lands.
+  const tryFlush = useCallback(() => {
+    void flushBucket(libraryItemId, apiBaseUrl);
   }, [apiBaseUrl, libraryItemId]);
+  useSyncTriggers(tryFlush);
 
   // Surface permanent failures (400/403/422/etc.) as toasts so the user
   // knows their highlight didn't save, and why. The store already dropped
