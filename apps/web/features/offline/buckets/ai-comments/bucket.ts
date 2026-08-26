@@ -6,6 +6,7 @@
 import { createBucketRegistry } from "../shared/bucket-registry";
 import { readStorage } from "./storage";
 import type {
+  AiCommentRecord,
   AiCommentsState,
   DropEvent,
   DropListener,
@@ -29,6 +30,16 @@ export function getAiCommentsBucket(
   apiBaseUrl: string,
 ): StorageBucket {
   return registry.getOrCreateBucket(libraryItemId, apiBaseUrl);
+}
+
+// SSR / pre-hydration snapshot for useSyncExternalStore. Must return the
+// same reference on every call — React (DEV) invokes it twice per hydration
+// render and logs "getServerSnapshot should be cached" on a fresh array
+// (see use-highlights.ts for the same guard on the highlights side).
+const EMPTY_SERVER_SNAPSHOT: AiCommentRecord[] = [];
+
+export function getAiCommentsServerSnapshot(): AiCommentRecord[] {
+  return EMPTY_SERVER_SNAPSHOT;
 }
 
 export function subscribeToAiComments(

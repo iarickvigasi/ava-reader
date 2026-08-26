@@ -16,6 +16,7 @@ import {
   __resetAiCommentsBucketsForTests,
   awaitAiCommentsPersistDrain,
   getAiCommentsBucket,
+  getAiCommentsServerSnapshot,
   setBucketAuth,
 } from "./bucket";
 import { applyServerSnapshot } from "./sync";
@@ -379,5 +380,14 @@ describe("ai-comments bucket — hydrate from Dexie", () => {
     await bucket.hydratedPromise;
     expect(bucket.state.snapshot.map((row) => row.id)).toEqual(["from-disk"]);
     expect(bucket.state.pending.map((m) => m.id)).toEqual(["pending-1"]);
+  });
+});
+
+describe("getAiCommentsServerSnapshot", () => {
+  it("returns the same reference on every call", () => {
+    // React (DEV) calls getServerSnapshot twice per hydration render and
+    // logs "The result of getServerSnapshot should be cached" on a fresh
+    // array. A referentially stable empty list keeps hydration quiet.
+    expect(getAiCommentsServerSnapshot()).toBe(getAiCommentsServerSnapshot());
   });
 });

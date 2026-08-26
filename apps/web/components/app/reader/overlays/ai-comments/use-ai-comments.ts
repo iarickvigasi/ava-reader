@@ -16,6 +16,7 @@ import {
   enqueueGenerate,
   flushBucket,
   getAiCommentsBucket,
+  getAiCommentsServerSnapshot,
   selectStableAiComments,
   setBucketAuth,
   subscribeToAiComments,
@@ -56,11 +57,12 @@ export function useAiComments(libraryItemId: string): UseAiCommentsResult {
   const [refetchTick, setRefetchTick] = useState(0);
 
   // Subscribe to the bucket. selectStableAiComments memoises by `version`
-  // so unrelated renders see referential equality.
+  // so unrelated renders see referential equality; the server snapshot is a
+  // stable module-level empty list for the same reason.
   const comments = useSyncExternalStore(
     (listener) => subscribeToAiComments(libraryItemId, apiBaseUrl, listener),
     () => selectStableAiComments(getAiCommentsBucket(libraryItemId, apiBaseUrl)),
-    () => [],
+    getAiCommentsServerSnapshot,
   );
 
   // Keep the bucket's token getter fresh — Clerk hooks return new identities

@@ -17,6 +17,7 @@ export type {
 
 export {
   getAiCommentsBucket,
+  getAiCommentsServerSnapshot,
   setBucketAuth,
   subscribeToAiComments,
   subscribeToDrops,
