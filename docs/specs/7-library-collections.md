@@ -1,6 +1,6 @@
 # Library & collections
 
-> Status: shipped · Updated: 2026-08-10 · ADRs: [[3-offline-first-dexie-buckets]],
+> Status: shipped · Updated: 2026-08-26 · ADRs: [[3-offline-first-dexie-buckets]],
 > [[4-route-precaching-service-worker]] · Related: [[17-offline-books-collection]] · Code:
 > apps/web/components/app/library, apps/web/features/offline/buckets/library
 
@@ -22,7 +22,9 @@ Serves the "organize a library, collections, reading lists" job.
    [[17-offline-books-collection]]), none renameable or deletable. On the library screen each
    section's title links to its collection page (same target as its "View all" link), styled like
    the plain heading; on hover it shifts to ink, matching the book-card title hover.
-3. Metadata is cached for offline; revalidates against server updatedAt when online.
+3. On book-info the cover links to the reader — identical to the Read button, including the
+   offline missing-book interception when the book isn't saved.
+4. Metadata is cached for offline; revalidates against server updatedAt when online.
 
 ## Data & sync
 library bucket (items + collections + membership, normalized); book-info details lazy-loaded once
@@ -41,7 +43,8 @@ boundary.
 ## Acceptance criteria
 - [ ] Library and collections render offline from cache.
 - [ ] Creating/renaming/reordering a collection persists and survives reload.
-- [ ] Book-info shows progress and offers read + save-offline actions.
+- [ ] Book-info shows progress and offers read + save-offline actions; the cover opens the
+  reader.
 
 ## Open questions
 Smart-collection rule editor; collection sharing (depends on social).

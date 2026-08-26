@@ -7,6 +7,7 @@ import {
   StackBooksIcon,
 } from "@/components/app/shared/app-icons";
 import { Button } from "@/components/ui/button";
+import { getReaderHref } from "@/lib/app-routes";
 
 type BookActionsProps = {
   slug: string;
@@ -22,7 +23,7 @@ export function BookActions({ slug, libraryItemId }: BookActionsProps) {
           missing-book modal instead of letting them land on an empty
           reader page. Online behaviour is unchanged. */}
       <ReadBookLink
-        href={`/app/read/${slug}`}
+        href={getReaderHref(slug)}
         libraryItemId={libraryItemId}
         className="relative inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-control bg-brand-fill px-6 text-sm font-semibold uppercase tracking-[0.12em] text-white transition duration-200 hover:bg-brand-fill-strong"
       >

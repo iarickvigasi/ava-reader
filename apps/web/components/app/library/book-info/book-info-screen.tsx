@@ -33,6 +33,10 @@ export function LibraryBookInfoScreen({
           <div className="grid gap-8 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:gap-12">
             <BookCoverPanel
               coverImageUrl={book.coverImageUrl}
+              readerLink={{
+                libraryItemId: book.libraryItemId,
+                slug: book.slug,
+              }}
               title={book.title}
             />
 
