@@ -23,7 +23,9 @@ Serves the "organize a library, collections, reading lists" job.
    section's title links to its collection page (same target as its "View all" link), styled like
    the plain heading; on hover it shifts to ink, matching the book-card title hover.
 3. On book-info the cover links to the reader — identical to the Read button, including the
-   offline missing-book interception when the book isn't saved.
+   offline missing-book interception when the book isn't saved. While navigation is pending the
+   Read button swaps its label to "Opening" + trailing ellipsis dots ([styles.md](../styles.md)
+   §Buttons); the cover shows no pending state.
 4. Metadata is cached for offline; revalidates against server updatedAt when online.
 
 ## Data & sync
@@ -45,6 +47,7 @@ boundary.
 - [ ] Creating/renaming/reordering a collection persists and survives reload.
 - [ ] Book-info shows progress and offers read + save-offline actions; the cover opens the
   reader.
+- [ ] The Read button shows "Opening" + trailing dots while reader navigation is pending.
 
 ## Open questions
 Smart-collection rule editor; collection sharing (depends on social).

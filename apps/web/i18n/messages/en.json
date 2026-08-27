@@ -317,11 +317,14 @@
   "shared": {
     "import": {
       "defaultLabel": "Import book",
-      "uploading": "Uploading...",
+      "uploading": "Uploading",
       "signIn": "Sign in to upload a book.",
       "noToken": "No session token was available.",
       "uploadFailed": "The upload could not be completed.",
       "imported": "Imported {filename}."
+    },
+    "readLink": {
+      "opening": "Opening"
     }
   },
   "nav": {

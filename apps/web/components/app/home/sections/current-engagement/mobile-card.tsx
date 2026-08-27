@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import { ReadBookLink } from "@/components/app/core/read-book-link";
+import { ReadLinkOpeningLabel } from "@/components/app/core/read-link-opening-label";
 import type { HomePayload } from "@/lib/api-types";
 import { ArrowRightIcon } from "@/components/app/shared/app-icons";
 
@@ -40,8 +41,10 @@ export function EngagementMobileCard({
           {engagement.chapterLabel}
         </p>
         <p className="mt-4 inline-flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-ink">
-          {t("resumeReading")}
-          <ArrowRightIcon className="size-3.5" />
+          <ReadLinkOpeningLabel>
+            {t("resumeReading")}
+            <ArrowRightIcon className="size-3.5" />
+          </ReadLinkOpeningLabel>
         </p>
       </div>
       <div className="hidden h-14 w-px bg-line sm:block" />

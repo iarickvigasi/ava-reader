@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { ReadBookLink } from "@/components/app/core/read-book-link";
+import { ReadLinkOpeningLabel } from "@/components/app/core/read-link-opening-label";
 import {
   ReaderListeningIcon,
   StackBooksIcon,
@@ -27,8 +28,10 @@ export function BookActions({ slug, libraryItemId }: BookActionsProps) {
         libraryItemId={libraryItemId}
         className="relative inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-control bg-brand-fill px-6 text-sm font-semibold uppercase tracking-[0.12em] text-brand-foreground transition duration-200 hover:bg-brand-fill-strong"
       >
-        <StackBooksIcon className="size-4" />
-        {t("read")}
+        <ReadLinkOpeningLabel>
+          <StackBooksIcon className="size-4" />
+          {t("read")}
+        </ReadLinkOpeningLabel>
       </ReadBookLink>
       <Button
         type="button"

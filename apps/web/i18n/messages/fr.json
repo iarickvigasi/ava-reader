@@ -317,11 +317,14 @@
   "shared": {
     "import": {
       "defaultLabel": "Importer un livre",
-      "uploading": "Téléversement...",
+      "uploading": "Téléversement",
       "signIn": "Connectez-vous pour téléverser un livre.",
       "noToken": "Aucun jeton de session n'était disponible.",
       "uploadFailed": "Le téléversement n'a pas pu être terminé.",
       "imported": "{filename} importé."
+    },
+    "readLink": {
+      "opening": "Ouverture"
     }
   },
   "nav": {

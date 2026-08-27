@@ -1,10 +1,10 @@
 # Route precaching (offline app shell)
 
-> Status: active · Updated: 2026-07-05 · ADRs: [[3-offline-first-dexie-buckets]],
+> Status: active · Updated: 2026-08-27 · ADRs: [[3-offline-first-dexie-buckets]],
 > [[4-route-precaching-service-worker]] · Related: [[11-cache-priming]], [[6-offline-reading]] ·
 > Code: apps/web/public/sw.js, apps/web/scripts/gen-precache-manifest.mjs,
-> apps/web/features/offline/{prime/routes,prime/prime-routes,sw/precache-routes},
-> apps/web/components/app/core/route-precache-runner.tsx
+> apps/web/features/offline/{prime/routes,prime/prime-routes,sw/precache-routes,sw/register,
+> sw/cleanup-leftover-workers}, apps/web/components/app/core/route-precache-runner.tsx
 
 ## Summary
 Make every app route load offline — including hard reload and direct-URL entry — after a single
@@ -74,6 +74,11 @@ data still comes from Dexie buckets. Serves the offline-first job (product.md).
    navigation, which lands on the doc path.
 8. A new build installs a fresh SW + asset set and evicts the old cache (existing activate logic);
    `controllerchange` re-runs the island so the new version's route shells are precached.
+9. **Dev eviction:** the registrar registers only in production builds; in dev it instead
+   unregisters any worker at the origin and deletes `ava-reader-sw-*` caches. A worker left behind
+   by a production-build session (offline testing runs `next start` on :3000) otherwise keeps
+   controlling dev pages and cache-firsts the dev server's mutable, unhashed chunks — stale JS/CSS
+   and hydration mismatches. Already-controlled tabs heal on their next reload.
 
 ## Data & sync
 No new buckets/endpoints and **no *persisted* done marker** (it would lock out new builds — a fresh
@@ -119,6 +124,8 @@ platform-imposed, see [[6-offline-reading]] Edge cases.
   soft-navigation to `/app/library` (the one static route with a `loading.tsx`) serves its full
   shell — not a partial prefetch stub — so the page renders instead of stranding on the previous
   route.
+- [ ] Running `next dev` after a production-build session at the same origin unregisters the
+  leftover worker on the first `/app` load; dev pages never serve `/_next/static` from a SW cache.
 
 ## Open questions
 Freshness/refresh of never-revisited shells; whether to precache admin routes.

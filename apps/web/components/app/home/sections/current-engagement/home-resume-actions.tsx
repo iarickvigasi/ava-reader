@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { ReadBookLink } from "@/components/app/core/read-book-link";
+import { ReadLinkOpeningLabel } from "@/components/app/core/read-link-opening-label";
 import { ImportButton } from "@/components/app/shared/import-button";
 
 type HomeResumeActionsProps = {
@@ -25,7 +26,7 @@ export function HomeResumeActions({
           libraryItemId={libraryItemId}
           className="inline-flex min-h-12 items-center justify-center gap-2 rounded-control bg-brand-fill px-5 text-sm font-semibold uppercase tracking-[0.14em] text-brand-foreground shadow-(--shadow-card) transition hover:bg-brand-fill-strong"
         >
-          {t("resumeReading")}
+          <ReadLinkOpeningLabel>{t("resumeReading")}</ReadLinkOpeningLabel>
         </ReadBookLink>
         <ImportButton
           variant="soft"

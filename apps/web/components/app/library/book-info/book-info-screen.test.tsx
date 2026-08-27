@@ -37,6 +37,9 @@ vi.mock("next/link", () => ({
       {children}
     </a>
   ),
+  // ReadLinkOpeningLabel reads the link's pending state; static markup has no
+  // navigation, so it is always idle here.
+  useLinkStatus: () => ({ pending: false }),
 }));
 
 describe("library book info metadata", () => {
@@ -148,6 +151,19 @@ describe("library book info metadata", () => {
 
     expect(markup).not.toContain(">Catalog<");
     expect(markup).toContain("Frankenstein");
+  });
+});
+
+describe("library book info actions", () => {
+  it("mounts the Opening pending label inside the Read button", () => {
+    const markup = renderToStaticMarkup(
+      withIntl(
+        <LibraryBookInfoScreen backHref="/app/library" book={createBookInfo({})} />,
+      ),
+    );
+
+    expect(markup).toContain("Opening");
+    expect(markup).not.toContain("Opening...");
   });
 });
 

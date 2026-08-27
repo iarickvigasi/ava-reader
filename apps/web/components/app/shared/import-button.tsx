@@ -1,12 +1,11 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
-import { useAuth } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
+import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { UploadIcon } from "@/components/app/shared/app-icons";
+import { PendingLabel } from "@/components/app/shared/pending-label";
+import { useImportUpload } from "@/components/app/shared/use-import-upload";
 import { cn } from "@/lib/cn";
-import { getPublicApiBaseUrl } from "@/lib/api";
 
 type ImportButtonProps = {
   className?: string;
@@ -38,53 +37,16 @@ export function ImportButton({
 }: ImportButtonProps) {
   const t = useTranslations("shared.import");
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const { getToken, isLoaded, isSignedIn } = useAuth();
-  const router = useRouter();
   const [internalNotice, setInternalNotice] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
-  const resolvedNotice = notice ?? internalNotice;
-  const resolvedLabel = label ?? t("defaultLabel");
 
   function publishNotice(nextNotice: string | null) {
     setInternalNotice(nextNotice);
     onNoticeChangeAction?.(nextNotice);
   }
 
-  async function onFileSelected(file: File) {
-    if (!isLoaded || !isSignedIn) {
-      publishNotice(t("signIn"));
-      return;
-    }
-
-    const token = await getToken();
-
-    if (!token) {
-      publishNotice(t("noToken"));
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const response = await fetch(`${getPublicApiBaseUrl()}/api/library/import`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const payload = (await response.json().catch(() => null)) as
-        | { message?: string }
-        | null;
-      publishNotice(payload?.message ?? t("uploadFailed"));
-      return;
-    }
-
-    publishNotice(t("imported", { filename: file.name }));
-    router.refresh();
-  }
+  const { isUploading, upload } = useImportUpload({ onNotice: publishNotice });
+  const resolvedNotice = notice ?? internalNotice;
+  const resolvedLabel = label ?? t("defaultLabel");
 
   return (
     <div className="flex min-w-0 flex-col gap-2">
@@ -101,9 +63,7 @@ export function ImportButton({
             return;
           }
 
-          startTransition(() => {
-            void onFileSelected(file);
-          });
+          upload(file);
         }}
       />
 
@@ -115,11 +75,20 @@ export function ImportButton({
           variant === "icon" ? "" : "min-h-12",
           className,
         )}
-        disabled={isPending}
+        disabled={isUploading}
         onClick={() => inputRef.current?.click()}
       >
-        <UploadIcon className={cn("shrink-0", variant === "icon" ? "size-5" : "size-4")} />
-        {variant === "icon" ? <span className="sr-only">{resolvedLabel}</span> : isPending ? t("uploading") : resolvedLabel}
+        {variant === "icon" ? (
+          <>
+            <UploadIcon className="size-5 shrink-0" />
+            <span className="sr-only">{resolvedLabel}</span>
+          </>
+        ) : (
+          <PendingLabel pending={isUploading} pendingText={t("uploading")}>
+            <UploadIcon className="size-4 shrink-0" />
+            {resolvedLabel}
+          </PendingLabel>
+        )}
       </button>
 
       {!hideNotice && resolvedNotice ? (

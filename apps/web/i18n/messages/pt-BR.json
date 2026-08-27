@@ -317,11 +317,14 @@
   "shared": {
     "import": {
       "defaultLabel": "Importar livro",
-      "uploading": "Enviando...",
+      "uploading": "Enviando",
       "signIn": "Entre para enviar um livro.",
       "noToken": "Nenhum token de sessão estava disponível.",
       "uploadFailed": "Não foi possível concluir o envio.",
       "imported": "{filename} importado."
+    },
+    "readLink": {
+      "opening": "Abrindo"
     }
   },
   "nav": {

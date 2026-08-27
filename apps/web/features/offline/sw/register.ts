@@ -1,11 +1,15 @@
 // Client-side service-worker registration.
 //
 // Gated on production: registering in dev would cache Next's dev assets and
-// break HMR. The worker URL carries the build version as ?v=… so a new build
-// installs a fresh worker (different bytes) and evicts the previous caches on
-// activate.
+// break HMR. Dev goes further and evicts a leftover worker from a previous
+// production-build session at this origin — left in control, it cache-firsts
+// the dev server's mutable chunks (stale JS/CSS, hydration mismatches). The
+// worker URL carries the build version as ?v=… so a new build installs a
+// fresh worker (different bytes) and evicts the previous caches on activate.
 
 import { emitAppToast } from "@/components/app/core/app-toast";
+
+import { cleanupLeftoverServiceWorkers } from "./cleanup-leftover-workers";
 
 // Session-scoped dedupe key so a persistent failure doesn't spam the toast
 // on every page navigation within the same tab/session.
@@ -23,6 +27,10 @@ export function registerServiceWorker(options: RegisterOptions = {}): void {
     return;
   }
   if (process.env.NODE_ENV !== "production") {
+    void cleanupLeftoverServiceWorkers(
+      "serviceWorker" in navigator ? navigator.serviceWorker : undefined,
+      typeof caches === "undefined" ? undefined : caches,
+    );
     return;
   }
   if (!("serviceWorker" in navigator)) {

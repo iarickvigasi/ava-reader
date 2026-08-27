@@ -17,8 +17,9 @@ import {
 } from "@/features/offline/buckets/library";
 import { useNetworkState } from "@/features/offline/net/use-network-state";
 
+import { DotPulseIcon } from "@/components/app/shared/dot-pulse-icon";
+
 import { ActionCard } from "./action-card";
-import { DotPulseIcon } from "./dot-pulse-icon";
 import { resolveOfflineCard } from "./resolve-offline-card";
 
 // Save-for-offline card. The variant is chosen by `resolveOfflineCard` from

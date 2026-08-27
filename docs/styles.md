@@ -58,6 +58,10 @@ Interactive titles hover to `ink` (`hover:text-ink`; cards `group-hover:text-ink
 `soft-fill`), `danger` (bg-danger — destructive confirms). Sizes `md` (default) ·
 `sm` (compact, uppercase — modal/secondary actions). Reuse the primitive; don't
 hand-roll `<button className>`.
+**Pending actions**: a control firing a slow action swaps its label through `<PendingLabel>`
+(`components/app/shared/pending-label.tsx`) — stacked layers keep width stable while the pending
+text + trailing `<DotPulseIcon>` (an animated ellipsis on the baseline) fade in after 150ms, so
+instant completions never flash. Pending strings carry no literal "…" — the dots are the ellipsis.
 
 ## Inputs → `components/ui/text-input.tsx`
 `rounded-control`, filled (`bg-paper`/`bg-paper-strong`), no border, `outline-none`
