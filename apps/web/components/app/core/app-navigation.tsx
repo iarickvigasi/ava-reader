@@ -155,7 +155,7 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
         </div>
       </header>
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-line/60 bg-paper/96 backdrop-blur md:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-40 bg-paper/96 backdrop-blur md:hidden">
         <div className="mx-auto grid max-w-xl grid-cols-4 px-3">
           {items.map((item) => {
             const isActive = isAppNavigationItemActive(pathname, item.href);
@@ -271,7 +271,7 @@ function ReaderNavigation() {
         </div>
       </aside>
 
-      <div className="sticky top-0 z-40 border-b border-line/40 bg-paper/95 px-4 py-3 backdrop-blur md:hidden">
+      <div className="sticky top-0 z-40 bg-paper/95 px-4 py-3 backdrop-blur md:hidden">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <a

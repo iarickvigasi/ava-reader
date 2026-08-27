@@ -57,7 +57,7 @@ export function HighlightSection() {
         </div>
         <ChevronDownIcon className="size-3.5 text-copy" />
       </div>
-      <div className="flex items-center gap-3 border-t border-paper-strong/50 px-5 pb-6 pt-4">
+      <div className="flex items-center gap-3 px-5 pb-6 pt-4">
         {HIGHLIGHT_COLOR_ORDER.map((color) => (
           <HighlightColorSwatch
             key={color}

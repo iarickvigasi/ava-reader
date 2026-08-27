@@ -93,6 +93,6 @@ function ContentsBackdrop({ onClose }: { onClose: () => void }) {
 
 function ContentsBackgroundLayer() {
   return (
-    <div className="absolute inset-0 border-r border-line/35 bg-linear-to-r from-paper-strong/88 via-paper/78 to-paper/50 shadow-[10px_0_40px_rgba(31,27,24,0.05)] backdrop-blur-[7px] md:hidden" />
+    <div className="absolute inset-0 bg-linear-to-r from-paper-strong/88 via-paper/78 to-paper/50 shadow-[10px_0_40px_rgba(31,27,24,0.05)] backdrop-blur-[7px] md:hidden" />
   );
 }
