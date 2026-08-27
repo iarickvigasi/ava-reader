@@ -49,3 +49,5 @@ lives in specs/, architecture in architecture.md, setup commands in README.md. K
   only writes .next/dev/types, whose validator imports the stale .next/types/routes).
 - /dev/reader-resume-fixture is the only auth-free reader page (real multicol layout, fixture
   data); apps/web/app/dev/layout.tsx provides its ReaderUiProvider + shell box — keep it.
+- Device-only bugs (iOS Safari): tools/iphone-inspector/ evaluates JS inside the real logged-in
+  Safari tab over USB — recorders, pitfalls, and the full workflow are in its README.
