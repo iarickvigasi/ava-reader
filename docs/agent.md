@@ -28,6 +28,9 @@ product.md, dev.md, and the relevant docs/specs/*.md. For consequential decision
   file instead of duplicating.
 - Clean code: one function/component per file; split large components; logic in hooks + pure
   functions. Refactor toward the limits, never add to a violation.
+- Write code minimalistically — the smallest change that fixes the problem actually observed. Do
+  not pre-fix predicted problems: report them and document them in the owning spec (Known gap /
+  Open questions) instead.
 - Code reads as a sequence of named steps. A function that does several things is a short list of
   calls to small, intent-named helpers (find → clamp → pick → compose), each doing one thing; the
   helpers live below it in the same file, or in a use-*.ts hook / sibling module when they are a

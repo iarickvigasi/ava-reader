@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import type { ReaderBookPayload, ReaderChapterPayload } from "@/lib/api-types";
+import { useDropLiveSelection } from "../../selection/use-drop-live-selection";
 import { MobileCloseButton } from "../mobile-close-button";
 import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
@@ -21,6 +22,9 @@ export function ReaderAiToolboxOverlay({
   onClose,
 }: ReaderAiToolboxOverlayProps) {
   useCloseOnEscape(onClose);
+  // This panel is why the native callout must not render, so it owns dropping
+  // the live selection of a touch capture (spec 1.6).
+  useDropLiveSelection();
 
   return (
     <div className="pointer-events-none fixed inset-0 z-50">

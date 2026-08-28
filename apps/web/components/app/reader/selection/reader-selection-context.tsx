@@ -10,10 +10,15 @@ import {
 } from "react";
 import type { ReaderRangeLocator } from "@/lib/api-types";
 import type { HighlightColor } from "@/features/offline/buckets/highlights";
+import type { SelectionPointer } from "./types";
 
 type ReaderSelectionContextValue = {
   text: string | null;
   locator: ReaderRangeLocator | null;
+  // Which input built the captured selection; null when the panel was opened
+  // from a click on an existing highlight/comment rather than a live capture.
+  // The AI toolbox drops the live selection on open for "touch" captures.
+  pointer: SelectionPointer | null;
   // When the panel is open against an existing highlight (because the user
   // clicked one in the article, or because we matched their fresh selection
   // to a stored highlight), these point at the row the swatch click should
@@ -23,6 +28,7 @@ type ReaderSelectionContextValue = {
   setSelection: (next: {
     text: string;
     locator: ReaderRangeLocator | null;
+    pointer?: SelectionPointer | null;
     highlightId?: string | null;
     highlightColor?: HighlightColor | null;
   }) => void;
@@ -38,6 +44,7 @@ const ReaderSelectionContext =
 export function ReaderSelectionProvider({ children }: { children: ReactNode }) {
   const [text, setText] = useState<string | null>(null);
   const [locator, setLocator] = useState<ReaderRangeLocator | null>(null);
+  const [pointer, setPointer] = useState<SelectionPointer | null>(null);
   const [highlightId, setHighlightId] = useState<string | null>(null);
   const [highlightColor, setHighlightColor] = useState<HighlightColor | null>(
     null,
@@ -47,11 +54,13 @@ export function ReaderSelectionProvider({ children }: { children: ReactNode }) {
     ({
       text: nextText,
       locator: nextLocator,
+      pointer: nextPointer = null,
       highlightId: nextHighlightId = null,
       highlightColor: nextHighlightColor = null,
     }) => {
       setText(nextText);
       setLocator(nextLocator);
+      setPointer(nextPointer);
       setHighlightId(nextHighlightId);
       setHighlightColor(nextHighlightColor);
     },
@@ -68,6 +77,7 @@ export function ReaderSelectionProvider({ children }: { children: ReactNode }) {
   const clearSelection = useCallback(() => {
     setText(null);
     setLocator(null);
+    setPointer(null);
     setHighlightId(null);
     setHighlightColor(null);
   }, []);
@@ -76,6 +86,7 @@ export function ReaderSelectionProvider({ children }: { children: ReactNode }) {
     () => ({
       text,
       locator,
+      pointer,
       highlightId,
       highlightColor,
       setSelection,
@@ -85,6 +96,7 @@ export function ReaderSelectionProvider({ children }: { children: ReactNode }) {
     [
       text,
       locator,
+      pointer,
       highlightId,
       highlightColor,
       setSelection,

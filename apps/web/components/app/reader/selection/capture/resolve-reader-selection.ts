@@ -3,7 +3,7 @@ import type { ReaderSelection } from "../types";
 export function resolveReaderSelection(
   selection: Selection | null,
   container: HTMLElement | null,
-): ReaderSelection | null {
+): Omit<ReaderSelection, "pointer"> | null {
   if (
     !selection ||
     !container ||
