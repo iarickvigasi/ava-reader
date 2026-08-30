@@ -43,6 +43,10 @@ lives in specs/, architecture in architecture.md, setup commands in README.md. K
   host navigator.serviceWorker is undefined and registration silently no-ops. DevTools-Offline
   exercises SW fallbacks but keeps navigator.onLine true; wifi-off flips onLine but loopback still
   reaches the server — neither fully simulates production offline.
+- A dead API (Docker daemon down) reads as "only the covers are broken": home and library fall
+  back to the Dexie last-good payload (fetchServerApiTolerant) and book-info's shell hydrates
+  client-side, so all text renders, while every cover is an <img> at :4000 → BookCoverFallback.
+  `curl localhost:4000/api/library/covers/<bookId>` before suspecting cover code.
 - Turbopack fast refresh can desync: new utilities land in the compiled CSS while the element
   keeps old classes. Hard-refresh before debugging a className change that "didn't apply".
 - A new route/layout fails `pnpm typecheck` until `pnpm build` regenerates .next/types (next dev
