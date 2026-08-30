@@ -5,10 +5,11 @@ import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
+import { revalidateLibrary } from "@/features/offline/buckets/library";
 import { getPublicApiBaseUrl } from "@/lib/api";
 
 type UseImportUploadOptions = {
-  onNotice: (notice: string | null) => void;
+  onNoticeAction: (notice: string | null) => void;
 };
 
 // Upload state + side effects behind ImportButton. The transition callback is
@@ -16,7 +17,13 @@ type UseImportUploadOptions = {
 // version fired the promise without awaiting it, ending the transition (and
 // the "Uploading…" label) before the upload had even started. router.refresh()
 // runs inside the same action, extending the pending state into the refresh.
-export function useImportUpload({ onNotice }: UseImportUploadOptions) {
+//
+// router.refresh() alone doesn't show the new book on /app/library: that screen
+// reads the library bucket once hydrated and useHydrateLibrary treats its RSC
+// payload as a one-shot, so a refreshed payload repaints stale cache. Import
+// therefore revalidates the bucket itself (spec 7.1); the router refresh stays
+// for the RSC-only surfaces (home).
+export function useImportUpload({ onNoticeAction }: UseImportUploadOptions) {
   const t = useTranslations("shared.import");
   const { getToken, isLoaded, isSignedIn } = useAuth();
   const router = useRouter();
@@ -24,14 +31,14 @@ export function useImportUpload({ onNotice }: UseImportUploadOptions) {
 
   async function uploadFile(file: File) {
     if (!isLoaded || !isSignedIn) {
-      onNotice(t("signIn"));
+      onNoticeAction(t("signIn"));
       return;
     }
 
     const token = await getToken();
 
     if (!token) {
-      onNotice(t("noToken"));
+      onNoticeAction(t("noToken"));
       return;
     }
 
@@ -50,11 +57,12 @@ export function useImportUpload({ onNotice }: UseImportUploadOptions) {
       const payload = (await response.json().catch(() => null)) as
         | { message?: string }
         | null;
-      onNotice(payload?.message ?? t("uploadFailed"));
+      onNoticeAction(payload?.message ?? t("uploadFailed"));
       return;
     }
 
-    onNotice(t("imported", { filename: file.name }));
+    onNoticeAction(t("imported", { filename: file.name }));
+    await revalidateLibrary(getToken);
     router.refresh();
   }
 

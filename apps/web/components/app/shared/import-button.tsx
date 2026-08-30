@@ -42,7 +42,7 @@ export function ImportButton({
     onNoticeChangeAction?.(nextNotice);
   }
 
-  const { isUploading, upload } = useImportUpload({ onNotice: publishNotice });
+  const { isUploading, upload } = useImportUpload({ onNoticeAction: publishNotice });
   const resolvedNotice = notice ?? internalNotice;
   const resolvedLabel = label ?? t("defaultLabel");
   const isIcon = variant === "icon";
