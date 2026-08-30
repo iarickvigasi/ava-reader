@@ -25,8 +25,12 @@ reading lists" job. Split by subsystem, like [[1-reader/_overview]].
 - **Book card** (serialized) — {libraryItemId, slug, title, authors, coverImageUrl,
   completionPercent, lastReadAt, offlineRequested, primaryFormat}: the one shape every book list
   renders (library, collection pages; home mirrors it).
+- **Active item** — a LibraryItem with isArchived false. Every count, preview and sort in the
+  library runs over active items only; archived ones never render. Nothing archives yet, so in
+  practice this is currently every item.
 - **Engagement recency** = max(progress.lastReadAt, lastOpenedAt, addedAt) — the sort key for
-  every book list.
+  every book list, and (taken as a collection's maximum) the first key ordering the
+  collections themselves ([[7.1-library-screen]] §3).
 
 ## Scope (whole feature)
 - In: everything in the five sub-specs.

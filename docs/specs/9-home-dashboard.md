@@ -17,7 +17,9 @@ discovery. The daily entry point into the habit.
 1. Home loads a cached payload (recents, featured, stats, collections) and renders offline.
 2. Stats display server baseline augmented with unsynced local session/progress deltas.
 3. Current-book card resumes reading at the saved position; cards link into library/reader.
-4. Collections panel rows open the clicked collection's page (payload carries the collection slug);
+4. The collections panel lists the first six collections in the library's display order
+   ([[7-library/7.1-library-screen]] §3) — the six most relevant shelves, not the six with the
+   lowest sortOrder. Rows open the clicked collection's page (payload carries the slug);
    the panel header's "open all" opens the library. A cached payload predating the slug field
    falls back to the library link until revalidation refreshes it.
 5. Now Listening lays out as one grid in two shapes. Below `md` the cover and the title/author

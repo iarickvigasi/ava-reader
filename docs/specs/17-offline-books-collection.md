@@ -22,8 +22,10 @@ without a connection", on every device.
    appear here" instead of the generic no-books copy.
 2. Membership = `offlineRequested` ([[12-offline-save-sync]]), so it is the same set on every
    device. A book still downloading on this device is listed; its card reads "Download queued".
-3. It sorts **last** (`sortOrder: 2`), after Imported Books and Public Domain — its books are
-   duplicates of those shelves, and this keeps `collectSmartBooks` ordering unchanged.
+3. Its position is computed like every other shelf's ([[7-library/7.1-library-screen]] §3), not
+   fixed. Because its books are duplicates of the source shelves it usually ties them on recency
+   and then leads them on item count. `sortOrder: 2` survives only to order the book-info
+   collection chips.
 4. Like every SMART collection it cannot be renamed or deleted.
 
 ## Data & sync

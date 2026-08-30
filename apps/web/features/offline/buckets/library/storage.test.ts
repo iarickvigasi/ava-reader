@@ -76,6 +76,40 @@ describe("library bucket storage", () => {
     expect(view!.collections[0].books[0].title).toBe("Book A");
   });
 
+  it("reads collections back in display order, not Dexie's key order", async () => {
+    // Ids are deliberately ascending in the opposite order to the display
+    // rule, so a passing test can only mean the sort ran: Dexie returns rows
+    // by primary key. Both shelves hold the same freshly-read book, so the
+    // item count is what separates them.
+    const justOpened = {
+      libraryItemId: "lib-1",
+      slug: "book-a",
+      title: "Book A",
+      authors: ["A"],
+      coverImageUrl: null,
+      completionPercent: 10,
+      primaryFormat: "EPUB" as const,
+      lastReadAt: "2026-08-30T00:00:00Z",
+    };
+    const base = payload().collections[0];
+    await applyLibraryPayload({
+      summary: { booksCount: 1, collectionsCount: 3 },
+      collections: [
+        { ...base, id: "col-a", slug: "broad", name: "Broad", itemCount: 9, books: [justOpened] },
+        { ...base, id: "col-b", slug: "empty", name: "Empty", itemCount: 0, books: [] },
+        { ...base, id: "col-c", slug: "narrow", name: "Narrow", itemCount: 1, books: [justOpened] },
+      ],
+    });
+
+    const view = await readLibraryView();
+
+    expect(view!.collections.map((collection) => collection.name)).toEqual([
+      "Narrow",
+      "Broad",
+      "Empty",
+    ]);
+  });
+
   it("preserves savedOffline across a re-hydration", async () => {
     await applyLibraryPayload(payload());
     const db = getDb();

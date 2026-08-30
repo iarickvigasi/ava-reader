@@ -8,6 +8,7 @@ import { serializeCollectionSummary } from '../serialize-collection-summary';
 import { serializeLibraryBook } from '../serialize-library-book';
 import { loadCollectionOverviews } from './load-collection-overviews';
 import { loadPreviewItems } from './load-preview-items';
+import { orderCollectionsForDisplay } from './order-collections';
 
 const LIBRARY_COLLECTION_PREVIEW_LIMIT = 4;
 
@@ -22,16 +23,18 @@ export async function getLibraryOverview(options: {
     options.userId,
   );
 
-  const perCollection = collections.map((collection) => {
-    const activeItems = collection.items
-      .map((item) => item.libraryItem)
-      .filter((item) => !item.isArchived)
-      .sort(compareByEngagementDesc);
-    const previewIds = activeItems
-      .slice(0, LIBRARY_COLLECTION_PREVIEW_LIMIT)
-      .map((item) => item.id);
-    return { activeItems, collection, previewIds };
-  });
+  const perCollection = orderCollectionsForDisplay(
+    collections.map((collection) => {
+      const activeItems = collection.items
+        .map((item) => item.libraryItem)
+        .filter((item) => !item.isArchived)
+        .sort(compareByEngagementDesc);
+      const previewIds = activeItems
+        .slice(0, LIBRARY_COLLECTION_PREVIEW_LIMIT)
+        .map((item) => item.id);
+      return { activeItems, collection, previewIds };
+    }),
+  );
 
   const previewIds = Array.from(
     new Set(perCollection.flatMap(({ previewIds }) => previewIds)),

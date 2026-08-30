@@ -11,6 +11,8 @@ import type {
 
 import { isOfflineBooksCollection } from "@/lib/smart-collections";
 
+import { compareCollectionViews } from "./compare-collections";
+
 import {
   getDb,
   type CollectionMembershipRow,
@@ -55,24 +57,28 @@ export async function readLibraryView(): Promise<LibraryView | null> {
         }
       }
 
-      const views: CollectionView[] = collections.map((collection) => {
-        if (isOfflineBooksCollection(collection)) {
-          return collectionRowToView(
-            collection,
-            selectOfflineBookRows(items).map(toBookView),
-          );
-        }
-        const rawLinks = byCollection.get(collection.id) ?? [];
-        const sorted = [...rawLinks].sort((a, b) => a.order - b.order);
-        const books: LibraryBookView[] = [];
-        for (const link of sorted) {
-          const row = itemsById.get(link.libraryItemId);
-          if (row) {
-            books.push(toBookView(row));
+      const views: CollectionView[] = collections
+        .map((collection) => {
+          if (isOfflineBooksCollection(collection)) {
+            return collectionRowToView(
+              collection,
+              selectOfflineBookRows(items).map(toBookView),
+            );
           }
-        }
-        return collectionRowToView(collection, books);
-      });
+          const rawLinks = byCollection.get(collection.id) ?? [];
+          const sorted = [...rawLinks].sort((a, b) => a.order - b.order);
+          const books: LibraryBookView[] = [];
+          for (const link of sorted) {
+            const row = itemsById.get(link.libraryItemId);
+            if (row) {
+              books.push(toBookView(row));
+            }
+          }
+          return collectionRowToView(collection, books);
+        })
+        // Dexie returns rows in primary-key order; display order is computed
+        // here (docs/specs/7-library/7.1-library-screen.md §3).
+        .sort(compareCollectionViews);
 
       // Falls back to the rows on hand when nothing is stored yet (a cache
       // seeded only by a collection page), rather than to zero.

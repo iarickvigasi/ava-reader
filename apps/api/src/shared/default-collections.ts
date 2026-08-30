@@ -25,8 +25,11 @@ export const DEFAULT_SMART_COLLECTIONS = [
     smartKey: OFFLINE_BOOKS_SMART_KEY,
     name: 'Offline Books',
     description: "Books you've saved to read without a connection.",
-    // Sorts last: its books are duplicates of the two source shelves above, and
-    // this keeps the cache primer's first-seen ordering unchanged.
+    // sortOrder no longer decides where a shelf renders — the library and home
+    // lists compute display order from engagement and size
+    // (docs/specs/7-library/7.1-library-screen.md §3). It still orders the
+    // book-info collection chips (items/serialize-item-collections.ts) and is
+    // where a future manual reorder would land.
     sortOrder: 2,
   },
 ] as const;

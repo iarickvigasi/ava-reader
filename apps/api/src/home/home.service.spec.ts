@@ -148,8 +148,20 @@ describe('HomeService', () => {
         description: null,
         id: 'collection-1',
         items: [
-          { libraryItem: { progress: { completionPercent: 100 } } },
-          { libraryItem: { progress: null } },
+          {
+            libraryItem: {
+              addedAt: new Date('2026-08-01T00:00:00.000Z'),
+              lastOpenedAt: null,
+              progress: { completionPercent: 100, lastReadAt: null },
+            },
+          },
+          {
+            libraryItem: {
+              addedAt: new Date('2026-08-02T00:00:00.000Z'),
+              lastOpenedAt: null,
+              progress: null,
+            },
+          },
         ],
         kind: 'CUSTOM',
         name: 'Stoic Philosophy',

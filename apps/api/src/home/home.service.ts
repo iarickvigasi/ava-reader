@@ -9,6 +9,7 @@ import {
   mostRecentEngagementDate,
 } from '../shared/engagement-date';
 import { findPrimarySourceFile } from '../shared/primary-book-file';
+import { selectHomeCollections } from './collections-panel';
 
 // Match the same shape used by LibraryService: cover bytes are served from
 // `/api/library/covers/:bookId` and BookFile.readingProgressIndex is a multi-KB
@@ -137,7 +138,6 @@ export class HomeService {
           },
         },
         orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
-        take: 6,
       }),
       this.prisma.readingSessionSegment.aggregate({
         where: {
@@ -174,18 +174,7 @@ export class HomeService {
 
     return {
       collections: {
-        items: collections.map((collection) => ({
-          description: collection.description,
-          id: collection.id,
-          itemCount: collection.items.length,
-          kind: collection.kind,
-          name: collection.name,
-          slug: collection.slug,
-          smartKey: collection.smartKey,
-          unreadCount: collection.items.filter(
-            (item) => (item.libraryItem.progress?.completionPercent ?? 0) < 100,
-          ).length,
-        })),
+        items: selectHomeCollections(collections),
       },
       currentEngagement: currentEngagement
         ? serializeCurrentEngagement(currentEngagement)

@@ -388,20 +388,84 @@ describe('LibraryService', () => {
 
     const payload = await libraryService.getLibrary('clerk_123');
 
-    expect(payload.collections[0]).toMatchObject({
+    // The empty shelf is kept but sorts behind the filled one, so it trails
+    // the payload even though the query returned it first.
+    expect(payload.collections[1]).toMatchObject({
       description: 'Your personal uploads.',
       id: 'collection-empty',
       itemCount: 0,
       name: 'Empty Shelf',
       unreadCount: 0,
     });
-    expect(payload.collections[0].books).toEqual([]);
-    expect(payload.collections[1].books[0]).toMatchObject({
+    expect(payload.collections[1].books).toEqual([]);
+    expect(payload.collections[0].books[0]).toMatchObject({
       authors: [],
       lastReadAt: '2026-04-04T08:30:00.000Z',
       libraryItemId: 'library-c',
       title: 'Untitled Notes',
     });
+  });
+
+  it('orders collections by recency, then fewest items, empty shelves last', async () => {
+    // One book the user just opened, re-listed by the shelves that hold it —
+    // they tie on recency, so the item count is what separates them.
+    const justOpened = createLightweightItem({
+      addedAt: '2026-01-01T00:00:00.000Z',
+      id: 'library-recent',
+      lastReadAt: '2026-08-30T09:00:00.000Z',
+    });
+    const filler = (id: string) =>
+      createLightweightItem({ addedAt: '2026-02-01T00:00:00.000Z', id });
+    for (const id of [
+      'library-recent',
+      'library-f1',
+      'library-f2',
+      'library-stale',
+    ]) {
+      registerPreviewBook(createPreviewBook({ bookId: `book-${id}`, id }));
+    }
+    findManyCollections.mockResolvedValue([
+      createCollectionRecord({
+        id: 'collection-imported',
+        items: [justOpened, filler('library-f1'), filler('library-f2')],
+        name: 'Imported Books',
+      }),
+      createCollectionRecord({
+        id: 'collection-empty',
+        items: [],
+        name: 'Empty Shelf',
+      }),
+      createCollectionRecord({
+        id: 'collection-stale',
+        items: [
+          createLightweightItem({
+            addedAt: '2020-01-01T00:00:00.000Z',
+            id: 'library-stale',
+          }),
+        ],
+        name: 'Stale Shelf',
+      }),
+      createCollectionRecord({
+        id: 'collection-offline',
+        items: [justOpened, filler('library-f1')],
+        name: 'Offline Books',
+      }),
+      createCollectionRecord({
+        id: 'collection-scifi',
+        items: [justOpened],
+        name: 'Sci-fi',
+      }),
+    ]);
+
+    const payload = await libraryService.getLibrary('clerk_123');
+
+    expect(payload.collections.map((collection) => collection.name)).toEqual([
+      'Sci-fi',
+      'Offline Books',
+      'Imported Books',
+      'Stale Shelf',
+      'Empty Shelf',
+    ]);
   });
 
   it('treats a newer open as fresher engagement than an older lastReadAt', async () => {
