@@ -4,11 +4,11 @@ import { UsersService } from '../users/users.service';
 import { deleteCollection } from './collections/delete-collection';
 import { getCollection } from './collections/get-collection';
 import { renameCollection } from './collections/rename-collection';
-import { getLibraryItem } from './get-library-item';
 import { importBook } from './import/import-book';
+import { getLibraryItem } from './items/get-library-item';
+import { setOfflineRequested } from './items/set-offline-requested';
 import { addCatalogBook } from './membership/add-catalog-book';
 import { getLibraryOverview } from './overview/get-library-overview';
-import { setOfflineRequested } from './set-offline-requested';
 
 @Injectable()
 export class LibraryService {

@@ -1,41 +1,41 @@
 import JSZip from 'jszip';
-import { resolveZipPath } from '../shared/zip-utils';
-import type { ReaderChapter, ReaderPackage } from './reader-types';
+import { resolveZipPath } from '../../shared/zip-utils';
+import type { ReaderChapter, ReaderPackage } from '../reader-types';
 import {
   xmlParser,
   orderedXmlParser,
   firstAsArray,
   findFirstNodeByTag,
   getNodeChildren,
-} from './epub/xml-utils';
+} from './xml-utils';
 import {
   readZipText,
   readPackagePath,
   readEpubAssetAsDataUrl,
   readEpubAssetAsText,
-} from './epub/archive';
-import { loadChapterStylesheetHints } from './epub/css/load-chapter-stylesheets';
+} from './archive';
+import { loadChapterStylesheetHints } from './css/load-chapter-stylesheets';
 import {
   parseManifestItems,
   buildManifestById,
   resolveReadingOrderItems,
-} from './epub/manifest';
+} from './manifest';
 import {
   readTocEntries,
   findTocLabelForChapterCoord,
   createFallbackToc,
   resolveTocNodes,
-} from './epub/toc';
-import type { ParsedTocNode } from './epub/toc';
+} from './toc';
+import type { ParsedTocNode } from './toc';
 import {
   collectTocAnchorsBySpinePath,
   createChapterId,
   getChapterTitleFromBlocks,
   resolveChapterFallbackLabel,
   splitBlocksAtTocAnchors,
-} from './epub/chapters';
-import { normalizeBlocksFromNodes } from './epub/blocks';
-import { normalizeHrefForLookup } from './epub/archive';
+} from './chapters';
+import { normalizeBlocksFromNodes } from './blocks';
+import { normalizeHrefForLookup } from './archive';
 
 export async function buildReaderPackageFromEpub(input: {
   authors: string[];
@@ -93,7 +93,7 @@ export async function buildReaderPackageFromEpub(input: {
       );
       const parsedChapter = orderedXmlParser.parse(
         chapterText,
-      ) as import('./epub/xml-utils').OrderedNode[];
+      ) as import('./xml-utils').OrderedNode[];
       const bodyNode = findFirstNodeByTag(parsedChapter, 'body');
 
       if (!bodyNode) {

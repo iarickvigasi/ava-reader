@@ -1,15 +1,15 @@
 import { BadRequestException, type Logger } from '@nestjs/common';
 import { BookFileFormat, BookFileKind, ProcessingStatus } from '@prisma/client';
-import type { PrismaService } from '../prisma/prisma.service';
+import type { PrismaService } from '../../prisma/prisma.service';
 import { toBookPayload } from './book-payload';
 import { enqueueChapterPurposeAnalysis } from './enqueue-chapter-purpose-analysis';
 import {
   findReadyDerivedReader,
   type OwnedLibraryItem,
-} from './library-item-access';
-import { loadReaderPackage } from './package/load-reader-package';
-import { selectChapter, selectChapterWindow } from './package/select-chapter';
-import { createProgressSummary } from './progress/progress-summary';
+} from '../library-item-access';
+import { loadReaderPackage } from '../package/load-reader-package';
+import { selectChapter, selectChapterWindow } from '../package/select-chapter';
+import { createProgressSummary } from '../progress/progress-summary';
 import type { ReaderStatusPayload } from './reader-payload-types';
 
 // The four reader statuses and what produces each are specified in

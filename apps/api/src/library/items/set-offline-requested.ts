@@ -1,7 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
-import type { PrismaService } from '../prisma/prisma.service';
+import type { PrismaService } from '../../prisma/prisma.service';
 import { ownedLibraryItemWhere } from './library-item-access';
-import { syncOfflineBooksMembership } from './membership/offline-collection-membership';
+import { syncOfflineBooksMembership } from '../membership/offline-collection-membership';
 
 // Sets the per-user "keep this book available offline" intent. Synced across
 // devices: a new device reads this on its next library load and the cache

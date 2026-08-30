@@ -1,8 +1,8 @@
 import { BookFileFormat } from '@prisma/client';
 import { NotFoundException } from '@nestjs/common';
-import type { PrismaService } from '../prisma/prisma.service';
-import { buildCoverImageUrl } from '../shared/cover-image-url';
-import { findPrimarySourceFile } from '../shared/primary-book-file';
+import type { PrismaService } from '../../prisma/prisma.service';
+import { buildCoverImageUrl } from '../../shared/cover-image-url';
+import { findPrimarySourceFile } from '../../shared/primary-book-file';
 import { ownedLibraryItemWhere } from './library-item-access';
 import { sortAndSerializeCollections } from './serialize-item-collections';
 

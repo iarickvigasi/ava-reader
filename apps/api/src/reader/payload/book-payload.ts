@@ -1,5 +1,5 @@
 import type { BookFileFormat } from '@prisma/client';
-import type { OwnedLibraryItem } from './library-item-access';
+import type { OwnedLibraryItem } from '../library-item-access';
 import type { ReaderBookPayload } from './reader-payload-types';
 
 // Every status carries this, so the client can show the title and resume

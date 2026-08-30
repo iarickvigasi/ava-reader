@@ -4,7 +4,7 @@ import {
   findReadyDerivedReader,
   type OwnedLibraryItem,
 } from '../library-item-access';
-import type { ReaderProgressSummary } from '../reader-payload-types';
+import type { ReaderProgressSummary } from '../payload/reader-payload-types';
 import type { ReaderLocator } from '../reader-types';
 import { loadReadingProgressIndex } from './load-progress-index';
 import { computeProgressMetricsFromIndex } from './progress-metrics';

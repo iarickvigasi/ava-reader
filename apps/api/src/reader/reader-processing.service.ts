@@ -13,7 +13,7 @@ import {
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { checksumBuffer, toPrismaBytes } from '../shared/blob-utils';
-import { buildReaderPackageFromEpub } from './epub-reader-package';
+import { buildReaderPackageFromEpub } from './epub/epub-reader-package';
 import { estimatePageCount } from './page-estimate';
 import { buildReadingProgressIndex } from './progress/reading-progress-index';
 

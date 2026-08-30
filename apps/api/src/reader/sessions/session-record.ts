@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import type { ReaderSessionPayload } from '../reader-payload-types';
+import type { ReaderSessionPayload } from '../payload/reader-payload-types';
 
 export const lockedSessionSelect = {
   durationSeconds: true,

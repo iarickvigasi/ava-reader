@@ -3,7 +3,7 @@ import type {
   ReaderChapter,
   ReaderLocator,
   ReaderTocNode,
-} from './reader-types';
+} from '../reader-types';
 
 export type ReaderProgressSummary = {
   chapterLabel: string | null;

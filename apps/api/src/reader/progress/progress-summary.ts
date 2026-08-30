@@ -1,5 +1,5 @@
 import { decodeXmlEntities } from '../../shared/xml-entities';
-import type { ReaderProgressSummary } from '../reader-payload-types';
+import type { ReaderProgressSummary } from '../payload/reader-payload-types';
 import { parseLocator } from './locator';
 
 export function createProgressSummary(

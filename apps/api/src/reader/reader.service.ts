@@ -5,11 +5,11 @@ import { getOwnedLibraryItem } from './library-item-access';
 import { validateLocator } from './progress/locator';
 import { createProgressSummary } from './progress/progress-summary';
 import { updateReadingProgress } from './progress/update-progress';
-import { buildReaderPayload } from './reader-payload';
+import { buildReaderPayload } from './payload/reader-payload';
 import type {
   ReaderProgressSummary,
   ReaderStatusPayload,
-} from './reader-payload-types';
+} from './payload/reader-payload-types';
 import type { ReaderLocator } from './reader-types';
 import {
   resolveOfflineReplay,

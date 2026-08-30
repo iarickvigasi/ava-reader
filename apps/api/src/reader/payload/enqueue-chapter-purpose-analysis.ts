@@ -1,6 +1,6 @@
 import type { Logger } from '@nestjs/common';
-import { requestChapterPurposeAnalysis } from '../book-analysis/chapter-purpose/request-analysis';
-import type { PrismaService } from '../prisma/prisma.service';
+import { requestChapterPurposeAnalysis } from '../../book-analysis/chapter-purpose/request-analysis';
+import type { PrismaService } from '../../prisma/prisma.service';
 
 // Lazily analyse on first read: a bulk import of forty EPUBs costs nothing,
 // and only the books someone actually opens are ever paid for. Deliberately
