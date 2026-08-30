@@ -376,7 +376,8 @@
       "searchPlaceholder": "Пошук",
       "collectionsMetric": "Колекції",
       "booksMetric": "Книжки",
-      "newCollection": "Нова колекція"
+      "newCollection": "Нова колекція",
+      "importBook": "Імпортувати нову книжку"
     },
     "empty": {
       "eyebrow": "Бібліотека",

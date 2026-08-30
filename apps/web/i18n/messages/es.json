@@ -376,7 +376,8 @@
       "searchPlaceholder": "Buscar",
       "collectionsMetric": "Colecciones",
       "booksMetric": "Libros",
-      "newCollection": "Nueva colección"
+      "newCollection": "Nueva colección",
+      "importBook": "Importar nuevo libro"
     },
     "empty": {
       "eyebrow": "Biblioteca",

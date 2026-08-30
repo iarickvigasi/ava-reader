@@ -5,6 +5,24 @@ import { isAppNavigationItemActive } from "@/lib/app-navigation";
 import type { LibraryPayload } from "@/lib/api-types";
 import { withIntl } from "@/lib/test-utils/intl";
 
+// The header's import action mounts <ImportButton>, which reads Clerk auth and
+// the router for its post-upload refresh. Static markup mounts neither
+// provider, so both are stubbed the way import-button.test.tsx stubs them.
+vi.mock("@clerk/nextjs", () => ({
+  useAuth: () => ({
+    getToken: async () => "test-token",
+    isLoaded: true,
+    isSignedIn: true,
+  }),
+}));
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    refresh: vi.fn(),
+  }),
+}));
+
 vi.mock("next/link", () => ({
   default: ({
     children,
@@ -66,6 +84,21 @@ describe("library and navigation UI", () => {
     );
     expect(markup).toContain("Imported Books");
     expect(markup).toContain("No books are in this collection yet.");
+  });
+
+  it("pairs each header metric with the action that changes it", () => {
+    const markup = renderToStaticMarkup(
+      withIntl(<LibraryScreen library={createLibraryPayload()} />),
+    );
+
+    // Phone layout comes first in the DOM: New collection → Collections,
+    // Import new book → Books, action first in each row.
+    expect(markup).toMatch(
+      /New collection[\s\S]*?>Collections<\/p>[\s\S]*?Import new book[\s\S]*?>Books<\/p>/,
+    );
+    // Both actions again in the md+ bar — one copy per breakpoint layout.
+    expect(markup.split("New collection").length - 1).toBe(2);
+    expect(markup.split("Import new book").length - 1).toBe(2);
   });
 
   it("marks the library tab active in shared app navigation", () => {

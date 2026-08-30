@@ -19,7 +19,8 @@ export default async function LibraryPage() {
       {/* LibraryHydrator is a render-less client island that seeds the
           offline-first Dexie bucket from this RSC payload and revalidates
           against the API while online. The visual screen below stays
-          decoupled from auth/hydration so it remains SSR-testable. */}
+          decoupled from hydration; its only auth touchpoint is the header's
+          import action, which its test stubs, so it stays SSR-testable. */}
       <LibraryHydrator initial={library} />
       <LibraryScreen library={library} />
     </>

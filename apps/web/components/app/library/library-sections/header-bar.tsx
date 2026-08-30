@@ -1,61 +1,55 @@
-import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
 import type { LibraryPayload } from "@/lib/api-types";
-import { SummaryMetric, SummaryMetricSkeleton } from "./summary-metric";
+import { cn } from "@/lib/cn";
+import { LibraryHeaderBarDesktop } from "./header-bar-desktop";
+import { LibraryHeaderBarMobile } from "./header-bar-mobile";
+import { SummaryMetricSkeleton } from "./summary-metric";
 
-type LibraryHeaderBarProps = {
+export function LibraryHeaderBar({
+  summary,
+}: {
   summary: LibraryPayload["summary"];
-};
-
-export function LibraryHeaderBar({ summary }: LibraryHeaderBarProps) {
-  const t = useTranslations("library.header");
+}) {
   return (
     <section>
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
-        <label className="block md:w-88 md:max-w-88 md:shrink-0">
-          <span className="sr-only">{t("searchAria")}</span>
-          <input
-            aria-label={t("searchAria")}
-            className="h-10 w-full rounded-control bg-paper-strong/90 px-4 text-[0.82rem] uppercase tracking-[0.14em] text-title outline-none placeholder:text-muted"
-            placeholder={t("searchPlaceholder")}
-            readOnly
-            value=""
-          />
-        </label>
-
-        <div className="flex items-center gap-5 sm:gap-8 md:gap-10">
-          <SummaryMetric
-            label={t("collectionsMetric")}
-            value={summary.collectionsCount}
-          />
-          <SummaryMetric label={t("booksMetric")} value={summary.booksCount} />
-        </div>
-
-        <Button
-          type="button"
-          variant="primary"
-          className="min-h-10 w-full rounded-control px-4 text-[0.72rem] uppercase tracking-[0.14em] shadow-(--shadow-nav) md:ml-auto md:w-auto"
-        >
-          {t("newCollection")}
-        </Button>
-      </div>
+      <LibraryHeaderBarMobile summary={summary} />
+      <LibraryHeaderBarDesktop summary={summary} />
     </section>
   );
 }
 
+// One markup for both layouts: placeholders carry no meaning, so the phone's
+// metric/button rows and the desktop bar are the same boxes rearranged.
 export function LibraryHeaderBarSkeleton() {
   return (
     <section>
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
         <div className="h-10 w-full animate-pulse rounded-control bg-paper-strong md:w-88 md:max-w-88 md:shrink-0" />
 
-        <div className="flex items-center gap-5 sm:gap-8 md:gap-10">
+        <div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-6 md:flex md:gap-10">
+          <ButtonSkeleton className="w-34 md:hidden" />
           <SummaryMetricSkeleton />
+          <ButtonSkeleton className="w-34 md:hidden" />
           <SummaryMetricSkeleton />
         </div>
 
-        <div className="h-10 w-full animate-pulse rounded-control bg-paper-strong md:ml-auto md:w-34" />
+        <div className="ml-auto hidden md:flex md:items-center md:gap-3">
+          <ButtonSkeleton className="w-40" />
+          <ButtonSkeleton className="w-34" />
+        </div>
       </div>
     </section>
+  );
+}
+
+// Width comes from the call site: cn() is a plain join, so a default width here
+// would still emit alongside an override (styles.md).
+function ButtonSkeleton({ className }: { className?: string }) {
+  return (
+    <div
+      className={cn(
+        "h-10 animate-pulse rounded-control bg-paper-strong",
+        className,
+      )}
+    />
   );
 }

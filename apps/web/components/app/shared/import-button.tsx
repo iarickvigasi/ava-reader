@@ -4,6 +4,13 @@ import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { UploadIcon } from "@/components/app/shared/app-icons";
 import { PendingLabel } from "@/components/app/shared/pending-label";
+import {
+  importButtonBase,
+  importButtonSizes,
+  importButtonVariants,
+  type ImportButtonSize,
+  type ImportButtonVariant,
+} from "@/components/app/shared/import-button-styles";
 import { useImportUpload } from "@/components/app/shared/use-import-upload";
 import { cn } from "@/lib/cn";
 
@@ -13,19 +20,9 @@ type ImportButtonProps = {
   label?: string;
   notice?: string | null;
   onNoticeChangeAction?: (notice: string | null) => void;
-  variant?: "primary" | "soft" | "ghost" | "icon";
+  size?: ImportButtonSize;
+  variant?: ImportButtonVariant;
 };
-
-const styles = {
-  ghost:
-    "bg-white/40 text-ink hover:bg-white/70",
-  icon:
-    "size-11 rounded-control bg-white/55 text-ink hover:bg-white",
-  primary:
-    "bg-brand-fill text-brand-foreground shadow-(--shadow-card) hover:bg-brand-fill-strong",
-  soft:
-    "bg-soft-fill text-soft-foreground hover:bg-soft-tone-fill",
-} as const;
 
 export function ImportButton({
   className,
@@ -33,6 +30,7 @@ export function ImportButton({
   label,
   notice,
   onNoticeChangeAction,
+  size = "md",
   variant = "primary",
 }: ImportButtonProps) {
   const t = useTranslations("shared.import");
@@ -47,6 +45,7 @@ export function ImportButton({
   const { isUploading, upload } = useImportUpload({ onNotice: publishNotice });
   const resolvedNotice = notice ?? internalNotice;
   const resolvedLabel = label ?? t("defaultLabel");
+  const isIcon = variant === "icon";
 
   return (
     <div className="flex min-w-0 flex-col gap-2">
@@ -70,15 +69,15 @@ export function ImportButton({
       <button
         type="button"
         className={cn(
-          "inline-flex items-center justify-center gap-2 rounded-control px-4 py-3 text-sm font-semibold uppercase tracking-[0.14em] transition disabled:cursor-not-allowed disabled:opacity-60",
-          variant === "icon" ? styles.icon : styles[variant],
-          variant === "icon" ? "" : "min-h-12",
+          importButtonBase,
+          importButtonVariants[variant],
+          isIcon ? "" : importButtonSizes[size],
           className,
         )}
         disabled={isUploading}
         onClick={() => inputRef.current?.click()}
       >
-        {variant === "icon" ? (
+        {isIcon ? (
           <>
             <UploadIcon className="size-5 shrink-0" />
             <span className="sr-only">{resolvedLabel}</span>
