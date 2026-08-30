@@ -138,6 +138,26 @@ function createFixtureChapter(input: {
       kind: "paragraph",
       text: CITATIONS_TEXT,
     },
+    // Superscripts and subscripts (spec 1.1 §8): the exponent must read as a
+    // power rather than as `10500`, and this paragraph's leading must match
+    // its plain neighbours' — the reason the raised run sits at leading-0.
+    {
+      id: `${input.chapterId}::paragraph-scripts`,
+      inlines: [
+        { kind: "text", text: "Scientific notation must survive the parser: " },
+        { kind: "text", text: "10" },
+        { kind: "text", script: "super", text: "500" },
+        { kind: "text", text: " and 10" },
+        { kind: "text", script: "super", text: "-30" },
+        { kind: "text", text: ", the formula H" },
+        { kind: "text", script: "sub", text: "2" },
+        { kind: "text", text: "O, and a footnote marker" },
+        { href: "#fn1", kind: "text", script: "super", text: "1" },
+        { kind: "text", text: "." },
+      ],
+      kind: "paragraph",
+      text: "Scientific notation must survive the parser: 10500 and 10-30, the formula H2O, and a footnote marker1.",
+    },
   ];
 
   return {

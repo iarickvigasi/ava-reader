@@ -8,6 +8,10 @@ export type ReaderInline =
       fontWeight?: number;
       href?: string;
       italic?: boolean;
+      // Vertical position from a <sup>/<sub> wrapper. Absent means baseline.
+      // Carries no characters of its own, so locator textOffsets — counted
+      // over text data — are identical with or without it.
+      script?: "super" | "sub";
     }
   | {
       alt: string | null;

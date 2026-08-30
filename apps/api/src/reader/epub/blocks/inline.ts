@@ -14,6 +14,7 @@ type InlineState = {
   fontWeight?: number;
   href?: string;
   italic?: boolean;
+  script?: 'super' | 'sub';
 };
 
 export async function normalizeInlineNodes(
@@ -38,6 +39,7 @@ export async function normalizeInlineNodes(
           href: state.href,
           italic: state.italic,
           kind: 'text',
+          script: state.script,
           text: textValue,
         });
       }
@@ -53,6 +55,7 @@ export async function normalizeInlineNodes(
         href: nextState.href,
         italic: nextState.italic,
         kind: 'text',
+        script: nextState.script,
         text: '\n',
       });
       continue;
@@ -103,7 +106,21 @@ function deriveInlineState(node: OrderedNode, state: InlineState): InlineState {
     fontWeight: inlineFontWeight ?? state.fontWeight,
     href: tagName === 'a' ? (attrs['@_href'] ?? state.href) : state.href,
     italic: state.italic || tagName === 'em' || tagName === 'i',
+    script: resolveInlineScript(tagName) ?? state.script,
   };
+}
+
+// <sup>/<sub> place a run above or below the baseline. The nearest ancestor
+// wins, so a <sub> inside a <sup> reads as a subscript — matching how the
+// element's own vertical-align would override its parent's in CSS.
+function resolveInlineScript(tagName: string | undefined) {
+  if (tagName === 'sup') {
+    return 'super' as const;
+  }
+  if (tagName === 'sub') {
+    return 'sub' as const;
+  }
+  return undefined;
 }
 
 async function tryResolveImageInline(
@@ -147,7 +164,8 @@ function compactInlines(inlines: ReaderInline[]) {
       previous.bold === inline.bold &&
       previous.fontWeight === inline.fontWeight &&
       previous.italic === inline.italic &&
-      previous.href === inline.href
+      previous.href === inline.href &&
+      previous.script === inline.script
     ) {
       previous.text = `${previous.text}${inline.text}`;
       continue;
