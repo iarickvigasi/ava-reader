@@ -1,7 +1,7 @@
 # AI Toolbox
 
-> Status: shipped · Updated: 2026-08-24 · ADRs: [[2-openrouter-and-byo-key]] · Code:
-> apps/web/components/app/reader/overlays/ai-toolbox
+> Status: shipped · Updated: 2026-08-30 · ADRs: [[2-openrouter-and-byo-key]] · Code:
+> apps/web/components/app/reader/overlays/ai-toolbox, apps/api/src/ai-comments
 
 ## Summary
 On-selection AI tools — translate, explain, etymology — that stream an answer about the selected
@@ -53,10 +53,10 @@ selection — drift only ever affects the helper context.
 
 ## Data & sync
 Backed by the ai-comments bucket via generate.{translate|explain|etymology} mutations → POST
-/library/:itemId/ai-comments/generate/:kind → streamed structured output stored as a ready Ai
-Comment. All three payloads accept optional `context`, `bookTitle`, `author` (previously explain
-only). Target language from UserPreferences. The comment's status (queued → streaming → ready, or
-failed-with-reason) is the single source of truth the panel renders from.
+/library/:itemId/ai-comments/{translate|explain|etymology} → streamed structured output stored as
+a ready Ai Comment. All three payloads accept optional `context`, `bookTitle`, `author`
+(previously explain only). Target language from UserPreferences. The comment's status (queued →
+streaming → ready, or failed-with-reason) is the single source of truth the panel renders from.
 
 Server cache key (sourceHash) is hash(kind | text | targetLang | model | context | bookTitle |
 author) — context-bearing requests no longer collide across locations or books (previously the

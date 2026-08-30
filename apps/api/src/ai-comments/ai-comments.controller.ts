@@ -18,10 +18,8 @@ import type { Response } from 'express';
 import { ZodError } from 'zod';
 import type { AuthenticatedRequest } from '../auth/authenticated-request';
 import { ClerkAuthGuard } from '../auth/clerk-auth.guard';
-import {
-  AiCommentsService,
-  type AiToolGenerationResult,
-} from './ai-comments.service';
+import type { AiToolGenerationResult } from './ai-comment-types';
+import { AiCommentsService } from './ai-comments.service';
 import { etymologySchema, explainSchema, translateSchema } from './dto';
 
 @Controller('library/:libraryItemId/ai-comments')
