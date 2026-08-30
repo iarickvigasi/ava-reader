@@ -48,7 +48,7 @@ export function ImportButton({
   const isIcon = variant === "icon";
 
   return (
-    <div className="flex min-w-0 flex-col gap-2">
+    <div className="relative flex min-w-0 flex-col">
       <input
         ref={inputRef}
         type="file"
@@ -90,8 +90,14 @@ export function ImportButton({
         )}
       </button>
 
+      {/* Out of flow on purpose: in the library header the actions are
+          vertically centred, so a notice that grew this column would shove the
+          button upward (spec 7.1). Absolute keeps the button's box fixed
+          without reserving a blank line when there's no notice. */}
       {!hideNotice && resolvedNotice ? (
-        <p className="truncate text-xs tracking-[0.08em] text-muted">{resolvedNotice}</p>
+        <p className="absolute left-0 right-0 top-full mt-2 truncate text-xs tracking-[0.08em] text-muted">
+          {resolvedNotice}
+        </p>
       ) : null}
     </div>
   );
