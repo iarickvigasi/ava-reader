@@ -31,6 +31,12 @@ discovery. The daily entry point into the habit.
    mobile engagement card — not covers) swap their label to "Opening" + trailing ellipsis dots
    while reader navigation is pending; import buttons (incl. the empty-state first upload) show
    "Uploading" + dots from file pick until the refreshed payload renders.
+7. The quote block shows one quote from a fixed curated list, picked by UTC day so it changes once
+   a day and every viewer sees the same quote. Each pass through the list is shuffled by a seeded
+   PRNG keyed to the pass number: the order looks different every cycle, yet all quotes still show
+   before any repeats, and the pick stays reproducible on both server and client. Quotes stay in
+   their original English in all locales and live in a code list (`home-quotes.ts`), not in the
+   i18n message files.
 
 ## Data & sync
 home bucket (single payload row keyed to the user); composed with stats deltas. Service worker
@@ -49,6 +55,8 @@ current book.
       `<BookCover>` owns ratio and fit app-wide, see [styles.md](../styles.md).
 - [ ] Resume and import controls show their pending label (Opening/Uploading + trailing dots)
       while the action is in flight.
+- [ ] The quote block shows the same quote for a whole UTC day and a different one the next day,
+      cycling through the full list before repeating, in a different order each pass.
 - [ ] Below `md`, Now Listening renders the title beside the cover and never overflows its column
       at any phone width; from `md` the layout is unchanged.
 

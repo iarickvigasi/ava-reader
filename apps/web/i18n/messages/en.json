@@ -131,10 +131,6 @@
       "hoursReading": "Hours Reading",
       "aiComments": "AI Comments"
     },
-    "quote": {
-      "text": "Reading is a conversation. All books talk. But a good book listens as well.",
-      "attribution": "Mark Haddon"
-    },
     "collections": {
       "title": "Collections",
       "openAll": "Open all",

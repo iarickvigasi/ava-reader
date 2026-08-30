@@ -131,10 +131,6 @@
       "hoursReading": "Horas de lectura",
       "aiComments": "Comentarios de IA"
     },
-    "quote": {
-      "text": "Leer es una conversación. Todos los libros hablan, pero un buen libro también escucha.",
-      "attribution": "Mark Haddon"
-    },
     "collections": {
       "title": "Colecciones",
       "openAll": "Abrir todo",
