@@ -1,4 +1,5 @@
 import type { PrismaService } from '../../prisma/prisma.service';
+import { SOURCE_SMART_KEYS } from '../../shared/default-collections';
 import {
   compareByEngagementDesc,
   mostRecentEngagementDate,
@@ -59,11 +60,34 @@ export async function getLibraryOverview(options: {
       },
     ),
     summary: {
-      booksCount: perCollection.reduce(
-        (sum, { activeItems }) => sum + activeItems.length,
-        0,
-      ),
+      booksCount: countUniqueBooks(perCollection),
       collectionsCount: collections.length,
     },
   };
+}
+
+// The library-wide book total, read from the source shelves alone: together
+// they hold every book exactly once, while Offline Books and custom lists
+// re-list those same books. A shelf the user doesn't have yet is skipped, and
+// the Set keeps a book counted once even if the shelves ever overlap.
+function countUniqueBooks(
+  perCollection: Array<{
+    activeItems: Array<{ id: string }>;
+    collection: { smartKey: string | null };
+  }>,
+): number {
+  const bookIds = new Set<string>();
+  for (const { activeItems, collection } of perCollection) {
+    if (!isSourceShelf(collection.smartKey)) {
+      continue;
+    }
+    for (const item of activeItems) {
+      bookIds.add(item.id);
+    }
+  }
+  return bookIds.size;
+}
+
+function isSourceShelf(smartKey: string | null): boolean {
+  return smartKey !== null && SOURCE_SMART_KEYS.includes(smartKey);
 }

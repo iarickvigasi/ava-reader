@@ -111,6 +111,31 @@ describe("library bucket storage", () => {
     ]);
   });
 
+  it("reports the server's book total, not the number of cached rows", async () => {
+    // The overview payload carries only a per-collection preview, so counting
+    // cached rows would report 2 for a 9-book library.
+    const previewOnly: LibraryPayload = {
+      ...payload(),
+      summary: { booksCount: 9, collectionsCount: 1 },
+      collections: [
+        { ...payload().collections[0], itemCount: 9, unreadCount: 8 },
+      ],
+    };
+    await applyLibraryPayload(previewOnly);
+
+    const view = await readLibraryView();
+    expect(view!.summary.booksCount).toBe(9);
+  });
+
+  it("falls back to the cached row count when no server total is stored", async () => {
+    // A cache seeded only by a collection-page visit carries no library-wide
+    // summary; the count degrades to the rows on hand rather than to zero.
+    await applyCollectionPayload(payload().collections[0]);
+
+    const view = await readLibraryView();
+    expect(view!.summary.booksCount).toBe(2);
+  });
+
   it("readCollectionViewBySlug returns null for unknown slug", async () => {
     await applyLibraryPayload(payload());
     const view = await readCollectionViewBySlug("nope");

@@ -31,6 +31,15 @@ export const DEFAULT_SMART_COLLECTIONS = [
   },
 ] as const;
 
+// The shelves that partition the library: every book joins exactly the one
+// matching its source, never both. Derived from the list above rather than
+// spelled out again, so a new source shelf is picked up for free. Offline
+// Books carries no source and is excluded — it re-lists these shelves' books.
+export const SOURCE_SMART_KEYS: readonly string[] =
+  DEFAULT_SMART_COLLECTIONS.filter((collection) => 'source' in collection).map(
+    (collection) => collection.smartKey,
+  );
+
 export function getSmartCollectionKey(source: LibrarySource) {
   return source === LibrarySource.CATALOG
     ? 'public-domain-library'

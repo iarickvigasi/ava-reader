@@ -200,6 +200,103 @@ describe('LibraryService', () => {
     expect(payload.collections[0].books[1].coverImageUrl).toBeNull();
   });
 
+  it('counts a book re-listed by other shelves once in the library summary', async () => {
+    // The real shape: every book joins its source shelf, the ones saved
+    // offline also sit on Offline Books, and a custom list may re-list them
+    // again. Summing per-collection counts would report 10 for 6 books.
+    for (let i = 1; i <= 6; i++) {
+      registerPreviewBook(
+        createPreviewBook({ bookId: `book-${i}`, id: `library-${i}` }),
+      );
+    }
+    findManyCollections.mockResolvedValue([
+      createCollectionRecord({
+        id: 'collection-imported',
+        items: Array.from({ length: 6 }, (_, index) =>
+          createLightweightItem({ id: `library-${index + 1}` }),
+        ),
+        name: 'Imported Books',
+        smartKey: 'imported-library',
+      }),
+      createCollectionRecord({
+        id: 'collection-offline',
+        items: [createLightweightItem({ id: 'library-1' })],
+        name: 'Offline Books',
+        smartKey: 'offline-books',
+      }),
+      createCollectionRecord({
+        id: 'collection-custom',
+        items: [1, 2, 3].map((index) =>
+          createLightweightItem({ id: `library-${index}` }),
+        ),
+        kind: 'CUSTOM',
+        name: 'Late Night Reads',
+      }),
+    ]);
+
+    const payload = await libraryService.getLibrary('clerk_123');
+
+    expect(payload.summary).toEqual({ booksCount: 6, collectionsCount: 3 });
+  });
+
+  it('counts across both source shelves', async () => {
+    for (let i = 1; i <= 5; i++) {
+      registerPreviewBook(
+        createPreviewBook({ bookId: `book-${i}`, id: `library-${i}` }),
+      );
+    }
+    findManyCollections.mockResolvedValue([
+      createCollectionRecord({
+        id: 'collection-imported',
+        items: [createLightweightItem({ id: 'library-1' })],
+        name: 'Imported Books',
+        smartKey: 'imported-library',
+      }),
+      createCollectionRecord({
+        id: 'collection-catalog',
+        items: [2, 3, 4, 5].map((index) =>
+          createLightweightItem({ id: `library-${index}` }),
+        ),
+        name: 'Public Domain',
+        smartKey: 'public-domain-library',
+      }),
+    ]);
+
+    const payload = await libraryService.getLibrary('clerk_123');
+
+    expect(payload.summary.booksCount).toBe(5);
+  });
+
+  it('leaves out a book that only a custom list knows about', async () => {
+    // The total comes from the source shelves alone — see the known gap in
+    // spec 7.5.
+    for (let i = 1; i <= 3; i++) {
+      registerPreviewBook(
+        createPreviewBook({ bookId: `book-${i}`, id: `library-${i}` }),
+      );
+    }
+    findManyCollections.mockResolvedValue([
+      createCollectionRecord({
+        id: 'collection-imported',
+        items: [1, 2].map((index) =>
+          createLightweightItem({ id: `library-${index}` }),
+        ),
+        name: 'Imported Books',
+        smartKey: 'imported-library',
+      }),
+      createCollectionRecord({
+        id: 'collection-custom',
+        items: [createLightweightItem({ id: 'library-3' })],
+        kind: 'CUSTOM',
+        name: 'Late Night Reads',
+      }),
+    ]);
+
+    const payload = await libraryService.getLibrary('clerk_123');
+
+    expect(payload.summary.booksCount).toBe(2);
+  });
+
   it('limits library collection previews to the 4 most recent books', async () => {
     for (let i = 1; i <= 5; i++) {
       registerPreviewBook(
@@ -978,6 +1075,7 @@ function createCollectionRecord(
     kind: 'SMART' | 'CUSTOM';
     name: string;
     slug: string;
+    smartKey: string | null;
     sortOrder: number;
   }> = {},
 ) {

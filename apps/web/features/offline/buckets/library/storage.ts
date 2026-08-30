@@ -22,6 +22,10 @@ import {
   deriveOfflineCounts,
   selectOfflineBookRows,
 } from "./offline-books-view";
+import {
+  readLibraryBooksCountTx,
+  writeLibraryBooksCountTx,
+} from "./summary-store";
 import type { CollectionView, LibraryBookView, LibraryView } from "./types";
 
 // Reads everything we need to render the library screen in one transaction.
@@ -31,7 +35,7 @@ export async function readLibraryView(): Promise<LibraryView | null> {
   const db = getDb();
   return db.transaction(
     "r",
-    [db.libraryItems, db.collections, db.collectionMembership],
+    [db.libraryItems, db.collections, db.collectionMembership, db.meta],
     async () => {
       const collections = await db.collections.toArray();
       if (collections.length === 0) {
@@ -70,10 +74,14 @@ export async function readLibraryView(): Promise<LibraryView | null> {
         return collectionRowToView(collection, books);
       });
 
+      // Falls back to the rows on hand when nothing is stored yet (a cache
+      // seeded only by a collection page), rather than to zero.
+      const storedBooksCount = await readLibraryBooksCountTx();
+
       return {
         collections: views,
         summary: {
-          booksCount: items.length,
+          booksCount: storedBooksCount ?? items.length,
           collectionsCount: collections.length,
         },
       };
@@ -147,7 +155,7 @@ export async function applyLibraryPayload(payload: LibraryPayload) {
 
   await db.transaction(
     "rw",
-    [db.libraryItems, db.collections, db.collectionMembership],
+    [db.libraryItems, db.collections, db.collectionMembership, db.meta],
     async () => {
       // Preserve offline-save metadata when rewriting a row. If the user has
       // marked a book savedOffline, we must not stomp that flag from a
@@ -195,6 +203,7 @@ export async function applyLibraryPayload(payload: LibraryPayload) {
       await db.libraryItems.bulkPut(nextItems);
       await db.collections.bulkPut(collections);
       await db.collectionMembership.bulkPut(memberships);
+      await writeLibraryBooksCountTx(payload.summary.booksCount);
     },
   );
 }
