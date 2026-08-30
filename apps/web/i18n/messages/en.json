@@ -195,6 +195,7 @@
     },
     "listening": {
       "title": "Now Listening",
+      "comingSoon": "Listening mode coming soon",
       "skipBackward": "Skip backward",
       "skipForward": "Skip forward",
       "play": "Play audio preview",

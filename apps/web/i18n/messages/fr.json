@@ -195,6 +195,7 @@
     },
     "listening": {
       "title": "En écoute",
+      "comingSoon": "Le mode écoute arrive bientôt",
       "skipBackward": "Reculer",
       "skipForward": "Avancer",
       "play": "Lire l'aperçu audio",

@@ -3,13 +3,19 @@
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { BackwardIcon, ForwardIcon, PauseIcon, PlayIcon } from "@/components/app/shared/app-icons";
+import { cn } from "@/lib/cn";
 
-export function ListeningControls() {
+export function ListeningControls({ className }: { className?: string }) {
   const t = useTranslations("home.listening");
   const [isPlaying, setIsPlaying] = useState(false);
 
   return (
-    <div className="flex items-center justify-center gap-10 pt-2 text-copy">
+    <div
+      className={cn(
+        "flex items-center justify-center gap-10 pt-2 text-copy",
+        className,
+      )}
+    >
       <button
         type="button"
         className="inline-flex size-10 items-center justify-center text-copy transition hover:text-ink"

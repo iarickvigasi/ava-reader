@@ -195,6 +195,7 @@
     },
     "listening": {
       "title": "Wird gehört",
+      "comingSoon": "Hörmodus folgt in Kürze",
       "skipBackward": "Zurückspringen",
       "skipForward": "Vorspringen",
       "play": "Audiovorschau abspielen",

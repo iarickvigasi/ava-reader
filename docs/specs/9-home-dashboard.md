@@ -1,6 +1,6 @@
 # Home dashboard
 
-> Status: shipped · Updated: 2026-08-26 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
+> Status: shipped · Updated: 2026-08-30 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
 > apps/web/components/app/home, apps/web/features/offline/buckets/home
 
 ## Summary
@@ -9,7 +9,8 @@ discovery. The daily entry point into the habit.
 
 ## Scope
 - In: current-book resume card, stats (hours, highlights, volumes) with local deltas, daily mastery
-  chart, recent annotations, featured/collections panels — offline-capable.
+  chart, recent annotations, featured/collections panels — offline-capable; a Now Listening
+  placeholder module (static transport, no audio).
 - Non-goals: full discovery engine (explore — future), insights analytics page (future).
 
 ## Behaviour
@@ -19,7 +20,12 @@ discovery. The daily entry point into the habit.
 4. Collections panel rows open the clicked collection's page (payload carries the collection slug);
    the panel header's "open all" opens the library. A cached payload predating the slug field
    falls back to the library link until revalidation refreshes it.
-5. Slow-action feedback ([styles.md](../styles.md) §Buttons): resume surfaces (desktop button,
+5. Now Listening lays out as one grid in two shapes. Below `md` the cover and the title/author
+   share a row — the cover column is a percentage of the card, so cover and title scale together
+   on a narrow phone — and the "coming soon" line, the times/bar and the transport each span the
+   full card width beneath it. From `md` the cover spans the whole stack in its own column.
+   Titles too wide for the column hyphenate (`hyphens-auto`, dictionary keyed off `<html lang>`).
+6. Slow-action feedback ([styles.md](../styles.md) §Buttons): resume surfaces (desktop button,
    mobile engagement card — not covers) swap their label to "Opening" + trailing ellipsis dots
    while reader navigation is pending; import buttons (incl. the empty-state first upload) show
    "Uploading" + dots from file pick until the refreshed payload renders.
@@ -41,6 +47,16 @@ current book.
       `<BookCover>` owns ratio and fit app-wide, see [styles.md](../styles.md).
 - [ ] Resume and import controls show their pending label (Opening/Uploading + trailing dots)
       while the action is in flight.
+- [ ] Below `md`, Now Listening renders the title beside the cover and never overflows its column
+      at any phone width; from `md` the layout is unchanged.
+
+## Known gaps
+- A title long enough to overrun its column falls back to a mid-word break with no hyphen where the
+  browser ships no hyphenation dictionary (embedded Chromium; iOS Safari hyphenates). Past five
+  lines it truncates — `line-clamp-5`.
+- `listening.authorLine` carries authors only; the "coming soon" line is web copy. A cached payload
+  written before that split still holds the old combined string, so the suffix shows twice until
+  revalidation refreshes the home bucket.
 
 ## Open questions
 Personalized recommendations source; insights page scope.

@@ -201,7 +201,7 @@ export class HomeService {
       },
       listening: currentEngagement
         ? {
-            authorLine: `${formatAuthors(currentEngagement.book.authors)} • Listening mode coming soon`,
+            authorLine: formatAuthors(currentEngagement.book.authors),
             progressPercent: currentEngagement.progress?.completionPercent ?? 0,
             title: currentEngagement.book.title,
           }
