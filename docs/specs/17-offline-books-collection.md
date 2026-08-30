@@ -36,11 +36,19 @@ the `CollectionItem` together. No schema change is needed; `pnpm db:backfill-off
 the row for every user holding a `LibraryItem` and seeds membership from `offlineRequested = true`.
 
 **Client membership is derived, not read.** For this `smartKey` the library bucket ignores the
-cached `collectionMembership` rows and filters `libraryItems` on `offlineRequested`, deriving
-`itemCount`/`unreadCount` alongside. Same rule the server applies, evaluated locally — so a toggle
-made offline moves the book immediately instead of waiting for the dirty PATCH to flush. The server
-row still owns id, slug, name, kind and description. Order stays engagement-based, matching
-`compareLibraryItemsByEngagement`.
+cached `collectionMembership` rows and filters `libraryItems` on `offlineRequested`. Same rule the
+server applies, evaluated locally — so a toggle made offline moves the book immediately instead of
+waiting for the dirty PATCH to flush. The server row still owns id, slug, name, kind and
+description. Order stays engagement-based, matching `compareLibraryItemsByEngagement`.
+
+**The counts are not derived that way.** A library payload caches only each collection's 4-book
+preview, so counting cached rows would report a fraction of the shelf — and that fraction feeds
+the display-order tiebreak ([[7-library/7.1-library-screen]] §3). itemCount/unreadCount take the
+server's stored counts, which cover the whole collection, and adjust them by the toggles the
+server hasn't seen: rows whose `offlineRequested` differs from `offlineRequestedBaseline`, the
+value the last payload carried. The baseline follows the payload, never the PATCH ack — clearing
+it on the ack would drop a toggle out of the count while the cached collection row still held the
+pre-toggle total, so the save would appear to undo itself.
 
 ## Edge cases
 Toggle while offline → derived membership updates at once; the PATCH follows on reconnect. Saved on
@@ -50,13 +58,18 @@ another device → listed here before the content arrives; the primer fetches it
 cascades and `serializeCollection` filters archived. A pre-existing CUSTOM collection named
 "Offline Books" → the unique `(userId, name)` is resolved the way the slug already is, so import
 cannot fail on it; the stored name becomes "Offline Books (2)" while the shelf still *displays* the
-localized name, so that user sees two same-titled shelves until they rename theirs. 
+localized name, so that user sees two same-titled shelves until they rename theirs. The count's
+base is the last *synced* total, so a book-info visit can refresh a row's baseline without
+refreshing the shelf's stored total; counts clamp at zero and the next library load restores both
+together.
 
 ## Acceptance criteria
 - [ ] A user with books but nothing saved offline sees the empty Offline Books shelf, localized.
 - [ ] Saving a book offline adds it to the shelf; removing it takes it off, both while offline.
 - [ ] A book saved on device A appears on the shelf on device B after its next library load.
 - [ ] The shelf renders from cache while offline and lists exactly the `offlineRequested` books.
+- [ ] Its item count matches the collection page's, not the number of preview cards on screen, and
+      moves by one the moment a book is saved or released while offline.
 - [ ] Neither Offline Books nor any other SMART collection can be renamed or deleted, API included.
 - [ ] Existing users get the collection without importing a new book.
 

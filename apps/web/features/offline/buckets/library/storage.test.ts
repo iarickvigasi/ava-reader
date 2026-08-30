@@ -110,6 +110,71 @@ describe("library bucket storage", () => {
     ]);
   });
 
+  it("reports the offline shelf's whole count, not just its cached previews", async () => {
+    const saved = {
+      ...payload().collections[0].books[0],
+      offlineRequested: true,
+    };
+    const offlineShelf = {
+      ...payload().collections[0],
+      id: "col-offline",
+      slug: "offline-books",
+      kind: "SMART" as const,
+      name: "Offline Books",
+      smartKey: "offline-books",
+      // The server says twelve; a library payload only ever ships four.
+      itemCount: 12,
+      unreadCount: 7,
+      books: [saved],
+    };
+    await applyLibraryPayload({
+      summary: { booksCount: 12, collectionsCount: 1 },
+      collections: [offlineShelf],
+    });
+
+    const view = await readLibraryView();
+
+    expect(view!.collections[0]).toMatchObject({
+      itemCount: 12,
+      unreadCount: 7,
+    });
+    expect(view!.collections[0].books).toHaveLength(1);
+  });
+
+  it("moves the offline count by one when a book is toggled locally", async () => {
+    const unsaved = payload().collections[0].books[0];
+    await applyLibraryPayload({
+      summary: { booksCount: 12, collectionsCount: 1 },
+      collections: [
+        {
+          ...payload().collections[0],
+          id: "col-offline",
+          slug: "offline-books",
+          kind: "SMART" as const,
+          name: "Offline Books",
+          smartKey: "offline-books",
+          itemCount: 12,
+          unreadCount: 7,
+          books: [{ ...unsaved, offlineRequested: false }],
+        },
+      ],
+    });
+
+    await setOfflineRequestedLocal(unsaved.libraryItemId, true);
+    const saved = await readLibraryView();
+    expect(saved!.collections[0]).toMatchObject({
+      itemCount: 13,
+      unreadCount: 8,
+    });
+
+    await setOfflineRequestedLocal(unsaved.libraryItemId, false);
+    const released = await readLibraryView();
+    expect(released!.collections[0]).toMatchObject({
+      itemCount: 12,
+      unreadCount: 7,
+    });
+  });
+
   it("preserves savedOffline across a re-hydration", async () => {
     await applyLibraryPayload(payload());
     const db = getDb();

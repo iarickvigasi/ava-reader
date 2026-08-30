@@ -7,8 +7,6 @@
 
 import type { LibraryItemRow } from "../../db";
 
-import type { LibraryBookView } from "./types";
-
 const FULLY_READ_PERCENT = 100;
 
 // Ordered by the same engagement timestamp the server sorts collections by;
@@ -22,15 +20,47 @@ export function selectOfflineBookRows(
     .sort((left, right) => engagementMs(right) - engagementMs(left));
 }
 
-// The server's itemCount/unreadCount for this collection describe the last
-// synced membership, so they have to be recomputed alongside the derived books.
-export function deriveOfflineCounts(books: LibraryBookView[]) {
+// The counts, unlike the book list, cannot be derived from the cached rows: a
+// library payload stores only each collection's 4-book preview, so counting
+// `offlineRequested` rows reports a fraction of the shelf. The server's stored
+// counts do cover the whole collection, so they are the base — adjusted by the
+// toggles the server hasn't seen yet, which keeps an offline save visible in
+// the number straight away.
+export function resolveOfflineCounts(
+  stored: { itemCount: number; unreadCount: number },
+  rows: LibraryItemRow[],
+) {
+  const added = rows.filter(isLocallyAdded);
+  const removed = rows.filter(isLocallyRemoved);
   return {
-    itemCount: books.length,
-    unreadCount: books.filter(
-      (book) => book.completionPercent < FULLY_READ_PERCENT,
-    ).length,
+    // Clamped because the base is the last *synced* count: a book-info visit
+    // can refresh a row's baseline without refreshing the shelf's stored
+    // total, so a burst of un-saves can briefly outrun it. The next library
+    // load restores both together.
+    itemCount: atLeastZero(stored.itemCount + added.length - removed.length),
+    unreadCount: atLeastZero(
+      stored.unreadCount + countUnread(added) - countUnread(removed),
+    ),
   };
+}
+
+// Saved locally since the last payload — the server's count is missing it.
+function isLocallyAdded(row: LibraryItemRow): boolean {
+  return row.offlineRequested === true && row.offlineRequestedBaseline === false;
+}
+
+// Un-saved locally since the last payload — the server's count still has it.
+function isLocallyRemoved(row: LibraryItemRow): boolean {
+  return !row.offlineRequested && row.offlineRequestedBaseline === true;
+}
+
+function countUnread(rows: LibraryItemRow[]): number {
+  return rows.filter((row) => row.completionPercent < FULLY_READ_PERCENT)
+    .length;
+}
+
+function atLeastZero(count: number): number {
+  return Math.max(0, count);
 }
 
 function engagementMs(row: LibraryItemRow): number {

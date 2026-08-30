@@ -21,7 +21,7 @@ import {
 } from "../../db";
 
 import {
-  deriveOfflineCounts,
+  resolveOfflineCounts,
   selectOfflineBookRows,
 } from "./offline-books-view";
 import {
@@ -63,6 +63,7 @@ export async function readLibraryView(): Promise<LibraryView | null> {
             return collectionRowToView(
               collection,
               selectOfflineBookRows(items).map(toBookView),
+              resolveOfflineCounts(collection, items),
             );
           }
           const rawLinks = byCollection.get(collection.id) ?? [];
@@ -113,6 +114,7 @@ export async function readCollectionViewBySlug(
         return collectionRowToView(
           collection,
           selectOfflineBookRows(rows).map(toBookView),
+          resolveOfflineCounts(collection, rows),
         );
       }
       const links = await db.collectionMembership
@@ -386,6 +388,7 @@ function bookToItemRow(
     primaryFormat: book.primaryFormat,
     lastReadAt: book.lastReadAt ?? null,
     offlineRequested: book.offlineRequested ?? false,
+    offlineRequestedBaseline: book.offlineRequested ?? false,
     offlineRequestedDirty: false,
     coverBlob: null,
     savedOffline: false,
@@ -448,6 +451,10 @@ export async function applyBookInfoPayload(
         ? prior.offlineRequested ?? false
         : book.offlineRequested ?? prior?.offlineRequested ?? false,
       offlineRequestedDirty: prior?.offlineRequestedDirty ?? false,
+      // Straight from the payload, even when a dirty local toggle wins above:
+      // that difference is exactly what the shelf's count needs to see.
+      offlineRequestedBaseline:
+        book.offlineRequested ?? prior?.offlineRequestedBaseline ?? false,
       serverUpdatedAt: prior?.serverUpdatedAt ?? nowIso,
       details: {
         addedAt: book.addedAt,
@@ -541,14 +548,13 @@ function toBookView(row: LibraryItemRow): LibraryBookView {
 function collectionRowToView(
   collection: CollectionRow,
   books: LibraryBookView[],
+  // Defaults to the server's counts; the Offline Books shelf passes its own,
+  // since its membership is evaluated locally (offline-books-view.ts).
+  counts: { itemCount: number; unreadCount: number } = {
+    itemCount: collection.itemCount,
+    unreadCount: collection.unreadCount,
+  },
 ): CollectionView {
-  // The offline shelf's books are derived from `offlineRequested`, so its
-  // server-sent counts describe the last synced membership and must be
-  // recomputed to match what we're about to render.
-  const counts = isOfflineBooksCollection(collection)
-    ? deriveOfflineCounts(books)
-    : { itemCount: collection.itemCount, unreadCount: collection.unreadCount };
-
   return {
     id: collection.id,
     slug: collection.slug,

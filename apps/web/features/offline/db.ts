@@ -54,6 +54,15 @@ export type LibraryItemRow = LibraryCardBook & {
   // PATCHed to the server; the sync flush drains it and a revalidation
   // preserves the local value while it's still dirty.
   offlineRequestedDirty?: boolean;
+  // What the last server payload said `offlineRequested` was. Compared against
+  // the live value to find toggles the server hasn't counted yet, so the
+  // Offline Books shelf can report the server's whole-collection count plus
+  // those (see buckets/library/offline-books-view.ts). Deliberately tracks the
+  // payload, not the PATCH: clearing it on a flush ack would drop the toggle
+  // out of the count while the cached collection row still held the old total.
+  // Undefined on rows cached before this field existed — those contribute
+  // nothing, so no schema version bump is needed.
+  offlineRequestedBaseline?: boolean;
   // Server-side updatedAt of the LibraryItem row, used to short-circuit
   // unchanged revalidations.
   serverUpdatedAt: string | null;
