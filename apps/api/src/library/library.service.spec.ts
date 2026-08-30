@@ -956,10 +956,14 @@ describe('LibraryService', () => {
 
     const payload = await libraryService.setOfflineRequested(
       'clerk_123',
-      'a-book',
+      'item-1',
       true,
     );
 
+    expect(findFirstLibraryItem).toHaveBeenCalledWith({
+      where: { id: 'item-1', isArchived: false, userId: 'user-1' },
+      select: { id: true },
+    });
     expect(updateLibraryItem).toHaveBeenCalledWith({
       where: { id: 'item-1' },
       data: { offlineRequested: true },
@@ -998,7 +1002,7 @@ describe('LibraryService', () => {
     });
     findUniqueCollection.mockResolvedValue({ id: 'offline-collection' });
 
-    await libraryService.setOfflineRequested('clerk_123', 'a-book', true);
+    await libraryService.setOfflineRequested('clerk_123', 'item-1', true);
 
     expect(findUniqueCollection).toHaveBeenCalledWith({
       where: {
@@ -1031,7 +1035,7 @@ describe('LibraryService', () => {
     });
     findUniqueCollection.mockResolvedValue({ id: 'offline-collection' });
 
-    await libraryService.setOfflineRequested('clerk_123', 'a-book', false);
+    await libraryService.setOfflineRequested('clerk_123', 'item-1', false);
 
     expect(deleteManyCollectionItems).toHaveBeenCalledWith({
       where: {
@@ -1051,7 +1055,7 @@ describe('LibraryService', () => {
     });
     findUniqueCollection.mockResolvedValue(null);
 
-    await libraryService.setOfflineRequested('clerk_123', 'a-book', true);
+    await libraryService.setOfflineRequested('clerk_123', 'item-1', true);
 
     expect(upsertCollectionItem).not.toHaveBeenCalled();
     expect(deleteManyCollectionItems).not.toHaveBeenCalled();

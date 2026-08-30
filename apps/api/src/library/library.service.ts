@@ -73,8 +73,8 @@ export class LibraryService {
   ) {
     const user = await this.user(clerkUserId);
     return setOfflineRequested({
+      libraryItemId,
       prisma: this.prisma,
-      ref: libraryItemId,
       requested,
       userId: user.id,
     });

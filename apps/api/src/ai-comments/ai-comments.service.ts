@@ -10,7 +10,7 @@ import type {
 import { deleteAiComment } from './comments/delete-comment';
 import { listAiComments } from './comments/list-comments';
 import { generateAiComment } from './generate/generate-comment';
-import { requireOwnedLibraryItem } from './library-item-access';
+import { requireOwnedLibraryItem } from '../shared/owned-library-item';
 
 @Injectable()
 export class AiCommentsService {

@@ -1,20 +1,24 @@
 import { NotFoundException } from '@nestjs/common';
 import type { PrismaService } from '../../prisma/prisma.service';
-import { ownedLibraryItemWhere } from './library-item-access';
 import { syncOfflineBooksMembership } from '../membership/offline-collection-membership';
 
 // Sets the per-user "keep this book available offline" intent. Synced across
 // devices: a new device reads this on its next library load and the cache
 // primer downloads the content (see specs/12-offline-save-sync). Idempotent;
-// accepts either a libraryItemId or a slug like the read endpoints.
+// id-only — by the time the switch is reachable the client holds the id
+// from a library payload (see specs/7-library/7.5-library-payloads.md §7).
 export async function setOfflineRequested(options: {
+  libraryItemId: string;
   prisma: PrismaService;
-  ref: string;
   requested: boolean;
   userId: string;
 }) {
   const item = await options.prisma.libraryItem.findFirst({
-    where: ownedLibraryItemWhere(options.userId, options.ref),
+    where: {
+      id: options.libraryItemId,
+      isArchived: false,
+      userId: options.userId,
+    },
     select: { id: true },
   });
   if (!item) {

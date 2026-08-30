@@ -1,6 +1,8 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
+import { requireOwnedLibraryItem } from '../shared/owned-library-item';
+import { parseLocator } from '../shared/parse-locator';
 
 export type AnnotationListItem = {
   id: string;
@@ -37,17 +39,10 @@ export class AnnotationsService {
     clerkUserId: string,
     libraryItemId: string,
   ): Promise<AnnotationListItem[]> {
-    const user = await this.users.getCurrentUserRecord(clerkUserId);
-    const libraryItem = await this.prisma.libraryItem.findFirst({
-      where: { id: libraryItemId, userId: user.id },
-      select: { id: true },
-    });
-    if (!libraryItem) {
-      throw new NotFoundException('Library item not found.');
-    }
+    const owned = await this.ownedLibraryItem(clerkUserId, libraryItemId);
 
     const rows = await this.prisma.annotation.findMany({
-      where: { userId: user.id, libraryItemId: libraryItem.id },
+      where: { userId: owned.userId, libraryItemId: owned.libraryItemId },
       orderBy: { createdAt: 'desc' },
       select: {
         id: true,
@@ -61,7 +56,7 @@ export class AnnotationsService {
 
     return rows.map((row) => ({
       ...row,
-      locator: parseLocator(row.locator),
+      locator: parseLocator(row.locator, 'Annotation'),
     }));
   }
 
@@ -71,14 +66,10 @@ export class AnnotationsService {
   // belongs to another user (i.e. id collision across accounts), we treat it
   // as a fresh row and 404 on update so the queue stops retrying.
   async upsert(input: UpsertInput): Promise<AnnotationListItem> {
-    const user = await this.users.getCurrentUserRecord(input.clerkUserId);
-    const libraryItem = await this.prisma.libraryItem.findFirst({
-      where: { id: input.libraryItemId, userId: user.id },
-      select: { id: true },
-    });
-    if (!libraryItem) {
-      throw new NotFoundException('Library item not found.');
-    }
+    const owned = await this.ownedLibraryItem(
+      input.clerkUserId,
+      input.libraryItemId,
+    );
 
     const existing = await this.prisma.annotation.findUnique({
       where: { id: input.id },
@@ -86,7 +77,8 @@ export class AnnotationsService {
     });
     if (
       existing &&
-      (existing.userId !== user.id || existing.libraryItemId !== libraryItem.id)
+      (existing.userId !== owned.userId ||
+        existing.libraryItemId !== owned.libraryItemId)
     ) {
       throw new NotFoundException('Annotation not found.');
     }
@@ -95,8 +87,8 @@ export class AnnotationsService {
       where: { id: input.id },
       create: {
         id: input.id,
-        userId: user.id,
-        libraryItemId: libraryItem.id,
+        userId: owned.userId,
+        libraryItemId: owned.libraryItemId,
         excerpt: input.excerpt,
         highlightColor: input.highlightColor,
         locator: input.locator,
@@ -116,18 +108,14 @@ export class AnnotationsService {
       },
     });
 
-    return { ...row, locator: parseLocator(row.locator) };
+    return { ...row, locator: parseLocator(row.locator, 'Annotation') };
   }
 
   async remove(input: DeleteInput): Promise<void> {
-    const user = await this.users.getCurrentUserRecord(input.clerkUserId);
-    const libraryItem = await this.prisma.libraryItem.findFirst({
-      where: { id: input.libraryItemId, userId: user.id },
-      select: { id: true },
-    });
-    if (!libraryItem) {
-      throw new NotFoundException('Library item not found.');
-    }
+    const owned = await this.ownedLibraryItem(
+      input.clerkUserId,
+      input.libraryItemId,
+    );
 
     // deleteMany swallows "not found" — that's exactly what we want for the
     // offline replay path, where a delete may be re-sent after the row is
@@ -136,23 +124,18 @@ export class AnnotationsService {
     await this.prisma.annotation.deleteMany({
       where: {
         id: input.id,
-        userId: user.id,
-        libraryItemId: libraryItem.id,
+        userId: owned.userId,
+        libraryItemId: owned.libraryItemId,
       },
     });
   }
-}
 
-const parseLocatorLogger = new Logger('parseAnnotationLocator');
-
-function parseLocator(raw: string | null): unknown {
-  if (!raw) {
-    return null;
-  }
-  try {
-    return JSON.parse(raw);
-  } catch {
-    parseLocatorLogger.error(`Annotation locator JSON was not parsed: ${raw}`);
-    return null;
+  private ownedLibraryItem(clerkUserId: string, libraryItemId: string) {
+    return requireOwnedLibraryItem({
+      clerkUserId,
+      libraryItemId,
+      prisma: this.prisma,
+      users: this.users,
+    });
   }
 }

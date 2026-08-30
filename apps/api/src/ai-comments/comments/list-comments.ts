@@ -1,6 +1,6 @@
 import type { PrismaService } from '../../prisma/prisma.service';
 import type { AiCommentListItem } from '../ai-comment-types';
-import { parseLocator } from './parse-locator';
+import { parseLocator } from '../../shared/parse-locator';
 
 // Returns every persisted AI comment the user has created for the item,
 // newest first. Locator strings are parsed to JSON so the client can
@@ -27,6 +27,6 @@ export async function listAiComments(input: {
 
   return rows.map((row) => ({
     ...row,
-    locator: parseLocator(row.locator),
+    locator: parseLocator(row.locator, 'AiComment'),
   }));
 }
