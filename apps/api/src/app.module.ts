@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AiCommentsController } from './ai-comments/ai-comments.controller';
 import { AiCommentsService } from './ai-comments/ai-comments.service';
+import { AiToolboxController } from './ai-comments/ai-toolbox.controller';
 import { OpenRouterClient } from './shared/openrouter-client';
 import { AnnotationsController } from './annotations/annotations.controller';
 import { BookAnalysisService } from './book-analysis/book-analysis.service';
@@ -38,6 +39,7 @@ import { UsersService } from './users/users.service';
     CatalogController,
     FeedbackController,
     AiCommentsController,
+    AiToolboxController,
     AnnotationsController,
   ],
   providers: [
