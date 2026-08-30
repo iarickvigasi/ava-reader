@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { OFFLINE_BOOKS_SMART_KEY } from '../shared/default-collections';
+import { OFFLINE_BOOKS_SMART_KEY } from '../../shared/default-collections';
 
 type TransactionClient = Prisma.TransactionClient;
 

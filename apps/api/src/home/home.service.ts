@@ -1,8 +1,14 @@
-import { BookFileKind, type Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
+import { buildCoverImageUrl } from '../shared/cover-image-url';
 import { daysAgo, startOfDay } from '../shared/date-utils';
+import {
+  compareByEngagementDesc,
+  mostRecentEngagementDate,
+} from '../shared/engagement-date';
+import { findPrimarySourceFile } from '../shared/primary-book-file';
 
 // Match the same shape used by LibraryService: cover bytes are served from
 // `/api/library/covers/:bookId` and BookFile.readingProgressIndex is a multi-KB
@@ -230,24 +236,13 @@ export class HomeService {
 }
 
 function selectCurrentEngagement(libraryItems: LibraryItemRecord[]) {
-  const sorted = [...libraryItems].sort((left, right) => {
-    const leftScore = getEngagementTimestamp(left);
-    const rightScore = getEngagementTimestamp(right);
-
-    return rightScore - leftScore;
-  });
+  const sorted = [...libraryItems].sort(compareByEngagementDesc);
 
   return sorted[0] ?? null;
 }
 
-function getEngagementTimestamp(item: LibraryItemRecord) {
-  return getMostRecentEngagementDate(item).getTime();
-}
-
 function serializeCurrentEngagement(item: LibraryItemRecord) {
-  const primarySource = item.book.files.find(
-    (file) => file.kind === BookFileKind.SOURCE && file.isPrimary,
-  );
+  const primarySource = findPrimarySourceFile(item.book.files);
 
   return {
     authors: item.book.authors,
@@ -256,7 +251,7 @@ function serializeCurrentEngagement(item: LibraryItemRecord) {
     coverImageUrl: item.book.coverBlob
       ? buildCoverImageUrl(item.book.id)
       : null,
-    lastReadAt: getMostRecentEngagementDate(item).toISOString(),
+    lastReadAt: mostRecentEngagementDate(item).toISOString(),
     libraryItemId: item.id,
     nextMilestone: item.progress?.chapterLabel ?? 'Continue where you left off',
     primaryFormat: primarySource?.format ?? 'UNKNOWN',
@@ -265,25 +260,8 @@ function serializeCurrentEngagement(item: LibraryItemRecord) {
   };
 }
 
-function buildCoverImageUrl(bookId: string) {
-  // Mirrors LibraryService.buildCoverImageUrl — same public endpoint, served
-  // by LibraryController. Both home and library payloads point browsers at
-  // the same cached URLs.
-  return `/api/library/covers/${bookId}`;
-}
-
-function getMostRecentEngagementDate(item: LibraryItemRecord) {
-  const lastReadAtMs = item.progress?.lastReadAt?.getTime() ?? 0;
-  const lastOpenedAtMs = item.lastOpenedAt?.getTime() ?? 0;
-  const addedAtMs = item.addedAt.getTime();
-
-  return new Date(Math.max(lastReadAtMs, lastOpenedAtMs, addedAtMs));
-}
-
 function serializeCatalogEntry(entry: CatalogEntryRecord) {
-  const primarySource = entry.book.files.find(
-    (file) => file.kind === BookFileKind.SOURCE && file.isPrimary,
-  );
+  const primarySource = findPrimarySourceFile(entry.book.files);
 
   return {
     authors: entry.book.authors,

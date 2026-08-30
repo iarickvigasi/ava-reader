@@ -1,7 +1,7 @@
 # Offline Books collection
 
 > Status: active · Updated: 2026-08-10 · ADRs: [[3-offline-first-dexie-buckets]] · Related:
-> [[7-library-collections]], [[12-offline-save-sync]], [[13-offline-save-button]] · Code:
+> [[7-library/_overview]], [[12-offline-save-sync]], [[13-offline-save-button]] · Code:
 > apps/api/src/shared/default-collections.ts, apps/api/src/library,
 > apps/web/features/offline/buckets/library
 
