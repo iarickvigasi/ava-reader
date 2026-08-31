@@ -28,6 +28,8 @@ import type { ReadyReaderProps } from "../shared/types";
 import { useReaderPagination } from "../pagination/use-reader-pagination";
 import { useHighlightSelectionBridge } from "../selection/use-highlight-selection-bridge";
 import { useReaderTextSelection } from "../selection/use-reader-text-selection";
+import { IosSelectionOverlay } from "../selection/ios/ios-selection-overlay";
+import { useIosSelection } from "../selection/ios/use-ios-selection";
 
 export function ReadyReader({
   activeChapter,
@@ -155,6 +157,16 @@ export function ReadyReader({
     disabled: shouldMaskArticle,
   });
 
+  // On iOS the platform refuses to paint a selection on most pages, so the
+  // app owns the gesture and the paint there instead (spec 1.6 Behaviour 8).
+  const { isActive: isIosSelection, rects: iosSelectionRects } =
+    useIosSelection({
+      containerRef: pageBoxRef,
+      onSelectText: onTextSelected,
+      disabled: shouldMaskArticle,
+      pageKey: `${activeChapter.chapterId}:${currentPageIndex}`,
+    });
+
   useEffect(() => {
     if (!isPanelOpen) {
       return;
@@ -205,7 +217,10 @@ export function ReadyReader({
             >
               {/* Must NOT clip: its edge coincides exactly with the column
                   edge, so any overflow-hidden here re-amputates edge ink. */}
-              <div ref={pageBoxRef} className="h-full w-full">
+              <div
+                ref={pageBoxRef}
+                className={isIosSelection ? "h-full w-full select-none" : "h-full w-full"}
+              >
                 <ReaderArticle
                   applyAiComments
                   blocks={activeChapter.blocks}
@@ -233,6 +248,8 @@ export function ReadyReader({
           </div>
         </section>
       </div>
+
+      <IosSelectionOverlay rects={iosSelectionRects} />
 
       {isContentsOpen ? (
         <ReaderContentsOverlay

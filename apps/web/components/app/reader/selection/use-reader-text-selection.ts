@@ -1,5 +1,6 @@
 import { useEffect, useRef, type RefObject } from "react";
 import { createSelectionCapture } from "./capture/create-selection-capture";
+import { isIosTouch } from "./ios/is-ios-touch";
 import type { ReaderSelection } from "./types";
 
 type UseReaderTextSelectionParams = {
@@ -18,6 +19,11 @@ type UseReaderTextSelectionParams = {
 // touch are captured on the tick after the gesture's end event; capture never
 // mutates the selection (the AI toolbox owns the drop) — the event
 // choreography lives in capture/create-selection-capture.ts.
+//
+// iOS is not served from here at all: there the article is non-selectable and
+// the app runs its own gesture (ios/use-ios-selection, spec 1.6 Behaviour 8),
+// so this hook stands down rather than listening for a selection that can
+// never appear.
 export function useReaderTextSelection({
   containerRef,
   onSelectText,
@@ -35,6 +41,9 @@ export function useReaderTextSelection({
       return;
     }
     if (typeof window === "undefined" || typeof document === "undefined") {
+      return;
+    }
+    if (isIosTouch(window)) {
       return;
     }
 
