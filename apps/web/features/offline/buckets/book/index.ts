@@ -7,6 +7,7 @@ export {
   hasBookContent,
   markBookSaved,
   readBookContent,
+  readBookIdBySlug,
   readCachedChapterIds,
   readChapter,
   readOfflineState,

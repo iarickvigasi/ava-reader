@@ -69,6 +69,20 @@ export async function readBookContent(libraryItemId: string) {
   return db.books.get(libraryItemId);
 }
 
+// Resolves a slug to the book whose content is cached under it. `books` is the
+// authority on what can be read offline: `libraryItems` only ever holds the
+// collection *previews* the library payload carries (4 per collection), so a
+// saved book outside every preview has no row there (spec 6, Read path). A
+// scan is enough — the table is bounded by what the user saved.
+export async function readBookIdBySlug(slug: string): Promise<string | null> {
+  const db = getDb();
+  const rows = await db.books.toArray();
+  const match = rows.find(
+    (row) => (row.metadata as ReaderBookPayload | undefined)?.slug === slug,
+  );
+  return match?.libraryItemId ?? null;
+}
+
 export async function readChapter(libraryItemId: string, chapterId: string) {
   const db = getDb();
   return db.bookChapters.get([libraryItemId, chapterId]);

@@ -16,6 +16,7 @@ import {
   hasBookContent,
   markBookSaved,
   readBookContent,
+  readBookIdBySlug,
   readCachedChapterIds,
   readChapter,
   readOfflineState,
@@ -84,6 +85,24 @@ describe("book bucket storage", () => {
     expect(book?.chapterIds).toEqual(["ch-1", "ch-2"]);
     const chapter = await readChapter("lib-1", "ch-1");
     expect(chapter?.blocks).toHaveLength(1);
+  });
+
+  it("readBookIdBySlug finds cached content the library preview no longer lists", async () => {
+    await applyBookContent({
+      libraryItemId: "lib-9",
+      toc: [],
+      chapterIds: ["ch-1"],
+      metadata: {
+        libraryItemId: "lib-9",
+        slug: "book-outside-preview",
+        title: "Book Outside Preview",
+        authors: [],
+        primaryFormat: "EPUB",
+      },
+    });
+
+    expect(await readBookIdBySlug("book-outside-preview")).toBe("lib-9");
+    expect(await readBookIdBySlug("never-saved")).toBeNull();
   });
 
   it("readCachedChapterIds returns only the requested book's chapters", async () => {

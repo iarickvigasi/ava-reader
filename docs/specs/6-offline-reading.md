@@ -2,7 +2,8 @@
 
 > Status: shipped · Updated: 2026-08-09 · ADRs: [[3-offline-first-dexie-buckets]] · Related:
 > [[12-offline-save-sync]], [[13-offline-save-button]] · Code:
-> apps/web/features/offline/buckets/book, apps/web/features/offline/lifecycle/persist-storage.ts
+> apps/web/features/offline/buckets/book, apps/web/features/offline/lifecycle/persist-storage.ts,
+> apps/web/features/reader/resolve-cached-library-item-id.ts
 
 ## Summary
 Downloads a book's full content (chapters + cover) into Dexie so it can be read with no network.
@@ -37,6 +38,15 @@ Underpins the offline-first promise.
 book bucket + reader-cache (chapter blobs), quota.ts enforcement. Read path prefers Dexie; the
 reader serves cached chapters offline.
 
+**Read path — slug → book.** `/app/read/<slug>` is a generic shell
+([[4-route-precaching-service-worker]]), so the client resolves the slug itself. It asks
+`libraryItems` first, then falls back to the slug on the cached `books` row. The fallback is load
+bearing: `libraryItems` mirrors the `/library` payload, which carries only the first **4 books per
+collection**, and applying that payload clears the table — so a saved book that has dropped out of
+every collection preview has no row there at all. `books` is the authority on what is downloaded,
+so it, not the preview cache, decides whether a book reads offline. Resolving from `libraryItems`
+alone made fully-downloaded books report "This page needs a connection".
+
 ## Edge cases
 Storage quota exceeded → toast + stop; interrupted download → resume; eviction while reading the
 evicted book; cover missing. Offline never evicts: opening another book while disconnected keeps the
@@ -58,6 +68,8 @@ Open questions). Other platforms evict only under genuine disk pressure, which p
 
 ## Acceptance criteria
 - [ ] A saved book reads fully offline, including cover.
+- [ ] A saved book opens offline by URL even when it is outside every collection preview — i.e. when
+  the cached library list has no row for its slug.
 - [ ] Download resumes after interruption without re-fetching cached chapters.
 - [ ] Hitting quota surfaces a toast and stops cleanly; explicit saves outrank auto-saves.
 - [ ] Opening a second book online drops the previous auto-cache — including when the second book
@@ -67,6 +79,12 @@ Open questions). Other platforms evict only under genuine disk pressure, which p
 - [ ] Overlapping saves of the same book never delete or corrupt a completed download.
 - [ ] A save requests persistent storage once; a granted or denied result never changes the save's
   outcome, and an already-persistent origin is not re-asked.
+
+## Known gaps
+`libraryItems` is a preview projection (≤4 books per collection) that other screens still read as if
+it were the whole library. The reader no longer depends on it, but the same shape is behind the
+Offline Books count gap in [[17-offline-books-collection]]; each surface needs its own evidence
+before it is changed.
 
 ## Open questions
 Per-user storage budget UI; whole-collection save; cache expiry policy; a web-app manifest + install
