@@ -9,7 +9,7 @@ export type LibraryCardBook = {
   coverImageUrl: string | null;
   libraryItemId: string;
   // Server-synced "keep this book available offline" intent (see
-  // specs/12-offline-save-sync). Optional because only the library payloads
+  // specs/6-offline/6.2-save-sync). Optional because only the library payloads
   // populate it; home/catalog/reader cards omit it.
   offlineRequested?: boolean;
   primaryFormat: BookFileFormat;

@@ -1,7 +1,7 @@
 // Standalone background fetch of a book's reading progress into the offline
 // progress bucket. Mirrors the highlights/ai-comments revalidators — used by
 // the cache primer so a book primed on a fresh device resumes on the last-read
-// page instead of chapter 1 (see specs/11-cache-priming,
+// page instead of chapter 1 (see specs/6-offline/6.4-cache-priming,
 // specs/5-reading-sessions-progress). Best-effort: a failure leaves whatever
 // was cached and the next pass / reader open retries.
 

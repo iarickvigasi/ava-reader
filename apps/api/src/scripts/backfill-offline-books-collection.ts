@@ -17,7 +17,7 @@ const prisma = new PrismaClient({ adapter });
 // who already had a library when the Offline Books shelf shipped is invisible
 // to that path. Creates the collection for them and seeds its membership from
 // LibraryItem.offlineRequested. Safe to re-run — existing rows are left alone.
-// See docs/specs/17-offline-books-collection.md.
+// See docs/specs/6-offline/6.8-offline-books-collection.md.
 async function main() {
   const definition = DEFAULT_SMART_COLLECTIONS.find(
     (entry) => entry.smartKey === OFFLINE_BOOKS_SMART_KEY,

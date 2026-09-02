@@ -29,7 +29,7 @@ idempotently. Stats = server baseline + unsynced local deltas, so reconnect neve
 
 The progress bucket (locator + completion % + server `lastReadAt`) is the offline resume substrate,
 populated three ways: the reader writes it while reading (dirty until the server acks), `GET
-/reader/progress` revalidates it from the server (primer, on reconnect — see [[11-cache-priming]]),
+/reader/progress` revalidates it from the server (primer, on reconnect — see [[6.4-cache-priming]]),
 and the cached reader payload reads it back so a fresh/offline device resumes on the right page
 ([[1-reader/1.5-resume]]). A **dirty** row (local ahead) always wins over a server revalidate.
 

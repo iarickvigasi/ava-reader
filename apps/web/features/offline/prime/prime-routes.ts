@@ -1,4 +1,4 @@
-// Orchestrates route-shell precaching (see [[14-route-precaching]]). The route
+// Orchestrates route-shell precaching (see [[6.5-route-precaching]]). The route
 // list is fixed (static routes + shell sentinels — ADR 4), so this is a thin,
 // stateless step: while online, hand the list to the SW. Posting is idempotent
 // and cheap (the SW skips routes it has already cached), so the island re-runs

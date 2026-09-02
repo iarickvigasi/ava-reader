@@ -27,7 +27,7 @@ export type PrimeRuntime = {
   // so the island can surface a toast. Optional — omitted in tests that don't
   // assert on it.
   onStorageFull?: () => void;
-  // Reports priming progress to the header chip (see [[11-cache-priming]]):
+  // Reports priming progress to the header chip (see [[6.4-cache-priming]]):
   // the metadata tier ticks per book-info cached, the content tier per book
   // saved, and the orchestrator emits `{ phase: "ready" }` on first completion.
   // Optional — omitted in tests/SSR.

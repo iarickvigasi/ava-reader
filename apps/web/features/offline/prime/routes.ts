@@ -1,5 +1,5 @@
 // The fixed route list whose shells the SW precaches for offline use (see
-// [[14-route-precaching]]). Per-entity routes (reader, book-info, collection)
+// [[6.5-route-precaching]]). Per-entity routes (reader, book-info, collection)
 // are generic shells (ADR 4) — any slug returns the same document — so one
 // `__shell__` sentinel per family covers every book/collection, with no
 // library enumeration.

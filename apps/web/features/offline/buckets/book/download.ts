@@ -396,7 +396,7 @@ export async function saveBookOffline(
     // (registerInFlight aborted us and took the in-flight slot), we no longer
     // own the book's rows — the newer save does. Tearing down here would delete
     // chapters it is actively writing, or wipe a download it already completed
-    // (see [[6-offline-reading]]). A superseded run exits without touching
+    // (see [[6.1-offline-reading]]). A superseded run exits without touching
     // shared state and lets its successor own the outcome.
     const stillOwner = isCurrentInFlight(libraryItemId, controller);
 

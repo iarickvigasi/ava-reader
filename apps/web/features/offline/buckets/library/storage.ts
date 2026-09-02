@@ -446,7 +446,7 @@ export async function applyBookInfoPayload(
       // toggle (dirty) wins; otherwise take this payload's value, then the
       // prior cached value. Without this, a book-info re-hydration wipes the
       // flag the library/collection writes set — which silently starves the
-      // cache primer of its targets (see [[12-offline-save-sync]]).
+      // cache primer of its targets (see [[6.2-save-sync]]).
       offlineRequested: prior?.offlineRequestedDirty
         ? prior.offlineRequested ?? false
         : book.offlineRequested ?? prior?.offlineRequested ?? false,

@@ -1,5 +1,5 @@
 // Single source of truth for "how far along is background priming right now"
-// (see [[11-cache-priming]]). The primer runs client-side, so it writes here
+// (see [[6.4-cache-priming]]). The primer runs client-side, so it writes here
 // directly via setPrimeProgress — no service-worker messaging. The header chip
 // reads it through use-prime-progress. Plain JS so the (non-React) primer can
 // write it. Mirrors net-state.ts.
@@ -7,7 +7,7 @@
 // The content tier reports per-book progress; the orchestrator emits `ready` on
 // first completion. The metadata tier is NOT surfaced — it's a fast handful of
 // small JSON fetches, and the "ready" beat already signals when offline browsing
-// is prepared (see [[11-cache-priming]]). `ready` carries no counts.
+// is prepared (see [[6.4-cache-priming]]). `ready` carries no counts.
 export type PrimeProgress =
   | { phase: "content"; done: number; total: number }
   | { phase: "ready" };

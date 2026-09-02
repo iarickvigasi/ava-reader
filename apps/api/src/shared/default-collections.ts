@@ -3,7 +3,7 @@ import { LibrarySource } from '@prisma/client';
 // The shelf holding every book the user marked to keep offline. Membership
 // tracks LibraryItem.offlineRequested rather than an import source, so it is
 // deliberately absent from getSmartCollectionKey below. See
-// docs/specs/17-offline-books-collection.md.
+// docs/specs/6-offline/6.8-offline-books-collection.md.
 export const OFFLINE_BOOKS_SMART_KEY = 'offline-books';
 
 export const DEFAULT_SMART_COLLECTIONS = [

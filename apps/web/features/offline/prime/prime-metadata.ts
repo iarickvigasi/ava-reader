@@ -69,7 +69,7 @@ export async function primeMetadata(
   // Verify presence before declaring the pass clean. A book missing here on
   // every pass means metadata never goes clean (its `/api/library/[slug]`
   // persistently fails) and its details page falls back offline — see
-  // [[11-cache-priming]].
+  // [[6.4-cache-priming]].
   if (!(await d.readHome())) {
     return false;
   }

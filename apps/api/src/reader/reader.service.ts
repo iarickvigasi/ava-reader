@@ -50,7 +50,7 @@ export class ReaderService {
   }
 
   // Lightweight resume-position read for the offline primer's progress-bucket
-  // revalidation (see specs/11-cache-priming): just the progress summary, no
+  // revalidation (see specs/6-offline/6.4-cache-priming): just the progress summary, no
   // chapter loading.
   async getProgress(
     clerkUserId: string,

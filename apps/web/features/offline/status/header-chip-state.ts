@@ -1,4 +1,4 @@
-// Pure decision for the single header status slot (see [[11-cache-priming]]):
+// Pure decision for the single header status slot (see [[6.4-cache-priming]]):
 // offline beats priming-progress beats nothing. The content tier shows live;
 // only the `ready` beat dwells for `dwellMs` before hiding — a brief "finished"
 // confirmation, and the anti-flicker tail. Kept pure (explicit `now`/
@@ -20,7 +20,7 @@ export type HeaderChipInput = {
   now: number;
   dwellMs: number;
   // Whether the SW has confirmed the app's route shells are cached
-  // ([[14-route-precaching]]). The "ready" cue must wait for this, else it
+  // ([[6.5-route-precaching]]). The "ready" cue must wait for this, else it
   // over-promises: priming can finish before the shells land, and a route
   // (e.g. /app/library) would be a blank page offline.
   shellsReady: boolean;

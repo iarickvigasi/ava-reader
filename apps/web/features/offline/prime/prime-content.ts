@@ -1,7 +1,7 @@
 // Tier 2 of the primer: the heavy per-book offline payload — full reader
 // chapters + cover, plus highlights and AI comments — for every book the user
 // marked "keep offline" (offlineRequested, server-synced; see
-// specs/12-offline-save-sync). NOT all books: un-marked books load when opened.
+// specs/6-offline/6.2-save-sync). NOT all books: un-marked books load when opened.
 // Sequential (the save orchestrator is single-flight), quota-gated, and yields
 // to any save the user starts.
 
@@ -34,7 +34,7 @@ export async function primeBookContent(
   const currentBookId = includeCurrentBook ? await d.readCurrentBookId() : null;
   const books = collectContentTargets(view, currentBookId);
 
-  // Progress for the header chip (see [[11-cache-priming]]): total known up
+  // Progress for the header chip (see [[6.4-cache-priming]]): total known up
   // front, one tick per book handled. Reported even for already-cached books,
   // so a resumed/warm device climbs straight to total and the chip's "done"
   // dwell still fires.

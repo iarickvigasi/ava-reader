@@ -1,4 +1,4 @@
-// Post-build step for route precaching (see docs/specs/14-route-precaching.md).
+// Post-build step for route precaching (see docs/specs/6-offline/6.5-route-precaching.md).
 // Globs the built static output and writes a flat list of asset URLs the
 // service worker precaches on activate, so every route's JS/CSS chunks are
 // present offline. Globbing the output dir avoids coupling to any Next-internal

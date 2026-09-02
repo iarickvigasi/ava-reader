@@ -11,7 +11,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 // URL changed, previous page still painted, no error, no fallback. Letting
 // the request fail instead triggers Next's hard navigation onto the cached
 // document, which is what makes offline navigation work.
-// See docs/specs/14-route-precaching.md §5.
+// See docs/specs/6-offline/6.5-route-precaching.md §5.
 
 import {
   dispatchFetch,

@@ -1,8 +1,8 @@
 # Library (overview)
 
 > Status: shipped · Updated: 2026-08-28 · ADRs: [[3-offline-first-dexie-buckets]],
-> [[4-route-precaching-service-worker]] · Related: [[17-offline-books-collection]],
-> [[12-offline-save-sync]] · Code: apps/web/components/app/library,
+> [[4-route-precaching-service-worker]] · Related: [[6.8-offline-books-collection]],
+> [[6.2-save-sync]] · Code: apps/web/components/app/library,
 > apps/web/features/offline/buckets/library, apps/api/src/library
 
 ## Summary
@@ -21,7 +21,7 @@ reading lists" job. Split by subsystem, like [[1-reader/_overview]].
 - **LibraryItem** — the user↔book link: per-user slug, source (IMPORTED | CATALOG),
   offlineRequested, isArchived, addedAt/lastOpenedAt, one ReadingProgress row.
 - **Collection** {kind: CUSTOM | SMART, smartKey?, name, slug, sortOrder} with CollectionItem
-  membership rows; SMART shelves are system-owned ([[17-offline-books-collection]]).
+  membership rows; SMART shelves are system-owned ([[6.8-offline-books-collection]]).
 - **Book card** (serialized) — {libraryItemId, slug, title, authors, coverImageUrl,
   completionPercent, lastReadAt, offlineRequested, primaryFormat}: the one shape every book list
   renders (library, collection pages; home mirrors it).
@@ -35,7 +35,7 @@ reading lists" job. Split by subsystem, like [[1-reader/_overview]].
 ## Scope (whole feature)
 - In: everything in the five sub-specs.
 - Non-goals: reading itself ([[1-reader/_overview]]), catalog/discovery (explore — future),
-  sharing collections (social — future), offline content download ([[6-offline-reading]]).
+  sharing collections (social — future), offline content download ([[6.1-offline-reading]]).
 
 ## Cross-cutting acceptance
 - [ ] Library, collections, and book-info render offline from cache.

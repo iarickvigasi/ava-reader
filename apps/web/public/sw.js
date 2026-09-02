@@ -3,9 +3,9 @@
  * Makes the app's HTML shell + JS/CSS chunks load offline. The data layer is
  * owned by Dexie buckets + the sync runner — /api/* is never intercepted.
  * Behavior contract (strategies, cache keys, precache protocol, and the
- * regression traps behind them): docs/specs/14-route-precaching.md, with
- * specs 6 (offline reading), 11 (cache priming) and ADR 4. File layout:
- * docs/specs/16-sw-code-organization.md.
+ * regression traps behind them): docs/specs/6-offline/6.5-route-precaching.md, with
+ * specs 6.1 (offline reading), 6.4 (cache priming) and ADR 4. File layout:
+ * docs/specs/6-offline/6.6-sw-code-organization.md.
  */
 
 /* ----------------------------------------------------------------------------
@@ -45,7 +45,7 @@ self.addEventListener("activate", (event) => {
 });
 
 // Precache every build asset from the manifest so a route's chunks are present
-// offline (spec 14 §2). Best effort — on failure they cache reactively later.
+// offline (spec 6.5 §2). Best effort — on failure they cache reactively later.
 async function precacheBuildAssets() {
   try {
     const response = await fetch("/precache-assets.json", { cache: "no-store" });
@@ -86,7 +86,7 @@ async function precacheBuildAssets() {
 // payload stored per pathname answers a different question than the next
 // request asks. A mismatched 200 strands the router — URL changed, previous
 // page still painted, no error and no fallback. Failing instead is what
-// triggers Next's hard navigation onto the cached document (spec 14 §5).
+// triggers Next's hard navigation onto the cached document (spec 6.5 §5).
 function isRscRequest(request) {
   return (
     request.headers.get("RSC") === "1" ||
@@ -95,7 +95,7 @@ function isRscRequest(request) {
 }
 
 // Link prefetches are never cached or served — a dynamic route's prefetch is a
-// partial "loading" stub that would poison the navigation key (spec 14 §5).
+// partial "loading" stub that would poison the navigation key (spec 6.5 §5).
 // Real navigations carry next-router-state-tree instead, never these.
 function isPrefetchRequest(request) {
   return (
@@ -105,7 +105,7 @@ function isPrefetchRequest(request) {
 }
 
 // Redirects reach the browser untouched — substituting the cached shell
-// swallows the Clerk handshake (spec 14 §6). Navigations use redirect mode
+// swallows the Clerk handshake (spec 6.5 §6). Navigations use redirect mode
 // "manual", so a 307 surfaces as an opaqueredirect (status 0, not ok).
 function isRedirectResponse(response) {
   return (
@@ -129,7 +129,7 @@ function navigationCacheKey(request) {
 
 // Per-entity routes are generic shells (ADR 4): each family keeps one extra
 // doc entry under a __shell__ key so a never-visited slug still gets a shell
-// offline (spec 14 §7).
+// offline (spec 6.5 §7).
 const SHELL_ROUTE_PREFIXES = [
   "/app/read/",
   "/app/library/books/",
@@ -238,7 +238,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
   // Prefetch stubs must never touch the cache, and RSC payloads must never be
-  // cached or served at all (spec 14 §5).
+  // cached or served at all (spec 6.5 §5).
   if (isPrefetchRequest(request) || isRscRequest(request)) {
     return;
   }
@@ -261,7 +261,7 @@ self.addEventListener("fetch", (event) => {
 });
 
 /* ----------------------------------------------------------------------------
- * Route precache — client posts PRECACHE_ROUTES; see spec 14 §3–4
+ * Route precache — client posts PRECACHE_ROUTES; see spec 6.5 §3–4
  * -------------------------------------------------------------------------- */
 
 // Enough parallel fetches to hide round-trips without swamping the origin.
@@ -310,7 +310,7 @@ async function precacheRoutes(routes) {
 }
 
 // redirect: "manual" so a stale session's Clerk redirect is never followed
-// into a 200 that poisons the route key (spec 14 §4).
+// into a 200 that poisons the route key (spec 6.5 §4).
 async function cacheRouteShell(cache, route) {
   await storeRouteResponse(cache, new Request(route, { redirect: "manual" }));
 }
@@ -322,7 +322,7 @@ async function storeRouteResponse(cache, request) {
   }
   try {
     const response = await fetch(request);
-    // Only a real 200 is cached — a Clerk handshake 3xx is not ok (spec 14 §4).
+    // Only a real 200 is cached — a Clerk handshake 3xx is not ok (spec 6.5 §4).
     if (response && response.ok) {
       putDocResponse(cache, request, response);
     }

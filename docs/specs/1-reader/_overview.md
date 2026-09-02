@@ -31,7 +31,7 @@ below.
 ## Scope (whole feature)
 - In: everything in the seven sub-specs.
 - Non-goals: annotation logic (see 2-highlights, 3-ai-toolbox, 4-ai-comments), content download (see
-  6-offline-reading), audio narration (roadmap).
+  6-offline/6.1-offline-reading), audio narration (roadmap).
 
 ## Cross-cutting acceptance
 - [ ] A cached book opens, renders, paginates, and is navigable fully offline.

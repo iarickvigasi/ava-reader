@@ -26,7 +26,7 @@ import { resolveOfflineCard } from "./resolve-offline-card";
 // durable Dexie state — crucially "queued" derives from the synced
 // `offlineRequested` intent (not transient component state), so a request made
 // offline survives navigation and the background primer finishes the download
-// on reconnect (see specs/12-offline-save-sync, specs/13-offline-save-button).
+// on reconnect (see specs/6-offline/6.2-save-sync, specs/6-offline/6.3-save-button).
 export function DownloadOfflineCard({
   libraryItemId,
 }: {

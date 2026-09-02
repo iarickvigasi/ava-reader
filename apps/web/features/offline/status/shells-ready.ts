@@ -1,5 +1,5 @@
 // Whether the service worker has confirmed the app's route shells are cached
-// (see [[14-route-precaching]]). The route-precache runner writes it after the
+// (see [[6.5-route-precaching]]). The route-precache runner writes it after the
 // SW acks a complete pass; the header chip reads it via use-shells-ready to gate
 // the "Ready for offline work" cue, so that cue never fires while a route (e.g.
 // /app/library) would be a blank page offline. Plain JS — mirrors

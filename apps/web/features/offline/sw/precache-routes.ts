@@ -1,6 +1,6 @@
 // Asks the active service worker to precache a set of route shells (doc + RSC)
 // and waits for its completion ack, so the caller can tell whether offline
-// browsing is genuinely ready (see [[14-route-precaching]]). The SW owns the
+// browsing is genuinely ready (see [[6.5-route-precaching]]). The SW owns the
 // fetching + cache keys; this is just the client-side hand-off + confirmation.
 
 export type PrecacheRoutesMessage = {

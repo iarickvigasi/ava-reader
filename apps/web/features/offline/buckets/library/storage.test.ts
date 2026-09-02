@@ -399,7 +399,7 @@ describe("library bucket storage", () => {
 
 // A payload as the server sends it: the offline shelf carries the membership
 // that was true at sync time. The read layer deliberately ignores those rows and
-// derives from `offlineRequested` instead — see spec 17.
+// derives from `offlineRequested` instead — see spec 6.8.
 function offlineShelfPayload(): LibraryPayload {
   const [bookA, bookB] = payload().collections[0].books;
   return {

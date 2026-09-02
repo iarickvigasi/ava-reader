@@ -64,7 +64,7 @@ export function useSaveBook(libraryItemId: string) {
       signal?: AbortSignal,
     ): Promise<SaveOutcome> => {
       // Ask the browser to keep this origin's storage out of the eviction
-      // pool before we write a book into it (spec 6). Browsers grant on
+      // pool before we write a book into it (spec 6.1). Browsers grant on
       // engagement, so a save is the moment most likely to succeed. Not
       // awaited: a denial is normal and must never delay or fail the save.
       void ensurePersistentStorage();
