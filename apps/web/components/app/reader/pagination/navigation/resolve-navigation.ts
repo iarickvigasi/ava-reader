@@ -33,7 +33,7 @@ export function resolveSwipeNavigationOutcome(input: {
   // selection drag on touch clears the swipe threshold trivially, so without
   // this guard the gesture would be read as a page turn — turning the page out
   // from under the reader's selection. Selecting and swiping are mutually
-  // exclusive on touch (see spec 1.6-selection-bridge).
+  // exclusive on touch (see spec 2.6-selection-bridge).
   hasActiveSelection: boolean;
   swipeMaxOffAxis: number;
   swipeThreshold: number;

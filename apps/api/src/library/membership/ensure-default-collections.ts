@@ -6,7 +6,7 @@ import { resolveUniqueSlug } from '../../shared/slugify';
 
 // Upserts the three system smart shelves, keyed by per-user smartKey; names
 // and slugs resolve uniqueness against non-smart namesakes
-// (docs/specs/7-library/7.3-collections.md).
+// (docs/specs/3-library/3.3-collections.md).
 export async function ensureDefaultCollectionsTx(
   tx: Prisma.TransactionClient,
   userId: string,

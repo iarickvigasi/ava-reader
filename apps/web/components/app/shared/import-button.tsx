@@ -92,7 +92,7 @@ export function ImportButton({
 
       {/* Out of flow on purpose: in the library header the actions are
           vertically centred, so a notice that grew this column would shove the
-          button upward (spec 7.1). Absolute keeps the button's box fixed
+          button upward (spec 3.1). Absolute keeps the button's box fixed
           without reserving a blank line when there's no notice. */}
       {!hideNotice && resolvedNotice ? (
         <p className="absolute left-0 right-0 top-full mt-2 truncate text-xs tracking-[0.08em] text-muted">

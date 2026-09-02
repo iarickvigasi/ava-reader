@@ -335,7 +335,7 @@ describe("primeAllCaches", () => {
     // Regression: the header showed "Ready for offline work" while the current
     // book's background auto-save had failed, so going offline and tapping
     // continue-reading hit the missing-book modal. The cue must wait for the
-    // current book's content to be present (see [[6.4-cache-priming]]).
+    // current book's content to be present (see [[4.4-cache-priming]]).
     const saveBook = vi.fn(async (_id: string, kind?: string) =>
       kind === "auto"
         ? ({ kind: "failed", reason: "network" } as const)

@@ -5,7 +5,7 @@ import type { LibraryBookView, LibraryView } from "../buckets/library/types";
 // shelves (imported / catalog), so this is the whole library with duplicates
 // removed — the third shelf, Offline Books, is a subset of those two and adds
 // nothing new past the `seen` filter. First-seen order follows the view's
-// collection order, which is display order (docs/specs/7-library/7.1-library-
+// collection order, which is display order (docs/specs/3-library/3.1-library-
 // screen.md §3), so the most recently engaged shelf primes first — the set is
 // the same either way.
 export function collectSmartBooks(view: LibraryView): LibraryBookView[] {

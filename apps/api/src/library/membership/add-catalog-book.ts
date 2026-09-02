@@ -5,7 +5,7 @@ import { addBookToUserLibraryTx } from './add-book-to-user-library';
 
 // Adds a PUBLISHED catalog entry's book to the user's library — the same core
 // as import, with the originating entry recorded
-// (docs/specs/7-library/7.4-import.md §6).
+// (docs/specs/3-library/3.4-import.md §6).
 export function addCatalogBook(options: {
   entryId: string;
   prisma: PrismaService;

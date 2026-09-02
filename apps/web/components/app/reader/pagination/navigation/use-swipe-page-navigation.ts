@@ -9,7 +9,7 @@ import type { PageStepControls } from "./use-page-stepper";
 // disarms while loading / a panel is open); handleTouchEnd classifies the
 // release delta via resolveSwipeNavigationOutcome. A drag that left a text
 // selection inside containerRef is treated as a selection, not a swipe, so it
-// never turns the page (see spec 1.6-selection-bridge).
+// never turns the page (see spec 2.6-selection-bridge).
 export function useSwipePageNavigation({
   goToNextPage,
   goToPreviousPage,

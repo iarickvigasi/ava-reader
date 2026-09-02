@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 const isProtectedRoute = createRouteMatcher(["/app(.*)"]);
 
-// Offline-first route protection (see docs/specs/10-auth.md, edge cases).
+// Offline-first route protection (see docs/specs/7-auth.md, edge cases).
 //
 // `auth.protect()` would redirect whenever the session token can't be
 // verified — including when it merely couldn't *refresh* because Clerk's

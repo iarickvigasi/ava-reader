@@ -11,7 +11,7 @@ export type IosSelectionCaptureParams = SelectionGestureParams & {
   onCapture: (selection: ReaderSelection) => void;
 };
 
-// Binds the iOS selection gesture to touch events (spec 1.6 Behaviour 8).
+// Binds the iOS selection gesture to touch events (spec 2.6 Behaviour 8).
 // Release reports the range through the same onCapture the native path uses,
 // leaving the panel and locator pipeline unchanged.
 export function createIosSelectionCapture({

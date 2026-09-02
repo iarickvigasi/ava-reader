@@ -12,7 +12,7 @@ import { orderCollectionsForDisplay } from './order-collections';
 
 const LIBRARY_COLLECTION_PREVIEW_LIMIT = 4;
 
-// GET /library (docs/specs/7-library/7.5-library-payloads.md §1): the
+// GET /library (docs/specs/3-library/3.5-library-payloads.md §1): the
 // two-phase read behind the library screen.
 export async function getLibraryOverview(options: {
   prisma: PrismaService;

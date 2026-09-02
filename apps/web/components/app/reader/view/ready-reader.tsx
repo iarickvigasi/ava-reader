@@ -158,7 +158,7 @@ export function ReadyReader({
   });
 
   // On iOS the platform refuses to paint a selection on most pages, so the
-  // app owns the gesture and the paint there instead (spec 1.6 Behaviour 8).
+  // app owns the gesture and the paint there instead (spec 2.6 Behaviour 8).
   const { isActive: isIosSelection, rects: iosSelectionRects } =
     useIosSelection({
       containerRef: pageBoxRef,

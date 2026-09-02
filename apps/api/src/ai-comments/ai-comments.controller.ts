@@ -12,7 +12,7 @@ import type { AuthenticatedRequest } from '../auth/authenticated-request';
 import { ClerkAuthGuard } from '../auth/clerk-auth.guard';
 import { AiCommentsService } from './ai-comments.service';
 
-// Reads and deletes of persisted AI comments (spec 4-ai-comments). The tool
+// Reads and deletes of persisted AI comments (spec 5.3-ai-comments). The tool
 // runs that create them live in AiToolboxController on the same prefix.
 @Controller('library/:libraryItemId/ai-comments')
 export class AiCommentsController {

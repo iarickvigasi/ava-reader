@@ -6,7 +6,7 @@ import { findPrimarySourceFile } from '../../shared/primary-book-file';
 import { ownedLibraryItemWhere } from './library-item-access';
 import { sortAndSerializeCollections } from './serialize-item-collections';
 
-// The book-info payload (docs/specs/7-library/7.2-book-info.md).
+// The book-info payload (docs/specs/3-library/3.2-book-info.md).
 export async function getLibraryItem(options: {
   prisma: PrismaService;
   ref: string;

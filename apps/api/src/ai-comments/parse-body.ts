@@ -2,7 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 import { ZodError } from 'zod';
 
 // Turns a schema rejection into a 400 carrying the joined issue messages —
-// the panel renders a permanent failure's reason inline (spec 3), so it has
+// the panel renders a permanent failure's reason inline (spec 5.2), so it has
 // to read as a sentence rather than a status code.
 export function parseBody<T>(
   schema: { parse: (input: unknown) => T },

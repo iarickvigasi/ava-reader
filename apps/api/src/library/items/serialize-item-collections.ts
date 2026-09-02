@@ -9,7 +9,7 @@ type CollectionItemForSerialize = {
 };
 
 // The collections chips on book-info, sorted sortOrder then name
-// (docs/specs/7-library/7.5-library-payloads.md §3).
+// (docs/specs/3-library/3.5-library-payloads.md §3).
 export function sortAndSerializeCollections(
   collectionItems: CollectionItemForSerialize[],
 ) {

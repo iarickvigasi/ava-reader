@@ -11,7 +11,7 @@ headings, table rows, and unbreakable tokens (long paths/URLs) may exceed the wi
 ≤130 lines max. Numbered `N-<feature>.md` from `_template.md`. A feature that spans several distinct
 subsystems becomes a folder `N-<feature>/` with `_overview.md` (summary, shared model, sub-spec
 map) + numbered sub-specs; otherwise it stays one file. Don't repeat the shared model in children —
-link to the overview. Folders today: reader, offline, library.
+link to the overview. Folders today: reader, library, offline, reader-panels.
 
 ## Code
 - Files & folders kebab-case. Tests co-located as *.test.ts(x).

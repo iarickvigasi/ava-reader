@@ -23,7 +23,7 @@ export function ReaderAiToolboxOverlay({
 }: ReaderAiToolboxOverlayProps) {
   useCloseOnEscape(onClose);
   // This panel is why the native callout must not render, so it owns dropping
-  // the live selection of a touch capture (spec 1.6).
+  // the live selection of a touch capture (spec 2.6).
   useDropLiveSelection();
 
   return (

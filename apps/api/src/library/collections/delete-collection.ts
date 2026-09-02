@@ -2,7 +2,7 @@ import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import type { PrismaService } from '../../prisma/prisma.service';
 
 // DELETE /library/collections/:id
-// (docs/specs/7-library/7.3-collections.md §4).
+// (docs/specs/3-library/3.3-collections.md §4).
 export async function deleteCollection(options: {
   collectionId: string;
   prisma: PrismaService;

@@ -51,7 +51,7 @@ function findStartBlock(
 }
 
 // The locator's offsets were measured against the rendered DOM, which can
-// drift from `block.text` by a few characters (see spec 3) — clamp, never
+// drift from `block.text` by a few characters (see spec 5.2) — clamp, never
 // trust them to land exactly. A selection that crosses into a later block
 // simply extends to the end of the start block.
 function clampSelectionToBlock(

@@ -7,7 +7,7 @@ import { copyTextToClipboard } from "./copy-text-to-clipboard";
 // How long the button shows the "copied" check before reverting.
 const COPIED_RESET_MS = 2000;
 
-// Copy-selection behaviour for the toolbox selection strip (spec 3,
+// Copy-selection behaviour for the toolbox selection strip (spec 5.2,
 // Behaviour 6): writes the exact selection text to the clipboard, exposes a
 // transient `isCopied` flag for the inline check confirmation, and toasts on
 // failure — success stays toast-free.

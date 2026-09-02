@@ -4,9 +4,9 @@ import { syncOfflineBooksMembership } from '../membership/offline-collection-mem
 
 // Sets the per-user "keep this book available offline" intent. Synced across
 // devices: a new device reads this on its next library load and the cache
-// primer downloads the content (see specs/6-offline/6.2-save-sync). Idempotent;
+// primer downloads the content (see specs/4-offline/4.2-save-sync). Idempotent;
 // id-only — by the time the switch is reachable the client holds the id
-// from a library payload (see specs/7-library/7.5-library-payloads.md §7).
+// from a library payload (see specs/3-library/3.5-library-payloads.md §7).
 export async function setOfflineRequested(options: {
   libraryItemId: string;
   prisma: PrismaService;

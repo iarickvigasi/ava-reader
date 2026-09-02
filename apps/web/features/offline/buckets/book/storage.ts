@@ -72,7 +72,7 @@ export async function readBookContent(libraryItemId: string) {
 // Resolves a slug to the book whose content is cached under it. `books` is the
 // authority on what can be read offline: `libraryItems` only ever holds the
 // collection *previews* the library payload carries (4 per collection), so a
-// saved book outside every preview has no row there (spec 6.1, Read path). A
+// saved book outside every preview has no row there (spec 4.1, Read path). A
 // scan is enough — the table is bounded by what the user saved.
 export async function readBookIdBySlug(slug: string): Promise<string | null> {
   const db = getDb();
@@ -174,7 +174,7 @@ export async function attachCoverBlob(
 
 // Returns the libraryItemIds of every "auto-saved, not explicit" book other
 // than the one currently open. In steady state there's at most one, but a
-// release ([[6.3-save-button]]) can briefly leave a second, so this
+// release ([[4.3-save-button]]) can briefly leave a second, so this
 // returns all of them. The reader uses it to drop stale auto-caches when the
 // user opens another book (see ./evict).
 export async function findEvictableAutoSavedIds(
@@ -228,7 +228,7 @@ export type OfflineState = "absent" | "auto" | "explicit";
 // the evictable auto-cache) versus explicitly downloaded from scratch (so
 // "remove" deletes it and returns to "Save for offline").
 // `offlineRequested` is the server-synced "keep this book offline" intent
-// (see [[6.2-save-sync]]). It is reported even when state is "absent"
+// (see [[4.2-save-sync]]). It is reported even when state is "absent"
 // (no content cached yet) so the book-info card can show "Download queued" —
 // a request made offline must survive leaving and reopening the page.
 export type OfflineDetail = {

@@ -1,7 +1,7 @@
 "use client";
 
 // The single header status slot: renders the Offline chip, the priming-progress
-// chip, or nothing — exactly one at a time (see [[6.4-cache-priming]]). Offline
+// chip, or nothing — exactly one at a time (see [[4.4-cache-priming]]). Offline
 // wins over priming. Drop-in replacement for the old direct <OfflineIndicator/>
 // mounts in the page + reader headers.
 

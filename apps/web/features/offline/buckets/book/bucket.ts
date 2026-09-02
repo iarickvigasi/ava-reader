@@ -115,7 +115,7 @@ export function registerInFlight(
 // Ownership fence: true only while `controller` is still the registered save
 // for this book. A run superseded by a newer save (registerInFlight replaced
 // its controller) returns false — it must not tear down state the newer save
-// now owns. See [[6.1-offline-reading]] (concurrent same-book saves).
+// now owns. See [[4.1-offline-reading]] (concurrent same-book saves).
 export function isCurrentInFlight(
   libraryItemId: string,
   controller: AbortController,

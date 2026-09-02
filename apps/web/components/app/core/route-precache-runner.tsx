@@ -1,7 +1,7 @@
 "use client";
 
 // Render-less island that asks the service worker to precache the app's route
-// shells (see [[6.5-route-precaching]]). Mounted in AppShell, so it runs on
+// shells (see [[4.5-route-precaching]]). Mounted in AppShell, so it runs on
 // *any* /app route. The route list is fixed (static routes + generic-shell
 // sentinels — ADR 4), so a single successful pass per page-session suffices;
 // it re-runs on connection regain and on SW takeover (a new build's worker

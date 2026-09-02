@@ -7,7 +7,7 @@
 // payload clears the table — so a saved book that has dropped out of every
 // preview has no row there while its chapters sit fully cached in `books`.
 // Gating the offline read on `libraryItems` made those books unopenable
-// (spec 6.1, Read path).
+// (spec 4.1, Read path).
 
 import { readBookIdBySlug } from "@/features/offline/buckets/book";
 import { readLibraryItemIdBySlug } from "@/features/offline/buckets/library/storage";

@@ -13,7 +13,7 @@ type SelectionCaptureParams = {
   onCapture: (selection: ReaderSelection) => void;
 };
 
-// The DOM side of selection capture (spec 1.6). Reads are deferred to the
+// The DOM side of selection capture (spec 2.6). Reads are deferred to the
 // next tick (the selection isn't final when mouseup/touchend fires) through
 // the settle scheduler's single slot, and capture is read-only: it reports
 // the selection + pointer kind, and the AI toolbox owns dropping a touch

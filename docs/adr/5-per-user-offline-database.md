@@ -9,7 +9,7 @@ Sign-out cleared only Dexie, and only on the in-tab signed-in→signed-out edge 
 different user (A never signs out, B signs in), an account switch, or a session that expired
 elsewhere left A's library, highlights, reading positions, cached SSR shells, and preferences
 readable by B. A reading app must guarantee one account's data never surfaces to another on a shared
-device ([[10-auth]] lists this edge; product.md: respect users).
+device ([[7-auth]] lists this edge; product.md: respect users).
 
 ## Decision
 One Dexie database **per user: `ava-reader-<clerkUserId>`**. `getDb()` opens the active user's DB;
@@ -25,7 +25,7 @@ caches + localStorage. The legacy single `ava-reader` DB is deleted once.
 - Cross-user leakage is closed by construction (separate IndexedDB per account), not by remembering
   to clear every table — defense-in-depth.
 - We do not retain multiple users' data for instant switch-back (others are purged on login);
-  coexistence / offline-multi-user is explicitly out of scope ([[10-auth]] non-goals).
+  coexistence / offline-multi-user is explicitly out of scope ([[7-auth]] non-goals).
 - Cost: `getDb()` depends on an active-user marker; a stale marker on an online cold-start-as-B
   yields a brief, self-healing flash of cached content before the reconciler switches+purges (data
   stays isolated regardless).

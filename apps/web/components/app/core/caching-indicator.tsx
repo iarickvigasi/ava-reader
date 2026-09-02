@@ -1,7 +1,7 @@
 "use client";
 
 // Non-interactive header pill for the background primer's progress (see
-// [[6.4-cache-priming]]). Sibling to OfflineIndicator; HeaderStatusChip shows
+// [[4.4-cache-priming]]). Sibling to OfflineIndicator; HeaderStatusChip shows
 // exactly one of them. Two states share one pill so its reserved height never
 // reflows the header:
 //   - caching → content tier, "Caching for offline access n/m books"

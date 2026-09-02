@@ -30,7 +30,7 @@ export function normalizeSelectionText(text: string): string {
 
 // Cache key for a (kind, text, targetLang, model, context, bookTitle,
 // author) tuple. The `model` is folded in so a model swap doesn't quietly
-// serve the previous model's output. The selection-context fields (spec 3)
+// serve the previous model's output. The selection-context fields (spec 5.2)
 // are folded in so the same phrase under different surrounding sentences —
 // or in a different book — generates fresh instead of reusing the other
 // location's cached answer. Requests without them hash on empty strings, so

@@ -23,7 +23,7 @@ export type LibraryMutationPayload = {
 };
 
 // The shared add-to-library core behind import and catalog adds: idempotent
-// per user+book (docs/specs/7-library/7.4-import.md §5).
+// per user+book (docs/specs/3-library/3.4-import.md §5).
 export async function addBookToUserLibraryTx(
   tx: Prisma.TransactionClient,
   input: {

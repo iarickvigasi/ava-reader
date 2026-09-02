@@ -15,7 +15,7 @@ type SummaryItem = {
 
 // The collection summary shape shared by the overview sections and the
 // collection page. itemCount/unreadCount cover every active item, not just
-// the preview cards; "unread" = completionPercent < 100 (specs/18 clamps the
+// the preview cards; "unread" = completionPercent < 100 (specs/8-chapter-purpose-analysis clamps the
 // percent so back-matter can't strand a finished book here).
 export function serializeCollectionSummary<Book>(input: {
   activeItems: SummaryItem[];

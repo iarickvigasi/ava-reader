@@ -269,7 +269,7 @@ describe('LibraryService', () => {
 
   it('leaves out a book that only a custom list knows about', async () => {
     // The total comes from the source shelves alone — see the known gap in
-    // spec 7.5.
+    // spec 3.5.
     for (let i = 1; i <= 3; i++) {
       registerPreviewBook(
         createPreviewBook({ bookId: `book-${i}`, id: `library-${i}` }),

@@ -24,14 +24,14 @@ below.
   **ReaderListItem**; align left|center|right|justify.
 - **ReaderChapterPayload** / **ReaderTocNode** — chapter content and TOC tree.
 - **ReaderLocator** {chapterId, blockId, textOffset} — a point position. **ReaderRangeLocator** — a
-  selection range with contextBefore/After fallback. Defined once in spec 1.4; other specs reference
+  selection range with contextBefore/After fallback. Defined once in spec 2.4; other specs reference
   it.
 - **ReaderProgressPayload** {locator, completionPercent, …}.
 
 ## Scope (whole feature)
 - In: everything in the seven sub-specs.
-- Non-goals: annotation logic (see 2-highlights, 3-ai-toolbox, 4-ai-comments), content download (see
-  6-offline/6.1-offline-reading), audio narration (roadmap).
+- Non-goals: annotation logic (see 5.1-highlights, 5.2-ai-toolbox, 5.3-ai-comments), content download (see
+  4-offline/4.1-offline-reading), audio narration (roadmap).
 
 ## Cross-cutting acceptance
 - [ ] A cached book opens, renders, paginates, and is navigable fully offline.

@@ -24,7 +24,7 @@ type UseIosSelectionParams = {
 const NO_RECTS: DOMRect[] = [];
 const subscribeToNothing = () => () => {};
 
-// The iOS half of selection (spec 1.6 Behaviour 8). Returns the line rects to
+// The iOS half of selection (spec 2.6 Behaviour 8). Returns the line rects to
 // paint; an empty list on every other platform, where the OS still draws it.
 export function useIosSelection({
   containerRef,

@@ -1,4 +1,4 @@
-// Upgrades the origin's storage from best-effort to persistent (spec 6.1).
+// Upgrades the origin's storage from best-effort to persistent (spec 4.1).
 //
 // By default a browser may evict an origin's IndexedDB + Cache Storage without
 // warning once the device runs low on disk, oldest-used origin first — which
@@ -8,7 +8,7 @@
 // Deliberately fire-and-forget at the call site: browsers grant on engagement
 // heuristics (installed, bookmarked, high engagement), so a denial is normal
 // and must never fail a save. Note this does NOT lift iOS Safari's 7-day
-// visit-free wipe — only a home-screen install does (spec 6.1, Edge cases).
+// visit-free wipe — only a home-screen install does (spec 4.1, Edge cases).
 
 export async function ensurePersistentStorage(): Promise<boolean> {
   if (

@@ -18,7 +18,7 @@ discovery. The daily entry point into the habit.
 2. Stats display server baseline augmented with unsynced local session/progress deltas.
 3. Current-book card resumes reading at the saved position; cards link into library/reader.
 4. The collections panel lists the first six collections in the library's display order
-   ([[7-library/7.1-library-screen]] §3) — the six most relevant shelves, not the six with the
+   ([[3-library/3.1-library-screen]] §3) — the six most relevant shelves, not the six with the
    lowest sortOrder. Rows open the clicked collection's page (payload carries the slug);
    the panel header's "open all" opens the library. A cached payload predating the slug field
    falls back to the library link until revalidation refreshes it.

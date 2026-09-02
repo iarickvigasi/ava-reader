@@ -21,7 +21,7 @@ type UseImportUploadOptions = {
 // router.refresh() alone doesn't show the new book on /app/library: that screen
 // reads the library bucket once hydrated and useHydrateLibrary treats its RSC
 // payload as a one-shot, so a refreshed payload repaints stale cache. Import
-// therefore revalidates the bucket itself (spec 7.1); the router refresh stays
+// therefore revalidates the bucket itself (spec 3.1); the router refresh stays
 // for the RSC-only surfaces (home).
 export function useImportUpload({ onNoticeAction }: UseImportUploadOptions) {
   const t = useTranslations("shared.import");

@@ -13,7 +13,7 @@ import { createProgressSummary } from '../progress/progress-summary';
 import type { ReaderStatusPayload } from './reader-payload-types';
 
 // The four reader statuses and what produces each are specified in
-// docs/specs/1-reader/1.7-reader-payload.md.
+// docs/specs/2-reader/2.7-reader-payload.md.
 export async function buildReaderPayload(params: {
   chapterId?: string;
   libraryItem: OwnedLibraryItem;

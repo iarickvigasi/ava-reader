@@ -4,7 +4,7 @@
 // only each collection's preview subset, so counting rows reports a fraction
 // of the library. Storing the scalar in the shared `meta` key/value table
 // keeps the header metric identical online and from cache — see
-// docs/specs/7-library/7.1-library-screen.md §5.
+// docs/specs/3-library/3.1-library-screen.md §5.
 
 import { getDb } from "../../db";
 

@@ -11,7 +11,7 @@ type OverviewEntry = {
 };
 
 // Puts the overview's collections in display order
-// (docs/specs/7-library/7.1-library-screen.md §3). activeItems is already
+// (docs/specs/3-library/3.1-library-screen.md §3). activeItems is already
 // engagement-sorted by the caller, so its first entry carries the collection's
 // recency — no second pass over the items.
 export function orderCollectionsForDisplay<Entry extends OverviewEntry>(

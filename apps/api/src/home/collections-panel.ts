@@ -26,7 +26,7 @@ type PanelCollection = {
   smartKey: string | null;
 };
 
-// The home collections panel (docs/specs/9-home-dashboard.md §4): the first six
+// The home collections panel (docs/specs/1-home-dashboard.md §4): the first six
 // collections in the library's display order. The cut has to happen after the
 // sort, so the query hands us every collection rather than taking six itself.
 export function selectHomeCollections(collections: PanelCollection[]) {

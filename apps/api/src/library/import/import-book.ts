@@ -11,7 +11,7 @@ import { addBookToUserLibraryTx } from '../membership/add-book-to-user-library';
 import { createBookTx } from './create-book';
 import { deleteBookBlobsBestEffort, storeBookBlobs } from './store-book-blobs';
 
-// POST /library/import (docs/specs/7-library/7.4-import.md): validate the
+// POST /library/import (docs/specs/3-library/3.4-import.md): validate the
 // upload, extract metadata, store blobs, then create the book and shelf it.
 export async function importBook(options: {
   clerkUserId: string;

@@ -3,7 +3,7 @@ import { LibrarySource } from '@prisma/client';
 // The shelf holding every book the user marked to keep offline. Membership
 // tracks LibraryItem.offlineRequested rather than an import source, so it is
 // deliberately absent from getSmartCollectionKey below. See
-// docs/specs/6-offline/6.8-offline-books-collection.md.
+// docs/specs/4-offline/4.8-offline-books-collection.md.
 export const OFFLINE_BOOKS_SMART_KEY = 'offline-books';
 
 export const DEFAULT_SMART_COLLECTIONS = [
@@ -27,7 +27,7 @@ export const DEFAULT_SMART_COLLECTIONS = [
     description: "Books you've saved to read without a connection.",
     // sortOrder no longer decides where a shelf renders — the library and home
     // lists compute display order from engagement and size
-    // (docs/specs/7-library/7.1-library-screen.md §3). It still orders the
+    // (docs/specs/3-library/3.1-library-screen.md §3). It still orders the
     // book-info collection chips (items/serialize-item-collections.ts) and is
     // where a future manual reorder would land.
     sortOrder: 2,

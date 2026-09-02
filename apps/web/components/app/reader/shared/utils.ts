@@ -175,7 +175,7 @@ export function isInteractiveTarget(target: EventTarget | null) {
 // True when the browser holds a non-empty text selection whose range sits
 // inside `container`. Lets the touch swipe handler tell a genuine page-swipe
 // apart from a text-selection drag: while the reader is selecting, the gesture
-// must select, not turn the page (see spec 1.6-selection-bridge).
+// must select, not turn the page (see spec 2.6-selection-bridge).
 export function hasActiveSelectionWithin(container: HTMLElement | null) {
   if (!container || typeof window === "undefined") {
     return false;

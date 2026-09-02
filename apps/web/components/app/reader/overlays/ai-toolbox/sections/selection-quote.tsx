@@ -6,7 +6,7 @@ type SelectionQuoteProps = {
   onToggle: () => void;
 };
 
-// The strip's quote line (spec 3, Behaviour 7): a toggle button showing one
+// The strip's quote line (spec 5.2, Behaviour 7): a toggle button showing one
 // truncated line collapsed and the full wrapped fragment expanded. The quote
 // text itself is the accessible name; aria-expanded carries the state.
 export function SelectionQuote({

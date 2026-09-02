@@ -16,7 +16,7 @@ import { etymologySchema, explainSchema, translateSchema } from './dto';
 import { sendStreamingResponse } from './generate/stream-to-response';
 import { parseBody } from './parse-body';
 
-// The three on-selection tools (spec 3-ai-toolbox). Each streams its answer
+// The three on-selection tools (spec 5.2-ai-toolbox). Each streams its answer
 // back as plain text; the AI comment it leaves behind is read and deleted
 // through AiCommentsController, which shares this route prefix.
 @Controller('library/:libraryItemId/ai-comments')

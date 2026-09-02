@@ -13,7 +13,7 @@ export type SelectionGestureParams = {
 
 export type SelectionGesture = ReturnType<typeof createSelectionGesture>;
 
-// What the iOS gesture *means*, with no event handling in it (spec 1.6
+// What the iOS gesture *means*, with no event handling in it (spec 2.6
 // Behaviour 8): the current range, the anchor a drag grows from, and the four
 // moves the finger can make on them.
 export function createSelectionGesture({

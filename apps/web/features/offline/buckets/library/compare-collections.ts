@@ -1,7 +1,7 @@
 // Display order for the cached library view — the mirror of the server's
 // apps/api/src/shared/compare-collections.ts (this workspace has no shared
 // package; lib/smart-collections.ts mirrors an API constant the same way).
-// See docs/specs/7-library/7.1-library-screen.md §3.
+// See docs/specs/3-library/3.1-library-screen.md §3.
 //
 // Applied on read rather than stored: Dexie hands `collections` back in
 // primary-key order, and the Offline Books shelf is derived locally, so its

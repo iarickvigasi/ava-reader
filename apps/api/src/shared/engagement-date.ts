@@ -5,7 +5,7 @@ type EngagementTimestamps = {
 };
 
 // Engagement recency — the sort key for every book list (library overview,
-// collection pages, home's current book). See docs/specs/7-library/_overview.md.
+// collection pages, home's current book). See docs/specs/3-library/_overview.md.
 export function mostRecentEngagementDate(item: EngagementTimestamps): Date {
   const lastReadAtMs = item.progress?.lastReadAt?.getTime() ?? 0;
   const lastOpenedAtMs = item.lastOpenedAt?.getTime() ?? 0;

@@ -1,5 +1,5 @@
 // Dev-only hygiene: a worker registered by a previous production-build
-// session at this origin (offline testing runs `next start` on :3000, spec 6.5)
+// session at this origin (offline testing runs `next start` on :3000, spec 4.5)
 // would keep controlling dev pages and cache-first the dev server's mutable
 // chunks — stale JS/CSS and hydration mismatches. Both phases are best-effort
 // and independent: a failure in one never blocks the other or the app.

@@ -4,7 +4,7 @@ const NON_SPACE = /\S/;
 
 // The word under (x, y), or null when the point isn't on text inside the page
 // box. This is what the long-press selects: with the article non-selectable,
-// iOS no longer offers its own word-select (spec 1.6 Behaviour 8).
+// iOS no longer offers its own word-select (spec 2.6 Behaviour 8).
 export function wordRangeAt(
   doc: Document,
   container: HTMLElement,

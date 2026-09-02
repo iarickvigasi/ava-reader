@@ -1,6 +1,6 @@
 "use client";
 
-// Draws the selection iOS refuses to draw (spec 1.6 Behaviour 8): one tinted
+// Draws the selection iOS refuses to draw (spec 2.6 Behaviour 8): one tinted
 // rect per line box plus the two drag handles, in viewport coordinates, below
 // the panels and deaf to pointers.
 export function IosSelectionOverlay({ rects }: { rects: DOMRect[] }) {

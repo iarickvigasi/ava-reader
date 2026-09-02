@@ -40,12 +40,12 @@ precache rejected — the payload it bakes in is redundant with Dexie, which alr
 3. **Route precache:** an AppShell island posts the SW a `PRECACHE_ROUTES` message with the static
    routes plus one `__shell__` sentinel per per-entity family — ~7 fetches total, no library
    enumeration. The SW fetches each route's doc and stores it under the existing
-   `__sw=doc` keys, query params stripped (RSC payloads are not cached — spec 6.5 §5). Pages are
+   `__sw=doc` keys, query params stripped (RSC payloads are not cached — spec 4.5 §5). Pages are
    fetched, never executed.
 4. **Offline serving:** docs match exact per-URL first, then fall back to the per-family `__shell__`
    entry (every successful shell-route doc fetch also refreshes it). RSC payloads are never cached
    or served, so offline every soft navigation degrades to Next's own hard-navigation, which lands
-   on the doc path and gets the shell (spec 6.5 §5).
+   on the doc path and gets the shell (spec 4.5 §5).
 
 ## Consequences
 - "Readable offline" now equals "content is in Dexie" — the condition the user actually controls —
@@ -53,7 +53,7 @@ precache rejected — the payload it bakes in is redundant with Dexie, which alr
 - Cost: per-entity routes paint a brief skeleton online instead of SSR; unknown slugs render a
   client "not available" state, not an HTTP 404. The exception to "server components fetch the
   initial payload" is recorded in conventions.md.
-- A book added on another device still needs its *content* primed ([[6.4-cache-priming]]); the route
+- A book added on another device still needs its *content* primed ([[4.4-cache-priming]]); the route
   shell itself is already covered.
 - Reversible-ish: the SW additions are additive (removing them leaves reactive caching intact);
-  shells could revert to SSR pages independently. See [[6.5-route-precaching]].
+  shells could revert to SSR pages independently. See [[4.5-route-precaching]].

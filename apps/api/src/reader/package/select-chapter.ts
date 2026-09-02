@@ -2,7 +2,7 @@ import type { ReaderChapter, ReaderPackage } from '../reader-types';
 
 // How many chapters either side of the active one travel in the payload. A
 // full package is tens of MB parsed, so the reader is fed a sliding window and
-// pages through it (see specs/1-reader/1.3-navigation).
+// pages through it (see specs/2-reader/2.3-navigation).
 const CHAPTER_WINDOW_RADIUS = 1;
 
 export function selectChapter(

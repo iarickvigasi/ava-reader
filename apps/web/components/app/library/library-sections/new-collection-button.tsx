@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
 
 // The header's primary action. Inert until collection create has an endpoint
-// (spec 7.3). Shared by both header layouts so the phone and desktop
+// (spec 3.3). Shared by both header layouts so the phone and desktop
 // copies cannot drift apart visually; callers pass width only.
 export function NewCollectionButton({ className }: { className?: string }) {
   const t = useTranslations("library.header");

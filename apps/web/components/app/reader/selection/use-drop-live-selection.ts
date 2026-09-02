@@ -11,7 +11,7 @@ import { useReaderSelectionContext } from "./reader-selection-context";
 // selection itself. Mouse captures keep their selection (desktop has no
 // callout), as do opens from highlight/comment clicks (pointer is null).
 // Re-runs on every fresh capture in case one lands while the panel is open.
-// iOS never gets here: it has no native selection to drop (spec 1.6 §8).
+// iOS never gets here: it has no native selection to drop (spec 2.6 §8).
 export function useDropLiveSelection() {
   const { pointer, locator, text } = useReaderSelectionContext();
 

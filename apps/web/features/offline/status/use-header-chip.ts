@@ -1,5 +1,5 @@
 // Drives the single header status slot: returns "offline" | "caching" | "none"
-// (see [[6.4-cache-priming]]). All branching lives in the pure resolveHeaderChip;
+// (see [[4.4-cache-priming]]). All branching lives in the pure resolveHeaderChip;
 // this hook feeds it the reactive online + priming-progress values and the
 // clock, remembers when priming completed (for the dwell window), and
 // re-renders once when that window expires. The clock read happens in an effect

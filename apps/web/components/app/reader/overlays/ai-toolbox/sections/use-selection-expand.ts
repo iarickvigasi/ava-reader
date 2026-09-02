@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useReaderSelectionContext } from "../../../selection/reader-selection-context";
 
-// Expand/collapse for the toolbox selection strip quote (spec 3, Behaviour 7):
+// Expand/collapse for the toolbox selection strip quote (spec 5.2, Behaviour 7):
 // collapsed is one truncated line, expanded shows the full fragment.
 export function useSelectionExpand(): {
   isExpanded: boolean;

@@ -18,7 +18,7 @@ export type ToolRequestFields = {
 
 // Everything a tool item needs to build its generate payload, derived from
 // the current selection and the book: the trimmed selection, the serialized
-// locator, the sentence context around the selection (spec 3), and the book
+// locator, the sentence context around the selection (spec 5.2), and the book
 // metadata. Optional fields degrade to undefined — the request then behaves
 // as if the feature didn't exist.
 export function useToolRequestFields(

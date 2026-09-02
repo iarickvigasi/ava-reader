@@ -78,7 +78,7 @@ export async function readLibraryView(): Promise<LibraryView | null> {
           return collectionRowToView(collection, books);
         })
         // Dexie returns rows in primary-key order; display order is computed
-        // here (docs/specs/7-library/7.1-library-screen.md §3).
+        // here (docs/specs/3-library/3.1-library-screen.md §3).
         .sort(compareCollectionViews);
 
       // Falls back to the rows on hand when nothing is stored yet (a cache
@@ -446,7 +446,7 @@ export async function applyBookInfoPayload(
       // toggle (dirty) wins; otherwise take this payload's value, then the
       // prior cached value. Without this, a book-info re-hydration wipes the
       // flag the library/collection writes set — which silently starves the
-      // cache primer of its targets (see [[6.2-save-sync]]).
+      // cache primer of its targets (see [[4.2-save-sync]]).
       offlineRequested: prior?.offlineRequestedDirty
         ? prior.offlineRequested ?? false
         : book.offlineRequested ?? prior?.offlineRequested ?? false,

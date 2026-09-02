@@ -3,7 +3,7 @@
 // same rule the server applies, but evaluating it locally means a toggle made
 // offline moves the book immediately instead of waiting for the dirty PATCH to
 // flush — and that shelf matters most precisely when there's no connection.
-// See docs/specs/6-offline/6.8-offline-books-collection.md.
+// See docs/specs/4-offline/4.8-offline-books-collection.md.
 
 import type { LibraryItemRow } from "../../db";
 

@@ -29,9 +29,9 @@ idempotently. Stats = server baseline + unsynced local deltas, so reconnect neve
 
 The progress bucket (locator + completion % + server `lastReadAt`) is the offline resume substrate,
 populated three ways: the reader writes it while reading (dirty until the server acks), `GET
-/reader/progress` revalidates it from the server (primer, on reconnect — see [[6.4-cache-priming]]),
+/reader/progress` revalidates it from the server (primer, on reconnect — see [[4.4-cache-priming]]),
 and the cached reader payload reads it back so a fresh/offline device resumes on the right page
-([[1-reader/1.5-resume]]). A **dirty** row (local ahead) always wins over a server revalidate.
+([[2-reader/2.5-resume]]). A **dirty** row (local ahead) always wins over a server revalidate.
 
 **Progress sync runner** (`progress/sync.ts`, mounted app-wide as `ProgressSyncRunner`, mirroring
 the preferences/offline-intent flush): on reconnect / tab-visible / mount it PATCHes every dirty row
@@ -46,7 +46,7 @@ runner) carries the client `readAt`; `PATCH .../reader/progress` ignores a write
 stored `lastReadAt` and returns the newer stored position for the client to adopt. So a late offline
 sync can't rewind a page another device advanced, while a deliberate backward re-read still wins
 (it's more recent). Decided by client wall-clock (skew caveat); the JS compare isn't fully atomic
-against a same-book write racing inside one request. Resolves the [[1-reader/1.5-resume]] divergence
+against a same-book write racing inside one request. Resolves the [[2-reader/2.5-resume]] divergence
 question.
 
 A completed offline session replays via `POST .../session` with `clientSessionId` + original

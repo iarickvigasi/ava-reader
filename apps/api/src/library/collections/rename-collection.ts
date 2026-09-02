@@ -7,7 +7,7 @@ import type { PrismaService } from '../../prisma/prisma.service';
 import { isPrismaUniqueConstraintError } from '../../shared/prisma-errors';
 
 // PATCH /library/collections/:id
-// (docs/specs/7-library/7.3-collections.md §3).
+// (docs/specs/3-library/3.3-collections.md §3).
 export async function renameCollection(options: {
   collectionId: string;
   input: {

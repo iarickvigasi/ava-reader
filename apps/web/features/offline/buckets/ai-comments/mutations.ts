@@ -48,7 +48,7 @@ export function enqueueGenerate(
 ) {
   const bucket = getOrCreateBucket(libraryItemId, apiBaseUrl);
   // An identical request is already queued — keep it instead of piling up a
-  // second placeholder under a new client id (see spec 4-ai-comments, Edge
+  // second placeholder under a new client id (see spec 5.3-ai-comments, Edge
   // cases). A re-run of the offline toolbox effect is a no-op.
   const signature = requestSignature(mutation);
   const alreadyQueued = bucket.state.pending.some(

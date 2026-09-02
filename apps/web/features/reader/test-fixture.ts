@@ -122,7 +122,7 @@ function createFixtureChapter(input: {
     },
     // A word too wide for a mobile column, and a bare-URL citation list: the
     // two shapes that used to paint across the column gap onto the next page
-    // (see spec 1.1-content-rendering). Kept so /dev/reader-resume-fixture
+    // (see spec 2.1-content-rendering). Kept so /dev/reader-resume-fixture
     // stays a repro for it.
     {
       anchorId: `${input.chapterId}-overflow-heading`,
@@ -138,7 +138,7 @@ function createFixtureChapter(input: {
       kind: "paragraph",
       text: CITATIONS_TEXT,
     },
-    // Superscripts and subscripts (spec 1.1 §8): the exponent must read as a
+    // Superscripts and subscripts (spec 2.1 §8): the exponent must read as a
     // power rather than as `10500`, and this paragraph's leading must match
     // its plain neighbours' — the reason the raised run sits at leading-0.
     {

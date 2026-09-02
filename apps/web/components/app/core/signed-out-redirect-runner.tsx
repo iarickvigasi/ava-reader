@@ -1,7 +1,7 @@
 "use client";
 
 // Render-less island: redirects a signed-out user to the local sign-in page
-// (10-auth spec, Behaviour 4). The middleware deliberately passes any
+// (7-auth spec, Behaviour 4). The middleware deliberately passes any
 // `__session*` cookie holder through so offline reloads keep working — which
 // means an *online* user with an expired session would otherwise land on a
 // tokenless SSR render. Only the client knows whether it's really online,

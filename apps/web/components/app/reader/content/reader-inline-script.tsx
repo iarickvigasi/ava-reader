@@ -8,7 +8,7 @@ type InlineScript = Extract<ReaderInline, { kind: "text" }>["script"];
 // `sup`/`sub` (75%, line-height 0, baseline-aligned, offset by top/bottom), so
 // the glyph paints off the baseline without growing the line box — a paragraph
 // holding an exponent keeps its neighbours' leading, and the line-box rule
-// pagination depends on (spec 1.1 §5) holds.
+// pagination depends on (spec 2.1 §5) holds.
 export function ReaderInlineScript({
   children,
   script,

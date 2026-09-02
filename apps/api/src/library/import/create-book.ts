@@ -9,7 +9,7 @@ import type { ExtractedBookMetadata } from '../../shared/metadata-extractor';
 
 // Creates the Book row with its primary SOURCE file and, for EPUBs, the
 // processing run that derives the reader package
-// (docs/specs/7-library/7.4-import.md).
+// (docs/specs/3-library/3.4-import.md).
 export function createBookTx(
   tx: Prisma.TransactionClient,
   input: {

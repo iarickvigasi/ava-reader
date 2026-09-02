@@ -29,7 +29,7 @@ export type LibraryCollectionRecord = Prisma.CollectionGetPayload<{
 }>;
 
 // The collection page payload: the shared summary shape with every active
-// book, engagement-sorted (docs/specs/7-library/7.5-library-payloads.md §2).
+// book, engagement-sorted (docs/specs/3-library/3.5-library-payloads.md §2).
 export function serializeCollection(collection: LibraryCollectionRecord) {
   const activeItems = collection.items
     .map((item) => item.libraryItem)

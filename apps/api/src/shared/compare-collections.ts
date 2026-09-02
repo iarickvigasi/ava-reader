@@ -1,5 +1,5 @@
 // Display order for collection lists — the library overview and the home panel
-// (docs/specs/7-library/7.1-library-screen.md §3).
+// (docs/specs/3-library/3.1-library-screen.md §3).
 //
 // Recency leads, but ties are the norm rather than the exception: a broad shelf
 // re-lists a narrow shelf's books, so opening one book gives every collection

@@ -4,7 +4,7 @@
 // sync triggers (online event, tab regains visibility, mount). Mounted in
 // AppShell so it runs on every authenticated route, independent of the reader —
 // this is what lets offline reading sync without reopening the book (see
-// specs/5-reading-sessions-progress). The flush is single-flight and online-
+// specs/6-reading-sessions-progress). The flush is single-flight and online-
 // guarded, so firing it from several triggers is cheap.
 
 import { useAuth } from "@clerk/nextjs";

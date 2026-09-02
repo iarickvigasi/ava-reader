@@ -20,7 +20,7 @@ type LibraryBookItem = {
 };
 
 // The one card shape every book list renders — library overview sections and
-// collection pages (home mirrors it). See docs/specs/7-library/_overview.md.
+// collection pages (home mirrors it). See docs/specs/3-library/_overview.md.
 export function serializeLibraryBook(
   item: LibraryBookItem,
   engagement: { completionPercent: number; lastReadAt: Date },

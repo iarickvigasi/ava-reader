@@ -1,5 +1,5 @@
 // Offline-capable sync for the "keep this book offline" intent
-// (see specs/6-offline/6.2-save-sync). A toggle writes optimistically to Dexie and
+// (see specs/4-offline/4.2-save-sync). A toggle writes optimistically to Dexie and
 // marks the row dirty; this module PATCHes dirty rows to the server and clears
 // the flag on success. A toggle made while offline simply stays dirty until the
 // next online flush. Mirrors the preferences bucket's dirty-then-flush model.

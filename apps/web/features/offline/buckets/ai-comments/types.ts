@@ -44,7 +44,7 @@ export type ServerAiComment = {
 // Discriminated payloads matching the three streaming POST endpoints.
 // Carry everything the sync runner needs to replay the call without
 // holding onto a Locator object (which the API expects as a JSON string).
-// The selection-context fields (spec 3) are captured at enqueue time so a
+// The selection-context fields (spec 5.2) are captured at enqueue time so a
 // replayed request sends exactly what a live one would have.
 type GenerateContextFields = {
   context?: string;

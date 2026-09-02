@@ -7,10 +7,10 @@ import { beforeEach, describe, expect, it } from "vitest";
 // refreshed, every SSR render was tokenless, and the user was stranded on
 // the offline-route fallback while online. Redirects must reach the browser
 // untouched, and no redirected response may ever be cached as a route's
-// canonical entry. See docs/specs/6-offline/6.5-route-precaching.md §6, 10-auth.md.
+// canonical entry. See docs/specs/4-offline/4.5-route-precaching.md §6, 7-auth.md.
 //
 // Only documents are covered here. RSC requests are no longer intercepted at
-// all (spec 6.5 §5), so their redirects reach the browser by definition —
+// all (spec 4.5 §5), so their redirects reach the browser by definition —
 // sw-fetch-handler.test.ts owns that contract.
 
 import {

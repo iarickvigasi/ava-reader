@@ -21,7 +21,7 @@ type UseReaderTextSelectionParams = {
 // choreography lives in capture/create-selection-capture.ts.
 //
 // iOS is not served from here at all: there the article is non-selectable and
-// the app runs its own gesture (ios/use-ios-selection, spec 1.6 Behaviour 8),
+// the app runs its own gesture (ios/use-ios-selection, spec 2.6 Behaviour 8),
 // so this hook stands down rather than listening for a selection that can
 // never appear.
 export function useReaderTextSelection({

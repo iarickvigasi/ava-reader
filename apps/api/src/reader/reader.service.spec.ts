@@ -27,7 +27,7 @@ describe('ReaderService', () => {
   const aggregateReadingSessionSegment = jest.fn();
   const queryRaw = jest.fn();
   // Reading a book lazily enqueues its chapter-purpose analysis
-  // (see specs/18-chapter-purpose-analysis). Stubbed so the reader payload
+  // (see specs/8-chapter-purpose-analysis). Stubbed so the reader payload
   // tests exercise that path instead of silently swallowing a mock failure.
   const findUniqueBookAnalysis = jest.fn();
   const findFirstBookProcessingRun = jest.fn();
@@ -127,7 +127,7 @@ describe('ReaderService', () => {
     jest.useRealTimers();
   });
 
-  // Lazy analysis (specs/18-chapter-purpose-analysis): a bulk import costs
+  // Lazy analysis (specs/8-chapter-purpose-analysis): a bulk import costs
   // nothing, only the books someone actually opens are analysed. The enqueue is
   // fire-and-forget, hence the microtask flush.
   describe('chapter-purpose analysis enqueue', () => {

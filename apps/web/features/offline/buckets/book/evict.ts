@@ -7,7 +7,7 @@
 // (`savedOffline`) are never candidates. It runs only when online, so a switch
 // made offline keeps the previous cache and is reclaimed later, on reconnect.
 //
-// See [[6.1-offline-reading]].
+// See [[4.1-offline-reading]].
 
 import { deleteBookContent, findEvictableAutoSavedIds } from "./storage";
 

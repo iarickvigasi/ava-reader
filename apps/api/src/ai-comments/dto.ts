@@ -12,7 +12,7 @@ const META_MAX_LENGTH = 200;
 // side. 2 KB is a generous ceiling — typical payloads are 200–400 bytes.
 const LOCATOR_MAX_LENGTH = 2048;
 
-// Selection context (spec 3): the sentences around the selection plus book
+// Selection context (spec 5.2): the sentences around the selection plus book
 // metadata. Accepted by all three tools — prompts use it for disambiguation
 // and the source hash folds it in so cached answers stay location-specific.
 const baseSchema = z.object({
