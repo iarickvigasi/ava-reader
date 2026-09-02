@@ -8,8 +8,9 @@
 
 ## Summary
 Make every app route load offline — including hard reload and direct-URL entry — after a single
-online visit to any one route. Caches the route *shell* (HTML doc + RSC payload + JS/CSS chunks);
-data still comes from Dexie buckets. Serves the offline-first job (product.md).
+online visit to any one route. Caches the route *shell* (HTML doc + JS/CSS chunks); data still comes
+from Dexie buckets; RSC payloads are deliberately **not** cached (§5). Serves the offline-first job
+(product.md).
 
 ## Scope
 - In: a build-time asset manifest the SW precaches; a `PRECACHE_ROUTES` SW message an AppShell
@@ -38,28 +39,30 @@ data still comes from Dexie buckets. Serves the offline-first job (product.md).
    (`controllerchange`) and **on every reconnect until a pass is confirmed complete**, so a pass
    interrupted by going offline is retried, never latched done at post time. A confirmed pass sets
    the in-session **shells-ready** signal the readiness cue consumes ([[11-cache-priming]]).
-4. **SW handling:** for each route the SW fetches the document (plain GET) and the RSC payload
-   (`RSC:1` header), storing them under the existing `__sw=doc` / `__sw=rsc` keys. Keys drop *all*
-   query params — Next's `_rsc` cache-buster and the client-only hydration hints the app appends to
+4. **SW handling:** for each route the SW fetches the document (plain GET) and stores it under the
+   `__sw=doc` key. Keys drop *all* query params — the client-only hydration hints the app appends to
    book links (`?title=…&author=…&fromCollection=…`) — else a real click on a hinted link would
-   miss the precached bare route offline. The reactive handler classifies a request as RSC by the
-   `RSC: 1` header or `Accept: text/x-component`. Per-entity-family docs are *additionally* stored
-   under the family's `__shell__` key
-   (every successful doc fetch refreshes it). Bounded concurrency; 3xx/redirects not cached —
+   miss the precached bare route offline. Per-entity-family docs are *additionally* stored under the
+   family's `__shell__` key (every successful doc fetch refreshes it). Bounded concurrency; 3xx/redirects not cached —
    precache fetches use `redirect:"manual"` so a Clerk handshake/sign-in redirect can never be
    *followed* into a 200 that poisons a route key (redirect-follow was how a stale session cached
    the sign-in page as `/app`). Already-cached routes are skipped, so re-posting is cheap. When the
    pass settles the SW **replies with the set of routes now cached**, so the client can tell whether
    offline browsing is genuinely ready or must be retried on reconnect.
-5. **Prefetch bypass (reactive fetch handler):** Next marks link prefetches with a
-   `next-router-prefetch` (or `next-router-segment-prefetch`) header; real navigations carry
-   `next-router-state-tree` instead. A dynamic route *with* a `loading.tsx` (e.g. `/app/library`)
-   prefetches to a tiny "loading" **stub**, not the full page. The SW **must not** cache or serve
-   prefetch responses under the shared navigation key: caching one overwrites the full precached
-   RSC, and offline that stub is a valid `200` that Next neither finishes rendering *nor* falls back
-   from (no hard-nav) — the route is stranded with the URL changed and the previous page still
-   shown. So any request carrying a prefetch header passes straight through to the network (no cache
-   read/write); the navigation key keeps the full payload the precache / a real navigation stored.
+5. **RSC + prefetch bypass (reactive fetch handler):** the SW never caches or serves a React Flight
+   payload. A soft navigation asks not for a page but for a *delta* against the router state it
+   already holds, sent as `next-router-state-tree` — and the server declares the dependency:
+   `Vary: rsc, next-router-state-tree, …`. Keyed on pathname alone, the cache answers a question the
+   request never asked; that is a wrong answer, not a stale one. Next can neither apply it nor
+   detect failure (it is a valid `200`), so the navigation never commits *and* never falls back:
+   URL changed, previous page painted, no error, waits forever. Reproduced on-device 2026-09-01 —
+   Library served from cache in 12 ms, Home still rendered under `/app/library` minutes later.
+   Letting the request **fail** triggers Next's hard navigation onto the cached doc: 52–79 ms warm
+   on an iPhone 17. So RSC requests (`RSC: 1` header or `Accept: text/x-component`) pass straight
+   through, as do link prefetches (`next-router-prefetch` / `next-router-segment-prefetch`), which
+   on a `loading.tsx` route are additionally a partial stub. **Trap:** never reinstate an RSC cache
+   to "optimise" offline soft navigation — per-state-tree keys are the only sound version, and the
+   precache cannot enumerate arrival paths in advance.
 6. **Redirect pass-through (reactive fetch handler):** a redirect response (any 3xx; surfaces as
    `opaqueredirect` on navigations, whose redirect mode is `manual`) is returned to the browser
    **as-is** — never treated as "server erroring → serve cache". Substituting the cached shell for a
@@ -69,9 +72,9 @@ data still comes from Dexie buckets. Serves the offline-first job (product.md).
    (subresource/RSC fetches) never becomes a route's canonical entry.
 7. **Offline serving (docs):** exact per-URL match first, then the per-family `__shell__` fallback —
    so a never-visited book still gets the shell, which hydrates the right book from
-   `location.pathname` + Dexie. **RSC:** strictly per-URL, no cross-slug fallback (a mismatched
-   payload risks Next rewriting the URL); a failed RSC fetch triggers Next's built-in hard
-   navigation, which lands on the doc path.
+   `location.pathname` + Dexie. Offline every soft navigation degrades to a hard one (§5), so the
+   doc path is the only offline entry point — which is why doc coverage, not RSC coverage, is what
+   the precache ack gates on.
 8. A new build installs a fresh SW + asset set and evicts the old cache (existing activate logic);
    `controllerchange` re-runs the island so the new version's route shells are precached.
 9. **Dev eviction:** the registrar registers only in production builds; in dev it instead
@@ -96,11 +99,10 @@ the island against the new cache. Auth-gated doc fetch returns a Clerk 3xx → n
 `ok`-only guard). Never-visited book offline → family shell serves; whether it *reads* depends on
 its content being in Dexie ([[6-offline-reading]]/[[11-cache-priming]]) — missing content shows the
 missing-book modal, not a network error. Book added on another device → shell already covers its
-routes; only its content needs priming. Online link prefetch of a `loading.tsx` route
-(`/app/library`) → bypassed, so its partial "loading" stub can't poison the navigation key; the
-precache's full `rsc:1` fetch stays the offline payload. (This was the bug behind "URL flips to
-`/app/library` but the page stays on home": the poisoned stub was served, so the navigation neither
-completed nor hard-fell-back to the cached doc.) iOS Safari drops the whole registration + cache
+routes; only its content needs priming. "URL flips to `/app/library` but the page stays on home" →
+the RSC cache, twice: first a prefetch stub served as the navigation payload, then — after that was
+bypassed — the precached full-tree payload served to a request that asked for a delta. Both are
+fixed by not caching RSC at all (§5). iOS Safari drops the whole registration + cache
 after 7 visit-free days, so a lapsed iOS user precaches from scratch on the next online visit —
 platform-imposed, see [[6-offline-reading]] Edge cases.
 
@@ -118,12 +120,12 @@ platform-imposed, see [[6-offline-reading]] Edge cases.
   the SW's precache ack.
 - [ ] A 3xx/`opaqueredirect` navigation response reaches the browser untouched (Clerk handshake and
   sign-in redirects complete online); cache is served only on network failure or 4xx/5xx.
-- [ ] No redirected response (followed or manual) is ever cached under a route's doc/RSC key — by
-  the reactive handler or the precache pass.
-- [ ] A Next link **prefetch** never overwrites a route's cached navigation RSC. Offline
-  soft-navigation to `/app/library` (the one static route with a `loading.tsx`) serves its full
-  shell — not a partial prefetch stub — so the page renders instead of stranding on the previous
-  route.
+- [ ] No redirected response (followed or manual) is ever cached under a route's doc key — by the
+  reactive handler or the precache pass.
+- [ ] No RSC payload is ever written to or served from the cache, by either the reactive handler or
+  the precache pass.
+- [ ] Offline, tapping a nav link (e.g. Library from Home) renders that route via a hard
+  navigation — never a URL that changes while the previous page stays on screen.
 - [ ] Running `next dev` after a production-build session at the same origin unregisters the
   leftover worker on the first `/app` load; dev pages never serve `/_next/static` from a SW cache.
 

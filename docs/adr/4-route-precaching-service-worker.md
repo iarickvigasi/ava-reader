@@ -39,13 +39,13 @@ precache rejected — the payload it bakes in is redundant with Dexie, which alr
    middleware covers `/app(.*)`).
 3. **Route precache:** an AppShell island posts the SW a `PRECACHE_ROUTES` message with the static
    routes plus one `__shell__` sentinel per per-entity family — ~7 fetches total, no library
-   enumeration. The SW fetches each route's doc (and RSC) and stores them under the existing
-   `__sw=doc`/`__sw=rsc` keys, query params stripped. Pages are fetched, never executed.
+   enumeration. The SW fetches each route's doc and stores it under the existing
+   `__sw=doc` keys, query params stripped (RSC payloads are not cached — spec 14 §5). Pages are
+   fetched, never executed.
 4. **Offline serving:** docs match exact per-URL first, then fall back to the per-family `__shell__`
-   entry (every successful shell-route doc fetch also refreshes it). RSC stays strictly per-URL with
-   no cross-slug fallback — a mismatched RSC payload risks Next rewriting the canonical URL; a
-   failed RSC fetch triggers Next's own hard-navigation, which lands on the doc path and gets the
-   shell.
+   entry (every successful shell-route doc fetch also refreshes it). RSC payloads are never cached
+   or served, so offline every soft navigation degrades to Next's own hard-navigation, which lands
+   on the doc path and gets the shell (spec 14 §5).
 
 ## Consequences
 - "Readable offline" now equals "content is in Dexie" — the condition the user actually controls —

@@ -22,11 +22,11 @@ How apps/web/public/sw.js is structured so it stays readable. Pure code organiza
    header (5–8 lines: purpose + spec pointers) → version & cache name → lifecycle (install,
    activate, precacheBuildAssets) → request classification (isRscRequest, isPrefetchRequest,
    isRedirectResponse) → cache keys (navigationCacheKey, SHELL_ROUTE_PREFIXES, shellDocKey) →
-   strategies (cacheFirst, networkFirst, networkFirstDoc + putDocResponse, matchDocFallback) →
+   strategies (cacheFirst, networkFirstDoc + putDocResponse, matchDocFallback) →
    fetch router (bypass guards + dispatch only, no inline strategy logic) → route precache
    (message listener, PRECACHE_CONCURRENCY, precacheRoutes, cacheRouteShell, storeRouteResponse).
-3. networkFirstDoc stays a separate explicit function — decided not to merge it into a
-   parameterized networkFirst.
+3. networkFirstDoc is the only network-first strategy: the RSC variant was removed with the RSC
+   cache ([[14-route-precaching]] §5).
 4. Comment policy: rationale lives in specs, not the file. A regression already documented in
    [[14-route-precaching]] (redirect pass-through, prefetch-stub poisoning, shell-key fallback,
    precache redirect:"manual") gets a one-liner naming the failure + spec pointer, e.g.

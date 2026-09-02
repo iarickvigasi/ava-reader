@@ -8,6 +8,10 @@ import { beforeEach, describe, expect, it } from "vitest";
 // the offline-route fallback while online. Redirects must reach the browser
 // untouched, and no redirected response may ever be cached as a route's
 // canonical entry. See docs/specs/14-route-precaching.md §6, 10-auth.md.
+//
+// Only documents are covered here. RSC requests are no longer intercepted at
+// all (spec 14 §5), so their redirects reach the browser by definition —
+// sw-fetch-handler.test.ts owns that contract.
 
 import {
   dispatchFetch,
@@ -15,11 +19,9 @@ import {
   loadServiceWorker,
   MockCache,
   ORIGIN,
-  RSC_NAV_HEADERS,
 } from "./sw-test-harness";
 
 const APP_DOC_KEY = `${ORIGIN}/app?__sw=doc`;
-const APP_RSC_KEY = `${ORIGIN}/app?__sw=rsc`;
 
 // Navigations have redirect mode "manual": fetch() resolves an opaqueredirect
 // (status 0, ok false). undici can't construct one, so fake the read surface.
@@ -68,22 +70,6 @@ describe("service worker — redirects pass through and never poison the cache",
     expect(response).toBe(redirect);
   });
 
-  it("returns a 3xx RSC response as-is instead of the cached payload", async () => {
-    await cache.put(APP_RSC_KEY, new Response("STALE_RSC", { status: 200 }));
-    const redirect = new Response(null, {
-      status: 307,
-      headers: { location: `${ORIGIN}/sign-in` },
-    });
-    sw.fetchMock.mockResolvedValue(redirect);
-
-    const response = await dispatchFetch(
-      sw.listeners.fetch!,
-      fakeRequest("/app", { headers: RSC_NAV_HEADERS }),
-    );
-
-    expect(response).toBe(redirect);
-  });
-
   it("still serves the cached shell on a plain 4xx/5xx (resilience unchanged)", async () => {
     await cache.put(APP_DOC_KEY, new Response("GOOD_SHELL", { status: 200 }));
     sw.fetchMock.mockResolvedValue(new Response("boom", { status: 500 }));
@@ -96,15 +82,15 @@ describe("service worker — redirects pass through and never poison the cache",
     expect(await response?.text()).toBe("GOOD_SHELL");
   });
 
-  it("never caches a followed-redirect 200 under the route's RSC key", async () => {
+  it("never caches a followed-redirect 200 under the route's doc key", async () => {
     sw.fetchMock.mockResolvedValue(followedRedirect("SIGN_IN_PAGE"));
 
     await dispatchFetch(
       sw.listeners.fetch!,
-      fakeRequest("/app", { headers: RSC_NAV_HEADERS }),
+      fakeRequest("/app", { mode: "navigate" }),
     );
 
-    expect(await cache.match(APP_RSC_KEY)).toBeUndefined();
+    expect(await cache.match(APP_DOC_KEY)).toBeUndefined();
   });
 
   it("precaches with redirect:'manual' and skips a route answering with a redirect", async () => {
@@ -124,6 +110,5 @@ describe("service worker — redirects pass through and never poison the cache",
       expect(request.redirect).toBe("manual");
     }
     expect(await cache.match(APP_DOC_KEY)).toBeUndefined();
-    expect(await cache.match(APP_RSC_KEY)).toBeUndefined();
   });
 });

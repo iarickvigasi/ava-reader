@@ -81,8 +81,12 @@ async function precacheBuildAssets() {
  * Request classification
  * -------------------------------------------------------------------------- */
 
-// Next soft navigations request the React Flight payload (spec 14 §4); treated
-// like navigations: network-first with cache fallback.
+// Next soft navigations request the React Flight payload. These are never
+// cached or served: the server varies them on `next-router-state-tree`, so a
+// payload stored per pathname answers a different question than the next
+// request asks. A mismatched 200 strands the router — URL changed, previous
+// page still painted, no error and no fallback. Failing instead is what
+// triggers Next's hard navigation onto the cached document (spec 14 §5).
 function isRscRequest(request) {
   return (
     request.headers.get("RSC") === "1" ||
@@ -114,18 +118,18 @@ function isRedirectResponse(response) {
  * Cache keys
  * -------------------------------------------------------------------------- */
 
-// Stable per-route key: pathname only (ALL query params dropped), tagged with
-// the content kind so a cached doc and RSC payload never collide (spec 14 §4).
-function navigationCacheKey(request, kind) {
+// Stable per-route key: pathname only (ALL query params dropped). Documents
+// are the only thing keyed this way — RSC payloads are never cached.
+function navigationCacheKey(request) {
   const url = new URL(request.url);
   url.search = "";
-  url.searchParams.set("__sw", kind);
+  url.searchParams.set("__sw", "doc");
   return url.toString();
 }
 
 // Per-entity routes are generic shells (ADR 4): each family keeps one extra
 // doc entry under a __shell__ key so a never-visited slug still gets a shell
-// offline. Docs only — RSC stays strictly per-URL (spec 14 §7).
+// offline (spec 14 §7).
 const SHELL_ROUTE_PREFIXES = [
   "/app/read/",
   "/app/library/books/",
@@ -162,48 +166,19 @@ async function cacheFirst(request, cache) {
   return response;
 }
 
-// Network-first for RSC payloads: freshness wins online; the cache is only the
-// offline safety net (no stale-while-revalidate flash).
-async function networkFirst(request, cache, kind) {
-  const key = navigationCacheKey(request, kind);
-  try {
-    const response = await fetch(request);
-    if (isRedirectResponse(response)) {
-      return response;
-    }
-    // A followed redirect's body belongs to another URL — serve it, never
-    // cache it (spec 14 §6).
-    if (response && response.ok) {
-      if (!response.redirected) {
-        cache.put(key, response.clone());
-      }
-      return response;
-    }
-    // Server reachable but erroring (4xx/5xx): prefer the last good copy.
-    const cached = await cache.match(key);
-    return cached ?? response;
-  } catch (error) {
-    const cached = await cache.match(key);
-    if (cached) {
-      return cached;
-    }
-    throw error;
-  }
-}
-
 // Store a successful document under its exact per-URL key and, for shell
 // families, refresh the family __shell__ entry too.
 function putDocResponse(cache, request, response) {
-  cache.put(navigationCacheKey(request, "doc"), response.clone());
+  cache.put(navigationCacheKey(request), response.clone());
   const shellKey = shellDocKey(request);
-  if (shellKey && shellKey !== navigationCacheKey(request, "doc")) {
+  if (shellKey && shellKey !== navigationCacheKey(request)) {
     cache.put(shellKey, response.clone());
   }
 }
 
 // Offline doc lookup: exact per-URL match first, then the family shell.
 async function matchDocFallback(request, cache) {
-  const exact = await cache.match(navigationCacheKey(request, "doc"));
+  const exact = await cache.match(navigationCacheKey(request));
   if (exact) {
     return exact;
   }
@@ -217,9 +192,9 @@ async function matchDocFallback(request, cache) {
   return null;
 }
 
-// Same shape as networkFirst, for documents: reads fall back through
-// matchDocFallback and writes go through putDocResponse (kept separate on
-// purpose — spec 16).
+// Network-first for documents: freshness wins online, the cache is the
+// offline safety net. Reads fall back through matchDocFallback and writes go
+// through putDocResponse.
 async function networkFirstDoc(request, cache) {
   try {
     const response = await fetch(request);
@@ -262,8 +237,9 @@ self.addEventListener("fetch", (event) => {
   if (url.pathname.startsWith("/api/")) {
     return;
   }
-  // Prefetch stubs must never touch the cache (spec 14 §5).
-  if (isPrefetchRequest(request)) {
+  // Prefetch stubs must never touch the cache, and RSC payloads must never be
+  // cached or served at all (spec 14 §5).
+  if (isPrefetchRequest(request) || isRscRequest(request)) {
     return;
   }
 
@@ -275,9 +251,6 @@ self.addEventListener("fetch", (event) => {
       const cache = await caches.open(CACHE_NAME);
       if (isStaticChunk) {
         return cacheFirst(request, cache); // hashed, immutable filenames
-      }
-      if (isRscRequest(request)) {
-        return networkFirst(request, cache, "rsc");
       }
       if (isNavigation) {
         return networkFirstDoc(request, cache);
@@ -329,7 +302,7 @@ async function precacheRoutes(routes) {
   );
   const cached = [];
   for (const route of valid) {
-    if (await cache.match(navigationCacheKey(new Request(route), "doc"))) {
+    if (await cache.match(navigationCacheKey(new Request(route)))) {
       cached.push(route);
     }
   }
@@ -339,18 +312,11 @@ async function precacheRoutes(routes) {
 // redirect: "manual" so a stale session's Clerk redirect is never followed
 // into a 200 that poisons the route key (spec 14 §4).
 async function cacheRouteShell(cache, route) {
-  await Promise.all([
-    storeRouteResponse(cache, new Request(route, { redirect: "manual" }), "doc"),
-    storeRouteResponse(
-      cache,
-      new Request(route, { headers: { RSC: "1" }, redirect: "manual" }),
-      "rsc",
-    ),
-  ]);
+  await storeRouteResponse(cache, new Request(route, { redirect: "manual" }));
 }
 
-async function storeRouteResponse(cache, request, kind) {
-  const key = navigationCacheKey(request, kind);
+async function storeRouteResponse(cache, request) {
+  const key = navigationCacheKey(request);
   if (await cache.match(key)) {
     return; // already cached (e.g. visited online) — don't refetch.
   }
@@ -358,11 +324,7 @@ async function storeRouteResponse(cache, request, kind) {
     const response = await fetch(request);
     // Only a real 200 is cached — a Clerk handshake 3xx is not ok (spec 14 §4).
     if (response && response.ok) {
-      if (kind === "doc") {
-        putDocResponse(cache, request, response);
-      } else {
-        await cache.put(key, response);
-      }
+      putDocResponse(cache, request, response);
     }
   } catch {
     // Offline or transient failure — skip; the next pass retries.
