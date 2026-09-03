@@ -14,6 +14,7 @@ import {
   readLibraryView,
   setOfflineRequestedLocal,
 } from "./storage";
+import { pruneLibraryItems } from "./prune-items";
 
 function payload(): LibraryPayload {
   return {
@@ -95,9 +96,30 @@ describe("library bucket storage", () => {
     await applyLibraryPayload({
       summary: { booksCount: 1, collectionsCount: 3 },
       collections: [
-        { ...base, id: "col-a", slug: "broad", name: "Broad", itemCount: 9, books: [justOpened] },
-        { ...base, id: "col-b", slug: "empty", name: "Empty", itemCount: 0, books: [] },
-        { ...base, id: "col-c", slug: "narrow", name: "Narrow", itemCount: 1, books: [justOpened] },
+        {
+          ...base,
+          id: "col-a",
+          slug: "broad",
+          name: "Broad",
+          itemCount: 9,
+          books: [justOpened],
+        },
+        {
+          ...base,
+          id: "col-b",
+          slug: "empty",
+          name: "Empty",
+          itemCount: 0,
+          books: [],
+        },
+        {
+          ...base,
+          id: "col-c",
+          slug: "narrow",
+          name: "Narrow",
+          itemCount: 1,
+          books: [justOpened],
+        },
       ],
     });
 
@@ -210,6 +232,52 @@ describe("library bucket storage", () => {
     ]);
   });
 
+  // The regression: the list payload previews 4 books per collection, and a
+  // clear-and-rebuild from it deleted every book outside those previews — so
+  // the primer's full per-collection pass was erased by the next library
+  // visit, leaving a 50-book library with 6 cached rows.
+  it("keeps books an incomplete preview payload does not mention", async () => {
+    const full = payload().collections[0];
+    // The primer hydrated the shelf in full: 2 books, membership order 0,1.
+    await applyCollectionPayload(full);
+
+    // A later library-list refresh previews only the first book, but says the
+    // shelf holds 2 — so it is not authoritative for the second one.
+    await applyLibraryPayload({
+      ...payload(),
+      collections: [{ ...full, itemCount: 2, books: full.books.slice(0, 1) }],
+    });
+
+    const view = await readLibraryView();
+    expect(view!.collections[0].books.map((b) => b.libraryItemId)).toEqual([
+      "lib-1",
+      "lib-2",
+    ]);
+  });
+
+  it("prunes only on an explicit complete-pass keep set", async () => {
+    await applyCollectionPayload(payload().collections[0]);
+    const db = getDb();
+
+    await pruneLibraryItems(["lib-1"]);
+
+    expect(await db.libraryItems.get("lib-2")).toBeUndefined();
+    expect(await db.libraryItems.get("lib-1")).toBeDefined();
+    // Membership for the pruned book goes with it.
+    const links = await db.collectionMembership.toArray();
+    expect(links.map((l) => l.libraryItemId)).toEqual(["lib-1"]);
+  });
+
+  it("never prunes a row with an unsynced offline toggle", async () => {
+    await applyCollectionPayload(payload().collections[0]);
+    await setOfflineRequestedLocal("lib-2", true);
+
+    await pruneLibraryItems(["lib-1"]);
+
+    const row = await getDb().libraryItems.get("lib-2");
+    expect(row?.offlineRequestedDirty).toBe(true);
+  });
+
   it("reports the server's book total, not the number of cached rows", async () => {
     // The overview payload carries only a per-collection preview, so counting
     // cached rows would report 2 for a 9-book library.
@@ -285,7 +353,9 @@ describe("library bucket storage", () => {
       approximateBodyPageCount: null,
       approximatePageCount: 1296,
       chapterLabel: "Volume One, Part One, Chapter 1",
-      collections: [{ id: "col-1", kind: "CUSTOM", name: "Favorites", smartKey: null }],
+      collections: [
+        { id: "col-1", kind: "CUSTOM", name: "Favorites", smartKey: null },
+      ],
       description: "Epic of Russian society during the Napoleonic era.",
       genres: ["Fiction", "Classic"],
       language: "ru",

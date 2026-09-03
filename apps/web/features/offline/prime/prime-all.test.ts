@@ -76,6 +76,7 @@ type Harness = {
   revalidateBookInfo: ReturnType<typeof vi.fn>;
   revalidateLibrary: ReturnType<typeof vi.fn>;
   revalidateCollection: ReturnType<typeof vi.fn>;
+  pruneLibraryItems: ReturnType<typeof vi.fn>;
   revalidatePreferences: ReturnType<typeof vi.fn>;
   revalidateHighlights: ReturnType<typeof vi.fn>;
   revalidateAiComments: ReturnType<typeof vi.fn>;
@@ -88,6 +89,7 @@ function setup(overrides: Partial<PrimeInternals> = {}): Harness {
   const revalidateBookInfo = vi.fn(async () => {});
   const revalidateLibrary = vi.fn(async () => {});
   const revalidateCollection = vi.fn(async () => {});
+  const pruneLibraryItems = vi.fn(async () => {});
   const revalidatePreferences = vi.fn(async () => {});
   const revalidateHighlights = vi.fn(async () => {});
   const revalidateAiComments = vi.fn(async () => {});
@@ -109,6 +111,7 @@ function setup(overrides: Partial<PrimeInternals> = {}): Harness {
     revalidateHome: async () => {},
     revalidateLibrary,
     revalidateCollection,
+    pruneLibraryItems,
     revalidateBookInfo,
     revalidatePreferences,
     revalidateHighlights,
@@ -133,6 +136,7 @@ function setup(overrides: Partial<PrimeInternals> = {}): Harness {
     revalidateBookInfo,
     revalidateLibrary,
     revalidateCollection,
+    pruneLibraryItems,
     revalidatePreferences,
     revalidateHighlights,
     revalidateAiComments,
@@ -219,6 +223,51 @@ describe("primeAllCaches", () => {
     await primeAllCaches(h.runtime, h.internals);
     expect(h.saveBook).toHaveBeenCalledWith("a"); // reconciled (consent-exempt)
     expect(h.saveBook).not.toHaveBeenCalledWith("b", "auto"); // withheld
+  });
+
+  // Custom shelves were skipped, so their membership + order never cached and
+  // a custom collection page showed only the 4-book preview offline.
+  it("hydrates custom collections in full, not just smart ones", async () => {
+    const h = setup();
+    await primeAllCaches(h.runtime, h.internals);
+
+    expect(h.revalidateCollection).toHaveBeenCalledWith("imported", expect.any(Function));
+    expect(h.revalidateCollection).toHaveBeenCalledWith("faves", expect.any(Function));
+  });
+
+  it("prunes to the ids a complete pass saw", async () => {
+    const h = setup();
+    await primeAllCaches(h.runtime, h.internals);
+
+    expect(h.pruneLibraryItems).toHaveBeenCalledTimes(1);
+    expect(h.pruneLibraryItems.mock.calls[0][0].sort()).toEqual(["a", "b"]);
+  });
+
+  it("never prunes when a collection came back short of its itemCount", async () => {
+    // One book failed to fetch; `revalidate*` swallowed the error, so the loop
+    // finished but the shelf is incomplete. Pruning here would delete it.
+    const h = setup({
+      readLibraryView: async () => ({
+        collections: [
+          {
+            id: "c-smart",
+            slug: "imported",
+            name: "Imported Books",
+            description: null,
+            kind: "SMART",
+            smartKey: "imported-library",
+            itemCount: 50,
+            unreadCount: 0,
+            books: [book("a")],
+          },
+        ],
+        summary: { booksCount: 50, collectionsCount: 1 },
+      }),
+    });
+
+    await primeAllCaches(h.runtime, h.internals);
+
+    expect(h.pruneLibraryItems).not.toHaveBeenCalled();
   });
 
   it("happy path: primes metadata, preferences, content + annotations", async () => {

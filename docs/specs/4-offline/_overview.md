@@ -49,6 +49,25 @@ they vary by router state and cannot be keyed per path ([[4.5-route-precaching]]
 **3. localStorage**: the `ava-reader:active-user` marker — who Dexie opens for before Clerk boots.
 Correct offline by construction, since identity can only change online.
 
+### Write paths — who may delete
+A payload may only delete what it can prove absent. `GET /library` carries previews, so it proves
+nothing about absence; `GET /library/collections/:slug` returns a collection **in full**, so a
+completed pass over every collection does.
+
+| table | `applyLibraryPayload` (previews) | `applyCollectionPayload` (full) |
+| --- | --- | --- |
+| `collections` | replace — it lists them all | upsert the one |
+| `libraryItems` | **upsert only, never delete** | upsert (merge local flags) |
+| `collectionMembership` | replace only a **complete** collection | replace for that collection |
+
+A collection in the list payload is complete when `books.length >= itemCount` — the shelf has ≤4
+books, so its preview *is* the whole shelf and it may be replaced. Otherwise membership is seeded
+only if the collection has none yet, never overwritten: preview rows carry `order: 0…3` (first four
+by engagement) and would silently corrupt full ordering. Deletion of vanished books belongs to the
+primer, after a verified-complete pass over every collection ([[4.4-cache-priming]]) — never to a
+library-list refresh, which is what used to reduce a 50-book library to the 6 books the previews
+happened to name.
+
 ### The rule
 **Never gate a read on a projection.** Ask the table that owns the thing: "can I read this book
 offline?" is a question for `books`, not `libraryItems`. Resolving a reader slug through

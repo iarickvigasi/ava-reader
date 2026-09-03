@@ -24,6 +24,7 @@ import {
   resolveOfflineCounts,
   selectOfflineBookRows,
 } from "./offline-books-view";
+import { replacePreviewMembershipTx } from "./preview-membership";
 import {
   readLibraryBooksCountTx,
   writeLibraryBooksCountTx,
@@ -105,7 +106,10 @@ export async function readCollectionViewBySlug(
     "r",
     [db.libraryItems, db.collections, db.collectionMembership],
     async () => {
-      const collection = await db.collections.where("slug").equals(slug).first();
+      const collection = await db.collections
+        .where("slug")
+        .equals(slug)
+        .first();
       if (!collection) {
         return null;
       }
@@ -201,16 +205,16 @@ export async function applyLibraryPayload(payload: LibraryPayload) {
         } satisfies LibraryItemRow;
       });
 
-      // Replace strategy: clear tables, then bulk-put the fresh data. Cheap
-      // for a couple-hundred row library. If it ever stops being cheap we
-      // can diff instead.
-      await db.libraryItems.clear();
+      // `collections` is the only table this payload can prove absence for —
+      // it lists every collection. Items and membership are previews (4 books
+      // per collection), so deleting from them here erased the primer's full
+      // per-collection pass; pruning belongs to that pass instead
+      // ([[4-offline/_overview]], Write paths).
       await db.collections.clear();
-      await db.collectionMembership.clear();
+      await db.collections.bulkPut(collections);
 
       await db.libraryItems.bulkPut(nextItems);
-      await db.collections.bulkPut(collections);
-      await db.collectionMembership.bulkPut(memberships);
+      await replacePreviewMembershipTx(payload, memberships);
       await writeLibraryBooksCountTx(payload.summary.booksCount);
     },
   );
@@ -219,9 +223,7 @@ export async function applyLibraryPayload(payload: LibraryPayload) {
 // Same as applyLibraryPayload but only touches one collection — used by the
 // /app/library/collections/[slug] route so reading a single collection
 // page doesn't wipe siblings.
-export async function applyCollectionPayload(
-  collection: LibraryCollection,
-) {
+export async function applyCollectionPayload(collection: LibraryCollection) {
   const db = getDb();
   const nowIso = new Date().toISOString();
   const items = collection.books.map((book) => bookToItemRow(book, nowIso));
@@ -448,8 +450,8 @@ export async function applyBookInfoPayload(
       // flag the library/collection writes set — which silently starves the
       // cache primer of its targets (see [[4.2-save-sync]]).
       offlineRequested: prior?.offlineRequestedDirty
-        ? prior.offlineRequested ?? false
-        : book.offlineRequested ?? prior?.offlineRequested ?? false,
+        ? (prior.offlineRequested ?? false)
+        : (book.offlineRequested ?? prior?.offlineRequested ?? false),
       offlineRequestedDirty: prior?.offlineRequestedDirty ?? false,
       // Straight from the payload, even when a dirty local toggle wins above:
       // that difference is exactly what the shelf's count needs to see.

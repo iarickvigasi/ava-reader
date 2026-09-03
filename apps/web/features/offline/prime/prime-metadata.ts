@@ -1,14 +1,19 @@
 // Tier 1 of the primer: the cheap metadata caches — home, user preferences,
-// the library list, every smart collection in full, and per-book info for
-// every smart-collection book. Reuses the existing `revalidate*` functions, so
-// no new endpoints.
+// the library list, every collection in full, and per-book info for every
+// smart-collection book. Reuses the existing `revalidate*` functions, so no
+// new endpoints.
 //
-// Why hydrate each smart collection: `/api/library` only returns a 4-book
-// preview per collection, so the library view alone can't enumerate every
-// book. `/api/library/collections/:slug` returns the full list, so we hydrate
-// each smart collection before enumerating book-info targets.
+// Why hydrate each collection: `/api/library` only returns a 4-book preview
+// per collection, so the library view alone can't enumerate every book.
+// `/api/library/collections/:slug` returns the full list, so we hydrate every
+// collection before enumerating book-info targets.
+//
+// This pass is also the only place allowed to delete cached library rows: it
+// is the one moment the device holds the whole library, so absence is
+// knowable ([[4-offline/_overview]], Write paths).
 
 import { mapWithConcurrency } from "./concurrency";
+import { collectCompleteLibraryIds } from "./library-completeness";
 import { collectSmartBooks } from "./smart-books";
 import type { PrimeInternals, PrimeRuntime } from "./types";
 
@@ -35,21 +40,27 @@ export async function primeMetadata(
     return false; // library never landed — nothing to enumerate
   }
 
-  // Hydrate each default smart collection in full so the view holds every book,
-  // not just the 4-book preview the library list returns.
-  const smartSlugs = listView.collections
-    .filter((c) => c.kind === "SMART")
-    .map((c) => c.slug);
-  for (const slug of smartSlugs) {
+  // Hydrate every collection in full so the view holds every book, not just
+  // the 4-book preview the library list returns. Custom shelves included:
+  // their membership and order cache nowhere else.
+  for (const collection of listView.collections) {
     if (!guard()) {
       return false;
     }
-    await d.revalidateCollection(slug, runtime.getToken);
+    await d.revalidateCollection(collection.slug, runtime.getToken);
   }
 
   const view = await d.readLibraryView();
   if (!view) {
     return false;
+  }
+
+  // Drop books that are gone server-side — but only against a pass that
+  // demonstrably cached every shelf in full (`revalidate*` swallow network
+  // errors, so finishing the loop above proves nothing).
+  const cachedIds = collectCompleteLibraryIds(view);
+  if (cachedIds) {
+    await d.pruneLibraryItems(cachedIds);
   }
   const slugs = collectSmartBooks(view).map((b) => b.slug);
 

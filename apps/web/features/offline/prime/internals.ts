@@ -9,6 +9,7 @@ import {
   revalidateCollection,
   revalidateLibrary,
 } from "../buckets/library/revalidate";
+import { pruneLibraryItems } from "../buckets/library/prune-items";
 import { readLibraryView } from "../buckets/library/storage";
 import { revalidatePreferences } from "../buckets/preferences/revalidate";
 import { revalidateHighlights } from "../buckets/highlights/revalidate";
@@ -36,6 +37,7 @@ export const DEFAULT_INTERNALS: PrimeInternals = {
   revalidateHome,
   revalidateLibrary,
   revalidateCollection,
+  pruneLibraryItems,
   revalidateBookInfo,
   revalidatePreferences,
   revalidateHighlights,

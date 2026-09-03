@@ -52,6 +52,9 @@ export type PrimeInternals = {
   revalidateHome: (getToken: GetToken) => Promise<void>;
   revalidateLibrary: (getToken: GetToken) => Promise<void>;
   revalidateCollection: (slug: string, getToken: GetToken) => Promise<void>;
+  // Deletes cached library rows outside the keep set. Only a complete pass may
+  // call it — see prime-metadata.
+  pruneLibraryItems: (keepIds: string[]) => Promise<void>;
   revalidateBookInfo: (slug: string, getToken: GetToken) => Promise<void>;
   revalidatePreferences: (getToken: GetToken) => Promise<void>;
   revalidateHighlights: (libraryItemId: string, getToken: GetToken) => Promise<void>;
