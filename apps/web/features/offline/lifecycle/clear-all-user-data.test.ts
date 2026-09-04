@@ -39,7 +39,7 @@ async function deleteAllOfflineDbs() {
 
 async function seedUser(userId: string) {
   setActiveUser(userId);
-  await getDb().me.put({ id: "me", user: anyUser(), fetchedAt: "t" });
+  await getDb().me.put({ id: "me", user: anyUser(), avatarBlob: null, fetchedAt: "t" });
 }
 
 beforeEach(async () => {

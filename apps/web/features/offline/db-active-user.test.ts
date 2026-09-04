@@ -65,7 +65,7 @@ describe("per-user database", () => {
 
   it("isolates data between users on the same profile", async () => {
     setActiveUser("user-1");
-    await getDb().me.put({ id: "me", user: anyUser(), fetchedAt: "t" });
+    await getDb().me.put({ id: "me", user: anyUser(), avatarBlob: null, fetchedAt: "t" });
     expect(await getDb().me.count()).toBe(1);
 
     // Switching users opens a different, empty database.
@@ -81,9 +81,9 @@ describe("per-user database", () => {
 describe("deleteUserDb / purgeOtherUserDbs", () => {
   it("deleteUserDb removes only that user's database", async () => {
     setActiveUser("user-1");
-    await getDb().me.put({ id: "me", user: anyUser(), fetchedAt: "t" });
+    await getDb().me.put({ id: "me", user: anyUser(), avatarBlob: null, fetchedAt: "t" });
     setActiveUser("user-2");
-    await getDb().me.put({ id: "me", user: anyUser(), fetchedAt: "t" });
+    await getDb().me.put({ id: "me", user: anyUser(), avatarBlob: null, fetchedAt: "t" });
 
     await deleteUserDb("user-1");
 
@@ -95,7 +95,7 @@ describe("deleteUserDb / purgeOtherUserDbs", () => {
   it("purgeOtherUserDbs keeps only the named user's database", async () => {
     for (const u of ["user-1", "user-2", "user-3"]) {
       setActiveUser(u);
-      await getDb().me.put({ id: "me", user: anyUser(), fetchedAt: "t" });
+      await getDb().me.put({ id: "me", user: anyUser(), avatarBlob: null, fetchedAt: "t" });
     }
 
     await purgeOtherUserDbs("user-2");

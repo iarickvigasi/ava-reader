@@ -99,6 +99,10 @@ export type CollectionMembershipRow = {
 export type CurrentUserRow = {
   id: "me";
   user: CurrentUserPayload;
+  // Cached profile photo bytes — populated lazily the first time the network
+  // avatarUrl is viewed (see buckets/me/persist-avatar-blob.ts). Not indexed,
+  // so no schema version bump needed.
+  avatarBlob: Blob | null;
   fetchedAt: string;
 };
 

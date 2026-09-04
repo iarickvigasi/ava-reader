@@ -6,7 +6,9 @@ import type { CurrentUserPayload } from "@/lib/api-types/user";
 import { DB_NAME, __resetDbForTests } from "../../db";
 import {
   applyCurrentUser,
+  attachAvatarBlob,
   clearCurrentUser,
+  readAvatarBlob,
   readCurrentUser,
 } from "./storage";
 
@@ -55,5 +57,37 @@ describe("me bucket storage", () => {
     await applyCurrentUser(user);
     await clearCurrentUser();
     expect(await readCurrentUser()).toBeNull();
+  });
+
+  it("returns null before any avatar is cached", async () => {
+    expect(await readAvatarBlob()).toBeNull();
+  });
+
+  it("round-trips the avatar blob", async () => {
+    await applyCurrentUser(user);
+    const blob = new Blob(["fake-image-bytes"], { type: "image/jpeg" });
+
+    await attachAvatarBlob(blob);
+
+    expect(await readAvatarBlob()).toEqual(blob);
+  });
+
+  it("no-ops attaching an avatar before any user is cached", async () => {
+    const blob = new Blob(["fake-image-bytes"], { type: "image/jpeg" });
+
+    await attachAvatarBlob(blob);
+
+    expect(await readAvatarBlob()).toBeNull();
+  });
+
+  it("preserves the cached avatar blob across a re-apply of the user", async () => {
+    await applyCurrentUser(user);
+    const blob = new Blob(["fake-image-bytes"], { type: "image/jpeg" });
+    await attachAvatarBlob(blob);
+
+    await applyCurrentUser({ ...user, displayName: "Renamed" });
+
+    expect(await readAvatarBlob()).toEqual(blob);
+    expect((await readCurrentUser())?.displayName).toBe("Renamed");
   });
 });

@@ -102,7 +102,7 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
                   {t("admin.short")}
                 </Link>
               ) : null}
-              <UserMenuButton />
+              <UserMenuButton currentUser={currentUser} />
             </div>
           </div>
 
@@ -148,7 +148,7 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
                     {currentUser?.displayName ?? t("userFallbackName")}
                   </p>
                 </div>
-                <UserMenuButton />
+                <UserMenuButton currentUser={currentUser} />
               </div>
             </div>
           </div>
