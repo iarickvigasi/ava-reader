@@ -43,4 +43,18 @@ describe("BookCover", () => {
     expect(markup).toContain("Matrescence");
     expect(markup).not.toContain("<img");
   });
+
+  it("renders the network src on first paint even with an offline libraryItemId", () => {
+    const markup = renderToStaticMarkup(
+      <BookCover
+        alt="cover"
+        libraryItemId="book-1"
+        src="/covers/a.jpg"
+        title="Matrescence"
+      />,
+    );
+
+    expect(markup).toContain("<img");
+    expect(markup).toContain("/covers/a.jpg");
+  });
 });

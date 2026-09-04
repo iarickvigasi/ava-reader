@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
-
 import { cn } from "@/lib/cn";
 import { BookCoverFallback } from "./book-cover-fallback";
+import { useBookCoverSrc } from "./use-book-cover-src";
 
 // The single cover primitive — every cover in the app renders through it.
 //
@@ -17,34 +16,33 @@ import { BookCoverFallback } from "./book-cover-fallback";
 //
 // The fallback fills the frame until the image has fully decoded, then
 // unmounts. A cached cover neither flashes it nor shifts the layout: the ref
-// callback measures during commit, before the browser paints. Both flags are
-// tracked per-src, so swapping src (a re-import, a different book in the same
-// slot) re-arms the placeholder instead of showing a stale one.
+// callback measures during commit, before the browser paints.
+//
+// `libraryItemId` (see use-book-cover-src.ts) lets a failed network cover
+// fall back to the offline-saved blob before giving up on the fallback.
 
 const RATIO_CLASS = {
   audiobook: "aspect-square",
   book: "aspect-2/3",
 } as const;
 
-type Artwork = { ratio: number; src: string };
-
 export function BookCover({
   alt,
   className,
+  libraryItemId = null,
   ratio = "book",
   src,
   title,
 }: {
   alt: string;
   className?: string;
+  libraryItemId?: null | string;
   ratio?: keyof typeof RATIO_CLASS;
   src: string | null;
   title: string;
 }) {
-  const [measured, setMeasured] = useState<Artwork | null>(null);
-  const [failedSrc, setFailedSrc] = useState<null | string>(null);
-
-  const artwork = measured?.src === src ? measured : null;
+  const { artwork, effectiveSrc, handleFailure, handleRef, measure } =
+    useBookCoverSrc(src, libraryItemId);
 
   const frame = cn(
     "overflow-hidden rounded-cover",
@@ -52,16 +50,11 @@ export function BookCover({
     className,
   );
 
-  // No src, or the browser would paint its broken-image icon (offline, dead URL).
-  if (!src || failedSrc === src) {
+  // No src, or every source we know (network, then the offline-saved blob)
+  // has failed — the browser would otherwise paint its broken-image icon.
+  if (!effectiveSrc) {
     return <BookCoverFallback className={frame} title={title} />;
   }
-
-  const measure = (node: HTMLImageElement) => {
-    setMeasured((current) =>
-      current?.src === src ? current : toArtwork(node, src),
-    );
-  };
 
   return (
     <div
@@ -75,24 +68,11 @@ export function BookCover({
       <img
         alt={alt}
         className="relative size-full object-contain"
-        onError={() => setFailedSrc(src)}
+        onError={handleFailure}
         onLoad={(event) => measure(event.currentTarget)}
-        ref={(node) => {
-          if (node?.complete) {
-            measure(node);
-          }
-        }}
-        src={src}
+        ref={handleRef}
+        src={effectiveSrc}
       />
     </div>
   );
-}
-
-// A decode failure reports 0×0 — keep the reserved ratio rather than collapsing
-// the frame; onError swaps in the fallback anyway.
-function toArtwork(node: HTMLImageElement, src: string): Artwork | null {
-  if (!node.naturalWidth || !node.naturalHeight) {
-    return null;
-  }
-  return { ratio: node.naturalWidth / node.naturalHeight, src };
 }

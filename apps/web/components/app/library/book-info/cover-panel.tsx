@@ -24,6 +24,7 @@ export function BookCoverPanel({
     <BookCover
       alt={`${title} cover`}
       className="relative w-full shadow-(--shadow-card)"
+      libraryItemId={readerLink?.libraryItemId ?? null}
       src={resolveApiAssetUrl(coverImageUrl)}
       title={title}
     />

@@ -10,6 +10,7 @@ export {
   readBookIdBySlug,
   readCachedChapterIds,
   readChapter,
+  readCoverBlob,
   readOfflineState,
   type OfflineDetail,
   type OfflineState,
@@ -40,5 +41,6 @@ export {
 
 export { useBookSaveStatus, useSaveBook } from "./hooks";
 export { useBookOfflineState } from "./use-book-offline-state";
+export { useCoverBlobUrl } from "./use-cover-blob-url";
 
 export { loadReaderPayloadFromCache } from "./reader-cache";

@@ -172,6 +172,12 @@ export async function attachCoverBlob(
   await db.libraryItems.put({ ...row, coverBlob: blob });
 }
 
+export async function readCoverBlob(libraryItemId: string): Promise<Blob | null> {
+  const db = getDb();
+  const row = await db.libraryItems.get(libraryItemId);
+  return row?.coverBlob ?? null;
+}
+
 // Returns the libraryItemIds of every "auto-saved, not explicit" book other
 // than the one currently open. In steady state there's at most one, but a
 // release ([[4.3-save-button]]) can briefly leave a second, so this

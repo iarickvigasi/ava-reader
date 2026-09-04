@@ -50,6 +50,7 @@ export function LibraryBookCard({
             book.coverImageUrl ? "shadow-(--shadow-card)" : "",
             mobile ? "max-w-43.5" : "max-w-61.5",
           )}
+          libraryItemId={book.libraryItemId}
           src={resolveApiAssetUrl(book.coverImageUrl)}
           title={book.title}
         />
