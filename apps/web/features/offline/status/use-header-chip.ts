@@ -1,14 +1,16 @@
-// Drives the single header status slot: returns "offline" | "caching" | "none"
-// (see [[4.4-cache-priming]]). All branching lives in the pure resolveHeaderChip;
-// this hook feeds it the reactive online + priming-progress values and the
-// clock, remembers when priming completed (for the dwell window), and
-// re-renders once when that window expires. The clock read happens in an effect
-// (never during render) to keep the component pure.
+// Drives the single header status slot: returns "offline" | "slow" | "caching"
+// | "ready" | "none" (see [[4.4-cache-priming]], [[4.10-slow-connection]]). All
+// branching lives in the pure resolveHeaderChip; this hook feeds it the
+// reactive online + slow + priming-progress values and the clock, remembers
+// when priming completed (for the dwell window), and re-renders once when
+// that window expires. The clock read happens in an effect (never during
+// render) to keep the component pure.
 
 import { useEffect, useRef, useState } from "react";
 
 import { resolveHeaderChip, type ChipState } from "./header-chip-state";
 import { useNetworkState } from "../net/use-network-state";
+import { useSlowState } from "../net/use-slow-state";
 import { setPrimeProgress } from "./prime-progress";
 import { usePrimeProgress } from "./use-prime-progress";
 import { useShellsReady } from "./use-shells-ready";
@@ -19,6 +21,7 @@ const DWELL_MS = 5_000;
 
 export function useHeaderChip(): ChipState {
   const online = useNetworkState();
+  const slow = useSlowState();
   const progress = usePrimeProgress();
   const shellsReady = useShellsReady();
   // When priming completed this episode (ref so updating it can't loop). Written
@@ -34,6 +37,7 @@ export function useHeaderChip(): ChipState {
     const compute = (): number | null => {
       const result = resolveHeaderChip({
         online,
+        slow,
         progress,
         completedAt: completedAtRef.current,
         now: Date.now(),
@@ -63,7 +67,7 @@ export function useHeaderChip(): ChipState {
     }
     const id = setTimeout(compute, timerMs);
     return () => clearTimeout(id);
-  }, [online, progress, shellsReady]);
+  }, [online, slow, progress, shellsReady]);
 
   return state;
 }

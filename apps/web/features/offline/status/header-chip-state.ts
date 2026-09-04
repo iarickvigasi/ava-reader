@@ -9,12 +9,16 @@ import type { PrimeProgress } from "./prime-progress";
 
 export type ChipState =
   | { kind: "offline" }
+  | { kind: "slow" } // degraded-but-online connection, [[4.10-slow-connection]]
   | { kind: "caching"; done: number; total: number } // content tier
   | { kind: "ready" }
   | { kind: "none" };
 
 export type HeaderChipInput = {
   online: boolean;
+  // Slow-connection signal ([[4.10-slow-connection]]) — ignored while
+  // offline (offline wins outright), otherwise beats priming/ready.
+  slow: boolean;
   progress: PrimeProgress | null;
   completedAt: number | null;
   now: number;
@@ -45,11 +49,17 @@ function live(state: ChipState): HeaderChipResult {
 }
 
 export function resolveHeaderChip(input: HeaderChipInput): HeaderChipResult {
-  const { online, progress, completedAt, now, dwellMs, shellsReady } = input;
+  const { online, slow, progress, completedAt, now, dwellMs, shellsReady } =
+    input;
 
   // Offline wins, and ends any dwell so a later reconnect starts fresh.
   if (!online) {
     return { state: { kind: "offline" }, completedAt: null, timerMs: null };
+  }
+
+  // Degraded-but-online beats priming/ready — no dwell, it's live like offline.
+  if (slow) {
+    return { state: { kind: "slow" }, completedAt: null, timerMs: null };
   }
 
   // Nothing to prime (idle, or a warm device that never reported).

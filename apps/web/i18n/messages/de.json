@@ -21,12 +21,16 @@
   "offline": {
     "chip": "Offline",
     "chipAria": "Du bist offline. Tippe für Details.",
+    "slowChip": "Langsam",
+    "slowChipAria": "Deine Verbindung ist langsam. Tippe für Details.",
     "cachingStatus": "Offlinezugriff wird vorbereitet",
     "cachingCount": "{done}/{total} Bücher",
     "readyStatus": "Bereit für die Offline-Nutzung",
     "modal": {
       "title": "Du bist offline",
       "body": "Kein Internet? Kein Problem. Jedes Buch, das du gespeichert hast, ist zum Lesen bereit. Deine Markierungen, Lesezeichen, Einstellungen und dein Lesefortschritt sind alle sicher auf deinem Gerät gespeichert und werden synchronisiert, sobald du wieder verbunden bist. Alles, was KI benötigt, wird ausgeführt, sobald du wieder online bist.",
+      "slowTitle": "Langsame Verbindung",
+      "slowBody": "Deine Verbindung scheint langsam zu sein, daher zeigt die App, was bereits auf deinem Gerät gespeichert ist, damit alles schnell bleibt. Alles, was einen neuen Download braucht — einschließlich KI-Tools — wird nachgeholt, sobald sich deine Verbindung verbessert.",
       "dismiss": "Verstanden"
     },
     "routeFallback": {

@@ -21,6 +21,8 @@ raw fetch. Split by subsystem, like [[2-reader/_overview]].
 - 6.7 data-isolation — per-user Dexie DB, cache + localStorage clearing on sign-out/switch.
 - 6.8 offline-books-collection — the SMART shelf listing what is saved offline.
 - 4.9 header-avatar — always-visible header avatar slot + offline profile-photo caching.
+- 4.10 slow-connection — the "Slow" header badge + cache-first document fallback on a degraded
+  (online but unresponsive) connection.
 
 ## Shared data model — what is authoritative for what
 Three substrates hold offline state. **Which one owns a fact decides which one a read may trust.**

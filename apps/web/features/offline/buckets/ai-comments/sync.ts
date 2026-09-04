@@ -11,8 +11,13 @@
 //     duplicate.
 //
 // Retry / drop classification matches highlights.
+//
+// Time-to-first-byte guard: a generate fetch on a technically-online but
+// unresponsive connection would otherwise hang forever (see spec
+// 5.2-ai-toolbox) — see ../shared/fetch-with-timeout.
 
 import { notifyDrop, persist, trackPersist } from "../shared/bucket-core";
+import { fetchWithTimeout } from "../shared/fetch-with-timeout";
 import { classifyFailure } from "../shared/http";
 import { createSyncRuntime } from "../shared/sync-core";
 import { getOrCreateBucket } from "./bucket";
@@ -36,6 +41,11 @@ type SendResult =
   | { kind: "deleted" }
   | { kind: "drop"; reason: string }
   | { kind: "generated" };
+
+// Time-to-first-byte only — once a response starts, the streaming read loop
+// below is never cut off, so a slow-but-progressing generation always
+// completes.
+const GENERATE_TTFB_TIMEOUT_MS = 5_000;
 
 const runtime = createSyncRuntime<
   AiCommentRecord,
@@ -93,6 +103,27 @@ function applyTerminal(
     }
   }
   return nextSnapshot;
+}
+
+// Flips a row that was optimistically set to "streaming" (the attempt
+// started) back to "queued" (no data ever arrived, and a retry is
+// scheduled) — so the panel renders the "waiting for connection" placeholder
+// instead of an indefinite "Generating…" animation.
+function markQueued(
+  bucket: StorageBucket,
+  libraryItemId: string,
+  commentId: string,
+): void {
+  bucket.state = {
+    ...bucket.state,
+    snapshot: bucket.state.snapshot.map((row) =>
+      row.id === commentId ? { ...row, status: "queued" as const } : row,
+    ),
+  };
+  persist(bucket);
+  trackPersist(bucket, () =>
+    patchCommentStatus(libraryItemId, commentId, "queued"),
+  );
 }
 
 async function sendMutation(
@@ -184,16 +215,25 @@ async function sendGenerate(
 
   let response: Response;
   try {
-    response = await fetch(url, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-        Accept: "text/plain",
+    response = await fetchWithTimeout(
+      url,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Accept: "text/plain",
+        },
+        body: JSON.stringify(mutation.payload),
       },
-      body: JSON.stringify(mutation.payload),
-    });
+      GENERATE_TTFB_TIMEOUT_MS,
+    );
   } catch {
+    // No response at all — offline, a genuine network error, or the TTFB
+    // timeout above. The row is already "streaming" (placeholder write
+    // above); flip it back to "queued" so the panel shows the same "waiting
+    // for connection" copy the offline path uses, not a stuck "Generating…".
+    markQueued(bucket, libraryItemId, mutation.id);
     return { kind: "retry" };
   }
 
@@ -201,6 +241,7 @@ async function sendGenerate(
     return classifyFailure(response);
   }
   if (!response.body) {
+    markQueued(bucket, libraryItemId, mutation.id);
     return { kind: "retry" };
   }
 

@@ -244,6 +244,38 @@ describe("ai-comments bucket — sync streaming", () => {
     expect(queue).toHaveLength(0);
   });
 
+  it("resets a hung/failed generate request back to queued instead of leaving it stuck streaming", async () => {
+    // Regression: on a technically-online but unresponsive connection (the
+    // TTFB timeout in ../shared/fetch-with-timeout turns this into the same
+    // rejection), the row used to stay "streaming" forever instead of
+    // becoming the honest "waiting for connection" placeholder the offline
+    // path already shows.
+    const fetchMock = vi.fn(() => Promise.reject(new Error("network error")));
+    vi.stubGlobal("fetch", fetchMock);
+    setBucketAuth(LIBRARY_ID, API, async () => "token");
+
+    enqueueGenerate(LIBRARY_ID, API, {
+      kind: "generate.explain",
+      id: "client-timeout",
+      payload: { text: "x" },
+      locator: null,
+      queuedAt: "2026-04-12T11:00:00.000Z",
+    });
+    await drain();
+
+    const bucket = getAiCommentsBucket(LIBRARY_ID, API);
+    const view = selectStableAiComments(bucket);
+    expect(view).toHaveLength(1);
+    expect(view[0]?.status).toBe("queued");
+    expect(bucket.state.pending).toHaveLength(1);
+    expect(bucket.retryHandle).not.toBeNull();
+    const dexieRows = await getDb()
+      .aiComments.where("libraryItemId")
+      .equals(LIBRARY_ID)
+      .toArray();
+    expect(dexieRows[0]?.status).toBe("queued");
+  });
+
   it("retries on 503 — queue stays intact", async () => {
     const fetchMock = vi.fn(async () => ({
       ok: false,

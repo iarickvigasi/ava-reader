@@ -9,6 +9,7 @@ function resolve(
 ) {
   return resolveHeaderChip({
     online: true,
+    slow: false,
     progress: null,
     completedAt: null,
     now: 1000,
@@ -44,6 +45,26 @@ describe("resolveHeaderChip", () => {
       progress: { phase: "content", done: 3, total: 12 },
     });
     expect(r.state).toEqual({ kind: "offline" });
+  });
+
+  it("shows the Slow chip when online but the connection looks slow", () => {
+    const r = resolve({ slow: true });
+    expect(r.state).toEqual({ kind: "slow" });
+    expect(r.completedAt).toBeNull();
+    expect(r.timerMs).toBeNull();
+  });
+
+  it("Offline wins over Slow — a real disconnect always takes priority", () => {
+    const r = resolve({ online: false, slow: true });
+    expect(r.state).toEqual({ kind: "offline" });
+  });
+
+  it("Slow wins over in-progress priming", () => {
+    const r = resolve({
+      slow: true,
+      progress: { phase: "content", done: 3, total: 12 },
+    });
+    expect(r.state).toEqual({ kind: "slow" });
   });
 
   it("shows the Caching chip during the content tier", () => {

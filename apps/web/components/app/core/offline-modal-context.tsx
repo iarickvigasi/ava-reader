@@ -1,9 +1,10 @@
 "use client";
 
-// Shared modal state for the "you're offline" dialog. The dialog auto-opens
-// when (a) the app boots while offline OR (b) the connection drops while a
-// reader route is active. It can also be opened manually by tapping the
-// offline chip in any header.
+// Shared modal state for the "you're offline" / "connection looks slow"
+// dialog. It auto-opens (always as "offline") when (a) the app boots while
+// offline OR (b) the connection drops while a reader route is active. It can
+// also be opened manually by tapping the Offline or Slow chip in any header
+// — `reason` picks which copy the dialog shows (spec 4.10-slow-connection).
 
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useRef, useState, } from "react";
 import { usePathname } from "next/navigation";
@@ -12,9 +13,12 @@ import { isOnline, subscribeToNetworkState, } from "@/features/offline/net/net-s
 import { hasSeenOfflineModal, markOfflineModalSeen, } from "@/features/offline/notices/seen-modal";
 import { OfflineModal } from "./offline-modal";
 
+export type OfflineModalReason = "offline" | "slow";
+
 type OfflineModalCtx = {
   isOpen: boolean;
-  open: () => void;
+  reason: OfflineModalReason;
+  open: (reason?: OfflineModalReason) => void;
   close: () => void;
 };
 
@@ -29,6 +33,7 @@ export function useOfflineModal(): OfflineModalCtx {
     // the provider into the root layout so this branch becomes unreachable.
     return {
       isOpen: false,
+      reason: "offline",
       open: () => {},
       close: () => {},
     };
@@ -42,6 +47,7 @@ type OfflineModalProviderProps = {
 
 export function OfflineModalProvider({ children }: OfflineModalProviderProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [reason, setReason] = useState<OfflineModalReason>("offline");
   const pathname = usePathname();
   // We need the latest pathname inside the subscription callback so the
   // "connection dropped while reading" trigger reflects the current route
@@ -72,9 +78,11 @@ export function OfflineModalProvider({ children }: OfflineModalProviderProps) {
       }
       // Auto-open the first time we go offline; afterwards the chip is the
       // only way back in. Record "seen" the moment we surface it (on display,
-      // not on dismiss).
+      // not on dismiss). Always the "offline" reason — a soft/transient
+      // "slow" state never auto-interrupts (spec 4.10-slow-connection).
       if (hasSeenOfflineModal()) return;
       markOfflineModalSeen();
+      setReason("offline");
       setIsOpen(true);
     };
     // Cold-start read. If we boot offline, surface the modal immediately
@@ -87,11 +95,14 @@ export function OfflineModalProvider({ children }: OfflineModalProviderProps) {
     return subscribeToNetworkState(applyOnline);
   }, []);
 
-  const open = useCallback(() => setIsOpen(true), []);
+  const open = useCallback((nextReason: OfflineModalReason = "offline") => {
+    setReason(nextReason);
+    setIsOpen(true);
+  }, []);
   const close = useCallback(() => setIsOpen(false), []);
 
   return (
-    <Ctx.Provider value={{ isOpen, open, close }}>
+    <Ctx.Provider value={{ isOpen, reason, open, close }}>
       {children}
       <OfflineModal />
     </Ctx.Provider>

@@ -21,12 +21,16 @@
   "offline": {
     "chip": "Hors ligne",
     "chipAria": "Vous êtes hors ligne. Touchez pour plus de détails.",
+    "slowChip": "Lent",
+    "slowChipAria": "Votre connexion semble lente. Touchez pour plus de détails.",
     "cachingStatus": "Préparation de l'accès hors ligne",
     "cachingCount": "{done}/{total} livres",
     "readyStatus": "Prêt pour le travail hors ligne",
     "modal": {
       "title": "Vous êtes hors ligne",
       "body": "Pas de connexion ? Aucun problème. Tous les livres que vous avez enregistrés sont prêts à être lus. Vos surlignages, signets, réglages et votre progression de lecture sont tous conservés en sécurité sur votre appareil et se mettront à jour dès que vous serez de nouveau connecté. Tout ce qui nécessite l'IA s'exécutera une fois que vous serez de nouveau en ligne.",
+      "slowTitle": "Connexion lente",
+      "slowBody": "Votre connexion semble lente, donc l'application affiche ce qui est déjà enregistré sur votre appareil pour que tout reste rapide. Tout ce qui nécessite un nouveau téléchargement — y compris les outils IA — se mettra à jour dès que votre connexion s'améliorera.",
       "dismiss": "Compris"
     },
     "routeFallback": {

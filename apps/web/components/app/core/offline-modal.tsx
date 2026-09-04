@@ -8,8 +8,10 @@ import { Button } from "@/components/ui/button";
 import { useOfflineModal } from "./offline-modal-context";
 
 export function OfflineModal() {
-  const { isOpen, close } = useOfflineModal();
+  const { isOpen, reason, close } = useOfflineModal();
   const t = useTranslations("offline.modal");
+  const titleKey = reason === "slow" ? "slowTitle" : "title";
+  const bodyKey = reason === "slow" ? "slowBody" : "body";
 
   // Close on Escape — mirrors what the other modals in the app do.
   useEffect(() => {
@@ -43,10 +45,10 @@ export function OfflineModal() {
           id="offline-modal-title"
           className="font-reader text-[1.75rem] leading-[1.1] text-title"
         >
-          {t("title")}
+          {t(titleKey)}
         </h2>
         <p className="mt-4 text-base leading-7 text-copy">
-          {t("body")}
+          {t(bodyKey)}
         </p>
         <div className="mt-6 flex justify-end">
           <Button type="button" size="sm" onClick={close}>

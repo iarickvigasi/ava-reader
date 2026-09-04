@@ -192,12 +192,82 @@ async function matchDocFallback(request, cache) {
   return null;
 }
 
+// Timeout past which a slow document fetch falls back to any cached copy
+// instead of blocking (spec 4.5 §10 / 4.10-slow-connection).
+const SLOW_DOC_TIMEOUT_MS = 3000;
+
 // Network-first for documents: freshness wins online, the cache is the
 // offline safety net. Reads fall back through matchDocFallback and writes go
-// through putDocResponse.
-async function networkFirstDoc(request, cache) {
+// through putDocResponse. A fetch stuck past SLOW_DOC_TIMEOUT_MS with a
+// cached fallback available serves that cache immediately instead (spec 4.5
+// §10); with no cache yet it just keeps waiting, unaffected — never a slower
+// load than before this existed.
+async function networkFirstDoc(request, cache, event) {
+  const networkPromise = fetch(request);
+  const cached = await raceCacheFallback(
+    networkPromise,
+    cache,
+    request,
+    event,
+  );
+  return cached ?? applyNetworkOutcome(request, cache, networkPromise);
+}
+
+// Races the network against SLOW_DOC_TIMEOUT_MS. Returns a cached fallback
+// only when the timer wins *and* a cache entry exists — otherwise null, so
+// the caller falls through to the normal (blocking) network wait. On a
+// served fallback the network fetch is left running (event.waitUntil keeps
+// the worker alive for it) so the cache still refreshes on success, and every
+// open client is told the connection looks slow.
+async function raceCacheFallback(networkPromise, cache, request, event) {
+  const timedOut = new Promise((resolve) => {
+    setTimeout(() => resolve(true), SLOW_DOC_TIMEOUT_MS);
+  });
+  const timeoutWon = await Promise.race([
+    networkPromise.then(
+      () => false,
+      () => false,
+    ),
+    timedOut,
+  ]);
+  if (!timeoutWon) {
+    return null; // the network already settled — nothing to race for.
+  }
+  const cached = await matchDocFallback(request, cache);
+  if (!cached) {
+    return null; // no cache yet — keep waiting on the network as before.
+  }
+  const background = applyNetworkOutcome(request, cache, networkPromise).catch(
+    () => {},
+  );
+  if (event) {
+    event.waitUntil(Promise.all([background, broadcastSlowConnection()]));
+  } else {
+    broadcastSlowConnection();
+  }
+  return cached;
+}
+
+// Tells every open tab a document fetch just fell back to cache because the
+// network hadn't responded — drives the client's "Slow" badge (spec
+// 4.10-slow-connection). Best-effort: a missed broadcast just means one
+// client's badge decays a little late.
+async function broadcastSlowConnection() {
+  if (!self.clients || !self.clients.matchAll) {
+    return;
+  }
+  const clientsList = await self.clients.matchAll({ type: "window" });
+  for (const client of clientsList) {
+    client.postMessage({ type: "AVA_SLOW_CONNECTION" });
+  }
+}
+
+// The original network-first body, unchanged — just parameterized on an
+// already-started fetch so both the fast path and the deferred/background
+// path (raceCacheFallback) share one implementation.
+async function applyNetworkOutcome(request, cache, networkPromise) {
   try {
-    const response = await fetch(request);
+    const response = await networkPromise;
     if (isRedirectResponse(response)) {
       return response;
     }
@@ -253,7 +323,7 @@ self.addEventListener("fetch", (event) => {
         return cacheFirst(request, cache); // hashed, immutable filenames
       }
       if (isNavigation) {
-        return networkFirstDoc(request, cache);
+        return networkFirstDoc(request, cache, event);
       }
       return cacheFirst(request, cache); // fonts, icons, other /public assets
     })(),

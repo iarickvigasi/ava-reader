@@ -64,13 +64,19 @@ export type SwListener = (event: unknown) => void;
 
 export function loadServiceWorker() {
   const listeners: Record<string, SwListener> = {};
+  const postMessage = vi.fn();
   const self = {
     location: new URL(`${ORIGIN}/sw.js?v=test`),
     addEventListener: (type: string, handler: SwListener) => {
       listeners[type] = handler;
     },
     skipWaiting: () => {},
-    clients: { claim: async () => {} },
+    clients: {
+      claim: async () => {},
+      // A single fake window client — enough to assert the slow-connection
+      // broadcast (spec 4.10-slow-connection) reaches every open tab.
+      matchAll: async () => [{ postMessage }],
+    },
   };
   const cacheStorage = new MockCacheStorage();
   const fetchMock = vi.fn<(req: Request) => Promise<Response>>();
@@ -88,7 +94,7 @@ export function loadServiceWorker() {
   );
   factory(self, cacheStorage, fetchMock, URL, Request, Response, Headers, console);
 
-  return { listeners, cacheStorage, fetchMock };
+  return { listeners, cacheStorage, fetchMock, clientPostMessage: postMessage };
 }
 
 // A fake Request carrying only the fields the fetch handler reads. (undici's
@@ -112,6 +118,12 @@ export async function dispatchFetch(handler: SwListener, request: unknown) {
     respondWith: (promise: Promise<Response>) => {
       responded = promise;
     },
+    // Background work extending the event's lifetime (deferred cache
+    // refresh, slow-connection broadcast — spec 4.10-slow-connection) is
+    // deliberately not awaited here: a test double's network promise can be
+    // left permanently unsettled (simulating a hang), which must not hang
+    // the test. A test asserting on that background work polls for it
+    // instead (e.g. vi.waitFor).
     waitUntil: () => {},
   });
   // Awaiting the respondWith promise lets any cache writes inside the strategy
