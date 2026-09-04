@@ -17,7 +17,7 @@ import {
 import { replacePreviewMembershipTx } from "./preview-membership";
 import { writeLibraryBooksCountTx } from "./summary-store";
 
-import { getDb, type LibraryItemRow } from "../../db";
+import { getDb, type LibraryItemRow } from "../../../db";
 
 // Replaces the entire library cache with a fresh server payload. We delete
 // rows that are no longer present so collections / books removed on another

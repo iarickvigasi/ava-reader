@@ -4,7 +4,7 @@
 
 import type { LibraryBookInfo } from "@/lib/api-types/library";
 
-import { getDb, type LibraryItemRow } from "../../db";
+import { getDb, type LibraryItemRow } from "../../../db";
 
 // Writes the full LibraryBookInfo into the row identified by libraryItemId.
 // Used by the book-info page hydrator after either of its server fetches.

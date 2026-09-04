@@ -13,10 +13,10 @@ import { OfflineRouteFallback } from "@/components/app/core/offline-route-fallba
 import { LibraryBookInfoScreen } from "@/components/app/library/book-info/book-info-screen";
 import {
   BookInfoHydrator,
+  readBookInfoBySlug,
+  readWithRevalidate,
   revalidateBookInfo,
 } from "@/features/offline/buckets/library";
-import { readBookInfoBySlug } from "@/features/offline/buckets/library";
-import { readWithRevalidate } from "@/features/offline/buckets/library/read-with-revalidate";
 import { isOnline } from "@/features/offline/net/net-state";
 import { useNetworkState } from "@/features/offline/net/use-network-state";
 import type { LibraryBookInfo } from "@/lib/api-types";

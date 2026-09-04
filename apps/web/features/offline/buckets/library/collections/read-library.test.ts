@@ -3,11 +3,11 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import type { LibraryPayload } from "@/lib/api-types/library";
 
-import { DB_NAME, __resetDbForTests } from "../../db";
-import { __resetLibraryBucketForTests } from "./bucket";
-import { setOfflineRequestedLocal } from "./offline-intent-store";
+import { DB_NAME, __resetDbForTests } from "../../../db";
+import { __resetLibraryBucketForTests } from "../bucket";
+import { setOfflineRequestedLocal } from "../offline-intent/offline-intent-store";
 import { readCollectionViewBySlug, readLibraryView } from "./read-library";
-import { offlineShelfPayload, payload } from "./test-fixture";
+import { offlineShelfPayload, payload } from "../test-fixture";
 import { applyCollectionPayload, applyLibraryPayload } from "./write-library";
 
 beforeEach(async () => {

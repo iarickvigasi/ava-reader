@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { LibraryBookView, LibraryView } from "../buckets/library/types";
+import type { LibraryBookView, LibraryView } from "../buckets/library";
 import type { PrimeProgress } from "../status/prime-progress";
 
 import {

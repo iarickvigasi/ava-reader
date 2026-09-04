@@ -6,7 +6,7 @@ import type { LibraryPayload } from "@/lib/api-types/library";
 
 import { groupMembershipByCollection } from "./membership-index";
 
-import { getDb, type CollectionMembershipRow } from "../../db";
+import { getDb, type CollectionMembershipRow } from "../../../db";
 
 // Membership for the collections a list payload names. A collection is only
 // replaced when its preview *is* the whole shelf (`books.length >= itemCount`);

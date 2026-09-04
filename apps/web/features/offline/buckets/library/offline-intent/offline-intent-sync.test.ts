@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.stubGlobal("navigator", { onLine: true });
 
-import { DB_NAME, __resetDbForTests, getDb, type LibraryItemRow } from "../../db";
+import { DB_NAME, __resetDbForTests, getDb, type LibraryItemRow } from "../../../db";
 import {
   __resetOfflineIntentSyncForTests,
   flushOfflineIntents,

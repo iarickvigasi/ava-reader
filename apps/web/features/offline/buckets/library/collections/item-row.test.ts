@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { mergeListPayloadItemRow } from "./item-row";
 import { bookToItemRow } from "./payload-rows";
 
-import type { LibraryItemRow } from "../../db";
+import type { LibraryItemRow } from "../../../db";
 
 const NOW = "2026-02-01T00:00:00Z";
 

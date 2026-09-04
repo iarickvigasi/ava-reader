@@ -4,7 +4,7 @@
 
 import type { LibraryBookInfo } from "@/lib/api-types/library";
 
-import { getDb } from "../../db";
+import { getDb } from "../../../db";
 
 // Reads back a full LibraryBookInfo from Dexie. Returns null when either the
 // row is missing or details have never been fetched — the page falls back to

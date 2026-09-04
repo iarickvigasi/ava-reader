@@ -3,12 +3,12 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import type { LibraryBookInfo } from "@/lib/api-types/library";
 
-import { DB_NAME, __resetDbForTests } from "../../db";
-import { __resetLibraryBucketForTests } from "./bucket";
+import { DB_NAME, __resetDbForTests } from "../../../db";
+import { __resetLibraryBucketForTests } from "../bucket";
 import { readBookInfoBySlug } from "./read-book-info";
-import { payload } from "./test-fixture";
+import { payload } from "../test-fixture";
 import { applyBookInfoPayload } from "./write-book-info";
-import { applyLibraryPayload } from "./write-library";
+import { applyLibraryPayload } from "../collections/write-library";
 
 beforeEach(async () => {
   __resetDbForTests();

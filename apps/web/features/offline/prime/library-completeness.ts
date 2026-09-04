@@ -12,7 +12,7 @@
 
 import { isOfflineBooksCollection } from "@/lib/smart-collections";
 
-import type { LibraryView } from "../buckets/library/types";
+import type { LibraryView } from "../buckets/library";
 
 export function collectCompleteLibraryIds(view: LibraryView): string[] | null {
   const judged = view.collections.filter(

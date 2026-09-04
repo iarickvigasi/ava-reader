@@ -1,7 +1,7 @@
 // Groups membership links by collection id — the shape both the read path and
 // the list write path need before they can act one collection at a time.
 
-import type { CollectionMembershipRow } from "../../db";
+import type { CollectionMembershipRow } from "../../../db";
 
 export function groupMembershipByCollection(
   links: CollectionMembershipRow[],

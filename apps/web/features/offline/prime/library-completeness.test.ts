@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import type { CollectionView, LibraryBookView, LibraryView } from "../buckets/library/types";
+import type {
+  CollectionView,
+  LibraryBookView,
+  LibraryView,
+} from "../buckets/library";
 
 import { collectCompleteLibraryIds } from "./library-completeness";
 

@@ -9,14 +9,14 @@ import { isOfflineBooksCollection } from "@/lib/smart-collections";
 import {
   resolveOfflineCounts,
   selectOfflineBookRows,
-} from "./offline-books-view";
-import type { CollectionView, LibraryBookView } from "./types";
+} from "../offline-intent/offline-books-view";
+import type { CollectionView, LibraryBookView } from "../types";
 
 import type {
   CollectionMembershipRow,
   CollectionRow,
   LibraryItemRow,
-} from "../../db";
+} from "../../../db";
 
 // For callers holding the whole cache already; `items` covers both branches.
 export function buildCollectionView(

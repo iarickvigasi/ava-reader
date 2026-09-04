@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { LibraryItemRow } from "../../db";
+import type { LibraryItemRow } from "../../../db";
 
 import {
   resolveOfflineCounts,

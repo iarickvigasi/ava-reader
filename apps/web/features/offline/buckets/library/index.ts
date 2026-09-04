@@ -22,8 +22,12 @@ export {
   CollectionHydrator,
   LibraryHydrator,
 } from "./hydrator";
-export { readBookInfoBySlug } from "./read-book-info";
-export { readCollectionViewBySlug, readLibraryView } from "./read-library";
+export { pruneLibraryItems } from "./prune-items";
+export { readBookInfoBySlug } from "./book-info/read-book-info";
+export {
+  readCollectionViewBySlug,
+  readLibraryView,
+} from "./collections/read-library";
 export {
   revalidateBookInfo,
   revalidateCollection,
@@ -35,10 +39,8 @@ export {
   releaseBookOffline,
   flushOfflineIntents,
   __resetOfflineIntentSyncForTests,
-} from "./offline-intent-sync";
+} from "./offline-intent/offline-intent-sync";
+export { readWithRevalidate } from "./read-with-revalidate";
 export { readLibraryItemIdBySlug } from "./slug-lookup";
-export type {
-  CollectionView,
-  LibraryBookView,
-  LibraryView,
-} from "./types";
+export { collectionViewToLibraryCollection } from "./collections/view-to-collection";
+export type { CollectionView, LibraryBookView, LibraryView } from "./types";

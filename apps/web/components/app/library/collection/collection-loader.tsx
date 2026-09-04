@@ -13,11 +13,11 @@ import { LibraryCollectionPlaceholderPage } from "@/components/app/library/colle
 import { LibraryCollectionScreen } from "@/components/app/library/collection/collection-screen";
 import {
   CollectionHydrator,
+  collectionViewToLibraryCollection,
+  readCollectionViewBySlug,
+  readWithRevalidate,
   revalidateCollection,
 } from "@/features/offline/buckets/library";
-import { readCollectionViewBySlug } from "@/features/offline/buckets/library";
-import { readWithRevalidate } from "@/features/offline/buckets/library/read-with-revalidate";
-import { collectionViewToLibraryCollection } from "@/features/offline/buckets/library/view-to-collection";
 import { isOnline } from "@/features/offline/net/net-state";
 import { useNetworkState } from "@/features/offline/net/use-network-state";
 import type { LibraryCollection } from "@/lib/api-types";

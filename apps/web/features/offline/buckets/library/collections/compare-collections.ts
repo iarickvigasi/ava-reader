@@ -7,7 +7,7 @@
 // primary-key order, and the Offline Books shelf is derived locally, so its
 // position has to be recomputed from whatever is cached right now.
 
-import type { CollectionView } from "./types";
+import type { CollectionView } from "../types";
 
 type CollectionOrderKey = {
   itemCount: number;

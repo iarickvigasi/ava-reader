@@ -1,10 +1,10 @@
 import "fake-indexeddb/auto";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { DB_NAME, __resetDbForTests, getDb } from "../../db";
-import { __resetLibraryBucketForTests } from "./bucket";
+import { DB_NAME, __resetDbForTests, getDb } from "../../../db";
+import { __resetLibraryBucketForTests } from "../bucket";
 import { applyBookInfoPayload } from "./write-book-info";
-import { applyLibraryPayload } from "./write-library";
+import { applyLibraryPayload } from "../collections/write-library";
 
 beforeEach(async () => {
   __resetDbForTests();

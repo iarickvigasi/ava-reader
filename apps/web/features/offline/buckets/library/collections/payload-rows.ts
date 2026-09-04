@@ -12,7 +12,7 @@ import type {
   CollectionMembershipRow,
   CollectionRow,
   LibraryItemRow,
-} from "../../db";
+} from "../../../db";
 
 // Everything a whole-library payload writes, flattened out of its collections.
 export function collectPayloadRows(payload: LibraryPayload, nowIso: string) {

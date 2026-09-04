@@ -6,7 +6,7 @@
 // keeps the header metric identical online and from cache — see
 // docs/specs/3-library/3.1-library-screen.md §5.
 
-import { getDb } from "../../db";
+import { getDb } from "../../../db";
 
 const META_KEY_BOOKS_COUNT = "library:booksCount";
 

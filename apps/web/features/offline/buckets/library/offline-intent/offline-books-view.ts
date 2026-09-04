@@ -5,7 +5,7 @@
 // flush — and that shelf matters most precisely when there's no connection.
 // See docs/specs/4-offline/4.8-offline-books-collection.md.
 
-import type { LibraryItemRow } from "../../db";
+import type { LibraryItemRow } from "../../../db";
 
 const FULLY_READ_PERCENT = 100;
 

@@ -2,7 +2,7 @@
 // seams (PrimeInternals) so its control flow can be unit-tested without Dexie,
 // Clerk, or the network; production wires the real implementations.
 
-import type { LibraryView } from "../buckets/library/types";
+import type { LibraryView } from "../buckets/library";
 import type { SaveOutcome } from "../buckets/book/download";
 import type { SaveKind } from "../buckets/book/storage";
 import type { PrimeProgress } from "../status/prime-progress";

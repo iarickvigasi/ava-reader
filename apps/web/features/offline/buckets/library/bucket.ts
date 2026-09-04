@@ -8,10 +8,10 @@ import type {
   LibraryPayload,
 } from "@/lib/api-types/library";
 
-import { readBookInfoBySlug } from "./read-book-info";
-import { readCollectionViewBySlug, readLibraryView } from "./read-library";
-import { applyCollectionPayload, applyLibraryPayload } from "./write-library";
-import { applyBookInfoPayload } from "./write-book-info";
+import { readBookInfoBySlug } from "./book-info/read-book-info";
+import { readCollectionViewBySlug, readLibraryView } from "./collections/read-library";
+import { applyCollectionPayload, applyLibraryPayload } from "./collections/write-library";
+import { applyBookInfoPayload } from "./book-info/write-book-info";
 import type {
   CollectionView,
   LibraryBucketState,

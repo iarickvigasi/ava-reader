@@ -3,12 +3,12 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import type { LibraryBookInfo, LibraryPayload } from "@/lib/api-types/library";
 
-import { DB_NAME, __resetDbForTests, getDb } from "../../db";
-import { __resetLibraryBucketForTests } from "./bucket";
-import { readBookInfoBySlug } from "./read-book-info";
+import { DB_NAME, __resetDbForTests, getDb } from "../../../db";
+import { __resetLibraryBucketForTests } from "../bucket";
+import { readBookInfoBySlug } from "../book-info/read-book-info";
 import { readCollectionViewBySlug, readLibraryView } from "./read-library";
-import { payload } from "./test-fixture";
-import { applyBookInfoPayload } from "./write-book-info";
+import { payload } from "../test-fixture";
+import { applyBookInfoPayload } from "../book-info/write-book-info";
 import { applyCollectionPayload, applyLibraryPayload } from "./write-library";
 
 beforeEach(async () => {

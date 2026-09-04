@@ -46,7 +46,9 @@ Each domain under features/offline/buckets/<name>/ has a fixed file set — mirr
 - sync.ts — applyServerSnapshot + flush loop + retry
 - id.ts — client ULIDs · index.ts — public surface
 Mutations apply in-memory instantly, persist to Dexie fire-and-forget, flush idempotently on
-reconnect.
+reconnect. A bucket that outgrows the flat set groups its files into domain subfolders (library/
+has collections/, book-info/, offline-intent/); index.ts stays the only entry point, so nothing
+outside the bucket imports a subfolder path.
 
 ## Tests
 Vitest (web), Jest (API). Use fake-indexeddb; await *PersistDrain() — never poll timers.

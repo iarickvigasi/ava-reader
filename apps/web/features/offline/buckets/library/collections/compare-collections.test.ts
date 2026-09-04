@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { compareCollectionViews } from "./compare-collections";
-import type { CollectionView, LibraryBookView } from "./types";
+import type { CollectionView, LibraryBookView } from "../types";
 
 function book(lastReadAt: string | null): LibraryBookView {
   return {

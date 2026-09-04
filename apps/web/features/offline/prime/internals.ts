@@ -3,14 +3,14 @@
 
 import { readHome } from "../buckets/home/storage";
 import { revalidateHome } from "../buckets/home/revalidate";
-import { readBookInfo } from "../buckets/library/bucket";
 import {
+  pruneLibraryItems,
+  readBookInfo,
+  readLibraryView,
   revalidateBookInfo,
   revalidateCollection,
   revalidateLibrary,
-} from "../buckets/library/revalidate";
-import { pruneLibraryItems } from "../buckets/library/prune-items";
-import { readLibraryView } from "../buckets/library";
+} from "../buckets/library";
 import { revalidatePreferences } from "../buckets/preferences/revalidate";
 import { revalidateHighlights } from "../buckets/highlights/revalidate";
 import { revalidateAiComments } from "../buckets/ai-comments/revalidate";

@@ -1,4 +1,4 @@
-import type { LibraryBookView, LibraryView } from "../buckets/library/types";
+import type { LibraryBookView, LibraryView } from "../buckets/library";
 
 // Collects the unique books that belong to the default smart collections
 // (`kind === "SMART"`). Every book lands in exactly one of the two *source*

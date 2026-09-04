@@ -3,10 +3,10 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { DB_NAME, __resetDbForTests, getDb } from "../../db";
 import { __resetLibraryBucketForTests } from "./bucket";
-import { setOfflineRequestedLocal } from "./offline-intent-store";
+import { setOfflineRequestedLocal } from "./offline-intent/offline-intent-store";
 import { pruneLibraryItems } from "./prune-items";
 import { payload } from "./test-fixture";
-import { applyCollectionPayload } from "./write-library";
+import { applyCollectionPayload } from "./collections/write-library";
 
 beforeEach(async () => {
   __resetDbForTests();

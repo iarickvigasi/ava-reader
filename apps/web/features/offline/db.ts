@@ -57,7 +57,7 @@ export type LibraryItemRow = LibraryCardBook & {
   // What the last server payload said `offlineRequested` was. Compared against
   // the live value to find toggles the server hasn't counted yet, so the
   // Offline Books shelf can report the server's whole-collection count plus
-  // those (see buckets/library/offline-books-view.ts). Deliberately tracks the
+  // those (see buckets/library/offline-intent/offline-books-view.ts). Deliberately tracks the
   // payload, not the PATCH: clearing it on a flush ack would drop the toggle
   // out of the count while the cached collection row still held the old total.
   // Undefined on rows cached before this field existed — those contribute

@@ -5,7 +5,7 @@
 
 import type { BookFileFormat, LibraryCollection } from "@/lib/api-types";
 
-import type { CollectionView } from "./types";
+import type { CollectionView } from "../types";
 
 export function collectionViewToLibraryCollection(
   view: CollectionView,

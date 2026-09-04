@@ -2,7 +2,7 @@
 // write that flips the flag or its dirty bookkeeping. The flush loop that
 // PATCHes these rows lives next door in offline-intent-sync.ts.
 
-import { getDb, type LibraryItemRow } from "../../db";
+import { getDb, type LibraryItemRow } from "../../../db";
 
 // Optimistically toggles the "keep offline" intent on a library row and marks
 // it dirty so the sync flush PATCHes it. Returns false if the row isn't cached

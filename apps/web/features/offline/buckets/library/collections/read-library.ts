@@ -12,9 +12,9 @@ import {
 import { compareCollectionViews } from "./compare-collections";
 import { groupMembershipByCollection } from "./membership-index";
 import { readLibraryBooksCountTx } from "./summary-store";
-import type { CollectionView, LibraryView } from "./types";
+import type { CollectionView, LibraryView } from "../types";
 
-import { getDb } from "../../db";
+import { getDb } from "../../../db";
 
 // Reads everything we need to render the library screen in one transaction.
 // Returns null when the DB is empty — caller treats that as "never hydrated"

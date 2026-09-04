@@ -6,7 +6,7 @@
 
 import { getPublicApiBaseUrl } from "@/lib/api";
 
-import { refreshFromDb } from "./bucket";
+import { refreshFromDb } from "../bucket";
 import {
   listOfflineIntentDirty,
   markOfflineIntentClean,

@@ -31,7 +31,7 @@ import {
   revalidateCollection,
   revalidateLibrary,
 } from "./revalidate";
-import { flushOfflineIntents } from "./offline-intent-sync";
+import { flushOfflineIntents } from "./offline-intent/offline-intent-sync";
 import type { CollectionView, LibraryView } from "./types";
 
 // Read the current library view. Returns null until the bucket finishes

@@ -4,7 +4,7 @@
 // field added on one side and forgotten on the other silently wipes the user's
 // offline state.
 
-import type { LibraryItemRow } from "../../db";
+import type { LibraryItemRow } from "../../../db";
 
 // Layers an already-cached row's locally-owned fields back onto a row built
 // from a fresh payload. A list payload carries neither offline-save state nor
