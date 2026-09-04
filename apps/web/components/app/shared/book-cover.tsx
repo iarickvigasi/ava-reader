@@ -18,8 +18,9 @@ import { useBookCoverSrc } from "./use-book-cover-src";
 // unmounts. A cached cover neither flashes it nor shifts the layout: the ref
 // callback measures during commit, before the browser paints.
 //
-// `libraryItemId` (see use-book-cover-src.ts) lets a failed network cover
-// fall back to the offline-saved blob before giving up on the fallback.
+// `libraryItemId` (see use-book-cover-src.ts) tries the offline-saved blob
+// first, ahead of the network — a cover never changes, so a cached one is
+// worth preferring even online.
 
 const RATIO_CLASS = {
   audiobook: "aspect-square",
@@ -50,7 +51,7 @@ export function BookCover({
     className,
   );
 
-  // No src, or every source we know (network, then the offline-saved blob)
+  // No src, or every source we know (the offline-saved blob, then network)
   // has failed — the browser would otherwise paint its broken-image icon.
   if (!effectiveSrc) {
     return <BookCoverFallback className={frame} title={title} />;

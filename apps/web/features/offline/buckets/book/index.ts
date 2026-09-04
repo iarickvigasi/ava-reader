@@ -42,5 +42,6 @@ export {
 export { useBookSaveStatus, useSaveBook } from "./hooks";
 export { useBookOfflineState } from "./use-book-offline-state";
 export { useCoverBlobUrl } from "./use-cover-blob-url";
+export { persistCoverFromNetwork } from "./persist-cover-blob";
 
 export { loadReaderPayloadFromCache } from "./reader-cache";

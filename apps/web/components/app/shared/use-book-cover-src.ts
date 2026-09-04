@@ -1,42 +1,61 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import { useCoverBlobUrl } from "@/features/offline/buckets/book";
+import {
+  persistCoverFromNetwork,
+  useCoverBlobUrl,
+} from "@/features/offline/buckets/book";
 
 type Artwork = { ratio: number; src: string };
 
-// Resolves which src BookCover should render — the network cover, then (given
-// a libraryItemId) its offline-saved blob once that fails — and tracks the
-// decoded artwork ratio for whichever one is current.
+// Resolves which src BookCover should render, cache-first: the Dexie-cached
+// cover (given a libraryItemId) before the network — covers don't change, so
+// once one is cached there's no reason to ever refetch it. While the cache
+// lookup is unresolved, `effectiveSrc` is null (BookCoverFallback holds the
+// frame) rather than racing a network request that cache may make moot.
 //
-// A failure can arrive with no `error` event to catch: offline, the image
-// often finishes (0×0) before hydration attaches the listener, so
-// `handleRef`'s mount-time `complete` check routes that through the same
-// `handleFailure` path as onError — otherwise the browser's broken-image icon
-// paints over the BookCoverFallback sitting right behind it.
+// No id, or the lookup resolves absent → network `src`. A successful network
+// view of a personal-library cover (an id and no cached copy yet) is written
+// through to Dexie in the background so the *next* view is a cache hit — see
+// persistCoverFromNetwork.
+//
+// A failure — at either layer — can arrive with no `error` event to catch:
+// offline, an image often finishes (0×0) before hydration attaches the
+// listener, so `handleRef`'s mount-time `complete` check routes that through
+// the same `handleFailure` path as onError.
 export function useBookCoverSrc(src: null | string, libraryItemId: null | string) {
   const [measured, setMeasured] = useState<Artwork | null>(null);
-  const [failedSrc, setFailedSrc] = useState<null | string>(null);
-  const [blobFailed, setBlobFailed] = useState(false);
+  const [failedNetworkSrc, setFailedNetworkSrc] = useState<null | string>(null);
+  const [failedCacheUrl, setFailedCacheUrl] = useState<null | string>(null);
 
-  const networkFailed = !!src && failedSrc === src;
-  const offlineCoverUrl = useCoverBlobUrl(
-    networkFailed && !blobFailed ? libraryItemId : null,
-  );
-  const effectiveSrc = networkFailed
-    ? blobFailed
-      ? null
-      : offlineCoverUrl
-    : src;
+  const cached = useCoverBlobUrl(libraryItemId);
+  const stillCheckingCache = cached === undefined;
+  const cacheAvailable = typeof cached === "string" && cached !== failedCacheUrl;
+  const networkFailed = !!src && src === failedNetworkSrc;
+
+  const effectiveSrc = stillCheckingCache
+    ? null
+    : cacheAvailable
+      ? cached
+      : networkFailed
+        ? null
+        : src;
+
+  useEffect(() => {
+    if (!libraryItemId || !src || cached !== null) {
+      return;
+    }
+    void persistCoverFromNetwork(libraryItemId, src);
+  }, [libraryItemId, src, cached]);
 
   const artwork = measured?.src === effectiveSrc ? measured : null;
 
   const handleFailure = () => {
-    if (networkFailed) {
-      setBlobFailed(true);
+    if (cacheAvailable) {
+      setFailedCacheUrl(cached);
     } else if (src) {
-      setFailedSrc(src);
+      setFailedNetworkSrc(src);
     }
   };
 
