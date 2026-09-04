@@ -5,12 +5,21 @@
 // can't see per-render props (currentUser), and an import() rejection (e.g.
 // offline, blocked chunk) has no error boundary around it and would
 // otherwise propagate as a render error, unmounting the header slot instead
-// of leaving the fallback in place — see [[4.9-header-avatar]]. Until the
-// import resolves (or if it never does), UserAvatarFallback holds the slot at
-// a fixed size so the header never shifts.
-
+// of leaving the fallback in place — see [[4.9-header-avatar]].
+//
+// A resolved import() is not "Clerk is ready": @clerk/nextjs's wrapper
+// components are this app's own same-origin JS (already loaded, resolves
+// instantly even offline) — the actual clerk-js runtime is fetched
+// separately by <ClerkProvider>, from Clerk's own CDN, and offline that
+// fetch never completes. <UserButton> mounts fine but renders nothing until
+// that finishes, which — swapping on import() alone — permanently hid the
+// fallback behind a blank button. `useUser().isLoaded` reflects
+// ClerkProvider's own readiness, so gating on it keeps the fallback in place
+// until Clerk can actually render something.
 import { useEffect, useState } from "react";
 import type { ComponentType } from "react";
+
+import { useUser } from "@clerk/nextjs";
 
 import type { CurrentUserPayload } from "@/lib/api-types/user";
 
@@ -23,6 +32,7 @@ export function UserMenuButton({
 }: {
   currentUser?: CurrentUserPayload | null;
 }) {
+  const { isLoaded } = useUser();
   const [ClerkButton, setClerkButton] =
     useState<ClerkUserButtonComponent | null>(null);
 
@@ -42,7 +52,7 @@ export function UserMenuButton({
     };
   }, []);
 
-  if (ClerkButton) {
+  if (ClerkButton && isLoaded) {
     return <ClerkButton />;
   }
   return <UserAvatarFallback currentUser={currentUser} />;
