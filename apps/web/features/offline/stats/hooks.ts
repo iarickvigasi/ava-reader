@@ -26,8 +26,8 @@ import {
 } from "./compose";
 import {
   readHighlightCountDelta,
-  readLocalVolumesRead,
   readUnsyncedSessionDeltas,
+  readVolumesReadDelta,
   type UnsyncedSessionDeltas,
 } from "./local-deltas";
 
@@ -39,16 +39,16 @@ const RECOMPUTE_INTERVAL_MS = 30_000;
 type DeltaBundle = {
   sessions: UnsyncedSessionDeltas;
   highlightsNet: number;
-  volumesReadLocal: number | null;
+  volumesReadDelta: number;
 };
 
 async function readBundle(): Promise<DeltaBundle> {
-  const [sessions, highlightsNet, volumesReadLocal] = await Promise.all([
+  const [sessions, highlightsNet, volumesReadDelta] = await Promise.all([
     readUnsyncedSessionDeltas(),
     readHighlightCountDelta(),
-    readLocalVolumesRead(),
+    readVolumesReadDelta(),
   ]);
-  return { sessions, highlightsNet, volumesReadLocal };
+  return { sessions, highlightsNet, volumesReadDelta };
 }
 
 const EMPTY_BUNDLE: DeltaBundle = {
@@ -58,7 +58,7 @@ const EMPTY_BUNDLE: DeltaBundle = {
     byUtcDaySeconds: new Map(),
   },
   highlightsNet: 0,
-  volumesReadLocal: null,
+  volumesReadDelta: 0,
 };
 
 // Lazy shared bundle so multiple consumers on the same page (StatsPanel
@@ -101,7 +101,7 @@ export function useComposedHomeStats(
   const deltas: HomeStatsDeltas = {
     hoursReadingExtraSeconds: bundle.sessions.totalSeconds,
     highlightsNet: bundle.highlightsNet,
-    volumesReadLocal: bundle.volumesReadLocal,
+    volumesReadDelta: bundle.volumesReadDelta,
     aiCommentsNet: 0,
   };
   return composeHomeStats(home.stats, deltas);

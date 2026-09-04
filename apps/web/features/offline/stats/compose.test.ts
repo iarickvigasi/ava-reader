@@ -35,7 +35,7 @@ describe("composeHomeStats", () => {
     const out = composeHomeStats(baselineStats, {
       hoursReadingExtraSeconds: 7200, // 2h
       highlightsNet: 0,
-      volumesReadLocal: null,
+      volumesReadDelta: 0,
       aiCommentsNet: 0,
     });
     expect(out.hoursReading).toBe(10);
@@ -45,27 +45,27 @@ describe("composeHomeStats", () => {
     const out = composeHomeStats(baselineStats, {
       hoursReadingExtraSeconds: 3599,
       highlightsNet: 0,
-      volumesReadLocal: null,
+      volumesReadDelta: 0,
       aiCommentsNet: 0,
     });
     expect(out.hoursReading).toBe(8);
   });
 
-  it("replaces volumesRead with the local count when non-null", () => {
+  it("adds volumesReadDelta to the server baseline", () => {
     const out = composeHomeStats(baselineStats, {
       hoursReadingExtraSeconds: 0,
       highlightsNet: 0,
-      volumesReadLocal: 6,
+      volumesReadDelta: 2,
       aiCommentsNet: 0,
     });
-    expect(out.volumesRead).toBe(6);
+    expect(out.volumesRead).toBe(5);
   });
 
-  it("falls back to the server volumesRead when local count is null", () => {
+  it("leaves volumesRead at the baseline when the delta is zero", () => {
     const out = composeHomeStats(baselineStats, {
       hoursReadingExtraSeconds: 0,
       highlightsNet: 0,
-      volumesReadLocal: null,
+      volumesReadDelta: 0,
       aiCommentsNet: 0,
     });
     expect(out.volumesRead).toBe(3);
@@ -76,7 +76,7 @@ describe("composeHomeStats", () => {
       composeHomeStats(baselineStats, {
         hoursReadingExtraSeconds: 0,
         highlightsNet: 2,
-        volumesReadLocal: null,
+        volumesReadDelta: 0,
         aiCommentsNet: 0,
       }).highlights,
     ).toBe(12);
@@ -84,7 +84,7 @@ describe("composeHomeStats", () => {
       composeHomeStats(baselineStats, {
         hoursReadingExtraSeconds: 0,
         highlightsNet: -3,
-        volumesReadLocal: null,
+        volumesReadDelta: 0,
         aiCommentsNet: 0,
       }).highlights,
     ).toBe(7);
@@ -95,7 +95,7 @@ describe("composeHomeStats", () => {
       composeHomeStats(baselineStats, {
         hoursReadingExtraSeconds: 0,
         highlightsNet: -50,
-        volumesReadLocal: null,
+        volumesReadDelta: 0,
         aiCommentsNet: 0,
       }).highlights,
     ).toBe(0);
@@ -106,7 +106,7 @@ describe("composeHomeStats", () => {
       composeHomeStats(baselineStats, {
         hoursReadingExtraSeconds: 0,
         highlightsNet: 0,
-        volumesReadLocal: null,
+        volumesReadDelta: 0,
         aiCommentsNet: 0,
       }),
     ).toEqual(baselineStats);

@@ -1,7 +1,7 @@
 export {
   readHighlightCountDelta,
-  readLocalVolumesRead,
   readUnsyncedSessionDeltas,
+  readVolumesReadDelta,
   type UnsyncedSessionDeltas,
 } from "./local-deltas";
 

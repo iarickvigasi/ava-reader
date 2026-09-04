@@ -88,21 +88,18 @@ export async function readHighlightCountDelta(): Promise<number> {
   return delta;
 }
 
-// Books at 100% completion according to Dexie's mirror. We *replace* the
-// server's volumesRead with this when Dexie has data — Dexie's progress
-// rows are kept in lockstep with every progress write (online or offline)
-// so they're a more accurate live count than the home snapshot.
-//
-// Returns null on a fresh device (no progress rows at all) so the composer
-// can fall back to the server count instead of showing zero.
-export async function readLocalVolumesRead(): Promise<number | null> {
+// Net new completions the server doesn't know about yet: local progress
+// rows that reached 100% but are still `dirty` (unsynced). This mirrors
+// `readHighlightCountDelta` — an *additive* delta, not a replacement — because
+// the local `progress` table only mirrors books opened (or marked offline) on
+// this device, not the whole library. Treating its full count as the
+// authoritative total would understate volumesRead for books completed
+// elsewhere and never opened locally. Once a completion syncs, dirty flips to
+// false and the delta collapses to zero, matching the composer's invariant.
+export async function readVolumesReadDelta(): Promise<number> {
   const db = getDb();
-  const totalRows = await db.progress.count();
-  if (totalRows === 0) {
-    return null;
-  }
   return db.progress
-    .filter((row) => row.completionPercent >= 100)
+    .filter((row) => row.dirty && row.completionPercent >= 100)
     .count();
 }
 

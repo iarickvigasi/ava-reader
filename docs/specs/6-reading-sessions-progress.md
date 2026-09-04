@@ -1,6 +1,6 @@
 # Reading sessions, progress & stats
 
-> Status: shipped · Updated: 2026-08-11 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
+> Status: shipped · Updated: 2026-09-04 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
 > apps/web/features/offline/buckets/{sessions,progress}, apps/web/features/offline/stats,
 > apps/web/components/app/home/sections/mastery, apps/api/src/reader/{sessions,progress}
 
@@ -26,6 +26,12 @@ shown on home. Serves the "track time spent/remaining, build a habit" job.
 ## Data & sync
 sessions bucket (clientSessionId ULID, per-day segments) and progress bucket; both flush
 idempotently. Stats = server baseline + unsynced local deltas, so reconnect never double-counts.
+`volumesRead` follows the same rule as every other stat: the delta is the count of local `progress`
+rows that are `dirty` (unsynced) and `completionPercent >= 100` — books completed offline the server
+hasn't acked yet — added on top of the baseline. It is never a replacement, because the local
+`progress` table only mirrors books opened (or marked offline) on this device, not the whole
+library; treating its full local count as authoritative would undercount books completed on another
+device or before this browser had a Dexie mirror.
 
 The progress bucket (locator + completion % + server `lastReadAt`) is the offline resume substrate,
 populated three ways: the reader writes it while reading (dirty until the server acks), `GET
@@ -66,6 +72,8 @@ Offline across multiple days; multiple devices for one book; clock changes; sess
 - [ ] A stale offline progress sync never rewinds a position advanced on another device
   (most-recent-reading wins); a genuine later read does win.
 - [ ] Daily mastery chart reflects per-day minutes against the goal.
+- [ ] Home's Books Read stat matches (or exceeds, for an unsynced offline completion) the server
+  count — never undercounts because a completed book isn't in this device's local progress mirror.
 
 ## Open questions
 Time-remaining estimate model; merging sessions started independently on two offline devices (the

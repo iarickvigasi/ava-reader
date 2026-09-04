@@ -14,9 +14,9 @@ import type { UnsyncedSessionDeltas } from "./local-deltas";
 export type HomeStatsDeltas = {
   hoursReadingExtraSeconds: number;
   highlightsNet: number;
-  // null = no local data, fall back to the server count. Non-null replaces
-  // the server count (Dexie is more accurate; see local-deltas comment).
-  volumesReadLocal: number | null;
+  // Net new completions not yet acked by the server — see local-deltas
+  // comment. Always added to the baseline, never replaces it.
+  volumesReadDelta: number;
   // aiComments delta is a future phase 5 hook. For now we always pass 0.
   aiCommentsNet: number;
 };
@@ -38,10 +38,7 @@ export function composeHomeStats(
     aiComments: Math.max(0, baseline.aiComments + deltas.aiCommentsNet),
     highlights: Math.max(0, baseline.highlights + deltas.highlightsNet),
     hoursReading: baseline.hoursReading + extraHours,
-    volumesRead:
-      deltas.volumesReadLocal !== null
-        ? deltas.volumesReadLocal
-        : baseline.volumesRead,
+    volumesRead: baseline.volumesRead + deltas.volumesReadDelta,
   };
 }
 

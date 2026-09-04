@@ -5,8 +5,8 @@ import { DB_NAME, __resetDbForTests, getDb } from "../db";
 import {
   __test,
   readHighlightCountDelta,
-  readLocalVolumesRead,
   readUnsyncedSessionDeltas,
+  readVolumesReadDelta,
 } from "./local-deltas";
 
 beforeEach(() => {
@@ -193,14 +193,15 @@ describe("readHighlightCountDelta", () => {
   });
 });
 
-describe("readLocalVolumesRead", () => {
-  it("returns null when no progress rows exist", async () => {
-    expect(await readLocalVolumesRead()).toBeNull();
+describe("readVolumesReadDelta", () => {
+  it("returns 0 when no progress rows exist", async () => {
+    expect(await readVolumesReadDelta()).toBe(0);
   });
 
-  it("counts only rows where completionPercent >= 100", async () => {
+  it("counts only dirty rows at >= 100% — synced completions don't count", async () => {
     const db = getDb();
     await db.progress.bulkPut([
+      // Completed offline, not yet acked by the server → counts.
       {
         libraryItemId: "lib-1",
         locator: null,
@@ -208,8 +209,10 @@ describe("readLocalVolumesRead", () => {
         lastReadAt: null,
         lastLocalUpdateAt: "2026-04-12T10:00:00.000Z",
         lastServerUpdateAt: null,
-        dirty: false,
+        dirty: true,
       },
+      // Completed and already synced (dirty: false) — the server baseline
+      // already reflects this one, so it must NOT be counted again.
       {
         libraryItemId: "lib-2",
         locator: null,
@@ -219,6 +222,7 @@ describe("readLocalVolumesRead", () => {
         lastServerUpdateAt: "2026-04-12T10:00:00.000Z",
         dirty: false,
       },
+      // Dirty but not complete → doesn't count.
       {
         libraryItemId: "lib-3",
         locator: null,
@@ -226,9 +230,9 @@ describe("readLocalVolumesRead", () => {
         lastReadAt: null,
         lastLocalUpdateAt: "2026-04-12T10:00:00.000Z",
         lastServerUpdateAt: null,
-        dirty: false,
+        dirty: true,
       },
     ]);
-    expect(await readLocalVolumesRead()).toBe(2);
+    expect(await readVolumesReadDelta()).toBe(1);
   });
 });
