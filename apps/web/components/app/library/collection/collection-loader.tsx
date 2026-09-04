@@ -15,7 +15,7 @@ import {
   CollectionHydrator,
   revalidateCollection,
 } from "@/features/offline/buckets/library";
-import { readCollectionViewBySlug } from "@/features/offline/buckets/library/storage";
+import { readCollectionViewBySlug } from "@/features/offline/buckets/library";
 import { readWithRevalidate } from "@/features/offline/buckets/library/read-with-revalidate";
 import { collectionViewToLibraryCollection } from "@/features/offline/buckets/library/view-to-collection";
 import { isOnline } from "@/features/offline/net/net-state";

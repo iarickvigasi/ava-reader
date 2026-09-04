@@ -4,6 +4,8 @@
 
 import type { LibraryPayload } from "@/lib/api-types/library";
 
+import { groupMembershipByCollection } from "./membership-index";
+
 import { getDb, type CollectionMembershipRow } from "../../db";
 
 // Membership for the collections a list payload names. A collection is only
@@ -15,15 +17,7 @@ export async function replacePreviewMembershipTx(
   memberships: CollectionMembershipRow[],
 ): Promise<void> {
   const db = getDb();
-  const byCollection = new Map<string, CollectionMembershipRow[]>();
-  for (const link of memberships) {
-    const list = byCollection.get(link.collectionId);
-    if (list) {
-      list.push(link);
-    } else {
-      byCollection.set(link.collectionId, [link]);
-    }
-  }
+  const byCollection = groupMembershipByCollection(memberships);
   for (const collection of payload.collections) {
     const links = byCollection.get(collection.id) ?? [];
     const complete = collection.books.length >= collection.itemCount;

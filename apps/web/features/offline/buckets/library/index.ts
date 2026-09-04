@@ -22,6 +22,8 @@ export {
   CollectionHydrator,
   LibraryHydrator,
 } from "./hydrator";
+export { readBookInfoBySlug } from "./read-book-info";
+export { readCollectionViewBySlug, readLibraryView } from "./read-library";
 export {
   revalidateBookInfo,
   revalidateCollection,
@@ -34,6 +36,7 @@ export {
   flushOfflineIntents,
   __resetOfflineIntentSyncForTests,
 } from "./offline-intent-sync";
+export { readLibraryItemIdBySlug } from "./slug-lookup";
 export type {
   CollectionView,
   LibraryBookView,

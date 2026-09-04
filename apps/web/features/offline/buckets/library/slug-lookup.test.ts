@@ -5,7 +5,8 @@ import type { LibraryPayload } from "@/lib/api-types/library";
 
 import { __resetDbForTests } from "../../db";
 import { __resetLibraryBucketForTests } from "./bucket";
-import { applyLibraryPayload, readLibraryItemIdBySlug } from "./storage";
+import { readLibraryItemIdBySlug } from "./slug-lookup";
+import { applyLibraryPayload } from "./write-library";
 
 const PAYLOAD: LibraryPayload = {
   summary: { booksCount: 1, collectionsCount: 1 },

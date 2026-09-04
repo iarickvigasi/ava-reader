@@ -13,7 +13,7 @@ import {
   markOfflineKeptLocal,
   markOfflineReleasedLocal,
   setOfflineRequestedLocal,
-} from "./storage";
+} from "./offline-intent-store";
 
 type GetToken = () => Promise<string | null>;
 

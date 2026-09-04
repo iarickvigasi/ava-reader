@@ -10,7 +10,7 @@
 // (spec 4.1, Read path).
 
 import { readBookIdBySlug } from "@/features/offline/buckets/book";
-import { readLibraryItemIdBySlug } from "@/features/offline/buckets/library/storage";
+import { readLibraryItemIdBySlug } from "@/features/offline/buckets/library";
 
 export async function resolveCachedLibraryItemId(
   slug: string,

@@ -29,9 +29,13 @@ describe("fetchWithTimeout", () => {
     );
 
     const result = fetchWithTimeout("/x", {}, 5_000);
-    const assertion = expect(result).rejects.toThrow("timeout");
+    // Pre-attach a no-op handler so Node doesn't report an unhandled
+    // rejection the instant the fake timer fires below — the real
+    // assertion still runs after, as an independent listener on the
+    // same promise.
+    result.catch(() => {});
     await vi.advanceTimersByTimeAsync(5_000);
-    await assertion;
+    expect(result).rejects.toThrow("timeout");
   });
 
   it("aborts the real request via the signal passed to fetch", async () => {
@@ -41,9 +45,13 @@ describe("fetchWithTimeout", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     const result = fetchWithTimeout("/x", {}, 5_000);
-    const assertion = expect(result).rejects.toThrow();
+    // Pre-attach a no-op handler so Node doesn't report an unhandled
+    // rejection the instant the fake timer fires below — the real
+    // assertion still runs after, as an independent listener on the
+    // same promise.
+    result.catch(() => {});
     await vi.advanceTimersByTimeAsync(5_000);
-    await assertion;
+    expect(result).rejects.toThrow();
 
     const signal = fetchMock.mock.calls[0]?.[1]?.signal as AbortSignal;
     expect(signal.aborted).toBe(true);

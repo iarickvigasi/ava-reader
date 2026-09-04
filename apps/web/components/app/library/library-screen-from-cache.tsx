@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 
 import { OfflineRouteFallback } from "@/components/app/core/offline-route-fallback";
 import { LibraryHydrator } from "@/features/offline/buckets/library";
-import { readLibraryView } from "@/features/offline/buckets/library/storage";
+import { readLibraryView } from "@/features/offline/buckets/library";
 import { collectionViewToLibraryCollection } from "@/features/offline/buckets/library/view-to-collection";
 import type { LibraryPayload } from "@/lib/api-types";
 

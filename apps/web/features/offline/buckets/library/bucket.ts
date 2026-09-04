@@ -8,14 +8,10 @@ import type {
   LibraryPayload,
 } from "@/lib/api-types/library";
 
-import {
-  applyBookInfoPayload,
-  applyCollectionPayload,
-  applyLibraryPayload,
-  readBookInfoBySlug,
-  readCollectionViewBySlug,
-  readLibraryView,
-} from "./storage";
+import { readBookInfoBySlug } from "./read-book-info";
+import { readCollectionViewBySlug, readLibraryView } from "./read-library";
+import { applyCollectionPayload, applyLibraryPayload } from "./write-library";
+import { applyBookInfoPayload } from "./write-book-info";
 import type {
   CollectionView,
   LibraryBucketState,

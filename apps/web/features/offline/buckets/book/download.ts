@@ -254,6 +254,53 @@ export async function saveBookOffline(
     error: null,
   });
 
+  // Ownership fence + cleanup shared by every failure/cancellation path.
+  // Called directly for conditions detected inline below, and from the
+  // catch block for genuine errors bubbling out of a fetch/write.
+  //
+  // Ownership fence: if a newer save for this same book superseded us
+  // (registerInFlight aborted us and took the in-flight slot), we no longer
+  // own the book's rows — the newer save does. Tearing down here would delete
+  // chapters it is actively writing, or wipe a download it already completed
+  // (see [[4.1-offline-reading]]). A superseded run exits without touching
+  // shared state and lets its successor own the outcome.
+  async function handleFailure(error: unknown): Promise<SaveOutcome> {
+    const stillOwner = isCurrentInFlight(libraryItemId, controller);
+
+    const aborted =
+      controller.signal.aborted ||
+      (error instanceof DOMException && error.name === "AbortError") ||
+      (error instanceof Error && error.name === "AbortError");
+
+    if (aborted) {
+      // Cancelled — clean up partial rows so the user doesn't end up with a
+      // ghost half-saved book in their cache. Status returns to idle. Only when
+      // we still own the book (genuine user cancel / different-book switch).
+      if (stillOwner) {
+        await deleteBookContent(libraryItemId).catch(() => {
+          // Cleanup is best-effort.
+        });
+        setStatus(libraryItemId, {
+          status: "idle",
+          currentChapters: 0,
+          totalChapters: 0,
+          error: null,
+        });
+      }
+      return { kind: "cancelled" };
+    }
+
+    // Real failure (network, malformed payload, …). Also clean up so a
+    // retry starts from a clean slate — but only if we still own the book.
+    const reason =
+      error instanceof Error ? error.message : "Unknown save error";
+    if (stillOwner) {
+      await deleteBookContent(libraryItemId).catch(() => {});
+      setStatus(libraryItemId, { status: "failed", error: reason });
+    }
+    return { kind: "failed", reason };
+  }
+
   try {
     // Step 1 — discovery. The initial reader fetch (no chapter param)
     // returns the active chapter, its window, and the full TOC.
@@ -263,7 +310,9 @@ export async function saveBookOffline(
       controller.signal,
     );
     if (initial.status !== "READY") {
-      throw new Error(`Book is not READY (status: ${initial.status})`);
+      return await handleFailure(
+        new Error(`Book is not READY (status: ${initial.status})`),
+      );
     }
 
     const chapterIds = flattenTocChapterIds(initial.toc);
@@ -329,9 +378,9 @@ export async function saveBookOffline(
     const stillMissing = ordered.filter((id) => !covered.has(id));
     for (const chapterId of stillMissing) {
       if (controller.signal.aborted) {
-        // Funnel through the catch so partial rows are cleaned up and status is
-        // reset to idle — same as every other cancellation path.
-        throw new DOMException("Aborted", "AbortError");
+        // Route through the shared cleanup so partial rows are cleaned up
+        // and status is reset to idle — same as every other cancellation path.
+        return await handleFailure(new DOMException("Aborted", "AbortError"));
       }
       if (covered.has(chapterId)) {
         continue;
@@ -353,7 +402,7 @@ export async function saveBookOffline(
     }
 
     if (controller.signal.aborted) {
-      throw new DOMException("Aborted", "AbortError");
+      return await handleFailure(new DOMException("Aborted", "AbortError"));
     }
 
     // Step 3 — write the BookRow last. hasBookContent uses this row as the
@@ -392,46 +441,10 @@ export async function saveBookOffline(
     });
     return { kind: "saved" };
   } catch (error) {
-    // Ownership fence: if a newer save for this same book superseded us
-    // (registerInFlight aborted us and took the in-flight slot), we no longer
-    // own the book's rows — the newer save does. Tearing down here would delete
-    // chapters it is actively writing, or wipe a download it already completed
-    // (see [[4.1-offline-reading]]). A superseded run exits without touching
-    // shared state and lets its successor own the outcome.
-    const stillOwner = isCurrentInFlight(libraryItemId, controller);
-
-    const aborted =
-      controller.signal.aborted ||
-      (error instanceof DOMException && error.name === "AbortError") ||
-      (error instanceof Error && error.name === "AbortError");
-
-    if (aborted) {
-      // Cancelled — clean up partial rows so the user doesn't end up with a
-      // ghost half-saved book in their cache. Status returns to idle. Only when
-      // we still own the book (genuine user cancel / different-book switch).
-      if (stillOwner) {
-        await deleteBookContent(libraryItemId).catch(() => {
-          // Cleanup is best-effort.
-        });
-        setStatus(libraryItemId, {
-          status: "idle",
-          currentChapters: 0,
-          totalChapters: 0,
-          error: null,
-        });
-      }
-      return { kind: "cancelled" };
-    }
-
-    // Real failure (network, malformed payload, …). Also clean up so a
-    // retry starts from a clean slate — but only if we still own the book.
-    const reason =
-      error instanceof Error ? error.message : "Unknown save error";
-    if (stillOwner) {
-      await deleteBookContent(libraryItemId).catch(() => {});
-      setStatus(libraryItemId, { status: "failed", error: reason });
-    }
-    return { kind: "failed", reason };
+    // Genuine error bubbling out of a fetch/write (network, malformed
+    // payload, an abort surfaced by a called function, …) — same cleanup as
+    // the inline conditions above.
+    return await handleFailure(error);
   } finally {
     clearInFlight(libraryItemId, controller);
   }

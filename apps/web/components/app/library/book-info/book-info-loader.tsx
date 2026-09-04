@@ -15,7 +15,7 @@ import {
   BookInfoHydrator,
   revalidateBookInfo,
 } from "@/features/offline/buckets/library";
-import { readBookInfoBySlug } from "@/features/offline/buckets/library/storage";
+import { readBookInfoBySlug } from "@/features/offline/buckets/library";
 import { readWithRevalidate } from "@/features/offline/buckets/library/read-with-revalidate";
 import { isOnline } from "@/features/offline/net/net-state";
 import { useNetworkState } from "@/features/offline/net/use-network-state";

@@ -10,7 +10,7 @@ import {
   revalidateLibrary,
 } from "../buckets/library/revalidate";
 import { pruneLibraryItems } from "../buckets/library/prune-items";
-import { readLibraryView } from "../buckets/library/storage";
+import { readLibraryView } from "../buckets/library";
 import { revalidatePreferences } from "../buckets/preferences/revalidate";
 import { revalidateHighlights } from "../buckets/highlights/revalidate";
 import { revalidateAiComments } from "../buckets/ai-comments/revalidate";
