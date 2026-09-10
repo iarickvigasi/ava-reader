@@ -10,7 +10,7 @@ import { useHomeFromCache } from "@/features/offline/buckets/home";
 import { OfflineRouteFallback } from "@/components/app/core/offline-route-fallback";
 import { HomeScreen } from "./home-screen";
 
-export function HomeScreenFromCache() {
+export function HomeScreenFromCache({ reason = "unavailable" }: { reason?: "apiUnavailable" | "authUnavailable" | "unavailable" }) {
   const state = useHomeFromCache();
 
   if (state.status === "loading") {
@@ -20,7 +20,7 @@ export function HomeScreenFromCache() {
   }
 
   if (state.status === "empty") {
-    return <OfflineRouteFallback routeKey="home" />;
+    return <OfflineRouteFallback routeKey="home" reason={reason} />;
   }
 
   return <HomeScreen home={state.payload} />;

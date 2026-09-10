@@ -595,5 +595,40 @@
       "requiredVarsLabel": "Variables web requeridas",
       "returnToSplash": "Volver al inicio"
     }
+  },
+  "unavailablePage": {
+    "retry": "Reintentar",
+    "retrying": "Reintentando",
+    "home": "Volver al inicio",
+    "library": "Abrir biblioteca",
+    "offline": {
+      "label": "Modo sin conexión",
+      "title": "Estás sin conexión",
+      "hint": "Conéctate para cargar esta página. Los libros guardados en este dispositivo siguen disponibles."
+    },
+    "apiUnavailable": {
+      "label": "Servicio no disponible",
+      "title": "No podemos conectar con Ava",
+      "body": "Tu navegador tiene conexión, pero no pudimos acceder al servicio que carga tus datos de lectura. Inténtalo de nuevo en un momento.",
+      "hint": "Puedes seguir abriendo los libros guardados en este dispositivo mientras el servicio no esté disponible."
+    },
+    "authUnavailable": {
+      "label": "Sesión no disponible",
+      "title": "No pudimos verificar tu sesión",
+      "body": "Inténtalo de nuevo para volver a conectar con tu cuenta.",
+      "hint": "Tus libros guardados y tu progreso de lectura permanecen en este dispositivo."
+    },
+    "unavailable": {
+      "label": "No se pudo cargar",
+      "title": "Esta página no está disponible ahora",
+      "body": "No pudimos cargar los datos de esta página. Inténtalo de nuevo en un momento.",
+      "hint": "Los libros guardados en este dispositivo siguen disponibles en tu biblioteca."
+    },
+    "notFound": {
+      "label": "Página no encontrada · 404",
+      "title": "Esta página no está aquí",
+      "body": "El enlace puede ser incorrecto o la página puede haberse movido. Vuelve al inicio para seguir leyendo.",
+      "hint": "Comprueba si hay errores en la dirección o vuelve al inicio."
+    }
   }
 }

@@ -595,5 +595,40 @@
       "requiredVarsLabel": "Erforderliche Web-Variablen",
       "returnToSplash": "Zurück zum Startbildschirm"
     }
+  },
+  "unavailablePage": {
+    "retry": "Erneut versuchen",
+    "retrying": "Neuer Versuch",
+    "home": "Zur Startseite",
+    "library": "Bibliothek öffnen",
+    "offline": {
+      "label": "Offline-Modus",
+      "title": "Du bist offline",
+      "hint": "Verbinde dich mit dem Internet, um diese Seite zu laden. Auf diesem Gerät gespeicherte Bücher bleiben verfügbar."
+    },
+    "apiUnavailable": {
+      "label": "Dienst nicht verfügbar",
+      "title": "Ava ist gerade nicht erreichbar",
+      "body": "Dein Browser ist online, aber der Dienst für deine Lesedaten ist nicht erreichbar. Versuche es gleich noch einmal.",
+      "hint": "Du kannst weiterhin Bücher öffnen, die auf diesem Gerät gespeichert sind."
+    },
+    "authUnavailable": {
+      "label": "Sitzung nicht verfügbar",
+      "title": "Deine Sitzung konnte nicht bestätigt werden",
+      "body": "Versuche es erneut, um die Verbindung zu deinem Konto wiederherzustellen.",
+      "hint": "Deine gespeicherten Bücher und dein Lesefortschritt bleiben auf diesem Gerät."
+    },
+    "unavailable": {
+      "label": "Laden fehlgeschlagen",
+      "title": "Diese Seite ist gerade nicht verfügbar",
+      "body": "Die Daten für diese Seite konnten nicht geladen werden. Versuche es gleich noch einmal.",
+      "hint": "Auf diesem Gerät gespeicherte Bücher findest du weiterhin in deiner Bibliothek."
+    },
+    "notFound": {
+      "label": "Seite nicht gefunden · 404",
+      "title": "Diese Seite ist nicht hier",
+      "body": "Der Link ist möglicherweise falsch oder die Seite wurde verschoben. Kehre zur Startseite zurück, um weiterzulesen.",
+      "hint": "Prüfe die Adresse auf Tippfehler oder kehre zur Startseite zurück."
+    }
   }
 }

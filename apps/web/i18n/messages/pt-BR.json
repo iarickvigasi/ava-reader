@@ -595,5 +595,40 @@
       "requiredVarsLabel": "Variáveis web obrigatórias",
       "returnToSplash": "Voltar à tela inicial"
     }
+  },
+  "unavailablePage": {
+    "retry": "Tentar novamente",
+    "retrying": "Tentando novamente",
+    "home": "Voltar ao início",
+    "library": "Abrir biblioteca",
+    "offline": {
+      "label": "Modo offline",
+      "title": "Você está offline",
+      "hint": "Conecte-se para carregar esta página. Os livros salvos neste dispositivo continuam disponíveis."
+    },
+    "apiUnavailable": {
+      "label": "Serviço indisponível",
+      "title": "Não conseguimos acessar a Ava",
+      "body": "Seu navegador está online, mas não conseguimos acessar o serviço que carrega seus dados de leitura. Tente novamente em instantes.",
+      "hint": "Você ainda pode abrir os livros salvos neste dispositivo enquanto o serviço estiver indisponível."
+    },
+    "authUnavailable": {
+      "label": "Sessão indisponível",
+      "title": "Não foi possível verificar sua sessão",
+      "body": "Tente novamente para reconectar sua conta.",
+      "hint": "Seus livros salvos e seu progresso de leitura permanecem neste dispositivo."
+    },
+    "unavailable": {
+      "label": "Falha ao carregar",
+      "title": "Esta página está indisponível no momento",
+      "body": "Não foi possível carregar os dados desta página. Tente novamente em instantes.",
+      "hint": "Os livros salvos neste dispositivo continuam disponíveis na sua biblioteca."
+    },
+    "notFound": {
+      "label": "Página não encontrada · 404",
+      "title": "Esta página não está aqui",
+      "body": "O link pode estar incorreto ou a página pode ter sido movida. Volte ao início para continuar lendo.",
+      "hint": "Verifique se há erros no endereço ou volte ao início."
+    }
   }
 }

@@ -595,5 +595,40 @@
       "requiredVarsLabel": "Required web variables",
       "returnToSplash": "Return to splash"
     }
+  },
+  "unavailablePage": {
+    "retry": "Try again",
+    "retrying": "Trying again",
+    "home": "Back to home",
+    "library": "Open library",
+    "offline": {
+      "label": "Offline mode",
+      "title": "You’re offline",
+      "hint": "Reconnect to load this page. Books saved on this device are still available."
+    },
+    "apiUnavailable": {
+      "label": "Service unavailable",
+      "title": "We can’t reach Ava right now",
+      "body": "Your browser is online, but we couldn’t reach the service that loads your reading data. Please try again in a moment.",
+      "hint": "You can still open books saved on this device while the service is unavailable."
+    },
+    "authUnavailable": {
+      "label": "Session unavailable",
+      "title": "We couldn’t verify your session",
+      "body": "Your session could not be verified. Try again to reconnect to your account.",
+      "hint": "Your saved books and reading progress remain on this device."
+    },
+    "unavailable": {
+      "label": "Unable to load",
+      "title": "This page is unavailable right now",
+      "body": "We couldn’t load the data for this page. Please try again in a moment.",
+      "hint": "Books saved on this device are still available in your library."
+    },
+    "notFound": {
+      "label": "Page not found · 404",
+      "title": "This page isn’t here",
+      "body": "The link may be incorrect, or the page may have moved. Head back home to continue reading.",
+      "hint": "Check the address for a typo, or return to your dashboard."
+    }
   }
 }

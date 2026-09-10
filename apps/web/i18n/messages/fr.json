@@ -595,5 +595,40 @@
       "requiredVarsLabel": "Variables web requises",
       "returnToSplash": "Retour à l'écran d'accueil"
     }
+  },
+  "unavailablePage": {
+    "retry": "Réessayer",
+    "retrying": "Nouvelle tentative",
+    "home": "Retour à l’accueil",
+    "library": "Ouvrir la bibliothèque",
+    "offline": {
+      "label": "Mode hors ligne",
+      "title": "Vous êtes hors ligne",
+      "hint": "Reconnectez-vous pour charger cette page. Les livres enregistrés sur cet appareil restent disponibles."
+    },
+    "apiUnavailable": {
+      "label": "Service indisponible",
+      "title": "Impossible de joindre Ava",
+      "body": "Votre navigateur est en ligne, mais le service qui charge vos données de lecture est inaccessible. Réessayez dans un instant.",
+      "hint": "Vous pouvez toujours ouvrir les livres enregistrés sur cet appareil pendant l’indisponibilité du service."
+    },
+    "authUnavailable": {
+      "label": "Session indisponible",
+      "title": "Impossible de vérifier votre session",
+      "body": "Réessayez pour vous reconnecter à votre compte.",
+      "hint": "Vos livres enregistrés et votre progression de lecture restent sur cet appareil."
+    },
+    "unavailable": {
+      "label": "Chargement impossible",
+      "title": "Cette page est indisponible pour le moment",
+      "body": "Impossible de charger les données de cette page. Réessayez dans un instant.",
+      "hint": "Les livres enregistrés sur cet appareil restent disponibles dans votre bibliothèque."
+    },
+    "notFound": {
+      "label": "Page introuvable · 404",
+      "title": "Cette page n’est pas ici",
+      "body": "Le lien est peut-être incorrect ou la page a été déplacée. Retournez à l’accueil pour continuer à lire.",
+      "hint": "Vérifiez l’adresse ou retournez à l’accueil."
+    }
   }
 }

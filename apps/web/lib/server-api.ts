@@ -58,39 +58,36 @@ async function fetchWithToken<T>(
   return (await response.json()) as T;
 }
 
-// RSC data fetch for pages with an offline cache fallback. The strict variant
-// (redirect when unverified) was removed: cookie-less visitors are caught by
-// the middleware (apps/web/proxy.ts), and every page that fetches here has a
-// cache path, so unverified-but-offline must NOT redirect.
-// path. Returns null — meaning "render the cached / fallback UI" — when:
-// - the session can't be verified right now (stale token, Clerk unreachable):
-//   redirecting would strand an offline user on a sign-in they can't complete;
-// - the API itself is unreachable (offline, backend down);
-// - the API rejected the stale token (401/403) — same offline-auth situation.
-// Anything else (404, 5xx, …) is a genuine error and bubbles to notFound() /
-// the error boundary as usual.
+export type ServerApiResult<T> =
+  | { status: "ready"; data: T }
+  | { status: "apiUnavailable" | "authUnavailable" };
+
+// Preserve the failure reason for pages that need a specific recovery state.
+// HTTP 404 and other unexpected responses still reach the route/error boundary.
+export async function fetchServerApiResult<T>(
+  path: string,
+  options: ApiRequestOptions = {},
+): Promise<ServerApiResult<T>> {
+  const token = await resolveServerAuthToken();
+  if (!token) return { status: "authUnavailable" };
+  try {
+    return { status: "ready", data: await fetchWithToken<T>(token, path, options) };
+  } catch (error) {
+    if (isNetworkError(error)) return { status: "apiUnavailable" };
+    if (error instanceof ServerApiError && (error.status === 401 || error.status === 403)) {
+      return { status: "authUnavailable" };
+    }
+    throw error;
+  }
+}
+
+// Existing cache consumers only need a payload or a cache miss.
 export async function fetchServerApiTolerant<T>(
   path: string,
   options: ApiRequestOptions = {},
 ): Promise<T | null> {
-  const token = await resolveServerAuthToken();
-  if (!token) {
-    return null;
-  }
-  try {
-    return await fetchWithToken<T>(token, path, options);
-  } catch (error) {
-    if (isNetworkError(error)) {
-      return null;
-    }
-    if (
-      error instanceof ServerApiError &&
-      (error.status === 401 || error.status === 403)
-    ) {
-      return null;
-    }
-    throw error;
-  }
+  const result = await fetchServerApiResult<T>(path, options);
+  return result.status === "ready" ? result.data : null;
 }
 
 // Distinguishes "couldn't reach the API at all" (offline, DNS failure, the
