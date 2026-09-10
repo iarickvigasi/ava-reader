@@ -477,7 +477,8 @@
         "descriptionPlaceholder": "Add a short description for this collection.",
         "cancel": "Cancel",
         "save": "Save",
-        "saving": "Saving..."
+        "saving": "Saving...",
+        "optional": "(optional)"
       },
       "deleteModal": {
         "eyebrow": "Collection",
@@ -493,7 +494,18 @@
         "signInToDelete": "Sign in to delete this collection.",
         "noToken": "No session token was available.",
         "updateFailed": "Collection update failed.",
-        "deleteFailed": "Collection delete failed."
+        "deleteFailed": "Collection delete failed.",
+        "nameTooLong": "Collection title must be 100 characters or fewer.",
+        "descriptionTooLong": "Description must be 1,000 characters or fewer.",
+        "nameDuplicate": "A collection with this title already exists.",
+        "createOffline": "Connect to the internet to create this collection. Your text will stay here.",
+        "signInToCreate": "Sign in to create a collection.",
+        "createFailed": "Could not create the collection. Please try again."
+      },
+      "createModal": {
+        "title": "Create collection",
+        "create": "Create collection",
+        "creating": "Creating…"
       }
     }
   },

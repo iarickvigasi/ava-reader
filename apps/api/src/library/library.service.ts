@@ -1,3 +1,4 @@
+import { createCollection } from './collections/create-collection';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
@@ -78,6 +79,14 @@ export class LibraryService {
       requested,
       userId: user.id,
     });
+  }
+
+  async createCollection(
+    clerkUserId: string,
+    input: { name?: unknown; description?: unknown },
+  ) {
+    const user = await this.user(clerkUserId);
+    return createCollection({ prisma: this.prisma, userId: user.id, input });
   }
 
   async renameCollection(

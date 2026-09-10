@@ -40,7 +40,7 @@ export function LibraryScreen({ library }: LibraryScreenProps) {
   const summary = view?.summary ?? library.summary;
 
   const hasBooks = collections.some((collection) => collection.books.length > 0);
-  const isEmpty = collections.length === 0 || !hasBooks;
+  const isEmpty = !hasBooks && !collections.some((collection) => collection.kind === "CUSTOM");
 
   return (
     <LibraryScreenShell>

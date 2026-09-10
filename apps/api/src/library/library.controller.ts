@@ -85,6 +85,15 @@ export class LibraryController {
     );
   }
 
+  @Post('collections')
+  @UseGuards(ClerkAuthGuard)
+  createCollection(
+    @Req() request: AuthenticatedRequest,
+    @Body() body: { name?: unknown; description?: unknown },
+  ) {
+    return this.libraryService.createCollection(request.auth.clerkUserId, body);
+  }
+
   @Patch('collections/:collectionId')
   @UseGuards(ClerkAuthGuard)
   renameCollection(

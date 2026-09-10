@@ -3,3 +3,5 @@ cmdq/
 out/
 probes/
 __pycache__/
+/runprobe.sh
+/keepalive.sh

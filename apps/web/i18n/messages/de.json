@@ -477,7 +477,8 @@
         "descriptionPlaceholder": "Füge eine kurze Beschreibung für diese Sammlung hinzu.",
         "cancel": "Abbrechen",
         "save": "Speichern",
-        "saving": "Wird gespeichert..."
+        "saving": "Wird gespeichert...",
+        "optional": "(optional)"
       },
       "deleteModal": {
         "eyebrow": "Sammlung",
@@ -493,7 +494,18 @@
         "signInToDelete": "Melde dich an, um diese Sammlung zu löschen.",
         "noToken": "Kein Sitzungstoken verfügbar.",
         "updateFailed": "Aktualisierung der Sammlung fehlgeschlagen.",
-        "deleteFailed": "Löschen der Sammlung fehlgeschlagen."
+        "deleteFailed": "Löschen der Sammlung fehlgeschlagen.",
+        "nameTooLong": "Der Sammlungstitel darf höchstens 100 Zeichen enthalten.",
+        "descriptionTooLong": "Die Beschreibung darf höchstens 1.000 Zeichen enthalten.",
+        "nameDuplicate": "Eine Sammlung mit diesem Titel existiert bereits.",
+        "createOffline": "Verbinde dich mit dem Internet, um diese Sammlung zu erstellen. Dein Text bleibt hier erhalten.",
+        "signInToCreate": "Melde dich an, um eine Sammlung zu erstellen.",
+        "createFailed": "Die Sammlung konnte nicht erstellt werden. Versuche es erneut."
+      },
+      "createModal": {
+        "title": "Sammlung erstellen",
+        "create": "Sammlung erstellen",
+        "creating": "Wird erstellt…"
       }
     }
   },

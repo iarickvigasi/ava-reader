@@ -39,6 +39,15 @@ vi.mock("next/link", () => ({
 }));
 
 describe("library and navigation UI", () => {
+  it("shows an empty custom collection even when the library has no books", () => {
+    const payload = createLibraryPayload();
+    payload.collections = payload.collections.filter((collection) => collection.kind === "CUSTOM").map((collection) => ({ ...collection, books: [], itemCount: 0, unreadCount: 0 }));
+    payload.summary.booksCount = 0;
+    const markup = renderToStaticMarkup(withIntl(<LibraryScreen library={payload} />));
+    expect(markup).toContain("Late Night Reads");
+    expect(markup).toContain('href="/app/library/collections/late-night-reads"');
+  });
+
   it("renders per-collection view-all links to collection detail screens", () => {
     const markup = renderToStaticMarkup(
       withIntl(<LibraryScreen library={createLibraryPayload()} />),

@@ -1,10 +1,7 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  NotFoundException,
-} from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import type { PrismaService } from '../../prisma/prisma.service';
-import { isPrismaUniqueConstraintError } from '../../shared/prisma-errors';
+import { validateCollectionInput } from './collection-input';
+import { collectionWrite, duplicateCollectionError } from './collection-write';
 
 // PATCH /library/collections/:id
 // (docs/specs/3-library/3.3-collections.md §3).
@@ -17,39 +14,46 @@ export async function renameCollection(options: {
   prisma: PrismaService;
   userId: string;
 }) {
-  const name = options.input.name?.trim() ?? '';
+  const normalized = validateCollectionInput(options.input);
+  const name = normalized.name;
+  return collectionWrite(options.prisma, async (tx) => {
+    const collection = await tx.collection.findFirst({
+      where: {
+        id: options.collectionId,
+        userId: options.userId,
+      },
+      select: {
+        description: true,
+        id: true,
+        kind: true,
+      },
+    });
 
-  if (!name) {
-    throw new BadRequestException('Collection name is required.');
-  }
+    if (!collection) {
+      throw new NotFoundException('Collection not found.');
+    }
 
-  const collection = await options.prisma.collection.findFirst({
-    where: {
-      id: options.collectionId,
-      userId: options.userId,
-    },
-    select: {
-      description: true,
-      id: true,
-      kind: true,
-    },
-  });
+    if (collection.kind === 'SMART') {
+      throw new ForbiddenException('Smart collections cannot be renamed.');
+    }
 
-  if (!collection) {
-    throw new NotFoundException('Collection not found.');
-  }
+    const description =
+      options.input.description === undefined
+        ? collection.description
+        : normalized.description;
 
-  if (collection.kind === 'SMART') {
-    throw new ForbiddenException('Smart collections cannot be renamed.');
-  }
+    const duplicate = await tx.collection.findFirst({
+      where: {
+        userId: options.userId,
+        id: { not: collection.id },
+        name: { equals: name, mode: 'insensitive' },
+      },
+      select: { id: true },
+    });
+    if (duplicate && duplicate.id !== collection.id)
+      throw duplicateCollectionError();
 
-  const description =
-    options.input.description === undefined
-      ? collection.description
-      : normalizeCollectionDescription(options.input.description);
-
-  try {
-    const renamed = await options.prisma.collection.update({
+    const renamed = await tx.collection.update({
       where: {
         id: collection.id,
       },
@@ -69,18 +73,5 @@ export async function renameCollection(options: {
       description: renamed.description,
       name: renamed.name,
     };
-  } catch (error) {
-    if (isPrismaUniqueConstraintError(error)) {
-      throw new BadRequestException(
-        'A collection with this name already exists.',
-      );
-    }
-
-    throw error;
-  }
-}
-
-function normalizeCollectionDescription(rawDescription: null | string) {
-  const trimmed = rawDescription?.trim() ?? '';
-  return trimmed.length > 0 ? trimmed : null;
+  });
 }

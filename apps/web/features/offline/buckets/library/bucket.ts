@@ -120,6 +120,7 @@ function viewsEqual(a: LibraryView | null, b: LibraryView | null): boolean {
     const cb = b.collections[i];
     if (ca.id !== cb.id) return false;
     if (ca.name !== cb.name) return false;
+    if (ca.description !== cb.description) return false;
     if (ca.unreadCount !== cb.unreadCount) return false;
     if (ca.itemCount !== cb.itemCount) return false;
     if (ca.books.length !== cb.books.length) return false;

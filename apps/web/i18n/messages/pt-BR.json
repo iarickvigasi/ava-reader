@@ -477,7 +477,8 @@
         "descriptionPlaceholder": "Adicione uma breve descrição para esta coleção.",
         "cancel": "Cancelar",
         "save": "Salvar",
-        "saving": "Salvando..."
+        "saving": "Salvando...",
+        "optional": "(opcional)"
       },
       "deleteModal": {
         "eyebrow": "Coleção",
@@ -493,7 +494,18 @@
         "signInToDelete": "Entre para excluir esta coleção.",
         "noToken": "Nenhum token de sessão estava disponível.",
         "updateFailed": "Falha ao atualizar a coleção.",
-        "deleteFailed": "Falha ao excluir a coleção."
+        "deleteFailed": "Falha ao excluir a coleção.",
+        "nameTooLong": "O título da coleção deve ter no máximo 100 caracteres.",
+        "descriptionTooLong": "A descrição deve ter no máximo 1.000 caracteres.",
+        "nameDuplicate": "Já existe uma coleção com este título.",
+        "createOffline": "Conecte-se à internet para criar esta coleção. Seu texto será mantido aqui.",
+        "signInToCreate": "Entre para criar uma coleção.",
+        "createFailed": "Não foi possível criar a coleção. Tente novamente."
+      },
+      "createModal": {
+        "title": "Criar coleção",
+        "create": "Criar coleção",
+        "creating": "Criando…"
       }
     }
   },
