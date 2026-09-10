@@ -81,7 +81,7 @@ export class LibraryController {
     return this.libraryService.setOfflineRequested(
       request.auth.clerkUserId,
       libraryItemId,
-      body.requested === true,
+      body.requested,
     );
   }
 

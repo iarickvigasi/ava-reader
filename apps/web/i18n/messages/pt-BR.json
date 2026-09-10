@@ -483,7 +483,7 @@
       "deleteModal": {
         "eyebrow": "Coleção",
         "title": "Excluir a coleção?",
-        "body": "Isto removerá permanentemente <emphasis>{name}</emphasis> e suas associações de coleção.",
+        "body": "A coleção <emphasis>{name}</emphasis> será excluída permanentemente. Os livros desta coleção permanecerão na sua biblioteca.",
         "cancel": "Cancelar",
         "confirm": "Confirmar exclusão",
         "deleting": "Excluindo..."

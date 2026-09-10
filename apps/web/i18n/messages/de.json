@@ -483,7 +483,7 @@
       "deleteModal": {
         "eyebrow": "Sammlung",
         "title": "Sammlung löschen?",
-        "body": "Dies entfernt <emphasis>{name}</emphasis> dauerhaft samt aller Sammlungszugehörigkeiten.",
+        "body": "Die Sammlung <emphasis>{name}</emphasis> wird dauerhaft gelöscht. Die Bücher aus dieser Sammlung bleiben in deiner Bibliothek.",
         "cancel": "Abbrechen",
         "confirm": "Löschen bestätigen",
         "deleting": "Wird gelöscht..."
