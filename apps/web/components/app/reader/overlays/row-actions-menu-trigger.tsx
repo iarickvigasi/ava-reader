@@ -1,5 +1,6 @@
 import { MoreVerticalIcon } from "@/components/app/shared/app-icons";
 import { cn } from "@/lib/cn";
+import type { Ref } from "react";
 
 // Reveal-on-hover class per row group. Kept as static literals so Tailwind's
 // scanner emits the `group-hover/<group>` rules — they can't be interpolated.
@@ -17,18 +18,24 @@ export function RowActionsMenuTrigger({
   isOpen,
   onToggle,
   sizeClass = "size-6",
+  buttonRef,
+  controlsId,
 }: {
   ariaLabel: string;
   group: RowGroup;
   isOpen: boolean;
   onToggle: () => void;
   sizeClass?: string;
+  buttonRef?: Ref<HTMLButtonElement>;
+  controlsId?: string;
 }) {
   return (
     <button
+      ref={buttonRef}
       type="button"
       aria-haspopup="menu"
       aria-expanded={isOpen}
+      aria-controls={controlsId}
       aria-label={ariaLabel}
       className={cn(
         "inline-flex shrink-0 items-center justify-center rounded-full text-ink/55 transition",

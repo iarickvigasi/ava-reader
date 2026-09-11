@@ -8,10 +8,10 @@ import {
   useMemo,
   useSyncExternalStore,
 } from "react";
+import { useAnnotationLoad } from "@/features/annotations/use-annotation-load";
 import { getPublicApiBaseUrl } from "@/lib/api";
 import type { ReaderRangeLocator } from "@/lib/api-types";
 import {
-  applyServerSnapshot,
   enqueueDelete,
   enqueueUpsert,
   flushBucket,
@@ -21,7 +21,6 @@ import {
   setBucketAuth,
   subscribeToDrops,
   subscribeToHighlights,
-  toHighlightRecord,
   type HighlightColor,
   type HighlightRecord,
 } from "@/features/offline/buckets/highlights";
@@ -30,6 +29,8 @@ import { emitAppToast } from "@/components/app/core/app-toast";
 
 type UseHighlightsResult = {
   highlights: HighlightRecord[];
+  loadStatus: ReturnType<typeof useAnnotationLoad>["loadStatus"];
+  refetch: () => void;
   upsertHighlight: (input: {
     id?: string;
     excerpt: string;
@@ -77,60 +78,7 @@ export function useHighlights(libraryItemId: string): UseHighlightsResult {
     getServerSnapshot,
   );
 
-  // Initial load: GET the server list, replace the snapshot. Pending writes
-  // stay queued until flushed.
-  useEffect(() => {
-    if (!isLoaded || !isSignedIn) {
-      return;
-    }
-    const controller = new AbortController();
-    const run = async () => {
-      const token = await getToken();
-      if (!token) {
-        return;
-      }
-      const response = await fetch(
-        `${apiBaseUrl}/api/library/${encodeURIComponent(
-          libraryItemId,
-        )}/annotations`,
-        {
-          method: "GET",
-          signal: controller.signal,
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-          },
-        },
-      );
-      if (!response.ok) {
-        emitAppToast({
-          message: t("loadFailed"),
-          tone: "warning",
-        });
-        return;
-      }
-      const data = (await response.json()) as {
-        items?: Parameters<typeof toHighlightRecord>[0][];
-      };
-      if (controller.signal.aborted) {
-        return;
-      }
-      const records = (data.items ?? []).map(toHighlightRecord);
-      applyServerSnapshot(libraryItemId, apiBaseUrl, records);
-      void flushBucket(libraryItemId, apiBaseUrl);
-    };
-    run().catch(() => {
-      if (!controller.signal.aborted) {
-        emitAppToast({
-          message: t("loadFailed"),
-          tone: "warning",
-        });
-      }
-    });
-    return () => {
-      controller.abort();
-    };
-  }, [apiBaseUrl, getToken, isLoaded, isSignedIn, libraryItemId, t]);
+  const { loadStatus, refetch } = useAnnotationLoad(libraryItemId, "highlights");
 
   // Background flush triggers. No mount kick — the initial-load effect above
   // already flushes once the server snapshot lands.
@@ -178,7 +126,7 @@ export function useHighlights(libraryItemId: string): UseHighlightsResult {
   );
 
   return useMemo(
-    () => ({ highlights, upsertHighlight, deleteHighlight }),
-    [highlights, upsertHighlight, deleteHighlight],
+    () => ({ highlights, upsertHighlight, deleteHighlight, loadStatus, refetch }),
+    [highlights, upsertHighlight, deleteHighlight, loadStatus, refetch],
   );
 }

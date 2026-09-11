@@ -481,6 +481,13 @@
           "title": "Eliminar libro",
           "description": "Aún no disponible"
         }
+      },
+      "annotations": {
+        "actionsLabel": "Más opciones para «{text}»",
+        "delete": "Eliminar",
+        "loading": "Cargando pasajes guardados…",
+        "loadFailed": "No se pudieron cargar los pasajes guardados. Inténtalo de nuevo.",
+        "retry": "Intentar de nuevo"
       }
     },
     "collectionActions": {

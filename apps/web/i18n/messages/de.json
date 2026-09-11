@@ -481,6 +481,13 @@
           "title": "Buch löschen",
           "description": "Noch nicht verfügbar"
         }
+      },
+      "annotations": {
+        "actionsLabel": "Weitere Optionen für „{text}“",
+        "delete": "Löschen",
+        "loading": "Gespeicherte Textstellen werden geladen…",
+        "loadFailed": "Gespeicherte Textstellen konnten nicht geladen werden. Bitte versuche es erneut.",
+        "retry": "Erneut versuchen"
       }
     },
     "collectionActions": {

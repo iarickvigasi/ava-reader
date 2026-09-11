@@ -481,6 +481,13 @@
           "title": "Excluir livro",
           "description": "Ainda não disponível"
         }
+      },
+      "annotations": {
+        "actionsLabel": "Mais opções para “{text}”",
+        "delete": "Excluir",
+        "loading": "Carregando trechos salvos…",
+        "loadFailed": "Não foi possível carregar os trechos salvos. Tente novamente.",
+        "retry": "Tentar novamente"
       }
     },
     "collectionActions": {

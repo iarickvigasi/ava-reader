@@ -10,6 +10,7 @@ import { BookDescription } from "./description";
 import { BookHeader } from "./header";
 import { BookMetadata } from "./metadata";
 import { ReadingProgress } from "./reading-progress";
+import { BookAnnotations } from "./annotations/book-annotations";
 
 type LibraryBookInfoScreenProps = {
   backHref: string;
@@ -59,6 +60,7 @@ export function LibraryBookInfoScreen({
             libraryItemId={book.libraryItemId}
           />
         </section>
+        <BookAnnotations key={book.libraryItemId} libraryItemId={book.libraryItemId} />
       </div>
     </div>
   );

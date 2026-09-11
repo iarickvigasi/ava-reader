@@ -481,6 +481,13 @@
           "title": "Supprimer le livre",
           "description": "Pas encore disponible"
         }
+      },
+      "annotations": {
+        "actionsLabel": "Plus d’options pour « {text} »",
+        "delete": "Supprimer",
+        "loading": "Chargement des passages enregistrés…",
+        "loadFailed": "Impossible de charger les passages enregistrés. Réessayez.",
+        "retry": "Réessayer"
       }
     },
     "collectionActions": {

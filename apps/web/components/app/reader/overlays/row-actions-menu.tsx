@@ -26,11 +26,19 @@ export type RowAction = {
   onClick?: () => void;
 };
 
-export function RowActionsMenu({ actions }: { actions: RowAction[] }) {
+export function RowActionsMenu({ actions, placement = "floating", ariaLabel }: {
+  actions: RowAction[];
+  placement?: "floating" | "popover";
+  ariaLabel?: string;
+}) {
   return (
     <div
       role="menu"
-      className="absolute right-2 top-full z-10 mt-1 w-36 rounded-control bg-paper-strong p-2 shadow-[-6px_6px_18px_rgba(31,27,24,0.10)]"
+      aria-label={ariaLabel}
+      className={cn(
+        "w-36 rounded-control bg-paper-strong p-2 shadow-(--shadow-soft)",
+        placement === "floating" && "absolute right-2 top-full z-10 mt-1",
+      )}
     >
       {actions.map((action) => {
         const preset = ACTION_PRESET[action.kind];

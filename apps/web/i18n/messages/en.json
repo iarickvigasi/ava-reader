@@ -481,6 +481,13 @@
           "title": "Delete Book",
           "description": "No action yet"
         }
+      },
+      "annotations": {
+        "actionsLabel": "More options for “{text}”",
+        "delete": "Delete",
+        "loading": "Loading saved passages…",
+        "loadFailed": "Couldn’t load saved passages. Please try again.",
+        "retry": "Try again"
       }
     },
     "collectionActions": {

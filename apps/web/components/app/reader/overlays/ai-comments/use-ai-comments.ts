@@ -7,11 +7,11 @@
 
 import { useAuth } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 
+import { useAnnotationLoad } from "@/features/annotations/use-annotation-load";
 import { emitAppToast } from "@/components/app/core/app-toast";
 import {
-  applyServerSnapshot,
   enqueueDelete,
   enqueueGenerate,
   flushBucket,
@@ -23,7 +23,6 @@ import {
   subscribeToDrops,
   type AiCommentRecord,
   type PendingMutation,
-  type ServerAiComment,
 } from "@/features/offline/buckets/ai-comments";
 import { useSyncTriggers } from "@/features/offline/net/use-sync-triggers";
 import { getPublicApiBaseUrl } from "@/lib/api";
@@ -33,6 +32,7 @@ export type { AiCommentRecord };
 
 type UseAiCommentsResult = {
   comments: AiCommentRecord[];
+  loadStatus: ReturnType<typeof useAnnotationLoad>["loadStatus"];
   refetch: () => void;
   deleteAiComment: (id: string) => Promise<void>;
   // New: enqueue a generate intent. Used by the AI toolbox to fall back to
@@ -55,7 +55,7 @@ export function useAiComments(libraryItemId: string): UseAiCommentsResult {
   const { getToken, isLoaded, isSignedIn } = useAuth();
   const t = useTranslations("reader.aiComments");
   const apiBaseUrl = getPublicApiBaseUrl();
-  const [refetchTick, setRefetchTick] = useState(0);
+  const { loadStatus, refetch } = useAnnotationLoad(libraryItemId, "comments");
 
   // Subscribe to the bucket. selectStableAiComments memoises by `version`
   // so unrelated renders see referential equality; the server snapshot is a
@@ -76,56 +76,6 @@ export function useAiComments(libraryItemId: string): UseAiCommentsResult {
     setBucketAuth(libraryItemId, apiBaseUrl, getToken);
   }, [apiBaseUrl, getToken, isLoaded, isSignedIn, libraryItemId]);
 
-  // Initial GET + refetch on tick bumps. On 4xx/5xx, surface a toast — the
-  // bucket still works from whatever Dexie has cached.
-  useEffect(() => {
-    if (!isLoaded || !isSignedIn) {
-      return;
-    }
-    const controller = new AbortController();
-    const run = async () => {
-      const token = await getToken();
-      if (!token) {
-        return;
-      }
-      const response = await fetch(
-        `${apiBaseUrl}/api/library/${encodeURIComponent(
-          libraryItemId,
-        )}/ai-comments`,
-        {
-          method: "GET",
-          signal: controller.signal,
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-          },
-        },
-      );
-      if (!response.ok) {
-        if (!controller.signal.aborted) {
-          emitAppToast({ message: t("highlightsLoadFailed"), tone: "warning" });
-        }
-        return;
-      }
-      const data = (await response.json()) as { items?: ServerAiComment[] };
-      if (!controller.signal.aborted) {
-        applyServerSnapshot(libraryItemId, apiBaseUrl, data.items ?? []);
-      }
-    };
-    run().catch(() => {
-      // Network blip while offline. Cached bucket is still served.
-    });
-    return () => controller.abort();
-  }, [
-    apiBaseUrl,
-    getToken,
-    isLoaded,
-    isSignedIn,
-    libraryItemId,
-    refetchTick,
-    t,
-  ]);
-
   // Drain queue + retry on `online` and on tab regaining visibility.
   const tryFlush = useCallback(() => {
     void flushBucket(libraryItemId, apiBaseUrl);
@@ -143,8 +93,6 @@ export function useAiComments(libraryItemId: string): UseAiCommentsResult {
       emitAppToast({ message: t("deleteFailed"), tone: "warning" });
     });
   }, [apiBaseUrl, libraryItemId, t]);
-
-  const refetch = useCallback(() => setRefetchTick((tick) => tick + 1), []);
 
   const deleteAiComment = useCallback(
     async (id: string) => {
@@ -170,5 +118,5 @@ export function useAiComments(libraryItemId: string): UseAiCommentsResult {
     [apiBaseUrl, libraryItemId],
   );
 
-  return { comments, refetch, deleteAiComment, enqueueGenerateIntent };
+  return { comments, refetch, deleteAiComment, enqueueGenerateIntent, loadStatus };
 }
