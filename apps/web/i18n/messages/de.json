@@ -450,13 +450,32 @@
         "lastReadDateOnly": "Zuletzt gelesen: {date}",
         "descriptionFallback": "Dieser Titel ist in deiner Bibliothek. Detaillierte redaktionelle Notizen sind für diese Ausgabe noch nicht verfügbar."
       },
+      "collectionPicker": {
+        "title": "Zu Sammlungen hinzufügen",
+        "description": "Wähle aus, in welchen Sammlungen du dieses Buch aufbewahren möchtest.",
+        "emptyTitle": "Noch keine Sammlungen",
+        "emptyDescription": "Erstelle eine Sammlung in deiner Bibliothek und kehre dann zurück, um dieses Buch hinzuzufügen.",
+        "goToLibrary": "Zur Bibliothek",
+        "cancel": "Abbrechen",
+        "close": "Schließen",
+        "save": "Änderungen speichern",
+        "saving": "Wird gespeichert",
+        "loading": "Sammlungen werden geladen",
+        "loadFailed": "Deine Sammlungen konnten nicht geladen werden. Bitte versuche es erneut.",
+        "unavailableOffline": "Verbinde dich mit dem Internet, um deine Sammlungen zu laden.",
+        "retry": "Erneut versuchen",
+        "saveFailed": "Deine Änderungen konnten nicht gespeichert werden. Bitte versuche es erneut.",
+        "offlineHint": "Änderungen werden synchronisiert, sobald du wieder online bist.",
+        "selectedCount": "{count, plural, =0 {Keine Sammlungen ausgewählt} one {# Sammlung ausgewählt} other {# Sammlungen ausgewählt}}",
+        "syncFailed": "Einige Änderungen an den Sammlungen konnten nicht synchronisiert werden. Öffne die Auswahl erneut und versuche es noch einmal."
+      },
       "actionCards": {
         "markAsFinished": {
           "title": "Als gelesen markieren",
           "description": "Setzt den Fortschritt auf 100 %"
         },
         "manageCollections": {
-          "title": "Sammlungen verwalten"
+          "title": "Zu Sammlungen hinzufügen"
         },
         "deleteBook": {
           "title": "Buch löschen",

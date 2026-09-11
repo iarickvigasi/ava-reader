@@ -450,13 +450,32 @@
         "lastReadDateOnly": "Dernière lecture : {date}",
         "descriptionFallback": "Ce titre est dans votre bibliothèque. Aucune note éditoriale détaillée n'est encore disponible pour cette édition."
       },
+      "collectionPicker": {
+        "title": "Ajouter aux collections",
+        "description": "Choisissez où ranger ce livre.",
+        "emptyTitle": "Aucune collection pour le moment",
+        "emptyDescription": "Créez une collection dans votre bibliothèque, puis revenez ici pour y ajouter ce livre.",
+        "goToLibrary": "Aller à la bibliothèque",
+        "cancel": "Annuler",
+        "close": "Fermer",
+        "save": "Enregistrer les modifications",
+        "saving": "Enregistrement",
+        "loading": "Chargement des collections",
+        "loadFailed": "Impossible de charger vos collections. Veuillez réessayer.",
+        "unavailableOffline": "Connectez-vous à Internet pour charger vos collections.",
+        "retry": "Réessayer",
+        "saveFailed": "Impossible d’enregistrer vos modifications. Veuillez réessayer.",
+        "offlineHint": "Les modifications seront synchronisées dès que vous serez de nouveau en ligne.",
+        "selectedCount": "{count, plural, =0 {Aucune collection sélectionnée} one {# collection sélectionnée} other {# collections sélectionnées}}",
+        "syncFailed": "Certaines modifications des collections n’ont pas pu être synchronisées. Rouvrez le sélecteur et réessayez."
+      },
       "actionCards": {
         "markAsFinished": {
           "title": "Marquer comme terminé",
           "description": "Place la progression à 100 %"
         },
         "manageCollections": {
-          "title": "Gérer les collections"
+          "title": "Ajouter aux collections"
         },
         "deleteBook": {
           "title": "Supprimer le livre",

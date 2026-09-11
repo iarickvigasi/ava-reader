@@ -75,11 +75,11 @@ export function BookInfoLoader() {
       wasOffline.current = true;
       return;
     }
-    if (wasOffline.current) {
+    if (wasOffline.current && state.status !== "loading") {
       wasOffline.current = false;
-      setAttempt((current) => current + 1);
+      if (state.status === "unavailable") setAttempt((current) => current + 1);
     }
-  }, [online]);
+  }, [online, state.status]);
 
   if (state.status === "loading") {
     return <LibraryBookInfoLoading />;

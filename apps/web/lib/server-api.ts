@@ -101,11 +101,7 @@ export function isNetworkError(error: unknown): boolean {
   if (error instanceof TypeError) {
     return true;
   }
-  if (
-    error instanceof Error &&
-    typeof (error as { cause?: unknown }).cause !== "undefined"
-  ) {
-    return true;
-  }
-  return false;
+  return error instanceof Error &&
+    typeof (error as { cause?: unknown }).cause !== "undefined";
+
 }

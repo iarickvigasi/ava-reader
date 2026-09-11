@@ -5,7 +5,7 @@
 // hydrates the bucket with the RSC payload so the first render has data.
 
 import { useAuth } from "@clerk/nextjs";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSyncExternalStore } from "react";
 
 import type {
@@ -22,7 +22,6 @@ import {
   hydrateBookInfo,
   hydrateCollection,
   hydrateFromPayload,
-  readBookInfo,
   refreshFromDb,
   subscribe,
 } from "./bucket";
@@ -140,30 +139,4 @@ export function useHydrateBookInfo(initial: LibraryBookInfo) {
   }, [slug, getToken, isLoaded, online]);
 }
 
-// Read a single book-info row out of Dexie. Returns:
-// - `initial` (always) for the first render — server-rendered RSC payload
-//   matches this so there's no hydration mismatch.
-// - The cached row once Dexie resolves; identical to initial when the
-//   page loads online for the first time, possibly older fields if the
-//   page is being re-rendered offline after a previous visit.
-export function useBookInfo(
-  slug: string,
-  initial: LibraryBookInfo,
-): LibraryBookInfo {
-  const [value, setValue] = useState<LibraryBookInfo>(initial);
-
-  useEffect(() => {
-    let cancelled = false;
-    void readBookInfo(slug).then((row) => {
-      if (cancelled || !row) {
-        return;
-      }
-      setValue(row);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [slug]);
-
-  return value;
-}
+export { useBookInfo } from "./book-info/use-book-info";

@@ -1,5 +1,6 @@
 import { NotFoundException } from '@nestjs/common';
 import type { PrismaService } from '../../prisma/prisma.service';
+import { collectionDetailsInclude } from './collection-details-include';
 import { serializeCollection } from './serialize-collection';
 
 // GET /library/collections/:ref — reads by collection id or slug.
@@ -13,29 +14,7 @@ export async function getCollection(options: {
       userId: options.userId,
       OR: [{ id: options.ref }, { slug: options.ref }],
     },
-    include: {
-      items: {
-        include: {
-          libraryItem: {
-            include: {
-              book: {
-                include: {
-                  coverBlob: { select: { mimeType: true } },
-                  // readingProgressIndex on BookFile is a per-position
-                  // progress map (see schema.prisma) — multi-KB per file
-                  // and never rendered on this screen. Pick only the
-                  // scalars we need.
-                  files: {
-                    select: { format: true, isPrimary: true, kind: true },
-                  },
-                },
-              },
-              progress: true,
-            },
-          },
-        },
-      },
-    },
+    include: collectionDetailsInclude,
   });
 
   if (!collection) {

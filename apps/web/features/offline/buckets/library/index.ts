@@ -8,6 +8,7 @@ export {
   readCollectionBySlug,
   refreshFromDb,
   subscribe,
+  __resetLibraryBucketForTests as clearLibraryBucket,
 } from "./bucket";
 export {
   useBookInfo,
@@ -44,3 +45,11 @@ export { readWithRevalidate } from "./read-with-revalidate";
 export { readLibraryItemIdBySlug } from "./slug-lookup";
 export { collectionViewToLibraryCollection } from "./collections/view-to-collection";
 export type { CollectionView, LibraryBookView, LibraryView } from "./types";
+export {
+  updateBookCollections,
+  flushCollectionMemberships,
+  readCollectionPickerOptions,
+  subscribeToCollectionMembershipDrops,
+  clearCollectionMembershipRuntime,
+  type MembershipDropEvent,
+} from "./membership";

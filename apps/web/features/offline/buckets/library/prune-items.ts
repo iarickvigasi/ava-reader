@@ -12,8 +12,10 @@ export async function pruneLibraryItems(keepIds: string[]): Promise<void> {
   const keep = new Set(keepIds);
   await db.transaction(
     "rw",
-    [db.libraryItems, db.collectionMembership],
+    [db.libraryItems, db.collectionMembership, db.collectionMembershipMutations],
     async () => {
+      const pending = await db.collectionMembershipMutations.toArray();
+      for (const mutation of pending) keep.add(mutation.libraryItemId);
       const rows = await db.libraryItems.toArray();
       const stale = rows
         .filter((row) => !keep.has(row.libraryItemId))

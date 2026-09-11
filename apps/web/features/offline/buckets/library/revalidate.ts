@@ -10,6 +10,8 @@ import type {
 } from "@/lib/api-types/library";
 
 import { getPublicApiBaseUrl } from "@/lib/api";
+import { getDb } from "../../db";
+import { membershipGeneration } from "./membership/bucket";
 
 import {
   hydrateBookInfo,
@@ -23,6 +25,8 @@ async function fetchJson<T>(
   path: string,
   getToken: GetToken,
 ): Promise<T | null> {
+  const db = getDb();
+  const generation = membershipGeneration();
   const token = await getToken();
   if (!token) {
     return null;
@@ -34,7 +38,8 @@ async function fetchJson<T>(
     if (!response.ok) {
       return null;
     }
-    return (await response.json()) as T;
+    const payload = (await response.json()) as T;
+    return db === getDb() && generation === membershipGeneration() ? payload : null;
   } catch {
     // Network blip → caller already has whatever Dexie cached. The next
     // online/visibility tick will try again.

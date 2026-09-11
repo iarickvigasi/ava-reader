@@ -94,3 +94,15 @@ export type LibraryCollectionDeletePayload = {
   collectionId: string;
   state: "deleted";
 };
+
+export type LibraryBookCollectionsInput = {
+  libraryItemId: string;
+  addCollectionIds: string[];
+  removeCollectionIds: string[];
+};
+
+export type LibraryBookCollectionsPayload = {
+  libraryItemId: string;
+  collections: LibraryBookInfo["collections"];
+  affectedCollections: LibraryCollection[];
+};

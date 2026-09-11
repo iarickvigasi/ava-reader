@@ -17,7 +17,8 @@ import {
 import { replacePreviewMembershipTx } from "./preview-membership";
 import { writeLibraryBooksCountTx } from "./summary-store";
 
-import { getDb, type LibraryItemRow } from "../../../db";
+import { getDb, type AvaReaderDB, type LibraryItemRow } from "../../../db";
+import { readProtectedCollections } from "../membership/protected-collections";
 
 // Replaces the entire library cache with a fresh server payload. We delete
 // rows that are no longer present so collections / books removed on another
@@ -32,20 +33,23 @@ export async function applyLibraryPayload(payload: LibraryPayload) {
 
   await db.transaction(
     "rw",
-    [db.libraryItems, db.collections, db.collectionMembership, db.meta],
+    [db.libraryItems, db.collections, db.collectionMembership, db.collectionMembershipMutations, db.meta],
     async () => {
       const nextItems = await mergeOntoCachedTx(items);
+      const { ids: protectedIds, rows: protectedRows } = await readProtectedCollections();
 
-      // `collections` is the only table this payload can prove absence for —
-      // it lists every collection. Items and membership are previews (4 books
-      // per collection), so deleting from them here erased the primer's full
-      // per-collection pass; pruning belongs to that pass instead
-      // ([[4-offline/_overview]], Write paths).
+      // Only collection absence is authoritative here: books are previews.
       await db.collections.clear();
-      await db.collections.bulkPut(collections);
+      await db.collections.bulkPut([
+        ...collections.filter((collection) => !protectedIds.has(collection.id)),
+        ...protectedRows,
+      ]);
 
       await db.libraryItems.bulkPut(nextItems);
-      await replacePreviewMembershipTx(payload, memberships);
+      await replacePreviewMembershipTx({
+        ...payload,
+        collections: payload.collections.filter((collection) => !protectedIds.has(collection.id)),
+      }, memberships);
       await writeLibraryBooksCountTx(payload.summary.booksCount);
     },
   );
@@ -54,16 +58,19 @@ export async function applyLibraryPayload(payload: LibraryPayload) {
 // Same as applyLibraryPayload but only touches one collection — used by the
 // /app/library/collections/[slug] route so reading a single collection
 // page doesn't wipe siblings.
-export async function applyCollectionPayload(collection: LibraryCollection) {
-  const db = getDb();
+export async function applyCollectionPayload(collection: LibraryCollection, acknowledged = false, db = getDb()) {
   const nowIso = new Date().toISOString();
   const items = collection.books.map((book) => bookToItemRow(book, nowIso));
 
   await db.transaction(
     "rw",
-    [db.libraryItems, db.collections, db.collectionMembership],
+    [db.libraryItems, db.collections, db.collectionMembership, db.collectionMembershipMutations],
     async () => {
-      await db.libraryItems.bulkPut(await mergeOntoCachedTx(items));
+      if (!acknowledged) {
+        const pending = await db.collectionMembershipMutations.toArray();
+        if (pending.some((row) => row.changes.some((change) => change.collectionId === collection.id))) return;
+      }
+      await db.libraryItems.bulkPut(await mergeOntoCachedTx(items, db));
       await db.collections.put(collectionToRow(collection));
       await db.collectionMembership
         .where("collectionId")
@@ -79,8 +86,9 @@ export async function applyCollectionPayload(collection: LibraryCollection) {
 // re-hydration stomps a book the user marked savedOffline.
 async function mergeOntoCachedTx(
   rows: LibraryItemRow[],
+  db: AvaReaderDB = getDb(),
 ): Promise<LibraryItemRow[]> {
-  const cached = await getDb()
+  const cached = await db
     .libraryItems.where("libraryItemId")
     .anyOf(rows.map((row) => row.libraryItemId))
     .toArray();

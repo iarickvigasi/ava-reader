@@ -5,6 +5,8 @@ import type { HomePayload } from "@/lib/api-types/home";
 
 import { DB_NAME, __resetDbForTests } from "../../db";
 import { applyHome, clearHome, readHome } from "./storage";
+import { hydrateFromPayload } from "../library/bucket";
+import { payload as libraryPayload } from "../library/test-fixture";
 
 // The storage layer treats the payload as opaque (it stores/reads it as-is),
 // so a minimal stand-in is enough to exercise the round-trip. Cast keeps the
@@ -29,6 +31,13 @@ afterEach(async () => {
 });
 
 describe("home bucket storage", () => {
+  it("preserves newer server collections when no membership edits are pending", async () => {
+    await hydrateFromPayload(libraryPayload());
+    const fresh = { ...home, collections: { items: [{ id: "new-server-collection", name: "New" }] } } as unknown as HomePayload;
+    await applyHome(fresh);
+    expect(await readHome()).toEqual(fresh);
+  });
+
   it("returns null before any payload is cached", async () => {
     expect(await readHome()).toBeNull();
   });

@@ -7,10 +7,12 @@ import type { HomePayload } from "@/lib/api-types/home";
 import { getPublicApiBaseUrl } from "@/lib/api";
 
 import { applyHome } from "./storage";
+import { getDb } from "../../db";
 
 type GetToken = () => Promise<string | null>;
 
 export async function revalidateHome(getToken: GetToken): Promise<void> {
+  const db = getDb();
   const token = await getToken();
   if (!token) {
     return;
@@ -23,6 +25,7 @@ export async function revalidateHome(getToken: GetToken): Promise<void> {
       return;
     }
     const payload = (await response.json()) as HomePayload;
+    if (db !== getDb()) return;
     await applyHome(payload);
   } catch {
     // Network blip — the cached payload stays. Next online tick retries.

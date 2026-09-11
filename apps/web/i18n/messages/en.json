@@ -450,13 +450,32 @@
         "lastReadDateOnly": "Last read: {date}",
         "descriptionFallback": "This title is in your library. Detailed editorial notes are not available yet for this edition."
       },
+      "collectionPicker": {
+        "title": "Add to collections",
+        "description": "Choose where to keep this book.",
+        "emptyTitle": "No collections yet",
+        "emptyDescription": "Create a collection in your library, then come back to add this book.",
+        "goToLibrary": "Go to library",
+        "cancel": "Cancel",
+        "close": "Close",
+        "save": "Save changes",
+        "saving": "Saving",
+        "loading": "Loading collections",
+        "loadFailed": "Your collections couldn’t be loaded. Please try again.",
+        "unavailableOffline": "Connect to the internet to load your collections.",
+        "retry": "Try again",
+        "saveFailed": "Your changes couldn’t be saved. Please try again.",
+        "offlineHint": "Changes will sync when you’re back online.",
+        "selectedCount": "{count, plural, =0 {No collections selected} one {# collection selected} other {# collections selected}}",
+        "syncFailed": "Some collection changes couldn’t be synced. Please reopen the picker and try again."
+      },
       "actionCards": {
         "markAsFinished": {
           "title": "Mark as Finished",
           "description": "Set progress to 100%"
         },
         "manageCollections": {
-          "title": "Manage Collections"
+          "title": "Add to collections"
         },
         "deleteBook": {
           "title": "Delete Book",

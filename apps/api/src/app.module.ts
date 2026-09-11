@@ -19,6 +19,7 @@ import { HomeController } from './home/home.controller';
 import { HomeService } from './home/home.service';
 import { LibraryController } from './library/library.controller';
 import { LibraryService } from './library/library.service';
+import { CollectionMembershipController } from './library/membership/collection-membership.controller';
 import { OrphanBlobCleanupService } from './library/orphan-blob-cleanup.service';
 import { PrismaService } from './prisma/prisma.service';
 import { ReaderController } from './reader/reader.controller';
@@ -35,6 +36,7 @@ import { UsersService } from './users/users.service';
     UsersController,
     HomeController,
     LibraryController,
+    CollectionMembershipController,
     ReaderController,
     CatalogController,
     FeedbackController,

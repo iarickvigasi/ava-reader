@@ -5,6 +5,7 @@
 import type { LibraryBookInfo } from "@/lib/api-types/library";
 
 import { getDb } from "../../../db";
+import { overlayBookCollections } from "../membership/selectors";
 
 // Reads back a full LibraryBookInfo from Dexie. Returns null when either the
 // row is missing or details have never been fetched — the page falls back to
@@ -31,7 +32,11 @@ export async function readBookInfoBySlug(
     approximateBodyPageCount: row.details.approximateBodyPageCount ?? null,
     approximatePageCount: row.details.approximatePageCount,
     chapterLabel: row.details.chapterLabel,
-    collections: row.details.collections,
+    collections: overlayBookCollections(
+      row.details.collections,
+      await db.collectionMembershipMutations.get(row.libraryItemId),
+      await db.collections.toArray(),
+    ),
     description: row.details.description,
     genres: row.details.genres,
     language: row.details.language,

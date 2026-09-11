@@ -13,6 +13,7 @@ import { compareCollectionViews } from "./compare-collections";
 import { groupMembershipByCollection } from "./membership-index";
 import { readLibraryBooksCountTx } from "./summary-store";
 import type { CollectionView, LibraryView } from "../types";
+import { overlayCollectionMembership } from "../membership/selectors";
 
 import { getDb } from "../../../db";
 
@@ -23,25 +24,25 @@ export async function readLibraryView(): Promise<LibraryView | null> {
   const db = getDb();
   return db.transaction(
     "r",
-    [db.libraryItems, db.collections, db.collectionMembership, db.meta],
+    [db.libraryItems, db.collections, db.collectionMembership, db.collectionMembershipMutations, db.meta],
     async () => {
       const collections = await db.collections.toArray();
       if (collections.length === 0) {
         return null;
       }
       const items = await db.libraryItems.toArray();
+      const mutations = await db.collectionMembershipMutations.toArray();
       const byCollection = groupMembershipByCollection(
         await db.collectionMembership.toArray(),
       );
 
       const views = collections
-        .map((collection) =>
-          buildCollectionView(
-            collection,
-            items,
-            byCollection.get(collection.id) ?? [],
-          ),
-        )
+        .map((collection) => {
+          const overlaid = overlayCollectionMembership(
+            collection, items, byCollection.get(collection.id) ?? [], mutations,
+          );
+          return buildCollectionView(overlaid.collection, items, overlaid.links);
+        })
         // Dexie returns rows in primary-key order; display order is computed
         // here (docs/specs/3-library/3.1-library-screen.md §3).
         .sort(compareCollectionViews);
@@ -68,7 +69,7 @@ export async function readCollectionViewBySlug(
   const db = getDb();
   return db.transaction(
     "r",
-    [db.libraryItems, db.collections, db.collectionMembership],
+    [db.libraryItems, db.collections, db.collectionMembership, db.collectionMembershipMutations],
     async () => {
       const collection = await db.collections
         .where("slug")
@@ -87,11 +88,10 @@ export async function readCollectionViewBySlug(
         .where("collectionId")
         .equals(collection.id)
         .toArray();
-      const items = await db.libraryItems
-        .where("libraryItemId")
-        .anyOf(links.map((link) => link.libraryItemId))
-        .toArray();
-      return buildMembershipCollectionView(collection, items, links);
+      const items = await db.libraryItems.toArray();
+      const mutations = await db.collectionMembershipMutations.toArray();
+      const overlaid = overlayCollectionMembership(collection, items, links, mutations);
+      return buildMembershipCollectionView(overlaid.collection, items, overlaid.links);
     },
   );
 }

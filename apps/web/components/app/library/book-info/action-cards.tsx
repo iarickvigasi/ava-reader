@@ -7,8 +7,7 @@ import type { LibraryBookInfo } from "@/lib/api-types";
 import { ActionCard } from "./action-card";
 import { CheckBoldIcon } from "./check-bold-icon";
 import { DownloadOfflineCard } from "./download-offline-card";
-import { useBookInfoFormatters } from "./formatters";
-import { LibraryBoldIcon } from "./library-bold-icon";
+import { ManageCollectionsCard } from "./manage-collections-card";
 import { TrashBoldIcon } from "./trash-bold-icon";
 
 type BookActionCardsProps = {
@@ -21,7 +20,6 @@ export function BookActionCards({
   libraryItemId,
 }: BookActionCardsProps) {
   const t = useTranslations("library.bookInfo.actionCards");
-  const fmt = useBookInfoFormatters();
   return (
     <aside className="space-y-4">
       {/* Download for offline — tri-state action card. Title + description
@@ -34,11 +32,7 @@ export function BookActionCards({
         icon={CheckBoldIcon}
         title={t("markAsFinished.title")}
       />
-      <ActionCard
-        description={fmt.formatCollectionLabel(collections.length)}
-        icon={LibraryBoldIcon}
-        title={t("manageCollections.title")}
-      />
+      <ManageCollectionsCard collections={collections} libraryItemId={libraryItemId} />
       <ActionCard
         danger
         description={t("deleteBook.description")}

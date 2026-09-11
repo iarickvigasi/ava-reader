@@ -16,6 +16,7 @@
 //   instead of corrupting data.
 
 import Dexie, { type Table } from "dexie";
+import type { MembershipMutation } from "./buckets/library/membership/types";
 
 import type { HomePayload } from "@/lib/api-types/home";
 import type {
@@ -301,7 +302,7 @@ export type MetaRow = {
 // Bumped only for structural changes WITHIN one user's database. The database
 // NAME is per-user (`ava-reader-<userId>`), so different accounts on one browser
 // profile never share an object store — see adr/5.
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 export const DB_NAME_PREFIX = "ava-reader-";
 // The pre-per-user single database; swept once by purgeOtherUserDbs (adr/5).
 export const LEGACY_DB_NAME = "ava-reader";
@@ -324,6 +325,7 @@ export class AvaReaderDB extends Dexie {
   libraryItems!: Table<LibraryItemRow, string>;
   collections!: Table<CollectionRow, string>;
   collectionMembership!: Table<CollectionMembershipRow, [string, string]>;
+  collectionMembershipMutations!: Table<MembershipMutation, string>;
 
   me!: Table<CurrentUserRow, "me">;
   home!: Table<HomeRow, "me">;
@@ -387,6 +389,9 @@ export class AvaReaderDB extends Dexie {
       preferenceMutations: "mutationId, queuedAt",
 
       meta: "key",
+    });
+    this.version(2).stores({
+      collectionMembershipMutations: "libraryItemId, queuedAt",
     });
   }
 }

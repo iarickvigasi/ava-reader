@@ -21,9 +21,10 @@ import { useEffect, useRef } from "react";
 import { getActiveUserId, setActiveUser } from "../db";
 import { adoptUser, wipeUserData } from "./clear-all-user-data";
 import { decideIdentityAction } from "./identity-action";
+import { flushCollectionMemberships } from "../buckets/library";
 
 export function OfflineIdentityReconciler() {
-  const { isLoaded, userId } = useAuth();
+  const { getToken, isLoaded, userId } = useAuth();
   // Guards against re-entrancy while an async wipe/adopt is in flight.
   const runningRef = useRef(false);
 
@@ -42,6 +43,7 @@ export function OfflineIdentityReconciler() {
       // set so getDb() opens the right DB. Idempotent.
       if (current) {
         setActiveUser(current);
+        void flushCollectionMemberships(getToken);
       }
       return;
     }
@@ -51,10 +53,12 @@ export function OfflineIdentityReconciler() {
       action.kind === "wipe"
         ? wipeUserData(action.userId)
         : adoptUser(action.userId);
-    void run.finally(() => {
+    void run.then(() => {
+      if (current) void flushCollectionMemberships(getToken);
+    }).finally(() => {
       runningRef.current = false;
     });
-  }, [isLoaded, userId]);
+  }, [getToken, isLoaded, userId]);
 
   return null;
 }

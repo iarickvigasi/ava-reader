@@ -13,8 +13,9 @@ export async function applyBookInfoPayload(
 ): Promise<void> {
   const db = getDb();
   const nowIso = new Date().toISOString();
-  await db.transaction("rw", db.libraryItems, async () => {
+  await db.transaction("rw", [db.libraryItems, db.collectionMembershipMutations], async () => {
     const prior = await db.libraryItems.get(book.libraryItemId);
+    const pending = await db.collectionMembershipMutations.get(book.libraryItemId);
     const next: LibraryItemRow = {
       libraryItemId: book.libraryItemId,
       slug: book.slug,
@@ -52,7 +53,7 @@ export async function applyBookInfoPayload(
         approximateBodyPageCount: book.approximateBodyPageCount ?? null,
         approximatePageCount: book.approximatePageCount,
         chapterLabel: book.chapterLabel,
-        collections: book.collections,
+        collections: pending && prior?.details ? prior.details.collections : book.collections,
         description: book.description,
         genres: book.genres,
         language: book.language,

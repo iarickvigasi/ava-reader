@@ -37,11 +37,13 @@ Monorepo: pnpm workspaces + Turbo (lint/typecheck/test/build), Node ≥22.
 - **db.ts** — one Dexie instance **per user** (`ava-reader-<userId>`; adr/5), versioned schema.
   Tables: libraryItems, collections, collectionMembership, books, bookChapters, highlights,
   aiComments, sessions, progress, statsSnapshot, preferences, me, home, meta + per-domain mutation
-  queues (highlightMutations, aiCommentMutations, sessionMutations, preferenceMutations). Bump
+  queues (highlightMutations, aiCommentMutations, sessionMutations, preferenceMutations,
+  collectionMembershipMutations). Bump
   `.version(n)` for any structural change.
 - **buckets/** — one folder per domain (fixed file set: types, storage, bucket, selectors,
   mutations, sync, id, index — see conventions.md). Writeable: highlights, ai-comments, progress,
-  sessions. Cached read payloads: book, library, home, me. shared/bucket-core.ts holds listeners,
+  sessions, library custom memberships. Cached read payloads: book, library, home, me.
+  shared/bucket-core.ts holds listeners,
   persist, and retry backoff (1s→30s, capped, reset on success).
 - **bucket sync** — each writeable bucket's `sync.ts` drains its own queue, triggered on `online`
   (its own listener) and via the page hydrators; one in-flight flush per bucket, FIFO queue,
