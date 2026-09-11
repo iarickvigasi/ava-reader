@@ -5,10 +5,12 @@ export function ModalShell({
   children,
   onClose,
   labelledBy,
+  maxWidth = "2xl",
 }: {
   children: ReactNode;
   onClose: () => void;
   labelledBy?: string;
+  maxWidth?: "md" | "2xl";
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const t = useTranslations("library.collectionActions.editModal");
@@ -26,7 +28,7 @@ export function ModalShell({
       ref={ref}
       aria-label={labelledBy ? undefined : t("eyebrow")}
       aria-labelledby={labelledBy}
-      className="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-2xl overflow-y-auto bg-transparent p-0 text-ink outline-none backdrop:bg-ink/40 backdrop:backdrop-blur-sm"
+      className={`fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] ${maxWidth === "md" ? "max-w-md" : "max-w-2xl"} overflow-y-auto bg-transparent p-0 text-ink outline-none backdrop:bg-ink/40 backdrop:backdrop-blur-sm`}
       onCancel={(event) => {
         event.preventDefault();
         onClose();

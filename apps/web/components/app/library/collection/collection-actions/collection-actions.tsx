@@ -244,7 +244,10 @@ export function LibraryCollectionActions({
       />
 
       {modalMode ? (
-        <ModalShell onClose={closeModal}>
+        <ModalShell
+          onClose={closeModal}
+          maxWidth={modalMode === "delete" ? "md" : "2xl"}
+        >
           {modalMode === "edit" ? (
             <EditCollectionModal
               collectionDescription={draftDescription}
