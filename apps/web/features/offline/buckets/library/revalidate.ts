@@ -24,6 +24,7 @@ type GetToken = () => Promise<string | null>;
 async function fetchJson<T>(
   path: string,
   getToken: GetToken,
+  onNotFound?: () => void,
 ): Promise<T | null> {
   const db = getDb();
   const generation = membershipGeneration();
@@ -36,6 +37,15 @@ async function fetchJson<T>(
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!response.ok) {
+      // A cache miss alone cannot distinguish an unknown URL from offline.
+      // Only a current, explicit API 404 confirms that the resource is absent.
+      if (
+        response.status === 404 &&
+        db === getDb() &&
+        generation === membershipGeneration()
+      ) {
+        onNotFound?.();
+      }
       return null;
     }
     const payload = (await response.json()) as T;
@@ -58,10 +68,12 @@ export async function revalidateLibrary(getToken: GetToken): Promise<void> {
 export async function revalidateCollection(
   slug: string,
   getToken: GetToken,
+  onNotFound?: () => void,
 ): Promise<void> {
   const payload = await fetchJson<LibraryCollectionPayload>(
     `/api/library/collections/${encodeURIComponent(slug)}`,
     getToken,
+    onNotFound,
   );
   if (!payload) {
     return;
@@ -72,10 +84,12 @@ export async function revalidateCollection(
 export async function revalidateBookInfo(
   slug: string,
   getToken: GetToken,
+  onNotFound?: () => void,
 ): Promise<void> {
   const payload = await fetchJson<LibraryBookInfoPayload>(
     `/api/library/${encodeURIComponent(slug)}`,
     getToken,
+    onNotFound,
   );
   if (!payload) {
     return;

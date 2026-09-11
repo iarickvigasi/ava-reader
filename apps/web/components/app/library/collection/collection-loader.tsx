@@ -9,6 +9,7 @@ import { useAuth } from "@clerk/nextjs";
 import { useEffect, useRef, useState } from "react";
 
 import { OfflineRouteFallback } from "@/components/app/core/offline-route-fallback";
+import { UnavailablePage } from "@/components/app/core/unavailable-page";
 import { LibraryCollectionPlaceholderPage } from "@/components/app/library/collection/collection-placeholder-page";
 import { LibraryCollectionScreen } from "@/components/app/library/collection/collection-screen";
 import {
@@ -28,7 +29,8 @@ const COLLECTION_PATH_PREFIX = "/app/library/collections/";
 type LoaderState =
   | { status: "loading" }
   | { status: "ready"; collection: LibraryCollection }
-  | { status: "unavailable" };
+  | { status: "unavailable" }
+  | { status: "notFound" };
 
 export function CollectionLoader() {
   const { getToken } = useAuth();
@@ -40,10 +42,11 @@ export function CollectionLoader() {
   useEffect(() => {
     const slug = slugFromPath(window.location.pathname, COLLECTION_PATH_PREFIX);
     if (!slug) {
-      setState({ status: "unavailable" });
+      setState({ status: "notFound" });
       return;
     }
     let cancelled = false;
+    let missing = false;
     setState({ status: "loading" });
     void readWithRevalidate({
       isOnline,
@@ -51,7 +54,9 @@ export function CollectionLoader() {
         const view = await readCollectionViewBySlug(slug);
         return view ? collectionViewToLibraryCollection(view) : null;
       },
-      revalidate: () => revalidateCollection(slug, getToken),
+      revalidate: () => revalidateCollection(slug, getToken, () => {
+        missing = true;
+      }),
     }).then((collection) => {
       if (cancelled) {
         return;
@@ -59,8 +64,10 @@ export function CollectionLoader() {
       setState(
         collection
           ? { status: "ready", collection }
-          : { status: "unavailable" },
+          : { status: missing ? "notFound" : "unavailable" },
       );
+    }).catch(() => {
+      if (!cancelled) setState({ status: "unavailable" });
     });
     return () => {
       cancelled = true;
@@ -83,6 +90,9 @@ export function CollectionLoader() {
 
   if (state.status === "loading") {
     return <LibraryCollectionPlaceholderPage />;
+  }
+  if (state.status === "notFound") {
+    return <UnavailablePage kind="notFound" />;
   }
   if (state.status === "unavailable") {
     return <OfflineRouteFallback routeKey="generic" />;

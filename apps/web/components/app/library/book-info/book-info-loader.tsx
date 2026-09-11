@@ -10,6 +10,7 @@ import { useEffect, useRef, useState } from "react";
 
 import LibraryBookInfoLoading from "@/app/app/library/books/[slug]/loading";
 import { OfflineRouteFallback } from "@/components/app/core/offline-route-fallback";
+import { UnavailablePage } from "@/components/app/core/unavailable-page";
 import { LibraryBookInfoScreen } from "@/components/app/library/book-info/book-info-screen";
 import {
   BookInfoHydrator,
@@ -27,7 +28,8 @@ const BOOK_INFO_PATH_PREFIX = "/app/library/books/";
 type LoaderState =
   | { status: "loading" }
   | { status: "ready"; book: LibraryBookInfo; backHref: string }
-  | { status: "unavailable" };
+  | { status: "unavailable" }
+  | { status: "notFound" };
 
 export function BookInfoLoader() {
   const { getToken } = useAuth();
@@ -39,7 +41,7 @@ export function BookInfoLoader() {
   useEffect(() => {
     const slug = slugFromPath(window.location.pathname, BOOK_INFO_PATH_PREFIX);
     if (!slug) {
-      setState({ status: "unavailable" });
+      setState({ status: "notFound" });
       return;
     }
     const fromCollection = new URLSearchParams(window.location.search).get(
@@ -49,18 +51,25 @@ export function BookInfoLoader() {
       ? getCollectionHref(fromCollection)
       : APP_LIBRARY_HREF;
     let cancelled = false;
+    let missing = false;
     setState({ status: "loading" });
     void readWithRevalidate({
       isOnline,
       read: () => readBookInfoBySlug(slug),
-      revalidate: () => revalidateBookInfo(slug, getToken),
+      revalidate: () => revalidateBookInfo(slug, getToken, () => {
+        missing = true;
+      }),
     }).then((book) => {
       if (cancelled) {
         return;
       }
       setState(
-        book ? { status: "ready", book, backHref } : { status: "unavailable" },
+        book
+          ? { status: "ready", book, backHref }
+          : { status: missing ? "notFound" : "unavailable" },
       );
+    }).catch(() => {
+      if (!cancelled) setState({ status: "unavailable" });
     });
     return () => {
       cancelled = true;
@@ -83,6 +92,9 @@ export function BookInfoLoader() {
 
   if (state.status === "loading") {
     return <LibraryBookInfoLoading />;
+  }
+  if (state.status === "notFound") {
+    return <UnavailablePage kind="notFound" />;
   }
   if (state.status === "unavailable") {
     return <OfflineRouteFallback routeKey="generic" />;
