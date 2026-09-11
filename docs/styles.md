@@ -68,7 +68,9 @@ instant completions never flash. Pending strings carry no literal "…" — the 
 + visible `focus-visible:ring-2 focus-visible:ring-line-strong`.
 
 ## Modals & overlays
-Scrim `fixed inset-0 z-50 flex … bg-ink/40 backdrop-blur-sm`, click-to-close.
+Backdrop `fixed inset-0 z-50 flex … bg-transparent backdrop-blur-sm`, click-to-close.
+Keep backdrops transparent in both themes; native dialogs use
+`backdrop:bg-transparent backdrop:backdrop-blur-sm` to override the browser tint.
 Panel `rounded-modal bg-paper`/`bg-surface` + `shadow-(--shadow-card)`,
 `role="dialog" aria-modal`, Escape closes, title `font-reader`. Action row uses
 `<Button size="sm">` (`rounded-control`, no border).
