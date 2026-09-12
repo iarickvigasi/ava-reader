@@ -1,7 +1,8 @@
-import { HANDLE_GRAB_RADIUS_PX } from "../capture/timing";
 import { extendSelectionRange } from "./extend-selection-range";
-import { isWithin, readRangeEndpoints } from "./range-endpoints";
+import { readRangeEndpoints } from "./range-endpoints";
+import { selectionHandleAt } from "./selection-handle-at";
 import { wordRangeAt } from "./word-range-at";
+import { wordRangeFromCaret } from "./word-range-from-caret";
 
 export type SelectionGestureParams = {
   doc: Document;
@@ -13,9 +14,7 @@ export type SelectionGestureParams = {
 
 export type SelectionGesture = ReturnType<typeof createSelectionGesture>;
 
-// What the iOS gesture *means*, with no event handling in it (spec 2.6
-// Behaviour 8): the current range, the anchor a drag grows from, and the four
-// moves the finger can make on them.
+// Owns the live iOS range and the complete unit a drag grows from (spec 2.6).
 export function createSelectionGesture({
   doc,
   getContainer,
@@ -30,23 +29,26 @@ export function createSelectionGesture({
     onPaint(next);
   };
 
-  // A touch on either handle re-grabs that end, anchoring the drag to the other.
   const grabHandle = (x: number, y: number): boolean => {
+    const container = getContainer();
     const endpoints = range && readRangeEndpoints(range);
 
-    if (!range || !endpoints) {
+    if (!range || !endpoints || !container) {
       return false;
     }
 
-    const isEnd = isWithin(endpoints.end, x, y, HANDLE_GRAB_RADIUS_PX);
-    const isStart = isWithin(endpoints.start, x, y, HANDLE_GRAB_RADIUS_PX);
-
-    if (!isEnd && !isStart) {
+    const handle = selectionHandleAt(endpoints, x, y);
+    if (!handle) {
       return false;
     }
 
-    anchor = range.cloneRange();
-    anchor.collapse(isEnd);
+    const isEnd = handle === "end";
+    const caret = range.cloneRange();
+    caret.collapse(isEnd);
+    const affinity = isEnd ? "forward" : "backward";
+    const unit = wordRangeFromCaret(doc, container, caret, affinity);
+    if (!unit) return false;
+    anchor = unit;
     isDragging = true;
 
     return true;
