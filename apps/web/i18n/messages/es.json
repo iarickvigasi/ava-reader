@@ -484,6 +484,11 @@
       },
       "annotations": {
         "actionsLabel": "Más opciones para «{text}»",
+        "listActionsLabel": "Más opciones para {title}",
+        "copyAll": "Copiar todo",
+        "highlightsCopied": "Resaltados copiados",
+        "commentsCopied": "Comentarios de IA copiados",
+        "copyFailed": "No se pudo copiar. Inténtalo de nuevo.",
         "delete": "Eliminar",
         "loading": "Cargando pasajes guardados…",
         "loadFailed": "No se pudieron cargar los pasajes guardados. Inténtalo de nuevo.",

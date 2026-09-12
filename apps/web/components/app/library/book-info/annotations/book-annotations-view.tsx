@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl";
 import type { HighlightRecord } from "@/features/offline/buckets/highlights";
 import type { AiCommentRecord } from "@/features/offline/buckets/ai-comments";
 import type { AnnotationLoadStatus } from "@/features/annotations/annotation-sources";
+import { useCopyBookAnnotations } from "@/features/library/use-copy-book-annotations";
 import { AnnotationColumn } from "./annotation-column";
 import { AnnotationRow } from "./annotation-row";
 import { CommentBody } from "./comment-body";
@@ -25,9 +26,10 @@ export function BookAnnotationsView({
 }: BookAnnotationsViewProps) {
   const highlightsText = useTranslations("reader.highlights");
   const commentsText = useTranslations("reader.aiComments");
+  const { copyHighlights, copyComments } = useCopyBookAnnotations({ highlights, comments, chapterLabels });
   return (
     <div className="grid items-start gap-10 border-t border-line/30 pt-10 lg:grid-cols-2 lg:gap-12 lg:pt-14">
-      <AnnotationColumn title={highlightsText("title")} count={highlights.length}>
+      <AnnotationColumn title={highlightsText("title")} count={highlights.length} onCopy={copyHighlights}>
         {highlights.length ? (
           <ul className="divide-y divide-line/30">
             {highlights.map((highlight) => (
@@ -41,7 +43,7 @@ export function BookAnnotationsView({
           </ul>
         ) : <AnnotationListState status={highlightsStatus} emptyLabel={highlightsText("empty")} onRetry={retryHighlights} />}
       </AnnotationColumn>
-      <AnnotationColumn title={commentsText("title")} count={comments.length}>
+      <AnnotationColumn title={commentsText("title")} count={comments.length} onCopy={copyComments}>
         {comments.length ? (
           <ul className="divide-y divide-line/30">
             {comments.map((comment) => (

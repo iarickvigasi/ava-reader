@@ -22,7 +22,7 @@ export function RowActionsMenuTrigger({
   controlsId,
 }: {
   ariaLabel: string;
-  group: RowGroup;
+  group?: RowGroup;
   isOpen: boolean;
   onToggle: () => void;
   sizeClass?: string;
@@ -41,11 +41,12 @@ export function RowActionsMenuTrigger({
         "inline-flex shrink-0 items-center justify-center rounded-full text-ink/55 transition",
         sizeClass,
         "hover:bg-soft-tone-fill hover:text-ink",
-        "opacity-0 focus:opacity-100",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-line-strong",
+        group ? "opacity-0 focus:opacity-100" : "opacity-100",
         // Touch has no hover: coarse pointers always show the trigger, at
         // touch-target size (pointer-coarse:size-8 overrides sizeClass).
         "pointer-coarse:opacity-100 pointer-coarse:size-8",
-        REVEAL_BY_GROUP[group],
+        group && REVEAL_BY_GROUP[group],
         isOpen && "opacity-100 text-ink",
       )}
       onClick={(event) => {

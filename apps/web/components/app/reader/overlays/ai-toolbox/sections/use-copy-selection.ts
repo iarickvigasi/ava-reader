@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { emitAppToast } from "@/components/app/core/app-toast";
 import { useReaderSelectionContext } from "../../../selection/reader-selection-context";
-import { copyTextToClipboard } from "./copy-text-to-clipboard";
+import { copyTextToClipboard } from "@/lib/copy-text-to-clipboard";
 
 // How long the button shows the "copied" check before reverting.
 const COPIED_RESET_MS = 2000;

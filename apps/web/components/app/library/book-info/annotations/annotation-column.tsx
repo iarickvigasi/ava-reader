@@ -1,21 +1,26 @@
 import type { ReactNode } from "react";
 import { useId } from "react";
+import { AnnotationListActions } from "./annotation-list-actions";
 
 type AnnotationColumnProps = {
   title: string;
   count: number;
   children: ReactNode;
+  onCopy: () => Promise<void>;
 };
 
-export function AnnotationColumn({ title, count, children }: AnnotationColumnProps) {
+export function AnnotationColumn({ title, count, children, onCopy }: AnnotationColumnProps) {
   const headingId = useId();
   return (
     <section aria-labelledby={headingId} className="min-w-0 space-y-6">
-      <div className="flex items-baseline gap-3">
-        <h2 id={headingId} className="font-display text-4xl leading-none text-title md:text-5xl">
-          {title}
-        </h2>
-        <span className="font-ui text-sm tabular-nums text-muted">{count}</span>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex min-w-0 items-baseline gap-3">
+          <h2 id={headingId} className="min-w-0 break-words font-display text-4xl leading-none text-title md:text-5xl">
+            {title}
+          </h2>
+          <span className="shrink-0 font-ui text-sm tabular-nums text-muted">{count}</span>
+        </div>
+        <AnnotationListActions title={title} disabled={count === 0} onCopy={onCopy} />
       </div>
       <div
         role="region"

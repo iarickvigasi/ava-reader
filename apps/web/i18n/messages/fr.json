@@ -484,6 +484,11 @@
       },
       "annotations": {
         "actionsLabel": "Plus d’options pour « {text} »",
+        "listActionsLabel": "Plus d’options pour {title}",
+        "copyAll": "Tout copier",
+        "highlightsCopied": "Surlignages copiés",
+        "commentsCopied": "Commentaires IA copiés",
+        "copyFailed": "Impossible de copier. Veuillez réessayer.",
         "delete": "Supprimer",
         "loading": "Chargement des passages enregistrés…",
         "loadFailed": "Impossible de charger les passages enregistrés. Réessayez.",

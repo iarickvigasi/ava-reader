@@ -22,6 +22,16 @@ const render = (props: Partial<Parameters<typeof BookAnnotationsView>[0]> = {}) 
   renderToStaticMarkup(withIntl(<BookAnnotationsView {...defaults} {...props} />));
 
 describe("book-info annotations", () => {
+  it("provides a separate list menu for each section even when lists are empty", () => {
+    for (const props of [{}, { highlights: [], comments: [] }]) {
+      const markup = render(props);
+      expect(markup).toContain('aria-label="More options for Highlights"');
+      expect(markup).toContain('aria-label="More options for AI Comments"');
+      expect(markup.match(/aria-label="More options for (?:Highlights|AI Comments)"/g))
+        .toHaveLength(2);
+    }
+  });
+
   it("renders every passage and expanded response without color or expansion controls", () => {
     const markup = render({
       highlights: Array.from({ length: 14 }, (_, i) => ({ ...highlight, id: `h${i}`, excerpt: `Passage ${i}` })),

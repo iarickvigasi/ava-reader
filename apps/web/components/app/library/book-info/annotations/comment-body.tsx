@@ -1,12 +1,10 @@
-import { useTranslations } from "next-intl";
 import type { AiCommentRecord } from "@/features/offline/buckets/ai-comments";
+import { getCommentDisplayStatus } from "@/features/library/get-comment-display-status";
+import { useCommentStatusLabels } from "@/features/library/use-comment-status-labels";
 
 export function CommentBody({ comment }: { comment: AiCommentRecord }) {
-  const t = useTranslations("reader.aiTools");
-  const comments = useTranslations("reader.aiComments");
-  const status = comment.status === "queued" ? t("queued")
-    : comment.status === "streaming" ? t("generating")
-    : comment.status === "failed" ? comment.error || t("errors.generic") : null;
+  const labels = useCommentStatusLabels();
+  const status = getCommentDisplayStatus(comment, labels);
   return (
     <div className="space-y-2">
       {comment.body ? (
@@ -14,9 +12,9 @@ export function CommentBody({ comment }: { comment: AiCommentRecord }) {
           {comment.body}
         </p>
       ) : null}
-      {status || !comment.body ? (
+      {status ? (
         <p role="status" className="font-ui text-sm text-muted">
-          {status || comments("emptyBody")}
+          {status}
         </p>
       ) : null}
     </div>

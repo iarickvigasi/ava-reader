@@ -484,6 +484,11 @@
       },
       "annotations": {
         "actionsLabel": "More options for “{text}”",
+        "listActionsLabel": "More options for {title}",
+        "copyAll": "Copy all",
+        "highlightsCopied": "Highlights copied",
+        "commentsCopied": "AI comments copied",
+        "copyFailed": "Couldn’t copy. Please try again.",
         "delete": "Delete",
         "loading": "Loading saved passages…",
         "loadFailed": "Couldn’t load saved passages. Please try again.",

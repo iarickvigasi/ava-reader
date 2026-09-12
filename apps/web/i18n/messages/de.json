@@ -484,6 +484,11 @@
       },
       "annotations": {
         "actionsLabel": "Weitere Optionen für „{text}“",
+        "listActionsLabel": "Weitere Optionen für {title}",
+        "copyAll": "Alles kopieren",
+        "highlightsCopied": "Markierungen kopiert",
+        "commentsCopied": "KI-Kommentare kopiert",
+        "copyFailed": "Kopieren fehlgeschlagen. Bitte versuche es erneut.",
         "delete": "Löschen",
         "loading": "Gespeicherte Textstellen werden geladen…",
         "loadFailed": "Gespeicherte Textstellen konnten nicht geladen werden. Bitte versuche es erneut.",
