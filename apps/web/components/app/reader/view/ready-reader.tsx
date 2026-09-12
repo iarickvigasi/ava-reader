@@ -157,14 +157,14 @@ export function ReadyReader({
     disabled: shouldMaskArticle,
   });
 
-  // On iOS the platform refuses to paint a selection on most pages, so the
-  // app owns the gesture and the paint there instead (spec 2.6 Behaviour 8).
+  // iOS uses app-owned selection gestures and paint (spec 2.6 Behaviour 8).
   const { isActive: isIosSelection, rects: iosSelectionRects } =
     useIosSelection({
+      bookLanguage: payload.book.language,
       containerRef: pageBoxRef,
       onSelectText: onTextSelected,
       disabled: shouldMaskArticle,
-      pageKey: `${activeChapter.chapterId}:${currentPageIndex}`,
+      pageKey: `${libraryItemId}:${activeChapter.chapterId}:${currentPageIndex}`,
     });
 
   useEffect(() => {

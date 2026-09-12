@@ -11,8 +11,10 @@ import {
 import type { ReaderSelection } from "../types";
 import { createIosSelectionCapture } from "./create-ios-selection-capture";
 import { isIosTouch } from "./is-ios-touch";
+import { selectionModeForLanguage } from "./selection-mode-for-language";
 
 type UseIosSelectionParams = {
+  bookLanguage: string | null;
   containerRef: RefObject<HTMLElement | null>;
   onSelectText: (selection: ReaderSelection) => void;
   disabled: boolean;
@@ -27,6 +29,7 @@ const subscribeToNothing = () => () => {};
 // The iOS half of selection (spec 2.6 Behaviour 8). Returns the line rects to
 // paint; an empty list on every other platform, where the OS still draws it.
 export function useIosSelection({
+  bookLanguage,
   containerRef,
   onSelectText,
   disabled,
@@ -39,6 +42,9 @@ export function useIosSelection({
     () => isIosTouch(window),
     () => false,
   );
+  // ReadyReader is keyed by book identity. Freeze language for this opening,
+  // so refreshed cache metadata cannot change mode during a gesture/page turn.
+  const [mode] = useState(() => selectionModeForLanguage(bookLanguage));
 
   const [painted, setPainted] = useState<{ key: string; rects: DOMRect[] }>({
     key: pageKey,
@@ -67,13 +73,14 @@ export function useIosSelection({
     const capture = createIosSelectionCapture({
       win: window,
       doc: document,
+      mode,
       getContainer: () => containerRef.current,
       onPaint: paint,
       onCapture: (selection) => onSelectRef.current(selection),
     });
 
     return () => capture.destroy();
-  }, [containerRef, disabled, isActive, paint]);
+  }, [containerRef, disabled, isActive, mode, paint, pageKey]);
 
   return {
     isActive,

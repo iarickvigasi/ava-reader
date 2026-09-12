@@ -10,6 +10,7 @@ export function toBookPayload(
 ): ReaderBookPayload {
   return {
     authors: libraryItem.book.authors,
+    language: libraryItem.book.language,
     libraryItemId: libraryItem.id,
     primaryFormat,
     slug: libraryItem.slug,

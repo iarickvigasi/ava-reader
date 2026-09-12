@@ -71,6 +71,7 @@ describe("book bucket storage", () => {
         slug: "book-a",
         title: "Book A",
         authors: ["A"],
+        language: null,
         primaryFormat: "EPUB",
       },
     });
@@ -97,6 +98,7 @@ describe("book bucket storage", () => {
         slug: "book-outside-preview",
         title: "Book Outside Preview",
         authors: [],
+        language: null,
         primaryFormat: "EPUB",
       },
     });
@@ -151,6 +153,7 @@ describe("book bucket storage", () => {
         slug: "book-a",
         title: "Book A",
         authors: [],
+        language: null,
         primaryFormat: "EPUB",
       },
     });
@@ -235,6 +238,7 @@ describe("book bucket storage", () => {
         slug: "book-a",
         title: "Book A",
         authors: [],
+        language: null,
         primaryFormat: "EPUB",
       },
     });
@@ -270,6 +274,7 @@ describe("book bucket storage", () => {
         slug: "book-a",
         title: "Book A",
         authors: ["A"],
+        language: null,
         primaryFormat: "EPUB",
       },
     });

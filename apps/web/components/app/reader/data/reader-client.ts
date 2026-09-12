@@ -1,10 +1,10 @@
 import type {
   ReaderLocator,
   ReaderProgressPayload,
-  ReaderStatusPayload,
 } from "@/lib/api-types";
 import { loadReaderPayloadFromCache } from "@/features/offline/buckets/book";
 import { type ReaderAuthInput, resolveReaderAuthToken } from "./reader-auth";
+import { fetchReaderPayloadFromNetwork } from "./reader-payload-network";
 import {
   HTTP_METHOD_PATCH,
   HTTP_METHOD_POST,
@@ -23,14 +23,8 @@ export {
 export { getOrCreateReaderClientInstanceId } from "./reader-client-instance-id";
 export type { ReaderAuthInput } from "./reader-auth";
 
-// Loads the reader payload (text + status) for a library item, optionally
-// scoped to a specific chapter. Supports cancellation via AbortSignal.
-//
-// Cache-first: when the book has been saved offline (full Dexie cache),
-// we serve from there even online. Book content is immutable once parsed
-// on the server, so a cached copy is always fresh;
-// this also makes the reader fully functional
-// offline as long as the book has been saved.
+// Cache-first chapter loading, online or offline. Parsed content is immutable;
+// the book bucket fills missing metadata separately for older downloads.
 export async function fetchReaderPayload(
   input: ReaderAuthInput & {
     chapterId?: string;
@@ -46,23 +40,7 @@ export async function fetchReaderPayload(
     return cached;
   }
 
-  const token = await resolveReaderAuthToken(input);
-
-  const url = buildReaderUrl(input.libraryItemId);
-  if (input.chapterId) {
-    url.searchParams.set("chapter", input.chapterId);
-  }
-
-  const response = await fetch(url.toString(), {
-    headers: withAuthHeader(token),
-    signal: input.signal,
-  });
-
-  if (!response.ok) {
-    throw new Error("The reader payload could not be loaded.");
-  }
-
-  return (await response.json()) as ReaderStatusPayload;
+  return fetchReaderPayloadFromNetwork(input);
 }
 
 // Records that the user opened the book — drives "last opened" timestamps

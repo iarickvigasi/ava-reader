@@ -45,3 +45,5 @@ export { useCoverBlobUrl } from "./use-cover-blob-url";
 export { persistCoverFromNetwork } from "./persist-cover-blob";
 
 export { loadReaderPayloadFromCache } from "./reader-cache";
+export { refreshReaderLanguage } from "./refresh-reader-language";
+export { useRefreshReaderLanguage } from "./use-refresh-reader-language";

@@ -11,17 +11,16 @@ export type IosSelectionCaptureParams = SelectionGestureParams & {
   onCapture: (selection: ReaderSelection) => void;
 };
 
-// Binds the iOS selection gesture to touch events (spec 2.6 Behaviour 8).
-// Release reports the range through the same onCapture the native path uses,
-// leaving the panel and locator pipeline unchanged.
+// Bind the iOS gesture to touch events, sharing native capture's output (spec 2.6).
 export function createIosSelectionCapture({
   win,
   doc,
+  mode,
   getContainer,
   onPaint,
   onCapture,
 }: IosSelectionCaptureParams): SelectionCapture {
-  const gesture = createSelectionGesture({ doc, getContainer, onPaint });
+  const gesture = createSelectionGesture({ doc, mode, getContainer, onPaint });
   const press = createPressTimer(win, () => {
     const { x, y } = press.origin();
     gesture.selectWordAt(x, y);
@@ -92,6 +91,7 @@ export function createIosSelectionCapture({
   return {
     destroy: () => {
       press.cancel();
+      gesture.clear();
       doc.removeEventListener("touchstart", handleTouchStart, true);
       doc.removeEventListener("touchmove", handleTouchMove, true);
       doc.removeEventListener("touchend", handleTouchEnd, true);

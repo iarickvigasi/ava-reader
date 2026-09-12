@@ -3,20 +3,21 @@ import { readRangeEndpoints } from "./range-endpoints";
 import { selectionHandleAt } from "./selection-handle-at";
 import { wordRangeAt } from "./word-range-at";
 import { wordRangeFromCaret } from "./word-range-from-caret";
+import type { SelectionMode } from "./selection-mode-for-language";
 
 export type SelectionGestureParams = {
   doc: Document;
+  mode: SelectionMode;
   getContainer: () => HTMLElement | null;
-  // Fires on every change of the live range so the overlay repaints it; null
-  // means "nothing selected".
+  // Paint every change of the live range; null means nothing selected.
   onPaint: (range: Range | null) => void;
 };
 
 export type SelectionGesture = ReturnType<typeof createSelectionGesture>;
 
-// Owns the live iOS range and the complete unit a drag grows from (spec 2.6).
 export function createSelectionGesture({
   doc,
+  mode,
   getContainer,
   onPaint,
 }: SelectionGestureParams) {
@@ -46,7 +47,7 @@ export function createSelectionGesture({
     const caret = range.cloneRange();
     caret.collapse(isEnd);
     const affinity = isEnd ? "forward" : "backward";
-    const unit = wordRangeFromCaret(doc, container, caret, affinity);
+    const unit = wordRangeFromCaret(doc, container, caret, mode, affinity);
     if (!unit) return false;
     anchor = unit;
     isDragging = true;
@@ -56,7 +57,7 @@ export function createSelectionGesture({
 
   const selectWordAt = (x: number, y: number) => {
     const container = getContainer();
-    const word = container && wordRangeAt(doc, container, x, y);
+    const word = container && wordRangeAt(doc, container, x, y, mode);
 
     if (!word) {
       return;
@@ -70,7 +71,7 @@ export function createSelectionGesture({
   const dragTo = (x: number, y: number) => {
     const container = getContainer();
     const next =
-      container && anchor && extendSelectionRange(anchor, doc, container, x, y);
+      container && anchor && extendSelectionRange(anchor, doc, container, x, y, mode);
 
     if (next) {
       setRange(next);

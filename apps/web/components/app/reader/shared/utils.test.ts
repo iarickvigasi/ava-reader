@@ -78,6 +78,7 @@ describe("reader screen utils", () => {
       activeChapterId: "chapter-1",
       book: {
         authors: [],
+        language: null,
         libraryItemId: "library-1",
         primaryFormat: "EPUB",
         title: "Malformed",

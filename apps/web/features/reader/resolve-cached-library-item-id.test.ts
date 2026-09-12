@@ -20,6 +20,7 @@ async function seedCachedBook(libraryItemId: string, slug: string) {
       slug,
       title: "Title",
       authors: [],
+      language: null,
       primaryFormat: "EPUB",
     },
   });

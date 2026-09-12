@@ -1,5 +1,6 @@
 import { selectionUnitAt } from "./selection-unit-at";
 import { textContextFromCaret } from "./text-context-from-caret";
+import type { SelectionMode } from "./selection-mode-for-language";
 
 // Affinity is exact: an endpoint at a word's end looks backwards to anchor that
 // word, while its start looks forwards. Delimiters never jump to a nearby word.
@@ -7,6 +8,7 @@ export function wordRangeFromCaret(
   doc: Document,
   container: HTMLElement,
   caret: Range,
+  mode: SelectionMode,
   affinity: "forward" | "backward" = "forward",
 ): Range | null {
   if (
@@ -16,7 +18,7 @@ export function wordRangeFromCaret(
 
   const context = textContextFromCaret(container, caret);
   if (!context) return null;
-  const unit = selectionUnitAt(context.text, context.offset, affinity);
+  const unit = selectionUnitAt(context.text, context.offset, mode, affinity);
   if (!unit) return null;
   const start = context.runs.find(
     (run) => run.start <= unit.start && unit.start < run.end,

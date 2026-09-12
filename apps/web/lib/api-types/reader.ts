@@ -1,4 +1,6 @@
-import type { BookFileFormat } from "./shared";
+import type { ReaderBookPayload } from "./reader-book";
+
+export type { ReaderBookPayload } from "./reader-book";
 
 export type ReaderInline =
   | {
@@ -130,14 +132,6 @@ export type ReaderSessionPayload = {
   lastTrackedAt: string | null;
   sessionId: string;
   startedAt: string;
-};
-
-export type ReaderBookPayload = {
-  authors: string[];
-  libraryItemId: string;
-  primaryFormat: BookFileFormat;
-  slug: string;
-  title: string;
 };
 
 export type ReaderStatusPayload =

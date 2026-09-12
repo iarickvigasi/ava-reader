@@ -4,7 +4,6 @@
 // `chapters[]` is the requested chapter plus its immediate neighbours.
 
 import type {
-  ReaderBookPayload,
   ReaderChapterPayload,
   ReaderStatusPayload,
   ReaderTocNode,
@@ -12,6 +11,7 @@ import type {
 
 import { getDb } from "../../db";
 import { readProgress } from "../progress/storage";
+import { readReaderMetadata } from "./reader-metadata";
 
 export async function loadReaderPayloadFromCache(
   libraryItemId: string,
@@ -71,11 +71,9 @@ export async function loadReaderPayloadFromCache(
     return null;
   }
 
-  // BookRow stores `toc` + `metadata` as `unknown` to keep the offline layer
-  // decoupled from the still-evolving reader payload shape. The rows were
-  // written by us from the same source types so the cast is safe.
+  // Legacy downloads borrow language from cached book-info until refreshed.
   const toc = (book.toc ?? []) as ReaderTocNode[];
-  const metadata = book.metadata as ReaderBookPayload;
+  const metadata = await readReaderMetadata(db, book);
 
   // Overlay the resume position from the progress bucket so a cached book
   // resumes on the right page even on a fresh/offline device that never wrote a
@@ -83,6 +81,7 @@ export async function loadReaderPayloadFromCache(
   // specs/4-offline/4.4-cache-priming, specs/2-reader/2.5-resume). Neutral when this device
   // has no row yet (never read + never primed → the reader starts at chapter 1).
   const progressRow = await readProgress(libraryItemId);
+  if (getDb() !== db) return null;
 
   return {
     status: "READY",

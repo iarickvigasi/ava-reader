@@ -1,13 +1,13 @@
 "use client";
 
-import type { CSSProperties } from "react";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, type CSSProperties } from "react";
 import {
   MAX_FONT_SCALE,
   MIN_FONT_SCALE,
   useFontScale,
 } from "@/components/app/preferences/use-font-scale";
 import { BookContextProvider } from "@/features/offline/buckets/book/context";
+import { useRefreshReaderLanguage } from "@/features/offline/buckets/book";
 import { AiCommentsProvider } from "./overlays/ai-comments/ai-comments-context";
 import { HighlightsProvider } from "./overlays/highlights/highlights-context";
 import { ReadyReader } from "./view/ready-reader";
@@ -26,6 +26,7 @@ export function ReaderScreen({
   libraryItemId,
   persistenceMode = READER_PERSISTENCE_MODE_REMOTE,
 }: ReaderScreenProps) {
+  useRefreshReaderLanguage(libraryItemId);
   const [fontScale, setFontScale] = useFontScale();
   const {
     activeChapter,
@@ -45,11 +46,9 @@ export function ReaderScreen({
     persistenceMode,
   });
   const isReaderReady = payload.status === READER_STATUS_READY;
-
   const handleDecreaseFont = useCallback(() => {
     setFontScale(Math.max(MIN_FONT_SCALE, roundFontScale(fontScale - 0.1)));
   }, [fontScale, setFontScale]);
-
   const handleIncreaseFont = useCallback(() => {
     setFontScale(Math.min(MAX_FONT_SCALE, roundFontScale(fontScale + 0.1)));
   }, [fontScale, setFontScale]);
@@ -73,6 +72,7 @@ export function ReaderScreen({
             <HighlightsProvider libraryItemId={libraryItemId}>
               <ReaderSelectionProvider>
                 <ReadyReader
+                  key={libraryItemId}
                   activeChapter={activeChapter}
                   displayLocator={displayLocator}
                   fontScale={fontScale}

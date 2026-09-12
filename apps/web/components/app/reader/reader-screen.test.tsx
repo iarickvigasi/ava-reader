@@ -24,6 +24,7 @@ describe("reader screen", () => {
     const payload: ReaderStatusPayload = {
       book: {
         authors: [],
+        language: null,
         libraryItemId: "library-1",
         primaryFormat: "EPUB",
         slug: "library-1",

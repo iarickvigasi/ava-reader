@@ -11,6 +11,7 @@ export function createReaderResumeFixturePayload(): ReaderStatusPayload {
     activeChapterId: "chapter-1",
     book: {
       authors: ["Fixture Author"],
+      language: "en",
       libraryItemId: "reader-resume-fixture",
       primaryFormat: "EPUB",
       slug: "reader-resume-fixture",

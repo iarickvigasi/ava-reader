@@ -34,6 +34,7 @@ function bookMetadata(libraryItemId: string): ReaderBookPayload {
     slug: `slug-${libraryItemId}`,
     title: `Title ${libraryItemId}`,
     authors: ["Author"],
+    language: null,
     primaryFormat: "EPUB",
   };
 }

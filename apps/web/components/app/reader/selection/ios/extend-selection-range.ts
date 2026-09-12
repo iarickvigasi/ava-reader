@@ -1,4 +1,5 @@
 import { wordRangeAt } from "./word-range-at";
+import type { SelectionMode } from "./selection-mode-for-language";
 
 // The anchor and target are complete selection units. Their union preserves
 // the anchor when reversing direction or moving within the same word.
@@ -8,8 +9,9 @@ export function extendSelectionRange(
   container: HTMLElement,
   x: number,
   y: number,
+  mode: SelectionMode,
 ): Range | null {
-  const target = wordRangeAt(doc, container, x, y);
+  const target = wordRangeAt(doc, container, x, y, mode);
 
   if (!target || !container.contains(anchor.commonAncestorContainer)) {
     return null;

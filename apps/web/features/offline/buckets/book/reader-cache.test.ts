@@ -30,6 +30,7 @@ async function seedBook(libraryItemId: string, chapterIds: string[]) {
       slug: `slug-${libraryItemId}`,
       title: `Title ${libraryItemId}`,
       authors: ["Author"],
+      language: null,
       primaryFormat: "EPUB",
     },
   });
@@ -141,6 +142,7 @@ describe("loadReaderPayloadFromCache", () => {
         slug: "slug",
         title: "T",
         authors: [],
+        language: null,
         primaryFormat: "EPUB",
       },
     });

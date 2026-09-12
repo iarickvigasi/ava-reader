@@ -1,5 +1,6 @@
 import { caretRangeAt } from "./caret-range-at";
 import { wordRangeFromCaret } from "./word-range-from-caret";
+import type { SelectionMode } from "./selection-mode-for-language";
 
 // The whole word or grapheme under (x, y), or null outside visible text.
 // Shared by long-press and dragging in the app-owned iOS selection (spec 2.6).
@@ -8,6 +9,7 @@ export function wordRangeAt(
   container: HTMLElement,
   x: number,
   y: number,
+  mode: SelectionMode,
 ): Range | null {
   const caret = caretRangeAt(doc, container, x, y);
   if (!caret || !containsPoint(container.getBoundingClientRect(), x, y)) {
@@ -17,7 +19,7 @@ export function wordRangeAt(
   // A caret lies after a glyph when its right half is hit. Check both adjacent
   // units against their painted rects, so that glyph still selects itself.
   for (const affinity of ["forward", "backward"] as const) {
-    const range = wordRangeFromCaret(doc, container, caret, affinity);
+    const range = wordRangeFromCaret(doc, container, caret, mode, affinity);
     if (range && Array.from(range.getClientRects()).some(
       (rect) => containsPoint(rect, x, y),
     )) {
