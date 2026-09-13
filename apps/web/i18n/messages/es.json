@@ -26,6 +26,7 @@
     "cachingStatus": "Preparando el acceso sin conexión",
     "cachingCount": "{done}/{total} libros",
     "readyStatus": "Listo para trabajar sin conexión",
+    "readyCompactStatus": "Listo",
     "modal": {
       "title": "Estás sin conexión",
       "body": "¿Sin internet? No hay problema. Cualquier libro que hayas guardado está listo para leer. Tus resaltados, marcadores, ajustes y progreso de lectura se guardan de forma segura en tu dispositivo y se pondrán al día en cuanto vuelvas a conectarte. Todo lo que necesite IA se ejecutará cuando estés de nuevo en línea.",

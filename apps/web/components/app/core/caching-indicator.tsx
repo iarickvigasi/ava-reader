@@ -2,8 +2,7 @@
 
 // Non-interactive header pill for the background primer's progress (see
 // [[4.4-cache-priming]]). Sibling to OfflineIndicator; HeaderStatusChip shows
-// exactly one of them. Two states share one pill so its reserved height never
-// reflows the header:
+// exactly one of them inside a slot that reserves space even while idle:
 //   - caching → content tier, "Caching for offline access n/m books"
 //   - ready   → brief "Ready for offline work" confirmation on first completion
 // The dot pulses while work is active (the offline chip's is deliberately
@@ -14,6 +13,7 @@
 import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/cn";
+import styles from "./status-chip.module.css";
 
 type Progress = { done: number; total: number };
 
@@ -21,14 +21,16 @@ export type PrimeChipState = ({ kind: "caching" } & Progress) | { kind: "ready" 
 
 type CachingIndicatorProps = {
   state: PrimeChipState;
-  // Compact = count-only pill for space-tight mobile/reader headers.
+  // Compact = numeric progress or a short localized ready label.
   compact?: boolean;
+  iconOnly?: boolean;
   className?: string;
 };
 
 export function CachingIndicator({
   state,
   compact = false,
+  iconOnly = false,
   className,
 }: CachingIndicatorProps) {
   const t = useTranslations("offline");
@@ -39,27 +41,28 @@ export function CachingIndicator({
       ? null
       : t("cachingCount", { done: state.done, total: state.total });
   const icon = state.kind === "ready" ? <ReadyCheck /> : <CachingDot />;
+  const fullLabel = count ? `${phrase} ${count}` : phrase;
+  const label = compact
+    ? state.kind === "ready"
+      ? t("readyCompactStatus")
+      : `${state.done}/${state.total}`
+    : fullLabel;
 
   return (
     <span
       role="status"
       aria-label={phrase}
+      title={fullLabel}
       className={cn(
-        compact
-          ? "inline-flex h-7 items-center gap-1.5 rounded-full bg-soft-fill px-2 text-[0.6rem] font-semibold uppercase tracking-[0.14em] text-copy-strong"
-          : "inline-flex h-9 items-center gap-2 rounded-full bg-soft-fill px-3 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-copy-strong",
+        styles.pill,
+        compact && styles.compactPill,
+        iconOnly && styles.iconOnlyPill,
+        "rounded-full bg-soft-fill font-semibold uppercase text-copy-strong",
         className,
       )}
     >
       {icon}
-      {/* Compact: count only (ready falls back to the phrase). Full: phrase + count. */}
-      <span aria-hidden>
-        {compact
-          ? (count ?? phrase)
-          : count
-            ? `${phrase} ${count}`
-            : phrase}
-      </span>
+      <span aria-hidden className={styles.label}>{label}</span>
     </span>
   );
 }

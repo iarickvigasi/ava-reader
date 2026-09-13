@@ -14,8 +14,8 @@ export function ReadyReaderHeader({
   const { title, author, chapter } = formatReaderHeaderParts(payload, activeChapter);
 
   return (
-    <header className="min-w-0 flex-1 pt-1">
-      <h1 className="min-w-0 flex items-center gap-1 font-ui text-[1.05rem] leading-[1.35] tracking-[0.01em] text-title sm:text-[1.2rem] md:min-h-9">
+    <header className="flex min-w-0 flex-1 items-center gap-3 pt-1">
+      <h1 className="flex min-w-0 flex-1 items-center gap-1 font-ui text-[1.05rem] leading-[1.35] tracking-[0.01em] text-title sm:text-[1.2rem] md:min-h-9">
 
         <span className="min-w-0 truncate max-w-[25ch]">
           {title}
@@ -29,14 +29,13 @@ export function ReadyReaderHeader({
 
         <span className="shrink-0">–</span>
 
-        <span className="shrink-0 whitespace-nowrap">
+        <span className="min-w-0 truncate" title={chapter}>
           {chapter}
         </span>
-
-        <span className="ml-2 hidden md:inline-flex">
-          <HeaderStatusChip />
-        </span>
       </h1>
+      <div className="hidden shrink-0 md:flex">
+        <HeaderStatusChip />
+      </div>
     </header>
   );
 }

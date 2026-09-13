@@ -85,34 +85,38 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
     <>
       <header className="sticky top-0 z-40 bg-paper/92 backdrop-blur">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10">
-          <div className="flex h-16 items-center justify-between gap-3 md:hidden">
-            <div className="flex items-center gap-2">
-              <ThemeToggle />
+          {/* Equal side tracks keep the brand centered regardless of status or admin controls. */}
+          <div className="grid h-16 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 md:hidden">
+            <div className="flex min-w-0 items-center gap-2">
+              <div className="shrink-0"><ThemeToggle /></div>
               <HeaderStatusChip compact />
             </div>
             <Link href="/app" className="min-w-0">
               <AppHeaderBrand className="justify-center gap-2" />
             </Link>
-            <div className="flex items-center gap-2">
+            <div className="flex min-w-0 items-center justify-end gap-2">
               {isAdmin ? (
                 <Link
                   href="/app/admin/catalog"
-                  className="inline-flex min-h-10 items-center rounded-control bg-soft-fill px-3 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-ink transition hover:bg-soft-tone-fill"
+                  className="inline-flex min-h-10 min-w-0 items-center rounded-control bg-soft-fill px-3 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-ink transition hover:bg-soft-tone-fill"
+                  title={t("admin.long")}
                 >
-                  {t("admin.short")}
+                  <span className="truncate">{t("admin.short")}</span>
                 </Link>
               ) : null}
-              <UserMenuButton currentUser={currentUser} />
+              <div className="flex size-8 shrink-0 items-center justify-center">
+                <UserMenuButton currentUser={currentUser} />
+              </div>
             </div>
           </div>
 
-          <div className="hidden h-20 items-center justify-between gap-8 md:flex">
-            <Link href="/app">
+          <div className="hidden h-20 min-w-0 items-center gap-4 md:flex xl:gap-6">
+            <Link href="/app" className="shrink-0">
               <AppHeaderBrand />
             </Link>
 
-          <nav className="flex items-center gap-10">
-            {items.map((item) => {
+            <nav className="flex min-w-0 flex-1 items-center justify-center gap-4 lg:gap-6 xl:gap-8">
+              {items.map((item) => {
                 const isActive = isAppNavigationItemActive(pathname, item.href);
 
                 return (
@@ -121,7 +125,7 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
                     className={cn(
-                      "border-b-2 border-transparent pb-1 text-xl uppercase tracking-[0.08em] text-plum/75 transition hover:text-title",
+                      "min-w-0 truncate border-b-2 border-transparent pb-1 text-base uppercase tracking-[0.08em] text-plum/75 transition hover:text-title lg:text-lg xl:text-xl",
                       isActive && "border-title font-medium text-title",
                     )}
                   >
@@ -131,24 +135,29 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
               })}
             </nav>
 
-            <div className="flex items-center gap-3">
+            <div className="flex shrink-0 items-center gap-2">
               {isAdmin ? (
                 <Link
                   href="/app/admin/catalog"
-                  className="inline-flex min-h-11 items-center rounded-control bg-white/60 px-4 text-xs font-semibold uppercase tracking-[0.16em] text-ink transition hover:bg-white"
+                  className="inline-flex min-h-11 max-w-20 items-center rounded-control bg-white/60 px-3 text-xs font-semibold uppercase tracking-[0.16em] text-ink transition hover:bg-white"
+                  title={t("admin.long")}
                 >
-                  {t("admin.long")}
+                  <span className="truncate">{t("admin.short")}</span>
                 </Link>
               ) : null}
-              <HeaderStatusChip />
+              <div className="flex w-9 shrink-0 items-center lg:w-24">
+                <HeaderStatusChip compact />
+              </div>
               <ThemeToggle />
-              <div className="flex items-center gap-3 rounded-2xl bg-soft-fill px-4 py-2">
-                <div className="hidden text-right lg:block">
-                  <p className="text-sm font-semibold text-copy-strong">
+              <div className="flex items-center gap-2 rounded-2xl bg-soft-fill py-2 xl:px-3">
+                <div className="hidden w-24 min-w-0 text-right xl:block">
+                  <p className="truncate text-sm font-semibold text-copy-strong" title={currentUser?.displayName ?? t("userFallbackName")}>
                     {currentUser?.displayName ?? t("userFallbackName")}
                   </p>
                 </div>
-                <UserMenuButton currentUser={currentUser} />
+                <div className="flex size-8 shrink-0 items-center justify-center">
+                  <UserMenuButton currentUser={currentUser} />
+                </div>
               </div>
             </div>
           </div>
@@ -272,17 +281,17 @@ function ReaderNavigation() {
       </aside>
 
       <div className="sticky top-0 z-40 bg-paper/95 px-4 py-3 backdrop-blur md:hidden">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             <a
               href="/app"
               className="font-display text-xl leading-none text-ink"
             >
               AVA
             </a>
-            <HeaderStatusChip compact />
+            <HeaderStatusChip compact iconOnly />
           </div>
-          <div className="flex items-center gap-2 overflow-x-auto">
+          <div className="flex min-w-0 items-center gap-1 overflow-x-auto sm:gap-2">
             {readerNavItems.slice(0, 5).map((item) => (
               <ReaderNavItem
                 key={item.id}

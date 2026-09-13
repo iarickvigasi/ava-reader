@@ -1,43 +1,51 @@
 "use client";
 
-// The single header status slot: renders the Offline chip, the Slow chip, the
-// priming-progress chip, or nothing — exactly one at a time (see
-// [[4.4-cache-priming]], [[4.10-slow-connection]]). Offline wins over Slow
-// wins over priming. Drop-in replacement for the old direct
-// <OfflineIndicator/> mounts in the page + reader headers.
+// One reserved header slot across Offline, Slow, priming, ready, and idle.
+// Keeping the empty slot prevents status changes from moving nearby controls.
 
 import { useHeaderChip } from "@/features/offline/status/use-header-chip";
+import { cn } from "@/lib/cn";
 
 import { CachingIndicator } from "./caching-indicator";
 import { OfflineIndicator } from "./offline-indicator";
 import { SlowConnectionIndicator } from "./slow-connection-indicator";
+import styles from "./status-chip.module.css";
 
 type HeaderStatusChipProps = {
   compact?: boolean;
+  iconOnly?: boolean;
+  // Applies to the reserved slot, including while no chip is visible.
   className?: string;
 };
 
 export function HeaderStatusChip({
   compact = false,
+  iconOnly = false,
   className,
 }: HeaderStatusChipProps) {
   const chip = useHeaderChip();
+  const indicatorProps = { compact, iconOnly };
+  let indicator = null;
 
   if (chip.kind === "offline") {
-    return <OfflineIndicator compact={compact} className={className} />;
+    indicator = <OfflineIndicator {...indicatorProps} />;
+  } else if (chip.kind === "slow") {
+    indicator = <SlowConnectionIndicator {...indicatorProps} />;
+  } else if (chip.kind === "caching" || chip.kind === "ready") {
+    indicator = <CachingIndicator state={chip} {...indicatorProps} />;
   }
-  if (chip.kind === "slow") {
-    return <SlowConnectionIndicator compact={compact} className={className} />;
-  }
-  if (chip.kind === "none") {
-    return null;
-  }
-  // caching | ready — one pill.
-  const state =
-    chip.kind === "ready"
-      ? ({ kind: "ready" } as const)
-      : ({ kind: chip.kind, done: chip.done, total: chip.total } as const);
+
   return (
-    <CachingIndicator state={state} compact={compact} className={className} />
+    <span
+      data-header-status={chip.kind}
+      className={cn(
+        styles.slot,
+        compact && styles.compactSlot,
+        iconOnly && styles.iconOnlySlot,
+        className,
+      )}
+    >
+      {indicator}
+    </span>
   );
 }

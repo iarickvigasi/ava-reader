@@ -16,11 +16,13 @@ import { StatusPill } from "./status-pill";
 
 type SlowConnectionIndicatorProps = {
   compact?: boolean;
+  iconOnly?: boolean;
   className?: string;
 };
 
 export function SlowConnectionIndicator({
   compact = false,
+  iconOnly = false,
   className,
 }: SlowConnectionIndicatorProps) {
   const online = useNetworkState();
@@ -38,6 +40,7 @@ export function SlowConnectionIndicator({
       ariaLabel={t("slowChipAria")}
       dotClassName="bg-warning"
       compact={compact}
+      iconOnly={iconOnly}
       className={className}
       onClick={() => open("slow")}
     />
