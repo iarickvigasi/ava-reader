@@ -71,6 +71,8 @@ export type LibraryBookInfoDetails = {
   }>;
   description: string | null;
   genres: string[];
+  // Explicitly recorded completion date, independent of reading progress.
+  finishedAt: string | null;
   language: string | null;
   lastReadAt: string | null;
   minutesRead: number;

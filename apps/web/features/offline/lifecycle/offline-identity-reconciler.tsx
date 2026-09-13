@@ -21,7 +21,7 @@ import { useEffect, useRef } from "react";
 import { getActiveUserId, setActiveUser } from "../db";
 import { adoptUser, wipeUserData } from "./clear-all-user-data";
 import { decideIdentityAction } from "./identity-action";
-import { flushCollectionMemberships } from "../buckets/library";
+import { flushCollectionMemberships, flushFinishDates } from "../buckets/library";
 
 export function OfflineIdentityReconciler() {
   const { getToken, isLoaded, userId } = useAuth();
@@ -44,6 +44,7 @@ export function OfflineIdentityReconciler() {
       if (current) {
         setActiveUser(current);
         void flushCollectionMemberships(getToken);
+        void flushFinishDates(getToken);
       }
       return;
     }
@@ -54,7 +55,10 @@ export function OfflineIdentityReconciler() {
         ? wipeUserData(action.userId)
         : adoptUser(action.userId);
     void run.then(() => {
-      if (current) void flushCollectionMemberships(getToken);
+      if (current) {
+        void flushCollectionMemberships(getToken);
+        void flushFinishDates(getToken);
+      }
     }).finally(() => {
       runningRef.current = false;
     });

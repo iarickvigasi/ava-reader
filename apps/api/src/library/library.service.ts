@@ -7,6 +7,7 @@ import { getCollection } from './collections/get-collection';
 import { renameCollection } from './collections/rename-collection';
 import { importBook } from './import/import-book';
 import { getLibraryItem } from './items/get-library-item';
+import { setFinishedAt } from './items/set-finished-at';
 import { setOfflineRequested } from './items/set-offline-requested';
 import { addCatalogBook } from './membership/add-catalog-book';
 import { getLibraryOverview } from './overview/get-library-overview';
@@ -77,6 +78,20 @@ export class LibraryService {
       libraryItemId,
       prisma: this.prisma,
       requested,
+      userId: user.id,
+    });
+  }
+
+  async setFinishedAt(
+    clerkUserId: string,
+    libraryItemId: string,
+    input: unknown,
+  ) {
+    const user = await this.user(clerkUserId);
+    return setFinishedAt({
+      input,
+      libraryItemId,
+      prisma: this.prisma,
       userId: user.id,
     });
   }

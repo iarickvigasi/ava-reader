@@ -12,7 +12,7 @@ export const target: LibraryCollection = {
 export const book: LibraryBookInfo = {
   ...source.books[0], collections: [source], addedAt: "2026-01-01T00:00:00Z",
   approximateBodyPageCount: null, approximatePageCount: null, chapterLabel: null,
-  description: null, genres: [], language: null, lastReadAt: null, minutesRead: 0,
+  description: null, finishedAt: null, genres: [], language: null, lastReadAt: null, minutesRead: 0,
   publishedYear: null, source: "IMPORTED",
 };
 

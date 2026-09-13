@@ -68,6 +68,7 @@ describe("applyBookInfoPayload", () => {
       collections: [],
       description: null,
       genres: [],
+      finishedAt: null,
       language: null,
       lastReadAt: null,
       minutesRead: 0,

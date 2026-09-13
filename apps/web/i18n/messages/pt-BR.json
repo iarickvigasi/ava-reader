@@ -477,7 +477,11 @@
       "actionCards": {
         "markAsFinished": {
           "title": "Marcar como concluído",
-          "description": "Define o progresso para 100%"
+          "description": "Toque para salvar a data de hoje",
+          "finishedTitle": "Concluído em {date}",
+          "finishedDescription": "Toque para remover a data de conclusão",
+          "saveFailed": "Não foi possível salvar a alteração na data de conclusão. Tente novamente.",
+          "syncFailed": "Não foi possível sincronizar a alteração na data de conclusão. Tente novamente."
         },
         "manageCollections": {
           "title": "Adicionar às coleções"

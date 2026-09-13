@@ -253,6 +253,8 @@ model LibraryItem {
   originCatalogEntryId       String?
   addedAt                    DateTime                    @default(now())
   lastOpenedAt               DateTime?
+  // Explicit reading finish date, independent of position-based progress.
+  finishedAt                 DateTime?
   isArchived                 Boolean                     @default(false)
   offlineRequested           Boolean                     @default(false)
   createdAt                  DateTime                    @default(now())

@@ -5,6 +5,8 @@ import { parseBookDescription } from "./parse-book-description";
 
 describe("description content boundaries", () => {
   it("drops executable and embedded content while keeping text from ordinary wrappers and links", () => {
+    // Publisher attributes and unresolved sources are intentional unsafe input.
+    //noinspection HtmlDeprecatedAttribute,HtmlUnknownTarget,JSUnresolvedFunction
     const blocks = parseBookDescription('<div class="publisher" style="color:red" onclick="bad()">' +
       '<script>alert("secret script")</script><style>.secret-style{display:none}</style>' +
       '<iframe src="https://example.com">secret iframe</iframe>' +
@@ -20,6 +22,8 @@ describe("description content boundaries", () => {
   });
 
   it("returns the empty fallback signal for descriptions containing only unsafe content", () => {
+    // Keep the incomplete image tag to cover malformed source HTML.
+    //noinspection HtmlRequiredAltAttribute,HtmlUnknownTarget,JSUnresolvedFunction
     expect(parseBookDescription("<script>bad()</script><style>body{color:red}</style><img src=x>"))
       .toEqual([]);
   });

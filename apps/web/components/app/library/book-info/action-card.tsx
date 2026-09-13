@@ -7,7 +7,7 @@ type ActionCardProps = {
   description: string;
   icon: IconComponent;
   title: string;
-  onClick?: () => void;
+  onClick?: () => void | Promise<void>;
   disabled?: boolean;
 };
 

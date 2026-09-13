@@ -477,7 +477,11 @@
       "actionCards": {
         "markAsFinished": {
           "title": "Als gelesen markieren",
-          "description": "Setzt den Fortschritt auf 100 %"
+          "description": "Tippen, um das heutige Datum zu speichern",
+          "finishedTitle": "Beendet am {date}",
+          "finishedDescription": "Tippen, um das Lesedatum zu entfernen",
+          "saveFailed": "Die Änderung deines Lesedatums konnte nicht gespeichert werden. Bitte versuche es erneut.",
+          "syncFailed": "Die Änderung deines Lesedatums konnte nicht synchronisiert werden. Bitte versuche es erneut."
         },
         "manageCollections": {
           "title": "Zu Sammlungen hinzufügen"

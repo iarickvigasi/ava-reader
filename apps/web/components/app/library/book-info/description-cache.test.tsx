@@ -35,6 +35,7 @@ it("renders cached publisher HTML offline without rewriting the stored descripti
     collections: [],
     description: interstellarHtml,
     genres: [],
+    finishedAt: null,
     language: "en",
     lastReadAt: null,
     minutesRead: 0,

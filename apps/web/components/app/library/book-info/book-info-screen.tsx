@@ -57,6 +57,7 @@ export function LibraryBookInfoScreen({
           <BookDescription description={book.description} />
           <BookActionCards
             collections={book.collections}
+            finishedAt={book.finishedAt ?? null}
             libraryItemId={book.libraryItemId}
           />
         </section>

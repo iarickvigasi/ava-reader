@@ -85,6 +85,20 @@ export class LibraryController {
     );
   }
 
+  @Patch(':libraryItemId/finished')
+  @UseGuards(ClerkAuthGuard)
+  setFinishedAt(
+    @Req() request: AuthenticatedRequest,
+    @Param('libraryItemId') libraryItemId: string,
+    @Body() body: unknown,
+  ) {
+    return this.libraryService.setFinishedAt(
+      request.auth.clerkUserId,
+      libraryItemId,
+      body,
+    );
+  }
+
   @Post('collections')
   @UseGuards(ClerkAuthGuard)
   createCollection(

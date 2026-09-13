@@ -4,7 +4,7 @@
 
 import type { LibraryBookInfo } from "@/lib/api-types/library";
 
-import { getDb } from "../../../db";
+import { getDb, type AvaReaderDB } from "../../../db";
 import { overlayBookCollections } from "../membership/selectors";
 
 // Reads back a full LibraryBookInfo from Dexie. Returns null when either the
@@ -14,10 +14,16 @@ export async function readBookInfoBySlug(
   slug: string,
 ): Promise<LibraryBookInfo | null> {
   const db = getDb();
+  return db.transaction("r", [db.libraryItems, db.finishDateMutations, db.collectionMembershipMutations, db.collections],
+    () => readBookInfoSnapshot(db, slug));
+}
+
+async function readBookInfoSnapshot(db: AvaReaderDB, slug: string): Promise<LibraryBookInfo | null> {
   const row = await db.libraryItems.where("slug").equals(slug).first();
   if (!row || !row.details) {
     return null;
   }
+  const finishDate = await db.finishDateMutations.get(row.libraryItemId);
   return {
     libraryItemId: row.libraryItemId,
     slug: row.slug,
@@ -39,6 +45,8 @@ export async function readBookInfoBySlug(
     ),
     description: row.details.description,
     genres: row.details.genres,
+    // A queued clear (null) must win just as a queued date does.
+    finishedAt: finishDate ? finishDate.finishedAt : row.details.finishedAt ?? null,
     language: row.details.language,
     lastReadAt: row.details.lastReadAt,
     minutesRead: row.details.minutesRead,

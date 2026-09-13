@@ -4,7 +4,7 @@
 
 import { clearAllAiCommentsBuckets } from "../buckets/ai-comments";
 import { clearAllHighlightsBuckets } from "../buckets/highlights";
-import { clearCollectionMembershipRuntime, clearLibraryBucket } from "../buckets/library";
+import { clearCollectionMembershipRuntime, clearFinishDateRuntime, clearLibraryBucket } from "../buckets/library";
 import {
   clearActiveUser,
   deleteUserDb,
@@ -38,6 +38,7 @@ export async function adoptUser(userId: string): Promise<void> {
 // session can't inherit the previous user's registries.
 function resetInMemoryBuckets(): void {
   clearCollectionMembershipRuntime();
+  clearFinishDateRuntime();
   clearLibraryBucket();
   clearAllAiCommentsBuckets();
   clearAllHighlightsBuckets();

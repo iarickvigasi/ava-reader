@@ -39,6 +39,7 @@ describe("readBookInfoBySlug", () => {
         { id: "col-1", kind: "CUSTOM", name: "Favorites", smartKey: null },
       ],
       description: "Epic of Russian society during the Napoleonic era.",
+      finishedAt: null,
       genres: ["Fiction", "Classic"],
       language: "ru",
       lastReadAt: "2026-02-01T00:00:00Z",

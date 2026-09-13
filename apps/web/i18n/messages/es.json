@@ -477,7 +477,11 @@
       "actionCards": {
         "markAsFinished": {
           "title": "Marcar como terminado",
-          "description": "Pone el progreso al 100 %"
+          "description": "Toca para guardar la fecha de hoy",
+          "finishedTitle": "Terminado el {date}",
+          "finishedDescription": "Toca para eliminar la fecha de finalización",
+          "saveFailed": "No se pudo guardar el cambio en la fecha de finalización. Inténtalo de nuevo.",
+          "syncFailed": "No se pudo sincronizar el cambio en la fecha de finalización. Inténtalo de nuevo."
         },
         "manageCollections": {
           "title": "Añadir a colecciones"

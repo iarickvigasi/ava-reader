@@ -12,7 +12,9 @@ export const interstellarParagraphs = [
     "phenomena that those laws make possible.",
 ];
 
-export const interstellarHtml =
+// Preserve the publisher's legacy font markup for the normalization regression.
+//noinspection HtmlDeprecatedTag,HtmlDeprecatedAttribute,XmlDeprecatedElement
+const interstellarHtml =
   '<div><div style="font-family: \'MS Shell Dlg 2\', sans-serif; font-size: 12px;"><br></div>' +
   '<div><div><font face="MS Shell Dlg 2, sans-serif"><span style="font-size: 12px;">' +
   "A journey through the otherworldly science behind Christopher Nolan’s highly anticipated film, " +
@@ -29,3 +31,5 @@ export const interstellarHtml =
   "them triggered during the actual scripting and shooting of <i>Interstellar</i>—describe the " +
   "physical laws that govern our universe and the truly astounding phenomena that those laws " +
   "make possible.</span></font></div></div></div>";
+
+export { interstellarHtml };

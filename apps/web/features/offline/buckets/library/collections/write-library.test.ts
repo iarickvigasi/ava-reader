@@ -133,6 +133,7 @@ describe("library writes", () => {
       chapterLabel: null,
       collections: [],
       description: "Description for A",
+      finishedAt: null,
       genres: ["Fiction"],
       language: "en",
       lastReadAt: null,

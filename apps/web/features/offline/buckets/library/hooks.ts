@@ -124,7 +124,9 @@ export function useHydrateBookInfo(initial: LibraryBookInfo) {
   const slug = initial.slug;
 
   useEffect(() => {
-    void hydrateBookInfo(initial);
+    // The loader may supply an overlaid cache snapshot. Seed only a missing
+    // row; online revalidation is the authoritative write path.
+    void hydrateBookInfo(initial, { seedOnly: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

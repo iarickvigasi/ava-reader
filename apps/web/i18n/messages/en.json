@@ -476,8 +476,12 @@
       },
       "actionCards": {
         "markAsFinished": {
-          "title": "Mark as Finished",
-          "description": "Set progress to 100%"
+          "title": "Mark as finished",
+          "description": "Tap to save today’s date",
+          "finishedTitle": "Finished on {date}",
+          "finishedDescription": "Tap to remove finish date",
+          "saveFailed": "Your finish date change couldn’t be saved. Please try again.",
+          "syncFailed": "Your finish date change couldn’t be synced. Please try again."
         },
         "manageCollections": {
           "title": "Add to collections"

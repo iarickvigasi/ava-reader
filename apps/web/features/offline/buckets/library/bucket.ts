@@ -11,7 +11,7 @@ import type {
 import { readBookInfoBySlug } from "./book-info/read-book-info";
 import { readCollectionViewBySlug, readLibraryView } from "./collections/read-library";
 import { applyCollectionPayload, applyLibraryPayload } from "./collections/write-library";
-import { applyBookInfoPayload } from "./book-info/write-book-info";
+import { applyBookInfoPayload, type BookInfoWriteOptions } from "./book-info/write-book-info";
 import type {
   CollectionView,
   LibraryBucketState,
@@ -93,8 +93,8 @@ export async function readCollectionBySlug(
 // it out of the bucket avoids broadcasting unrelated updates to library
 // subscribers every time the user opens a book's info page.
 
-export async function hydrateBookInfo(book: LibraryBookInfo): Promise<void> {
-  await applyBookInfoPayload(book);
+export async function hydrateBookInfo(book: LibraryBookInfo, options?: BookInfoWriteOptions): Promise<void> {
+  await applyBookInfoPayload(book, options);
   // No `refreshFromDb()` here — book-info changes don't alter the
   // library/collection list, so library subscribers don't need a notify.
 }

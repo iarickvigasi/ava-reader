@@ -12,6 +12,8 @@ import type {
 import { getPublicApiBaseUrl } from "@/lib/api";
 import { getDb } from "../../db";
 import { membershipGeneration } from "./membership/bucket";
+import { finishDateGeneration } from "./finish-date/runtime";
+import { readFinishDateRevision } from "./finish-date/revision";
 
 import {
   hydrateBookInfo,
@@ -28,6 +30,7 @@ async function fetchJson<T>(
 ): Promise<T | null> {
   const db = getDb();
   const generation = membershipGeneration();
+  const finishGeneration = finishDateGeneration();
   const token = await getToken();
   if (!token) {
     return null;
@@ -42,14 +45,16 @@ async function fetchJson<T>(
       if (
         response.status === 404 &&
         db === getDb() &&
-        generation === membershipGeneration()
+        generation === membershipGeneration() &&
+        finishGeneration === finishDateGeneration()
       ) {
         onNotFound?.();
       }
       return null;
     }
     const payload = (await response.json()) as T;
-    return db === getDb() && generation === membershipGeneration() ? payload : null;
+    return db === getDb() && generation === membershipGeneration() &&
+      finishGeneration === finishDateGeneration() ? payload : null;
   } catch {
     // Network blip → caller already has whatever Dexie cached. The next
     // online/visibility tick will try again.
@@ -86,6 +91,8 @@ export async function revalidateBookInfo(
   getToken: GetToken,
   onNotFound?: () => void,
 ): Promise<void> {
+  const db = getDb();
+  const expectedFinishDateRevision = await readFinishDateRevision(db);
   const payload = await fetchJson<LibraryBookInfoPayload>(
     `/api/library/${encodeURIComponent(slug)}`,
     getToken,
@@ -94,5 +101,5 @@ export async function revalidateBookInfo(
   if (!payload) {
     return;
   }
-  await hydrateBookInfo(payload.book);
+  await hydrateBookInfo(payload.book, { db, expectedFinishDateRevision });
 }

@@ -18,6 +18,9 @@ vi.mock("../../db", () => ({ getDb: () => state.db }));
 vi.mock("./membership/bucket", () => ({
   membershipGeneration: () => state.generation,
 }));
+vi.mock("./finish-date/revision", () => ({
+  readFinishDateRevision: async () => null,
+}));
 vi.mock("./bucket", () => ({
   hydrateBookInfo: state.hydrateBookInfo,
   hydrateCollection: state.hydrateCollection,
@@ -162,7 +165,11 @@ describe.each([
 
     await expect(revalidate(SLUG, TOKEN, onNotFound)).resolves.toBeUndefined();
 
-    expect(hydrate).toHaveBeenCalledWith(CACHED);
+    if (payloadKey === "book") {
+      expect(hydrate).toHaveBeenCalledWith(CACHED, { db: state.db, expectedFinishDateRevision: null });
+    } else {
+      expect(hydrate).toHaveBeenCalledWith(CACHED);
+    }
     expect(onNotFound).not.toHaveBeenCalled();
   });
 });

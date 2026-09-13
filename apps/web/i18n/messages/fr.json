@@ -477,7 +477,11 @@
       "actionCards": {
         "markAsFinished": {
           "title": "Marquer comme terminé",
-          "description": "Place la progression à 100 %"
+          "description": "Appuyez pour enregistrer la date d’aujourd’hui",
+          "finishedTitle": "Terminé le {date}",
+          "finishedDescription": "Appuyez pour supprimer la date de fin de lecture",
+          "saveFailed": "La modification de votre date de fin de lecture n’a pas pu être enregistrée. Veuillez réessayer.",
+          "syncFailed": "La modification de votre date de fin de lecture n’a pas pu être synchronisée. Veuillez réessayer."
         },
         "manageCollections": {
           "title": "Ajouter aux collections"

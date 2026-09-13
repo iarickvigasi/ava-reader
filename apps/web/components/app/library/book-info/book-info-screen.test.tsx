@@ -155,6 +155,34 @@ describe("library book info metadata", () => {
 });
 
 describe("library book info actions", () => {
+  it("shows a finish date alongside the unchanged reading progress", () => {
+    const markup = renderToStaticMarkup(withIntl(
+      <LibraryBookInfoScreen backHref="/app/library" book={createBookInfo({
+        finishedAt: "2026-09-13T12:00:00.000Z",
+        completionPercent: 44,
+      })} />,
+    ));
+
+    expect(markup).toContain("Finished on Sep 13, 2026");
+    expect(markup).toContain("Tap to remove finish date");
+    expect(markup).toContain("44% completed");
+    expect(markup).toContain('style="width:44%"');
+  });
+
+  it("keeps the mark-as-finished action available at 100% without a finish date", () => {
+    const markup = renderToStaticMarkup(withIntl(
+      <LibraryBookInfoScreen backHref="/app/library" book={createBookInfo({
+        finishedAt: null,
+        completionPercent: 100,
+      })} />,
+    ));
+
+    expect(markup).toContain("Mark as finished");
+    expect(markup).toContain("Tap to save today’s date");
+    expect(markup).toContain("100% completed");
+    expect(markup).not.toContain("Finished on");
+  });
+
   it("mounts the Opening pending label inside the Read button", () => {
     const markup = renderToStaticMarkup(
       withIntl(
@@ -187,6 +215,7 @@ function createBookInfo(
     completionPercent: 44,
     coverImageUrl: null,
     description: "A gothic classic.",
+    finishedAt: null,
     genres: ["Gothic", "Classic"],
     language: "English",
     lastReadAt: "2026-04-11T08:30:00.000Z",

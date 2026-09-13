@@ -4,18 +4,31 @@
 
 import type { LibraryBookInfo } from "@/lib/api-types/library";
 
-import { getDb, type LibraryItemRow } from "../../../db";
+import { getDb, type AvaReaderDB, type LibraryItemRow } from "../../../db";
+import { readFinishDateRevision } from "../finish-date/revision";
+
+export type BookInfoWriteOptions = {
+  db?: AvaReaderDB;
+  seedOnly?: boolean;
+  expectedFinishDateRevision?: string | null;
+};
 
 // Writes the full LibraryBookInfo into the row identified by libraryItemId.
 // Used by the book-info page hydrator after either of its server fetches.
 export async function applyBookInfoPayload(
   book: LibraryBookInfo,
+  options: BookInfoWriteOptions = {},
 ): Promise<void> {
-  const db = getDb();
+  const db = options.db ?? getDb();
+  if (db !== getDb()) return;
   const nowIso = new Date().toISOString();
-  await db.transaction("rw", [db.libraryItems, db.collectionMembershipMutations], async () => {
+  await db.transaction("rw", [db.libraryItems, db.collectionMembershipMutations, db.finishDateMutations, db.meta], async () => {
+    if (options.expectedFinishDateRevision !== undefined &&
+      options.expectedFinishDateRevision !== await readFinishDateRevision(db)) return;
     const prior = await db.libraryItems.get(book.libraryItemId);
+    if (options.seedOnly && prior?.details) return;
     const pending = await db.collectionMembershipMutations.get(book.libraryItemId);
+    const pendingFinishDate = await db.finishDateMutations.get(book.libraryItemId);
     const next: LibraryItemRow = {
       libraryItemId: book.libraryItemId,
       slug: book.slug,
@@ -56,6 +69,9 @@ export async function applyBookInfoPayload(
         collections: pending && prior?.details ? prior.details.collections : book.collections,
         description: book.description,
         genres: book.genres,
+        // An offline route can hydrate its own overlaid cached payload. Keep
+        // the server baseline until sync acknowledges the pending value.
+        finishedAt: pendingFinishDate ? prior?.details?.finishedAt ?? null : book.finishedAt ?? null,
         language: book.language,
         // The details payload's lastReadAt is the strict
         // ReadingProgress.lastReadAt (nullable). The list payload's

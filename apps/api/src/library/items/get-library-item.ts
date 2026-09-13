@@ -61,6 +61,7 @@ export async function getLibraryItem(options: {
         ? buildCoverImageUrl(item.book.id)
         : null,
       description: item.book.description,
+      finishedAt: item.finishedAt?.toISOString() ?? null,
       genres: item.book.genres,
       language: item.book.language,
       lastReadAt: item.progress?.lastReadAt?.toISOString() ?? null,

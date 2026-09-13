@@ -5,6 +5,8 @@ import { BookDescription } from "./description";
 
 describe("BookDescription", () => {
   it("renders source emphasis with app typography and removes publisher markup", () => {
+    // Intentionally retain obsolete and incomplete HTML as sanitizer input.
+    //noinspection HtmlDeprecatedTag,HtmlDeprecatedAttribute,XmlDeprecatedElement,HtmlRequiredAltAttribute
     const description = [
       '<div class="publisher-layout" style="text-align:justify" onclick="alert(1)">',
       '<font face="MS Shell Dlg 2"><span style="font-size:12px">',

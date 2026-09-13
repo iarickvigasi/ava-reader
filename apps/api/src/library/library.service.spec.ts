@@ -624,6 +624,7 @@ describe('LibraryService', () => {
   it('returns one library item payload with approximate page count when available', async () => {
     findFirstLibraryItem.mockResolvedValue({
       addedAt: new Date('2026-04-01T10:00:00.000Z'),
+      finishedAt: new Date('2026-09-13T10:00:00.000Z'),
       book: {
         authors: ['Mary Shelley'],
         coverBlob: { mimeType: 'image/png' },
@@ -735,6 +736,7 @@ describe('LibraryService', () => {
         completionPercent: 44,
         coverImageUrl: '/api/library/covers/book-frank',
         description: 'A gothic classic.',
+        finishedAt: '2026-09-13T10:00:00.000Z',
         genres: ['Gothic', 'Horror'],
         language: 'English',
         lastReadAt: '2026-04-11T08:30:00.000Z',
@@ -783,8 +785,30 @@ describe('LibraryService', () => {
     );
 
     expect(payload.book.approximatePageCount).toBeNull();
+    expect(payload.book.finishedAt).toBeNull();
     expect(payload.book.genres).toEqual([]);
     expect(payload.book.coverImageUrl).toBeNull();
+  });
+
+  it("sets a finish date on the current user's library item", async () => {
+    const finishedAt = new Date('2026-09-13T10:00:00.000Z');
+    findFirstLibraryItem.mockResolvedValue({ id: 'library-42' });
+    updateLibraryItem.mockResolvedValue({ id: 'library-42', finishedAt });
+
+    await expect(
+      libraryService.setFinishedAt('clerk_123', 'library-42', {
+        finishedAt: finishedAt.toISOString(),
+      }),
+    ).resolves.toEqual({
+      libraryItemId: 'library-42',
+      finishedAt: finishedAt.toISOString(),
+    });
+    expect(getCurrentUserRecord).toHaveBeenCalledWith('clerk_123');
+    expect(updateLibraryItem).toHaveBeenCalledWith({
+      where: { id: 'library-42', userId: 'user-1', isArchived: false },
+      data: { finishedAt },
+      select: { id: true, finishedAt: true },
+    });
   });
 
   it('renames one owned collection with a trimmed name', async () => {
