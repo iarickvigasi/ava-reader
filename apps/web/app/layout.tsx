@@ -30,6 +30,7 @@ const readerSerif = Noto_Serif({
   variable: "--font-reader-serif",
   subsets: ["latin"],
   weight: ["400", "700"],
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {

@@ -27,22 +27,6 @@ export function buildBookTags(book: LibraryBookInfo) {
     .filter((genre) => genre.length > 0);
 }
 
-export function buildDescriptionParagraphs(
-  description: null | string,
-  fallback: string,
-) {
-  const content = description?.trim();
-
-  if (!content) {
-    return [fallback];
-  }
-
-  return content
-    .split(/\n\s*\n/g)
-    .map((paragraph) => paragraph.trim())
-    .filter((paragraph) => paragraph.length > 0);
-}
-
 // Locale-aware formatters. Bind a single instance per render with this hook
 // so callers don't pass the translator into every call.
 
