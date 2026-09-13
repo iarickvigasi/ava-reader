@@ -1,6 +1,10 @@
 {
   "common": {
-    "back": "Назад"
+    "back": "Назад",
+    "compactNumber": {
+      "thousand": "{value}\u00a0тис.",
+      "million": "{value}\u00a0млн"
+    }
   },
   "landing": {
     "tagline": {

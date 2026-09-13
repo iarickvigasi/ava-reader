@@ -6,6 +6,7 @@ import {
   SparkIcon,
   StackBooksIcon,
 } from "@/components/app/shared/app-icons";
+import { StatNumber } from "@/components/app/shared/stat-number";
 import type { HomePayload } from "@/lib/api-types";
 import { Panel, SectionEyebrow } from "../shared/home-shared";
 
@@ -31,7 +32,9 @@ export function StatsPanel({ stats }: { stats: Stats }) {
           <div className="grid grid-cols-4 gap-2">
             {items.map((item) => (
               <div key={item.id} className="min-w-0 space-y-1 text-center">
-                <p className="text-[1.35rem] leading-none text-ink">{item.value}</p>
+                <p className="text-base leading-none text-ink min-[375px]:text-lg min-[440px]:text-[1.35rem]">
+                  <StatNumber value={item.value} />
+                </p>
                 <p className="text-[0.5rem] leading-tight font-semibold uppercase tracking-widest text-olive">
                   {item.label}
                 </p>
@@ -46,7 +49,9 @@ export function StatsPanel({ stats }: { stats: Stats }) {
           <Panel key={item.id} className="p-6">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-4xl text-ink">{item.value}</p>
+                <p className="text-4xl text-ink">
+                  <StatNumber value={item.value} />
+                </p>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-olive">
                   {item.label}
                 </p>

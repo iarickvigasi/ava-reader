@@ -1,6 +1,10 @@
 {
   "common": {
-    "back": "Atrás"
+    "back": "Atrás",
+    "compactNumber": {
+      "thousand": "{value}\u00a0mil",
+      "million": "{value}\u00a0M"
+    }
   },
   "landing": {
     "tagline": {

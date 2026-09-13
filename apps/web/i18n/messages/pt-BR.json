@@ -1,6 +1,10 @@
 {
   "common": {
-    "back": "Voltar"
+    "back": "Voltar",
+    "compactNumber": {
+      "thousand": "{value}\u00a0mil",
+      "million": "{value}\u00a0mi"
+    }
   },
   "landing": {
     "tagline": {

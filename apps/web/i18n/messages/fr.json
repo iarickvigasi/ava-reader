@@ -1,6 +1,10 @@
 {
   "common": {
-    "back": "Retour"
+    "back": "Retour",
+    "compactNumber": {
+      "thousand": "{value}\u00a0k",
+      "million": "{value}\u00a0M"
+    }
   },
   "landing": {
     "tagline": {
