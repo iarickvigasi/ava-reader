@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* CSS-visible defaults; next/font's generated classes have higher specificity. */
+:where(:root) {
+  --font-cyrillic-body: "Nunito Sans";
+  --font-cyrillic-display: "Source Serif 4";
+}
+
 :root {
   --font-afacad: "Afacad", sans-serif;
   --font-abhaya: "Abhaya Libre", serif;
@@ -129,8 +135,8 @@
   --color-success: var(--success);
   --color-danger: var(--danger);
   --color-warning: var(--warning);
-  --font-sans: var(--font-afacad);
-  --font-display: var(--font-abhaya);
+  --font-sans: var(--font-cyrillic-body), var(--font-afacad);
+  --font-display: var(--font-cyrillic-display), var(--font-abhaya);
   --font-ui: var(--font-inter);
   --font-reader: var(--font-reader-serif);
 }

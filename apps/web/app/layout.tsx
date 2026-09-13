@@ -7,6 +7,7 @@ import { getLocale } from "next-intl/server";
 import { SiteFrame } from "@/components/layout/site-frame";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { OfflineIdentityReconciler } from "@/features/offline/lifecycle/offline-identity-reconciler";
+import { cyrillicBody, cyrillicDisplay } from "./fonts/cyrillic";
 import "./globals.css";
 
 const display = Abhaya_Libre({
@@ -57,7 +58,7 @@ export default async function RootLayout({
       lang={locale}
       data-theme={initialTheme}
       suppressHydrationWarning
-      className={`${display.variable} ${body.variable} ${ui.variable} ${readerSerif.variable} h-full antialiased`}
+      className={`${display.variable} ${body.variable} ${ui.variable} ${readerSerif.variable} ${cyrillicBody.variable} ${cyrillicDisplay.variable} h-full antialiased`}
     >
       <body className="min-h-full">
         <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />

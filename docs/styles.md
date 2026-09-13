@@ -18,10 +18,13 @@ Tune with `/NN` opacity (`text-ink/55`, `bg-ink/40`).
 ## Type
 | Utility | Font | Use |
 | --- | --- | --- |
-| `font-display` | Abhaya Libre | headings, hero numerals |
+| `font-display` | Abhaya Libre + Source Serif 4 Cyrillic | headings, hero numerals |
 | `font-reader` | Noto Serif | reader body **and dialog titles** |
 | `font-ui` | Inter | eyebrows, labels, meta |
-| `font-sans` | Afacad | default body |
+| `font-sans` | Afacad + Nunito Sans Cyrillic | default body |
+
+Cyrillic companions use script-only, size-matched faces; Latin retains its original fonts.
+Font sources, metrics and licenses: [font notes](../apps/web/app/fonts/README.md).
 
 Always the utility — never `font-(--font-x)`. **Eyebrow/overline** (ubiquitous):
 `font-ui text-xs uppercase tracking-[0.16em] text-muted`.
