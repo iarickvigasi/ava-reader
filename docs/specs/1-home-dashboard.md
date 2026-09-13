@@ -1,6 +1,6 @@
 # Home dashboard
 
-> Status: shipped · Updated: 2026-08-30 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
+> Status: shipped · Updated: 2026-09-13 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
 > apps/web/components/app/home, apps/web/features/offline/buckets/home
 
 ## Summary
@@ -37,6 +37,11 @@ discovery. The daily entry point into the habit.
    before any repeats, and the pick stays reproducible on both server and client. Quotes stay in
    their original English in all locales and live in a code list (`home-quotes.ts`), not in the
    i18n message files.
+8. Recent annotations shows up to three stacked quote cards, one latest saved annotation per
+   non-archived book, ordered by the shared engagement timestamp (latest read, opened, or added).
+   Books without annotations are skipped before selecting three. Home fetches annotation text
+   only for those selected books, using annotation counts on library metadata to find candidates.
+   Fewer eligible books show fewer cards; no annotations shows the existing empty state.
 
 ## Data & sync
 home bucket (single payload row keyed to the user); composed with stats deltas. Service worker
@@ -51,6 +56,8 @@ current book.
 - [ ] Stats reflect local deltas without double-counting after sync.
 - [ ] Resume card opens the current book at the last position.
 - [ ] Clicking a collections-panel row opens that collection at /app/library/collections/[slug].
+- [ ] Recent annotations shows the latest quote from each of three recently engaged books with
+      annotations, or fewer cards when fewer books qualify, using the existing quote card design.
 - [ ] Covers render whole (never cropped) whatever the source image ratio — one shared
       `<BookCover>` owns ratio and fit app-wide, see [styles.md](../styles.md).
 - [ ] Resume and import controls show their pending label (Opening/Uploading + trailing dots)

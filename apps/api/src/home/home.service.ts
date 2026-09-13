@@ -11,12 +11,15 @@ import {
 import { findPrimarySourceFile } from '../shared/primary-book-file';
 import { selectHomeCollections } from './collections-panel';
 
+const HOME_ANNOTATION_LIMIT = 3;
+
 // Match the same shape used by LibraryService: cover bytes are served from
 // `/api/library/covers/:bookId` and BookFile.readingProgressIndex is a multi-KB
 // Json column never rendered on home. Selecting only what we read keeps the
 // home payload small.
 type LibraryItemRecord = Prisma.LibraryItemGetPayload<{
   include: {
+    _count: { select: { annotations: true } };
     book: {
       include: {
         coverBlob: { select: { mimeType: true } };
@@ -52,7 +55,6 @@ export class HomeService {
       libraryItems,
       featuredCatalogEntries,
       recentReadingSessions,
-      annotations,
       collections,
       totalReadingSecondsAggregate,
       highlightsCount,
@@ -65,6 +67,11 @@ export class HomeService {
           isArchived: false,
         },
         include: {
+          _count: {
+            select: {
+              annotations: { where: { userId: user.id } },
+            },
+          },
           book: {
             include: {
               coverBlob: { select: { mimeType: true } },
@@ -105,22 +112,6 @@ export class HomeService {
           durationSeconds: true,
           trackedDay: true,
         },
-      }),
-      this.prisma.annotation.findMany({
-        where: {
-          userId: user.id,
-        },
-        include: {
-          libraryItem: {
-            include: {
-              book: true,
-            },
-          },
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-        take: 3,
       }),
       this.prisma.collection.findMany({
         where: {
@@ -171,6 +162,7 @@ export class HomeService {
     const currentEngagement = selectCurrentEngagement(libraryItems);
     const totalReadingSeconds =
       totalReadingSecondsAggregate._sum.durationSeconds ?? 0;
+    const annotations = await this.loadRecentAnnotations(user.id, libraryItems);
 
     return {
       collections: {
@@ -197,14 +189,7 @@ export class HomeService {
         : null,
       mastery: createMasteryPayload(recentReadingSessions),
       recentAnnotations: {
-        items: annotations.map((annotation) => ({
-          bookTitle: annotation.libraryItem.book.title,
-          colorLabel: annotation.highlightColor ?? 'Archival Yellow',
-          createdAt: annotation.createdAt.toISOString(),
-          excerpt: annotation.excerpt,
-          id: annotation.id,
-          note: annotation.note,
-        })),
+        items: annotations,
       },
       state,
       stats: {
@@ -221,6 +206,66 @@ export class HomeService {
         role: user.role,
       },
     };
+  }
+
+  private async loadRecentAnnotations(
+    userId: string,
+    libraryItems: LibraryItemRecord[],
+  ) {
+    // Count first so books without highlights do not consume a slot, then
+    // fetch excerpt text only for the three most recently engaged books.
+    const recentBooks = libraryItems
+      .filter((item) => item._count.annotations > 0)
+      .sort(
+        (left, right) =>
+          compareByEngagementDesc(left, right) ||
+          left.id.localeCompare(right.id),
+      )
+      .slice(0, HOME_ANNOTATION_LIMIT);
+
+    if (recentBooks.length === 0) return [];
+
+    const annotatedBooks = await this.prisma.libraryItem.findMany({
+      where: {
+        userId,
+        isArchived: false,
+        id: { in: recentBooks.map((item) => item.id) },
+      },
+      select: {
+        id: true,
+        annotations: {
+          where: { userId },
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+          take: 1,
+          select: {
+            createdAt: true,
+            excerpt: true,
+            highlightColor: true,
+            id: true,
+            note: true,
+          },
+        },
+      },
+    });
+    const annotationsByBook = new Map(
+      annotatedBooks.map((item) => [item.id, item.annotations[0]]),
+    );
+
+    return recentBooks.flatMap((item) => {
+      const annotation = annotationsByBook.get(item.id);
+      if (!annotation) return [];
+
+      return [
+        {
+          bookTitle: item.book.title,
+          colorLabel: annotation.highlightColor ?? 'Archival Yellow',
+          createdAt: annotation.createdAt.toISOString(),
+          excerpt: annotation.excerpt,
+          id: annotation.id,
+          note: annotation.note,
+        },
+      ];
+    });
   }
 }
 

@@ -16,19 +16,28 @@ export function RecentAnnotationsPanel({
   annotations: Annotation[];
 }) {
   const t = useTranslations("home.annotations");
-  const annotation = annotations[0];
+  const recentAnnotations = annotations.slice(0, 3);
 
   return (
     <section className="space-y-6">
       <SectionHeader label={t("title")} />
 
-      <Panel className="rounded-sm p-5 sm:rounded-3xl sm:p-8">
-        {annotation ? (
-          <AnnotationContent annotation={annotation} />
+      <div className="space-y-6">
+        {recentAnnotations.length > 0 ? (
+          recentAnnotations.map((annotation) => (
+            <Panel
+              key={annotation.id}
+              className="rounded-sm p-5 sm:rounded-3xl sm:p-8"
+            >
+              <AnnotationContent annotation={annotation} />
+            </Panel>
+          ))
         ) : (
-          <p className="text-base leading-7 text-copy">{t("empty")}</p>
+          <Panel className="rounded-sm p-5 sm:rounded-3xl sm:p-8">
+            <p className="text-base leading-7 text-copy">{t("empty")}</p>
+          </Panel>
         )}
-      </Panel>
+      </div>
     </section>
   );
 }
