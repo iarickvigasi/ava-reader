@@ -63,6 +63,10 @@ export const HOME_QUOTES: HomeQuote[] = [
     text: "Reading changed dreams into life and life into dreams.",
     attribution: "Mario Vargas Llosa",
   },
+  {
+    text: "The best and most beautiful things in the world cannot be seen or even touched — they must be felt with the heart.",
+    attribution: "Helen Keller",
+  },
 ];
 
 const MS_PER_DAY = 86_400_000;
