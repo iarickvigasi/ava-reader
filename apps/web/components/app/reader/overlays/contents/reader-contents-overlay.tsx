@@ -29,14 +29,17 @@ export function ReaderContentsOverlay({
   payload,
   pendingChapterId,
 }: ReaderContentsOverlayProps) {
-  const activePathIds = useMemo(
-    () =>
-      new Set(
-        findActiveTocPathIds(payload.toc, {
-          activeBlockId: activeLocator?.blockId ?? null,
-          activeChapterId,
-        }),
-      ),
+  const { activePathIds, currentEntryId } = useMemo(
+    () => {
+      const activePath = findActiveTocPathIds(payload.toc, {
+        activeBlockId: activeLocator?.blockId ?? null,
+        activeChapterId,
+      });
+      return {
+        activePathIds: new Set(activePath),
+        currentEntryId: activePath.at(-1) ?? null,
+      };
+    },
     [activeChapterId, activeLocator?.blockId, payload.toc],
   );
   const chapterCount = useMemo(
@@ -65,8 +68,8 @@ export function ReaderContentsOverlay({
                   completionPercent={payload.progress.completionPercent}
                 />
                 <ContentsTreeList
-                  activeChapterId={activeChapterId}
                   activePathIds={activePathIds}
+                  currentEntryId={currentEntryId}
                   entries={payload.toc}
                   onSelectChapter={onSelectChapter}
                   pendingChapterId={pendingChapterId}

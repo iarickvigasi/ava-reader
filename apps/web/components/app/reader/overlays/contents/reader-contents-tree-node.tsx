@@ -5,8 +5,8 @@ import { resolveTocNavigationTarget } from "@/features/reader/toc";
 import type { ReadyReaderTocEntry } from "../../shared/types";
 
 type ReaderContentsTreeNodeProps = {
-  activeChapterId: string;
   activePathIds: Set<string>;
+  currentEntryId: string | null;
   depth: number;
   entry: ReadyReaderTocEntry;
   onSelectChapter: (
@@ -16,43 +16,21 @@ type ReaderContentsTreeNodeProps = {
   pendingChapterId: string | null;
 };
 
-type TocStateKey = "loading" | "current" | "section" | "chapter" | null;
-
-function resolveEntryStateKey({
-  entry,
-  isCurrentChapter,
-  isCurrentSection,
-  isPending,
-}: {
-  entry: ReadyReaderTocEntry;
-  isCurrentChapter: boolean;
-  isCurrentSection: boolean;
-  isPending: boolean;
-}): TocStateKey {
-  if (isPending) return "loading";
-  if (isCurrentSection) return "current";
-  if (entry.blockId) return "section";
-  if (isCurrentChapter) return "chapter";
-  return null;
-}
-
 function resolveEntryLabelClassName({
   depth,
   isActivePath,
-  isCurrentChapter,
-  isCurrentSection,
+  isCurrent,
 }: {
   depth: number;
   isActivePath: boolean;
-  isCurrentChapter: boolean;
-  isCurrentSection: boolean;
+  isCurrent: boolean;
 }) {
   return cn(
     "min-w-0 font-reader leading-6 transition",
     depth === 0 ? "text-[0.98rem]" : "text-[0.92rem]",
-    isCurrentSection
+    isCurrent
       ? "font-semibold text-title"
-      : isCurrentChapter || isActivePath
+      : isActivePath
         ? "text-title"
         : depth > 0
           ? "text-title/62 hover:text-title"
@@ -61,8 +39,8 @@ function resolveEntryLabelClassName({
 }
 
 export function ReaderContentsTreeNode({
-  activeChapterId,
   activePathIds,
+  currentEntryId,
   depth,
   entry,
   onSelectChapter,
@@ -74,10 +52,8 @@ export function ReaderContentsTreeNode({
   const navigationTarget = resolveTocNavigationTarget(entry);
   const chapterId = entry.chapterId;
   const isClickable = Boolean(chapterId && navigationTarget);
-  const isCurrentSection = Boolean(
-    entry.blockId && isActivePath && entry.chapterId === activeChapterId,
-  );
-  const isCurrentChapter = !isCurrentSection && entry.chapterId === activeChapterId;
+  const isCurrent = entry.id === currentEntryId;
+  const stateKey = isPending ? "loading" : isCurrent ? "current" : null;
 
   return (
     <div className="space-y-3">
@@ -87,6 +63,7 @@ export function ReaderContentsTreeNode({
         {isClickable && chapterId && navigationTarget ? (
           <button
             type="button"
+            aria-current={isCurrent ? "location" : undefined}
             className="flex w-full items-start justify-between gap-3 text-left"
             onClick={() => onSelectChapter(chapterId, navigationTarget)}
           >
@@ -94,23 +71,16 @@ export function ReaderContentsTreeNode({
               className={resolveEntryLabelClassName({
                 depth,
                 isActivePath,
-                isCurrentChapter,
-                isCurrentSection,
+                isCurrent,
               })}
             >
               {entry.label}
             </span>
-            <span className="shrink-0 pt-1 font-ui text-[0.62rem] uppercase tracking-[0.16em] text-ink/35">
-              {(() => {
-                const stateKey = resolveEntryStateKey({
-                  entry,
-                  isCurrentChapter,
-                  isCurrentSection,
-                  isPending,
-                });
-                return stateKey ? t(stateKey) : "";
-              })()}
-            </span>
+            {stateKey ? (
+              <span className="shrink-0 pt-1 font-ui text-[0.62rem] uppercase tracking-[0.16em] text-ink/35">
+                {t(stateKey)}
+              </span>
+            ) : null}
           </button>
         ) : (
           <div className="flex items-start justify-between gap-3">
@@ -131,8 +101,8 @@ export function ReaderContentsTreeNode({
           {entry.children.map((child) => (
             <ReaderContentsTreeNode
               key={child.id}
-              activeChapterId={activeChapterId}
               activePathIds={activePathIds}
+              currentEntryId={currentEntryId}
               depth={depth + 1}
               entry={child}
               onSelectChapter={onSelectChapter}

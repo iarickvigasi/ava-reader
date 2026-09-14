@@ -3,8 +3,8 @@ import type { ReadyReaderTocEntry } from "../../shared/types";
 import { ReaderContentsTreeNode } from "./reader-contents-tree-node";
 
 type ContentsTreeListProps = {
-  activeChapterId: string;
   activePathIds: Set<string>;
+  currentEntryId: string | null;
   entries: ReadyReaderTocEntry[];
   onSelectChapter: (
     chapterId: string,
@@ -14,8 +14,8 @@ type ContentsTreeListProps = {
 };
 
 export function ContentsTreeList({
-  activeChapterId,
   activePathIds,
+  currentEntryId,
   entries,
   onSelectChapter,
   pendingChapterId,
@@ -26,8 +26,8 @@ export function ContentsTreeList({
         {entries.map((entry) => (
           <ReaderContentsTreeNode
             key={entry.id}
-            activeChapterId={activeChapterId}
             activePathIds={activePathIds}
+            currentEntryId={currentEntryId}
             depth={0}
             entry={entry}
             onSelectChapter={onSelectChapter}
