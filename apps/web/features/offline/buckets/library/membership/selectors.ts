@@ -1,6 +1,7 @@
 import type { LibraryBookInfo } from "@/lib/api-types/library";
 import type { CollectionMembershipRow, CollectionRow, LibraryItemRow } from "../../../db";
 import type { MembershipMutation } from "./types";
+import { cachedCompletionItem, isFinished } from "../../../completion/counts";
 
 export function overlayBookCollections(
   baseline: LibraryBookInfo["collections"],
@@ -37,7 +38,8 @@ export function overlayCollectionMembership(
     changed = true;
     const delta = Number(change.member) - Number(change.baselineMember);
     itemCount += delta;
-    if ((byId.get(mutation.libraryItemId)?.completionPercent ?? 0) < 100) unreadCount += delta;
+    const item = byId.get(mutation.libraryItemId);
+    if (!item || !isFinished(cachedCompletionItem(item))) unreadCount += delta;
     if (!change.member) members.delete(mutation.libraryItemId);
     else members.set(mutation.libraryItemId, {
       collectionId: collection.id, libraryItemId: mutation.libraryItemId, order: 0,

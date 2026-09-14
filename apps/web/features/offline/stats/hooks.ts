@@ -3,20 +3,19 @@
 // React hooks that wire the Dexie deltas (./local-deltas) through the pure
 // composers (./compose) and return UI-ready values.
 //
-// Reactivity strategy — small but principled:
+// Session/highlight delta refresh:
 //   - recompute on mount,
 //   - recompute on `visibilitychange → visible` (user came back from
 //     reader),
 //   - recompute every 30s while visible,
 //   - recompute on `online`.
-// The home page doesn't need millisecond freshness, and the alternative
-// (subscribing to every bucket's internals) adds coupling without
-// observable UX gain. The deltas are tiny Dexie scans — well under 5ms
-// even with hundreds of rows.
+// Completion totals instead come from useHomeWithCache's live subscription,
+// so mark/clear and acknowledgment update them without waiting for this timer.
 
 import { useCallback, useEffect, useState } from "react";
 
 import type { HomePayload } from "@/lib/api-types";
+import { useHomeWithCache } from "../buckets/home/hooks";
 
 import {
   composeBookMinutesRead,
@@ -27,7 +26,6 @@ import {
 import {
   readHighlightCountDelta,
   readUnsyncedSessionDeltas,
-  readVolumesReadDelta,
   type UnsyncedSessionDeltas,
 } from "./local-deltas";
 
@@ -39,16 +37,14 @@ const RECOMPUTE_INTERVAL_MS = 30_000;
 type DeltaBundle = {
   sessions: UnsyncedSessionDeltas;
   highlightsNet: number;
-  volumesReadDelta: number;
 };
 
 async function readBundle(): Promise<DeltaBundle> {
-  const [sessions, highlightsNet, volumesReadDelta] = await Promise.all([
+  const [sessions, highlightsNet] = await Promise.all([
     readUnsyncedSessionDeltas(),
     readHighlightCountDelta(),
-    readVolumesReadDelta(),
   ]);
-  return { sessions, highlightsNet, volumesReadDelta };
+  return { sessions, highlightsNet };
 }
 
 const EMPTY_BUNDLE: DeltaBundle = {
@@ -58,7 +54,6 @@ const EMPTY_BUNDLE: DeltaBundle = {
     byUtcDaySeconds: new Map(),
   },
   highlightsNet: 0,
-  volumesReadDelta: 0,
 };
 
 // Lazy shared bundle so multiple consumers on the same page (StatsPanel
@@ -95,16 +90,19 @@ export function useComposedHomeStats(
   home: HomePayload | null,
 ): HomePayload["stats"] | null {
   const bundle = useDeltaBundle();
-  if (!home) {
+  const effective = useHomeWithCache(home);
+  if (!effective) {
     return null;
   }
   const deltas: HomeStatsDeltas = {
     hoursReadingExtraSeconds: bundle.sessions.totalSeconds,
     highlightsNet: bundle.highlightsNet,
-    volumesReadDelta: bundle.volumesReadDelta,
+    // readHome has already composed this count, including acknowledged edits
+    // newer than its snapshot. Adding a separate pending delta would double it.
+    volumesReadDelta: 0,
     aiCommentsNet: 0,
   };
-  return composeHomeStats(home.stats, deltas);
+  return composeHomeStats(effective.stats, deltas);
 }
 
 export function useComposedMastery(

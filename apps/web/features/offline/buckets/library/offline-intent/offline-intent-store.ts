@@ -2,7 +2,8 @@
 // write that flips the flag or its dirty bookkeeping. The flush loop that
 // PATCHes these rows lives next door in offline-intent-sync.ts.
 
-import { getDb, type LibraryItemRow } from "../../../db";
+import { getDb, type AvaReaderDB, type LibraryItemRow } from "../../../db";
+import { bumpCompletionRevision, recordCompletionAck } from "../../../completion/state";
 
 // Optimistically toggles the "keep offline" intent on a library row and marks
 // it dirty so the sync flush PATCHes it. Returns false if the row isn't cached
@@ -61,13 +62,16 @@ export async function listOfflineIntentDirty(): Promise<LibraryItemRow[]> {
 export async function markOfflineIntentClean(
   libraryItemId: string,
   syncedValue: boolean,
+  db: AvaReaderDB = getDb(),
 ): Promise<void> {
-  const db = getDb();
-  const row = await db.libraryItems.get(libraryItemId);
-  if (!row || row.offlineRequested !== syncedValue) {
-    return;
-  }
-  await db.libraryItems.put({ ...row, offlineRequestedDirty: false });
+  if (db !== getDb()) return;
+  await db.transaction("rw", [db.libraryItems, db.meta], async () => {
+    const row = await db.libraryItems.get(libraryItemId);
+    if (!row) return;
+    await recordCompletionAck(db, libraryItemId, { offlineRequested: syncedValue });
+    if (row.offlineRequested !== syncedValue) return;
+    await db.libraryItems.put({ ...row, offlineRequestedDirty: false });
+  });
 }
 
 // Merges a patch into one cached row. False when the row isn't cached — the
@@ -77,10 +81,11 @@ async function patchItemRow(
   patch: Partial<LibraryItemRow>,
 ): Promise<boolean> {
   const db = getDb();
-  const row = await db.libraryItems.get(libraryItemId);
-  if (!row) {
-    return false;
-  }
-  await db.libraryItems.put({ ...row, ...patch });
-  return true;
+  return db.transaction("rw", [db.libraryItems, db.meta], async () => {
+    const row = await db.libraryItems.get(libraryItemId);
+    if (!row) return false;
+    await db.libraryItems.put({ ...row, ...patch });
+    await bumpCompletionRevision(db);
+    return true;
+  });
 }

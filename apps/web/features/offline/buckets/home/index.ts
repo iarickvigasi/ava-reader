@@ -1,6 +1,7 @@
 export { applyHome, clearHome, readHome } from "./storage";
 export {
   useHomeFromCache,
+  useHomeWithCache,
   useHydrateHome,
   type HomeCacheState,
 } from "./hooks";

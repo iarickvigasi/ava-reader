@@ -1,11 +1,19 @@
 import type { BookFileFormat } from "./shared";
 
+export type CompletionItem = {
+  libraryItemId: string;
+  finishedAt: string | null;
+  completionPercent: number;
+};
+
 // Shared between every screen that shows a book card: the library, a
 // collection, the home "currently reading" widget. Anything that knows a book
 // at all knows at least this much. Subtypes add screen-specific extras.
 export type LibraryCardBook = {
   authors: string[];
   completionPercent: number;
+  // Older list payloads can omit the finish date; null explicitly clears it.
+  finishedAt?: string | null;
   coverImageUrl: string | null;
   libraryItemId: string;
   // Server-synced "keep this book available offline" intent (see
@@ -26,6 +34,7 @@ export type LibraryCollectionBook = LibraryCardBook & {
 
 export type LibraryCollection = {
   books: LibraryCollectionBook[];
+  completionItems?: CompletionItem[];
   description: string | null;
   id: string;
   itemCount: number;

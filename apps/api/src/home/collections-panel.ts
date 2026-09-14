@@ -1,16 +1,21 @@
 import type { CollectionKind } from '@prisma/client';
 import {
+  isBookFinished,
+  serializeCompletionItem,
+} from '../shared/book-completion';
+import {
   compareCollectionsForDisplay,
   type CollectionOrderKey,
 } from '../shared/compare-collections';
 import { mostRecentEngagementDate } from '../shared/engagement-date';
 
 const HOME_COLLECTION_LIMIT = 6;
-const FULLY_READ_PERCENT = 100;
 
 type PanelItem = {
   libraryItem: {
     addedAt: Date;
+    id: string;
+    finishedAt: Date | null;
     lastOpenedAt: Date | null;
     progress: { completionPercent: number; lastReadAt: Date | null } | null;
   };
@@ -61,6 +66,9 @@ function latestEngagement(items: PanelItem[]): Date | null {
 
 function serializePanelCollection(collection: PanelCollection) {
   return {
+    completionItems: collection.items.map(({ libraryItem }) =>
+      serializeCompletionItem(libraryItem),
+    ),
     description: collection.description,
     id: collection.id,
     itemCount: collection.items.length,
@@ -69,9 +77,7 @@ function serializePanelCollection(collection: PanelCollection) {
     slug: collection.slug,
     smartKey: collection.smartKey,
     unreadCount: collection.items.filter(
-      (item) =>
-        (item.libraryItem.progress?.completionPercent ?? 0) <
-        FULLY_READ_PERCENT,
+      (item) => !isBookFinished(item.libraryItem),
     ).length,
   };
 }

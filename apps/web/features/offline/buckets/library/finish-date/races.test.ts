@@ -28,7 +28,7 @@ afterEach(() => {
 // module-level generation counter or calling its mutation/sync functions.
 async function acknowledgeInOtherTab(db: AvaReaderDB) {
   await db.transaction("rw!", [db.libraryItems, db.finishDateMutations, db.meta], async () => {
-    await db.libraryItems.update(book.libraryItemId, { "details.finishedAt": finishedAt });
+    await db.libraryItems.update(book.libraryItemId, { finishedAt, "details.finishedAt": finishedAt });
     await db.finishDateMutations.delete(book.libraryItemId);
     await db.meta.put({
       key: "finish-date-revision", value: crypto.randomUUID(), updatedAt: finishedAt,
@@ -47,6 +47,7 @@ it("does not overwrite another tab's acknowledged finish date with an older GET 
     await response.started;
     await acknowledgeInOtherTab(otherTab);
     expect(finishDateGeneration()).toBe(generation);
+    expect((await readBookInfo(book.slug))?.finishedAt).toBe(finishedAt);
     response.respond(Response.json({ book }));
     await revalidating;
     expect((await readBookInfo(book.slug))?.finishedAt).toBe(finishedAt);
@@ -75,6 +76,7 @@ it("reads a consistent finish date when another tab acknowledges between the boo
     expect(acknowledgment).toBeDefined();
     await acknowledgment;
     expect(await db.finishDateMutations.count()).toBe(0);
+    expect((await readBookInfo(book.slug))?.finishedAt).toBe(finishedAt);
   } finally {
     db.libraryItems.hook("reading").unsubscribe(onRead);
     await acknowledgment;

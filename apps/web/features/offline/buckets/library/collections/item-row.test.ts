@@ -76,4 +76,37 @@ describe("mergeListPayloadItemRow", () => {
     );
     expect(merged.offlineRequested).toBe(true);
   });
+
+  it.each([NOW, null])("carries an explicit finish date %s from a list payload", (finishedAt) => {
+    const row = bookToItemRow({
+      libraryItemId: "lib-1", slug: "book-a", title: "Book A", authors: ["A"],
+      coverImageUrl: null, completionPercent: 10, primaryFormat: "EPUB",
+      lastReadAt: NOW, finishedAt,
+    }, NOW);
+    expect(row.finishedAt).toBe(finishedAt);
+  });
+
+  it("retains a known legacy detail date when an older list omits the date", () => {
+    const details = { finishedAt: NOW, minutesRead: 12 } as LibraryItemRow["details"];
+    const merged = mergeListPayloadItemRow(serverRow(), cachedRow({ details }));
+    expect(merged.finishedAt).toBe(NOW);
+    expect(merged.details).toBe(details);
+  });
+
+  it("preserves an explicit canonical clear over a stale legacy detail date", () => {
+    const details = { finishedAt: NOW, minutesRead: 12 } as LibraryItemRow["details"];
+    const merged = mergeListPayloadItemRow(serverRow(), cachedRow({ finishedAt: null, details }));
+    expect(merged.finishedAt).toBeNull();
+    expect(merged.details).toEqual({ finishedAt: null, minutesRead: 12 });
+  });
+
+  it.each([NOW, null])("updates cached details with an incoming date %s", (finishedAt) => {
+    const details = { finishedAt: "2026-01-01T12:00:00Z", minutesRead: 12 } as LibraryItemRow["details"];
+    const merged = mergeListPayloadItemRow(
+      { ...serverRow(), finishedAt },
+      cachedRow({ finishedAt: details!.finishedAt, details }),
+    );
+    expect(merged.finishedAt).toBe(finishedAt);
+    expect(merged.details).toEqual({ finishedAt, minutesRead: 12 });
+  });
 });

@@ -7,6 +7,7 @@
 import { getPublicApiBaseUrl } from "@/lib/api";
 
 import { refreshFromDb } from "../bucket";
+import { getDb } from "../../../db";
 import {
   listOfflineIntentDirty,
   markOfflineIntentClean,
@@ -84,15 +85,17 @@ export async function flushOfflineIntents(getToken: GetToken): Promise<void> {
 }
 
 async function doFlush(getToken: GetToken): Promise<void> {
+  const db = getDb();
   const dirty = await listOfflineIntentDirty();
   if (dirty.length === 0) {
     return;
   }
   const token = await getToken();
-  if (!token) {
+  if (!token || db !== getDb()) {
     return;
   }
   for (const row of dirty) {
+    if (db !== getDb()) return;
     const requested = row.offlineRequested === true;
     try {
       const response = await fetch(
@@ -112,7 +115,7 @@ async function doFlush(getToken: GetToken): Promise<void> {
         // Transient — leave it dirty, the next online tick retries.
         continue;
       }
-      await markOfflineIntentClean(row.libraryItemId, requested);
+      await markOfflineIntentClean(row.libraryItemId, requested, db);
     } catch {
       // Network blip — same recovery as a 5xx: stays dirty.
     }

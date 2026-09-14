@@ -3,6 +3,7 @@
 // React bindings for the home cache.
 
 import { useAuth } from "@clerk/nextjs";
+import { liveQuery } from "dexie";
 import { useEffect, useState } from "react";
 
 import type { HomePayload } from "@/lib/api-types/home";
@@ -23,7 +24,7 @@ export function useHydrateHome(initial: HomePayload | null): void {
     if (!initial) {
       return;
     }
-    void applyHome(initial);
+    void applyHome(initial, { seedOnly: true });
   }, [initial]);
 
   useEffect(() => {
@@ -51,21 +52,21 @@ export function useHomeFromCache(): HomeCacheState {
   });
 
   useEffect(() => {
-    let cancelled = false;
-    void readHome().then((payload) => {
-      if (cancelled) {
-        return;
-      }
-      setState(
-        payload
-          ? { status: "ready", payload }
-          : { status: "empty", payload: null },
-      );
+    const subscription = liveQuery(readHome).subscribe({
+      next: (payload) => setState(payload
+        ? { status: "ready", payload }
+        : { status: "empty", payload: null }),
+      error: () => {},
     });
-    return () => {
-      cancelled = true;
-    };
+    return () => subscription.unsubscribe();
   }, []);
 
   return state;
+}
+
+// Both server-rendered panels and the offline page consume the same effective
+// counts. The initial prop preserves the matching server/client first render.
+export function useHomeWithCache(initial: HomePayload | null): HomePayload | null {
+  const state = useHomeFromCache();
+  return state.status === "ready" ? state.payload : initial;
 }

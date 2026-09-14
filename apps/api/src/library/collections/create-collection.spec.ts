@@ -43,6 +43,7 @@ describe('create collection', () => {
       books: [],
       itemCount: 0,
       unreadCount: 0,
+      completionItems: [],
     });
   });
 

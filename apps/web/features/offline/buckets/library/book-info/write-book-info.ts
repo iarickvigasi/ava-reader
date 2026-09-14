@@ -29,6 +29,9 @@ export async function applyBookInfoPayload(
     if (options.seedOnly && prior?.details) return;
     const pending = await db.collectionMembershipMutations.get(book.libraryItemId);
     const pendingFinishDate = await db.finishDateMutations.get(book.libraryItemId);
+    const finishedAt = pendingFinishDate
+      ? prior?.finishedAt !== undefined ? prior.finishedAt : prior?.details?.finishedAt ?? null
+      : book.finishedAt ?? null;
     const next: LibraryItemRow = {
       libraryItemId: book.libraryItemId,
       slug: book.slug,
@@ -36,6 +39,7 @@ export async function applyBookInfoPayload(
       authors: book.authors,
       coverImageUrl: book.coverImageUrl,
       completionPercent: book.completionPercent,
+      finishedAt,
       primaryFormat: book.primaryFormat,
       lastReadAt: book.lastReadAt ?? prior?.lastReadAt ?? null,
       coverBlob: prior?.coverBlob ?? null,
@@ -71,7 +75,7 @@ export async function applyBookInfoPayload(
         genres: book.genres,
         // An offline route can hydrate its own overlaid cached payload. Keep
         // the server baseline until sync acknowledges the pending value.
-        finishedAt: pendingFinishDate ? prior?.details?.finishedAt ?? null : book.finishedAt ?? null,
+        finishedAt,
         language: book.language,
         // The details payload's lastReadAt is the strict
         // ReadingProgress.lastReadAt (nullable). The list payload's

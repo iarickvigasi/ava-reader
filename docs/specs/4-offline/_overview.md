@@ -23,6 +23,8 @@ raw fetch. Split by subsystem, like [[2-reader/_overview]].
 - 4.9 header-avatar — always-visible header avatar slot + offline profile-photo caching.
 - 4.10 slow-connection — the "Slow" header badge + cache-first document fallback on a degraded
   (online but unresponsive) connection.
+- 4.11 completion-counts — whole-library completion snapshots, pending edits, and per-aggregate
+  reconciliation when only some books are cached.
 
 ## Shared data model — what is authoritative for what
 Three substrates hold offline state. **Which one owns a fact decides which one a read may trust.**

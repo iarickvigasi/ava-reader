@@ -1,5 +1,5 @@
 import type { HomePayload } from "@/lib/api-types";
-import { CollectionsPanel } from "./sections/collections-panel";
+import { HomeCollectionsWithCache } from "./sections/home-collections-with-cache";
 import { CurrentEngagementSection } from "./sections/current-engagement/current-engagement-section";
 import { DashboardFooter } from "./sections/dashboard-footer";
 import { EmptyHomeState } from "./sections/empty-home-state";
@@ -34,7 +34,7 @@ export function HomeScreen({ home }: HomeScreenProps) {
 
       {engagement ? (
         <section className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
-          <CollectionsPanel collections={home.collections.items} />
+          <HomeCollectionsWithCache home={home} />
           <RecentAnnotationsPanel annotations={home.recentAnnotations.items} />
         </section>
       ) : null}

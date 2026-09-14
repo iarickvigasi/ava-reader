@@ -81,8 +81,9 @@ back to the total when null.
 
 `computeProgressMetricsFromIndex` divides by body blocks only and clamps: a locator before the first
 body chapter reads 0%, after the last reads 100%. That clamp is a real fix — the library payload
-serializers (apps/api/src/library) and `home/collections-panel.ts` count unread books using
-`completionPercent < 100`, so a novel with a heavy bibliography could otherwise stay unread.
+serializers (apps/api/src/library) and `home/collections-panel.ts` count a book unread when it has
+no finish date and `completionPercent < 100`, so a novel with a heavy bibliography could otherwise
+stay unread unless manually marked finished.
 
 ## Edge cases
 - Missing API key, AI error, or schema violation → run `FAILED` with the message; labels stay

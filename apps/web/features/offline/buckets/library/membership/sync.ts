@@ -6,6 +6,7 @@ import { acknowledgeMembership } from "./acknowledge";
 import { isCurrentMembershipRuntime, membershipRuntime, reportMembershipDrop } from "./bucket";
 import { sendMembership } from "./send";
 import type { GetToken } from "./types";
+import { readCompletionRevision } from "../../../completion/state";
 
 export function flushCollectionMemberships(getToken: GetToken): Promise<void> {
   const runtime = membershipRuntime(getToken);
@@ -49,10 +50,11 @@ async function drain(runtime: ReturnType<typeof membershipRuntime>): Promise<voi
       const token = await runtime.getToken();
       if (!isCurrentMembershipRuntime(runtime)) return;
       if (!token) { retry(runtime); return; }
+      const snapshotCompletionRevision = await readCompletionRevision(runtime.db);
       const result = await sendMembership(head, token);
       if (!isCurrentMembershipRuntime(runtime)) return;
       if (result.kind === "retry") { retry(runtime); return; }
-      await acknowledgeMembership(runtime.db, head, result.kind === "saved" ? result.payload : undefined);
+      await acknowledgeMembership(runtime.db, head, result.kind === "saved" ? result.payload : undefined, snapshotCompletionRevision);
       if (!isCurrentMembershipRuntime(runtime)) return;
       runtime.retryDelayMs = 0;
       await refreshFromDb();

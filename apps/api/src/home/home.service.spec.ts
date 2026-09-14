@@ -3,6 +3,10 @@ import { HomeService } from './home.service';
 
 describe('HomeService', () => {
   const getCurrentUserRecord = jest.fn();
+  const findCompletionItems = jest.fn<
+    Promise<unknown[]>,
+    [Prisma.LibraryItemFindManyArgs]
+  >();
   const prisma = {
     aiComment: {
       count: jest.fn(),
@@ -18,9 +22,6 @@ describe('HomeService', () => {
     },
     libraryItem: {
       findMany: jest.fn<Promise<unknown[]>, [Prisma.LibraryItemFindManyArgs]>(),
-    },
-    readingProgress: {
-      count: jest.fn(),
     },
     readingSessionSegment: {
       aggregate: jest.fn(),
@@ -39,11 +40,22 @@ describe('HomeService', () => {
     prisma.catalogEntry.findMany.mockReset();
     prisma.collection.findMany.mockReset();
     prisma.libraryItem.findMany.mockReset();
-    prisma.readingProgress.count.mockReset();
+    findCompletionItems.mockReset();
     prisma.readingSessionSegment.aggregate.mockReset();
     prisma.readingSessionSegment.findMany.mockReset();
 
-    homeService = new HomeService(prisma as never, usersService as never);
+    homeService = new HomeService(
+      {
+        ...prisma,
+        libraryItem: {
+          findMany: (args: Prisma.LibraryItemFindManyArgs) =>
+            args.select?.finishedAt
+              ? findCompletionItems(args)
+              : prisma.libraryItem.findMany(args),
+        },
+      } as never,
+      usersService as never,
+    );
     getCurrentUserRecord.mockResolvedValue({
       avatarUrl: null,
       displayName: 'Reader',
@@ -59,7 +71,7 @@ describe('HomeService', () => {
       _sum: { durationSeconds: 0 },
     });
     prisma.annotation.count.mockResolvedValue(0);
-    prisma.readingProgress.count.mockResolvedValue(0);
+    findCompletionItems.mockResolvedValue([]);
     prisma.aiComment.count.mockResolvedValue(0);
   });
 
@@ -112,7 +124,18 @@ describe('HomeService', () => {
       },
     });
     prisma.annotation.count.mockResolvedValue(5);
-    prisma.readingProgress.count.mockResolvedValue(2);
+    findCompletionItems.mockResolvedValue([
+      {
+        id: 'finished-1',
+        finishedAt: null,
+        progress: { completionPercent: 100 },
+      },
+      {
+        id: 'finished-2',
+        finishedAt: new Date('2026-09-14T10:00:00Z'),
+        progress: null,
+      },
+    ]);
     prisma.aiComment.count.mockResolvedValue(3);
 
     const home = await homeService.getHome('clerk_1');
@@ -169,7 +192,7 @@ describe('HomeService', () => {
       },
     });
     prisma.annotation.count.mockResolvedValue(0);
-    prisma.readingProgress.count.mockResolvedValue(0);
+    findCompletionItems.mockResolvedValue([]);
     prisma.aiComment.count.mockResolvedValue(0);
 
     const home = await homeService.getHome('clerk_1');
@@ -195,7 +218,7 @@ describe('HomeService', () => {
       },
     });
     prisma.annotation.count.mockResolvedValue(0);
-    prisma.readingProgress.count.mockResolvedValue(0);
+    findCompletionItems.mockResolvedValue([]);
     prisma.aiComment.count.mockResolvedValue(0);
 
     const home = await homeService.getHome('clerk_1');

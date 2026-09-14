@@ -62,6 +62,7 @@ export function buildMembershipCollectionView(
 }
 
 function toBookView(row: LibraryItemRow): LibraryBookView {
+  const finishedAt = row.finishedAt !== undefined ? row.finishedAt : row.details?.finishedAt;
   return {
     libraryItemId: row.libraryItemId,
     slug: row.slug,
@@ -69,6 +70,7 @@ function toBookView(row: LibraryItemRow): LibraryBookView {
     authors: row.authors,
     coverImageUrl: row.coverImageUrl,
     completionPercent: row.completionPercent,
+    ...(finishedAt !== undefined ? { finishedAt } : {}),
     primaryFormat: row.primaryFormat,
     lastReadAt: row.lastReadAt,
     savedOffline: row.savedOffline,

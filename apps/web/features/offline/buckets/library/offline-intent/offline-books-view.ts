@@ -6,8 +6,7 @@
 // See docs/specs/4-offline/4.8-offline-books-collection.md.
 
 import type { LibraryItemRow } from "../../../db";
-
-const FULLY_READ_PERCENT = 100;
+import { cachedCompletionItem, isFinished } from "../../../completion/counts";
 
 // Ordered by the same engagement timestamp the server sorts collections by;
 // LibraryItemRow.lastReadAt already carries it (max of progress.lastReadAt,
@@ -55,7 +54,7 @@ function isLocallyRemoved(row: LibraryItemRow): boolean {
 }
 
 function countUnread(rows: LibraryItemRow[]): number {
-  return rows.filter((row) => row.completionPercent < FULLY_READ_PERCENT)
+  return rows.filter((row) => !isFinished(cachedCompletionItem(row)))
     .length;
 }
 

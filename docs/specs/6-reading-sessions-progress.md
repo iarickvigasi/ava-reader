@@ -1,6 +1,6 @@
 # Reading sessions, progress & stats
 
-> Status: shipped · Updated: 2026-09-04 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
+> Status: shipped · Updated: 2026-09-14 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
 > apps/web/features/offline/buckets/{sessions,progress}, apps/web/features/offline/stats,
 > apps/web/components/app/home/sections/mastery, apps/api/src/reader/{sessions,progress}
 
@@ -25,13 +25,24 @@ shown on home. Serves the "track time spent/remaining, build a habit" job.
 
 ## Data & sync
 sessions bucket (clientSessionId ULID, per-day segments) and progress bucket; both flush
-idempotently. Stats = server baseline + unsynced local deltas, so reconnect never double-counts.
-`volumesRead` follows the same rule as every other stat: the delta is the count of local `progress`
-rows that are `dirty` (unsynced) and `completionPercent >= 100` — books completed offline the server
-hasn't acked yet — added on top of the baseline. It is never a replacement, because the local
-`progress` table only mirrors books opened (or marked offline) on this device, not the whole
-library; treating its full local count as authoritative would undercount books completed on another
-device or before this browser had a Dexie mirror.
+idempotently. Reading-time and highlight stats add unsynced local deltas to their server baseline.
+
+`volumesRead` counts each library item once when **finishedAt is non-null OR completionPercent is
+at least 100**. A manual finish date does not change percentage, reading position, or reading time.
+Removing the date subtracts a completion only if progress is below 100; a dated book at 100 still
+counts once. Home includes archived library items in this total.
+
+The home snapshot carries a complete lightweight `completionItems` list, including items absent
+from this device's book/progress cache. Reads compose each item's snapshot fields with newer
+acknowledged fields and pending date/progress edits. Acknowledged changes remain available after
+their queues clear until the particular home snapshot reflects them; an unrelated collection
+refresh cannot retire a home adjustment. See [[4.11-completion-counts]] for the snapshot revision
+and membership composition rules. Older cached home payloads without this metadata keep their
+server total until a fresh response supplies it.
+
+`readHome()` returns the effective completion total. The home stats hook consumes that value
+directly and adds only its other stats deltas, so online and offline rendering never apply a
+completion adjustment twice. Home stats and collection counts subscribe to Dexie changes.
 
 The progress bucket (locator + completion % + server `lastReadAt`) is the offline resume substrate,
 populated three ways: the reader writes it while reading (dirty until the server acks), `GET
@@ -72,8 +83,10 @@ Offline across multiple days; multiple devices for one book; clock changes; sess
 - [ ] A stale offline progress sync never rewinds a position advanced on another device
   (most-recent-reading wins); a genuine later read does win.
 - [ ] Daily mastery chart reflects per-day minutes against the goal.
-- [ ] Home's Books Read stat matches (or exceeds, for an unsynced offline completion) the server
-  count — never undercounts because a completed book isn't in this device's local progress mirror.
+- [ ] Home's Books Read includes dated books or books at 100%, each once, including uncached and
+  archived books. Clearing a date at 100% keeps the book counted.
+- [ ] Pending additions/removals update counts immediately and survive queue acknowledgment,
+  reload, and stale aggregate responses without duplicate or disappearing adjustments.
 
 ## Open questions
 Time-remaining estimate model; merging sessions started independently on two offline devices (the

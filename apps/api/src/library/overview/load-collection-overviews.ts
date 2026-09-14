@@ -4,6 +4,7 @@ import type { PrismaService } from '../../prisma/prisma.service';
 export type LibraryItemLite = Prisma.LibraryItemGetPayload<{
   select: {
     id: true;
+    finishedAt: true;
     isArchived: true;
     addedAt: true;
     lastOpenedAt: true;
@@ -33,6 +34,7 @@ export function loadCollectionOverviews(prisma: PrismaService, userId: string) {
           libraryItem: {
             select: {
               addedAt: true,
+              finishedAt: true,
               id: true,
               isArchived: true,
               lastOpenedAt: true,

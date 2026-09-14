@@ -27,6 +27,7 @@ function serializeCurrentEngagement(item: LibraryItemRecord) {
     authors: item.book.authors,
     chapterLabel: item.progress?.chapterLabel ?? 'Opening chapters',
     completionPercent: item.progress?.completionPercent ?? 0,
+    finishedAt: item.finishedAt?.toISOString() ?? null,
     coverImageUrl: item.book.coverBlob
       ? buildCoverImageUrl(item.book.id)
       : null,

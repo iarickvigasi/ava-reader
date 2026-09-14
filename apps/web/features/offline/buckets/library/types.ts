@@ -27,6 +27,7 @@ export type LibraryBookView = {
   authors: string[];
   coverImageUrl: string | null;
   completionPercent: number;
+  finishedAt?: string | null;
   primaryFormat: string;
   lastReadAt: string | null;
   savedOffline: boolean;

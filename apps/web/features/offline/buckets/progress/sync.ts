@@ -10,6 +10,9 @@ import { getPublicApiBaseUrl } from "@/lib/api";
 import type { ReaderLocator, ReaderProgressPayload } from "@/lib/api-types";
 
 import { listDirtyProgress, markProgressSyncedIfUnchanged } from "./storage";
+import { revalidateHome } from "../home/revalidate";
+import { revalidateLibrary } from "../library/revalidate";
+import { getDb, type AvaReaderDB } from "../../db";
 
 type GetToken = () => Promise<string | null>;
 
@@ -31,6 +34,7 @@ export async function flushDirtyProgress(
 }
 
 async function doFlush(getToken: GetToken): Promise<{ synced: number }> {
+  const db = getDb();
   const dirty = await listDirtyProgress();
   if (dirty.length === 0) {
     return { synced: 0 };
@@ -41,7 +45,7 @@ async function doFlush(getToken: GetToken): Promise<{ synced: number }> {
       continue;
     }
     const token = await getToken();
-    if (!token) {
+    if (!token || db !== getDb()) {
       break; // no auth right now — leave the rest dirty for the next tick
     }
     const ok = await patchProgress(
@@ -51,12 +55,14 @@ async function doFlush(getToken: GetToken): Promise<{ synced: number }> {
       // The offline read moment, not the flush time — so the server's
       // most-recent-reading-wins compare uses when the user actually read.
       row.lastLocalUpdateAt,
+      db,
     );
     if (ok) {
       synced += 1;
     }
     // A failed PATCH leaves the row dirty; the next reconnect tick retries.
   }
+  if (synced && db === getDb()) void Promise.allSettled([revalidateHome(getToken), revalidateLibrary(getToken)]);
   return { synced };
 }
 
@@ -65,6 +71,7 @@ async function patchProgress(
   libraryItemId: string,
   locator: ReaderLocator,
   readAt: string,
+  db: AvaReaderDB,
 ): Promise<boolean> {
   try {
     const response = await fetch(
@@ -91,7 +98,7 @@ async function patchProgress(
       locator: server.locator,
       completionPercent: server.completionPercent,
       lastReadAt: server.lastReadAt,
-    });
+    }, db);
     return true;
   } catch {
     return false;

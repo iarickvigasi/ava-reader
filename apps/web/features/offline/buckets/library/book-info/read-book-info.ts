@@ -46,7 +46,8 @@ async function readBookInfoSnapshot(db: AvaReaderDB, slug: string): Promise<Libr
     description: row.details.description,
     genres: row.details.genres,
     // A queued clear (null) must win just as a queued date does.
-    finishedAt: finishDate ? finishDate.finishedAt : row.details.finishedAt ?? null,
+    finishedAt: finishDate ? finishDate.finishedAt
+      : row.finishedAt !== undefined ? row.finishedAt : row.details.finishedAt ?? null,
     language: row.details.language,
     lastReadAt: row.details.lastReadAt,
     minutesRead: row.details.minutesRead,

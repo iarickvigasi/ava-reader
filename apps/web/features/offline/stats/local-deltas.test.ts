@@ -2,6 +2,8 @@ import "fake-indexeddb/auto";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { DB_NAME, __resetDbForTests, getDb } from "../db";
+import { applyHome } from "../buckets/home/storage";
+import { completion, homeFixture } from "../buckets/home/test-fixture";
 import {
   __test,
   readHighlightCountDelta,
@@ -198,8 +200,12 @@ describe("readVolumesReadDelta", () => {
     expect(await readVolumesReadDelta()).toBe(0);
   });
 
-  it("counts only dirty rows at >= 100% — synced completions don't count", async () => {
+  it("counts the change against the full home snapshot without duplicating an existing completion", async () => {
     const db = getDb();
+    const home = homeFixture();
+    home.completionItems = [completion("lib-1", 20), completion("lib-2", 100), completion("lib-3", 73)];
+    home.stats.volumesRead = 1;
+    await applyHome(home);
     await db.progress.bulkPut([
       // Completed offline, not yet acked by the server → counts.
       {
@@ -234,5 +240,16 @@ describe("readVolumesReadDelta", () => {
       },
     ]);
     expect(await readVolumesReadDelta()).toBe(1);
+  });
+
+  it("keeps an older snapshot's count when completion metadata is unavailable", async () => {
+    const home = homeFixture();
+    delete home.completionItems;
+    await applyHome(home);
+    await getDb().progress.put({
+      libraryItemId: "lib-1", locator: null, completionPercent: 100, dirty: true,
+      lastReadAt: null, lastLocalUpdateAt: "2026-09-14T00:00:00Z", lastServerUpdateAt: null,
+    });
+    expect(await readVolumesReadDelta()).toBe(0);
   });
 });

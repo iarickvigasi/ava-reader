@@ -7,6 +7,8 @@ import type {
   LibraryCollection,
   LibraryPayload,
 } from "@/lib/api-types/library";
+import { liveQuery, type Subscription } from "dexie";
+import type { CompletionWriteOptions } from "../../completion/state";
 
 import { readBookInfoBySlug } from "./book-info/read-book-info";
 import { readCollectionViewBySlug, readLibraryView } from "./collections/read-library";
@@ -25,6 +27,7 @@ const state: LibraryBucketState = {
 };
 
 const listeners = new Set<Listener>();
+let subscription: Subscription | undefined;
 
 function notify() {
   state.version += 1;
@@ -36,8 +39,13 @@ function notify() {
 // React subscription primitive used by useSyncExternalStore.
 export function subscribe(listener: Listener): () => void {
   listeners.add(listener);
+  if (!subscription) subscription = liveQuery(readLibraryView).subscribe({
+    next: updateView,
+    error: () => { subscription = undefined; },
+  });
   return () => {
     listeners.delete(listener);
+    if (!listeners.size) { subscription?.unsubscribe(); subscription = undefined; }
   };
 }
 
@@ -56,6 +64,10 @@ export function getServerSnapshot(): LibraryView | null {
 // notifies listeners only when the view actually changes.
 export async function refreshFromDb(): Promise<void> {
   const next = await readLibraryView();
+  updateView(next);
+}
+
+function updateView(next: LibraryView | null) {
   if (viewsEqual(state.view, next)) {
     return;
   }
@@ -67,16 +79,17 @@ export async function refreshFromDb(): Promise<void> {
 // Dexie + updates memory. The caller (a client island sibling of the RSC
 // page) hands us the same payload Next gave the server component, so the
 // first paint and the hydrated state agree.
-export async function hydrateFromPayload(payload: LibraryPayload): Promise<void> {
-  await applyLibraryPayload(payload);
+export async function hydrateFromPayload(payload: LibraryPayload, options: CompletionWriteOptions = {}): Promise<void> {
+  await applyLibraryPayload(payload, options);
   await refreshFromDb();
 }
 
 // Same but for a single collection.
 export async function hydrateCollection(
   collection: LibraryCollection,
+  options: CompletionWriteOptions = {},
 ): Promise<void> {
-  await applyCollectionPayload(collection);
+  await applyCollectionPayload(collection, false, options.db, options);
   await refreshFromDb();
 }
 
@@ -129,6 +142,7 @@ function viewsEqual(a: LibraryView | null, b: LibraryView | null): boolean {
       const bb = cb.books[j];
       if (ba.libraryItemId !== bb.libraryItemId) return false;
       if (ba.completionPercent !== bb.completionPercent) return false;
+      if (ba.finishedAt !== bb.finishedAt) return false;
       if (ba.lastReadAt !== bb.lastReadAt) return false;
       if (ba.savedOffline !== bb.savedOffline) return false;
     }
@@ -139,6 +153,8 @@ function viewsEqual(a: LibraryView | null, b: LibraryView | null): boolean {
 // Test-only: reset the in-memory state. Does NOT touch Dexie — pair with
 // __resetDbForTests() in db.ts.
 export function __resetLibraryBucketForTests() {
+  subscription?.unsubscribe();
+  subscription = undefined;
   state.view = null;
   state.version = 0;
   listeners.clear();

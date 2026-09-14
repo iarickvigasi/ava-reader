@@ -4,7 +4,8 @@ import type { ReaderControllerAuth } from "../../../shared/types";
 import { persistReaderProgress } from "../../../data/reader-client";
 import { READER_STATUS_READY } from "../../../shared/constants";
 import { createLocatorKey } from "../../../shared/utils";
-import { markProgressSynced, writeProgress } from "@/features/offline/buckets/progress";
+import { markProgressSyncedIfUnchanged } from "@/features/offline/buckets/progress";
+import { getDb } from "@/features/offline/db";
 import {
   evaluatePersistEligibility,
   shouldClearPendingAfterAck,
@@ -57,6 +58,7 @@ export function usePersistServerProgress({
       }
 
       try {
+        const db = getDb();
         const nextProgress = await persistReaderProgress({
           getToken,
           isLoaded,
@@ -65,20 +67,13 @@ export function usePersistServerProgress({
           libraryItemId,
           locator,
         });
+        if (db !== getDb()) return null;
         const ackKey = createLocatorKey(nextProgress.locator);
         lastServerAckKeyRef.current = ackKey;
 
-        // Phase 4: server ack — refresh the Dexie row with the server's
-        // canonical completionPercent and mark it clean. If we never got
-        // here (offline), the row stays dirty for a future runner to flush.
-        void writeProgress({
-          libraryItemId,
-          locator: nextProgress.locator,
-          completionPercent: nextProgress.completionPercent,
-          dirty: false,
-        }).then(() => {
-          void markProgressSynced(libraryItemId);
-        });
+        // Use the same atomic acknowledgment as background sync. A newer
+        // local position keeps its pending completion contribution.
+        await markProgressSyncedIfUnchanged(libraryItemId, locator, nextProgress, db);
 
         if (
           shouldClearPendingAfterAck({

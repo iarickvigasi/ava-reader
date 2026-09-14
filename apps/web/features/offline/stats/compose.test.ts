@@ -71,6 +71,12 @@ describe("composeHomeStats", () => {
     expect(out.volumesRead).toBe(3);
   });
 
+  it("subtracts removed completions and clamps the total at zero", () => {
+    const deltas = { hoursReadingExtraSeconds: 0, highlightsNet: 0, aiCommentsNet: 0, volumesReadDelta: -1 };
+    expect(composeHomeStats(baselineStats, deltas).volumesRead).toBe(2);
+    expect(composeHomeStats(baselineStats, { ...deltas, volumesReadDelta: -10 }).volumesRead).toBe(0);
+  });
+
   it("applies highlights net (positive and negative)", () => {
     expect(
       composeHomeStats(baselineStats, {

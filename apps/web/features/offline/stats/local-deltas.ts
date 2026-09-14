@@ -6,6 +6,7 @@
 // to the server baseline and the UI shows the server number unchanged.
 
 import { getDb } from "../db";
+import { completionTables, composeCompletedCount, readCompletionContext } from "../completion/counts";
 
 // Sum of session seconds the server hasn't yet acknowledged, plus a
 // per-book and per-UTC-day breakdown so the composer can target the home
@@ -88,19 +89,20 @@ export async function readHighlightCountDelta(): Promise<number> {
   return delta;
 }
 
-// Net new completions the server doesn't know about yet: local progress
-// rows that reached 100% but are still `dirty` (unsynced). This mirrors
-// `readHighlightCountDelta` — an *additive* delta, not a replacement — because
-// the local `progress` table only mirrors books opened (or marked offline) on
-// this device, not the whole library. Treating its full count as the
-// authoritative total would understate volumesRead for books completed
-// elsewhere and never opened locally. Once a completion syncs, dirty flips to
-// false and the delta collapses to zero, matching the composer's invariant.
+// Signed difference from the raw cached home snapshot. A finished date OR
+// 100% progress completes a book; clearing a date can therefore subtract one.
+// Full snapshot metadata makes this safe with only a partial local library.
+// Callers using readHome() already receive the composed count and must not
+// add this delta again. Legacy snapshots keep their server count unchanged.
 export async function readVolumesReadDelta(): Promise<number> {
   const db = getDb();
-  return db.progress
-    .filter((row) => row.dirty && row.completionPercent >= 100)
-    .count();
+  return db.transaction("r", [db.home, ...completionTables(db)], async () => {
+    const row = await db.home.get("me");
+    if (row?.payload.completionItems === undefined) return 0;
+    const context = await readCompletionContext(db);
+    return composeCompletedCount(row.payload.completionItems, row.completionRevision ?? 0, context) -
+      row.payload.stats.volumesRead;
+  });
 }
 
 // "YYYY-MM-DD" in UTC. Matches the server's daily bucketing for

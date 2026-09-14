@@ -6,6 +6,7 @@ import { revalidateBookInfo, revalidateCollection } from "./revalidate";
 const state = vi.hoisted(() => ({
   db: {},
   generation: 0,
+  completionRevision: 7,
   hydrateBookInfo: vi.fn(),
   hydrateCollection: vi.fn(),
   hydrateFromPayload: vi.fn(),
@@ -20,6 +21,9 @@ vi.mock("./membership/bucket", () => ({
 }));
 vi.mock("./finish-date/revision", () => ({
   readFinishDateRevision: async () => null,
+}));
+vi.mock("../../completion/state", () => ({
+  readCompletionRevision: async () => state.completionRevision,
 }));
 vi.mock("./bucket", () => ({
   hydrateBookInfo: state.hydrateBookInfo,
@@ -36,6 +40,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   state.db = {};
   state.generation = 0;
+  state.completionRevision = 7;
   fetchMock.mockReset();
   fetchMock.mockResolvedValue(new Response(null, { status: 404 }));
   vi.stubGlobal("fetch", fetchMock);
@@ -168,7 +173,9 @@ describe.each([
     if (payloadKey === "book") {
       expect(hydrate).toHaveBeenCalledWith(CACHED, { db: state.db, expectedFinishDateRevision: null });
     } else {
-      expect(hydrate).toHaveBeenCalledWith(CACHED);
+      expect(hydrate).toHaveBeenCalledWith(CACHED, {
+        db: state.db, expectedCompletionRevision: state.completionRevision,
+      });
     }
     expect(onNotFound).not.toHaveBeenCalled();
   });

@@ -4,6 +4,8 @@ import { acknowledgeFinishDate } from "./acknowledge";
 import { finishDateRuntime, isCurrentFinishDateRuntime } from "./runtime";
 import { sendFinishDate } from "./send";
 import type { GetToken } from "./types";
+import { revalidateHome } from "../../home/revalidate";
+import { revalidateLibrary } from "../revalidate";
 
 export function flushFinishDates(getToken: GetToken): Promise<void> {
   const runtime = finishDateRuntime(getToken);
@@ -41,9 +43,13 @@ async function drainWithLock(runtime: ReturnType<typeof finishDateRuntime>): Pro
 async function drain(runtime: ReturnType<typeof finishDateRuntime>): Promise<void> {
   if (!isOnline() || !isCurrentFinishDateRuntime(runtime)) return;
   cancelRetry(runtime);
+  let changed = false;
   while (isOnline() && isCurrentFinishDateRuntime(runtime)) {
     const head = await runtime.db.finishDateMutations.orderBy("queuedAt").first();
-    if (!head) return;
+    if (!head) {
+      if (changed) void Promise.allSettled([revalidateHome(runtime.getToken), revalidateLibrary(runtime.getToken)]);
+      return;
+    }
     const token = await runtime.getToken();
     if (!isCurrentFinishDateRuntime(runtime)) return;
     if (!token) { retry(runtime); return; }
@@ -55,6 +61,7 @@ async function drain(runtime: ReturnType<typeof finishDateRuntime>): Promise<voi
       result.kind === "drop" ? result.reason : undefined);
     if (!isCurrentFinishDateRuntime(runtime)) return;
     runtime.retryDelayMs = 0;
+    changed = true;
   }
 }
 

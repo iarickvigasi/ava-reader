@@ -147,6 +147,7 @@ describe('LibraryService', () => {
             libraryItem: {
               select: {
                 addedAt: true,
+                finishedAt: true,
                 id: true,
                 isArchived: true,
                 lastOpenedAt: true,
@@ -166,6 +167,7 @@ describe('LibraryService', () => {
         id: true,
         slug: true,
         offlineRequested: true,
+        finishedAt: true,
         book: {
           select: {
             authors: true,
@@ -237,6 +239,57 @@ describe('LibraryService', () => {
     const payload = await libraryService.getLibrary('clerk_123');
 
     expect(payload.summary).toEqual({ booksCount: 6, collectionsCount: 3 });
+  });
+
+  it('counts finish dates beyond the four preview cards and snapshots every active member', async () => {
+    const date = '2026-09-14T10:00:00.000Z';
+    const items = [1, 2, 3, 4, 5].map((index) => {
+      const finishedAt = index === 2 || index === 5 ? date : null;
+      registerPreviewBook(
+        createPreviewBook({
+          bookId: `book-${index}`,
+          id: `item-${index}`,
+          finishedAt: finishedAt ? new Date(finishedAt) : null,
+        }),
+      );
+      return createLightweightItem({
+        id: `item-${index}`,
+        addedAt: `2026-09-0${7 - index}T10:00:00.000Z`,
+        completionPercent: index <= 2 ? 100 : 20,
+        finishedAt,
+      });
+    });
+    findManyCollections.mockResolvedValue([
+      createCollectionRecord({
+        items: [
+          ...items,
+          createLightweightItem({
+            id: 'archived',
+            isArchived: true,
+            finishedAt: date,
+          }),
+        ],
+      }),
+    ]);
+
+    const {
+      collections: [collection],
+    } = await libraryService.getLibrary('clerk_123');
+    expect(collection).toMatchObject({ itemCount: 5, unreadCount: 2 });
+    expect(collection.books.map((book) => book.libraryItemId)).toEqual([
+      'item-1',
+      'item-2',
+      'item-3',
+      'item-4',
+    ]);
+    expect(collection.books[1].finishedAt).toBe(date);
+    expect(collection.completionItems).toEqual([
+      { libraryItemId: 'item-1', finishedAt: null, completionPercent: 100 },
+      { libraryItemId: 'item-2', finishedAt: date, completionPercent: 100 },
+      { libraryItemId: 'item-3', finishedAt: null, completionPercent: 20 },
+      { libraryItemId: 'item-4', finishedAt: null, completionPercent: 20 },
+      { libraryItemId: 'item-5', finishedAt: date, completionPercent: 20 },
+    ]);
   });
 
   it('counts across both source shelves', async () => {
@@ -1190,6 +1243,7 @@ function createLightweightItem(
   overrides: Partial<{
     addedAt: string;
     completionPercent: number;
+    finishedAt: string | null;
     id: string;
     isArchived: boolean;
     lastOpenedAt: string | null;
@@ -1199,6 +1253,7 @@ function createLightweightItem(
   const {
     addedAt = '2026-04-01T00:00:00.000Z',
     completionPercent = 0,
+    finishedAt = null,
     id = 'library-item',
     isArchived = false,
     lastOpenedAt = null,
@@ -1208,6 +1263,7 @@ function createLightweightItem(
   return {
     libraryItem: {
       addedAt: new Date(addedAt),
+      finishedAt: finishedAt ? new Date(finishedAt) : null,
       id,
       isArchived,
       lastOpenedAt: lastOpenedAt ? new Date(lastOpenedAt) : null,
@@ -1223,6 +1279,7 @@ function createPreviewBook(input: {
   authors?: string[];
   bookId: string;
   hasCover?: boolean;
+  finishedAt?: Date | null;
   id: string;
   slug?: string;
   title?: string;
@@ -1242,6 +1299,7 @@ function createPreviewBook(input: {
       title: input.title ?? 'Book',
     },
     id: input.id,
+    finishedAt: input.finishedAt ?? null,
     slug: input.slug ?? input.id,
   };
 }

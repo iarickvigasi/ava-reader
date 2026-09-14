@@ -2,7 +2,8 @@ import { createHomeContractFixture } from './home-contract-fixture';
 
 describe('Home data loading', () => {
   it('starts all eight initial reads before waiting for any result', async () => {
-    const { service, prisma } = createHomeContractFixture();
+    const { service, prisma, findCompletionItems } =
+      createHomeContractFixture();
     const reads: Array<[jest.Mock, unknown]> = [
       [prisma.libraryItem.findMany, []],
       [prisma.catalogEntry.findMany, []],
@@ -13,7 +14,7 @@ describe('Home data loading', () => {
         { _sum: { durationSeconds: 0 } },
       ],
       [prisma.annotation.count, 0],
-      [prisma.readingProgress.count, 0],
+      [findCompletionItems, []],
       [prisma.aiComment.count, 0],
     ];
     const release: Array<() => void> = [];

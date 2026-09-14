@@ -1,4 +1,8 @@
-import { type BookFileFormat, type BookFileKind } from '@prisma/client';
+import {
+  type BookFileFormat,
+  type BookFileKind,
+  type Prisma,
+} from '@prisma/client';
 import { HomeService } from './home.service';
 
 export function createHomeContractFixture() {
@@ -9,13 +13,19 @@ export function createHomeContractFixture() {
     primaryEmail: 'reader@example.com',
     role: 'USER',
   };
+  const findCompletionItems = jest
+    .fn<Promise<unknown[]>, [Prisma.LibraryItemFindManyArgs]>()
+    .mockResolvedValue([]);
   const prisma = {
     aiComment: { count: jest.fn().mockResolvedValue(0) },
     annotation: { count: jest.fn().mockResolvedValue(0) },
     catalogEntry: { findMany: jest.fn().mockResolvedValue([]) },
     collection: { findMany: jest.fn().mockResolvedValue([]) },
-    libraryItem: { findMany: jest.fn().mockResolvedValue([]) },
-    readingProgress: { count: jest.fn().mockResolvedValue(0) },
+    libraryItem: {
+      findMany: jest
+        .fn<Promise<unknown[]>, [Prisma.LibraryItemFindManyArgs]>()
+        .mockResolvedValue([]),
+    },
     readingSessionSegment: {
       aggregate: jest
         .fn()
@@ -41,6 +51,7 @@ export function createHomeContractFixture() {
       title: 'Example Title',
     },
     id: 'library-1',
+    finishedAt: null,
     lastOpenedAt: null,
     progress: null,
     slug: 'example-title',
@@ -48,8 +59,20 @@ export function createHomeContractFixture() {
 
   return {
     libraryItem,
+    findCompletionItems,
     prisma,
-    service: new HomeService(prisma as never, usersService as never),
+    service: new HomeService(
+      {
+        ...prisma,
+        libraryItem: {
+          findMany: (args: Prisma.LibraryItemFindManyArgs) =>
+            args.select?.finishedAt
+              ? findCompletionItems(args)
+              : prisma.libraryItem.findMany(args),
+        },
+      } as never,
+      usersService as never,
+    ),
     user,
     usersService,
   };

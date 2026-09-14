@@ -8,13 +8,15 @@ import { getPublicApiBaseUrl } from "@/lib/api";
 
 import { applyHome } from "./storage";
 import { getDb } from "../../db";
+import { readCompletionRevision } from "../../completion/state";
 
 type GetToken = () => Promise<string | null>;
 
 export async function revalidateHome(getToken: GetToken): Promise<void> {
   const db = getDb();
+  const expectedCompletionRevision = await readCompletionRevision(db);
   const token = await getToken();
-  if (!token) {
+  if (!token || db !== getDb()) {
     return;
   }
   try {
@@ -26,7 +28,7 @@ export async function revalidateHome(getToken: GetToken): Promise<void> {
     }
     const payload = (await response.json()) as HomePayload;
     if (db !== getDb()) return;
-    await applyHome(payload);
+    await applyHome(payload, { db, expectedCompletionRevision });
   } catch {
     // Network blip — the cached payload stays. Next online tick retries.
   }

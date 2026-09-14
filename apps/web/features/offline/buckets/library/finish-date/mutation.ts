@@ -4,6 +4,7 @@ import { clearFinishDateFailure } from "./failure-store";
 import { writeFinishDateRevision } from "./revision";
 import { flushFinishDates } from "./sync";
 import type { GetToken } from "./types";
+import { bumpCompletionRevision } from "../../../completion/state";
 
 // Queue the explicit value, including null, so retries never change the tap's
 // date and an undo made while the first request is in flight is not lost.
@@ -24,6 +25,7 @@ export async function setBookFinishedAt(
     });
     await clearFinishDateFailure(db, libraryItemId);
     await writeFinishDateRevision(db);
+    await bumpCompletionRevision(db);
   });
   if (db !== getDb()) return;
   markFinishDateChange();

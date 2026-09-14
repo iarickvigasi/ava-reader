@@ -15,6 +15,7 @@ type LibraryBookItem = {
     title: string;
   };
   id: string;
+  finishedAt: Date | null;
   offlineRequested: boolean;
   slug: string;
 };
@@ -28,6 +29,7 @@ export function serializeLibraryBook(
   return {
     authors: item.book.authors,
     completionPercent: engagement.completionPercent,
+    finishedAt: item.finishedAt?.toISOString() ?? null,
     coverImageUrl: item.book.coverBlob
       ? buildCoverImageUrl(item.book.id)
       : null,

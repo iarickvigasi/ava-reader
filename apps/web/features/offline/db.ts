@@ -79,6 +79,8 @@ export type LibraryItemRow = LibraryCardBook & {
 };
 
 export type CollectionRow = Omit<LibraryCollection, "books"> & {
+  // Local revision at the start of the request producing these counts.
+  completionRevision?: number;
   // We split the books out into `collectionMembership` so a single book row
   // can appear in multiple collections without duplicating the LibraryItemRow.
   // Order is preserved via membership.order.
@@ -112,6 +114,7 @@ export type HomeRow = {
   id: "me";
   payload: HomePayload;
   fetchedAt: string;
+  completionRevision?: number;
 };
 
 // ----- Book content (phase 2) ------------------------------------------------

@@ -9,6 +9,8 @@ import { getPublicApiBaseUrl } from "@/lib/api";
 import type { ReaderProgressPayload } from "@/lib/api-types";
 
 import { readProgress, writeProgress } from "./storage";
+import { getDb } from "../../db";
+import { readCompletionRevision } from "../../completion/state";
 
 type GetToken = () => Promise<string | null>;
 
@@ -16,6 +18,8 @@ export async function revalidateProgress(
   libraryItemId: string,
   getToken: GetToken,
 ): Promise<void> {
+  const db = getDb();
+  const expectedCompletionRevision = await readCompletionRevision(db);
   // A dirty row is local progress the user is ahead on but hasn't synced (read
   // offline). The server is behind it, so pulling server truth would rewind the
   // reader — leave it for the reader's own PATCH to reconcile.
@@ -25,7 +29,7 @@ export async function revalidateProgress(
   }
 
   const token = await getToken();
-  if (!token) {
+  if (!token || db !== getDb()) {
     return;
   }
   const apiBaseUrl = getPublicApiBaseUrl();
@@ -52,7 +56,7 @@ export async function revalidateProgress(
       completionPercent: data.completionPercent,
       lastReadAt: data.lastReadAt,
       dirty: false,
-    });
+    }, { db, expectedCompletionRevision });
   } catch {
     // Network blip — cached progress (if any) stands.
   }

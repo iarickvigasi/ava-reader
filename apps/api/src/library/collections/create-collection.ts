@@ -42,7 +42,13 @@ export async function createCollection(options: {
       },
     });
     return {
-      collection: { ...collection, books: [], itemCount: 0, unreadCount: 0 },
+      collection: {
+        ...collection,
+        books: [],
+        completionItems: [],
+        itemCount: 0,
+        unreadCount: 0,
+      },
     };
   });
 }

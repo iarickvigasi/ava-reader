@@ -10,6 +10,7 @@ describe('Home response contract', () => {
     expect(usersService.getCurrentUserRecord).toHaveBeenCalledWith('clerk_1');
     expect(home).toEqual({
       collections: { items: [] },
+      completionItems: [],
       currentEngagement: null,
       feedback: { acceptsScreenshot: true },
       featuredCatalog: { entries: [] },
@@ -37,6 +38,7 @@ describe('Home response contract', () => {
       authors: [],
       chapterLabel: 'Opening chapters',
       completionPercent: 0,
+      finishedAt: null,
       coverImageUrl: null,
       lastReadAt: '2026-08-01T00:00:00.000Z',
       libraryItemId: 'library-1',

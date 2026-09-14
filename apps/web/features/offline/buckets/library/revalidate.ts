@@ -14,6 +14,7 @@ import { getDb } from "../../db";
 import { membershipGeneration } from "./membership/bucket";
 import { finishDateGeneration } from "./finish-date/runtime";
 import { readFinishDateRevision } from "./finish-date/revision";
+import { readCompletionRevision } from "../../completion/state";
 
 import {
   hydrateBookInfo,
@@ -63,11 +64,13 @@ async function fetchJson<T>(
 }
 
 export async function revalidateLibrary(getToken: GetToken): Promise<void> {
+  const db = getDb();
+  const expectedCompletionRevision = await readCompletionRevision(db);
   const payload = await fetchJson<LibraryPayload>("/api/library", getToken);
   if (!payload) {
     return;
   }
-  await hydrateFromPayload(payload);
+  await hydrateFromPayload(payload, { db, expectedCompletionRevision });
 }
 
 export async function revalidateCollection(
@@ -75,6 +78,8 @@ export async function revalidateCollection(
   getToken: GetToken,
   onNotFound?: () => void,
 ): Promise<void> {
+  const db = getDb();
+  const expectedCompletionRevision = await readCompletionRevision(db);
   const payload = await fetchJson<LibraryCollectionPayload>(
     `/api/library/collections/${encodeURIComponent(slug)}`,
     getToken,
@@ -83,7 +88,7 @@ export async function revalidateCollection(
   if (!payload) {
     return;
   }
-  await hydrateCollection(payload.collection);
+  await hydrateCollection(payload.collection, { db, expectedCompletionRevision });
 }
 
 export async function revalidateBookInfo(

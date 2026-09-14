@@ -2,10 +2,9 @@
 // stats. No Dexie, no React. The hooks layer hydrates them with values
 // produced by `./local-deltas`.
 //
-// "Local deltas naturally collapse to zero on reconnect" is the guiding
-// invariant — once the offline sessions / highlights sync, they leave the
-// pending tables, and the next /api/home GET returns a baseline that
-// already includes them. The composer adds zero on top. No UI jump.
+// Sessions/highlights add pending local changes to the server snapshot.
+// Completion counts use the aggregate reconciliation in completion/counts;
+// the home hook passes that effective total with no additional volume delta.
 
 import type { HomePayload } from "@/lib/api-types";
 
@@ -14,8 +13,8 @@ import type { UnsyncedSessionDeltas } from "./local-deltas";
 export type HomeStatsDeltas = {
   hoursReadingExtraSeconds: number;
   highlightsNet: number;
-  // Net new completions not yet acked by the server — see local-deltas
-  // comment. Always added to the baseline, never replaces it.
+  // Signed change from a raw snapshot. Pass zero for an already-composed
+  // readHome payload; removing a finish date can produce a negative delta.
   volumesReadDelta: number;
   // aiComments delta is a future phase 5 hook. For now we always pass 0.
   aiCommentsNet: number;
@@ -38,7 +37,7 @@ export function composeHomeStats(
     aiComments: Math.max(0, baseline.aiComments + deltas.aiCommentsNet),
     highlights: Math.max(0, baseline.highlights + deltas.highlightsNet),
     hoursReading: baseline.hoursReading + extraHours,
-    volumesRead: baseline.volumesRead + deltas.volumesReadDelta,
+    volumesRead: Math.max(0, baseline.volumesRead + deltas.volumesReadDelta),
   };
 }
 

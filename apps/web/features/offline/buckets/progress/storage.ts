@@ -5,7 +5,8 @@
 
 import type { ReaderLocator } from "@/lib/api-types";
 
-import { getDb, type ProgressRow } from "../../db";
+import { getDb, type AvaReaderDB, type ProgressRow } from "../../db";
+import { bumpCompletionRevision, readCompletionRevision, recordCompletionAck, type CompletionWriteOptions } from "../../completion/state";
 
 export async function writeProgress(input: {
   libraryItemId: string;
@@ -16,34 +17,35 @@ export async function writeProgress(input: {
   lastReadAt?: string | null;
   // Local view ahead of the server (a pending PATCH). Drained by sync.ts.
   dirty?: boolean;
-}): Promise<void> {
-  const db = getDb();
-  const nowIso = new Date().toISOString();
-  const prior = await db.progress.get(input.libraryItemId);
-  await db.progress.put({
-    libraryItemId: input.libraryItemId,
-    locator: input.locator,
-    completionPercent: input.completionPercent,
-    lastReadAt:
-      input.lastReadAt !== undefined
-        ? input.lastReadAt
-        : (prior?.lastReadAt ?? null),
-    lastLocalUpdateAt: nowIso,
-    lastServerUpdateAt: prior?.lastServerUpdateAt ?? null,
-    dirty: input.dirty ?? prior?.dirty ?? false,
+}, options: CompletionWriteOptions = {}): Promise<void> {
+  const db = options.db ?? getDb();
+  if (db !== getDb()) return;
+  await db.transaction("rw", [db.progress, db.meta], async () => {
+    const prior = await db.progress.get(input.libraryItemId);
+    if (options.expectedCompletionRevision !== undefined &&
+      (prior?.dirty || options.expectedCompletionRevision !== await readCompletionRevision(db))) return;
+    const nowIso = new Date().toISOString();
+    await db.progress.put({
+      libraryItemId: input.libraryItemId,
+      locator: input.locator,
+      completionPercent: input.completionPercent,
+      lastReadAt: input.lastReadAt !== undefined ? input.lastReadAt : (prior?.lastReadAt ?? null),
+      lastLocalUpdateAt: nowIso,
+      lastServerUpdateAt: input.dirty === false ? nowIso : prior?.lastServerUpdateAt ?? null,
+      dirty: input.dirty ?? prior?.dirty ?? false,
+    });
+    if (input.dirty === false) await recordCompletionAck(db, input.libraryItemId, { completionPercent: input.completionPercent });
+    else await bumpCompletionRevision(db);
   });
 }
 
-export async function markProgressSynced(libraryItemId: string): Promise<void> {
-  const db = getDb();
-  const row = await db.progress.get(libraryItemId);
-  if (!row) {
-    return;
-  }
-  await db.progress.put({
-    ...row,
-    lastServerUpdateAt: new Date().toISOString(),
-    dirty: false,
+export async function markProgressSynced(libraryItemId: string, db = getDb()): Promise<void> {
+  if (db !== getDb()) return;
+  await db.transaction("rw", [db.progress, db.meta], async () => {
+    const row = await db.progress.get(libraryItemId);
+    if (!row) return;
+    await db.progress.put({ ...row, lastServerUpdateAt: new Date().toISOString(), dirty: false });
+    await recordCompletionAck(db, libraryItemId, { completionPercent: row.completionPercent });
   });
 }
 
@@ -71,19 +73,23 @@ export async function markProgressSyncedIfUnchanged(
     completionPercent: number;
     lastReadAt: string | null;
   },
+  db: AvaReaderDB = getDb(),
 ): Promise<void> {
-  const db = getDb();
-  const row = await db.progress.get(libraryItemId);
-  if (!row || !sameLocator(row.locator, syncedLocator)) {
-    return;
-  }
-  await db.progress.put({
-    ...row,
-    locator: server.locator,
-    completionPercent: server.completionPercent,
-    lastReadAt: server.lastReadAt,
-    lastServerUpdateAt: new Date().toISOString(),
-    dirty: false,
+  if (db !== getDb()) return;
+  await db.transaction("rw", [db.progress, db.meta], async () => {
+    const row = await db.progress.get(libraryItemId);
+    if (!row) return;
+    // Retain the canonical state beneath any newer unsynced local locator.
+    await recordCompletionAck(db, libraryItemId, { completionPercent: server.completionPercent });
+    if (!sameLocator(row.locator, syncedLocator)) return;
+    await db.progress.put({
+      ...row,
+      locator: server.locator,
+      completionPercent: server.completionPercent,
+      lastReadAt: server.lastReadAt,
+      lastServerUpdateAt: new Date().toISOString(),
+      dirty: false,
+    });
   });
 }
 

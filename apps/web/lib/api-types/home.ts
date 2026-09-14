@@ -1,4 +1,4 @@
-import type { LibraryCardBook } from "./library";
+import type { CompletionItem, LibraryCardBook } from "./library";
 import type { BookFileFormat } from "./shared";
 import type { UserRole } from "./user";
 
@@ -12,8 +12,10 @@ export type CurrentEngagement = LibraryCardBook & {
 };
 
 export type HomePayload = {
+  completionItems?: CompletionItem[];
   collections: {
     items: Array<{
+      completionItems?: CompletionItem[];
       description: string | null;
       id: string;
       itemCount: number;

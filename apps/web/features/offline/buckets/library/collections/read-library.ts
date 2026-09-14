@@ -16,6 +16,7 @@ import type { CollectionView, LibraryView } from "../types";
 import { overlayCollectionMembership } from "../membership/selectors";
 
 import { getDb } from "../../../db";
+import { completionTables, composeCollectionCounts, readCompletionContext } from "../../../completion/counts";
 
 // Reads everything we need to render the library screen in one transaction.
 // Returns null when the DB is empty — caller treats that as "never hydrated"
@@ -24,14 +25,15 @@ export async function readLibraryView(): Promise<LibraryView | null> {
   const db = getDb();
   return db.transaction(
     "r",
-    [db.libraryItems, db.collections, db.collectionMembership, db.collectionMembershipMutations, db.meta],
+    [...completionTables(db), db.collections, db.collectionMembership],
     async () => {
       const collections = await db.collections.toArray();
       if (collections.length === 0) {
         return null;
       }
-      const items = await db.libraryItems.toArray();
-      const mutations = await db.collectionMembershipMutations.toArray();
+      const completion = await readCompletionContext(db);
+      const items = [...completion.items.values()];
+      const mutations = [...completion.memberships.values()];
       const byCollection = groupMembershipByCollection(
         await db.collectionMembership.toArray(),
       );
@@ -41,7 +43,9 @@ export async function readLibraryView(): Promise<LibraryView | null> {
           const overlaid = overlayCollectionMembership(
             collection, items, byCollection.get(collection.id) ?? [], mutations,
           );
-          return buildCollectionView(overlaid.collection, items, overlaid.links);
+          const view = buildCollectionView(overlaid.collection, items, overlaid.links);
+          return collection.completionItems
+            ? { ...view, ...composeCollectionCounts(collection, completion) } : view;
         })
         // Dexie returns rows in primary-key order; display order is computed
         // here (docs/specs/3-library/3.1-library-screen.md §3).
@@ -69,7 +73,7 @@ export async function readCollectionViewBySlug(
   const db = getDb();
   return db.transaction(
     "r",
-    [db.libraryItems, db.collections, db.collectionMembership, db.collectionMembershipMutations],
+    [...completionTables(db), db.collections, db.collectionMembership],
     async () => {
       const collection = await db.collections
         .where("slug")
@@ -78,20 +82,23 @@ export async function readCollectionViewBySlug(
       if (!collection) {
         return null;
       }
+      const completion = await readCompletionContext(db);
       // The derived shelf is evaluated against every cached row; a normal
       // collection loads only the rows its membership names.
       if (isOfflineBooksCollection(collection)) {
-        const rows = await db.libraryItems.toArray();
-        return buildOfflineShelfView(collection, rows);
+        const rows = [...completion.items.values()];
+        const view = buildOfflineShelfView(collection, rows);
+        return collection.completionItems ? { ...view, ...composeCollectionCounts(collection, completion) } : view;
       }
       const links = await db.collectionMembership
         .where("collectionId")
         .equals(collection.id)
         .toArray();
-      const items = await db.libraryItems.toArray();
-      const mutations = await db.collectionMembershipMutations.toArray();
+      const items = [...completion.items.values()];
+      const mutations = [...completion.memberships.values()];
       const overlaid = overlayCollectionMembership(collection, items, links, mutations);
-      return buildMembershipCollectionView(overlaid.collection, items, overlaid.links);
+      const view = buildMembershipCollectionView(overlaid.collection, items, overlaid.links);
+      return collection.completionItems ? { ...view, ...composeCollectionCounts(collection, completion) } : view;
     },
   );
 }

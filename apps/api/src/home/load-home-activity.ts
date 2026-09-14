@@ -1,16 +1,19 @@
 import type { PrismaService } from '../prisma/prisma.service';
+import {
+  isBookFinished,
+  serializeCompletionItem,
+} from '../shared/book-completion';
 import { daysAgo, startOfDay } from '../shared/date-utils';
 
 const HOME_ACTIVITY_DAYS = 7;
 const SECONDS_PER_HOUR = 3_600;
-const COMPLETE_PROGRESS_PERCENT = 100;
 
 export async function loadHomeActivity(prisma: PrismaService, userId: string) {
   const [
     recentReadingSessions,
     totalReadingSecondsAggregate,
     highlightsCount,
-    completedBooksCount,
+    completionItems,
     aiCommentsCount,
   ] = await Promise.all([
     prisma.readingSessionSegment.findMany({
@@ -28,10 +31,14 @@ export async function loadHomeActivity(prisma: PrismaService, userId: string) {
       _sum: { durationSeconds: true },
     }),
     prisma.annotation.count({ where: { userId } }),
-    prisma.readingProgress.count({
-      where: {
-        userId,
-        completionPercent: { gte: COMPLETE_PROGRESS_PERCENT },
+    // All-time totals preserve archived books. Derive the count and its
+    // reconciliation snapshot from one read so they cannot race each other.
+    prisma.libraryItem.findMany({
+      where: { userId },
+      select: {
+        id: true,
+        finishedAt: true,
+        progress: { select: { completionPercent: true } },
       },
     }),
     prisma.aiComment.count({ where: { userId } }),
@@ -40,12 +47,13 @@ export async function loadHomeActivity(prisma: PrismaService, userId: string) {
     totalReadingSecondsAggregate._sum.durationSeconds ?? 0;
 
   return {
+    completionItems: completionItems.map(serializeCompletionItem),
     recentReadingSessions,
     stats: {
       aiComments: aiCommentsCount,
       highlights: highlightsCount,
       hoursReading: Math.floor(totalReadingSeconds / SECONDS_PER_HOUR),
-      volumesRead: completedBooksCount,
+      volumesRead: completionItems.filter(isBookFinished).length,
     },
   };
 }

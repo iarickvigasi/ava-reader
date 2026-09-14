@@ -3,6 +3,7 @@ import { markFinishDateChange } from "./runtime";
 import { clearFinishDateFailure, writeFinishDateFailure } from "./failure-store";
 import { writeFinishDateRevision } from "./revision";
 import type { FinishDateMutation } from "./types";
+import { bumpCompletionRevision, recordCompletionAck } from "../../../completion/state";
 
 // Canonical value and queue acknowledgment move together. A newer edit stays
 // overlaid, even when it reverses the request currently being acknowledged.
@@ -17,8 +18,9 @@ export async function acknowledgeFinishDate(
   const removed = await db.transaction("rw", [db.libraryItems, db.finishDateMutations, db.meta], async () => {
     await writeFinishDateRevision(db);
     if (finishedAt !== undefined) {
-      await db.libraryItems.update(sent.libraryItemId, { "details.finishedAt": finishedAt });
-    }
+      await db.libraryItems.update(sent.libraryItemId, { finishedAt, "details.finishedAt": finishedAt });
+      await recordCompletionAck(db, sent.libraryItemId, { finishedAt });
+    } else await bumpCompletionRevision(db);
     const pending = await db.finishDateMutations.get(sent.libraryItemId);
     if (pending?.revision !== sent.revision) return false;
     if (failureReason !== undefined) {

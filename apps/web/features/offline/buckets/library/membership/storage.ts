@@ -2,11 +2,12 @@ import type { LibraryBookCollectionsInput } from "@/lib/api-types/library";
 import { getDb } from "../../../db";
 import { membershipRevision } from "./id";
 import type { MembershipChange } from "./types";
+import { bumpCompletionRevision } from "../../../completion/state";
 
 // Baselines come from book details, never absence in a four-book preview.
 export async function storeMembershipChanges(input: LibraryBookCollectionsInput) {
   const db = getDb();
-  await db.transaction("rw", [db.libraryItems, db.collections, db.collectionMembership, db.collectionMembershipMutations], async () => {
+  await db.transaction("rw", [db.libraryItems, db.collections, db.collectionMembership, db.collectionMembershipMutations, db.meta], async () => {
     const book = await db.libraryItems.get(input.libraryItemId);
     if (!book?.details) throw new Error("Book details are unavailable.");
     const prior = await db.collectionMembershipMutations.get(input.libraryItemId);
@@ -36,5 +37,6 @@ export async function storeMembershipChanges(input: LibraryBookCollectionsInput)
       queuedAt: prior?.queuedAt ?? new Date().toISOString(),
       changes: [...changes.values()],
     });
+    await bumpCompletionRevision(db);
   });
 }

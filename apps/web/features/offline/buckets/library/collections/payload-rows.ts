@@ -56,6 +56,7 @@ export function collectionToRow(collection: LibraryCollection): CollectionRow {
     smartKey: collection.smartKey,
     itemCount: collection.itemCount,
     unreadCount: collection.unreadCount,
+    completionItems: collection.completionItems,
     bookCount: collection.books.length,
     serverUpdatedAt: new Date().toISOString(),
   };
@@ -72,6 +73,7 @@ export function bookToItemRow(
     authors: book.authors,
     coverImageUrl: book.coverImageUrl,
     completionPercent: book.completionPercent,
+    ...(book.finishedAt !== undefined ? { finishedAt: book.finishedAt } : {}),
     primaryFormat: book.primaryFormat,
     lastReadAt: book.lastReadAt ?? null,
     offlineRequested: book.offlineRequested ?? false,

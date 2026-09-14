@@ -31,6 +31,7 @@ export async function getHome(options: {
 
   return {
     collections: { items: selectHomeCollections(collections) },
+    completionItems: activity.completionItems,
     currentEngagement: engagement.currentEngagement,
     feedback: { acceptsScreenshot: true },
     featuredCatalog: { entries: featuredCatalogEntries },
