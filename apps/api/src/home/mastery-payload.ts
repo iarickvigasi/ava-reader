@@ -1,12 +1,14 @@
 import { daysAgo, startOfDay } from '../shared/date-utils';
 
 const MASTERY_DAYS = 7;
-const DAILY_GOAL_MINUTES = 60;
+const DEFAULT_DAILY_GOAL_MINUTES = 60;
 const SECONDS_PER_MINUTE = 60;
 
 export function createMasteryPayload(
   readingSessions: Array<{ durationSeconds: number; trackedDay: Date }>,
+  readingGoalMinutes: number | null = null,
 ) {
+  const dailyGoalMinutes = readingGoalMinutes ?? DEFAULT_DAILY_GOAL_MINUTES;
   const daySecondsMap = new Map<string, number>();
 
   for (const session of readingSessions) {
@@ -27,7 +29,7 @@ export function createMasteryPayload(
     // The client formats the weekday label from `key` using the user's
     // locale — don't ship a server-localized string.
     return {
-      goalMet: minutes >= DAILY_GOAL_MINUTES,
+      goalMet: minutes >= dailyGoalMinutes,
       key,
       minutes,
     };
@@ -36,9 +38,9 @@ export function createMasteryPayload(
   const todayMinutes = days.at(-1)?.minutes ?? 0;
 
   return {
-    dailyGoalMinutes: DAILY_GOAL_MINUTES,
+    dailyGoalMinutes,
     days,
-    remainingMinutes: Math.max(DAILY_GOAL_MINUTES - todayMinutes, 0),
+    remainingMinutes: Math.max(dailyGoalMinutes - todayMinutes, 0),
     todayMinutes,
   };
 }

@@ -101,7 +101,9 @@
     },
     "readingGoal": {
       "label": "Objectif de lecture",
-      "unit": "(min/jour)"
+      "unit": "(min/jour)",
+      "ariaLabel": "Objectif de lecture en minutes par jour",
+      "invalid": "Saisissez un nombre entier compris entre {min} et {max} minutes."
     },
     "reading": {
       "section": "Lecture",

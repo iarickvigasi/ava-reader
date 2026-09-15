@@ -14,13 +14,22 @@ export async function getHome(options: {
   user: HomeUser;
 }) {
   const { prisma, user } = options;
-  const [libraryItems, featuredCatalogEntries, activity, collections] =
-    await Promise.all([
-      loadHomeLibraryItems(prisma, user.id),
-      loadHomeCatalog(prisma),
-      loadHomeActivity(prisma, user.id),
-      loadHomeCollections(prisma, user.id),
-    ]);
+  const [
+    libraryItems,
+    featuredCatalogEntries,
+    activity,
+    collections,
+    preferences,
+  ] = await Promise.all([
+    loadHomeLibraryItems(prisma, user.id),
+    loadHomeCatalog(prisma),
+    loadHomeActivity(prisma, user.id),
+    loadHomeCollections(prisma, user.id),
+    prisma.userPreferences.findUnique({
+      where: { userId: user.id },
+      select: { readingGoalMinutes: true },
+    }),
+  ]);
 
   const engagement = createCurrentEngagement(libraryItems);
   const annotations = await loadRecentAnnotations({
@@ -36,7 +45,10 @@ export async function getHome(options: {
     feedback: { acceptsScreenshot: true },
     featuredCatalog: { entries: featuredCatalogEntries },
     listening: engagement.listening,
-    mastery: createMasteryPayload(activity.recentReadingSessions),
+    mastery: createMasteryPayload(
+      activity.recentReadingSessions,
+      preferences?.readingGoalMinutes,
+    ),
     recentAnnotations: { items: annotations },
     state: libraryItems.length > 0 ? 'POPULATED' : 'EMPTY',
     stats: activity.stats,

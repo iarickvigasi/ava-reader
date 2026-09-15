@@ -1,6 +1,6 @@
 # Home dashboard
 
-> Status: shipped · Updated: 2026-09-13 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
+> Status: shipped · Updated: 2026-09-15 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
 > apps/web/components/app/home, apps/web/features/offline/buckets/home
 
 ## Summary
@@ -42,6 +42,9 @@ discovery. The daily entry point into the habit.
    Books without annotations are skipped before selecting three. Home fetches annotation text
    only for those selected books, using annotation counts on library metadata to find candidates.
    Fewer eligible books show fewer cards; no annotations shows the existing empty state.
+9. Daily mastery uses the user's saved reading goal (60 minutes when unset). Local goal edits
+   immediately update remaining minutes, the chart scale, and completion for all displayed days,
+   including days without new reading activity. Reading minutes are preserved.
 
 ## Data & sync
 home bucket (single payload row keyed to the user); composed with stats deltas. Service worker
@@ -54,6 +57,7 @@ current book.
 ## Acceptance criteria
 - [ ] Home renders offline from the cached payload.
 - [ ] Stats reflect local deltas without double-counting after sync.
+- [ ] Mastery uses the saved goal on first load and responds to local goal edits while offline.
 - [ ] Resume card opens the current book at the last position.
 - [ ] Clicking a collections-panel row opens that collection at /app/library/collections/[slug].
 - [ ] Recent annotations shows the latest quote from each of three recently engaged books with

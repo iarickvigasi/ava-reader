@@ -56,7 +56,7 @@ async function doFlush(getToken: GetToken): Promise<void> {
       // Transient — leave the dirty list intact, next online tick retries.
       return;
     }
-    await markFieldsClean(dirtyFields);
+    await markFieldsClean(dirtyFields, body);
   } catch {
     // Network blip — same recovery as a 5xx.
   }

@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { ChevronDownIcon } from "./preferences-icons";
 
 export function FieldLabel({ children }: { children: ReactNode }) {
@@ -94,11 +94,14 @@ export function SelectField({
   );
 }
 
-export function NumberField({ value }: { value: string }) {
+export function NumberField(props: Omit<ComponentPropsWithoutRef<"input">, "type">) {
   return (
-    <div className="flex h-9.5 w-full items-center rounded-lg bg-soft-tone-fill px-3 font-reader text-base text-copy-strong hover:bg-soft-tone-fill/80">
-      <span className="truncate">{value}</span>
-    </div>
+    <input
+      {...props}
+      type="number"
+      inputMode="numeric"
+      className="h-9.5 w-full min-w-0 rounded-lg bg-soft-tone-fill px-3 font-reader text-base text-copy-strong transition hover:bg-soft-tone-fill/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-fill aria-invalid:outline-2 aria-invalid:outline-danger"
+    />
   );
 }
 

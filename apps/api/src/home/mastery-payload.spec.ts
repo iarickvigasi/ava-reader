@@ -66,4 +66,27 @@ describe('createMasteryPayload', () => {
       expect(mastery.remainingMinutes).toBe(remainingMinutes);
     },
   );
+
+  it.each([
+    [1_799, 29, false, 1],
+    [1_800, 30, true, 0],
+    [2_100, 35, true, 0],
+  ])(
+    'calculates a custom 30-minute goal for %i reading seconds',
+    (durationSeconds, minutes, goalMet, remainingMinutes) => {
+      const mastery = createMasteryPayload(
+        [{ durationSeconds, trackedDay: new Date('2026-09-03T00:00:00Z') }],
+        30,
+      );
+
+      expect(mastery.dailyGoalMinutes).toBe(30);
+      expect(mastery.days.at(-1)).toEqual({
+        goalMet,
+        key: '2026-09-03',
+        minutes,
+      });
+      expect(mastery.todayMinutes).toBe(minutes);
+      expect(mastery.remainingMinutes).toBe(remainingMinutes);
+    },
+  );
 });

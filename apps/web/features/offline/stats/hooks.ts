@@ -14,6 +14,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { useReadingGoal } from "@/components/app/preferences/use-reading-goal";
 import type { HomePayload } from "@/lib/api-types";
 import { useHomeWithCache } from "../buckets/home/hooks";
 
@@ -109,10 +110,11 @@ export function useComposedMastery(
   home: HomePayload | null,
 ): HomePayload["mastery"] | null {
   const bundle = useDeltaBundle();
+  const [readingGoal] = useReadingGoal(home?.mastery.dailyGoalMinutes);
   if (!home) {
     return null;
   }
-  return composeMastery(home.mastery, bundle.sessions.byUtcDaySeconds);
+  return composeMastery(home.mastery, bundle.sessions.byUtcDaySeconds, readingGoal);
 }
 
 export function useComposedBookMinutesRead(

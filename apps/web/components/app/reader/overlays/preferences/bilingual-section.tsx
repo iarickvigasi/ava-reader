@@ -7,7 +7,8 @@ import {
 } from "@/components/app/preferences/use-translate-target-lang";
 import { isLocale, locales, localeLabels } from "@/i18n/locales";
 import { TRANSLATE_LANGUAGES } from "@/components/app/preferences/translate-languages";
-import { FieldRow, NumberField, SelectField } from "./preferences-fields";
+import { FieldRow, SelectField } from "./preferences-fields";
+import { ReadingGoalField } from "./reading-goal-field";
 
 const INTERFACE_LANG_OPTIONS = locales.map((value) => ({
   value,
@@ -18,7 +19,7 @@ export function BilingualSection() {
   const t = useTranslations("preferences");
   const [interfaceLang, setInterfaceLang] = useInterfaceLang();
   const [targetLang, setTargetLang] = useTranslateTargetLang();
-  const [readingGoal] = useReadingGoal();
+  const [readingGoal, setReadingGoal] = useReadingGoal();
 
   return (
     <section className="space-y-6">
@@ -49,7 +50,7 @@ export function BilingualSection() {
           </>
         }
       >
-        <NumberField value={String(readingGoal)} />
+        <ReadingGoalField value={readingGoal} onChange={setReadingGoal} />
       </FieldRow>
     </section>
   );

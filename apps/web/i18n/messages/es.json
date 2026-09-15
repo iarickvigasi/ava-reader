@@ -101,7 +101,9 @@
     },
     "readingGoal": {
       "label": "Meta de lectura",
-      "unit": "(min/día)"
+      "unit": "(min/día)",
+      "ariaLabel": "Meta de lectura en minutos al día",
+      "invalid": "Introduce un número entero entre {min} y {max} minutos."
     },
     "reading": {
       "section": "Lectura",

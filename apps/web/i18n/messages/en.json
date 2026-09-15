@@ -101,7 +101,9 @@
     },
     "readingGoal": {
       "label": "Reading goal",
-      "unit": "(min/day)"
+      "unit": "(min/day)",
+      "ariaLabel": "Reading goal in minutes per day",
+      "invalid": "Enter a whole number between {min} and {max} minutes."
     },
     "reading": {
       "section": "Reading",

@@ -168,6 +168,55 @@ describe("composeMastery", () => {
     expect(out.todayMinutes).toBe(baselineMastery.todayMinutes);
     expect(out.remainingMinutes).toBe(baselineMastery.remainingMinutes);
   });
+
+  it("applies a lower goal to every day without changing recorded minutes", () => {
+    const out = composeMastery(baselineMastery, new Map(), 20);
+
+    expect(out.dailyGoalMinutes).toBe(20);
+    expect(out.todayMinutes).toBe(25);
+    expect(out.remainingMinutes).toBe(0);
+    expect(out.days.map((day) => day.minutes)).toEqual(
+      baselineMastery.days.map((day) => day.minutes),
+    );
+    expect(out.days.map((day) => day.goalMet)).toEqual([
+      false, true, true, false, false, true, true,
+    ]);
+    expect(baselineMastery.days.at(-1)?.goalMet).toBe(false);
+  });
+
+  it("clears goal completion when a higher goal exceeds recorded minutes", () => {
+    const out = composeMastery(baselineMastery, new Map(), 90);
+
+    expect(out.dailyGoalMinutes).toBe(90);
+    expect(out.todayMinutes).toBe(25);
+    expect(out.remainingMinutes).toBe(65);
+    expect(out.days.map((day) => day.minutes)).toEqual(
+      baselineMastery.days.map((day) => day.minutes),
+    );
+    expect(out.days.every((day) => !day.goalMet)).toBe(true);
+    expect(baselineMastery.days[1].goalMet).toBe(true);
+  });
+
+  it("combines offline reading with an edited goal, including unchanged days", () => {
+    const out = composeMastery(
+      baselineMastery,
+      new Map([
+        ["2026-04-12", 600], // +10 min today → 35
+        ["2026-04-10", 900], // +15 min → 30
+      ]),
+      30,
+    );
+
+    expect(out.dailyGoalMinutes).toBe(30);
+    expect(out.todayMinutes).toBe(35);
+    expect(out.remainingMinutes).toBe(0);
+    expect(out.days.map((day) => day.minutes)).toEqual([
+      0, 70, 20, 0, 30, 30, 35,
+    ]);
+    expect(out.days.map((day) => day.goalMet)).toEqual([
+      false, true, false, false, true, true, true,
+    ]);
+  });
 });
 
 describe("composeBookMinutesRead", () => {

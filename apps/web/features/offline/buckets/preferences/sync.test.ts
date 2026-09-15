@@ -71,6 +71,44 @@ describe("flushPreferences", () => {
     expect(out.dirtyFields).toEqual([]);
   });
 
+  it("keeps a newer goal dirty when an earlier flush succeeds, then syncs it", async () => {
+    await markFieldDirty("readingGoalMinutes", 30);
+    await markFieldDirty("fontScale", 1.2);
+    let startFirst!: () => void;
+    let finishFirst!: (response: { ok: boolean; status: number }) => void;
+    const firstStarted = new Promise<void>((resolve) => { startFirst = resolve; });
+    const firstResponse = new Promise<{ ok: boolean; status: number }>((resolve) => {
+      finishFirst = resolve;
+    });
+    const fetchMock = vi.fn()
+      .mockImplementationOnce(() => {
+        startFirst();
+        return firstResponse;
+      })
+      .mockResolvedValue({ ok: true, status: 200 });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const firstFlush = flushPreferences(TOKEN);
+    await firstStarted;
+    await markFieldDirty("readingGoalMinutes", 45);
+    finishFirst({ ok: true, status: 200 });
+    await firstFlush;
+
+    const pending = await readPreferences();
+    expect(pending.values.readingGoalMinutes).toBe(45);
+    expect(pending.dirtyFields).toEqual(["readingGoalMinutes"]);
+
+    await flushPreferences(TOKEN);
+
+    expect(fetchMock.mock.calls.map(([, init]) => JSON.parse(init.body))).toEqual([
+      { readingGoalMinutes: 30, fontScale: 1.2 },
+      { readingGoalMinutes: 45 },
+    ]);
+    const synced = await readPreferences();
+    expect(synced.values.readingGoalMinutes).toBe(45);
+    expect(synced.dirtyFields).toEqual([]);
+  });
+
   it("keeps the dirty list intact on 5xx — next online tick retries", async () => {
     await markFieldDirty("theme", "dark");
     vi.stubGlobal(

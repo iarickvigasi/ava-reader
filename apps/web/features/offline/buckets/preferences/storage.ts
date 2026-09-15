@@ -90,9 +90,13 @@ export async function markFieldDirty(
   });
 }
 
-// Mark fields as clean after a successful PATCH. The PATCH may have
-// touched a subset of the dirty list; only those are removed.
-export async function markFieldsClean(fields: string[]): Promise<void> {
+// Mark fields as clean after a successful PATCH. When its sent values are
+// provided, keep edits made while the request was in flight dirty so a later
+// flush still sends them. Check and clear within the same transaction.
+export async function markFieldsClean(
+  fields: string[],
+  sentValues?: PreferencesValues,
+): Promise<void> {
   if (fields.length === 0) {
     return;
   }
@@ -102,7 +106,10 @@ export async function markFieldsClean(fields: string[]): Promise<void> {
     if (!existing) {
       return;
     }
-    const remaining = existing.dirtyFields.filter((f) => !fields.includes(f));
+    const remaining = existing.dirtyFields.filter((field) =>
+      !fields.includes(field) ||
+      (sentValues !== undefined && !Object.is(existing.values[field], sentValues[field])),
+    );
     await db.preferences.put({ ...existing, dirtyFields: remaining });
   });
 }

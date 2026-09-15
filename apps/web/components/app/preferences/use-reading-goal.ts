@@ -1,26 +1,37 @@
 "use client";
 
+import { useCallback, useSyncExternalStore } from "react";
+import { DEFAULT_READING_GOAL_MINUTES, parseReadingGoal } from "./reading-goal";
 import { usePreference } from "./use-preference";
 
-export const DEFAULT_READING_GOAL_MINUTES = 60;
-const MIN_GOAL_MINUTES = 1;
-const MAX_GOAL_MINUTES = 1440; // matches the API DTO bound (24 hours)
+export { DEFAULT_READING_GOAL_MINUTES } from "./reading-goal";
 
 const STORAGE_KEY = "ava.reader.readingGoalMinutes";
 
-function parseReadingGoal(raw: unknown): number | null {
-  const value = typeof raw === "number" ? raw : Number.parseFloat(String(raw));
-  if (!Number.isFinite(value)) return null;
-  const rounded = Math.round(value);
-  if (rounded < MIN_GOAL_MINUTES || rounded > MAX_GOAL_MINUTES) return null;
-  return rounded;
-}
+const subscribeToHydration = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
 
-export function useReadingGoal(): [number, (next: number) => void] {
-  return usePreference({
+export function useReadingGoal(
+  defaultValue = DEFAULT_READING_GOAL_MINUTES,
+): [number, (next: number) => void] {
+  const [goal, setGoal] = usePreference({
     field: "readingGoalMinutes",
     storageKey: STORAGE_KEY,
-    defaultValue: DEFAULT_READING_GOAL_MINUTES,
+    defaultValue,
     parse: parseReadingGoal,
   });
+  // Home renders its server goal during hydration. The saved local preference
+  // takes over afterwards, including edits made while offline.
+  const hydrated = useSyncExternalStore(
+    subscribeToHydration,
+    getClientSnapshot,
+    getServerSnapshot,
+  );
+  const update = useCallback((next: number) => {
+    const parsed = parseReadingGoal(next);
+    if (parsed !== null && parsed !== goal) setGoal(parsed);
+  }, [goal, setGoal]);
+
+  return [hydrated ? goal : defaultValue, update];
 }

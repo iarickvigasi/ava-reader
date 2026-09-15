@@ -21,6 +21,7 @@ export function createHomeContractFixture() {
     annotation: { count: jest.fn().mockResolvedValue(0) },
     catalogEntry: { findMany: jest.fn().mockResolvedValue([]) },
     collection: { findMany: jest.fn().mockResolvedValue([]) },
+    userPreferences: { findUnique: jest.fn().mockResolvedValue(null) },
     libraryItem: {
       findMany: jest
         .fn<Promise<unknown[]>, [Prisma.LibraryItemFindManyArgs]>()

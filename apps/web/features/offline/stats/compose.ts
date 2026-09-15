@@ -44,11 +44,12 @@ export function composeHomeStats(
 // Augments mastery daily bars with unsynced session minutes. Only days
 // that already exist in the server's `mastery.days` window are touched —
 // if the cached payload is from a previous week, we don't fabricate new
-// buckets. `todayMinutes` + `remainingMinutes` get recomputed against
-// `dailyGoalMinutes` so the goal-bar UI stays in sync.
+// buckets. The current reading goal applies to every displayed day, including
+// days without local reading, so preference edits update the goal-bar UI.
 export function composeMastery(
   baseline: HomePayload["mastery"],
   byUtcDaySeconds: UnsyncedSessionDeltas["byUtcDaySeconds"],
+  dailyGoalMinutes = baseline.dailyGoalMinutes,
 ): HomePayload["mastery"] {
   // Each day's `minutes` is server-floored from seconds. We add
   // floor(localSeconds / 60). Mismatch is bounded by 1 minute per day
@@ -56,25 +57,27 @@ export function composeMastery(
   const days = baseline.days.map((day) => {
     const extraSeconds = byUtcDaySeconds.get(day.key) ?? 0;
     const extraMinutes = Math.floor(Math.max(0, extraSeconds) / 60);
-    if (extraMinutes === 0) {
+    const minutes = day.minutes + extraMinutes;
+    const goalMet = minutes >= dailyGoalMinutes;
+    if (extraMinutes === 0 && goalMet === day.goalMet) {
       return day;
     }
-    const minutes = day.minutes + extraMinutes;
     return {
       ...day,
       minutes,
-      goalMet: minutes >= baseline.dailyGoalMinutes,
+      goalMet,
     };
   });
 
   const todayMinutes = days.at(-1)?.minutes ?? 0;
   const remainingMinutes = Math.max(
     0,
-    baseline.dailyGoalMinutes - todayMinutes,
+    dailyGoalMinutes - todayMinutes,
   );
 
   return {
     ...baseline,
+    dailyGoalMinutes,
     days,
     todayMinutes,
     remainingMinutes,

@@ -20,6 +20,9 @@ describe('HomeService', () => {
     collection: {
       findMany: jest.fn(),
     },
+    userPreferences: {
+      findUnique: jest.fn(),
+    },
     libraryItem: {
       findMany: jest.fn<Promise<unknown[]>, [Prisma.LibraryItemFindManyArgs]>(),
     },
@@ -39,6 +42,7 @@ describe('HomeService', () => {
     prisma.annotation.count.mockReset();
     prisma.catalogEntry.findMany.mockReset();
     prisma.collection.findMany.mockReset();
+    prisma.userPreferences.findUnique.mockReset();
     prisma.libraryItem.findMany.mockReset();
     findCompletionItems.mockReset();
     prisma.readingSessionSegment.aggregate.mockReset();
@@ -67,6 +71,7 @@ describe('HomeService', () => {
     prisma.catalogEntry.findMany.mockResolvedValue([]);
     prisma.readingSessionSegment.findMany.mockResolvedValue([]);
     prisma.collection.findMany.mockResolvedValue([]);
+    prisma.userPreferences.findUnique.mockResolvedValue(null);
     prisma.readingSessionSegment.aggregate.mockResolvedValue({
       _sum: { durationSeconds: 0 },
     });
