@@ -6,11 +6,12 @@ import {
   MIN_FONT_SCALE,
   useFontScale,
 } from "@/components/app/preferences/use-font-scale";
+import { useReaderDevice } from "@/features/reader/modes/use-reader-device";
 import { BookContextProvider } from "@/features/offline/buckets/book/context";
 import { useRefreshReaderLanguage } from "@/features/offline/buckets/book";
 import { AiCommentsProvider } from "./overlays/ai-comments/ai-comments-context";
 import { HighlightsProvider } from "./overlays/highlights/highlights-context";
-import { ReadyReader } from "./view/ready-reader";
+import { ReaderModeRouter } from "./view/reader-mode-router";
 import { ReaderSelectionProvider } from "./selection/reader-selection-context";
 import { ReaderStatusState } from "./view/reader-status-state";
 import {
@@ -27,6 +28,7 @@ export function ReaderScreen({
   persistenceMode = READER_PERSISTENCE_MODE_REMOTE,
 }: ReaderScreenProps) {
   useRefreshReaderLanguage(libraryItemId);
+  const isPhone = useReaderDevice() !== "desktop";
   const [fontScale, setFontScale] = useFontScale();
   const {
     activeChapter,
@@ -63,38 +65,40 @@ export function ReaderScreen({
 
   return (
     <BookContextProvider libraryItemId={libraryItemId}>
-    <div className="h-full bg-paper text-ink" style={readerStyle}>
-      <div className="mx-auto h-full max-w-375 overflow-hidden md:pl-20">
-        {!isReaderReady ? (
-          <ReaderStatusState payload={payload} />
-        ) : activeChapter ? (
-          <AiCommentsProvider libraryItemId={libraryItemId}>
-            <HighlightsProvider libraryItemId={libraryItemId}>
-              <ReaderSelectionProvider>
-                <ReadyReader
-                  key={libraryItemId}
-                  activeChapter={activeChapter}
-                  displayLocator={displayLocator}
-                  fontScale={fontScale}
-                  isBootstrapping={isBootstrapping}
-                  isLoadingChapter={isLoadingChapter}
-                  isRefreshingWindow={isRefreshingWindow}
-                  libraryItemId={libraryItemId}
-                  onDecreaseFont={handleDecreaseFont}
-                  onIncreaseFont={handleIncreaseFont}
-                  onSelectChapter={navigateToChapter}
-                  onVisibleLocatorChange={setVisibleLocator}
-                  payload={payload}
-                  pendingChapterId={pendingChapterId}
-                  restoreIntent={restoreIntent}
-                  visibleLocator={visibleLocator}
-                />
-              </ReaderSelectionProvider>
-            </HighlightsProvider>
-          </AiCommentsProvider>
-        ) : null}
+      <div className="h-full bg-paper text-ink" style={readerStyle}>
+        <div
+          className={`mx-auto h-full max-w-375 overflow-hidden ${isPhone ? "" : "md:pl-20"}`}
+        >
+          {!isReaderReady ? (
+            <ReaderStatusState payload={payload} />
+          ) : activeChapter ? (
+            <AiCommentsProvider libraryItemId={libraryItemId}>
+              <HighlightsProvider libraryItemId={libraryItemId}>
+                <ReaderSelectionProvider>
+                  <ReaderModeRouter
+                    key={libraryItemId}
+                    activeChapter={activeChapter}
+                    displayLocator={displayLocator}
+                    fontScale={fontScale}
+                    isBootstrapping={isBootstrapping}
+                    isLoadingChapter={isLoadingChapter}
+                    isRefreshingWindow={isRefreshingWindow}
+                    libraryItemId={libraryItemId}
+                    onDecreaseFont={handleDecreaseFont}
+                    onIncreaseFont={handleIncreaseFont}
+                    onSelectChapter={navigateToChapter}
+                    onVisibleLocatorChange={setVisibleLocator}
+                    payload={payload}
+                    pendingChapterId={pendingChapterId}
+                    restoreIntent={restoreIntent}
+                    visibleLocator={visibleLocator}
+                  />
+                </ReaderSelectionProvider>
+              </HighlightsProvider>
+            </AiCommentsProvider>
+          ) : null}
+        </div>
       </div>
-    </div>
     </BookContextProvider>
   );
 }

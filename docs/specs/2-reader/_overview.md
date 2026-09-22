@@ -4,12 +4,14 @@
 > apps/web/components/app/reader, apps/web/features/reader, apps/api/src/reader
 
 ## Summary
+
 The reading surface: renders a book's chapters as paginated blocks, lets the reader navigate and
 resume, and bridges text selection to the AI/annotation overlays. Serves the core "read across
 devices, online or offline" job. Reader is large enough to split — each subsystem has its own spec
 below.
 
 ## Sub-specs
+
 - 1.1 content-rendering — blocks, inlines, images, typography, font scale/theme application.
 - 1.2 pagination — column/page layout, measurement, page splitting, reflow.
 - 1.3 navigation — chapter traversal, TOC, jump-to-locator.
@@ -17,8 +19,10 @@ below.
 - 1.5 resume — restore the last reading position on reopen.
 - 1.6 selection-bridge — DOM selection → overlay-anchored intent.
 - 1.7 reader-payload — server payload statuses, package format/versioning, chapter window.
+- [Bilingual mode](../9-bilingual-mode/_overview.md) — paragraph flow and cached sentence translations.
 
 ## Shared data model (apps/web/lib/api-types/reader.ts)
+
 - **ReaderStatusPayload** — book + chapter window + progress + session, the reader's input.
 - **ReaderBlock** (union: paragraph, heading, list, image, …) of **ReaderInline** (text | image);
   **ReaderListItem**; align left|center|right|justify.
@@ -29,14 +33,17 @@ below.
 - **ReaderProgressPayload** {locator, completionPercent, …}.
 
 ## Scope (whole feature)
+
 - In: everything in the seven sub-specs.
 - Non-goals: annotation logic (see 5.1-highlights, 5.2-ai-toolbox, 5.3-ai-comments), content download (see
   4-offline/4.1-offline-reading), audio narration (roadmap).
 
 ## Cross-cutting acceptance
+
 - [ ] A cached book opens, renders, paginates, and is navigable fully offline.
 - [ ] Position survives reload, font/theme change, and reconnect via locators + resume.
 - [ ] Selection reliably anchors highlight and AI overlays to the right text.
 
 ## Open questions
+
 Reflowable layout on small/mobile screens; PDF / non-EPUB formats; RTL and vertical scripts.

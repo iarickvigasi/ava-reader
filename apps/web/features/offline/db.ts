@@ -18,6 +18,7 @@
 import Dexie, { type Table } from "dexie";
 import type { MembershipMutation } from "./buckets/library/membership/types";
 import type { FinishDateMutation } from "./buckets/library/finish-date/types";
+import type { TranslationChapterRow } from "./buckets/translations/types";
 
 import type { HomePayload } from "@/lib/api-types/home";
 import type {
@@ -246,9 +247,9 @@ export type PreferencesRow = {
 // is shared so the sync runner can treat them uniformly.
 
 export type MutationRow<TKind extends string, TPayload> = {
-  mutationId: string;        // ULID — also the idempotency key the server sees
+  mutationId: string; // ULID — also the idempotency key the server sees
   kind: TKind;
-  scopeId: string;           // libraryItemId, "me", etc. — used for sharding
+  scopeId: string; // libraryItemId, "me", etc. — used for sharding
   payload: TPayload;
   queuedAt: string;
   attemptCount: number;
@@ -257,9 +258,11 @@ export type MutationRow<TKind extends string, TPayload> = {
 };
 
 export type HighlightMutationKind = "upsert" | "delete";
-export type HighlightMutationPayload =
-  | { excerpt: string; highlightColor: string; locator: ReaderRangeLocator | null }
-  | null; // null for deletes — id is on the envelope
+export type HighlightMutationPayload = {
+  excerpt: string;
+  highlightColor: string;
+  locator: ReaderRangeLocator | null;
+} | null; // null for deletes — id is on the envelope
 
 export type HighlightMutationRow = MutationRow<
   HighlightMutationKind,
@@ -306,7 +309,7 @@ export type MetaRow = {
 // Bumped only for structural changes WITHIN one user's database. The database
 // NAME is per-user (`ava-reader-<userId>`), so different accounts on one browser
 // profile never share an object store — see adr/5.
-export const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 4;
 export const DB_NAME_PREFIX = "ava-reader-";
 // The pre-per-user single database; swept once by purgeOtherUserDbs (adr/5).
 export const LEGACY_DB_NAME = "ava-reader";
@@ -337,6 +340,7 @@ export class AvaReaderDB extends Dexie {
 
   books!: Table<BookRow, string>;
   bookChapters!: Table<ChapterRow, [string, string]>;
+  translations!: Table<TranslationChapterRow, [string, string, string]>;
 
   highlights!: Table<HighlightRow, [string, string]>;
   aiComments!: Table<AiCommentRow, [string, string]>;
@@ -373,7 +377,8 @@ export class AvaReaderDB extends Dexie {
       libraryItems:
         "libraryItemId, slug, lastReadAt, savedOffline, savedAutomatically",
       collections: "id, slug, kind",
-      collectionMembership: "[collectionId+libraryItemId], collectionId, libraryItemId, order",
+      collectionMembership:
+        "[collectionId+libraryItemId], collectionId, libraryItemId, order",
 
       books: "libraryItemId",
       bookChapters: "[libraryItemId+chapterId], libraryItemId, index",
@@ -400,6 +405,9 @@ export class AvaReaderDB extends Dexie {
     });
     this.version(3).stores({
       finishDateMutations: "libraryItemId, queuedAt",
+    });
+    this.version(4).stores({
+      translations: "[libraryItemId+chapterId+targetLang], libraryItemId",
     });
   }
 }

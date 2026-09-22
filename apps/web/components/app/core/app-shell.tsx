@@ -14,6 +14,7 @@ import { ProgressSyncRunner } from "@/components/app/core/progress-sync-runner";
 import { PreferencesSyncRunner } from "@/components/app/preferences/preferences-sync-runner";
 import { BackgroundPrimer } from "@/features/offline/prime";
 import { ReaderUiProvider } from "@/components/app/core/reader-ui-context";
+import { ReaderShell } from "./reader-shell";
 import { useLockDocumentOverscroll } from "@/components/app/core/use-lock-document-overscroll";
 import { useInterfaceLang } from "@/components/app/preferences/use-interface-lang";
 import { useCurrentUserCached } from "@/features/offline/buckets/me";
@@ -27,7 +28,10 @@ type AppShellProps = {
   currentUser: CurrentUserPayload | null;
 };
 
-export function AppShell({ children, currentUser: initialUser }: AppShellProps) {
+export function AppShell({
+  children,
+  currentUser: initialUser,
+}: AppShellProps) {
   const pathname = usePathname();
   const isReaderRoute = pathname.startsWith("/app/read/");
   const currentUser = useCurrentUserCached(initialUser);
@@ -60,10 +64,9 @@ export function AppShell({ children, currentUser: initialUser }: AppShellProps) 
       <MissingBookOfflineModal />
       {isReaderRoute ? (
         <ReaderUiProvider>
-          <div className="flex h-dvh flex-col overflow-hidden">
-            <AppNavigation currentUser={currentUser} />
-            <div className="min-h-0 flex-1">{children}</div>
-          </div>
+          <ReaderShell navigation={<AppNavigation currentUser={currentUser} />}>
+            {children}
+          </ReaderShell>
         </ReaderUiProvider>
       ) : (
         <div className="min-h-screen">

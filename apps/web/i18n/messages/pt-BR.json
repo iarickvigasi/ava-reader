@@ -2,8 +2,8 @@
   "common": {
     "back": "Voltar",
     "compactNumber": {
-      "thousand": "{value}\u00a0mil",
-      "million": "{value}\u00a0mi"
+      "thousand": "{value} mil",
+      "million": "{value} mi"
     }
   },
   "landing": {
@@ -320,6 +320,18 @@
       "current": "Atual",
       "section": "Seção",
       "chapter": "Capítulo"
+    },
+    "bilingual": {
+      "label": "Leitor bilíngue",
+      "original": "Original",
+      "preparing": "Preparando páginas",
+      "loading": "Traduzindo",
+      "offline": "Conecte-se para traduzir esta página",
+      "failed": "Tradução indisponível",
+      "retry": "Tentar novamente",
+      "previous": "Página anterior",
+      "next": "Próxima página",
+      "page": "Página {page}"
     }
   },
   "shared": {
@@ -350,9 +362,9 @@
     "reader": {
       "contents": "Sumário",
       "preferences": "Preferências",
-      "aiChats": "Chats com IA",
+      "aiChats": "Chats (IA)",
       "highlights": "Destaques",
-      "aiComments": "Comentários da IA",
+      "aiComments": "Comentários (IA)",
       "bookmarks": "Marcadores",
       "search": "Buscar",
       "listenToBook": "Ouvir o livro",

@@ -1,8 +1,11 @@
 import "fake-indexeddb/auto";
 import Dexie from "dexie";
 import { afterEach, expect, it } from "vitest";
-import { getDb, __resetDbForTests } from "../../../db";
-import { __setNetStateForTests, __resetNetStateForTests } from "../../../net/net-state";
+import { getDb, __resetDbForTests, SCHEMA_VERSION } from "../../../db";
+import {
+  __setNetStateForTests,
+  __resetNetStateForTests,
+} from "../../../net/net-state";
 import { readBookInfo, __resetLibraryBucketForTests } from "../bucket";
 import { clearFinishDateRuntime } from "./runtime";
 import { setBookFinishedAt } from "./mutation";
@@ -30,9 +33,11 @@ it("upgrades a v2 database without losing old book details, progress, or queued 
 
   const oldDb = new Dexie(name);
   oldDb.version(2).stores({
-    libraryItems: "libraryItemId, slug, lastReadAt, savedOffline, savedAutomatically",
+    libraryItems:
+      "libraryItemId, slug, lastReadAt, savedOffline, savedAutomatically",
     collections: "id, slug, kind",
-    collectionMembership: "[collectionId+libraryItemId], collectionId, libraryItemId, order",
+    collectionMembership:
+      "[collectionId+libraryItemId], collectionId, libraryItemId, order",
     collectionMembershipMutations: "libraryItemId, queuedAt",
     books: "libraryItemId",
     bookChapters: "[libraryItemId+chapterId], libraryItemId, index",
@@ -51,7 +56,9 @@ it("upgrades a v2 database without losing old book details, progress, or queued 
     meta: "key",
   });
   const pendingMembership = {
-    libraryItemId: book.libraryItemId, revision: "old-edit", queuedAt: finishedAt,
+    libraryItemId: book.libraryItemId,
+    revision: "old-edit",
+    queuedAt: finishedAt,
     changes: [{ collectionId: "col-1", member: false, baselineMember: true }],
   };
   try {
@@ -64,10 +71,12 @@ it("upgrades a v2 database without losing old book details, progress, or queued 
 
   const upgraded = getDb();
   await upgraded.open();
-  expect(upgraded.verno).toBe(3);
+  expect(upgraded.verno).toBe(SCHEMA_VERSION);
   expect(await upgraded.libraryItems.get(book.libraryItemId)).toEqual(row);
   expect(await upgraded.progress.get(book.libraryItemId)).toEqual(progress);
-  expect(await upgraded.collectionMembershipMutations.get(book.libraryItemId)).toEqual(pendingMembership);
+  expect(
+    await upgraded.collectionMembershipMutations.get(book.libraryItemId),
+  ).toEqual(pendingMembership);
   expect((await readBookInfo(book.slug))?.finishedAt).toBeNull();
   expect(await upgraded.finishDateMutations.count()).toBe(0);
   await setBookFinishedAt(book.libraryItemId, finishedAt, token);

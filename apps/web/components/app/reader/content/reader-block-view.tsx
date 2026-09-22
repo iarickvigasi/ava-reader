@@ -3,6 +3,12 @@ import type { ReaderBlock } from "@/lib/api-types";
 import { cn } from "@/lib/cn";
 import { resolveAlignmentClass, resolveBlockStyle } from "./reader-block-style";
 import { ReaderInlineContent } from "./reader-inline-content";
+import {
+  BLOCKQUOTE_CLASS,
+  HEADING_CLASS,
+  LIST_CLASS,
+  PARAGRAPH_CLASS,
+} from "./reader-block-classes";
 
 type SharedBlockProps = {
   "data-block-id": string;
@@ -16,7 +22,10 @@ type SharedBlockProps = {
 // Paragraph and blockquote share a single union variant, so a
 // kind-by-kind Extract collapses to never. These aliases pull the
 // variants out by hand.
-type TextReaderBlock = Extract<ReaderBlock, { kind: "paragraph" | "blockquote" }>;
+type TextReaderBlock = Extract<
+  ReaderBlock,
+  { kind: "paragraph" | "blockquote" }
+>;
 type HeadingReaderBlock = Extract<ReaderBlock, { kind: "heading" }>;
 type ListReaderBlock = Extract<ReaderBlock, { kind: "list" }>;
 type ImageReaderBlock = Extract<ReaderBlock, { kind: "image" }>;
@@ -26,21 +35,6 @@ type WithSharedProps<TBlock> = {
   sharedProps: SharedBlockProps;
   alignmentClass: string;
 };
-
-const HEADING_CLASS =
-  "break-inside-avoid-column font-reader text-[calc(1.7rem*var(--reader-font-scale)*var(--reader-block-scale,1))] leading-[1.15] font-bold tracking-[-0.03em] text-ink sm:text-[calc(2.15rem*var(--reader-font-scale)*var(--reader-block-scale,1))]";
-
-const BLOCKQUOTE_CLASS =
-  "border-l border-line/60 pl-5 font-reader text-[calc(1.18rem*var(--reader-font-scale)*var(--reader-block-scale,1))] leading-[1.9] italic text-ink/90 sm:text-[calc(1.3rem*var(--reader-font-scale)*var(--reader-block-scale,1))]";
-
-// pl is em-based so ::marker numerals scale with the list font: two-digit
-// decimal markers (~1.63em incl. the marker gap) stay inside the column at
-// every font scale — fixed px padding clipped them at the page edge.
-const LIST_CLASS =
-  "space-y-1 pl-[1.8em] font-reader text-[calc(1.12rem*var(--reader-font-scale)*var(--reader-block-scale,1))] leading-relaxed text-ink sm:text-[calc(1.28rem*var(--reader-font-scale)*var(--reader-block-scale,1))]";
-
-const PARAGRAPH_CLASS =
-  "font-reader text-[calc(1.16rem*var(--reader-font-scale)*var(--reader-block-scale,1))] leading-loose tracking-[-0.01em] text-ink sm:text-[calc(1.34rem*var(--reader-font-scale)*var(--reader-block-scale,1))]";
 
 const FIGURE_MIN_HEIGHT_PX = 160;
 const FIGURE_RESERVED_HEIGHT_PX = 64;
@@ -205,10 +199,7 @@ function ImageBlock({
   const maxHeight = resolveImageMaxHeight(pageHeight);
 
   return (
-    <figure
-      {...sharedProps}
-      className="break-inside-avoid-column space-y-3"
-    >
+    <figure {...sharedProps} className="break-inside-avoid-column space-y-3">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         alt={block.alt ?? ""}

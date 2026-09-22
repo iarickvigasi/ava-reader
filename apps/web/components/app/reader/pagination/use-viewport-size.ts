@@ -1,9 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getBrowserViewportHeight } from "../shared/utils";
 import type { PageBoxSize } from "../shared/types";
 
@@ -26,7 +21,7 @@ export function useViewportSize() {
 
     const viewportHeight = getBrowserViewportHeight();
     const rootTop = root.getBoundingClientRect().top;
-    const nextHeight = Math.max(320, Math.floor(viewportHeight - rootTop));
+    const nextHeight = Math.max(0, Math.floor(viewportHeight - rootTop));
 
     setAvailableHeight((current) =>
       current === nextHeight ? current : nextHeight,

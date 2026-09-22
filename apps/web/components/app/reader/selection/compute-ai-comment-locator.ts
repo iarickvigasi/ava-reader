@@ -1,10 +1,6 @@
 import type { ReaderRangeLocator } from "@/lib/api-types";
-
-// Number of characters of surrounding text we capture on each side of the
-// selection. Wide enough to disambiguate the same phrase appearing twice in a
-// chapter, narrow enough to keep the serialized locator under a few hundred
-// bytes.
-const CONTEXT_CHAR_COUNT = 30;
+import { sourceOffsetWithin } from "./source-offset-within";
+import { computeSelectionRangeContext } from "./selection-range-context";
 
 // Builds a serialisable position fingerprint for `range`. Returns null when the
 // range straddles non-block content or escapes the chapter article — in those
@@ -36,12 +32,12 @@ export function computeAiCommentLocator(
   // chapter.
   const chapterId = startBlock.dataset.chapterId ?? fallbackChapterId;
 
-  const startOffset = offsetWithin(
+  const startOffset = sourceOffsetWithin(
     startBlock,
     range.startContainer,
     range.startOffset,
   );
-  const endOffset = offsetWithin(
+  const endOffset = sourceOffsetWithin(
     endBlock,
     range.endContainer,
     range.endOffset,
@@ -50,7 +46,7 @@ export function computeAiCommentLocator(
     return null;
   }
 
-  const { contextBefore, contextAfter } = computeContext(range);
+  const { contextBefore, contextAfter } = computeSelectionRangeContext(range);
 
   return {
     chapterId,
@@ -74,73 +70,6 @@ function findBlockElement(node: Node): HTMLElement | null {
       current instanceof HTMLElement &&
       current.dataset.blockId !== undefined
     ) {
-      return current;
-    }
-    current = current.parentNode;
-  }
-  return null;
-}
-
-// Character offset of (node, nodeOffset) within `block`, measured against the
-// flat textContent of the block. Uses a probe Range so that mixed text/element
-// containers (paragraphs with <em>, lists with <li>, etc.) all collapse to a
-// single linear offset.
-function offsetWithin(
-  block: HTMLElement,
-  node: Node,
-  nodeOffset: number,
-): number | null {
-  if (!block.contains(node) && node !== block) {
-    return null;
-  }
-  const probe = document.createRange();
-  try {
-    probe.setStart(block, 0);
-    probe.setEnd(node, nodeOffset);
-  } catch {
-    return null;
-  }
-  return probe.toString().length;
-}
-
-function computeContext(range: Range): {
-  contextBefore: string;
-  contextAfter: string;
-} {
-  const article = findArticleElement(range.startContainer);
-  if (!article) {
-    return { contextBefore: "", contextAfter: "" };
-  }
-
-  let contextBefore = "";
-  let contextAfter = "";
-
-  const beforeRange = document.createRange();
-  try {
-    beforeRange.setStart(article, 0);
-    beforeRange.setEnd(range.startContainer, range.startOffset);
-    contextBefore = beforeRange.toString().slice(-CONTEXT_CHAR_COUNT);
-  } catch {
-    // Fall through with empty contextBefore.
-  }
-
-  const afterRange = document.createRange();
-  try {
-    afterRange.setStart(range.endContainer, range.endOffset);
-    afterRange.setEndAfter(article);
-    contextAfter = afterRange.toString().slice(0, CONTEXT_CHAR_COUNT);
-  } catch {
-    // Fall through with empty contextAfter.
-  }
-
-  return { contextBefore, contextAfter };
-}
-
-function findArticleElement(node: Node): HTMLElement | null {
-  let current: Node | null =
-    node.nodeType === Node.ELEMENT_NODE ? node : node.parentNode;
-  while (current) {
-    if (current instanceof HTMLElement && current.tagName === "ARTICLE") {
       return current;
     }
     current = current.parentNode;

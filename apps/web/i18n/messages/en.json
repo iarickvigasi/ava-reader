@@ -320,6 +320,18 @@
       "current": "Current",
       "section": "Section",
       "chapter": "Chapter"
+    },
+    "bilingual": {
+      "label": "Bilingual reader",
+      "original": "Original",
+      "preparing": "Preparing pages",
+      "loading": "Translating",
+      "offline": "Connect to translate this page",
+      "failed": "Translation unavailable",
+      "retry": "Try again",
+      "previous": "Previous page",
+      "next": "Next page",
+      "page": "Page {page}"
     }
   },
   "shared": {

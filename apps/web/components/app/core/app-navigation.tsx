@@ -5,27 +5,12 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { AppHeaderBrand } from "@/components/brand/app-header-brand";
 import { HeaderStatusChip } from "@/components/app/core/header-status-chip";
-import {
-  useReaderUi,
-  type ReaderPanel,
-} from "@/components/app/core/reader-ui-context";
+import { useReaderUi } from "@/components/app/core/reader-ui-context";
 import {
   ChartIcon,
   ExploreIcon,
-  FontControlsIcon,
   HomeIcon,
-  ReaderDownloadIcon,
-  ReaderBookmarksIcon,
-  ReaderFavoritesIcon,
   ReaderLibraryIcon,
-  ReaderLayoutIcon,
-  ReaderListeningIcon,
-  ReaderNotesIcon,
-  ReaderSaveIcon,
-  ReaderSearchIcon,
-  ReaderShareIcon,
-  ReaderTranslationIcon,
-  SparkIcon,
 } from "@/components/app/shared/app-icons";
 import { UserMenuButton } from "@/components/auth/clerk-user-button";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
@@ -33,28 +18,9 @@ import type { CurrentUserPayload } from "@/lib/api-types";
 import { isAppNavigationItemActive } from "@/lib/app-navigation";
 import { cn } from "@/lib/cn";
 
-const readerNavItems = [
-  { href: "", icon: ReaderLayoutIcon, id: "contents", panel: "contents" },
-  { href: "", icon: FontControlsIcon, id: "preferences", panel: "preferences" },
-  { href: "", icon: ReaderNotesIcon, id: "aiChats", panel: "ai-chats" },
-  { href: "", icon: ReaderFavoritesIcon, id: "highlights", panel: "highlights" },
-  { href: "", icon: SparkIcon, id: "aiComments", panel: "ai-comments" },
-  { href: "", icon: ReaderBookmarksIcon, id: "bookmarks" },
-  { href: "", icon: ReaderSearchIcon, id: "search" },
-  { href: "", icon: ReaderListeningIcon, id: "listenToBook" },
-  {
-    href: "",
-    icon: ReaderTranslationIcon,
-    id: "bilingualMode",
-    isActive: true,
-  },
-] as const;
-
-const readerUtilityItems = [
-  { icon: ReaderSaveIcon, id: "savePage" },
-  { icon: ReaderShareIcon, id: "shareBook" },
-  { icon: ReaderDownloadIcon, id: "downloadBook" },
-] as const;
+import { readerNavItems, readerUtilityItems } from "./reader-navigation-items";
+import { ReaderNavItem } from "./reader-nav-item";
+import { ReaderMobileNavigation } from "./reader-mobile-navigation";
 
 const items = [
   { href: "/app", id: "home", icon: HomeIcon },
@@ -88,7 +54,9 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
           {/* Equal side tracks keep the brand centered regardless of status or admin controls. */}
           <div className="grid h-16 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 md:hidden">
             <div className="flex min-w-0 items-center gap-2">
-              <div className="shrink-0"><ThemeToggle /></div>
+              <div className="shrink-0">
+                <ThemeToggle />
+              </div>
               <HeaderStatusChip compact />
             </div>
             <Link href="/app" className="min-w-0">
@@ -151,7 +119,10 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
               <ThemeToggle />
               <div className="flex items-center gap-2 rounded-2xl bg-soft-fill py-2 xl:px-3">
                 <div className="hidden w-24 min-w-0 text-right xl:block">
-                  <p className="truncate text-sm font-semibold text-copy-strong" title={currentUser?.displayName ?? t("userFallbackName")}>
+                  <p
+                    className="truncate text-sm font-semibold text-copy-strong"
+                    title={currentUser?.displayName ?? t("userFallbackName")}
+                  >
                     {currentUser?.displayName ?? t("userFallbackName")}
                   </p>
                 </div>
@@ -193,8 +164,8 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
   );
 }
 
-function ReaderNavigation() {
-  const { activePanel, togglePanel } = useReaderUi();
+export function ReaderNavigation() {
+  const { activePanel, togglePanel, isPhone } = useReaderUi();
   const isLeftPanelOpen =
     activePanel === "contents" ||
     activePanel === "preferences" ||
@@ -206,10 +177,9 @@ function ReaderNavigation() {
     <>
       <aside
         className={cn(
-          "group/reader-nav fixed inset-y-0 left-0 z-40 hidden overflow-hidden transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:flex",
-          isLeftPanelOpen
-            ? "w-94"
-            : "w-20 hover:w-56 focus-within:w-56",
+          "group/reader-nav fixed inset-y-0 left-0 z-40 hidden overflow-hidden transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          !isPhone && "md:flex",
+          isLeftPanelOpen ? "w-94" : "w-20 hover:w-56 focus-within:w-56",
         )}
       >
         <div
@@ -280,106 +250,8 @@ function ReaderNavigation() {
         </div>
       </aside>
 
-      <div className="sticky top-0 z-40 bg-paper/95 px-4 py-3 backdrop-blur md:hidden">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex shrink-0 items-center gap-2">
-            <a
-              href="/app"
-              className="font-display text-xl leading-none text-ink"
-            >
-              AVA
-            </a>
-            <HeaderStatusChip compact iconOnly />
-          </div>
-          <div className="flex min-w-0 items-center gap-1 overflow-x-auto sm:gap-2">
-            {readerNavItems.slice(0, 5).map((item) => (
-              <ReaderNavItem
-                key={item.id}
-                activePanel={activePanel}
-                compact
-                item={item}
-                onTogglePanel={togglePanel}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
+      <ReaderMobileNavigation />
     </>
-  );
-}
-
-function ReaderNavItem({
-  activePanel,
-  compact = false,
-  item,
-  onTogglePanel,
-}: {
-  activePanel: ReaderPanel | null;
-  compact?: boolean;
-  item: (typeof readerNavItems)[number];
-  onTogglePanel: (panel: ReaderPanel) => void;
-}) {
-  const t = useTranslations("nav.reader");
-  const label = t(item.id);
-  const Icon = item.icon;
-  const isPanelItem = "panel" in item;
-  const isActive = ("isActive" in item && item.isActive) || (
-    isPanelItem && activePanel === item.panel
-  );
-  const content = (
-    <>
-      <span
-        className={cn(
-          "flex shrink-0 items-center justify-center",
-          compact ? "size-9" : "h-12 w-12",
-        )}
-      >
-        <Icon
-          aria-hidden="true"
-          className={cn("shrink-0 text-title opacity-95", compact ? "size-4" : "size-4.5")}
-        />
-      </span>
-      {compact ? (
-        <span className="sr-only">{label}</span>
-      ) : (
-        <span className="max-w-0 -translate-x-1 overflow-hidden whitespace-nowrap text-[0.95rem] uppercase tracking-[0.08em] text-title opacity-0 transition-[max-width,opacity,transform] duration-300 group-hover/reader-nav:max-w-36 group-hover/reader-nav:translate-x-0 group-hover/reader-nav:opacity-100 group-focus-within/reader-nav:max-w-36 group-focus-within/reader-nav:translate-x-0 group-focus-within/reader-nav:opacity-100">
-          {label}
-        </span>
-      )}
-    </>
-  );
-
-  const className = cn(
-    "flex items-center overflow-hidden rounded-control text-title transition-colors duration-300",
-    compact
-      ? "size-9 shrink-0 justify-center"
-      : "w-full justify-start py-0",
-    "hover:bg-soft-tone-fill/75",
-    isActive && "bg-soft-tone-fill",
-  );
-
-  if (isPanelItem) {
-    return (
-      <button
-        type="button"
-        aria-label={label}
-        aria-pressed={isActive}
-        className={className}
-        onClick={() => onTogglePanel(item.panel)}
-      >
-        {content}
-      </button>
-    );
-  }
-
-  if (!item.href) {
-    return <div className={className}>{content}</div>;
-  }
-
-  return (
-    <Link aria-label={label} className={className} href={item.href}>
-      {content}
-    </Link>
   );
 }
 

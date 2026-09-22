@@ -6,6 +6,8 @@ import { AiToolboxController } from './ai-comments/ai-toolbox.controller';
 import { OpenRouterClient } from './shared/openrouter-client';
 import { AnnotationsController } from './annotations/annotations.controller';
 import { BookAnalysisService } from './book-analysis/book-analysis.service';
+import { BookTranslationsController } from './book-translations/book-translations.controller';
+import { BookTranslationsService } from './book-translations/book-translations.service';
 import { AnnotationsService } from './annotations/annotations.service';
 import { ClerkAuthGuard } from './auth/clerk-auth.guard';
 import { ClerkAuthService } from './auth/clerk-auth.service';
@@ -43,6 +45,7 @@ import { UsersService } from './users/users.service';
     AiCommentsController,
     AiToolboxController,
     AnnotationsController,
+    BookTranslationsController,
   ],
   providers: [
     AppService,
@@ -62,6 +65,7 @@ import { UsersService } from './users/users.service';
     OpenRouterClient,
     AnnotationsService,
     BookAnalysisService,
+    BookTranslationsService,
   ],
 })
 export class AppModule {}

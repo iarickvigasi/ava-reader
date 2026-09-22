@@ -2,8 +2,8 @@
   "common": {
     "back": "Назад",
     "compactNumber": {
-      "thousand": "{value}\u00a0тис.",
-      "million": "{value}\u00a0млн"
+      "thousand": "{value} тис.",
+      "million": "{value} млн"
     }
   },
   "landing": {
@@ -320,6 +320,18 @@
       "current": "Поточний",
       "section": "Підрозділ",
       "chapter": "Розділ"
+    },
+    "bilingual": {
+      "label": "Двомовне читання",
+      "original": "Оригінал",
+      "preparing": "Підготовка сторінок",
+      "loading": "Переклад",
+      "offline": "Підключіться, щоб перекласти цю сторінку",
+      "failed": "Переклад недоступний",
+      "retry": "Спробувати ще раз",
+      "previous": "Попередня сторінка",
+      "next": "Наступна сторінка",
+      "page": "Сторінка {page}"
     }
   },
   "shared": {
@@ -356,7 +368,7 @@
       "bookmarks": "Закладки",
       "search": "Пошук",
       "listenToBook": "Слухати книжку",
-      "bilingualMode": "Білінгвальний режим",
+      "bilingualMode": "Двомовний",
       "savePage": "Зберегти сторінку",
       "shareBook": "Поділитися книжкою",
       "downloadBook": "Завантажити книжку"

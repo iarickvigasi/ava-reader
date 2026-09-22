@@ -1,20 +1,10 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useReaderUi } from "@/components/app/core/reader-ui-context";
 import { ReaderArticle } from "../content/reader-article";
 import { ReaderPaginationPreloader } from "../pagination/measurement/reader-pagination-preloader";
-import {
-  ReadyReaderActivityStatus,
-  ReadyReaderHeader,
-  ReadyReaderProgress,
-} from "./ready-reader-sections";
-import { ReaderAiChatsOverlay } from "../overlays/ai-chats/reader-ai-chats-overlay";
-import { ReaderAiCommentsOverlay } from "../overlays/ai-comments/reader-ai-comments-overlay";
-import { useAiCommentsContext } from "../overlays/ai-comments/ai-comments-context";
-import { ReaderAiToolboxOverlay } from "../overlays/ai-toolbox/reader-ai-toolbox-overlay";
-import { ReaderContentsOverlay } from "../overlays/contents/reader-contents-overlay";
-import { ReaderHighlightsOverlay } from "../overlays/highlights/reader-highlights-overlay";
-import { useHighlightsContext } from "../overlays/highlights/highlights-context";
-import { ReaderPreferencesOverlay } from "../overlays/preferences/reader-preferences-overlay";
+import { ReadyReaderProgress } from "./ready-reader-progress";
+import { ReaderFrame } from "./reader-frame";
+import { ReaderPageViewport } from "./reader-page-viewport";
 import {
   READER_PANEL_AI_CHATS,
   READER_PANEL_AI_COMMENTS,
@@ -33,22 +23,19 @@ import { useIosSelection } from "../selection/ios/use-ios-selection";
 
 export function ReadyReader({
   activeChapter,
-  displayLocator,
   fontScale,
   isBootstrapping,
   isLoadingChapter,
   isRefreshingWindow,
   libraryItemId,
-  onDecreaseFont,
-  onIncreaseFont,
   onSelectChapter,
   onVisibleLocatorChange,
   payload,
-  pendingChapterId,
   restoreIntent,
   visibleLocator,
-}: ReadyReaderProps) {
-  const { activePanel, closePanel } = useReaderUi();
+  embedded = false,
+}: ReadyReaderProps & { embedded?: boolean }) {
+  const { activePanel } = useReaderUi();
   const isContentsOpen = activePanel === READER_PANEL_CONTENTS;
   const isPreferencesOpen = activePanel === READER_PANEL_PREFERENCES;
   const isAiChatsOpen = activePanel === READER_PANEL_AI_CHATS;
@@ -117,38 +104,6 @@ export function ReadyReader({
   const { onTextSelected, onHighlightClick, onAiCommentClick } =
     useHighlightSelectionBridge(activeChapter.chapterId);
 
-  const { highlights } = useHighlightsContext();
-  const handleSelectHighlightFromList = useCallback(
-    (highlightId: string) => {
-      const highlight = highlights.find((row) => row.id === highlightId);
-      if (!highlight?.locator) {
-        return;
-      }
-      closePanel();
-      onSelectChapter(highlight.locator.chapterId, {
-        blockId: highlight.locator.startBlockId,
-        textOffset: highlight.locator.startOffset,
-      });
-    },
-    [closePanel, highlights, onSelectChapter],
-  );
-
-  const { comments: aiComments } = useAiCommentsContext();
-  const handleSelectAiCommentFromList = useCallback(
-    (commentId: string) => {
-      const comment = aiComments.find((row) => row.id === commentId);
-      if (!comment?.locator) {
-        return;
-      }
-      closePanel();
-      onSelectChapter(comment.locator.chapterId, {
-        blockId: comment.locator.startBlockId,
-        textOffset: comment.locator.startOffset,
-      });
-    },
-    [aiComments, closePanel, onSelectChapter],
-  );
-
   useReaderTextSelection({
     containerRef: pageBoxRef,
     onSelectText: onTextSelected,
@@ -182,124 +137,58 @@ export function ReadyReader({
 
   return (
     <>
-      <div
-        ref={rootRef}
-        className="px-4 pb-2 pt-2 sm:px-6 sm:pb-5 sm:pt-8 md:px-7 md:pt-8 lg:px-8"
-        style={{
-          height: availableHeight > 0 ? `${availableHeight}px` : undefined,
-        }}
+      <ReaderFrame
+        rootRef={rootRef}
+        height={availableHeight}
+        activeChapter={activeChapter}
+        embedded={embedded}
+        payload={payload}
+        isBootstrapping={isBootstrapping}
+        isLoadingChapter={isLoadingChapter}
+        isRefreshingWindow={isRefreshingWindow}
       >
-        <section className="mx-auto flex h-full max-w-312 min-w-0 flex-col">
-          <div className="hidden items-start justify-between gap-6 sm:flex">
-            <ReadyReaderHeader activeChapter={activeChapter} payload={payload} />
-            <ReadyReaderActivityStatus
-              isBootstrapping={isBootstrapping}
-              isLoadingChapter={isLoadingChapter}
-              isRefreshingWindow={isRefreshingWindow}
-            />
-          </div>
-
-          <div className="flex min-h-0 flex-1 flex-col gap-0 sm:mt-8 sm:gap-4">
-
-            {/* overflow-hidden + px-* together form the page clip window:
-                the padding box clips 12-24px outside the column edges, so
-                line-end ink overhang (italic terminals, list markers) paints
-                into the margin instead of being amputated. Neighbouring
-                columns sit a full PAGE_GAP away, so the bleed ring can never
-                show another page (see 1.2-pagination "Page clip window"). */}
-            <div
-              className="relative min-h-0 flex-1 overflow-hidden px-3 py-2 sm:px-5 sm:py-6 md:px-6"
-              style={{
-                touchAction: "none",
-              }}
-              onTouchEnd={handleTouchEnd}
-              onTouchStart={handleTouchStart}
-            >
-              {/* Must NOT clip: its edge coincides exactly with the column
+        <ReaderPageViewport
+          onTouchEnd={handleTouchEnd}
+          onTouchStart={handleTouchStart}
+          embedded={embedded}
+        >
+          {/* Must NOT clip: its edge coincides exactly with the column
                   edge, so any overflow-hidden here re-amputates edge ink. */}
-              <div
-                ref={pageBoxRef}
-                className={isIosSelection ? "h-full w-full select-none" : "h-full w-full"}
-              >
-                <ReaderArticle
-                  applyAiComments
-                  blocks={activeChapter.blocks}
-                  chapterId={activeChapter.chapterId}
-                  onAiCommentClick={onAiCommentClick}
-                  onHighlightClick={onHighlightClick}
-                  pageHeight={pageBoxSize.height}
-                  prefixBlocks={prefixBlocks}
-                  prefixChapterId={previousChapter?.chapterId ?? null}
-                  spilloverBlocks={spilloverBlocks}
-                  spilloverChapterId={nextChapter?.chapterId ?? null}
-                  style={articleStyle}
-                />
-              </div>
-              {shouldMaskArticle ? (
-                <div className="pointer-events-none absolute inset-0 bg-paper/55 backdrop-blur-[2px]" />
-              ) : null}
-            </div>
-
-            <ReadyReaderProgress
-              completionPercent={payload.progress.completionPercent}
-              currentPageIndex={currentPageIndex}
-              pageCount={pageCount}
+          <div
+            ref={pageBoxRef}
+            className={
+              isIosSelection ? "h-full w-full select-none" : "h-full w-full"
+            }
+          >
+            <ReaderArticle
+              applyAiComments
+              blocks={activeChapter.blocks}
+              chapterId={activeChapter.chapterId}
+              onAiCommentClick={onAiCommentClick}
+              onHighlightClick={onHighlightClick}
+              pageHeight={pageBoxSize.height}
+              prefixBlocks={prefixBlocks}
+              prefixChapterId={previousChapter?.chapterId ?? null}
+              spilloverBlocks={spilloverBlocks}
+              spilloverChapterId={nextChapter?.chapterId ?? null}
+              style={articleStyle}
             />
           </div>
-        </section>
-      </div>
+          {shouldMaskArticle ? (
+            <div className="pointer-events-none absolute inset-0 bg-paper/55 backdrop-blur-[2px]" />
+          ) : null}
+        </ReaderPageViewport>
+
+        {!embedded && (
+          <ReadyReaderProgress
+            completionPercent={payload.progress.completionPercent}
+            currentPageIndex={currentPageIndex}
+            pageCount={pageCount}
+          />
+        )}
+      </ReaderFrame>
 
       <IosSelectionOverlay rects={iosSelectionRects} />
-
-      {isContentsOpen ? (
-        <ReaderContentsOverlay
-          activeChapterId={activeChapter.chapterId}
-          activeLocator={displayLocator}
-          onClose={closePanel}
-          onSelectChapter={(chapterId, target) => {
-            closePanel();
-            onSelectChapter(chapterId, target);
-          }}
-          payload={payload}
-          pendingChapterId={pendingChapterId}
-        />
-      ) : null}
-
-      {isPreferencesOpen ? (
-        <ReaderPreferencesOverlay
-          fontScale={fontScale}
-          onClose={closePanel}
-          onDecreaseFont={onDecreaseFont}
-          onIncreaseFont={onIncreaseFont}
-        />
-      ) : null}
-
-      {isAiChatsOpen ? <ReaderAiChatsOverlay onClose={closePanel} /> : null}
-
-      {isHighlightsOpen ? (
-        <ReaderHighlightsOverlay
-          toc={payload.toc}
-          onClose={closePanel}
-          onSelectHighlight={handleSelectHighlightFromList}
-        />
-      ) : null}
-
-      {isAiCommentsOpen ? (
-        <ReaderAiCommentsOverlay
-          toc={payload.toc}
-          onClose={closePanel}
-          onSelectAiComment={handleSelectAiCommentFromList}
-        />
-      ) : null}
-
-      {isAiToolboxOpen ? (
-        <ReaderAiToolboxOverlay
-          libraryItemId={libraryItemId}
-          book={payload.book}
-          chapters={payload.chapters}
-          onClose={closePanel}
-        />
-      ) : null}
 
       {pageBoxSize.width > 0 && pageBoxSize.height > 0 ? (
         <ReaderPaginationPreloader

@@ -2,8 +2,8 @@
   "common": {
     "back": "Retour",
     "compactNumber": {
-      "thousand": "{value}\u00a0k",
-      "million": "{value}\u00a0M"
+      "thousand": "{value} k",
+      "million": "{value} M"
     }
   },
   "landing": {
@@ -320,6 +320,18 @@
       "current": "Actuel",
       "section": "Section",
       "chapter": "Chapitre"
+    },
+    "bilingual": {
+      "label": "Lecture bilingue",
+      "original": "Original",
+      "preparing": "Préparation des pages",
+      "loading": "Traduction en cours",
+      "offline": "Connectez-vous pour traduire cette page",
+      "failed": "Traduction indisponible",
+      "retry": "Réessayer",
+      "previous": "Page précédente",
+      "next": "Page suivante",
+      "page": "Page {page}"
     }
   },
   "shared": {

@@ -2,8 +2,8 @@
   "common": {
     "back": "Zurück",
     "compactNumber": {
-      "thousand": "{value}\u00a0Tsd.",
-      "million": "{value}\u00a0Mio."
+      "thousand": "{value} Tsd.",
+      "million": "{value} Mio."
     }
   },
   "landing": {
@@ -320,6 +320,18 @@
       "current": "Aktuell",
       "section": "Abschnitt",
       "chapter": "Kapitel"
+    },
+    "bilingual": {
+      "label": "Zweisprachiger Reader",
+      "original": "Original",
+      "preparing": "Seiten werden vorbereitet",
+      "loading": "Wird übersetzt",
+      "offline": "Zum Übersetzen dieser Seite verbinden",
+      "failed": "Übersetzung nicht verfügbar",
+      "retry": "Erneut versuchen",
+      "previous": "Vorherige Seite",
+      "next": "Nächste Seite",
+      "page": "Seite {page}"
     }
   },
   "shared": {
@@ -356,7 +368,7 @@
       "bookmarks": "Lesezeichen",
       "search": "Suchen",
       "listenToBook": "Buch anhören",
-      "bilingualMode": "Bilingualer Modus",
+      "bilingualMode": "Bilingualer",
       "savePage": "Seite speichern",
       "shareBook": "Buch teilen",
       "downloadBook": "Buch herunterladen"

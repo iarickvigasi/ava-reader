@@ -4,7 +4,12 @@
 
 import { clearAllAiCommentsBuckets } from "../buckets/ai-comments";
 import { clearAllHighlightsBuckets } from "../buckets/highlights";
-import { clearCollectionMembershipRuntime, clearFinishDateRuntime, clearLibraryBucket } from "../buckets/library";
+import { clearAllTranslationBuckets } from "../buckets/translations";
+import {
+  clearCollectionMembershipRuntime,
+  clearFinishDateRuntime,
+  clearLibraryBucket,
+} from "../buckets/library";
 import {
   clearActiveUser,
   deleteUserDb,
@@ -37,6 +42,7 @@ export async function adoptUser(userId: string): Promise<void> {
 // Drop in-memory bucket state (listeners + cached selectors) so the next user's
 // session can't inherit the previous user's registries.
 function resetInMemoryBuckets(): void {
+  clearAllTranslationBuckets();
   clearCollectionMembershipRuntime();
   clearFinishDateRuntime();
   clearLibraryBucket();
