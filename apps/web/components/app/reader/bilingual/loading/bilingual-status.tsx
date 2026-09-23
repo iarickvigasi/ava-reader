@@ -29,7 +29,12 @@ export function BilingualStatus({
         {offline ? t("offline") : error ? t("failed") : t("loading")}
       </span>
       {error && !offline ? (
-        <Button variant="ghost" size="sm" onClick={retry}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="shrink-0 whitespace-nowrap"
+          onClick={retry}
+        >
           {t("retry")}
         </Button>
       ) : null}

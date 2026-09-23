@@ -33,8 +33,10 @@ export function BilingualFooter({
   return (
     <footer
       className={cn(
-        "flex shrink-0 items-center justify-between gap-2 py-1",
-        !isPhone && "sm:py-4",
+        // Reserve the retry button's height even when status is empty. Changing
+        // the footer height invalidates pagination and can loop through loading.
+        "flex h-12 shrink-0 items-center justify-between gap-2 py-1",
+        !isPhone && "sm:h-18 sm:py-4",
       )}
     >
       <BilingualStatus

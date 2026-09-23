@@ -103,7 +103,8 @@ export function useBilingualReader(props: ReadyReaderProps) {
     pending,
     prefetchNextChapter,
     offline: !demand.available,
-    error: pending ? (cache.error ?? demand.error) : alignmentDemand.error,
+    error:
+      (pending ? (cache.error ?? demand.error) : null) ?? alignmentDemand.error,
     retry: () => {
       cache.retry();
       demand.retry();
