@@ -324,6 +324,10 @@
       "chapter": "Chapitre"
     },
     "bilingual": {
+      "redoTranslation": "Retraduire",
+      "redoPairs": "Refaire les correspondances",
+      "redoTranslationBusy": "Traduction…",
+      "redoPairsBusy": "Correspondances…",
       "label": "Lecture bilingue",
       "original": "Original",
       "preparing": "Préparation des pages",

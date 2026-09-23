@@ -324,6 +324,10 @@
       "chapter": "Розділ"
     },
     "bilingual": {
+      "redoTranslation": "Перекласти заново",
+      "redoPairs": "Зіставити заново",
+      "redoTranslationBusy": "Перекладаємо…",
+      "redoPairsBusy": "Зіставляємо…",
       "label": "Двомовне читання",
       "original": "Оригінал",
       "preparing": "Підготовка сторінок",

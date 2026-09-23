@@ -6,6 +6,7 @@ export const translationQuerySchema = z.object({
 });
 
 export const generateTranslationSchema = translationQuerySchema.extend({
+  regenerate: z.boolean().optional(),
   chapterId: z.string().min(1).max(1024),
   contentRevision: z.string().min(1).max(256),
   translationVersion: z.number().int().positive(),

@@ -58,6 +58,41 @@ describe('bilingual generation', () => {
     expect(prompts.join('')).toContain('contextBefore');
   });
 
+  it('regenerates only requested saved sentences and replaces their rows', async () => {
+    const f = generationFixture();
+    const [selected, other] = f.context.units;
+    f.stored.set(selected.id, 'Old');
+    f.stored.set(other.id, 'Untouched');
+    f.getModel.mockReturnValue(
+      stubModel({ translations: [{ id: selected.id, text: 'New' }] }).model,
+    );
+    await generateTranslations({
+      ...f.args,
+      sentences: [selected],
+      regenerate: true,
+    });
+    expect(f.stored.get(selected.id)).toBe('New');
+    expect(f.stored.get(other.id)).toBe('Untouched');
+    expect(f.deleteMany).toHaveBeenCalledWith({
+      where: {
+        bookTranslationId: 'version-1',
+        chapterId: f.context.chapterId,
+        sentenceId: { in: [selected.id] },
+      },
+    });
+  });
+
+  it('keeps saved translations when regeneration produces invalid output', async () => {
+    const f = generationFixture();
+    f.stored.set(f.context.units[0].id, 'Old');
+    f.getModel.mockReturnValue(stubModel({ translations: [] }).model);
+    await expect(
+      generateTranslations({ ...f.args, regenerate: true }),
+    ).rejects.toThrow();
+    expect(f.deleteMany).not.toHaveBeenCalled();
+    expect(f.stored.get(f.context.units[0].id)).toBe('Old');
+  });
+
   it('never stores a partial or mismatched model response', async () => {
     const fixture = generationFixture();
     const { model } = stubModel({

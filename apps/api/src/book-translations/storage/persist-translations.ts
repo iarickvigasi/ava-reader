@@ -8,6 +8,7 @@ export async function persistTranslations(args: {
   sentences: BilingualUnit[];
   translations: Record<string, string>;
   modelId: string;
+  regenerate?: boolean;
 }): Promise<void> {
   await args.prisma.$transaction(async (tx) => {
     const identity = translationVersionIdentity(args.context);
@@ -17,6 +18,17 @@ export async function persistTranslations(args: {
       update: { updatedAt: new Date() },
       select: { id: true },
     });
+    if (args.regenerate) {
+      // Replace only the requested sentences, atomically after generation succeeds.
+      // Removing their previous rows also invalidates pairs even if text is unchanged.
+      await tx.sentenceTranslation.deleteMany({
+        where: {
+          bookTranslationId: version.id,
+          chapterId: args.context.chapterId,
+          sentenceId: { in: args.sentences.map((sentence) => sentence.id) },
+        },
+      });
+    }
     await tx.sentenceTranslation.createMany({
       skipDuplicates: true,
       data: args.sentences.map((sentence) => ({

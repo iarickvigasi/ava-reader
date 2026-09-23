@@ -14,6 +14,12 @@ export function generationFixture() {
       return Promise.resolve({ count: args.data.length });
     },
   );
+  const deleteMany = jest.fn(
+    ({ where }: { where: { sentenceId: { in: string[] } } }) => {
+      where.sentenceId.in.forEach((id) => stored.delete(id));
+      return Promise.resolve({ count: where.sentenceId.in.length });
+    },
+  );
   const upsert = jest.fn().mockResolvedValue({ id: 'version-1' });
   const findUnique = jest.fn(() =>
     Promise.resolve({
@@ -25,7 +31,7 @@ export function generationFixture() {
   );
   const tx = {
     bookTranslation: { upsert },
-    sentenceTranslation: { createMany },
+    sentenceTranslation: { createMany, deleteMany },
   };
   const prisma = {
     ...tx,
@@ -46,6 +52,7 @@ export function generationFixture() {
     context,
     stored,
     createMany,
+    deleteMany,
     upsert,
     findUnique,
     getModelId,

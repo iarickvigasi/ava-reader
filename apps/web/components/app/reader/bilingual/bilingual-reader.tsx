@@ -35,6 +35,7 @@ export function BilingualReader(props: ReadyReaderProps) {
     alignmentFailed,
     pending,
     retry,
+    regeneration,
     disabled,
     pageIndex,
     pages,
@@ -103,6 +104,10 @@ export function BilingualReader(props: ReadyReaderProps) {
           offline={offline}
           pending={pending}
           retry={retry}
+          redoTranslation={regeneration.redoTranslation}
+          redoPairs={regeneration.redoPairs}
+          regenerating={regeneration.busy}
+          redoDisabled={disabled || offline || !regeneration.hasSentences}
           goToNextPage={goToNextPage}
           goToPreviousPage={goToPreviousPage}
           previousDisabled={

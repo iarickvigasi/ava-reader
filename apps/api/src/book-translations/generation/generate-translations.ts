@@ -19,10 +19,13 @@ export async function generateTranslations(args: {
   context: TranslationContext;
   sentences: BilingualUnit[];
   signal: AbortSignal;
+  regenerate?: boolean;
 }): Promise<Record<string, string>> {
   const sentenceIds = args.sentences.map((sentence) => sentence.id);
   const cached = await readTranslations({ ...args, sentenceIds });
-  const missing = args.sentences.filter((sentence) => !cached[sentence.id]);
+  const missing = args.sentences.filter(
+    (sentence) => args.regenerate || !cached[sentence.id],
+  );
   if (!missing.length) return cached;
   args.signal.throwIfAborted();
   const modelId = args.openrouter.getModelId();

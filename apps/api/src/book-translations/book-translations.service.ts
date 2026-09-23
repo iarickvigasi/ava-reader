@@ -74,6 +74,7 @@ export class BookTranslationsService {
         context,
         sentences,
         signal: request.signal,
+        regenerate: request.regenerate,
       }),
     );
     return { ...translationResponseIdentity(context), translations };
@@ -100,6 +101,7 @@ export class BookTranslationsService {
         context,
         sentences,
         signal: request.signal,
+        regenerate: request.regenerate,
       }),
     );
     return { ...translationResponseIdentity(context), alignments };

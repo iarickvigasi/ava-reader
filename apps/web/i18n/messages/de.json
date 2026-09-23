@@ -324,6 +324,10 @@
       "chapter": "Kapitel"
     },
     "bilingual": {
+      "redoTranslation": "Neu übersetzen",
+      "redoPairs": "Neu zuordnen",
+      "redoTranslationBusy": "Wird übersetzt…",
+      "redoPairsBusy": "Wird zugeordnet…",
       "label": "Zweisprachiger Reader",
       "original": "Original",
       "preparing": "Seiten werden vorbereitet",

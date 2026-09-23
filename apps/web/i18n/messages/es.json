@@ -324,6 +324,10 @@
       "chapter": "Capítulo"
     },
     "bilingual": {
+      "redoTranslation": "Volver a traducir",
+      "redoPairs": "Rehacer pares",
+      "redoTranslationBusy": "Traduciendo…",
+      "redoPairsBusy": "Emparejando…",
       "label": "Lector bilingüe",
       "original": "Original",
       "preparing": "Preparando páginas",

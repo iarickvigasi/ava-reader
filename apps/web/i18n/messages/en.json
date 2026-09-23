@@ -324,6 +324,10 @@
       "chapter": "Chapter"
     },
     "bilingual": {
+      "redoTranslation": "Redo translation",
+      "redoPairs": "Redo pairs",
+      "redoTranslationBusy": "Retranslating…",
+      "redoPairsBusy": "Matching again…",
       "label": "Bilingual reader",
       "original": "Original",
       "preparing": "Preparing pages",

@@ -16,6 +16,7 @@ export async function generateTranslationBatch(
   chapter: BilingualChapter,
   ids: string[],
   signal: AbortSignal,
+  regenerate = false,
 ): Promise<void> {
   if (!isOnline()) {
     publishTranslationSnapshot(bucket, {
@@ -34,6 +35,7 @@ export async function generateTranslationBatch(
       translationVersion,
       targetLang,
       sentenceIds: ids,
+      ...(regenerate ? { regenerate: true } : {}),
     });
     signal.throwIfAborted();
     const result = validateGeneratedTranslations(value, chapter, ids);
@@ -44,10 +46,23 @@ export async function generateTranslationBatch(
       !sameTranslationIdentity(current, result)
     )
       return;
-    applyTranslationChapter(bucket, {
-      ...current,
-      translations: result.translations,
-    });
+    applyTranslationChapter(
+      bucket,
+      {
+        ...current,
+        translations: result.translations,
+        ...(regenerate
+          ? {
+              alignments: Object.fromEntries(
+                Object.entries(current.alignments ?? {}).filter(
+                  ([id]) => !ids.includes(id),
+                ),
+              ),
+            }
+          : {}),
+      },
+      regenerate ? ids : [],
+    );
   } catch (error) {
     if (!signal.aborted)
       publishTranslationSnapshot(bucket, {

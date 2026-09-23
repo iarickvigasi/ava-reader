@@ -75,18 +75,30 @@ export async function generateAlignments(
     openrouter: OpenRouterClient;
     sentences: BilingualUnit[];
     signal: AbortSignal;
+    regenerate?: boolean;
   },
 ): Promise<Record<string, SentenceAlignment>> {
   args.signal.throwIfAborted();
   const sentenceIds = args.sentences.map((unit) => unit.id);
   const rows = await rowsFor({ ...args, sentenceIds });
-  const missing = rows.filter((row) => !currentAlignment(row));
+  const missing = rows.filter(
+    (row) => args.regenerate || !currentAlignment(row),
+  );
   if (!missing.length) return readAlignments({ ...args, sentenceIds });
   const inputs = missing.map((row) => ({
     ...row,
     source: alignmentTokens(row.sourceText, args.context.sourceLanguage),
     translation: alignmentTokens(row.translatedText, args.context.targetLang),
   }));
+  const regenerated = new Set<string>();
+  const readResult = async () => {
+    const saved = await readAlignments({ ...args, sentenceIds });
+    return args.regenerate
+      ? Object.fromEntries(
+          Object.entries(saved).filter(([id]) => regenerated.has(id)),
+        )
+      : saved;
+  };
   const signal = AbortSignal.any([args.signal, AbortSignal.timeout(45_000)]);
   const request = async (
     batch: typeof inputs,
@@ -150,7 +162,7 @@ export async function generateAlignments(
     );
     signal.throwIfAborted();
     // Save each valid sentence against the exact winning translation.
-    await args.prisma.sentenceTranslation.updateMany({
+    const saved = await args.prisma.sentenceTranslation.updateMany({
       where: {
         id: row.id,
         sourceText: row.sourceText,
@@ -158,6 +170,7 @@ export async function generateAlignments(
       },
       data: { alignment },
     });
+    if (saved.count) regenerated.add(row.sentenceId);
   };
   try {
     const outputs = await request(inputs);
@@ -197,11 +210,11 @@ export async function generateAlignments(
       `Alignment generation failed: ${error instanceof Error ? error.name : 'Unknown error'}`,
     );
     // Successful sentences survive a failed retry or the shared deadline.
-    const saved = await readAlignments({ ...args, sentenceIds });
+    const saved = await readResult();
     if (Object.keys(saved).length) return saved;
     throw new BadGatewayException(
       'Phrase matching could not be completed. Please retry.',
     );
   }
-  return readAlignments({ ...args, sentenceIds });
+  return readResult();
 }

@@ -1,3 +1,4 @@
+import { usePageRegeneration } from "./use-page-regeneration";
 import { useCallback } from "react";
 import { useReaderUi } from "@/components/app/core/reader-ui-context";
 import { useTranslateTargetLang } from "@/components/app/preferences/use-translate-target-lang";
@@ -35,9 +36,16 @@ export function useBilingualReader(props: ReadyReaderProps) {
     layoutKey,
     props,
   });
+  const regeneration = usePageRegeneration(
+    chapter,
+    pagination.page?.unitIndexes ?? [],
+  );
   const navigate = pagination.go;
   const disabled =
-    props.isBootstrapping || props.isLoadingChapter || !measurement;
+    props.isBootstrapping ||
+    props.isLoadingChapter ||
+    !measurement ||
+    !!regeneration.busy;
   const canGenerate = !disabled && !isMeasuring && activePanel === null;
   const demand = useSentenceDemand(
     measuringChapter,
@@ -46,9 +54,9 @@ export function useBilingualReader(props: ReadyReaderProps) {
   );
   const go = useCallback(
     (direction: -1 | 1) => {
-      if (!isMeasuring) navigate(direction);
+      if (!isMeasuring && !regeneration.busy) navigate(direction);
     },
-    [isMeasuring, navigate],
+    [isMeasuring, navigate, regeneration.busy],
   );
   const pageKey = `${chapter?.chapterId}:${pagination.pageIndex}:${layoutKey}:${chapter?.targetLang}`;
   const interactions = useBilingualInteractions({
@@ -103,10 +111,19 @@ export function useBilingualReader(props: ReadyReaderProps) {
     pending,
     prefetchNextChapter,
     offline: !demand.available,
+    regeneration,
     error:
-      (pending ? (cache.error ?? demand.error) : null) ?? alignmentDemand.error,
-    alignmentFailed: !pending && !!alignmentDemand.error,
+      regeneration.error ??
+      (pending ? (cache.error ?? demand.error) : null) ??
+      alignmentDemand.error,
+    alignmentFailed: regeneration.error
+      ? regeneration.alignmentFailed
+      : !pending && !!alignmentDemand.error,
     retry: () => {
+      if (regeneration.error) {
+        regeneration.retry();
+        return;
+      }
       cache.retry();
       demand.retry();
       alignmentDemand.retry();

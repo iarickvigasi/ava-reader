@@ -15,6 +15,7 @@ import { validAlignments } from "@/features/reader/bilingual/alignment/validate-
 export function applyTranslationChapter(
   bucket: TranslationBucket,
   chapter: BilingualChapter,
+  replaceAlignmentIds: string[] = [],
 ): void {
   if (!isCurrentTranslationBucket(bucket)) return;
   const current = bucket.snapshot.chapter;
@@ -29,7 +30,11 @@ export function applyTranslationChapter(
     merged.alignments = validAlignments(
       {
         ...(current && sameTranslationIdentity(current, chapter)
-          ? current.alignments
+          ? Object.fromEntries(
+              Object.entries(current.alignments ?? {}).filter(
+                ([id]) => !replaceAlignmentIds.includes(id),
+              ),
+            )
           : {}),
         ...chapter.alignments,
       },

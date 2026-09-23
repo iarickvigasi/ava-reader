@@ -13,6 +13,7 @@ export async function ensureSentenceAlignments(
   chapter: BilingualChapter,
   ids: string[],
   signal: AbortSignal,
+  regenerate = false,
 ) {
   const bucket = getTranslationBucket(chapter);
   await bucket.hydrated;
@@ -27,7 +28,9 @@ export async function ensureSentenceAlignments(
   const current = bucket.snapshot.chapter;
   if (!current || !sameTranslationIdentity(current, chapter)) return;
   const maps = validAlignments(current.alignments, current);
-  const missing = ids.filter((id) => current.translations[id] && !maps[id]);
+  const missing = ids.filter(
+    (id) => current.translations[id] && (regenerate || !maps[id]),
+  );
   if (!missing.length) return;
   const controller = new AbortController();
   const abort = () => controller.abort();
@@ -47,6 +50,7 @@ export async function ensureSentenceAlignments(
         translationVersion,
         targetLang,
         sentenceIds: missing,
+        ...(regenerate ? { regenerate: true } : {}),
       },
     )) as BilingualIdentity & { alignments?: unknown };
     controller.signal.throwIfAborted();

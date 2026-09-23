@@ -12,6 +12,10 @@ export function BilingualFooter({
   offline,
   pending,
   retry,
+  redoTranslation,
+  redoPairs,
+  regenerating,
+  redoDisabled,
   previousDisabled,
   nextDisabled,
   goToPreviousPage,
@@ -24,6 +28,10 @@ export function BilingualFooter({
   offline: boolean;
   pending: boolean;
   retry: () => void;
+  redoTranslation: () => void;
+  redoPairs: () => void;
+  regenerating: "translation" | "pairs" | null;
+  redoDisabled: boolean;
   previousDisabled: boolean;
   nextDisabled: boolean;
   goToPreviousPage: () => void;
@@ -37,10 +45,32 @@ export function BilingualFooter({
       className={cn(
         // Reserve the retry button's height even when status is empty. Changing
         // the footer height invalidates pagination and can loop through loading.
-        "flex h-12 shrink-0 items-center justify-between gap-2 py-1",
-        !isPhone && "sm:h-18 sm:py-4",
+        "flex h-28 shrink-0 flex-wrap items-center justify-between gap-x-2 py-1",
+        !isPhone && "sm:h-24 sm:py-2",
       )}
     >
+      <div className="flex w-full shrink-0 items-center gap-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={redoDisabled}
+          onClick={redoTranslation}
+        >
+          {t(
+            regenerating === "translation"
+              ? "redoTranslationBusy"
+              : "redoTranslation",
+          )}
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={redoDisabled || pending}
+          onClick={redoPairs}
+        >
+          {t(regenerating === "pairs" ? "redoPairsBusy" : "redoPairs")}
+        </Button>
+      </div>
       <BilingualStatus
         error={error}
         alignmentFailed={alignmentFailed}
