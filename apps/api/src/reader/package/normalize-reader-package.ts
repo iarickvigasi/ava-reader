@@ -2,18 +2,6 @@ import { decodeXmlEntities } from '../../shared/xml-entities';
 import type { ReaderPackage } from '../reader-types';
 import { normalizeTocDisplayText } from '../toc-display-text';
 
-type LegacyReaderTocEntry = {
-  chapterId: string;
-  href: string;
-  label: string;
-  spineIndex: number;
-};
-
-export type LegacyReaderPackage = Omit<ReaderPackage, 'toc' | 'version'> & {
-  toc: LegacyReaderTocEntry[];
-  version: 1;
-};
-
 export type ReaderPackageWithLegacyAuthors = Omit<ReaderPackage, 'manifest'> & {
   manifest: Omit<ReaderPackage['manifest'], 'authors'> & {
     author?: null | string;
@@ -21,30 +9,7 @@ export type ReaderPackageWithLegacyAuthors = Omit<ReaderPackage, 'manifest'> & {
   };
 };
 
-// v1 stored a flat TOC array; v2 stores a tree. Lift each entry to a top-level
-// node with a synthetic id so downstream code only ever sees the tree shape.
-export function normalizeLegacyReaderPackage(
-  readerPackage: LegacyReaderPackage,
-): ReaderPackage {
-  const normalizedPackage: ReaderPackageWithLegacyAuthors = {
-    ...readerPackage,
-    toc: readerPackage.toc.map((entry, index) => ({
-      anchorId: null,
-      blockId: null,
-      chapterId: entry.chapterId,
-      children: [],
-      href: entry.href,
-      id: `toc:${index}`,
-      label: entry.label,
-      spineIndex: entry.spineIndex,
-    })),
-    version: 2,
-  };
-
-  return normalizeReaderPackageManifestAuthors(normalizedPackage);
-}
-
-export function normalizeReaderPackageManifestAuthors(
+export function normalizeReaderPackageMetadata(
   readerPackage: ReaderPackageWithLegacyAuthors,
 ): ReaderPackage {
   const authorCandidates = Array.isArray(readerPackage.manifest.authors)

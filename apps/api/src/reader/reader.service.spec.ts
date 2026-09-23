@@ -234,7 +234,6 @@ describe('ReaderService', () => {
   it('keeps persisted named entities, block text and ids unchanged when decoding legacy numeric labels', async () => {
     const storedPackage = createReaderPackage({
       tocMode: 'nested',
-      version: 2,
     });
     storedPackage.toc[0].label = 'Chapter One&#8217;s&nbsp;Story';
     storedPackage.chapters[0].label = 'Chapter One&#8217;s&nbsp;Story';
@@ -1154,24 +1153,20 @@ function createLockedSessionRecord(
   };
 }
 
-function createReaderPackage(input?: {
-  tocMode?: 'flat' | 'nested';
-  version?: 1 | 2;
-}) {
+function createReaderPackage(input?: { tocMode?: 'flat' | 'nested' }) {
   const tocMode = input?.tocMode ?? 'flat';
-  const version = input?.version ?? 1;
   return {
-    version,
+    version: 2 as const,
     manifest: {
       authors: ['Example Author'],
       language: 'en',
       sourceChecksum: 'checksum',
       title: 'Example Title',
-      totalBlocks: tocMode === 'nested' && version === 2 ? 5 : 4,
+      totalBlocks: tocMode === 'nested' ? 5 : 4,
       totalChapters: 4,
     },
     toc:
-      tocMode === 'nested' && version === 2
+      tocMode === 'nested'
         ? [
             {
               anchorId: null,
@@ -1227,24 +1222,40 @@ function createReaderPackage(input?: {
           ]
         : [
             {
+              anchorId: null,
+              blockId: null,
+              children: [],
+              id: 'toc:0',
               chapterId: 'chapter-1',
               href: 'text/chapter-1.xhtml',
               label: 'Chapter One',
               spineIndex: 0,
             },
             {
+              anchorId: null,
+              blockId: null,
+              children: [],
+              id: 'toc:1',
               chapterId: 'chapter-2',
               href: 'text/chapter-2.xhtml',
               label: 'Chapter Two',
               spineIndex: 1,
             },
             {
+              anchorId: null,
+              blockId: null,
+              children: [],
+              id: 'toc:2',
               chapterId: 'chapter-3',
               href: 'text/chapter-3.xhtml',
               label: 'Chapter Three',
               spineIndex: 2,
             },
             {
+              anchorId: null,
+              blockId: null,
+              children: [],
+              id: 'toc:3',
               chapterId: 'chapter-4',
               href: 'text/chapter-4.xhtml',
               label: 'Chapter Four',

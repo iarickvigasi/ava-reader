@@ -115,7 +115,7 @@ export type ReaderPackage = {
   chapters: ReaderChapter[];
   manifest: ReaderManifest;
   toc: ReaderTocNode[];
-  version: 1 | 2;
+  version: 2;
 };
 
 // Compact progress index — stored alongside the derived-reader BookFile so
