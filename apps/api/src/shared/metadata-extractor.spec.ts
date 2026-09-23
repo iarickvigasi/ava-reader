@@ -43,6 +43,40 @@ describe('extractBookMetadata', () => {
     expect(metadata.title).toBe('It’s “Fine”');
   });
 
+  it('decodes named entities in EPUB titles and authors', async () => {
+    const epubBuffer = await createEpubBuffer({
+      title: '&ldquo;Caf&eacute;&rdquo; &mdash; Art&nbsp;&amp; Love',
+      creators: [{ name: 'Ren&eacute; &amp; Ana', role: 'aut' }],
+    });
+
+    const metadata = await extractBookMetadata({
+      buffer: epubBuffer,
+      mimetype: 'application/epub+zip',
+      originalname: 'example.epub',
+    });
+
+    expect(metadata.title).toBe('“Café” — Art\u00a0& Love');
+    expect(metadata.authors).toEqual(['René & Ana']);
+  });
+
+  it('decodes escaped metadata only once and keeps encoded markup as text', async () => {
+    const epubBuffer = await createEpubBuffer({
+      title: '&lt;em&gt;Literal&lt;/em&gt; &amp;nbsp; &unknownEntity;',
+      creators: [{ name: 'Author &amp;#160; &amp;eacute;' }],
+    });
+
+    const metadata = await extractBookMetadata({
+      buffer: epubBuffer,
+      mimetype: 'application/epub+zip',
+      originalname: 'example.epub',
+    });
+
+    // Unknown entities must survive as literal reader text.
+    //noinspection CheckDtdRefs
+    expect(metadata.title).toBe('<em>Literal</em> &nbsp; &unknownEntity;');
+    expect(metadata.authors).toEqual(['Author &#160; &eacute;']);
+  });
+
   it('extracts EPUB subjects as normalized, deduplicated genres', async () => {
     const epubBuffer = await createEpubBuffer({
       dcSubjects: ['Science Fiction', ' Gothic ', 'Science Fiction'],

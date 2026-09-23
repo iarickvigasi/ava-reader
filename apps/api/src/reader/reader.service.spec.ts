@@ -231,20 +231,21 @@ describe('ReaderService', () => {
     ]);
   });
 
-  it('decodes persisted display labels without changing block text or ids', async () => {
+  it('keeps persisted named entities, block text and ids unchanged when decoding legacy numeric labels', async () => {
     const storedPackage = createReaderPackage({
       tocMode: 'nested',
       version: 2,
     });
-    storedPackage.toc[0].label = 'Chapter One&#8217;s Story';
-    storedPackage.chapters[0].label = 'Chapter One&#8217;s Story';
-    storedPackage.chapters[0].title = 'Chapter One&#8217;s Story';
-    storedPackage.chapters[0].blocks[0].text = 'Literal &#8217; body text';
+    storedPackage.toc[0].label = 'Chapter One&#8217;s&nbsp;Story';
+    storedPackage.chapters[0].label = 'Chapter One&#8217;s&nbsp;Story';
+    storedPackage.chapters[0].title = 'Chapter One&#8217;s&nbsp;Story';
+    storedPackage.chapters[0].blocks[0].text =
+      'Literal &#8217; &nbsp; body text';
     findUniqueOrThrowStoredBlob.mockResolvedValue({
       bytes: Buffer.from(JSON.stringify(storedPackage), 'utf8'),
     });
     const libraryItem = createLibraryItemRecord();
-    libraryItem.progress.chapterLabel = 'Chapter Two&#8217;s Story';
+    libraryItem.progress.chapterLabel = 'Chapter Two&#8217;s&nbsp;Story';
     findFirstLibraryItem.mockResolvedValue(libraryItem);
 
     const payload = await readerService.getReaderPayload(
@@ -257,16 +258,16 @@ describe('ReaderService', () => {
       throw new Error('Expected READY payload');
     }
 
-    expect(payload.toc[0]?.label).toBe('Chapter One’s Story');
-    expect(payload.progress.chapterLabel).toBe('Chapter Two’s Story');
+    expect(payload.toc[0]?.label).toBe('Chapter One’s&nbsp;Story');
+    expect(payload.progress.chapterLabel).toBe('Chapter Two’s&nbsp;Story');
     expect(payload.chapters[0]).toMatchObject({
       chapterId: 'chapter-1',
-      label: 'Chapter One’s Story',
-      title: 'Chapter One’s Story',
+      label: 'Chapter One’s&nbsp;Story',
+      title: 'Chapter One’s&nbsp;Story',
     });
     expect(payload.chapters[0]?.blocks[0]).toMatchObject({
       id: 'chapter-1::b1',
-      text: 'Literal &#8217; body text',
+      text: 'Literal &#8217; &nbsp; body text',
     });
   });
 

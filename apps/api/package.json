@@ -42,6 +42,7 @@
     "@prisma/client": "^7.8.0",
     "ai": "^5.0.179",
     "dotenv": "^17.2.3",
+    "entities": "^6.0.1",
     "fast-xml-parser": "^5.7.2",
     "jszip": "^3.10.1",
     "mime-types": "^3.0.2",

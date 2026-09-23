@@ -1,3 +1,6 @@
+import { decodeHTMLStrict } from 'entities';
+import type { EntityDecoderOptions } from 'fast-xml-parser';
+
 const XML_ENTITIES: Record<string, string> = {
   amp: '&',
   apos: "'",
@@ -18,9 +21,16 @@ export function createXmlEntityDecoder(): EntityDecoderOptions {
       inputEntities = { ...inputEntities, ...entities };
     },
     decode(value: string) {
-      return decodeXmlEntities(value, {
-        ...externalEntities,
-        ...inputEntities,
+      // Decode HTML names only while importing EPUB XML. Persisted package
+      // display text still uses decodeXmlEntities below, with its legacy rules.
+      return replaceEntityReferences(value, (reference, name) => {
+        if (Object.hasOwn(inputEntities, name)) {
+          return inputEntities[name];
+        }
+        if (Object.hasOwn(externalEntities, name)) {
+          return externalEntities[name];
+        }
+        return decodeHTMLStrict(reference);
       });
     },
     reset() {
@@ -37,6 +47,19 @@ export function decodeXmlEntities(
   value: string,
   additionalEntities: Record<string, string> = {},
 ) {
+  return replaceEntityReferences(
+    value,
+    (reference, name) =>
+      additionalEntities[name] ?? XML_ENTITIES[name] ?? reference,
+  );
+}
+
+function replaceEntityReferences(
+  value: string,
+  decodeNamedReference: (reference: string, name: string) => string,
+) {
+  // One pass keeps escaped literals such as &amp;nbsp; as text. Numeric
+  // references retain XML validity rules instead of HTML error recovery.
   return value.replace(
     ENTITY_REFERENCE_PATTERN,
     (
@@ -51,9 +74,7 @@ export function decodeXmlEntities(
       if (hexadecimal) {
         return decodeNumericReference(reference, hexadecimal, 16);
       }
-      return name
-        ? (additionalEntities[name] ?? XML_ENTITIES[name] ?? reference)
-        : reference;
+      return name ? decodeNamedReference(reference, name) : reference;
     },
   );
 }
@@ -79,4 +100,3 @@ function isValidXmlCodePoint(codePoint: number) {
     (codePoint >= 0x10000 && codePoint <= 0x10ffff)
   );
 }
-import type { EntityDecoderOptions } from 'fast-xml-parser';
