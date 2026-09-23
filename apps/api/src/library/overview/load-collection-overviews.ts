@@ -1,5 +1,4 @@
 import type { Prisma } from '@prisma/client';
-import type { PrismaService } from '../../prisma/prisma.service';
 
 export type LibraryItemLite = Prisma.LibraryItemGetPayload<{
   select: {
@@ -18,7 +17,10 @@ export type LibraryItemLite = Prisma.LibraryItemGetPayload<{
 // enough to compute counts and the engagement sort, but without any book
 // metadata or cover bytes. Touching cover bytes here is the historical hot
 // path that made library loads slow.
-export function loadCollectionOverviews(prisma: PrismaService, userId: string) {
+export function loadCollectionOverviews(
+  prisma: Prisma.TransactionClient,
+  userId: string,
+) {
   return prisma.collection.findMany({
     where: { userId },
     select: {

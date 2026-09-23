@@ -1,3 +1,4 @@
+import { writeUnlessDeleted } from "../library/deleted-items";
 // Dexie I/O for the highlights bucket. Replaces the localStorage substrate
 // from the original module. Tables:
 //   - highlights        — confirmed-by-server records (mirrors state.snapshot)
@@ -60,7 +61,7 @@ export async function replaceSnapshot(
 ): Promise<void> {
   const db = getDb();
   const rows = snapshot.map((record) => recordToRow(libraryItemId, record));
-  await db.transaction("rw", db.highlights, async () => {
+  await writeUnlessDeleted(db, libraryItemId, [db.highlights], async () => {
     await db.highlights
       .where("libraryItemId")
       .equals(libraryItemId)
@@ -74,7 +75,7 @@ export async function upsertSnapshotRow(
   record: HighlightRecord,
 ): Promise<void> {
   const db = getDb();
-  await db.highlights.put(recordToRow(libraryItemId, record));
+  await writeUnlessDeleted(db, libraryItemId, [db.highlights], () => db.highlights.put(recordToRow(libraryItemId, record)));
 }
 
 export async function removeSnapshotRow(
@@ -96,7 +97,7 @@ export async function upsertPendingMutation(
   mutation: PendingMutation,
 ): Promise<void> {
   const db = getDb();
-  await db.highlightMutations.put(pendingToRow(libraryItemId, mutation));
+  await writeUnlessDeleted(db, libraryItemId, [db.highlightMutations], () => db.highlightMutations.put(pendingToRow(libraryItemId, mutation)));
 }
 
 export async function removePendingMutation(

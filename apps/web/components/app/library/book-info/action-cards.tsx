@@ -1,14 +1,12 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 
 import type { LibraryBookInfo } from "@/lib/api-types";
 
-import { ActionCard } from "./action-card";
+import { DeleteBookCard } from "./delete-book-card";
 import { DownloadOfflineCard } from "./download-offline-card";
 import { FinishedDateCard } from "./finished-date-card";
 import { ManageCollectionsCard } from "./manage-collections-card";
-import { TrashBoldIcon } from "./trash-bold-icon";
 
 type BookActionCardsProps = {
   collections: LibraryBookInfo["collections"];
@@ -21,7 +19,6 @@ export function BookActionCards({
   finishedAt,
   libraryItemId,
 }: BookActionCardsProps) {
-  const t = useTranslations("library.bookInfo.actionCards");
   return (
     <aside className="space-y-4">
       {/* Download for offline — tri-state action card. Title + description
@@ -31,12 +28,7 @@ export function BookActionCards({
       <DownloadOfflineCard libraryItemId={libraryItemId} />
       <FinishedDateCard finishedAt={finishedAt} libraryItemId={libraryItemId} />
       <ManageCollectionsCard collections={collections} libraryItemId={libraryItemId} />
-      <ActionCard
-        danger
-        description={t("deleteBook.description")}
-        icon={TrashBoldIcon}
-        title={t("deleteBook.title")}
-      />
+      <DeleteBookCard libraryItemId={libraryItemId} />
     </aside>
   );
 }

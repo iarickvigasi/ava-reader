@@ -1,3 +1,4 @@
+import { isLibraryItemDeleted } from "../deleted-items";
 import { getDb, type AvaReaderDB } from "../../../db";
 import { markFinishDateChange } from "./runtime";
 import { clearFinishDateFailure, writeFinishDateFailure } from "./failure-store";
@@ -16,6 +17,7 @@ export async function acknowledgeFinishDate(
   if (db !== getDb()) return false;
   markFinishDateChange();
   const removed = await db.transaction("rw", [db.libraryItems, db.finishDateMutations, db.meta], async () => {
+    if (await isLibraryItemDeleted(db, sent.libraryItemId)) return false;
     await writeFinishDateRevision(db);
     if (finishedAt !== undefined) {
       await db.libraryItems.update(sent.libraryItemId, { finishedAt, "details.finishedAt": finishedAt });

@@ -1,3 +1,4 @@
+import { writeUnlessDeleted } from "../library/deleted-items";
 // Dexie I/O for the AI comments bucket. Two tables:
 //   - aiComments         — confirmed-by-server records (mirrors state.snapshot).
 //                          Queued / streaming local rows live here too so a
@@ -56,7 +57,7 @@ export async function replaceSnapshot(
 ): Promise<void> {
   const db = getDb();
   const rows = snapshot.map((record) => recordToRow(libraryItemId, record));
-  await db.transaction("rw", db.aiComments, async () => {
+  await writeUnlessDeleted(db, libraryItemId, [db.aiComments], async () => {
     await db.aiComments
       .where("libraryItemId")
       .equals(libraryItemId)
@@ -70,7 +71,7 @@ export async function upsertCommentRow(
   record: AiCommentRecord,
 ): Promise<void> {
   const db = getDb();
-  await db.aiComments.put(recordToRow(libraryItemId, record));
+  await writeUnlessDeleted(db, libraryItemId, [db.aiComments], () => db.aiComments.put(recordToRow(libraryItemId, record)));
 }
 
 export async function patchCommentStatus(
@@ -84,11 +85,11 @@ export async function patchCommentStatus(
   if (!row) {
     return;
   }
-  await db.aiComments.put({
+  await writeUnlessDeleted(db, libraryItemId, [db.aiComments], () => db.aiComments.put({
     ...row,
     status,
     body: bodyAppend !== undefined ? row.body + bodyAppend : row.body,
-  });
+  }));
 }
 
 // Marks a row failed and stashes the server's rejection reason so the panel
@@ -103,7 +104,7 @@ export async function markCommentFailed(
   if (!row) {
     return;
   }
-  await db.aiComments.put({ ...row, status: "failed", error });
+  await writeUnlessDeleted(db, libraryItemId, [db.aiComments], () => db.aiComments.put({ ...row, status: "failed", error }));
 }
 
 export async function removeCommentRow(
@@ -121,7 +122,7 @@ export async function upsertPendingMutation(
   mutation: PendingMutation,
 ): Promise<void> {
   const db = getDb();
-  await db.aiCommentMutations.put(pendingToRow(libraryItemId, mutation));
+  await writeUnlessDeleted(db, libraryItemId, [db.aiCommentMutations], () => db.aiCommentMutations.put(pendingToRow(libraryItemId, mutation)));
 }
 
 export async function removePendingMutation(

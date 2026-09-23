@@ -38,7 +38,7 @@ const fetchMock = vi.fn<typeof fetch>();
 
 beforeEach(() => {
   vi.clearAllMocks();
-  state.db = {};
+  state.db = { libraryItems: { where: () => ({ equals: () => ({ first: async () => undefined }) }), get: async () => undefined } };
   state.generation = 0;
   state.completionRevision = 7;
   fetchMock.mockReset();
@@ -131,7 +131,7 @@ describe.each([
 
   it("ignores a 404 from the previous account", async () => {
     fetchMock.mockImplementation(async () => {
-      state.db = {};
+      state.db = { libraryItems: { where: () => ({ equals: () => ({ first: async () => undefined }) }), get: async () => undefined } };
       return new Response(null, { status: 404 });
     });
     const onNotFound = vi.fn();

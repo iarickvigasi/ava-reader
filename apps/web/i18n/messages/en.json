@@ -509,7 +509,13 @@
         },
         "deleteBook": {
           "title": "Delete Book",
-          "description": "No action yet"
+          "description": "Remove from your library",
+          "body": "Delete this book and its downloaded content, highlights, and AI comments? Your reading sessions and reading hours will be kept.",
+          "cancel": "Cancel",
+          "confirm": "Delete book",
+          "deleting": "Deleting…",
+          "error": "Could not delete the book. Please try again.",
+          "offline": "Connect to delete this book"
         }
       },
       "annotations": {

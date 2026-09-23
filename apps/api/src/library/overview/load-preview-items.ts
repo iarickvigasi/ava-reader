@@ -1,5 +1,4 @@
 import type { Prisma } from '@prisma/client';
-import type { PrismaService } from '../../prisma/prisma.service';
 
 export type LibraryPreviewBookRecord = Prisma.LibraryItemGetPayload<{
   select: {
@@ -23,7 +22,7 @@ export type LibraryPreviewBookRecord = Prisma.LibraryItemGetPayload<{
 // items we actually need to render. Cover blob is selected without `bytes` so
 // the response shape stays small — the browser fetches cover images by URL.
 export async function loadPreviewItems(
-  prisma: PrismaService,
+  prisma: Prisma.TransactionClient,
   previewIds: string[],
 ): Promise<LibraryPreviewBookRecord[]> {
   if (previewIds.length === 0) {

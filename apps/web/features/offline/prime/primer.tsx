@@ -17,6 +17,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { emitAppToast } from "@/components/app/core/app-toast";
 import { fetchReaderPayload } from "@/components/app/reader/data/reader-client";
 
+import { revalidateHome } from "../buckets/home/revalidate";
+import { revalidateLibrary } from "../buckets/library/revalidate";
+import { useSyncTriggers } from "../net/use-sync-triggers";
 import { getDb } from "../db";
 import { saveBookOffline } from "../buckets/book/download";
 import { getPrimeProgress, setPrimeProgress } from "../status/prime-progress";
@@ -40,6 +43,11 @@ export function BackgroundPrimer(): React.ReactElement | null {
   const online = useNetworkState();
   const t = useTranslations("offline.toast");
   const [consentOpen, setConsentOpen] = useState(false);
+  // Recurring identity reconciliation is independent of once-only priming.
+  const refreshLibrary = useCallback(() => {
+    if (online) void revalidateLibrary(getToken).then(() => revalidateHome(getToken)).catch(() => {});
+  }, [online, getToken]);
+  useSyncTriggers(isLoaded && isSignedIn ? refreshLibrary : null, { kickOnAttach: true });
 
   // Saves one book's full content offline. `saveKind` defaults to "explicit"
   // (sticky) for offline-marked books, so a proactively-cached book isn't

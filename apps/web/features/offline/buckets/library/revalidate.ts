@@ -1,3 +1,4 @@
+import { cachedLibraryItemIds, removalTables, removeCachedLibraryItems } from "./remove-cached-items";
 // Client-side revalidation of the library / a single collection. Used by the
 // client islands on /app/library and /app/library/collections/[slug] to
 // refresh the offline cache once the page has hydrated, and on every
@@ -27,7 +28,7 @@ type GetToken = () => Promise<string | null>;
 async function fetchJson<T>(
   path: string,
   getToken: GetToken,
-  onNotFound?: () => void,
+  onNotFound?: () => void | Promise<void>,
 ): Promise<T | null> {
   const db = getDb();
   const generation = membershipGeneration();
@@ -49,7 +50,7 @@ async function fetchJson<T>(
         generation === membershipGeneration() &&
         finishGeneration === finishDateGeneration()
       ) {
-        onNotFound?.();
+        await onNotFound?.();
       }
       return null;
     }
@@ -66,17 +67,18 @@ async function fetchJson<T>(
 export async function revalidateLibrary(getToken: GetToken): Promise<void> {
   const db = getDb();
   const expectedCompletionRevision = await readCompletionRevision(db);
+  const removalCandidates = await db.transaction("r", removalTables(db), () => cachedLibraryItemIds(db));
   const payload = await fetchJson<LibraryPayload>("/api/library", getToken);
   if (!payload) {
     return;
   }
-  await hydrateFromPayload(payload, { db, expectedCompletionRevision });
+  await hydrateFromPayload(payload, { db, expectedCompletionRevision, removalCandidates });
 }
 
 export async function revalidateCollection(
   slug: string,
   getToken: GetToken,
-  onNotFound?: () => void,
+  onNotFound?: () => void | Promise<void>,
 ): Promise<void> {
   const db = getDb();
   const expectedCompletionRevision = await readCompletionRevision(db);
@@ -94,14 +96,20 @@ export async function revalidateCollection(
 export async function revalidateBookInfo(
   slug: string,
   getToken: GetToken,
-  onNotFound?: () => void,
+  onNotFound?: () => void | Promise<void>,
 ): Promise<void> {
   const db = getDb();
   const expectedFinishDateRevision = await readFinishDateRevision(db);
+  // Bind absence to the item requested, not a new book that later reuses its slug.
+  const cached = await db.libraryItems.where("slug").equals(slug).first()
+    ?? await db.libraryItems.get(slug);
   const payload = await fetchJson<LibraryBookInfoPayload>(
     `/api/library/${encodeURIComponent(slug)}`,
     getToken,
-    onNotFound,
+    async () => {
+      if (cached) await removeCachedLibraryItems([cached.libraryItemId], db);
+      if (db === getDb()) await onNotFound?.();
+    },
   );
   if (!payload) {
     return;

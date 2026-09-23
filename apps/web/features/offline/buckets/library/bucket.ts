@@ -12,7 +12,7 @@ import type { CompletionWriteOptions } from "../../completion/state";
 
 import { readBookInfoBySlug } from "./book-info/read-book-info";
 import { readCollectionViewBySlug, readLibraryView } from "./collections/read-library";
-import { applyCollectionPayload, applyLibraryPayload } from "./collections/write-library";
+import { applyCollectionPayload, applyLibraryPayload, type LibraryWriteOptions } from "./collections/write-library";
 import { applyBookInfoPayload, type BookInfoWriteOptions } from "./book-info/write-book-info";
 import type {
   CollectionView,
@@ -79,8 +79,10 @@ function updateView(next: LibraryView | null) {
 // Dexie + updates memory. The caller (a client island sibling of the RSC
 // page) hands us the same payload Next gave the server component, so the
 // first paint and the hydrated state agree.
-export async function hydrateFromPayload(payload: LibraryPayload, options: CompletionWriteOptions = {}): Promise<void> {
-  await applyLibraryPayload(payload, options);
+export async function hydrateFromPayload(payload: LibraryPayload, options: LibraryWriteOptions = {}): Promise<void> {
+  // An initial page payload can predate local changes; only a fresh API GET
+  // carries the request fence needed to authorize deleting cached identities.
+  await applyLibraryPayload(payload, { ...options, canRemove: options.expectedCompletionRevision !== undefined });
   await refreshFromDb();
 }
 

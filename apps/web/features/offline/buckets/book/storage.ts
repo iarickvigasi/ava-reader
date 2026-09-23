@@ -1,3 +1,4 @@
+import { writeUnlessDeleted } from "../library/deleted-items";
 // Dexie I/O for full book content (TOC, chapter blocks, cover blob).
 //
 // Two flags on the LibraryItemRow drive eviction semantics:
@@ -36,13 +37,13 @@ export async function applyBookContent(
 ): Promise<void> {
   const db = getDb();
   const nowIso = new Date().toISOString();
-  await db.books.put({
+  await writeUnlessDeleted(db, content.libraryItemId, [db.books], () => db.books.put({
     libraryItemId: content.libraryItemId,
     toc: content.toc,
     chapterIds: content.chapterIds,
     metadata: content.metadata,
     fetchedAt: nowIso,
-  });
+  }));
 }
 
 export async function applyChapter(input: {
@@ -54,14 +55,14 @@ export async function applyChapter(input: {
 }): Promise<void> {
   const db = getDb();
   const nowIso = new Date().toISOString();
-  await db.bookChapters.put({
+  await writeUnlessDeleted(db, input.libraryItemId, [db.bookChapters], () => db.bookChapters.put({
     libraryItemId: input.libraryItemId,
     chapterId: input.chapterId,
     index: input.index,
     blocks: input.blocks,
     aux: input.aux,
     fetchedAt: nowIso,
-  });
+  }));
 }
 
 export async function readBookContent(libraryItemId: string) {
@@ -157,7 +158,7 @@ export async function markBookSaved(
     savedAutomatically: kind === "auto" ? true : row.savedAutomatically,
     savedAt: row.savedAt ?? nowIso,
   };
-  await db.libraryItems.put(next);
+  await writeUnlessDeleted(db, libraryItemId, [db.libraryItems], () => db.libraryItems.put(next));
 }
 
 export async function attachCoverBlob(
@@ -169,7 +170,7 @@ export async function attachCoverBlob(
   if (!row) {
     return;
   }
-  await db.libraryItems.put({ ...row, coverBlob: blob });
+  await writeUnlessDeleted(db, libraryItemId, [db.libraryItems], () => db.libraryItems.put({ ...row, coverBlob: blob }));
 }
 
 export async function readCoverBlob(libraryItemId: string): Promise<Blob | null> {

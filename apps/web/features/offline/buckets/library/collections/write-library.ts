@@ -1,3 +1,5 @@
+import { removalTables, cachedLibraryItemIds, removeCachedItemsTx } from "../remove-cached-items";
+import { isLibraryItemDeleted } from "../deleted-items";
 // Dexie write paths for the library bucket: a whole library payload, or a
 // single collection's. Each one reads as collect → merge → write; item-row.ts
 // owns which fields are locally owned and so survive the merge.
@@ -21,11 +23,16 @@ import { getDb, type AvaReaderDB, type LibraryItemRow } from "../../../db";
 import { readProtectedCollections } from "../membership/protected-collections";
 import { COMPLETION_CHANGE_PREFIX, readCompletionRevision, type CompletionChange, type CompletionWriteOptions } from "../../../completion/state";
 
-// Replaces the entire library cache with a fresh server payload. We delete
-// rows that are no longer present so collections / books removed on another
-// device disappear here too. Highlights, books, sessions etc. are untouched —
-// they're managed by their own buckets.
-export async function applyLibraryPayload(payload: LibraryPayload, options: CompletionWriteOptions = {}) {
+export type LibraryWriteOptions = CompletionWriteOptions & {
+  canRemove?: boolean;
+  // Only sweep IDs already cached when the request began. A concurrent import
+  // may hydrate a new book after the server took its snapshot.
+  removalCandidates?: string[];
+};
+
+// Refresh previews and cascade missing identities only when the server supplies
+// a complete identity set. Reading sessions always survive deletion.
+export async function applyLibraryPayload(payload: LibraryPayload, options: LibraryWriteOptions = {}) {
   const db = options.db ?? getDb();
   if (db !== getDb()) return;
   const { collections, items, memberships } = collectPayloadRows(
@@ -35,10 +42,14 @@ export async function applyLibraryPayload(payload: LibraryPayload, options: Comp
 
   await db.transaction(
     "rw",
-    [db.libraryItems, db.collections, db.collectionMembership, db.collectionMembershipMutations, db.meta],
+    [...removalTables(db), db.collections],
     async () => {
       if (options.expectedCompletionRevision !== undefined &&
         options.expectedCompletionRevision !== await readCompletionRevision(db)) return;
+      // Reject a snapshot taken before a locally known deletion, including its counts.
+      for (const id of payload.libraryItemIds ?? items.map(item => item.libraryItemId)) {
+        if (await isLibraryItemDeleted(db, id)) return;
+      }
       const nextItems = await mergeOntoCachedTx(items, db, options.expectedCompletionRevision ?? 0);
       const { ids: protectedIds, rows: protectedRows } = await readProtectedCollections();
 
@@ -57,6 +68,12 @@ export async function applyLibraryPayload(payload: LibraryPayload, options: Comp
         collections: payload.collections.filter((collection) => !protectedIds.has(collection.id)),
       }, memberships);
       await writeLibraryBooksCountTx(payload.summary.booksCount);
+      if (options.canRemove !== false && payload.libraryItemIds !== undefined) {
+        const keep = new Set(payload.libraryItemIds);
+        const candidates = options.removalCandidates ?? await cachedLibraryItemIds(db);
+        const removed = candidates.filter(id => !keep.has(id));
+        await removeCachedItemsTx(db, removed);
+      }
     },
   );
 }
@@ -75,6 +92,9 @@ export async function applyCollectionPayload(collection: LibraryCollection, ackn
     async () => {
       if (options.expectedCompletionRevision !== undefined &&
         options.expectedCompletionRevision !== await readCompletionRevision(db)) return;
+      for (const item of [...collection.books, ...collection.completionItems ?? []]) {
+        if (await isLibraryItemDeleted(db, item.libraryItemId)) return;
+      }
       if (!acknowledged) {
         const pending = await db.collectionMembershipMutations.toArray();
         if (pending.some((row) => row.changes.some((change) => change.collectionId === collection.id))) return;
@@ -99,6 +119,11 @@ async function mergeOntoCachedTx(
   db: AvaReaderDB = getDb(),
   revision = 0,
 ): Promise<LibraryItemRow[]> {
+  const retained = [];
+  for (const row of rows) {
+    if (!await isLibraryItemDeleted(db, row.libraryItemId)) retained.push(row);
+  }
+  rows = retained;
   const cached = await db
     .libraryItems.where("libraryItemId")
     .anyOf(rows.map((row) => row.libraryItemId))

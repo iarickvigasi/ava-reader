@@ -1,4 +1,5 @@
-import type { PrismaService } from '../../prisma/prisma.service';
+import type { Prisma } from '@prisma/client';
+
 import { SOURCE_SMART_KEYS } from '../../shared/default-collections';
 import {
   compareByEngagementDesc,
@@ -15,7 +16,7 @@ const LIBRARY_COLLECTION_PREVIEW_LIMIT = 4;
 // GET /library (docs/specs/3-library/3.5-library-payloads.md §1): the
 // two-phase read behind the library screen.
 export async function getLibraryOverview(options: {
-  prisma: PrismaService;
+  prisma: Prisma.TransactionClient;
   userId: string;
 }) {
   const collections = await loadCollectionOverviews(
@@ -42,7 +43,12 @@ export async function getLibraryOverview(options: {
   const previewItems = await loadPreviewItems(options.prisma, previewIds);
   const previewById = new Map(previewItems.map((item) => [item.id, item]));
 
+  const identities = await options.prisma.libraryItem.findMany({
+    where: { userId: options.userId },
+    select: { id: true },
+  });
   return {
+    libraryItemIds: identities.map((item) => item.id),
     collections: perCollection.map(
       ({ activeItems, collection, previewIds }) => {
         const books = previewIds

@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 import { getOwnedLibraryItem } from './library-item-access';
@@ -107,14 +107,30 @@ export class ReaderService {
       );
     }
 
-    const libraryItem = await this.ownedLibraryItem(clerkUserId, libraryItemId);
+    let userId: string;
+    try {
+      userId = (await this.ownedLibraryItem(clerkUserId, libraryItemId)).userId;
+    } catch (error) {
+      if (
+        !(error instanceof NotFoundException) ||
+        !replay.isReplay ||
+        !replay.endedAt
+      )
+        throw error;
+      const user = await this.usersService.getCurrentUserRecord(clerkUserId);
+      const deleted = await this.prisma.deletedLibraryItem.findFirst({
+        where: { id: libraryItemId, userId: user.id },
+      });
+      if (!deleted) throw error;
+      userId = user.id;
+    }
     const session = await startReadingSession({
       clientInstanceId,
       libraryItemId,
       now,
       prisma: this.prisma,
       replay,
-      userId: libraryItem.userId,
+      userId,
     });
 
     return serializeSession(session);

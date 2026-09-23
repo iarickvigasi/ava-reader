@@ -1,3 +1,4 @@
+import { isLibraryItemDeleted } from "../deleted-items";
 // The book-info page's cache: the detail fields the library/collection
 // payloads don't carry, layered onto the row they already wrote. Cached so the
 // page works offline once the user has visited it online at least once.
@@ -25,6 +26,7 @@ export async function applyBookInfoPayload(
   await db.transaction("rw", [db.libraryItems, db.collectionMembershipMutations, db.finishDateMutations, db.meta], async () => {
     if (options.expectedFinishDateRevision !== undefined &&
       options.expectedFinishDateRevision !== await readFinishDateRevision(db)) return;
+    if (await isLibraryItemDeleted(db, book.libraryItemId)) return;
     const prior = await db.libraryItems.get(book.libraryItemId);
     if (options.seedOnly && prior?.details) return;
     const pending = await db.collectionMembershipMutations.get(book.libraryItemId);

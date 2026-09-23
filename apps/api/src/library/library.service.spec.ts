@@ -72,14 +72,12 @@ describe('LibraryService', () => {
     libraryService = new LibraryService(prisma as never, usersService as never);
     getCurrentUserRecord.mockResolvedValue({ id: 'user-1' });
     findManyLibraryItems.mockImplementation(
-      ({
-        where: {
-          id: { in: ids },
-        },
-      }: {
-        where: { id: { in: string[] } };
-      }) =>
-        Promise.resolve(ids.map((id) => previewBooksById[id]).filter(Boolean)),
+      ({ where }: { where: { id?: { in: string[] }; userId?: string } }) =>
+        Promise.resolve(
+          where.id
+            ? where.id.in.map((id) => previewBooksById[id]).filter(Boolean)
+            : Object.values(previewBooksById).map(({ id }) => ({ id })),
+        ),
     );
   });
 

@@ -137,6 +137,15 @@ export class LibraryController {
     );
   }
 
+  @Delete(':libraryItemId')
+  @UseGuards(ClerkAuthGuard)
+  deleteLibraryItem(
+    @Req() request: AuthenticatedRequest,
+    @Param('libraryItemId') id: string,
+  ) {
+    return this.libraryService.deleteLibraryItem(request.auth.clerkUserId, id);
+  }
+
   @Post('import')
   @UseGuards(ClerkAuthGuard)
   @UseInterceptors(FileInterceptor('file'))

@@ -1,3 +1,4 @@
+import { writeUnlessDeleted } from "../library/deleted-items";
 import type { BilingualChapter } from "@/lib/api-types/bilingual";
 
 import type { AvaReaderDB } from "../../db";
@@ -36,8 +37,8 @@ export async function writeTranslationChapter(
   db: AvaReaderDB,
   chapter: BilingualChapter,
 ) {
-  await db.translations.put({
+  await writeUnlessDeleted(db, chapter.libraryItemId, [db.translations], () => db.translations.put({
     ...chapter,
     fetchedAt: new Date().toISOString(),
-  });
+  }));
 }

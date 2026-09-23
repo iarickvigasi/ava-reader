@@ -46,6 +46,8 @@ export type LibraryCollection = {
 };
 
 export type LibraryPayload = {
+  // Complete server identity set. Omitted by older servers; previews never imply deletion.
+  libraryItemIds?: string[];
   collections: LibraryCollection[];
   summary: {
     booksCount: number;

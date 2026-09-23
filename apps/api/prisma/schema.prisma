@@ -70,6 +70,7 @@ model User {
   displayName                String?
   avatarUrl                  String?
   role                       UserRole                    @default(USER)
+  deletedLibraryItems        DeletedLibraryItem[]
   libraryItems               LibraryItem[]
   readingProgress            ReadingProgress[]
   readingSessions            ReadingSession[]
@@ -264,9 +265,6 @@ model LibraryItem {
   book                       Book                        @relation(fields: [bookId], references: [id], onDelete: Cascade)
   originCatalogEntry         CatalogEntry?               @relation(fields: [originCatalogEntryId], references: [id], onDelete: SetNull)
   progress                   ReadingProgress?
-  readingSessions            ReadingSession[]
-  readingSessionParticipants ReadingSessionParticipant[]
-  readingSessionSegments     ReadingSessionSegment[]
   annotations                Annotation[]
   aiComments                 AiComment[]
   bookTranslations           BookTranslation[]
@@ -314,7 +312,6 @@ model ReadingSession {
   createdAt       DateTime                    @default(now())
   updatedAt       DateTime                    @updatedAt
   user            User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  libraryItem     LibraryItem                 @relation(fields: [libraryItemId], references: [id], onDelete: Cascade)
   participants    ReadingSessionParticipant[]
   segments        ReadingSessionSegment[]
 
@@ -335,7 +332,6 @@ model ReadingSessionParticipant {
   updatedAt        DateTime       @updatedAt
   readingSession   ReadingSession @relation(fields: [readingSessionId], references: [id], onDelete: Cascade)
   user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  libraryItem      LibraryItem    @relation(fields: [libraryItemId], references: [id], onDelete: Cascade)
 
   @@unique([readingSessionId, clientInstanceId])
   @@index([readingSessionId, stoppedAt, lastSeenAt])
@@ -353,7 +349,6 @@ model ReadingSessionSegment {
   updatedAt        DateTime       @updatedAt
   readingSession   ReadingSession @relation(fields: [readingSessionId], references: [id], onDelete: Cascade)
   user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  libraryItem      LibraryItem    @relation(fields: [libraryItemId], references: [id], onDelete: Cascade)
 
   @@unique([readingSessionId, trackedDay])
   @@index([userId, trackedDay])
@@ -479,4 +474,14 @@ model FeedbackSubmission {
   attachmentBlob   StoredBlob? @relation("FeedbackAttachment", fields: [attachmentBlobId], references: [id], onDelete: SetNull)
 
   @@index([userId, createdAt])
+}
+
+// Ownership receipt for late offline session replays. Content is not retained.
+// Session libraryItemId values are historical identifiers, not cascading FKs.
+model DeletedLibraryItem {
+  id        String   @id
+  userId    String
+  deletedAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
 }

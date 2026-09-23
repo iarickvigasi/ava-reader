@@ -1,3 +1,4 @@
+import { isLibraryItemDeleted } from "../library/deleted-items";
 // Dexie I/O for per-book reading progress. Lives alongside the rest of the
 // offline data so cards / book-info / the reader can read completion % + the
 // resume locator offline. The reader's localStorage snapshot stays as the fast
@@ -21,6 +22,7 @@ export async function writeProgress(input: {
   const db = options.db ?? getDb();
   if (db !== getDb()) return;
   await db.transaction("rw", [db.progress, db.meta], async () => {
+    if (await isLibraryItemDeleted(db, input.libraryItemId)) return;
     const prior = await db.progress.get(input.libraryItemId);
     if (options.expectedCompletionRevision !== undefined &&
       (prior?.dirty || options.expectedCompletionRevision !== await readCompletionRevision(db))) return;

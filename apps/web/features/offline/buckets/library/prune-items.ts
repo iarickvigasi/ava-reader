@@ -1,6 +1,7 @@
-// The library cache's only delete path.
+// Legacy primer cleanup; current library responses reconcile complete IDs during replacement.
 
 import { getDb } from "../../db";
+import { removalTables, removeCachedItemsTx } from "./remove-cached-items";
 
 // Deletes every cached item outside `keepIds`, plus its membership rows. Only
 // the primer may call this, and only after a pass that hydrated every
@@ -12,7 +13,7 @@ export async function pruneLibraryItems(keepIds: string[]): Promise<void> {
   const keep = new Set(keepIds);
   await db.transaction(
     "rw",
-    [db.libraryItems, db.collectionMembership, db.collectionMembershipMutations, db.finishDateMutations],
+    removalTables(db),
     async () => {
       const pending = await db.collectionMembershipMutations.toArray();
       for (const mutation of pending) keep.add(mutation.libraryItemId);
@@ -27,11 +28,7 @@ export async function pruneLibraryItems(keepIds: string[]): Promise<void> {
       if (stale.length === 0) {
         return;
       }
-      await db.libraryItems.bulkDelete(stale);
-      await db.collectionMembership
-        .where("libraryItemId")
-        .anyOf(stale)
-        .delete();
+      await removeCachedItemsTx(db, stale);
     },
   );
 }

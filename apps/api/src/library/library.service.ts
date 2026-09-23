@@ -1,3 +1,4 @@
+import { deleteLibraryItem } from './items/delete-library-item';
 import { createCollection } from './collections/create-collection';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
@@ -39,7 +40,10 @@ export class LibraryService {
 
   async getLibrary(clerkUserId: string) {
     const user = await this.user(clerkUserId);
-    return getLibraryOverview({ prisma: this.prisma, userId: user.id });
+    return this.prisma.$transaction(
+      (tx) => getLibraryOverview({ prisma: tx, userId: user.id }),
+      { isolationLevel: 'RepeatableRead' },
+    );
   }
 
   async getBookCover(bookId: string) {
@@ -128,6 +132,11 @@ export class LibraryService {
       prisma: this.prisma,
       userId: user.id,
     });
+  }
+
+  async deleteLibraryItem(clerkUserId: string, id: string) {
+    const user = await this.user(clerkUserId);
+    return deleteLibraryItem(this.prisma, user.id, id);
   }
 
   private user(clerkUserId: string) {

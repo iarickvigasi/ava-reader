@@ -47,6 +47,9 @@ product.md, dev.md, and the relevant docs/specs/_.md. For consequential decision
   legitimately new files.
 - After a `git mv`/rename, grep docs for the old path too — spec "Code:" headers and prose
   reference source files, and stale paths there are as broken as a stale import. Update every hit.
+- Before declaring done, `git add` explicit paths for every file created or changed by the task,
+  including tests, migrations, and docs. Check `git status --short` for missed files or later edits.
+  Leave unrelated changes untouched; do not commit or push unless the user requests it.
 - Run the installed Prettier on every file created or edited, including tests and docs, using its
   applicable project configuration. Format explicit changed paths, then verify with `--check`.
   For unsupported formats, use the existing native formatter when available and report any skips.

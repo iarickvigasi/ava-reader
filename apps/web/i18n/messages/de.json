@@ -509,7 +509,13 @@
         },
         "deleteBook": {
           "title": "Buch löschen",
-          "description": "Noch nicht verfügbar"
+          "description": "Aus deiner Bibliothek entfernen",
+          "body": "Dieses Buch samt heruntergeladenen Inhalten, Markierungen und KI-Kommentaren löschen? Deine Lesesitzungen und Lesestunden bleiben erhalten.",
+          "cancel": "Abbrechen",
+          "confirm": "Buch löschen",
+          "deleting": "Wird gelöscht…",
+          "error": "Das Buch konnte nicht gelöscht werden. Bitte versuche es erneut.",
+          "offline": "Zum Löschen dieses Buches verbinden"
         }
       },
       "annotations": {

@@ -509,7 +509,13 @@
         },
         "deleteBook": {
           "title": "Excluir livro",
-          "description": "Ainda não disponível"
+          "description": "Remover da sua biblioteca",
+          "body": "Excluir este livro e seu conteúdo baixado, destaques e comentários de IA? Suas sessões e horas de leitura serão mantidas.",
+          "cancel": "Cancelar",
+          "confirm": "Excluir livro",
+          "deleting": "Excluindo…",
+          "error": "Não foi possível excluir o livro. Tente novamente.",
+          "offline": "Conecte-se para excluir este livro"
         }
       },
       "annotations": {

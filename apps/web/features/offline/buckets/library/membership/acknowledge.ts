@@ -1,3 +1,4 @@
+import { isLibraryItemDeleted } from "../deleted-items";
 import type { LibraryBookCollectionsPayload } from "@/lib/api-types/library";
 import { getDb, type AvaReaderDB } from "../../../db";
 import { applyCollectionPayload } from "../collections/write-library";
@@ -16,6 +17,7 @@ export async function acknowledgeMembership(
   if (getDb() !== db) return;
   markMembershipChange();
   await db.transaction("rw", [db.libraryItems, db.collections, db.collectionMembership, db.collectionMembershipMutations, db.meta], async () => {
+    if (await isLibraryItemDeleted(db, sent.libraryItemId)) return ;
     for (const collection of payload?.affectedCollections ?? []) {
       await applyCollectionPayload(collection, true, db, { snapshotCompletionRevision });
     }

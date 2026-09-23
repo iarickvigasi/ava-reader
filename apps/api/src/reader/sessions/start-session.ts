@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { NotFoundException } from '@nestjs/common';
 import type { PrismaService } from '../../prisma/prisma.service';
 import { applySessionActionTx } from './apply-session-action';
@@ -22,6 +23,17 @@ export async function startReadingSession(params: {
   const sessionStartedAt = replay.startedAt ?? now;
 
   return prisma.$transaction(async (tx) => {
+    await tx.$executeRaw(
+      Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${libraryItemId}, 0))`,
+    );
+    if (
+      !replay.isReplay &&
+      (await tx.deletedLibraryItem.findFirst({
+        where: { id: libraryItemId, userId },
+      }))
+    ) {
+      throw new NotFoundException('The requested library item was not found.');
+    }
     // Offline replay of a completed session: record it with its original
     // timestamps and real duration, immutably (a retry returns the existing
     // row). Kept entirely off the live 'start' action, which would reopen and

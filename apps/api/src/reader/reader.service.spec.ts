@@ -12,6 +12,7 @@ function getFirstCallArg<T>(fn: { mock: { calls: unknown[] } }): T {
 describe('ReaderService', () => {
   const getCurrentUserRecord = jest.fn();
   const findFirstLibraryItem = jest.fn();
+  const findDeletedLibraryItem = jest.fn();
   const findUniqueOrThrowStoredBlob = jest.fn();
   const updateBookFile = jest.fn();
   const updateLibraryItem = jest.fn();
@@ -34,6 +35,8 @@ describe('ReaderService', () => {
   const createBookProcessingRun = jest.fn();
 
   const tx = {
+    $executeRaw: jest.fn(),
+    deletedLibraryItem: { findFirst: findDeletedLibraryItem },
     $queryRaw: queryRaw,
     readingProgress: {
       updateMany: updateManyReadingProgress,
@@ -55,6 +58,7 @@ describe('ReaderService', () => {
   };
 
   const prisma = {
+    deletedLibraryItem: { findFirst: findDeletedLibraryItem },
     $transaction: jest.fn(
       async (callback: (transactionClient: typeof tx) => Promise<unknown>) =>
         callback(tx),
@@ -90,6 +94,7 @@ describe('ReaderService', () => {
     __resetReaderPackageCacheForTesting();
     getCurrentUserRecord.mockReset();
     findFirstLibraryItem.mockReset();
+    findDeletedLibraryItem.mockReset();
     // No analysis on record and no run in flight — the enqueue path's
     // "this book needs analysing" case.
     findUniqueBookAnalysis.mockReset();
@@ -523,66 +528,85 @@ describe('ReaderService', () => {
       endedAt: '2026-06-26T08:30:00.000Z',
     };
 
+    it('rejects replay of a deleted book without an ownership receipt', async () => {
+      findFirstLibraryItem.mockResolvedValue(null);
+      findDeletedLibraryItem.mockResolvedValue(null);
+      await expect(
+        readerService.startSession('clerk_1', 'foreign', 'client-a', REPLAY),
+      ).rejects.toThrow('not found');
+      expect(createReadingSession).not.toHaveBeenCalled();
+    });
+
     function setNowAfterReplay() {
       jest
         .useFakeTimers()
         .setSystemTime(new Date('2026-06-29T12:00:00.000Z').getTime());
     }
 
-    it('persists original timestamps and real duration without reopening or re-dating', async () => {
-      setNowAfterReplay();
-      findFirstLibraryItem.mockResolvedValue(createLibraryItemRecord());
-      findFirstReadingSession.mockResolvedValue(null);
-      createReadingSession.mockResolvedValue(
-        createLockedSessionRecord({
-          durationSeconds: 1_800,
-          endedAt: new Date(REPLAY.endedAt),
-          lastTrackedAt: new Date(REPLAY.endedAt),
-          startedAt: new Date(REPLAY.startedAt),
-          trackedDay: new Date('2026-06-26T00:00:00.000Z'),
-        }),
-      );
-      upsertReadingSessionSegment.mockResolvedValue({});
-      aggregateReadingSessionSegment.mockResolvedValue({
-        _sum: { durationSeconds: 1_800 },
-      });
-      updateManyReadingProgress.mockResolvedValue({ count: 1 });
+    it.each([false, true])(
+      'persists offline time, including after deletion=%s',
+      async (deleted) => {
+        setNowAfterReplay();
+        findFirstLibraryItem.mockResolvedValue(
+          deleted ? null : createLibraryItemRecord(),
+        );
+        findDeletedLibraryItem.mockResolvedValue(
+          deleted ? { id: 'library-1' } : null,
+        );
+        findFirstReadingSession.mockResolvedValue(null);
+        createReadingSession.mockResolvedValue(
+          createLockedSessionRecord({
+            durationSeconds: 1_800,
+            endedAt: new Date(REPLAY.endedAt),
+            lastTrackedAt: new Date(REPLAY.endedAt),
+            startedAt: new Date(REPLAY.startedAt),
+            trackedDay: new Date('2026-06-26T00:00:00.000Z'),
+          }),
+        );
+        upsertReadingSessionSegment.mockResolvedValue({});
+        aggregateReadingSessionSegment.mockResolvedValue({
+          _sum: { durationSeconds: 1_800 },
+        });
+        updateManyReadingProgress.mockResolvedValue({ count: 1 });
 
-      const session = await readerService.startSession(
-        'clerk_1',
-        'library-1',
-        'client-a',
-        REPLAY,
-      );
+        const session = await readerService.startSession(
+          'clerk_1',
+          'library-1',
+          'client-a',
+          REPLAY,
+        );
 
-      const createCall = getFirstCallArg<{
-        data: {
-          clientSessionId: string;
-          durationMinutes: number;
-          durationSeconds: number;
-          endedAt: Date;
-          lastTrackedAt: Date;
-          startedAt: Date;
-          trackedDay: Date;
-        };
-      }>(createReadingSession);
-      expect(createCall.data.durationSeconds).toBe(1_800);
-      expect(createCall.data.durationMinutes).toBe(30);
-      expect(createCall.data.clientSessionId).toBe('csid-1');
-      expect(createCall.data.endedAt.toISOString()).toBe(REPLAY.endedAt);
-      expect(createCall.data.startedAt.toISOString()).toBe(REPLAY.startedAt);
-      expect(createCall.data.lastTrackedAt.toISOString()).toBe(REPLAY.endedAt);
-      expect(createCall.data.trackedDay.toISOString()).toBe(
-        '2026-06-26T00:00:00.000Z',
-      );
+        const createCall = getFirstCallArg<{
+          data: {
+            clientSessionId: string;
+            durationMinutes: number;
+            durationSeconds: number;
+            endedAt: Date;
+            lastTrackedAt: Date;
+            startedAt: Date;
+            trackedDay: Date;
+          };
+        }>(createReadingSession);
+        expect(createCall.data.durationSeconds).toBe(1_800);
+        expect(createCall.data.durationMinutes).toBe(30);
+        expect(createCall.data.clientSessionId).toBe('csid-1');
+        expect(createCall.data.endedAt.toISOString()).toBe(REPLAY.endedAt);
+        expect(createCall.data.startedAt.toISOString()).toBe(REPLAY.startedAt);
+        expect(createCall.data.lastTrackedAt.toISOString()).toBe(
+          REPLAY.endedAt,
+        );
+        expect(createCall.data.trackedDay.toISOString()).toBe(
+          '2026-06-26T00:00:00.000Z',
+        );
 
-      // No 'start' action: the row is never reopened or re-dated to "now".
-      expect(updateReadingSession).not.toHaveBeenCalled();
-      expect(upsertReadingSessionParticipant).not.toHaveBeenCalled();
+        // No 'start' action: the row is never reopened or re-dated to "now".
+        expect(updateReadingSession).not.toHaveBeenCalled();
+        expect(upsertReadingSessionParticipant).not.toHaveBeenCalled();
 
-      expect(session.endedAt).toBe(REPLAY.endedAt);
-      expect(session.durationSeconds).toBe(1_800);
-    });
+        expect(session.endedAt).toBe(REPLAY.endedAt);
+        expect(session.durationSeconds).toBe(1_800);
+      },
+    );
 
     it('writes per-UTC-day segments and syncs progress minutes', async () => {
       setNowAfterReplay();

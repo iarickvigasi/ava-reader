@@ -509,7 +509,13 @@
         },
         "deleteBook": {
           "title": "Supprimer le livre",
-          "description": "Pas encore disponible"
+          "description": "Retirer de votre bibliothèque",
+          "body": "Supprimer ce livre, son contenu téléchargé, ses surlignages et ses commentaires IA ? Vos sessions et heures de lecture seront conservées.",
+          "cancel": "Annuler",
+          "confirm": "Supprimer le livre",
+          "deleting": "Suppression…",
+          "error": "Impossible de supprimer le livre. Veuillez réessayer.",
+          "offline": "Connectez-vous pour supprimer ce livre"
         }
       },
       "annotations": {
