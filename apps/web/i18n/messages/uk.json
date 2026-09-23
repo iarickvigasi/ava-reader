@@ -287,6 +287,8 @@
       }
     },
     "aiTools": {
+      "targetLanguage": "Перекласти на",
+      "chooseLanguage": "Виберіть мову",
       "translate": "Перекласти",
       "etymology": "Етимологія",
       "explain": "Пояснити",

@@ -80,6 +80,33 @@ export function fixtureTranslation(targetLang: string): BilingualChapter {
     translationVersion: 1,
     targetLang,
     units,
+    alignments: Object.fromEntries(
+      units
+        .filter((unit) => unit.kind === "sentence")
+        .map((unit) => [
+          unit.id,
+          {
+            version: 1,
+            sourceText: unit.text,
+            translatedText: translatedText(unit),
+            groups:
+              unit.id === "fixture-opening-0"
+                ? [
+                    {
+                      id: "we",
+                      source: [{ start: 0, end: 2 }],
+                      translation: [{ start: 0, end: 2 }],
+                    },
+                    {
+                      id: "left",
+                      source: [{ start: 3, end: 7 }],
+                      translation: [{ start: 3, end: 7 }],
+                    },
+                  ]
+                : [],
+          },
+        ]),
+    ),
     translations: Object.fromEntries(
       units
         .filter((unit) => unit.kind === "sentence")

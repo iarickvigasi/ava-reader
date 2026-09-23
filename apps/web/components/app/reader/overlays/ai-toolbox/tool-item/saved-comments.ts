@@ -22,6 +22,7 @@ const KIND_TO_TOOL: Record<AiCommentRecord["kind"], ToolKey> = {
 export function selectSavedComments(
   comments: AiCommentRecord[],
   selectedLocator: ReaderRangeLocator | null,
+  targetLanguage?: string,
 ): Partial<Record<ToolKey, SavedComment>> {
   if (!selectedLocator) return {};
   const result: Partial<Record<ToolKey, SavedComment>> = {};
@@ -29,6 +30,9 @@ export function selectSavedComments(
     const locator = comment.locator;
     if (!locator) continue;
     if (
+      locator.chapterId !== selectedLocator.chapterId ||
+      JSON.stringify(locator.translation) !==
+        JSON.stringify(selectedLocator.translation) ||
       locator.startBlockId !== selectedLocator.startBlockId ||
       locator.startOffset !== selectedLocator.startOffset ||
       locator.endBlockId !== selectedLocator.endBlockId ||
@@ -37,6 +41,12 @@ export function selectSavedComments(
       continue;
     }
     const toolKey = KIND_TO_TOOL[comment.kind];
+    if (
+      toolKey === "translate" &&
+      targetLanguage !== undefined &&
+      comment.targetLang !== targetLanguage
+    )
+      continue;
     if (result[toolKey] === undefined) {
       result[toolKey] = {
         body: comment.body,

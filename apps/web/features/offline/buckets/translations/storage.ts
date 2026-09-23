@@ -18,6 +18,7 @@ export async function readTranslationChapter(
     targetLang,
     units,
     translations,
+    alignments,
   } = row;
   return {
     libraryItemId,
@@ -27,6 +28,7 @@ export async function readTranslationChapter(
     targetLang,
     units,
     translations,
+    ...(alignments ? { alignments } : {}),
   };
 }
 

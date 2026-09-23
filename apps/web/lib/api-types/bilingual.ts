@@ -20,6 +20,19 @@ export type BilingualIdentity = {
 
 export type BilingualTranslations = BilingualIdentity & {
   translations: Record<string, string>;
+  alignments?: Record<string, SentenceAlignment>;
+};
+
+export type AlignmentSpan = { start: number; end: number };
+export type SentenceAlignment = {
+  version: 1;
+  sourceText: string;
+  translatedText: string;
+  groups: {
+    id: string;
+    source: AlignmentSpan[];
+    translation: AlignmentSpan[];
+  }[];
 };
 
 export type BilingualChapter = BilingualTranslations & {

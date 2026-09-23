@@ -71,6 +71,7 @@ export function clearAllTranslationBuckets(): void {
     bucket.disposed = true;
     bucket.fetchRun?.controller.abort();
     bucket.generationRun?.controller.abort();
+    bucket.alignmentRun?.controller.abort();
   }
   buckets.clear();
   for (const listener of listeners) listener();
@@ -82,6 +83,7 @@ export async function awaitTranslationPersistDrain(): Promise<void> {
       await bucket.hydrated;
       await bucket.fetchRun?.promise.catch(() => {});
       await bucket.generationRun?.promise.catch(() => {});
+      await bucket.alignmentRun?.promise.catch(() => {});
       await bucket.pendingPersist.catch(() => {});
     }),
   );

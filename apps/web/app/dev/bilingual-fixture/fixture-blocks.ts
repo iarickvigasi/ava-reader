@@ -17,10 +17,14 @@ export const fixtureBlocks: ReaderBlock[] = [
     text: "Bilingual pages",
     inlines: [{ kind: "text", text: "Bilingual pages" }],
   },
-  textBlock(
-    "fixture-opening",
-    "We left. Dawn came. Birds sang. The river crossed the valley.",
-  ),
+  {
+    id: "fixture-opening", kind: "paragraph",
+    text: "We left. Dawn came. Birds sang. The river crossed the valley.",
+    inlines: [
+      { kind: "text", text: "We", href: "#fixture-link" },
+      { kind: "text", text: " left. Dawn came. Birds sang. The river crossed the valley." },
+    ],
+  },
   {
     id: "fixture-image",
     kind: "image",

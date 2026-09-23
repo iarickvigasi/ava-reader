@@ -6,6 +6,7 @@ import {
 
 import { sameTranslationIdentity } from "./selectors";
 import type { TranslationScope } from "./types";
+import { validAlignments } from "@/features/reader/bilingual/alignment/validate-alignment";
 
 export function validateTranslationChapter(
   value: unknown,
@@ -45,6 +46,11 @@ export function validateTranslationChapter(
     if (unit.kind === "sentence") sentenceIds.add(unit.id);
   }
   validateTranslations(chapter.translations, sentenceIds);
+  if (chapter.alignments)
+    chapter.alignments = validAlignments(
+      chapter.alignments,
+      chapter as BilingualChapter,
+    );
   return chapter as BilingualChapter;
 }
 

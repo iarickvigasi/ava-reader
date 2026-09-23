@@ -10,6 +10,7 @@ import { sameTranslationIdentity } from "./selectors";
 import { writeTranslationChapter } from "./storage";
 import type { TranslationBucket, TranslationRun } from "./types";
 import { validateTranslationChapter } from "./validate";
+import { validAlignments } from "@/features/reader/bilingual/alignment/validate-alignment";
 
 export function applyTranslationChapter(
   bucket: TranslationBucket,
@@ -24,6 +25,17 @@ export function applyTranslationChapter(
           translations: { ...current.translations, ...chapter.translations },
         }
       : chapter;
+  if (current?.alignments || chapter.alignments) {
+    merged.alignments = validAlignments(
+      {
+        ...(current && sameTranslationIdentity(current, chapter)
+          ? current.alignments
+          : {}),
+        ...chapter.alignments,
+      },
+      merged,
+    );
+  }
   publishTranslationSnapshot(bucket, {
     chapter: merged,
     status: "ready",

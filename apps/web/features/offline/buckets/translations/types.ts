@@ -34,4 +34,5 @@ export type TranslationBucket = {
   revalidationError: unknown;
   fetchRun: TranslationRun | null;
   generationRun: TranslationRun | null;
+  alignmentRun?: TranslationRun | null;
 };

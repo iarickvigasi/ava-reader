@@ -25,8 +25,11 @@ export function useToolRequestFields(
   book: ReaderBookPayload,
   chapters: ReaderChapterPayload[],
 ): ToolRequestFields {
-  const { text: selectedText, locator: selectedLocator } =
-    useReaderSelectionContext();
+  const {
+    text: selectedText,
+    locator: selectedLocator,
+    context: selectionContext,
+  } = useReaderSelectionContext();
 
   // Serialise once per selection. The server stores this string verbatim in
   // AiComment.locator so it can re-anchor the highlight on a future read.
@@ -35,8 +38,12 @@ export function useToolRequestFields(
     [selectedLocator],
   );
   const context = useMemo(
-    () => extractSelectionContext(chapters, selectedLocator) ?? undefined,
-    [chapters, selectedLocator],
+    () =>
+      selectionContext ??
+      (selectedLocator?.translation
+        ? undefined
+        : (extractSelectionContext(chapters, selectedLocator) ?? undefined)),
+    [chapters, selectedLocator, selectionContext],
   );
 
   return {

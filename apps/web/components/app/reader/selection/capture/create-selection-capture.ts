@@ -2,7 +2,7 @@ import type { ReaderSelection, SelectionPointer } from "../types";
 import { isInsideReader } from "./is-inside-reader";
 import { resolveReaderSelection } from "./resolve-reader-selection";
 import { createSettleScheduler } from "./settle-scheduler";
-import { IMMEDIATE_SETTLE_MS } from "./timing";
+import { COMPAT_MOUSE_SUPPRESS_MS, IMMEDIATE_SETTLE_MS } from "./timing";
 
 export type SelectionCapture = { destroy(): void };
 
@@ -25,6 +25,7 @@ export function createSelectionCapture({
   onCapture,
 }: SelectionCaptureParams): SelectionCapture {
   const scheduler = createSettleScheduler(win);
+  let lastTouchAt = -Infinity;
 
   const checkSelection = (pointer: SelectionPointer) => {
     const selection = win.getSelection();
@@ -38,6 +39,7 @@ export function createSelectionCapture({
   // The container gate keeps a mouseup on the panel/backdrop from re-reading
   // a lingering selection and re-opening the panel that click just closed.
   const handleMouseUp = (event: MouseEvent) => {
+    if (Date.now() - lastTouchAt < COMPAT_MOUSE_SUPPRESS_MS) return;
     if (!isInsideReader(event.target, getContainer())) {
       return;
     }
@@ -47,6 +49,7 @@ export function createSelectionCapture({
   // touchend reports the node the finger went down on, so this gate also
   // covers gestures that started outside the reader.
   const handleTouchEnd = (event: TouchEvent) => {
+    lastTouchAt = Date.now();
     if (!isInsideReader(event.target, getContainer())) {
       return;
     }

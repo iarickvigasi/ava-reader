@@ -11,6 +11,7 @@ import { ReaderFrame } from "../view/reader-frame";
 import { ReaderPageViewport } from "../view/reader-page-viewport";
 import { useBilingualReader } from "./use-bilingual-reader";
 import { BilingualPreparingPage } from "./layout/bilingual-preparing-page";
+import { BilingualAlignmentOverlay } from "./interactions/bilingual-alignment-overlay";
 
 export function BilingualReader(props: ReadyReaderProps) {
   const t = useTranslations("reader.bilingual");
@@ -23,6 +24,9 @@ export function BilingualReader(props: ReadyReaderProps) {
     surfaceRef,
     gestureRef,
     sourceRef,
+    translationRef,
+    alignmentRects,
+    translatedSelection,
     handleTouchStart,
     handleTouchEnd,
     selection,
@@ -79,6 +83,8 @@ export function BilingualReader(props: ReadyReaderProps) {
                     units={measurement.units}
                     size={size}
                     side="translation"
+                    columnRef={translationRef}
+                    isIosSelection={translatedSelection.isActive}
                     lang={targetCode}
                   />
                 </>
@@ -109,6 +115,8 @@ export function BilingualReader(props: ReadyReaderProps) {
         />
       </ReaderFrame>
       <IosSelectionOverlay rects={selection.rects} />
+      <IosSelectionOverlay rects={translatedSelection.rects} />
+      <BilingualAlignmentOverlay rects={alignmentRects} />
       {measuringChapter && size.width > 0 && size.height > 0 ? (
         <BilingualMeasurements
           chapter={measuringChapter}

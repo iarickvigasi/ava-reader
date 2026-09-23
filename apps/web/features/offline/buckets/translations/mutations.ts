@@ -71,7 +71,7 @@ export async function ensureSentenceTranslations(
   }
 }
 
-function waitForRun(
+export function waitForRun(
   promise: Promise<void>,
   signal?: AbortSignal,
 ): Promise<void> {

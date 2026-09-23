@@ -15,6 +15,7 @@ import type { SelectionPointer } from "./types";
 type ReaderSelectionContextValue = {
   text: string | null;
   locator: ReaderRangeLocator | null;
+  context: string | null;
   // Which input built the captured selection; null when the panel was opened
   // from a click on an existing highlight/comment rather than a live capture.
   // The AI toolbox drops the live selection on open for "touch" captures.
@@ -29,6 +30,7 @@ type ReaderSelectionContextValue = {
     text: string;
     locator: ReaderRangeLocator | null;
     pointer?: SelectionPointer | null;
+    context?: string | null;
     highlightId?: string | null;
     highlightColor?: HighlightColor | null;
   }) => void;
@@ -45,6 +47,7 @@ export function ReaderSelectionProvider({ children }: { children: ReactNode }) {
   const [text, setText] = useState<string | null>(null);
   const [locator, setLocator] = useState<ReaderRangeLocator | null>(null);
   const [pointer, setPointer] = useState<SelectionPointer | null>(null);
+  const [context, setContext] = useState<string | null>(null);
   const [highlightId, setHighlightId] = useState<string | null>(null);
   const [highlightColor, setHighlightColor] = useState<HighlightColor | null>(
     null,
@@ -55,12 +58,14 @@ export function ReaderSelectionProvider({ children }: { children: ReactNode }) {
       text: nextText,
       locator: nextLocator,
       pointer: nextPointer = null,
+      context: nextContext = null,
       highlightId: nextHighlightId = null,
       highlightColor: nextHighlightColor = null,
     }) => {
       setText(nextText);
       setLocator(nextLocator);
       setPointer(nextPointer);
+      setContext(nextContext);
       setHighlightId(nextHighlightId);
       setHighlightColor(nextHighlightColor);
     },
@@ -78,6 +83,7 @@ export function ReaderSelectionProvider({ children }: { children: ReactNode }) {
     setText(null);
     setLocator(null);
     setPointer(null);
+    setContext(null);
     setHighlightId(null);
     setHighlightColor(null);
   }, []);
@@ -87,6 +93,7 @@ export function ReaderSelectionProvider({ children }: { children: ReactNode }) {
       text,
       locator,
       pointer,
+      context,
       highlightId,
       highlightColor,
       setSelection,
@@ -97,6 +104,7 @@ export function ReaderSelectionProvider({ children }: { children: ReactNode }) {
       text,
       locator,
       pointer,
+      context,
       highlightId,
       highlightColor,
       setSelection,

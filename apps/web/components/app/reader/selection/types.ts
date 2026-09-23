@@ -1,3 +1,5 @@
+import type { ReaderRangeLocator } from "@/lib/api-types";
+
 export type SelectionPointer = "touch" | "mouse";
 
 export type ReaderSelection = {
@@ -10,4 +12,6 @@ export type ReaderSelection = {
   // drop the live selection when it opens (native callout suppression, see
   // use-drop-live-selection); a mouse capture keeps its selection.
   pointer: SelectionPointer;
+  locator?: ReaderRangeLocator | null;
+  context?: string;
 };

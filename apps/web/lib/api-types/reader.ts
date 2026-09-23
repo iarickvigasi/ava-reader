@@ -117,6 +117,16 @@ export type ReaderRangeLocator = {
   endOffset: number;
   contextBefore: string;
   contextAfter: string;
+  // The outer offsets always anchor to the original book. Translated text has
+  // its own sentence-relative offsets and identity; never use those as source offsets.
+  translation?: {
+    targetLang: string;
+    contentRevision: string;
+    startSentenceId: string;
+    endSentenceId: string;
+    startOffset: number;
+    endOffset: number;
+  };
 };
 
 export type ReaderProgressPayload = {

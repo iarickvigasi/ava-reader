@@ -21,12 +21,26 @@ export function createIosSelectionCapture({
   onCapture,
 }: IosSelectionCaptureParams): SelectionCapture {
   const gesture = createSelectionGesture({ doc, mode, getContainer, onPaint });
+  let ownsTouch = false;
   const press = createPressTimer(win, () => {
     const { x, y } = press.origin();
     gesture.selectWordAt(x, y);
   });
 
   const handleTouchStart = (event: TouchEvent) => {
+    const container = getContainer();
+    if (
+      !container ||
+      !(event.target instanceof Node) ||
+      !container.contains(event.target) ||
+      event.touches.length !== 1
+    ) {
+      press.cancel();
+      ownsTouch = false;
+      gesture.clear();
+      return;
+    }
+    ownsTouch = true;
     const touch = event.touches[0];
     press.cancel();
 
@@ -48,6 +62,7 @@ export function createIosSelectionCapture({
   };
 
   const handleTouchMove = (event: TouchEvent) => {
+    if (!ownsTouch) return;
     const touch = event.touches[0];
 
     if (!touch) {
@@ -66,6 +81,8 @@ export function createIosSelectionCapture({
   };
 
   const handleTouchEnd = (event: TouchEvent) => {
+    if (!ownsTouch) return;
+    ownsTouch = false;
     press.cancel();
 
     if (!gesture.isDragging()) {
@@ -74,6 +91,9 @@ export function createIosSelectionCapture({
 
     const range = gesture.endDrag();
     const text = range?.toString().trim() ?? "";
+    // A compatibility click can otherwise land on the newly opened panel's
+    // backdrop and immediately dismiss it. Selection owns this whole gesture.
+    event.preventDefault();
     event.stopPropagation();
 
     if (range && text.length > 0) {
@@ -81,12 +101,19 @@ export function createIosSelectionCapture({
     }
   };
 
+  const handleTouchCancel = () => {
+    ownsTouch = false;
+    press.cancel();
+    gesture.clear();
+  };
+
   doc.addEventListener("touchstart", handleTouchStart, true);
   doc.addEventListener("touchmove", handleTouchMove, {
     capture: true,
     passive: false,
   });
-  doc.addEventListener("touchend", handleTouchEnd, true);
+  doc.addEventListener("touchend", handleTouchEnd, { capture: true, passive: false });
+  doc.addEventListener("touchcancel", handleTouchCancel, true);
 
   return {
     destroy: () => {
@@ -95,6 +122,7 @@ export function createIosSelectionCapture({
       doc.removeEventListener("touchstart", handleTouchStart, true);
       doc.removeEventListener("touchmove", handleTouchMove, true);
       doc.removeEventListener("touchend", handleTouchEnd, true);
+      doc.removeEventListener("touchcancel", handleTouchCancel, true);
     },
   };
 }

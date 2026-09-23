@@ -3,6 +3,10 @@
 // because `user-select: none` takes the native hit-testing away.
 type CaretDocument = Document & {
   caretRangeFromPoint?: (x: number, y: number) => Range | null;
+  caretPositionFromPoint?: (
+    x: number,
+    y: number,
+  ) => { offsetNode: Node; offset: number } | null;
 };
 
 export function caretRangeAt(
@@ -11,7 +15,15 @@ export function caretRangeAt(
   x: number,
   y: number,
 ): Range | null {
-  const caret = (doc as CaretDocument).caretRangeFromPoint?.(x, y) ?? null;
+  let caret = (doc as CaretDocument).caretRangeFromPoint?.(x, y) ?? null;
+  if (!caret) {
+    const point = (doc as CaretDocument).caretPositionFromPoint?.(x, y);
+    if (point) {
+      caret = doc.createRange();
+      caret.setStart(point.offsetNode, point.offset);
+      caret.collapse(true);
+    }
+  }
 
   if (!caret || !container.contains(caret.startContainer)) {
     return null;

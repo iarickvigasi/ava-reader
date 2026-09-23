@@ -38,12 +38,14 @@ Build a translated book incrementally, saving reusable sentence translations in 
 - [9.1 Layout](9.1-layout.md): paragraph flow, measurement, gestures, position preservation.
 - [9.2 AI API](9.2-ai-api.md): stable IDs, translated-book storage, generation prompt.
 - [9.3 Cache](9.3-cache.md): offline storage and bounded demand.
+- [9.4 Alignment](9.4-alignment.md): phrase matching, tap/selection gestures, and AI language context.
 
 ## Scope
 
 Mobile web/PWA; apps/mobile remains a native-app placeholder. Translated-book records are partial
 until the reader visits all sentences. Reading a book does not trigger whole-book AI generation.
-Exact line alignment and word-level alignment between languages are not required.
+Exact line alignment between languages is not required. Phrase alignment is optional enrichment
+generated for saved translations and described in 9.4.
 
 ## Acceptance criteria
 

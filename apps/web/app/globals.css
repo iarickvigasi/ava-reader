@@ -49,6 +49,8 @@
   --highlight-rose: #ffd8e0;
   --highlight-mauve: #f4d9f7;
 
+  --alignment-highlight: rgb(226 180 71 / 15%);
+
   /* Inverse-theme highlight palette. Always references the *other* theme's
      value, so consumers can render content (e.g. a color name) on the
      current paper and still see it pop — useful for chip labels that would
@@ -99,6 +101,8 @@
   --highlight-lavender: #3a335f;
   --highlight-rose: #572436;
   --highlight-mauve: #4d2c5b;
+
+  --alignment-highlight: rgb(242 202 113 / 15%);
 
   /* Inverse palette in dark mode = the light-theme pastels, which pop on
      the dark paper. */

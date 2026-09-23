@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   DEFAULT_TRANSLATE_TARGET_LANG,
   useTranslateTargetLang,
@@ -15,6 +15,7 @@ import { ToolSection } from "../tool-item/tool-section";
 import { TranslateToolItem } from "../tool-item/translate-tool-item";
 import { useToolAccordion } from "./use-tool-accordion";
 import { useToolRequestFields } from "../generate/use-tool-request-fields";
+import { translationTarget } from "../tool-item/translation-language";
 
 type AiToolsSectionProps = {
   libraryItemId: string;
@@ -33,23 +34,43 @@ export function AiToolsSection({
   const [targetLang] = useTranslateTargetLang();
 
   const request = useToolRequestFields(book, chapters);
+  const defaultLanguage = translationTarget(
+    book.language,
+    targetLang || DEFAULT_TRANSLATE_TARGET_LANG,
+    !!selectedLocator?.translation,
+  );
+  const [choice, setChoice] = useState<{
+    key: string | undefined;
+    language: string;
+  } | null>(null);
+  const language =
+    choice && choice.key === request.locator
+      ? choice.language
+      : defaultLanguage;
   // Keep the whole matched record per tool (body + status + error), not just
   // the body, so the panel can render queued / failed placeholders.
   const savedComments = useMemo(
-    () => selectSavedComments(comments, selectedLocator ?? null),
-    [comments, selectedLocator],
+    () => selectSavedComments(comments, selectedLocator ?? null, language),
+    [comments, selectedLocator, language],
   );
-  const { openTools, toggle } = useToolAccordion(request.locator, savedComments);
+  const { openTools, toggle } = useToolAccordion(
+    request.locator,
+    savedComments,
+  );
 
-  const language = targetLang || DEFAULT_TRANSLATE_TARGET_LANG;
   const common = { libraryItemId, ...request };
 
   return (
     <div className="flex flex-col gap-4">
       <TranslateToolItem
+        key={`${request.locator}:${language}`}
         {...common}
         label={t("translate")}
         language={language}
+        sourceLanguage={selectedLocator?.translation?.targetLang ?? null}
+        onLanguageChange={(language) =>
+          setChoice({ key: request.locator, language })
+        }
         isOpen={openTools.has("translate")}
         onToggle={() => toggle("translate")}
         saved={savedComments.translate}

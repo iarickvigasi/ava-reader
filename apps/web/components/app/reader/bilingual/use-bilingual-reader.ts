@@ -9,7 +9,7 @@ import { useSentenceDemand } from "@/features/reader/bilingual/demand/use-senten
 import { useBilingualSourceLocator } from "@/features/reader/bilingual/position/use-bilingual-source-locator";
 import type { ReadyReaderProps } from "../shared/types";
 import { useBilingualInteractions } from "./interactions/use-bilingual-interactions";
-import { useBilingualMarks } from "./interactions/use-bilingual-marks";
+import { useAlignmentDemand } from "@/features/reader/bilingual/alignment/use-alignment-demand";
 
 export function useBilingualReader(props: ReadyReaderProps) {
   const [targetLang] = useTranslateTargetLang();
@@ -52,20 +52,20 @@ export function useBilingualReader(props: ReadyReaderProps) {
   );
   const pageKey = `${chapter?.chapterId}:${pagination.pageIndex}:${layoutKey}:${chapter?.targetLang}`;
   const interactions = useBilingualInteractions({
+    chapter,
     chapterId: props.activeChapter.chapterId,
     language: props.payload.book.language,
     pageKey,
     disabled,
     go,
   });
-  useBilingualMarks({
-    articleRef: interactions.sourceRef,
-    chapterId: props.activeChapter.chapterId,
-    blocks: props.activeChapter.blocks,
-    pageKey: pagination.page,
-    onAiCommentClick: interactions.onAiCommentClick,
-    onHighlightClick: interactions.onHighlightClick,
-  });
+  // Saved annotations remain available in the panel; only alignment paints
+  // on bilingual pages, so the two kinds of emphasis never compete.
+  const alignmentDemand = useAlignmentDemand(
+    measuringChapter,
+    pagination.page?.unitIndexes ?? [],
+    !disabled && activePanel === null && demand.available && !!pagination.page,
+  );
   useBilingualSourceLocator({
     sourceRef: interactions.sourceRef,
     chapter,
@@ -103,10 +103,11 @@ export function useBilingualReader(props: ReadyReaderProps) {
     pending,
     prefetchNextChapter,
     offline: !demand.available,
-    error: pending ? (cache.error ?? demand.error) : null,
+    error: pending ? (cache.error ?? demand.error) : alignmentDemand.error,
     retry: () => {
       cache.retry();
       demand.retry();
+      alignmentDemand.retry();
     },
   };
 }

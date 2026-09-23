@@ -428,6 +428,7 @@ model SentenceTranslation {
   endOffset         Int
   sourceText        String
   translatedText    String
+  alignment         Json?
   modelId           String
   createdAt         DateTime        @default(now())
   bookTranslation   BookTranslation @relation(fields: [bookTranslationId], references: [id], onDelete: Cascade)

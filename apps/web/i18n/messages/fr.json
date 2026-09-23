@@ -287,6 +287,8 @@
       }
     },
     "aiTools": {
+      "targetLanguage": "Traduire en",
+      "chooseLanguage": "Choisir une langue",
       "translate": "Traduire",
       "etymology": "Étymologie",
       "explain": "Expliquer",

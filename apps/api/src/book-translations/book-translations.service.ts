@@ -8,6 +8,10 @@ import { loadTranslationContext } from './source/load-context';
 import { readTranslations } from './storage/read-translations';
 import { selectTranslationSentences } from './source/select-sentences';
 import { TranslationLock } from './generation/translation-lock';
+import {
+  generateAlignments,
+  readAlignments,
+} from './alignment/sentence-alignments';
 import type { ChapterTranslation, TranslationResult } from './types';
 import {
   translationResponseIdentity,
@@ -45,6 +49,7 @@ export class BookTranslationsService {
       ...translationResponseIdentity(context),
       units: context.units,
       translations,
+      alignments: await readAlignments({ prisma: this.prisma, context }),
     };
   }
 
@@ -72,5 +77,31 @@ export class BookTranslationsService {
       }),
     );
     return { ...translationResponseIdentity(context), translations };
+  }
+
+  async align(
+    request: GenerateTranslationRequest & {
+      clerkUserId: string;
+      libraryItemId: string;
+      signal: AbortSignal;
+    },
+  ) {
+    const context = await loadTranslationContext({
+      ...request,
+      prisma: this.prisma,
+      users: this.users,
+    });
+    const sentences = selectTranslationSentences(context, request);
+    const key = `alignment:${JSON.stringify(translationVersionIdentity(context))}`;
+    const alignments = await this.lock.run(key, request.signal, () =>
+      generateAlignments({
+        prisma: this.prisma,
+        openrouter: this.openrouter,
+        context,
+        sentences,
+        signal: request.signal,
+      }),
+    );
+    return { ...translationResponseIdentity(context), alignments };
   }
 }

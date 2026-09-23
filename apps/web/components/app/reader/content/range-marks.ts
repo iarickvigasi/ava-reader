@@ -9,6 +9,7 @@ export function buildRangeFromLocator(
   article: HTMLElement,
   locator: ReaderRangeLocator,
 ): Range | null {
+  if (locator.translation) return null;
   const startBlock = findBlock(article, locator.startBlockId);
   const endBlock = findBlock(article, locator.endBlockId);
   if (!startBlock || !endBlock) {

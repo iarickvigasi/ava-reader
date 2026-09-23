@@ -107,6 +107,14 @@ afterEach(() => {
 });
 
 describe("createSelectionCapture", () => {
+  it("does not recapture a touch selection as a synthetic mouse selection", () => {
+    const t = setup();
+    t.dispatch("touchend", { target: t.insideNode });
+    t.flush();
+    t.dispatch("mouseup", { target: t.insideNode });
+    t.flush();
+    expect(t.captures.map((capture) => capture.pointer)).toEqual(["touch"]);
+  });
   it("captures a mouse selection and keeps the live selection", () => {
     const t = setup();
 

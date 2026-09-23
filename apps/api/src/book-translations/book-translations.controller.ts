@@ -64,4 +64,32 @@ export class BookTranslationsController {
       response.off('close', abort);
     }
   }
+
+  @Post('align')
+  @HttpCode(200)
+  async align(
+    @Req() request: AuthenticatedRequest,
+    @Res({ passthrough: true }) response: Response,
+    @Param('libraryItemId') libraryItemId: string,
+    @Body() body: unknown,
+  ) {
+    const parsed = parseBody(generateTranslationSchema, body);
+    const controller = new AbortController();
+    const abort = () => {
+      if (!response.writableEnded) controller.abort();
+    };
+    request.once('aborted', abort);
+    response.once('close', abort);
+    try {
+      return await this.service.align({
+        ...parsed,
+        clerkUserId: request.auth.clerkUserId,
+        libraryItemId,
+        signal: controller.signal,
+      });
+    } finally {
+      request.off('aborted', abort);
+      response.off('close', abort);
+    }
+  }
 }

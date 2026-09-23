@@ -15,6 +15,7 @@ import { selectionModeForLanguage } from "./selection-mode-for-language";
 
 type UseIosSelectionParams = {
   bookLanguage: string | null;
+  languageKey?: string;
   containerRef: RefObject<HTMLElement | null>;
   onSelectText: (selection: ReaderSelection) => void;
   disabled: boolean;
@@ -30,6 +31,7 @@ const subscribeToNothing = () => () => {};
 // paint; an empty list on every other platform, where the OS still draws it.
 export function useIosSelection({
   bookLanguage,
+  languageKey = "book",
   containerRef,
   onSelectText,
   disabled,
@@ -44,7 +46,16 @@ export function useIosSelection({
   );
   // ReadyReader is keyed by book identity. Freeze language for this opening,
   // so refreshed cache metadata cannot change mode during a gesture/page turn.
-  const [mode] = useState(() => selectionModeForLanguage(bookLanguage));
+  const [language, setLanguage] = useState(() => ({
+    key: languageKey,
+    mode: selectionModeForLanguage(bookLanguage),
+  }));
+  if (language.key !== languageKey)
+    setLanguage({
+      key: languageKey,
+      mode: selectionModeForLanguage(bookLanguage),
+    });
+  const mode = language.mode;
 
   const [painted, setPainted] = useState<{ key: string; rects: DOMRect[] }>({
     key: pageKey,

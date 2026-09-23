@@ -7,6 +7,7 @@ import {
 } from "@/features/offline/buckets/translations/bucket";
 import { applyTranslationChapter } from "@/features/offline/buckets/translations/sync";
 import { fixtureTranslation } from "./fixture-payload";
+import { seedFixtureAnnotations } from "./fixture-annotations";
 
 // Dev-only harness: operate on the fake book's bucket without changing user identity.
 export function useFixtureTranslations(targetLang: string) {
@@ -26,6 +27,10 @@ export function useFixtureTranslations(targetLang: string) {
     void getDb()
       .translations.put({ ...initial, fetchedAt: new Date().toISOString() })
       .then(async () => {
+        if (
+          new URLSearchParams(window.location.search).get("annotations") === "1"
+        )
+          await seedFixtureAnnotations(chapter);
         const bucket = getTranslationBucket(initial);
         await bucket.hydrated;
         if (cancelled) return;

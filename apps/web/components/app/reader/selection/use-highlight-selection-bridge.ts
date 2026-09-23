@@ -28,21 +28,33 @@ export function useHighlightSelectionBridge(activeChapterId: string): {
   // shows the current color and clicks toggle/replace instead of stacking
   // duplicates.
   const onTextSelected = useCallback(
-    ({ text, range, pointer }: ReaderSelection) => {
-      const locator = computeAiCommentLocator(range, activeChapterId);
+    ({
+      text,
+      range,
+      pointer,
+      locator: providedLocator,
+      context,
+    }: ReaderSelection) => {
+      const locator =
+        providedLocator === undefined
+          ? computeAiCommentLocator(range, activeChapterId)
+          : providedLocator;
       const matched = locator
-        ? highlights.find(
+        ? (highlights.find(
             (highlight) =>
+              JSON.stringify(highlight.locator?.translation) ===
+                JSON.stringify(locator.translation) &&
               highlight.locator?.startBlockId === locator.startBlockId &&
               highlight.locator?.startOffset === locator.startOffset &&
               highlight.locator?.endBlockId === locator.endBlockId &&
               highlight.locator?.endOffset === locator.endOffset,
-          ) ?? null
+          ) ?? null)
         : null;
       setSelection({
         text,
         locator,
         pointer,
+        context,
         highlightId: matched?.id ?? null,
         highlightColor: matched?.color ?? null,
       });

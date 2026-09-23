@@ -1,6 +1,7 @@
 // Mouse and touchend checks read on the next tick; the browser has settled the
 // selection by then, so no extra delay is needed.
 export const IMMEDIATE_SETTLE_MS = 0;
+export const COMPAT_MOUSE_SUPPRESS_MS = 1_500;
 
 // iOS runs the app's own selection gesture (spec 2.6 Behaviour 8): how long a
 // finger must rest before the word under it is selected, how far it may drift
