@@ -11,6 +11,7 @@ describe('Home response contract', () => {
     expect(home).toEqual({
       collections: { items: [] },
       completionItems: [],
+      readingSnapshot: { clientSessionIds: [], totalSeconds: 0, days: [] },
       currentEngagement: null,
       feedback: { acceptsScreenshot: true },
       featuredCatalog: { entries: [] },

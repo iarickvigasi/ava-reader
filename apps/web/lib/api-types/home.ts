@@ -12,6 +12,11 @@ export type CurrentEngagement = LibraryCardBook & {
 };
 
 export type HomePayload = {
+  readingSnapshot?: {
+    clientSessionIds: string[];
+    totalSeconds: number;
+    days: Array<{ key: string; seconds: number }>;
+  };
   completionItems?: CompletionItem[];
   collections: {
     items: Array<{

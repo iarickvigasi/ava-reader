@@ -1,6 +1,6 @@
 # Reading sessions, progress & stats
 
-> Status: shipped · Updated: 2026-09-14 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
+> Status: shipped · Updated: 2026-09-23 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
 > apps/web/features/offline/buckets/{sessions,progress}, apps/web/features/offline/stats,
 > apps/web/components/app/home/sections/mastery, apps/api/src/reader/{sessions,progress}
 
@@ -81,6 +81,16 @@ Closed unsynced sessions use the same rounded seconds and 24h cap as server repl
 from the whole-second UTC start at each midnight; daily slices sum to book and overall totals.
 Invalid or reversed local timestamps contribute no time.
 
+Home reading totals carry all-time client session IDs, exact total seconds, and recent daily
+seconds from one repeatable-read server snapshot. Home composes that snapshot with closed local
+sessions in one reactive Dexie read. A session already in the snapshot adds nothing, even before
+its upload acknowledgment is stored. Successful offline replays remain local contributions until
+the particular snapshot includes them; permanent replay rejection removes the contribution.
+Older acknowledged rows without replay metadata remain server-only. Cached home payloads without
+reading reconciliation metadata retain their server reading totals until refreshed. Reading-hour
+and daily-minute rounding happens after adding seconds. Home metadata never reconciles book-info
+against a different snapshot.
+
 ## Edge cases
 
 Offline across multiple days; multiple devices for one book; clock changes; session never stopped
@@ -89,6 +99,8 @@ Offline across multiple days; multiple devices for one book; clock changes; sess
 ## Acceptance criteria
 
 - [ ] Reading offline accrues minutes and shows on home without double-counting after sync.
+- [ ] Home counts replayed sessions once in both GET/ack orders, after lost responses, reload,
+      and stale GET arrivals; IDs older than the mastery window reconcile all-time hours too.
 - [ ] Completion % and resume position survive reload and reconnect.
 - [ ] A stale offline progress sync never rewinds a position advanced on another device
       (most-recent-reading wins); a genuine later read does win.

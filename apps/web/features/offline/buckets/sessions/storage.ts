@@ -1,20 +1,3 @@
-// Dexie I/O for reading sessions. The schema's `sessions` table already
-// matches what we need: client-generated `clientSessionId` (PK), start/end
-// timestamps, `state` ("open" | "closed"), and `syncedAt` (null until the
-// server has acked the session).
-//
-// The model:
-//   - Reader mounts → create row, state="open".
-//   - As user reads, lastHeartbeatAt is bumped (local writes only).
-//   - Tab hides / unloads / explicit close → state="closed",
-//     endedAt = lastHeartbeatAt.
-//   - Sync runner finds closed rows with syncedAt=null and posts them; on
-//     ack, syncedAt is set so they're not re-sent.
-//
-// Reading hours = sum of (endedAt - startedAt) across all synced sessions on
-// the server. Whether the session was created online or replayed from a
-// queue doesn't matter for the totals.
-
 import { getDb, type SessionRow } from "../../db";
 
 export async function createLocalSession(input: {
@@ -76,6 +59,7 @@ export async function markSessionSynced(input: {
   clientSessionId: string;
   serverSessionId: string | null;
   syncedAt: string;
+  replayStatus?: SessionRow["replayStatus"];
 }): Promise<void> {
   const db = getDb();
   const row = await db.sessions.get(input.clientSessionId);
@@ -86,6 +70,7 @@ export async function markSessionSynced(input: {
     ...row,
     serverSessionId: input.serverSessionId ?? row.serverSessionId,
     syncedAt: input.syncedAt,
+    replayStatus: input.replayStatus ?? row.replayStatus,
   });
 }
 

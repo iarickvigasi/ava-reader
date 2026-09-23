@@ -4,6 +4,9 @@ import { homeFixture } from "../buckets/home/test-fixture";
 import { useComposedMastery } from "./hooks";
 
 const clock = vi.hoisted(() => ({ todayKey: "2026-04-13" }));
+vi.mock("../buckets/home/hooks", () => ({
+  useHomeWithCache: (home: unknown) => home,
+}));
 vi.mock("./use-delta-bundle", () => ({
   useDeltaBundle: () => ({
     todayKey: clock.todayKey,
@@ -16,7 +19,10 @@ vi.mock("@/components/app/preferences/use-reading-goal", () => ({
 
 it("uses the refreshed UTC date after hydration and on subsequent refreshes", () => {
   const home = homeFixture();
-  home.mastery.days = [{ key: "2026-04-12", minutes: 20, goalMet: false }];
+  home.mastery.days = [
+    { key: "2026-04-12", minutes: 20, goalMet: false },
+    { key: "2026-04-13", minutes: 30, goalMet: true },
+  ];
   function Probe() {
     const mastery = useComposedMastery(home);
     return (

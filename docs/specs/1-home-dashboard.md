@@ -18,7 +18,8 @@ discovery. The daily entry point into the habit.
 ## Behaviour
 
 1. Home loads a cached payload (recents, featured, stats, collections) and renders offline.
-2. Stats display server baseline augmented with unsynced local session/progress deltas.
+2. Stats reconcile local sessions against the cached reading snapshot
+   (see [[6-reading-sessions-progress]]).
 3. Current-book card resumes reading at the saved position; cards link into library/reader.
 4. The collections panel lists the first six collections in the library's display order
    ([[3-library/3.1-library-screen]] §3) — the six most relevant shelves, not the six with the

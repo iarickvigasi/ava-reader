@@ -15,6 +15,8 @@ describe('home completion statistics', () => {
       { id: 'archived', finishedAt, progress: { completionPercent: 20 } },
     ]);
     const prisma = {
+      $transaction: jest.fn((reads: Promise<unknown>[]) => Promise.all(reads)),
+      readingSession: { findMany: jest.fn().mockResolvedValue([]) },
       libraryItem: { findMany },
       readingSessionSegment: {
         findMany: jest.fn().mockResolvedValue([]),

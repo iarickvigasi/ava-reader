@@ -1,7 +1,7 @@
 import { createHomeContractFixture } from './home-contract-fixture';
 
 describe('Home data loading', () => {
-  it('starts all nine initial reads before waiting for any result', async () => {
+  it('starts all ten initial reads before waiting for any result', async () => {
     const { service, prisma, findCompletionItems } =
       createHomeContractFixture();
     const reads: Array<[jest.Mock, unknown]> = [
@@ -9,6 +9,7 @@ describe('Home data loading', () => {
       [prisma.catalogEntry.findMany, []],
       [prisma.collection.findMany, []],
       [prisma.readingSessionSegment.findMany, []],
+      [prisma.readingSession.findMany, []],
       [
         prisma.readingSessionSegment.aggregate,
         { _sum: { durationSeconds: 0 } },
@@ -28,7 +29,7 @@ describe('Home data loading', () => {
     const home = service.getHome('clerk_1');
     await Promise.resolve();
 
-    expect(release).toHaveLength(9);
+    expect(release).toHaveLength(10);
     for (const resolve of release) resolve();
     await expect(home).resolves.toMatchObject({ state: 'EMPTY' });
   });

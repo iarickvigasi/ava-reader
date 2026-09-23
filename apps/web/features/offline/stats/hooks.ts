@@ -21,7 +21,8 @@ export function useComposedHomeStats(
     return null;
   }
   const deltas: HomeStatsDeltas = {
-    hoursReadingExtraSeconds: bundle.sessions.totalSeconds,
+    // readHome reconciles reading time and completion against its own snapshot.
+    hoursReadingExtraSeconds: 0,
     highlightsNet: bundle.highlightsNet,
     // readHome has already composed this count, including acknowledged edits
     // newer than its snapshot. Adding a separate pending delta would double it.
@@ -35,25 +36,29 @@ export function useComposedMastery(
   home: HomePayload | null,
 ): HomePayload["mastery"] | null {
   const bundle = useDeltaBundle();
-  const [readingGoal] = useReadingGoal(home?.mastery.dailyGoalMinutes);
-  if (!home) {
+  const effective = useHomeWithCache(home);
+  const [readingGoal] = useReadingGoal(effective?.mastery.dailyGoalMinutes);
+  if (!effective) {
     return null;
   }
   if (!bundle.todayKey) {
-    const days = home.mastery.days.map((day) => ({
+    const days = effective.mastery.days.map((day) => ({
       ...day,
       goalMet: day.minutes >= readingGoal,
     }));
     return {
-      ...home.mastery,
+      ...effective.mastery,
       days,
       dailyGoalMinutes: readingGoal,
-      remainingMinutes: Math.max(0, readingGoal - home.mastery.todayMinutes),
+      remainingMinutes: Math.max(
+        0,
+        readingGoal - effective.mastery.todayMinutes,
+      ),
     };
   }
   return composeMastery(
-    home.mastery,
-    bundle.sessions.byUtcDaySeconds,
+    effective.mastery,
+    new Map(),
     readingGoal,
     bundle.todayKey,
   );

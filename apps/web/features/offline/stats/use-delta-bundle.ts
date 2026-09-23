@@ -3,14 +3,14 @@
 // React hooks that wire the Dexie deltas (./local-deltas) through the pure
 // composers (./compose) and return UI-ready values.
 //
-// Session/highlight delta refresh:
+// Book-session/highlight delta and UTC-date refresh:
 //   - recompute on mount,
 //   - recompute on `visibilitychange → visible` (user came back from
 //     reader),
 //   - recompute every 30s while visible,
 //   - recompute on `online`.
-// Completion totals instead come from useHomeWithCache's live subscription,
-// so mark/clear and acknowledgment update them without waiting for this timer.
+// Home reading and completion totals come from the home live subscription;
+// its transactional read reconciles sessions without waiting for this timer.
 
 import { useCallback, useEffect, useState } from "react";
 

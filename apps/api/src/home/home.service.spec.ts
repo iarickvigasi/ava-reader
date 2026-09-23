@@ -1,83 +1,18 @@
-import { BookFileFormat, BookFileKind, type Prisma } from '@prisma/client';
-import { HomeService } from './home.service';
+import { BookFileFormat, BookFileKind } from '@prisma/client';
+import { createHomeContractFixture } from './home-contract-fixture';
+
+type Fixture = ReturnType<typeof createHomeContractFixture>;
 
 describe('HomeService', () => {
-  const getCurrentUserRecord = jest.fn();
-  const findCompletionItems = jest.fn<
-    Promise<unknown[]>,
-    [Prisma.LibraryItemFindManyArgs]
-  >();
-  const prisma = {
-    aiComment: {
-      count: jest.fn(),
-    },
-    annotation: {
-      count: jest.fn(),
-    },
-    catalogEntry: {
-      findMany: jest.fn(),
-    },
-    collection: {
-      findMany: jest.fn(),
-    },
-    userPreferences: {
-      findUnique: jest.fn(),
-    },
-    libraryItem: {
-      findMany: jest.fn<Promise<unknown[]>, [Prisma.LibraryItemFindManyArgs]>(),
-    },
-    readingSessionSegment: {
-      aggregate: jest.fn(),
-      findMany: jest.fn(),
-    },
-  };
-  const usersService = {
-    getCurrentUserRecord,
-  };
-  let homeService: HomeService;
-
+  let prisma: Fixture['prisma'];
+  let homeService: Fixture['service'];
+  let findCompletionItems: Fixture['findCompletionItems'];
   beforeEach(() => {
-    getCurrentUserRecord.mockReset();
-    prisma.aiComment.count.mockReset();
-    prisma.annotation.count.mockReset();
-    prisma.catalogEntry.findMany.mockReset();
-    prisma.collection.findMany.mockReset();
-    prisma.userPreferences.findUnique.mockReset();
-    prisma.libraryItem.findMany.mockReset();
-    findCompletionItems.mockReset();
-    prisma.readingSessionSegment.aggregate.mockReset();
-    prisma.readingSessionSegment.findMany.mockReset();
-
-    homeService = new HomeService(
-      {
-        ...prisma,
-        libraryItem: {
-          findMany: (args: Prisma.LibraryItemFindManyArgs) =>
-            args.select?.finishedAt
-              ? findCompletionItems(args)
-              : prisma.libraryItem.findMany(args),
-        },
-      } as never,
-      usersService as never,
-    );
-    getCurrentUserRecord.mockResolvedValue({
-      avatarUrl: null,
-      displayName: 'Reader',
-      id: 'user-1',
-      primaryEmail: 'reader@example.com',
-      role: 'USER',
-    });
-    prisma.libraryItem.findMany.mockResolvedValue([]);
-    prisma.catalogEntry.findMany.mockResolvedValue([]);
-    prisma.readingSessionSegment.findMany.mockResolvedValue([]);
-    prisma.collection.findMany.mockResolvedValue([]);
-    prisma.userPreferences.findUnique.mockResolvedValue(null);
-    prisma.readingSessionSegment.aggregate.mockResolvedValue({
-      _sum: { durationSeconds: 0 },
-    });
-    prisma.annotation.count.mockResolvedValue(0);
-    findCompletionItems.mockResolvedValue([]);
-    prisma.aiComment.count.mockResolvedValue(0);
+    ({
+      prisma,
+      service: homeService,
+      findCompletionItems,
+    } = createHomeContractFixture());
   });
 
   it('builds home mastery and stats from persisted per-user aggregates', async () => {

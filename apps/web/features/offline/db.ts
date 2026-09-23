@@ -16,6 +16,8 @@
 //   instead of corrupting data.
 
 import Dexie, { type Table } from "dexie";
+import type { SessionRow } from "./buckets/sessions/types";
+export type { SessionRow } from "./buckets/sessions/types";
 import type { MembershipMutation } from "./buckets/library/membership/types";
 import type { FinishDateMutation } from "./buckets/library/finish-date/types";
 import type { TranslationChapterRow } from "./buckets/translations/types";
@@ -189,19 +191,6 @@ export type AiCommentRow = {
 };
 
 // ----- Reading sessions + progress + stats (phase 4) -------------------------
-
-export type SessionRow = {
-  // Client-generated ULID. Stays stable across retries so the server can
-  // upsert by it (API change in phase 4).
-  clientSessionId: string;
-  serverSessionId: string | null;
-  libraryItemId: string;
-  startedAt: string;
-  endedAt: string | null;
-  lastHeartbeatAt: string;
-  state: "open" | "closed";
-  syncedAt: string | null;
-};
 
 export type ProgressRow = {
   libraryItemId: string;
