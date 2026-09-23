@@ -5,7 +5,6 @@ import { DB_NAME, __resetDbForTests, getDb } from "../db";
 import { applyHome } from "../buckets/home/storage";
 import { completion, homeFixture } from "../buckets/home/test-fixture";
 import {
-  __test,
   readHighlightCountDelta,
   readUnsyncedSessionDeltas,
   readVolumesReadDelta,
@@ -104,14 +103,6 @@ describe("readUnsyncedSessionDeltas", () => {
     expect(out.byUtcDaySeconds.get("2026-04-11")).toBe(300);
     expect(out.byUtcDaySeconds.get("2026-04-12")).toBe(1800);
   });
-
-  it("toUtcDayKey formats YYYY-MM-DD in UTC", () => {
-    expect(__test.toUtcDayKey("2026-04-12T23:59:59.000Z")).toBe("2026-04-12");
-    expect(__test.toUtcDayKey("2026-04-12T00:00:00.000Z")).toBe("2026-04-12");
-    expect(__test.toUtcDayKey("2026-04-12T15:30:00-08:00")).toBe(
-      "2026-04-12",
-    );
-  });
 });
 
 describe("readHighlightCountDelta", () => {
@@ -203,7 +194,11 @@ describe("readVolumesReadDelta", () => {
   it("counts the change against the full home snapshot without duplicating an existing completion", async () => {
     const db = getDb();
     const home = homeFixture();
-    home.completionItems = [completion("lib-1", 20), completion("lib-2", 100), completion("lib-3", 73)];
+    home.completionItems = [
+      completion("lib-1", 20),
+      completion("lib-2", 100),
+      completion("lib-3", 73),
+    ];
     home.stats.volumesRead = 1;
     await applyHome(home);
     await db.progress.bulkPut([
@@ -247,8 +242,13 @@ describe("readVolumesReadDelta", () => {
     delete home.completionItems;
     await applyHome(home);
     await getDb().progress.put({
-      libraryItemId: "lib-1", locator: null, completionPercent: 100, dirty: true,
-      lastReadAt: null, lastLocalUpdateAt: "2026-09-14T00:00:00Z", lastServerUpdateAt: null,
+      libraryItemId: "lib-1",
+      locator: null,
+      completionPercent: 100,
+      dirty: true,
+      lastReadAt: null,
+      lastLocalUpdateAt: "2026-09-14T00:00:00Z",
+      lastServerUpdateAt: null,
     });
     expect(await readVolumesReadDelta()).toBe(0);
   });

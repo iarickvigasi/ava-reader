@@ -5,15 +5,18 @@
 > apps/web/components/app/home/sections/mastery, apps/api/src/reader/{sessions,progress}
 
 ## Summary
+
 Tracks reading position, time read, and reading streak/goal — fully offline — and composes the stats
 shown on home. Serves the "track time spent/remaining, build a habit" job.
 
 ## Scope
+
 - In: session start/heartbeat/stop, current locator + completion %, minutes read, daily-goal mastery
   chart, server-baseline + local-delta stats.
 - Non-goals: reading diary/reflection (future), social comparison.
 
 ## Behaviour
+
 1. Opening a book starts a session; heartbeats accrue while reading; closing stops it.
 2. Sessions are **multi-device**: each client sends a `clientInstanceId` and is tracked as a session
    participant. Time accrues only while at least one participant is live (none seen for 90s → marked
@@ -24,6 +27,7 @@ shown on home. Serves the "track time spent/remaining, build a habit" job.
    offline.
 
 ## Data & sync
+
 sessions bucket (clientSessionId ULID, per-day segments) and progress bucket; both flush
 idempotently. Reading-time and highlight stats add unsynced local deltas to their server baseline.
 
@@ -73,21 +77,30 @@ so a retried replay returns the existing row unchanged rather than reopening or 
 Timestamps are validated (invalid date or `endedAt < startedAt` → 400); an over-long span is clamped
 to 24h and logged. This path never routes through the live `start` action.
 
+Closed unsynced sessions use the same rounded seconds and 24h cap as server replay. Split
+from the whole-second UTC start at each midnight; daily slices sum to book and overall totals.
+Invalid or reversed local timestamps contribute no time.
+
 ## Edge cases
+
 Offline across multiple days; multiple devices for one book; clock changes; session never stopped
 (crash) → heartbeat bounds it.
 
 ## Acceptance criteria
+
 - [ ] Reading offline accrues minutes and shows on home without double-counting after sync.
 - [ ] Completion % and resume position survive reload and reconnect.
 - [ ] A stale offline progress sync never rewinds a position advanced on another device
-  (most-recent-reading wins); a genuine later read does win.
+      (most-recent-reading wins); a genuine later read does win.
 - [ ] Daily mastery chart reflects per-day minutes against the goal.
+- [ ] A 23:40–00:30 UTC offline session credits 20 minutes then 30 minutes, unchanged after
+      the split server baseline replaces its local delta.
 - [ ] Home's Books Read includes dated books or books at 100%, each once, including uncached and
-  archived books. Clearing a date at 100% keeps the book counted.
+      archived books. Clearing a date at 100% keeps the book counted.
 - [ ] Pending additions/removals update counts immediately and survive queue acknowledgment,
-  reload, and stale aggregate responses without duplicate or disappearing adjustments.
+      reload, and stale aggregate responses without duplicate or disappearing adjustments.
 
 ## Open questions
+
 Time-remaining estimate model; merging sessions started independently on two offline devices (the
 participant mechanism above only reconciles clients that reach the same session row).

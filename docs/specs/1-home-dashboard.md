@@ -4,16 +4,19 @@
 > apps/web/components/app/home, apps/web/features/offline/buckets/home
 
 ## Summary
+
 The signed-in landing page: continue reading, reading stats, daily goal, recent annotations, and
 discovery. The daily entry point into the habit.
 
 ## Scope
+
 - In: current-book resume card, stats (hours, highlights, volumes) with local deltas, daily mastery
   chart, recent annotations, featured/collections panels — offline-capable; a Now Listening
   placeholder module (static transport, no audio).
 - Non-goals: full discovery engine (explore — future), insights analytics page (future).
 
 ## Behaviour
+
 1. Home loads a cached payload (recents, featured, stats, collections) and renders offline.
 2. Stats display server baseline augmented with unsynced local session/progress deltas.
 3. Current-book card resumes reading at the saved position; cards link into library/reader.
@@ -45,16 +48,23 @@ discovery. The daily entry point into the habit.
 9. Daily mastery uses the user's saved reading goal (60 minutes when unset). Local goal edits
    immediately update remaining minutes, the chart scale, and completion for all displayed days,
    including days without new reading activity. Reading minutes are preserved.
+10. After hydration, mastery shows seven UTC dates ending today, retaining matching cached days
+    and adding unsynced reading per date. New dates show locally known activity until refresh.
+    The existing 30-second stats refresh and tab-resume refresh advance stale windows.
+    Initial rendering retains the cached window to keep server/client hydration consistent.
 
 ## Data & sync
+
 home bucket (single payload row keyed to the user); composed with stats deltas. Service worker
 serves the shell; client hydrates from the cached row.
 
 ## Edge cases
+
 Cold start offline (no cached payload) → minimal shell; stale payload + fresh local deltas; no
 current book.
 
 ## Acceptance criteria
+
 - [ ] Home renders offline from the cached payload.
 - [ ] Stats reflect local deltas without double-counting after sync.
 - [ ] Mastery uses the saved goal on first load and responds to local goal edits while offline.
@@ -72,6 +82,7 @@ current book.
       at any phone width; from `md` the layout is unchanged.
 
 ## Known gaps
+
 - A title long enough to overrun its column falls back to a mid-word break with no hyphen where the
   browser ships no hyphenation dictionary (embedded Chromium; iOS Safari hyphenates). Past five
   lines it truncates — `line-clamp-5`.
@@ -80,4 +91,5 @@ current book.
   revalidation refreshes the home bucket.
 
 ## Open questions
+
 Personalized recommendations source; insights page scope.

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { HomePayload } from "@/lib/api-types";
 
@@ -72,9 +72,17 @@ describe("composeHomeStats", () => {
   });
 
   it("subtracts removed completions and clamps the total at zero", () => {
-    const deltas = { hoursReadingExtraSeconds: 0, highlightsNet: 0, aiCommentsNet: 0, volumesReadDelta: -1 };
+    const deltas = {
+      hoursReadingExtraSeconds: 0,
+      highlightsNet: 0,
+      aiCommentsNet: 0,
+      volumesReadDelta: -1,
+    };
     expect(composeHomeStats(baselineStats, deltas).volumesRead).toBe(2);
-    expect(composeHomeStats(baselineStats, { ...deltas, volumesReadDelta: -10 }).volumesRead).toBe(0);
+    expect(
+      composeHomeStats(baselineStats, { ...deltas, volumesReadDelta: -10 })
+        .volumesRead,
+    ).toBe(0);
   });
 
   it("applies highlights net (positive and negative)", () => {
@@ -120,6 +128,11 @@ describe("composeHomeStats", () => {
 });
 
 describe("composeMastery", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-04-12T12:00:00Z"));
+  });
+  afterEach(() => vi.useRealTimers());
   it("adds minutes only to days present in the baseline window", () => {
     const out = composeMastery(
       baselineMastery,
@@ -159,7 +172,9 @@ describe("composeMastery", () => {
       new Map([["2026-04-08", 30]]), // 30 sec → 0 minute delta
     );
     const day = out.days.find((d) => d.key === "2026-04-08");
-    expect(day).toEqual(baselineMastery.days.find((d) => d.key === "2026-04-08"));
+    expect(day).toEqual(
+      baselineMastery.days.find((d) => d.key === "2026-04-08"),
+    );
   });
 
   it("returns the baseline unchanged when the delta map is empty", () => {
@@ -179,7 +194,13 @@ describe("composeMastery", () => {
       baselineMastery.days.map((day) => day.minutes),
     );
     expect(out.days.map((day) => day.goalMet)).toEqual([
-      false, true, true, false, false, true, true,
+      false,
+      true,
+      true,
+      false,
+      false,
+      true,
+      true,
     ]);
     expect(baselineMastery.days.at(-1)?.goalMet).toBe(false);
   });
@@ -214,7 +235,13 @@ describe("composeMastery", () => {
       0, 70, 20, 0, 30, 30, 35,
     ]);
     expect(out.days.map((day) => day.goalMet)).toEqual([
-      false, true, false, false, true, true, true,
+      false,
+      true,
+      false,
+      false,
+      true,
+      true,
+      true,
     ]);
   });
 });

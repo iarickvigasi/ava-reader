@@ -8,8 +8,6 @@
 
 import type { HomePayload } from "@/lib/api-types";
 
-import type { UnsyncedSessionDeltas } from "./local-deltas";
-
 export type HomeStatsDeltas = {
   hoursReadingExtraSeconds: number;
   highlightsNet: number;
@@ -41,48 +39,7 @@ export function composeHomeStats(
   };
 }
 
-// Augments mastery daily bars with unsynced session minutes. Only days
-// that already exist in the server's `mastery.days` window are touched —
-// if the cached payload is from a previous week, we don't fabricate new
-// buckets. The current reading goal applies to every displayed day, including
-// days without local reading, so preference edits update the goal-bar UI.
-export function composeMastery(
-  baseline: HomePayload["mastery"],
-  byUtcDaySeconds: UnsyncedSessionDeltas["byUtcDaySeconds"],
-  dailyGoalMinutes = baseline.dailyGoalMinutes,
-): HomePayload["mastery"] {
-  // Each day's `minutes` is server-floored from seconds. We add
-  // floor(localSeconds / 60). Mismatch is bounded by 1 minute per day
-  // worst case, which is below human perception for these bars.
-  const days = baseline.days.map((day) => {
-    const extraSeconds = byUtcDaySeconds.get(day.key) ?? 0;
-    const extraMinutes = Math.floor(Math.max(0, extraSeconds) / 60);
-    const minutes = day.minutes + extraMinutes;
-    const goalMet = minutes >= dailyGoalMinutes;
-    if (extraMinutes === 0 && goalMet === day.goalMet) {
-      return day;
-    }
-    return {
-      ...day,
-      minutes,
-      goalMet,
-    };
-  });
-
-  const todayMinutes = days.at(-1)?.minutes ?? 0;
-  const remainingMinutes = Math.max(
-    0,
-    dailyGoalMinutes - todayMinutes,
-  );
-
-  return {
-    ...baseline,
-    dailyGoalMinutes,
-    days,
-    todayMinutes,
-    remainingMinutes,
-  };
-}
+export { composeMastery } from "./compose-mastery";
 
 // Augments the per-book reading time on book-info. `baselineMinutes` is
 // the server-confirmed minutes-read for the book; we add the user's
