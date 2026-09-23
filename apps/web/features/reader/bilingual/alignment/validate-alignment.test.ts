@@ -21,6 +21,30 @@ describe("alignment cache validation", () => {
       isSentenceAlignment({ ...map, version: 2 }, "miss you", "tu me manques"),
     ).toBe(false);
   });
+  it("rejects malformed cached groups and spans", () => {
+    for (const group of [
+      null,
+      "invalid",
+      { ...map.groups[0], id: 123 },
+      { ...map.groups[0], source: [null] },
+      { ...map.groups[0], source: [{ start: "0", end: 8 }] },
+    ]) {
+      expect(
+        isSentenceAlignment(
+          { ...map, groups: [group] },
+          map.sourceText,
+          map.translatedText,
+        ),
+      ).toBe(false);
+    }
+    expect(
+      isSentenceAlignment(
+        { ...map, translatedText: undefined },
+        map.sourceText,
+        undefined,
+      ),
+    ).toBe(false);
+  });
   it("rejects invalid ranges and overlapping groups", () => {
     expect(
       isSentenceAlignment(

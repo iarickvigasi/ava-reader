@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { TRANSLATE_LANGUAGES } from "@/components/app/preferences/translate-languages";
+import { FieldRow, SelectField } from "../../preferences/preferences-fields";
 import { languageCode } from "./translation-language";
 import {
   ReaderTranslationIcon,
@@ -44,6 +45,7 @@ export function TranslateToolItem({
   saved,
 }: TranslateToolItemProps) {
   const t = useTranslations("reader.aiTools");
+  const preferences = useTranslations("preferences");
   const sameLanguage =
     !!sourceLanguage && languageCode(sourceLanguage) === languageCode(language);
   const payload = useMemo<AiToolPayload | null>(
@@ -71,40 +73,38 @@ export function TranslateToolItem({
     });
 
   return (
-    <ToolSection
-      icon={<ReaderTranslationIcon className="size-4" />}
-      label={label}
-      isExpanded={isOpen}
-      onToggle={onToggle}
-    >
-      <div className="flex flex-col gap-2">
-        {onLanguageChange ? (
-          <select
-            aria-label={t("targetLanguage")}
+    <div className="flex flex-col gap-2">
+      {onLanguageChange ? (
+        <FieldRow label={preferences("translate.label")}>
+          <SelectField
+            ariaLabel={preferences("translate.ariaLabel")}
             value={language}
-            onChange={(event) => onLanguageChange(event.target.value)}
-            className="rounded-control border border-ink/15 bg-paper p-2 text-sm text-ink"
-          >
-            <option value="">{t("chooseLanguage")}</option>
-            {language &&
-              !TRANSLATE_LANGUAGES.some(
-                (option) => option.value === language,
-              ) && <option value={language}>{language}</option>}
-            {TRANSLATE_LANGUAGES.filter(
-              (option) =>
-                !sourceLanguage ||
-                languageCode(option.value) !== languageCode(sourceLanguage),
-            ).map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        ) : (
-          <p className="font-ui text-[0.78rem] uppercase tracking-[0.14em] text-ink/70">
-            {language}
-          </p>
-        )}
+            onChange={onLanguageChange}
+            options={[
+              { value: "", label: t("chooseLanguage") },
+              ...(language &&
+              !TRANSLATE_LANGUAGES.some((option) => option.value === language)
+                ? [{ value: language, label: language }]
+                : []),
+              ...TRANSLATE_LANGUAGES.filter(
+                (option) =>
+                  !sourceLanguage ||
+                  languageCode(option.value) !== languageCode(sourceLanguage),
+              ),
+            ]}
+          />
+        </FieldRow>
+      ) : (
+        <p className="font-ui text-[0.78rem] uppercase tracking-[0.14em] text-ink/70">
+          {language}
+        </p>
+      )}
+      <ToolSection
+        icon={<ReaderTranslationIcon className="size-4" />}
+        label={label}
+        isExpanded={isOpen}
+        onToggle={onToggle}
+      >
         <div className="flex items-start gap-3">
           <button
             type="button"
@@ -124,7 +124,7 @@ export function TranslateToolItem({
             />
           </div>
         </div>
-      </div>
-    </ToolSection>
+      </ToolSection>
+    </div>
   );
 }

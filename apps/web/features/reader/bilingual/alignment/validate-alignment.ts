@@ -27,8 +27,9 @@ export function isSentenceAlignment(
   translatedText: string | undefined,
 ): value is SentenceAlignment {
   if (!value || typeof value !== "object") return false;
-  const map = value as SentenceAlignment;
+  const map = value as Record<string, unknown>;
   if (
+    typeof translatedText !== "string" ||
     map.version !== 1 ||
     map.sourceText !== sourceText ||
     map.translatedText !== translatedText ||
@@ -40,17 +41,21 @@ export function isSentenceAlignment(
     source: [] as { start: number; end: number }[],
     translation: [] as { start: number; end: number }[],
   };
-  for (const group of map.groups) {
-    if (!group || typeof group.id !== "string" || ids.has(group.id))
-      return false;
+  for (const value of map.groups as unknown[]) {
+    if (!value || typeof value !== "object") return false;
+    const group = value as Record<string, unknown>;
+    if (typeof group.id !== "string" || ids.has(group.id)) return false;
     ids.add(group.id);
     for (const side of ["source", "translation"] as const) {
       const spans = group[side];
-      const text = side === "source" ? sourceText : translatedText!;
+      const text = side === "source" ? sourceText : translatedText;
       if (!Array.isArray(spans) || !spans.length) return false;
-      for (const span of spans) {
+      for (const value of spans as unknown[]) {
+        if (!value || typeof value !== "object") return false;
+        const span = value as Record<string, unknown>;
         if (
-          !span ||
+          typeof span.start !== "number" ||
+          typeof span.end !== "number" ||
           !Number.isInteger(span.start) ||
           !Number.isInteger(span.end) ||
           span.start < 0 ||
@@ -58,18 +63,19 @@ export function isSentenceAlignment(
           span.end > text.length
         )
           return false;
+        const { start, end } = span;
         // Do not split a surrogate pair, even if malformed cache data asks us to.
-        for (const offset of [span.start, span.end]) {
+        for (const offset of [start, end]) {
           const code = text.charCodeAt(offset);
           if (code >= 0xdc00 && code <= 0xdfff) return false;
         }
         if (
           occupied[side].some(
-            (other) => span.start < other.end && span.end > other.start,
+            (other) => start < other.end && end > other.start,
           )
         )
           return false;
-        occupied[side].push(span);
+        occupied[side].push({ start, end });
       }
     }
   }

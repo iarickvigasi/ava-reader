@@ -68,9 +68,10 @@ export function AiToolsSection({
         label={t("translate")}
         language={language}
         sourceLanguage={selectedLocator?.translation?.targetLang ?? null}
-        onLanguageChange={(language) =>
-          setChoice({ key: request.locator, language })
-        }
+        onLanguageChange={(language) => {
+          if (openTools.has("translate")) toggle("translate");
+          setChoice({ key: request.locator, language });
+        }}
         isOpen={openTools.has("translate")}
         onToggle={() => toggle("translate")}
         saved={savedComments.translate}

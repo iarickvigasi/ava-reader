@@ -69,6 +69,16 @@ export async function readAlignments(
   );
 }
 
+function indexAlignmentOutputs<T extends { id: string }>(
+  sentences: T[],
+  expectedCount: number,
+): Map<string, T> {
+  const outputs = new Map(sentences.map((row) => [row.id, row]));
+  if (outputs.size !== expectedCount || sentences.length !== expectedCount)
+    throw new Error('Alignment sentence IDs did not match.');
+  return outputs;
+}
+
 export async function generateAlignments(
   args: Args & {
     openrouter: OpenRouterClient;
@@ -112,14 +122,10 @@ export async function generateAlignments(
       maxRetries: 0,
       maxOutputTokens: 16_000,
     });
-    const outputs = new Map(
-      result.object.sentences.map((row) => [row.id, row]),
+    const outputs = indexAlignmentOutputs(
+      result.object.sentences,
+      inputs.length,
     );
-    if (
-      outputs.size !== inputs.length ||
-      result.object.sentences.length !== inputs.length
-    )
-      throw new Error('Alignment sentence IDs did not match.');
     const resolved = inputs.map((row) => {
       const output = outputs.get(row.sentenceId);
       if (!output) throw new Error('Missing alignment sentence.');
