@@ -23,6 +23,50 @@ afterEach(() => {
 });
 
 describe("library writes", () => {
+  it.each([4, 8])("shows a new import after refreshing a cached %i-book shelf", async (count) => {
+    const base = payload();
+    const shelf = { ...base.collections[0], kind: "SMART" as const, smartKey: "imported-library" };
+    const books = Array.from({ length: count }, (_, index) => ({
+      ...shelf.books[0], libraryItemId: `old-${index}`, slug: `old-${index}`,
+    }));
+    await applyCollectionPayload({ ...shelf, itemCount: count, books });
+    await getDb().libraryItems.update("old-0", { savedOffline: true });
+    const imported = { ...books[0], libraryItemId: "new-import", slug: "new-import" };
+    const refreshed = {
+      ...base,
+      summary: { booksCount: count + 1, collectionsCount: 1 },
+      collections: [{ ...shelf, itemCount: count + 1, books: [imported, ...books.slice(0, 3)] }],
+    };
+
+    await applyLibraryPayload(refreshed);
+    await applyLibraryPayload(refreshed);
+
+    const view = await readLibraryView();
+    expect(view?.summary.booksCount).toBe(count + 1);
+    expect(view?.collections[0].books.map((book) => book.libraryItemId)).toEqual([
+      "new-import", ...books.map((book) => book.libraryItemId),
+    ]);
+    expect((await getDb().libraryItems.get("old-0"))?.savedOffline).toBe(true);
+    expect((await readCollectionViewBySlug(shelf.slug))?.books).toHaveLength(count + 1);
+  });
+
+  it("refreshes preview order while retaining the cached tail without duplicates", async () => {
+    const base = payload();
+    const shelf = base.collections[0];
+    const books = Array.from({ length: 6 }, (_, index) => ({
+      ...shelf.books[0], libraryItemId: `book-${index}`, slug: `book-${index}`,
+    }));
+    // Seed from a partial preview, rather than a full collection response.
+    await applyLibraryPayload({ ...base, collections: [{ ...shelf, itemCount: 6, books: books.slice(0, 4) }] });
+    await applyLibraryPayload({
+      ...base,
+      collections: [{ ...shelf, itemCount: 6, books: [books[4], books[2], books[1], books[0]] }],
+    });
+    expect((await readLibraryView())?.collections[0].books.map((book) => book.libraryItemId)).toEqual([
+      "book-4", "book-2", "book-1", "book-0", "book-3",
+    ]);
+  });
+
   it("preserves savedOffline across a re-hydration", async () => {
     await applyLibraryPayload(payload());
     const db = getDb();

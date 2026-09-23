@@ -10,8 +10,9 @@ import { getDb, type CollectionMembershipRow } from "../../../db";
 
 // Membership for the collections a list payload names. A collection is only
 // replaced when its preview *is* the whole shelf (`books.length >= itemCount`);
-// otherwise the rows are seeded once and then left alone, because preview
-// orders (0…3 by engagement) would overwrite the real order with a partial one.
+// otherwise the latest preview leads and the remaining cached members keep
+// their relative order. A partial preview cannot remove unseen members, but
+// must still introduce newly imported books and update the leading order.
 export async function replacePreviewMembershipTx(
   payload: LibraryPayload,
   memberships: CollectionMembershipRow[],
@@ -19,16 +20,19 @@ export async function replacePreviewMembershipTx(
   const db = getDb();
   const byCollection = groupMembershipByCollection(memberships);
   for (const collection of payload.collections) {
-    const links = byCollection.get(collection.id) ?? [];
+    let links = byCollection.get(collection.id) ?? [];
     const complete = collection.books.length >= collection.itemCount;
     if (!complete) {
       const cached = await db.collectionMembership
         .where("collectionId")
         .equals(collection.id)
-        .count();
-      if (cached > 0) {
-        continue;
-      }
+        .toArray();
+      const previewIds = new Set(links.map((link) => link.libraryItemId));
+      links = [
+        ...links,
+        ...cached.sort((a, b) => a.order - b.order)
+          .filter((link) => !previewIds.has(link.libraryItemId)),
+      ].map((link, order) => ({ ...link, order }));
     }
     await db.collectionMembership
       .where("collectionId")
