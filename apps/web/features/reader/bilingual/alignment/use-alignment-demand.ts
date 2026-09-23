@@ -10,10 +10,19 @@ export function useAlignmentDemand(
   enabled: boolean,
 ) {
   const [failure, setFailure] = useState<{
-    key: string;
+    identity: string;
+    ids: string[];
     message: string;
   } | null>(null);
   const [attempt, setAttempt] = useState(0);
+  const identity = JSON.stringify([
+    chapter?.libraryItemId,
+    chapter?.chapterId,
+    chapter?.contentRevision,
+    chapter?.translationVersion,
+    chapter?.targetLang,
+  ]);
+  const failedIds = failure?.identity === identity ? failure.ids : [];
   const maps = chapter ? validAlignments(chapter.alignments, chapter) : {};
   const last = visibleIndexes.at(-1) ?? -1;
   const candidates = [
@@ -29,7 +38,8 @@ export function useAlignmentDemand(
             !unit ||
             unit.kind !== "sentence" ||
             !chapter.translations[unit.id] ||
-            maps[unit.id]
+            maps[unit.id] ||
+            failedIds.includes(unit.id)
           )
             return [];
           chars += unit.text.length + chapter.translations[unit.id].length;
@@ -37,13 +47,7 @@ export function useAlignmentDemand(
         })
         .slice(0, 8)
     : [];
-  const key = JSON.stringify([
-    chapter?.libraryItemId,
-    chapter?.chapterId,
-    chapter?.contentRevision,
-    chapter?.targetLang,
-    ids,
-  ]);
+  const key = JSON.stringify([identity, ids]);
   const latest = useRef({ chapter, ids });
   useEffect(() => {
     latest.current = { chapter, ids };
@@ -58,17 +62,30 @@ export function useAlignmentDemand(
       controller.signal,
     ).catch((error: unknown) => {
       if (!controller.signal.aborted)
-        setFailure({
-          key,
+        setFailure((previous) => ({
+          identity,
+          ids: [
+            ...new Set([
+              ...(previous?.identity === identity ? previous.ids : []),
+              ...ids,
+            ]),
+          ],
           message:
             error instanceof Error ? error.message : "Phrase matching failed.",
-        });
+        }));
     });
     return () => controller.abort();
-  }, [enabled, key, attempt]);
+  }, [enabled, key, identity, attempt]);
   const retry = useCallback(() => {
     setFailure(null);
     setAttempt((value) => value + 1);
   }, []);
-  return { error: failure?.key === key ? failure.message : null, retry };
+  const hasVisibleFailure = visibleIndexes.some((index) => {
+    const id = chapter?.units[index]?.id;
+    return id && failedIds.includes(id) && !maps[id];
+  });
+  return {
+    error: hasVisibleFailure ? (failure?.message ?? null) : null,
+    retry,
+  };
 }

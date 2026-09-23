@@ -330,6 +330,7 @@
       "loading": "Wird übersetzt",
       "offline": "Zum Übersetzen dieser Seite verbinden",
       "failed": "Übersetzung nicht verfügbar",
+      "alignmentFailed": "Einige Wortgruppen-Zuordnungen sind nicht verfügbar",
       "retry": "Erneut versuchen",
       "previous": "Vorherige Seite",
       "next": "Nächste Seite",

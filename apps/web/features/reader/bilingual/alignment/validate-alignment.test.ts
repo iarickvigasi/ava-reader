@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { isSentenceAlignment } from "./validate-alignment";
 
 const map = {
-  version: 1,
+  version: 2,
   sourceText: "miss you",
   translatedText: "tu me manques",
   groups: [
@@ -18,7 +18,7 @@ describe("alignment cache validation", () => {
     expect(isSentenceAlignment(map, "miss you", "tu me manques")).toBe(true);
     expect(isSentenceAlignment(map, "miss you", "vous me manquez")).toBe(false);
     expect(
-      isSentenceAlignment({ ...map, version: 2 }, "miss you", "tu me manques"),
+      isSentenceAlignment({ ...map, version: 1 }, "miss you", "tu me manques"),
     ).toBe(false);
   });
   it("rejects malformed cached groups and spans", () => {

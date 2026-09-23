@@ -18,7 +18,7 @@ import {
 translationTestLifecycle();
 const saved = { ...chapter, translations: { s0: "Primera frase." } };
 const alignment: SentenceAlignment = {
-  version: 1,
+  version: 2,
   sourceText: chapter.units[0].text,
   translatedText: saved.translations.s0,
   groups: [
@@ -56,14 +56,12 @@ describe("alignment enrichment", () => {
     const bucket = await validatedBucket(saved);
     vi.stubGlobal(
       "fetch",
-      vi
-        .fn()
-        .mockResolvedValue(
-          Response.json({
-            ...chapter,
-            alignments: { s0: { ...alignment, translatedText: "Changed" } },
-          }),
-        ),
+      vi.fn().mockResolvedValue(
+        Response.json({
+          ...chapter,
+          alignments: { s0: { ...alignment, translatedText: "Changed" } },
+        }),
+      ),
     );
     await expect(
       ensureSentenceAlignments(saved, ["s0"], signal()),
@@ -71,6 +69,40 @@ describe("alignment enrichment", () => {
     expect(bucket.snapshot.status).toBe("ready");
     expect(bucket.snapshot.chapter?.translations).toEqual(saved.translations);
     expect(bucket.snapshot.chapter?.alignments).toBeUndefined();
+  });
+
+  it("keeps partial alignments and requests only missing sentences on retry", async () => {
+    const two = {
+      ...saved,
+      translations: { ...saved.translations, s1: "Segunda frase." },
+    };
+    const bucket = await validatedBucket(two);
+    const second = {
+      ...alignment,
+      sourceText: chapter.units[1].text,
+      translatedText: two.translations.s1,
+    };
+    const fetcher = vi
+      .fn()
+      .mockResolvedValueOnce(
+        Response.json({ ...chapter, alignments: { s0: alignment } }),
+      )
+      .mockResolvedValueOnce(
+        Response.json({ ...chapter, alignments: { s1: second } }),
+      );
+    vi.stubGlobal("fetch", fetcher);
+    await expect(
+      ensureSentenceAlignments(two, ["s0", "s1"], signal()),
+    ).rejects.toThrow("incomplete");
+    expect(bucket.snapshot.chapter?.alignments?.s0).toEqual(alignment);
+    await ensureSentenceAlignments(two, ["s0", "s1"], signal());
+    expect(JSON.parse(fetcher.mock.calls[1][1].body).sentenceIds).toEqual([
+      "s1",
+    ]);
+    expect(bucket.snapshot.chapter?.alignments).toEqual({
+      s0: alignment,
+      s1: second,
+    });
   });
 
   it("invalidates stale maps when a persisted translation changes", async () => {

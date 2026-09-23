@@ -3,11 +3,13 @@ import { Button } from "@/components/ui/button";
 
 export function BilingualStatus({
   error,
+  alignmentFailed = false,
   offline,
   pending,
   retry,
 }: {
   error: string | null;
+  alignmentFailed?: boolean;
   offline: boolean;
   pending: boolean;
   retry: () => void;
@@ -26,7 +28,11 @@ export function BilingualStatus({
       role="status"
     >
       <span className="truncate" title={error ?? undefined}>
-        {offline ? t("offline") : error ? t("failed") : t("loading")}
+        {offline
+          ? t("offline")
+          : error
+            ? t(alignmentFailed ? "alignmentFailed" : "failed")
+            : t("loading")}
       </span>
       {error && !offline ? (
         <Button

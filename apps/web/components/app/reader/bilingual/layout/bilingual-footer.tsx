@@ -8,6 +8,7 @@ export function BilingualFooter({
   pageIndex,
   completionPercent,
   error,
+  alignmentFailed = false,
   offline,
   pending,
   retry,
@@ -19,6 +20,7 @@ export function BilingualFooter({
   pageIndex: number;
   completionPercent: number;
   error: string | null;
+  alignmentFailed?: boolean;
   offline: boolean;
   pending: boolean;
   retry: () => void;
@@ -41,6 +43,7 @@ export function BilingualFooter({
     >
       <BilingualStatus
         error={error}
+        alignmentFailed={alignmentFailed}
         offline={offline}
         pending={pending}
         retry={retry}

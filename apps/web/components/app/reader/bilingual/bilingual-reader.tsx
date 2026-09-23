@@ -32,6 +32,7 @@ export function BilingualReader(props: ReadyReaderProps) {
     selection,
     offline,
     error,
+    alignmentFailed,
     pending,
     retry,
     disabled,
@@ -98,6 +99,7 @@ export function BilingualReader(props: ReadyReaderProps) {
           pageIndex={pageIndex}
           completionPercent={props.payload.progress.completionPercent}
           error={error}
+          alignmentFailed={alignmentFailed}
           offline={offline}
           pending={pending}
           retry={retry}

@@ -105,6 +105,7 @@ export function useBilingualReader(props: ReadyReaderProps) {
     offline: !demand.available,
     error:
       (pending ? (cache.error ?? demand.error) : null) ?? alignmentDemand.error,
+    alignmentFailed: !pending && !!alignmentDemand.error,
     retry: () => {
       cache.retry();
       demand.retry();

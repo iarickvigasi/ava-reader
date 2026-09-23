@@ -330,6 +330,7 @@
       "loading": "Traduciendo",
       "offline": "Conéctate para traducir esta página",
       "failed": "Traducción no disponible",
+      "alignmentFailed": "Algunas correspondencias de frases no están disponibles",
       "retry": "Reintentar",
       "previous": "Página anterior",
       "next": "Página siguiente",

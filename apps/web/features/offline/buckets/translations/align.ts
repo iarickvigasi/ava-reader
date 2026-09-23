@@ -53,18 +53,19 @@ export async function ensureSentenceAlignments(
     if (!response || !sameTranslationIdentity(response, current))
       throw new Error("Phrase matching did not match this chapter.");
     const alignments = validAlignments(response.alignments, current);
-    if (missing.some((id) => !alignments[id]))
-      throw new Error("Phrase matching is incomplete. Please retry.");
     const latest = bucket.snapshot.chapter;
     if (
       isCurrentTranslationBucket(bucket) &&
       latest &&
-      sameTranslationIdentity(latest, current)
+      sameTranslationIdentity(latest, current) &&
+      Object.keys(alignments).length > 0
     )
       applyTranslationChapter(bucket, {
         ...latest,
         alignments: { ...latest.alignments, ...alignments },
       });
+    if (missing.some((id) => !alignments[id]))
+      throw new Error("Phrase matching is incomplete. Please retry.");
   })().finally(() => {
     signal.removeEventListener("abort", abort);
     if (bucket.alignmentRun === run) bucket.alignmentRun = null;

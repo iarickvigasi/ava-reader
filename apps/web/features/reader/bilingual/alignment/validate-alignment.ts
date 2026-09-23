@@ -30,7 +30,7 @@ export function isSentenceAlignment(
   const map = value as Record<string, unknown>;
   if (
     typeof translatedText !== "string" ||
-    map.version !== 1 ||
+    map.version !== 2 ||
     map.sourceText !== sourceText ||
     map.translatedText !== translatedText ||
     !Array.isArray(map.groups)
