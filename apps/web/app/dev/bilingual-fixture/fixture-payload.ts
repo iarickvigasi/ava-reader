@@ -86,7 +86,7 @@ export function fixtureTranslation(targetLang: string): BilingualChapter {
         .map((unit) => [
           unit.id,
           {
-            version: 2,
+            version: 3,
             sourceText: unit.text,
             translatedText: translatedText(unit),
             groups:

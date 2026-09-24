@@ -10,7 +10,7 @@ import {
 
 translationTestLifecycle();
 const map = (index: number): SentenceAlignment => ({
-  version: 2,
+  version: 3,
   sourceText: chapter.units[index].text,
   translatedText: "Old",
   groups: [

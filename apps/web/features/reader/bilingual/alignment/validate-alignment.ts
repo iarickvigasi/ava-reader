@@ -30,7 +30,7 @@ export function isSentenceAlignment(
   const map = value as Record<string, unknown>;
   if (
     typeof translatedText !== "string" ||
-    map.version !== 2 ||
+    map.version !== 3 ||
     map.sourceText !== sourceText ||
     map.translatedText !== translatedText ||
     !Array.isArray(map.groups)
@@ -50,6 +50,7 @@ export function isSentenceAlignment(
       const spans = group[side];
       const text = side === "source" ? sourceText : translatedText;
       if (!Array.isArray(spans) || !spans.length) return false;
+      let meaningful = false;
       for (const value of spans as unknown[]) {
         if (!value || typeof value !== "object") return false;
         const span = value as Record<string, unknown>;
@@ -64,19 +65,19 @@ export function isSentenceAlignment(
         )
           return false;
         const { start, end } = span;
+        meaningful ||= /[\p{L}\p{N}\p{S}]/u.test(text.slice(start, end));
         // Do not split a surrogate pair, even if malformed cache data asks us to.
         for (const offset of [start, end]) {
           const code = text.charCodeAt(offset);
           if (code >= 0xdc00 && code <= 0xdfff) return false;
         }
         if (
-          occupied[side].some(
-            (other) => start < other.end && end > other.start,
-          )
+          occupied[side].some((other) => start < other.end && end > other.start)
         )
           return false;
         occupied[side].push({ start, end });
       }
+      if (!meaningful) return false;
     }
   }
   return true;

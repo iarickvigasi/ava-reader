@@ -18,7 +18,7 @@ import {
 translationTestLifecycle();
 const saved = { ...chapter, translations: { s0: "Primera frase." } };
 const alignment: SentenceAlignment = {
-  version: 2,
+  version: 3,
   sourceText: chapter.units[0].text,
   translatedText: saved.translations.s0,
   groups: [

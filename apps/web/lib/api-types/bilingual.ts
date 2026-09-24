@@ -25,7 +25,7 @@ export type BilingualTranslations = BilingualIdentity & {
 
 export type AlignmentSpan = { start: number; end: number };
 export type SentenceAlignment = {
-  version: 2;
+  version: 3;
   sourceText: string;
   translatedText: string;
   groups: {

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { isSentenceAlignment } from "./validate-alignment";
 
 const map = {
-  version: 2,
+  version: 3,
   sourceText: "miss you",
   translatedText: "tu me manques",
   groups: [
