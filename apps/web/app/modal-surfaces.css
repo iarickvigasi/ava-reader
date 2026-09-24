@@ -1,0 +1,10 @@
+/* Modal panels share the day palette; backdrops and night fills retain their styles. */
+@layer utilities {
+  :root:not([data-theme="dark"])
+    :is(dialog, [aria-modal="true"])
+    > .rounded-modal {
+    --soft-fill: var(--paper);
+    --paper-strong: var(--paper);
+    background-color: var(--surface-strong);
+  }
+}

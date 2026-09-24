@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/components/theme/theme-provider";
 import { OfflineIdentityReconciler } from "@/features/offline/lifecycle/offline-identity-reconciler";
 import { cyrillicBody, cyrillicDisplay } from "./fonts/cyrillic";
 import "./globals.css";
+import "./modal-surfaces.css";
 
 const display = Abhaya_Libre({
   variable: "--font-abhaya",

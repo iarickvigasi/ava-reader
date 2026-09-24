@@ -5,9 +5,11 @@ compose with `cn()` (`lib/cn.ts`). Tailwind v4, theme-switched via `data-theme`.
 Extends [conventions.md](conventions.md) §Code — this is the visual layer.
 
 ## Theming & color
+
 Light + dark under `:root[data-theme]`; every color is a CSS var surfaced as a
 Tailwind token. **Never hardcode a color** — no `#hex`/`rgb()` in `className`.
 Tune with `/NN` opacity (`text-ink/55`, `bg-ink/40`).
+
 - Surfaces — `paper`, `paper-strong`, `surface`, `surface-strong`
 - Text — `title` headings · `copy`/`copy-strong` body · `ink` UI · `muted` meta
 - Action — `brand-fill`(+`-strong`, `brand-foreground`) primary ·
@@ -16,12 +18,13 @@ Tune with `/NN` opacity (`text-ink/55`, `bg-ink/40`).
   `highlight-*`(+`-inverse`)
 
 ## Type
-| Utility | Font | Use |
-| --- | --- | --- |
-| `font-display` | Abhaya Libre + Source Serif 4 Cyrillic | headings, hero numerals |
-| `font-reader` | Noto Serif | reader body **and dialog titles** |
-| `font-ui` | Inter | eyebrows, labels, meta |
-| `font-sans` | Afacad + Nunito Sans Cyrillic | default body |
+
+| Utility        | Font                                   | Use                               |
+| -------------- | -------------------------------------- | --------------------------------- |
+| `font-display` | Abhaya Libre + Source Serif 4 Cyrillic | headings, hero numerals           |
+| `font-reader`  | Noto Serif                             | reader body **and dialog titles** |
+| `font-ui`      | Inter                                  | eyebrows, labels, meta            |
+| `font-sans`    | Afacad + Nunito Sans Cyrillic          | default body                      |
 
 Cyrillic companions use script-only, size-matched faces; Latin retains its original fonts.
 Font sources, metrics and licenses: [font notes](../apps/web/app/fonts/README.md).
@@ -30,6 +33,7 @@ Always the utility — never `font-(--font-x)`. **Eyebrow/overline** (ubiquitous
 `font-ui text-xs uppercase tracking-[0.16em] text-muted`.
 
 ## Radius — tokens; map any ad-hoc value to the nearest
+
 - `rounded-cover` 6px — book covers (applied by `<BookCover>`, never by a call site).
   The value lives in `globals.css` `@theme`; this line only documents it.
 - `rounded-control` 14px — buttons, inputs, chips
@@ -39,23 +43,27 @@ Always the utility — never `font-(--font-x)`. **Eyebrow/overline** (ubiquitous
 - `rounded-full` circles & icon-pills
 
 ## Book covers → `components/app/shared/book-cover.tsx`
+
 Every cover renders through `<BookCover>`. The frame hugs the artwork — `ratio` (`"book"` 2:3 ·
 `"audiobook"` square) only reserves space until the image reports its natural size — so the rounded
 clip and shadow trace the cover, never a letterbox bar. The placeholder fills the frame until the
 image decodes. Call sites pass width/shadow/margins only; never an `aspect-*`, radius or background.
 
 ## Borders
+
 No **decorative** borders — shape comes from fill + shadow. Keep only
 **structural** hairline dividers: directional `border-t/b/x/y` in `border-line(/NN)`,
 plus dashed drop-zones. Focus shows a **ring**, never a border.
 
 ## Shadow & motion
+
 Shadows are theme-switched vars: `shadow-(--shadow-soft|--shadow-card|--shadow-nav)`
 — use the `()` shorthand, not `[var(...)]`. Motion: `transition` +
 `duration-200`/`300` + `ease-out`; skeletons `animate-pulse`; named keyframes in globals.css.
 Interactive titles hover to `ink` (`hover:text-ink`; cards `group-hover:text-ink`) + `transition`.
 
 ## Buttons → `components/ui/button.tsx`
+
 `rounded-control`, fill-based, **no border**. Variants `primary` (brand-fill +
 `shadow-(--shadow-card)`), `soft` (soft-fill), `ghost` (transparent → hover
 `soft-fill`), `danger` (bg-danger — destructive confirms). Sizes `md` (default) ·
@@ -67,18 +75,24 @@ text + trailing `<DotPulseIcon>` (an animated ellipsis on the baseline) fade in 
 instant completions never flash. Pending strings carry no literal "…" — the dots are the ellipsis.
 
 ## Inputs → `components/ui/text-input.tsx`
+
 `rounded-control`, filled (`bg-paper`/`bg-paper-strong`), no border, `outline-none`
-+ visible `focus-visible:ring-2 focus-visible:ring-line-strong`.
+
+- visible `focus-visible:ring-2 focus-visible:ring-line-strong`.
 
 ## Modals & overlays
+
 Backdrop `fixed inset-0 z-50 flex … bg-transparent backdrop-blur-sm`, click-to-close.
 Keep backdrops transparent in both themes; native dialogs use
 `backdrop:bg-transparent backdrop:backdrop-blur-sm` to override the browser tint.
 Panel `rounded-modal bg-paper`/`bg-surface` + `shadow-(--shadow-card)`,
+with day-theme fills overridden to `surface-strong` by `app/modal-surfaces.css`; inside these
+panels, `soft-fill` and `paper-strong` use `paper` to swap the control and panel colors.
 `role="dialog" aria-modal`, Escape closes, title `font-reader`. Action row uses
 `<Button size="sm">` (`rounded-control`, no border).
 
 ## Z-index & layout
+
 `z-50` modals/overlays · `z-40` sticky nav/headers · `z-10` local poppers/menus.
 Wrap screens in `<ScreenContainer>` (`max-w-6xl`, responsive px). Spacing rhythm:
 `gap`/`space-y` in 2 / 3 / 4 / 6.
