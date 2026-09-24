@@ -1,6 +1,6 @@
 import { subscribeVisibility } from "./subscribe-visibility";
 import { useDemandActivity } from "./use-demand-activity";
-import { useAuth } from "@clerk/nextjs";
+import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import {
   useCallback,
   useEffect,

@@ -2,7 +2,7 @@
 
 import type { FormEvent, ReactNode } from "react";
 import { useState, useTransition } from "react";
-import { useAuth } from "@clerk/nextjs";
+import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useRouter } from "next/navigation";
 import type { AdminCatalogEntry } from "@/lib/api-types";
 import { cn } from "@/lib/cn";
@@ -43,15 +43,19 @@ export function AdminCatalogManager({
     });
 
     if (!response.ok) {
-      const payload = (await response.json().catch(() => null)) as
-        | { message?: string }
-        | null;
-      setNotice(payload?.message ?? "The catalog request could not be completed.");
+      const payload = (await response.json().catch(() => null)) as {
+        message?: string;
+      } | null;
+      setNotice(
+        payload?.message ?? "The catalog request could not be completed.",
+      );
       return null;
     }
 
     const payload = (await response.json()) as AdminCatalogEntry;
-    setNotice(method === "POST" ? "Catalog entry created." : "Catalog entry updated.");
+    setNotice(
+      method === "POST" ? "Catalog entry created." : "Catalog entry updated.",
+    );
     router.refresh();
 
     return payload;
@@ -67,14 +71,14 @@ export function AdminCatalogManager({
       return;
     }
 
-    setEntries((current) => [payload, ...current.filter((entry) => entry.id !== payload.id)]);
+    setEntries((current) => [
+      payload,
+      ...current.filter((entry) => entry.id !== payload.id),
+    ]);
     form.reset();
   }
 
-  async function onUpdate(
-    entryId: string,
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function onUpdate(entryId: string, event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const payload = await submitForm(
@@ -105,11 +109,14 @@ export function AdminCatalogManager({
             </h2>
           </div>
 
-          <form className="grid gap-4 sm:grid-cols-2" onSubmit={(event) =>
-            startTransition(() => {
-              void onCreate(event);
-            })
-          }>
+          <form
+            className="grid gap-4 sm:grid-cols-2"
+            onSubmit={(event) =>
+              startTransition(() => {
+                void onCreate(event);
+              })
+            }
+          >
             <Field label="Title" name="title" required />
             <Field label="Authors" name="authors" />
             <TextAreaField
@@ -187,7 +194,10 @@ export function AdminCatalogManager({
                 <summary className="cursor-pointer list-none">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-4">
-                      <CoverPreview title={entry.book.title} src={entry.book.coverImageDataUrl} />
+                      <CoverPreview
+                        title={entry.book.title}
+                        src={entry.book.coverImageDataUrl}
+                      />
                       <div className="space-y-1">
                         <p className="font-display text-2xl text-title">
                           {entry.book.title}
@@ -279,7 +289,11 @@ export function AdminCatalogManager({
                     label="Replace source"
                     name="sourceFile"
                   />
-                  <FileField accept="image/*" label="Replace cover" name="coverImage" />
+                  <FileField
+                    accept="image/*"
+                    label="Replace cover"
+                    name="coverImage"
+                  />
                   <div className="sm:col-span-2">
                     <button
                       type="submit"
@@ -410,25 +424,19 @@ function FileField({
 }
 
 function Badge({ children }: { children: ReactNode }) {
-  return (
-    <span className="rounded-full bg-white/70 px-3 py-1">
-      {children}
-    </span>
-  );
+  return <span className="rounded-full bg-white/70 px-3 py-1">{children}</span>;
 }
 
-function CoverPreview({
-  src,
-  title,
-}: {
-  src: string | null;
-  title: string;
-}) {
+function CoverPreview({ src, title }: { src: string | null; title: string }) {
   if (src) {
     return (
       <div className="size-16 overflow-hidden rounded-control bg-white/60">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img alt={`${title} cover`} className="size-full object-cover" src={src} />
+        <img
+          alt={`${title} cover`}
+          className="size-full object-cover"
+          src={src}
+        />
       </div>
     );
   }

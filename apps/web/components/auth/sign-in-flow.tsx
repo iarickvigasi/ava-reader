@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth, useSignIn } from "@clerk/nextjs";
+import { isLocallySignedOut } from "@/features/auth/local-sign-out";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -20,7 +21,8 @@ export function SignInFlow({ initialNotice }: SignInFlowProps) {
   const t = useTranslations("auth.signIn");
   const tShared = useTranslations("auth.shared");
   const { signIn, errors, fetchStatus } = useSignIn();
-  const { isSignedIn } = useAuth();
+  const { isSignedIn: signedIn, userId, sessionId } = useAuth();
+  const isSignedIn = signedIn && !isLocallySignedOut(userId ?? null, sessionId);
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>("idle");
   const [email, setEmail] = useState("");
@@ -147,7 +149,11 @@ export function SignInFlow({ initialNotice }: SignInFlowProps) {
           code={code}
           busy={fetchStatus === "fetching"}
           error={errorMessage}
-          notice={localMessage && errorMessage !== localMessage ? localMessage : undefined}
+          notice={
+            localMessage && errorMessage !== localMessage
+              ? localMessage
+              : undefined
+          }
           onEmailChange={setEmail}
           onCodeChange={setCode}
           onBack={() => {

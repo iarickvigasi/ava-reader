@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import { useAuth } from "@clerk/nextjs";
+import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { CameraIcon } from "@/components/app/shared/app-icons";
@@ -55,9 +55,9 @@ export function FeedbackForm({ className }: FeedbackFormProps) {
     });
 
     if (!response.ok) {
-      const payload = (await response.json().catch(() => null)) as
-        | { message?: string }
-        | null;
+      const payload = (await response.json().catch(() => null)) as {
+        message?: string;
+      } | null;
       setStatus(payload?.message ?? t("errors.submitFailed"));
       return;
     }

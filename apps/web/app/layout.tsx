@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { cookies } from "next/headers";
 import { Abhaya_Libre, Afacad, Inter, Noto_Serif } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
@@ -7,6 +8,7 @@ import { getLocale } from "next-intl/server";
 import { SiteFrame } from "@/components/layout/site-frame";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { OfflineIdentityReconciler } from "@/features/offline/lifecycle/offline-identity-reconciler";
+import { AuthRecoveryRunner } from "@/features/auth/auth-recovery-runner";
 import { cyrillicBody, cyrillicDisplay } from "./fonts/cyrillic";
 import "./globals.css";
 import "./modal-surfaces.css";
@@ -50,6 +52,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const serverUserId = await auth()
+    .then((session) => session.userId)
+    .catch(() => null);
   const cookieStore = await cookies();
   const initialTheme =
     cookieStore.get("ava-theme")?.value === "dark" ? "dark" : "light";
@@ -65,11 +70,17 @@ export default async function RootLayout({
       <body className="min-h-full">
         <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
         <NextIntlClientProvider>
-          <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">
-            <OfflineIdentityReconciler />
-            <ThemeProvider initialTheme={initialTheme}>
-              <SiteFrame>{children}</SiteFrame>
-            </ThemeProvider>
+          <ClerkProvider
+            signInUrl="/sign-in"
+            signUpUrl="/sign-up"
+            afterSignOutUrl="/sign-in"
+          >
+            <AuthRecoveryRunner />
+            <OfflineIdentityReconciler serverUserId={serverUserId}>
+              <ThemeProvider initialTheme={initialTheme}>
+                <SiteFrame>{children}</SiteFrame>
+              </ThemeProvider>
+            </OfflineIdentityReconciler>
           </ClerkProvider>
         </NextIntlClientProvider>
       </body>

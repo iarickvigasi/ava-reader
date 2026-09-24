@@ -667,6 +667,16 @@
       "subtitle": "Adicione as suas variáveis de ambiente do Clerk para ativar os fluxos personalizados de entrada e cadastro.",
       "requiredVarsLabel": "Variáveis web obrigatórias",
       "returnToSplash": "Voltar à tela inicial"
+    },
+    "device": {
+      "menu": "Menu da conta",
+      "manage": "Gerenciar conta",
+      "signIn": "Entrar",
+      "signOut": "Sair",
+      "syncPaused": "Entre para retomar a sincronização. Seus livros baixados continuam disponíveis.",
+      "reconnecting": "Reconectando. Suas alterações estão salvas neste dispositivo.",
+      "unsyncedWarning": "Algumas alterações ainda não foram sincronizadas. Ao sair, os livros baixados e as alterações não sincronizadas serão removidos deste dispositivo. Sair mesmo assim?",
+      "signOutError": "Não foi possível concluir a saída. Tente novamente."
     }
   },
   "unavailablePage": {

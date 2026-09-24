@@ -4,7 +4,7 @@
 // reading the server payload directly; the page-level client island still
 // hydrates the bucket with the RSC payload so the first render has data.
 
-import { useAuth } from "@clerk/nextjs";
+import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useEffect } from "react";
 import { useSyncExternalStore } from "react";
 
@@ -107,7 +107,9 @@ export function useCollectionView(slug: string): CollectionView | null {
   if (!view) {
     return null;
   }
-  return view.collections.find((collection) => collection.slug === slug) ?? null;
+  return (
+    view.collections.find((collection) => collection.slug === slug) ?? null
+  );
 }
 
 // Book-info hydration hook. Two responsibilities:

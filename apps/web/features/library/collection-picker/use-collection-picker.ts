@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useAuth } from "@clerk/nextjs";
+import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useTranslations } from "next-intl";
 import type { LibraryBookInfo } from "@/lib/api-types";
 import { updateBookCollections } from "@/features/offline/buckets/library";
@@ -10,7 +10,9 @@ import { useCollectionOptions } from "./use-collection-options";
 import { selectDraftMemberships } from "./select-draft-memberships";
 
 export function useCollectionPicker({
-  libraryItemId, memberships, onClose,
+  libraryItemId,
+  memberships,
+  onClose,
 }: {
   libraryItemId: string;
   memberships: LibraryBookInfo["collections"];
@@ -27,8 +29,13 @@ export function useCollectionPicker({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const submitting = useRef(false);
-  const changes = collectionChanges(options.collections, initialIds, selectedIds);
-  const dirty = changes.addCollectionIds.length + changes.removeCollectionIds.length > 0;
+  const changes = collectionChanges(
+    options.collections,
+    initialIds,
+    selectedIds,
+  );
+  const dirty =
+    changes.addCollectionIds.length + changes.removeCollectionIds.length > 0;
 
   function close() {
     if (!submitting.current) onClose();
@@ -37,11 +44,15 @@ export function useCollectionPicker({
   function toggle(id: string) {
     if (submitting.current) return;
     setError(null);
-    setOverrides((prior) => ({ ...prior, [id]: !(prior[id] ?? initialIds.has(id)) }));
+    setOverrides((prior) => ({
+      ...prior,
+      [id]: !(prior[id] ?? initialIds.has(id)),
+    }));
   }
 
   async function save() {
-    if (submitting.current || !dirty || options.unavailable || options.loading) return;
+    if (submitting.current || !dirty || options.unavailable || options.loading)
+      return;
     submitting.current = true;
     setPending(true);
     setError(null);
@@ -57,7 +68,15 @@ export function useCollectionPicker({
   }
 
   return {
-    ...options, close, toggle, save, pending, error, selectedIds, dirty,
-    selectedCount: options.collections.filter(({ id }) => selectedIds.has(id)).length,
+    ...options,
+    close,
+    toggle,
+    save,
+    pending,
+    error,
+    selectedIds,
+    dirty,
+    selectedCount: options.collections.filter(({ id }) => selectedIds.has(id))
+      .length,
   };
 }

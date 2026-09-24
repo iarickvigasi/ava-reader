@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@clerk/nextjs";
+import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useCallback, useEffect, useRef, useSyncExternalStore } from "react";
 
 import { getActiveUserId } from "../../db";

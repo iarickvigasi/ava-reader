@@ -5,7 +5,7 @@
 // can belong to a different slug), resolves the payload Dexie-first via
 // loadReaderForSlug, and renders the reader / skeleton / offline fallback.
 
-import { useAuth } from "@clerk/nextjs";
+import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useEffect, useRef, useState } from "react";
 
 import { OfflineRouteFallback } from "@/components/app/core/offline-route-fallback";
@@ -14,7 +14,10 @@ import { ReaderShellSkeleton } from "@/components/app/reader/reader-shell-skelet
 import { fetchReaderPayload } from "@/components/app/reader/data/reader-client";
 import { loadReaderPayloadFromCache } from "@/features/offline/buckets/book";
 import { emitMissingBookOfflineModal } from "@/features/offline/notices/missing-book-bus";
-import { isOnline, subscribeToNetworkState } from "@/features/offline/net/net-state";
+import {
+  isOnline,
+  subscribeToNetworkState,
+} from "@/features/offline/net/net-state";
 import {
   loadReaderForSlug,
   type ReaderLoadResult,

@@ -1,4 +1,4 @@
-import { useAuth } from "@clerk/nextjs";
+import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useReducer, useState } from "react";
 import type { ReaderLocator } from "@/lib/api-types";
 import {
@@ -32,11 +32,14 @@ export function useReaderScreenController({
   const [payload, setPayload] = useState(() =>
     normalizeReaderStatusPayload(initialPayload),
   );
-  const [visibleLocator, setVisibleLocator] = useState<ReaderLocator | null>(null);
-  const [initialResume, setInitialResume] = useState<InitialResumeBootstrapState>({
-    phase: READER_RESUME_PHASE_SELECTING,
-    snapshot: null,
-  });
+  const [visibleLocator, setVisibleLocator] = useState<ReaderLocator | null>(
+    null,
+  );
+  const [initialResume, setInitialResume] =
+    useState<InitialResumeBootstrapState>({
+      phase: READER_RESUME_PHASE_SELECTING,
+      snapshot: null,
+    });
   const [traversal, dispatchTraversal] = useReducer(
     readerTraversalReducer,
     initialPayload,
@@ -59,19 +62,23 @@ export function useReaderScreenController({
     visibleLocator,
   });
 
-  const { backgroundChapterId, commitVisibleChapter, loadChapterWindow, navigateToChapter } =
-    useReaderChapterNavigation({
-      currentReadyChapterId,
-      dispatchTraversal,
-      getToken,
-      isLoaded,
-      isSignedIn,
-      libraryItemId,
-      loadedChaptersById,
-      readyPayload,
-      setPayload,
-      setVisibleLocator,
-    });
+  const {
+    backgroundChapterId,
+    commitVisibleChapter,
+    loadChapterWindow,
+    navigateToChapter,
+  } = useReaderChapterNavigation({
+    currentReadyChapterId,
+    dispatchTraversal,
+    getToken,
+    isLoaded,
+    isSignedIn,
+    libraryItemId,
+    loadedChaptersById,
+    readyPayload,
+    setPayload,
+    setVisibleLocator,
+  });
 
   useReaderOpenEvent({
     getToken,

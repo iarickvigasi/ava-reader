@@ -1,9 +1,10 @@
 import { afterEach, expect, it, vi } from "vitest";
 import { useMasteryHistory } from "./use-mastery-history";
 
-vi.mock("@clerk/nextjs", () => ({
-  useAuth: () => ({ getToken: async () => "test-token" }),
+vi.mock("@/features/auth/use-offline-auth", () => ({
+  useOfflineAuth: () => ({ getToken: async () => "test-token" }),
 }));
+vi.mock("./use-history-recovery", () => ({ useHistoryRecovery: vi.fn() }));
 vi.mock("react", () => ({
   useState: (initial: unknown) => [initial, vi.fn()],
   useRef: (initial: unknown) => ({ current: initial }),
@@ -22,7 +23,7 @@ it("deduplicates simultaneous week requests and bypasses the HTTP cache", async 
   vi.stubGlobal("fetch", fetch);
   const history = useMasteryHistory("2026-09-17", 60);
   const first = history.load();
-  await Promise.resolve();
+  await vi.waitFor(() => expect(fetch).toHaveBeenCalledOnce());
   await history.load();
   expect(fetch).toHaveBeenCalledOnce();
   expect(fetch.mock.calls[0]).toEqual([

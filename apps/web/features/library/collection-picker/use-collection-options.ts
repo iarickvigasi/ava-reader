@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useAuth } from "@clerk/nextjs";
+import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import {
   readCollectionPickerOptions,
   revalidateLibrary,
@@ -20,7 +20,9 @@ export function useCollectionOptions() {
   const generation = useRef(0);
   const hasOptions = useRef(false);
   const tokenGetter = useRef(getToken);
-  useEffect(() => { tokenGetter.current = getToken; }, [getToken]);
+  useEffect(() => {
+    tokenGetter.current = getToken;
+  }, [getToken]);
 
   const retry = useCallback(async () => {
     const attempt = ++generation.current;
@@ -49,12 +51,18 @@ export function useCollectionOptions() {
   useEffect(() => {
     // Cached collections remain usable while offline auth is unavailable.
     void retry();
-    return () => { generation.current += 1; };
+    return () => {
+      generation.current += 1;
+    };
   }, [retry, online, isLoaded]);
 
   return {
-    collections: options === null ? [] :
-      (library?.collections ?? options).filter(({ kind }) => kind === "CUSTOM"),
+    collections:
+      options === null
+        ? []
+        : (library?.collections ?? options).filter(
+            ({ kind }) => kind === "CUSTOM",
+          ),
     loading,
     unavailable: !loading && options === null,
     online,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@clerk/nextjs";
+import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useTranslations } from "next-intl";
 import { type ComponentProps, useCallback, useEffect, useState } from "react";
 
@@ -37,8 +37,12 @@ export function DownloadOfflineCard({
   const online = useNetworkState();
   const snapshot = useBookSaveStatus(libraryItemId);
   const { save, remove, cancel } = useSaveBook(libraryItemId);
-  const { state: offlineState, fromAutoSave, offlineRequested, refresh } =
-    useBookOfflineState(libraryItemId, snapshot.status);
+  const {
+    state: offlineState,
+    fromAutoSave,
+    offlineRequested,
+    refresh,
+  } = useBookOfflineState(libraryItemId, snapshot.status);
   // True only while we tear down an in-flight download the user tapped to cancel.
   const [aborting, setAborting] = useState(false);
 

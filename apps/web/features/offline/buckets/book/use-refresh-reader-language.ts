@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@clerk/nextjs";
+import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useEffect } from "react";
 
 import { fetchReaderPayloadFromNetwork } from "@/components/app/reader/data/reader-payload-network";
@@ -18,26 +18,30 @@ export function useRefreshReaderLanguage(libraryItemId: string): void {
     if (!online || !isLoaded || !isSignedIn || !userId) return;
     let cancelled = false;
     // Let the root identity reconciler adopt this user before accessing Dexie.
-    void Promise.resolve().then(async () => {
-      if (cancelled) return;
-      await refreshReaderLanguage({
-        libraryItemId,
-        userId,
-        fetchLanguage: async () => {
-          const payload = await fetchReaderPayloadFromNetwork({
-            libraryItemId,
-            isLoaded,
-            isSignedIn,
-            getToken: async () => {
-              const token = await getToken();
-              return getActiveUserId() === userId ? token : null;
-            },
-          });
-          return readKnownReaderLanguage(payload.book);
-        },
-      });
-    }).catch(() => undefined);
+    void Promise.resolve()
+      .then(async () => {
+        if (cancelled) return;
+        await refreshReaderLanguage({
+          libraryItemId,
+          userId,
+          fetchLanguage: async () => {
+            const payload = await fetchReaderPayloadFromNetwork({
+              libraryItemId,
+              isLoaded,
+              isSignedIn,
+              getToken: async () => {
+                const token = await getToken();
+                return getActiveUserId() === userId ? token : null;
+              },
+            });
+            return readKnownReaderLanguage(payload.book);
+          },
+        });
+      })
+      .catch(() => undefined);
     // Persistence deliberately does not update the active reader's language.
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [getToken, isLoaded, isSignedIn, libraryItemId, online, userId]);
 }

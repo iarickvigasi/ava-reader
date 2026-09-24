@@ -1,8 +1,9 @@
 # 5. Per-user offline database isolation
 
-Status: accepted
+Status: accepted · Session-expiry cleanup superseded by [[6-durable-offline-authentication]].
 
 ## Context
+
 Offline data (ADR [[3-offline-first-dexie-buckets]]) lived in one Dexie database `ava-reader` shared
 by every account on a browser profile, alongside service-worker caches and global localStorage keys.
 Sign-out cleared only Dexie, and only on the in-tab signed-in→signed-out edge — so a cold start as a
@@ -12,16 +13,18 @@ readable by B. A reading app must guarantee one account's data never surfaces to
 device ([[7-auth]] lists this edge; product.md: respect users).
 
 ## Decision
+
 One Dexie database **per user: `ava-reader-<clerkUserId>`**. `getDb()` opens the active user's DB;
 the active user comes from Clerk, with the last active user persisted to localStorage so the
 offline-first instant read (before Clerk boots) opens the right DB — always correct offline, since
 identity can only change online. A different user structurally cannot read another's rows: isolation
 no longer depends on a wipe firing. A root-level reconciler clears across all three substrates — on
-identity mismatch (switch / cold-start-as-B) it purges every *other* `ava-reader-*` DB + the SW
+identity mismatch (switch / cold-start-as-B) it purges every _other_ `ava-reader-*` DB + the SW
 caches + the previous user's global localStorage; on sign-out it wipes the current user's DB + SW
 caches + localStorage. The legacy single `ava-reader` DB is deleted once.
 
 ## Consequences
+
 - Cross-user leakage is closed by construction (separate IndexedDB per account), not by remembering
   to clear every table — defense-in-depth.
 - We do not retain multiple users' data for instant switch-back (others are purged on login);

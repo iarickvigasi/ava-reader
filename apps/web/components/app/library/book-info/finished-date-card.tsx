@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@clerk/nextjs";
+import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
@@ -27,11 +27,15 @@ export function FinishedDateCard({
   const writing = useRef(false);
   const [pending, setPending] = useState(false);
 
-  useEffect(() => subscribeToFinishDateSyncFailures((event) => {
-    if (event.libraryItemId === libraryItemId) {
-      emitAppToast({ message: t("syncFailed"), tone: "error" });
-    }
-  }), [libraryItemId, t]);
+  useEffect(
+    () =>
+      subscribeToFinishDateSyncFailures((event) => {
+        if (event.libraryItemId === libraryItemId) {
+          emitAppToast({ message: t("syncFailed"), tone: "error" });
+        }
+      }),
+    [libraryItemId, t],
+  );
 
   const toggleFinishedDate = async () => {
     if (writing.current) return;
@@ -59,7 +63,11 @@ export function FinishedDateCard({
       disabled={pending}
       icon={CheckBoldIcon}
       onClick={toggleFinishedDate}
-      title={finishedAt ? t("finishedTitle", { date: formatDate(finishedAt) }) : t("title")}
+      title={
+        finishedAt
+          ? t("finishedTitle", { date: formatDate(finishedAt) })
+          : t("title")
+      }
     />
   );
 }

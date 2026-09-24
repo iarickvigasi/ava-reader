@@ -10,9 +10,13 @@ import { withIntl } from "@/lib/test-utils/intl";
 import { ActionCard } from "./action-card";
 import { FinishedDateCard } from "./finished-date-card";
 
-const { getToken } = vi.hoisted(() => ({ getToken: vi.fn(async () => "token") }));
+const { getToken } = vi.hoisted(() => ({
+  getToken: vi.fn(async () => "token"),
+}));
 
-vi.mock("@clerk/nextjs", () => ({ useAuth: () => ({ getToken }) }));
+vi.mock("@/features/auth/use-offline-auth", () => ({
+  useOfflineAuth: () => ({ getToken }),
+}));
 vi.mock("@/components/app/core/app-toast", () => ({ emitAppToast: vi.fn() }));
 vi.mock("@/features/offline/buckets/library", () => ({
   setBookFinishedAt: vi.fn(async () => undefined),
@@ -27,9 +31,11 @@ vi.mock("./action-card", async (importOriginal) => {
 });
 
 function renderCard(finishedAt: string | null = null) {
-  return renderToStaticMarkup(withIntl(
-    <FinishedDateCard finishedAt={finishedAt} libraryItemId="library-42" />,
-  ));
+  return renderToStaticMarkup(
+    withIntl(
+      <FinishedDateCard finishedAt={finishedAt} libraryItemId="library-42" />,
+    ),
+  );
 }
 
 async function clickCard(): Promise<void> {
@@ -60,7 +66,9 @@ describe("FinishedDateCard", () => {
     renderCard();
     await clickCard();
     expect(setBookFinishedAt).toHaveBeenCalledExactlyOnceWith(
-      "library-42", "2026-09-13T12:00:00.000Z", getToken,
+      "library-42",
+      "2026-09-13T12:00:00.000Z",
+      getToken,
     );
     expect(emitAppToast).not.toHaveBeenCalled();
   });
@@ -70,13 +78,20 @@ describe("FinishedDateCard", () => {
     expect(html).toContain("Finished on Sep 12, 2026");
     expect(html).toContain("Tap to remove finish date");
     await clickCard();
-    expect(setBookFinishedAt).toHaveBeenCalledExactlyOnceWith("library-42", null, getToken);
+    expect(setBookFinishedAt).toHaveBeenCalledExactlyOnceWith(
+      "library-42",
+      null,
+      getToken,
+    );
   });
 
   it("formats the finish date with the current locale", () => {
     const html = renderToStaticMarkup(
       <NextIntlClientProvider locale="de" messages={enMessages}>
-        <FinishedDateCard finishedAt="2026-09-12T12:00:00.000Z" libraryItemId="library-42" />
+        <FinishedDateCard
+          finishedAt="2026-09-12T12:00:00.000Z"
+          libraryItemId="library-42"
+        />
       </NextIntlClientProvider>,
     );
     expect(html).toContain("Finished on 12. Sept. 2026");
@@ -84,9 +99,11 @@ describe("FinishedDateCard", () => {
 
   it("ignores repeated taps until the local write completes", async () => {
     let complete!: () => void;
-    vi.mocked(setBookFinishedAt).mockReturnValueOnce(new Promise<void>((resolve) => {
-      complete = resolve;
-    }));
+    vi.mocked(setBookFinishedAt).mockReturnValueOnce(
+      new Promise<void>((resolve) => {
+        complete = resolve;
+      }),
+    );
     renderCard();
     const firstTap = clickCard();
     await clickCard();
@@ -96,7 +113,9 @@ describe("FinishedDateCard", () => {
   });
 
   it("reports local persistence errors and permits retry", async () => {
-    vi.mocked(setBookFinishedAt).mockRejectedValueOnce(new Error("Storage unavailable"));
+    vi.mocked(setBookFinishedAt).mockRejectedValueOnce(
+      new Error("Storage unavailable"),
+    );
     renderCard();
     await clickCard();
     expect(emitAppToast).toHaveBeenCalledExactlyOnceWith({

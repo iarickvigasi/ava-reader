@@ -667,6 +667,16 @@
       "subtitle": "Füge deine Clerk-Umgebungsvariablen hinzu, um die individuellen Anmelde- und Registrierungsflüsse zu aktivieren.",
       "requiredVarsLabel": "Erforderliche Web-Variablen",
       "returnToSplash": "Zurück zum Startbildschirm"
+    },
+    "device": {
+      "menu": "Kontomenü",
+      "manage": "Konto verwalten",
+      "signIn": "Anmelden",
+      "signOut": "Abmelden",
+      "syncPaused": "Melde dich an, um die Synchronisierung fortzusetzen. Heruntergeladene Bücher bleiben verfügbar.",
+      "reconnecting": "Verbindung wird wiederhergestellt. Deine Änderungen sind auf diesem Gerät gespeichert.",
+      "unsyncedWarning": "Einige Änderungen wurden noch nicht synchronisiert. Beim Abmelden werden heruntergeladene Bücher und nicht synchronisierte Änderungen von diesem Gerät entfernt. Trotzdem abmelden?",
+      "signOutError": "Abmeldung konnte nicht abgeschlossen werden. Bitte erneut versuchen."
     }
   },
   "unavailablePage": {

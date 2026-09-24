@@ -10,7 +10,7 @@
 // a save requested while offline must download once the connection returns. A
 // module-level `running` guard prevents overlapping passes (it doesn't latch).
 
-import { useAuth } from "@clerk/nextjs";
+import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -45,9 +45,14 @@ export function BackgroundPrimer(): React.ReactElement | null {
   const [consentOpen, setConsentOpen] = useState(false);
   // Recurring identity reconciliation is independent of once-only priming.
   const refreshLibrary = useCallback(() => {
-    if (online) void revalidateLibrary(getToken).then(() => revalidateHome(getToken)).catch(() => {});
+    if (online)
+      void revalidateLibrary(getToken)
+        .then(() => revalidateHome(getToken))
+        .catch(() => {});
   }, [online, getToken]);
-  useSyncTriggers(isLoaded && isSignedIn ? refreshLibrary : null, { kickOnAttach: true });
+  useSyncTriggers(isLoaded && isSignedIn ? refreshLibrary : null, {
+    kickOnAttach: true,
+  });
 
   // Saves one book's full content offline. `saveKind` defaults to "explicit"
   // (sticky) for offline-marked books, so a proactively-cached book isn't

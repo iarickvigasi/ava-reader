@@ -667,6 +667,16 @@
       "subtitle": "Ajoutez vos variables d'environnement Clerk pour activer les flux personnalisés de connexion et d'inscription.",
       "requiredVarsLabel": "Variables web requises",
       "returnToSplash": "Retour à l'écran d'accueil"
+    },
+    "device": {
+      "menu": "Menu du compte",
+      "manage": "Gérer le compte",
+      "signIn": "Se connecter",
+      "signOut": "Se déconnecter",
+      "syncPaused": "Connectez-vous pour reprendre la synchronisation. Vos livres téléchargés restent disponibles.",
+      "reconnecting": "Reconnexion en cours. Vos modifications sont enregistrées sur cet appareil.",
+      "unsyncedWarning": "Certaines modifications ne sont pas synchronisées. La déconnexion supprimera les livres téléchargés et les modifications non synchronisées de cet appareil. Se déconnecter quand même ?",
+      "signOutError": "Impossible de terminer la déconnexion. Veuillez réessayer."
     }
   },
   "unavailablePage": {

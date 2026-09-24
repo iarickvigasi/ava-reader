@@ -7,7 +7,7 @@
 // specs/6-reading-sessions-progress). The flush is single-flight and online-
 // guarded, so firing it from several triggers is cheap.
 
-import { useAuth } from "@clerk/nextjs";
+import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useCallback } from "react";
 
 import { flushDirtyProgress } from "@/features/offline/buckets/progress";

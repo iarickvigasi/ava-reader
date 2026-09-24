@@ -13,7 +13,7 @@
 // probes) and bridge React state. Keeping the orchestrator pure makes it
 // unit-testable without Clerk in scope.
 
-import { useAuth } from "@clerk/nextjs";
+import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useTranslations } from "next-intl";
 import { useCallback, useSyncExternalStore } from "react";
 
@@ -32,10 +32,7 @@ import {
   subscribeToBookSave,
   type BookSaveSnapshot,
 } from "./bucket";
-import {
-  saveBookOffline,
-  type SaveOutcome,
-} from "./download";
+import { saveBookOffline, type SaveOutcome } from "./download";
 import { checkStorageQuota } from "./quota";
 import { deleteBookContent } from "./storage";
 

@@ -1,19 +1,15 @@
-// The decision for the client-side signed-out guard (7-auth spec, Behaviour
-// 4). Redirect only when the signal is trustworthy: the device is online AND
-// clerk-js has fully loaded AND it reports signed-out. Offline (or while
-// Clerk is still loading / unreachable) we must keep serving the cached
-// shell — the user cannot complete a login without a connection.
-
 export type SignedOutRedirectInput = {
+  hasLocalAccount?: boolean;
   online: boolean;
   isLoaded: boolean;
   isSignedIn: boolean | undefined;
 };
 
 export function shouldRedirectToSignIn({
+  hasLocalAccount = false,
   online,
   isLoaded,
   isSignedIn,
 }: SignedOutRedirectInput): boolean {
-  return online && isLoaded && isSignedIn === false;
+  return !hasLocalAccount && online && isLoaded && isSignedIn === false;
 }

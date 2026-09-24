@@ -4,18 +4,15 @@
 
 export type IdentityAction =
   | { kind: "none" }
-  | { kind: "adopt"; userId: string }
-  | { kind: "wipe"; userId: string };
+  | { kind: "adopt"; userId: string };
 
 export function decideIdentityAction(
   previousUserId: string | null,
   currentUserId: string | null,
 ): IdentityAction {
   if (!currentUserId) {
-    // Signed out: wipe the previous user's data, if there was one.
-    return previousUserId
-      ? { kind: "wipe", userId: previousUserId }
-      : { kind: "none" };
+    // Expiry/revocation pauses sync; only explicit sign-out wipes local data.
+    return { kind: "none" };
   }
   if (previousUserId === currentUserId) {
     // Same user reload — nothing to do.

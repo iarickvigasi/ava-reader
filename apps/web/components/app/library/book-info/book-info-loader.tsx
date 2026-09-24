@@ -5,7 +5,7 @@
 // Dexie with a one-shot revalidation on miss while online. Freshness on a hit
 // is owned by BookInfoHydrator, exactly as on the old SSR page.
 
-import { useAuth } from "@clerk/nextjs";
+import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useEffect, useRef, useState } from "react";
 
 import LibraryBookInfoLoading from "@/app/app/library/books/[slug]/loading";
@@ -21,7 +21,11 @@ import {
 import { isOnline } from "@/features/offline/net/net-state";
 import { useNetworkState } from "@/features/offline/net/use-network-state";
 import type { LibraryBookInfo } from "@/lib/api-types";
-import { APP_LIBRARY_HREF, getCollectionHref, slugFromPath } from "@/lib/app-routes";
+import {
+  APP_LIBRARY_HREF,
+  getCollectionHref,
+  slugFromPath,
+} from "@/lib/app-routes";
 
 const BOOK_INFO_PATH_PREFIX = "/app/library/books/";
 
@@ -56,21 +60,24 @@ export function BookInfoLoader() {
     void readWithRevalidate({
       isOnline,
       read: () => readBookInfoBySlug(slug),
-      revalidate: () => revalidateBookInfo(slug, getToken, () => {
-        missing = true;
-      }),
-    }).then((book) => {
-      if (cancelled) {
-        return;
-      }
-      setState(
-        book
-          ? { status: "ready", book, backHref }
-          : { status: missing ? "notFound" : "unavailable" },
-      );
-    }).catch(() => {
-      if (!cancelled) setState({ status: "unavailable" });
-    });
+      revalidate: () =>
+        revalidateBookInfo(slug, getToken, () => {
+          missing = true;
+        }),
+    })
+      .then((book) => {
+        if (cancelled) {
+          return;
+        }
+        setState(
+          book
+            ? { status: "ready", book, backHref }
+            : { status: missing ? "notFound" : "unavailable" },
+        );
+      })
+      .catch(() => {
+        if (!cancelled) setState({ status: "unavailable" });
+      });
     return () => {
       cancelled = true;
     };

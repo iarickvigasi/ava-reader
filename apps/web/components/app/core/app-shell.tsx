@@ -9,6 +9,8 @@ import { MissingBookOfflineModal } from "@/components/app/core/missing-book-offl
 import { OfflineModalProvider } from "@/components/app/core/offline-modal-context";
 import { RoutePrecacheRunner } from "@/components/app/core/route-precache-runner";
 import { ServiceWorkerRegistrar } from "@/components/app/core/service-worker-registrar";
+import { AccountSyncRunner } from "@/features/auth/account-sync-runner";
+import { AuthStatusNotice } from "@/components/auth/auth-status-notice";
 import { SignedOutRedirectRunner } from "@/components/app/core/signed-out-redirect-runner";
 import { ProgressSyncRunner } from "@/components/app/core/progress-sync-runner";
 import { PreferencesSyncRunner } from "@/components/app/preferences/preferences-sync-runner";
@@ -55,6 +57,8 @@ export function AppShell({
     <OfflineModalProvider>
       <ServiceWorkerRegistrar />
       <SignedOutRedirectRunner />
+      <AuthStatusNotice />
+      <AccountSyncRunner />
       <RoutePrecacheRunner />
       <BackgroundPrimer />
       <LegacyLocalStorageCleanupRunner />

@@ -1,13 +1,8 @@
 "use client";
 
-import { useAuth } from "@clerk/nextjs";
+import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useTranslations } from "next-intl";
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useSyncExternalStore,
-} from "react";
+import { useCallback, useEffect, useMemo, useSyncExternalStore } from "react";
 import { useAnnotationLoad } from "@/features/annotations/use-annotation-load";
 import { getPublicApiBaseUrl } from "@/lib/api";
 import type { ReaderRangeLocator } from "@/lib/api-types";
@@ -69,7 +64,8 @@ export function useHighlights(libraryItemId: string): UseHighlightsResult {
     [apiBaseUrl, libraryItemId],
   );
   const getSnapshot = useCallback(
-    () => selectStableHighlights(getHighlightsBucket(libraryItemId, apiBaseUrl)),
+    () =>
+      selectStableHighlights(getHighlightsBucket(libraryItemId, apiBaseUrl)),
     [apiBaseUrl, libraryItemId],
   );
   const highlights = useSyncExternalStore(
@@ -78,7 +74,10 @@ export function useHighlights(libraryItemId: string): UseHighlightsResult {
     getServerSnapshot,
   );
 
-  const { loadStatus, refetch } = useAnnotationLoad(libraryItemId, "highlights");
+  const { loadStatus, refetch } = useAnnotationLoad(
+    libraryItemId,
+    "highlights",
+  );
 
   // Background flush triggers. No mount kick — the initial-load effect above
   // already flushes once the server snapshot lands.
@@ -100,9 +99,7 @@ export function useHighlights(libraryItemId: string): UseHighlightsResult {
     });
   }, [apiBaseUrl, libraryItemId, t]);
 
-  const upsertHighlight = useCallback<
-    UseHighlightsResult["upsertHighlight"]
-  >(
+  const upsertHighlight = useCallback<UseHighlightsResult["upsertHighlight"]>(
     ({ id, excerpt, color, locator }) => {
       const finalId = id ?? generateHighlightId();
       enqueueUpsert(libraryItemId, apiBaseUrl, {
@@ -116,9 +113,7 @@ export function useHighlights(libraryItemId: string): UseHighlightsResult {
     [apiBaseUrl, libraryItemId],
   );
 
-  const deleteHighlight = useCallback<
-    UseHighlightsResult["deleteHighlight"]
-  >(
+  const deleteHighlight = useCallback<UseHighlightsResult["deleteHighlight"]>(
     (id) => {
       enqueueDelete(libraryItemId, apiBaseUrl, id);
     },
@@ -126,7 +121,13 @@ export function useHighlights(libraryItemId: string): UseHighlightsResult {
   );
 
   return useMemo(
-    () => ({ highlights, upsertHighlight, deleteHighlight, loadStatus, refetch }),
+    () => ({
+      highlights,
+      upsertHighlight,
+      deleteHighlight,
+      loadStatus,
+      refetch,
+    }),
     [highlights, upsertHighlight, deleteHighlight, loadStatus, refetch],
   );
 }

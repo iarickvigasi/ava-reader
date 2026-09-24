@@ -68,7 +68,8 @@ Monorepo: pnpm workspaces + Turbo (lint/typecheck/test/build), Node ≥22.
 - **stats/** — composes server baseline + unsynced local session/progress deltas (no double-count on
   sync).
 - **sw/** — service worker caches the app shell; a root identity reconciler (lifecycle/) wipes all
-  offline substrates on sign-out / account-switch (adr/5); net-state tracks connectivity;
+  offline substrates on explicit sign-out / account-switch (adr/5, adr/6); expiry preserves data.
+  features/auth owns same-account bounded token access and provider recovery; net-state tracks connectivity;
   missing-book-bus signals uncached content.
 
 ## API (apps/api/src)

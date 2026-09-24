@@ -1,62 +1,57 @@
 # Authentication
 
-> Status: shipped · Updated: 2026-07-05 · ADRs: [[1-clerk-authentication]],
-> [[5-per-user-offline-database]] · Code: apps/web/app/{sign-in,sign-up}, apps/web/app/layout.tsx,
-> apps/web/proxy.ts, apps/api/src/{auth,users},
-> apps/web/features/offline/lifecycle/clear-on-sign-out.tsx,
-> apps/web/components/app/core/signed-out-redirect-runner.tsx
+> Status: active · Updated: 2026-09-24 · ADRs: [[1-clerk-authentication]],
+> [[5-per-user-offline-database]], [[6-durable-offline-authentication]] · Code:
+> apps/web/features/auth, apps/web/components/auth, apps/web/proxy.ts,
+> apps/web/features/offline/lifecycle/offline-identity-reconciler.tsx
 
 ## Summary
-Clerk-backed sign-in/sign-up that establishes the user identity scoping all reading data. Gate for
-every authenticated feature.
 
-## Scope
-- In: email-code + SSO sign-in/sign-up, session tokens, API token verification, clearing offline
-  data on sign-out.
-- Non-goals: roles/permissions beyond basic role field, offline-only accounts, social profiles.
+Clerk authenticates server requests. A remembered device account independently owns downloaded
+books and pending offline changes; losing an online session never removes local reading access.
 
 ## Behaviour
-1. Unauthenticated users hit /sign-in or /sign-up (Clerk flows).
-2. On success, a session token authorizes API calls; the User row links to clerkUserId.
-3. Sign-out and account-switch clear every offline substrate (per-user Dexie DB, SW caches,
-   localStorage) so no data leaks between accounts — see [[4.7-data-isolation]].
-4. **Client-side signed-out guard** (signed-out-redirect-runner, an AppShell island): when the
-   network is online **and** clerk-js has loaded **and** reports signed-out, redirect to the local
-   /sign-in. This is the *only* stale-session redirect — the middleware can't distinguish "stale
-   token, user online" from "stale token, can't refresh offline", but the client can: offline,
-   clerk-js never confirms signed-out (no false positives), so the cached shell keeps rendering from
-   Dexie. A session that is merely expired-but-refreshable is refreshed by clerk-js itself and never
-   triggers the guard.
+
+1. First-time visitors without a local account sign in before downloading data. Generic app shells
+   require no session cookie; the API always requires a valid Clerk bearer token.
+2. Returning readers open cached data immediately, even when offline, cookies expired, or Clerk
+   failed to load. Authentication restoration runs separately from local reading.
+3. Online states are restoring, authenticated, temporarily unavailable, and sign-in required.
+   Provider/network failure is not proof of sign-out. Confirmed expiry or revocation pauses sync
+   and shows a nonblocking sign-in action. It never redirects a remembered reader or wipes data.
+4. Failed Clerk initialization retries with capped backoff, on reconnect and visible-tab resume.
+   Token acquisition and history requests have deadlines; pending locks release on failure.
+   Previously requested history retries after recovery without moving the viewed week.
+5. Server tokens are short-lived and refreshed silently by Clerk. Intended production policy:
+   365-day maximum session lifetime, inactivity timeout disabled. This is Clerk configuration,
+   requires a suitable paid production plan, and cannot prevent cookie deletion/private-mode loss.
+6. Same-account reauthentication resumes pending changes. Every token getter verifies the current
+   session matches the local data owner before and after awaiting a token.
+7. Explicit sign-out uses an app-owned action, warns if unsynced work would be lost, records a
+   durable sign-out intent, clears local data, and blocks access in other tabs. Offline sign-out
+   clears local access immediately and retries server revocation when connectivity returns.
+8. Account switching keeps existing purge-on-switch isolation. Old account views unmount before
+   adopting the new account. Pending writes must never be sent with another account's token.
 
 ## Data & sync
-Clerk session → bearer token verified by apps/api/src/auth (networkless JWT verify; set
-CLERK_JWT_KEY to avoid a JWKS fetch per request). User.clerkUserId is the identity link. The API
-resolves the local user **DB-first** (`UsersService.getCurrentUserRecord`): a provisioned user is
-served from Postgres with no Clerk User-API call, so authenticated reads (home, library, …) succeed
-offline instead of 500ing; only a first-seen user hits Clerk, and a stale profile is refreshed
-opportunistically in the background (≤1×/user/hr, best-effort). No bucket; auth state required
-before any bucket sync.
 
-## Edge cases
-Token expiry mid-session; offline with a valid prior session (data accessible); sign-out while
-mutations pending; account switch on shared device. **Stale session, Clerk unreachable** (wifi drop
-with the web server still reachable, or a Clerk outage): the middleware (apps/web/proxy.ts) must
-never handshake/portal-redirect — a `__session*` cookie passes the shell through (Dexie renders, the
-API still verifies every bearer token); only a cookie-less visitor goes to the **local** /sign-in
-(`NEXT_PUBLIC_CLERK_SIGN_IN_URL` — the Account Portal fallback brick-loops offline tabs). **Stale
-session, online**: the cookie pass-through means SSR renders the degraded null-data shell (it looked
-like the offline fallback while online — the prod mobile bug); the client guard (Behaviour 4)
-redirects to /sign-in, and the SW must let auth redirects through and never cache
-degraded/redirected shells ([[4.5-route-precaching]]).
+Per-user Dexie and the active-user marker are local ownership, never server authorization.
+The API verifies Clerk JWTs and resolves provisioned users DB-first; profile refresh is best-effort.
+Authentication failures retain mutation queues; permanent domain failures retain their existing policy.
 
 ## Acceptance criteria
-- [ ] Authenticated users reach /app; unauthenticated are redirected to sign-in.
-- [ ] A signed-out (expired) session on an online device redirects to /sign-in instead of rendering
-  the offline-route fallback; the same expired session offline still renders the cached shell from
-  Dexie.
-- [ ] API rejects requests without a valid Clerk token.
-- [ ] Sign-out and account-switch leave no prior user's offline data
-  ([[4.7-data-isolation]]).
 
-## Open questions
-Pending-mutation handling on sign-out; future roles for authors/curators.
+- [ ] Cached books open on an offline cold start with expired credentials or failed Clerk scripts.
+- [ ] Offline → online restores authentication/history and sync without a reload.
+- [ ] Session expiry/revocation preserves downloaded books, progress, and pending annotations.
+- [ ] Same-account reauthentication resumes syncing; cross-account token acquisition is rejected.
+- [ ] Explicit sign-out wipes local data and blocks other tabs, including when offline.
+- [ ] API access without valid authentication remains denied.
+
+## Limits
+
+Only downloaded content is available offline. First sign-in, new AI work, and uncached content
+require connectivity. Browser storage eviction and manual clearing can remove offline content.
+Production inspected 2026-09-24: Hobby plan, maximum lifetime 7 days (locked Pro control),
+inactivity timeout disabled, multi-session disabled. The 365-day policy requires a plan upgrade;
+no billing or production settings were changed.

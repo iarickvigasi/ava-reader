@@ -5,7 +5,7 @@
 // in-memory version so existing callers (AiCommentsProvider /
 // PanelViewModel / data formatters) stay unchanged.
 
-import { useAuth } from "@clerk/nextjs";
+import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useSyncExternalStore } from "react";
 
@@ -42,10 +42,7 @@ type UseAiCommentsResult = {
     mutation: Extract<
       PendingMutation,
       {
-        kind:
-          | "generate.translate"
-          | "generate.etymology"
-          | "generate.explain";
+        kind: "generate.translate" | "generate.etymology" | "generate.explain";
       }
     >,
   ) => void;
@@ -62,7 +59,8 @@ export function useAiComments(libraryItemId: string): UseAiCommentsResult {
   // stable module-level empty list for the same reason.
   const comments = useSyncExternalStore(
     (listener) => subscribeToAiComments(libraryItemId, apiBaseUrl, listener),
-    () => selectStableAiComments(getAiCommentsBucket(libraryItemId, apiBaseUrl)),
+    () =>
+      selectStableAiComments(getAiCommentsBucket(libraryItemId, apiBaseUrl)),
     getAiCommentsServerSnapshot,
   );
 
@@ -118,5 +116,11 @@ export function useAiComments(libraryItemId: string): UseAiCommentsResult {
     [apiBaseUrl, libraryItemId],
   );
 
-  return { comments, refetch, deleteAiComment, enqueueGenerateIntent, loadStatus };
+  return {
+    comments,
+    refetch,
+    deleteAiComment,
+    enqueueGenerateIntent,
+    loadStatus,
+  };
 }

@@ -6,6 +6,8 @@
 // `initial`. When that fetch fails (offline), `initial` is null and these
 // hooks recover the last-known user from Dexie so the nav still renders.
 
+import { liveQuery } from "dexie";
+import { useRefreshCurrentUser } from "./use-refresh-current-user";
 import { useEffect, useState } from "react";
 
 import type { CurrentUserPayload } from "@/lib/api-types/user";
@@ -17,6 +19,7 @@ import { applyCurrentUser, readCurrentUser } from "./storage";
 export function useHydrateCurrentUser(
   initial: CurrentUserPayload | null,
 ): void {
+  useRefreshCurrentUser();
   useEffect(() => {
     if (!initial) {
       return;
@@ -38,20 +41,9 @@ export function useCurrentUserCached(
   const [cached, setCached] = useState<CurrentUserPayload | null>(null);
 
   useEffect(() => {
-    if (initial) {
-      // Server payload present — nothing to read from the cache.
-      return;
-    }
-    let cancelled = false;
-    void readCurrentUser().then((row) => {
-      if (!cancelled && row) {
-        setCached(row);
-      }
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [initial]);
+    const subscription = liveQuery(readCurrentUser).subscribe(setCached);
+    return () => subscription.unsubscribe();
+  }, []);
 
-  return initial ?? cached;
+  return cached ?? initial;
 }

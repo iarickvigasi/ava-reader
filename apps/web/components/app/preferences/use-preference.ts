@@ -4,7 +4,7 @@
 // out of the client-entry boundary lets the API accept a function `parse`
 // option without tripping the "props must be serializable" lint.
 
-import { useAuth } from "@clerk/nextjs";
+import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useCallback, useEffect, useState } from "react";
 import {
   fetchPreferences,
@@ -12,10 +12,7 @@ import {
   patchPreference,
   subscribePreference,
 } from "./preferences-store";
-import type {
-  PreferenceField,
-  PreferencesPayload,
-} from "./preferences-types";
+import type { PreferenceField, PreferencesPayload } from "./preferences-types";
 
 // Generic over string/number — the only two primitive shapes we currently
 // store. The hook keeps a localStorage cache for fast paint and offline

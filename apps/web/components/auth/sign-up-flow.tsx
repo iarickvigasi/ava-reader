@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth, useSignUp } from "@clerk/nextjs";
+import { isLocallySignedOut } from "@/features/auth/local-sign-out";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -20,7 +21,8 @@ export function SignUpFlow({ initialNotice }: SignUpFlowProps) {
   const t = useTranslations("auth.signUp");
   const tShared = useTranslations("auth.shared");
   const { signUp, errors, fetchStatus } = useSignUp();
-  const { isSignedIn } = useAuth();
+  const { isSignedIn: signedIn, userId, sessionId } = useAuth();
+  const isSignedIn = signedIn && !isLocallySignedOut(userId ?? null, sessionId);
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>("idle");
   const [email, setEmail] = useState("");
@@ -138,7 +140,11 @@ export function SignUpFlow({ initialNotice }: SignUpFlowProps) {
           code={code}
           busy={fetchStatus === "fetching"}
           error={errorMessage}
-          notice={localMessage && errorMessage !== localMessage ? localMessage : undefined}
+          notice={
+            localMessage && errorMessage !== localMessage
+              ? localMessage
+              : undefined
+          }
           captchaSlot={<div id="clerk-captcha" />}
           onEmailChange={setEmail}
           onCodeChange={setCode}

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useState, useTransition } from "react";
-import { useAuth } from "@clerk/nextjs";
+import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { getPublicApiBaseUrl } from "@/lib/api";

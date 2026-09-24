@@ -7,10 +7,9 @@ describe("decideIdentityAction", () => {
     expect(decideIdentityAction(null, null)).toEqual({ kind: "none" });
   });
 
-  it("wipes the previous user on sign-out (user → null)", () => {
+  it("preserves the previous user when the online session expires", () => {
     expect(decideIdentityAction("user-a", null)).toEqual({
-      kind: "wipe",
-      userId: "user-a",
+      kind: "none",
     });
   });
 

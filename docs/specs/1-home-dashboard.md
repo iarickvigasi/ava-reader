@@ -69,7 +69,9 @@ discovery. The daily entry point into the habit.
     `rounded-t-sm` on desktop, with square bottom corners.
     Prepending preserves the viewed dates; today’s summary remains fixed. Stop at the earliest
     recorded day, not an empty week. Earlier weeks stay in memory only and are never persisted.
-    Offline users can browse already loaded weeks; missing weeks show a connection/retry message.
+    Offline users can browse already loaded weeks. Missing weeks remain retryable; authentication
+    recovery or reconnect automatically retries the requested week without a page reload.
+    Token and request deadlines prevent an indefinitely pending skeleton.
 
 ## Data & sync
 

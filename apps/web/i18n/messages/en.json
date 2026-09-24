@@ -667,6 +667,16 @@
       "subtitle": "Add your Clerk environment variables to turn on the custom sign-in and sign-up flows.",
       "requiredVarsLabel": "Required web variables",
       "returnToSplash": "Return to splash"
+    },
+    "device": {
+      "menu": "Account menu",
+      "manage": "Manage account",
+      "signIn": "Sign in",
+      "signOut": "Sign out",
+      "syncPaused": "Sign in to resume syncing. Your downloaded books are still available.",
+      "reconnecting": "Reconnecting. Your changes are saved on this device.",
+      "unsyncedWarning": "Some changes have not synced. Signing out removes downloaded books and unsynced changes from this device. Sign out anyway?",
+      "signOutError": "Could not finish signing out. Please try again."
     }
   },
   "unavailablePage": {

@@ -5,7 +5,7 @@
 // while online. Freshness on a hit is owned by CollectionHydrator, exactly as
 // on the old SSR page.
 
-import { useAuth } from "@clerk/nextjs";
+import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useEffect, useRef, useState } from "react";
 
 import { OfflineRouteFallback } from "@/components/app/core/offline-route-fallback";
@@ -54,21 +54,24 @@ export function CollectionLoader() {
         const view = await readCollectionViewBySlug(slug);
         return view ? collectionViewToLibraryCollection(view) : null;
       },
-      revalidate: () => revalidateCollection(slug, getToken, () => {
-        missing = true;
-      }),
-    }).then((collection) => {
-      if (cancelled) {
-        return;
-      }
-      setState(
-        collection
-          ? { status: "ready", collection }
-          : { status: missing ? "notFound" : "unavailable" },
-      );
-    }).catch(() => {
-      if (!cancelled) setState({ status: "unavailable" });
-    });
+      revalidate: () =>
+        revalidateCollection(slug, getToken, () => {
+          missing = true;
+        }),
+    })
+      .then((collection) => {
+        if (cancelled) {
+          return;
+        }
+        setState(
+          collection
+            ? { status: "ready", collection }
+            : { status: missing ? "notFound" : "unavailable" },
+        );
+      })
+      .catch(() => {
+        if (!cancelled) setState({ status: "unavailable" });
+      });
     return () => {
       cancelled = true;
     };

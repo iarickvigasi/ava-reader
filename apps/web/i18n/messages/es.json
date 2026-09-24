@@ -667,6 +667,16 @@
       "subtitle": "Añade tus variables de entorno de Clerk para activar los flujos personalizados de inicio de sesión y registro.",
       "requiredVarsLabel": "Variables web requeridas",
       "returnToSplash": "Volver al inicio"
+    },
+    "device": {
+      "menu": "Menú de cuenta",
+      "manage": "Gestionar cuenta",
+      "signIn": "Iniciar sesión",
+      "signOut": "Cerrar sesión",
+      "syncPaused": "Inicia sesión para reanudar la sincronización. Tus libros descargados siguen disponibles.",
+      "reconnecting": "Reconectando. Tus cambios están guardados en este dispositivo.",
+      "unsyncedWarning": "Algunos cambios no se han sincronizado. Al cerrar sesión se eliminarán los libros descargados y los cambios sin sincronizar de este dispositivo. ¿Cerrar sesión de todos modos?",
+      "signOutError": "No se pudo completar el cierre de sesión. Inténtalo de nuevo."
     }
   },
   "unavailablePage": {

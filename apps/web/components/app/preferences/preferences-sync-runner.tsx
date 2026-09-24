@@ -5,7 +5,7 @@
 // it runs on every authenticated route — the queue is global (single
 // `preferences` row keyed by "me") so one mount per session is enough.
 
-import { useAuth } from "@clerk/nextjs";
+import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useCallback } from "react";
 
 import { flushPreferences } from "@/features/offline/buckets/preferences";
