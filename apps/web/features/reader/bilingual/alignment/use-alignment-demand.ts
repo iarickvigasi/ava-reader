@@ -1,3 +1,4 @@
+import { useDemandActivity } from "../demand/use-demand-activity";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { BilingualChapter } from "@/lib/api-types/bilingual";
 import { ensureSentenceAlignments } from "@/features/offline/buckets/translations/align";
@@ -48,6 +49,7 @@ export function useAlignmentDemand(
         .slice(0, 8)
     : [];
   const key = JSON.stringify([identity, ids]);
+  const { track, activeIds } = useDemandActivity(key, enabled);
   const latest = useRef({ chapter, ids });
   useEffect(() => {
     latest.current = { chapter, ids };
@@ -57,9 +59,11 @@ export function useAlignmentDemand(
       return;
     const controller = new AbortController();
     const { chapter, ids } = latest.current;
-    void runSentenceDemand(
-      () => ensureSentenceAlignments(chapter!, ids, controller.signal),
-      controller.signal,
+    void track({ key, ids, signal: controller.signal }, () =>
+      runSentenceDemand(
+        () => ensureSentenceAlignments(chapter!, ids, controller.signal),
+        controller.signal,
+      ),
     ).catch((error: unknown) => {
       if (!controller.signal.aborted)
         setFailure((previous) => ({
@@ -75,7 +79,7 @@ export function useAlignmentDemand(
         }));
     });
     return () => controller.abort();
-  }, [enabled, key, identity, attempt]);
+  }, [enabled, key, identity, attempt, track]);
   const retry = useCallback(() => {
     setFailure(null);
     setAttempt((value) => value + 1);
@@ -87,5 +91,6 @@ export function useAlignmentDemand(
   return {
     error: hasVisibleFailure ? (failure?.message ?? null) : null,
     retry,
+    activeIds,
   };
 }

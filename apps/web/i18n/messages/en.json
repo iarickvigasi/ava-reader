@@ -332,8 +332,8 @@
     "bilingual": {
       "redoTranslation": "Redo translation",
       "redoPairs": "Redo pairs",
-      "redoTranslationBusy": "Retranslating…",
-      "redoPairsBusy": "Matching again…",
+      "redoTranslationBusy": "Translating",
+      "redoPairsBusy": "Creating matches",
       "label": "Bilingual reader",
       "original": "Original",
       "preparing": "Preparing pages",

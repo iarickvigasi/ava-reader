@@ -332,8 +332,8 @@
     "bilingual": {
       "redoTranslation": "Traduzir novamente",
       "redoPairs": "Refazer pares",
-      "redoTranslationBusy": "Traduzindo…",
-      "redoPairsBusy": "Refazendo pares…",
+      "redoTranslationBusy": "Traduzindo",
+      "redoPairsBusy": "Criando correspondências",
       "label": "Leitor bilíngue",
       "original": "Original",
       "preparing": "Preparando páginas",

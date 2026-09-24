@@ -332,8 +332,8 @@
     "bilingual": {
       "redoTranslation": "Retraduire",
       "redoPairs": "Refaire les correspondances",
-      "redoTranslationBusy": "Traduction…",
-      "redoPairsBusy": "Correspondances…",
+      "redoTranslationBusy": "Traduction en cours",
+      "redoPairsBusy": "Création des correspondances",
       "label": "Lecture bilingue",
       "original": "Original",
       "preparing": "Préparation des pages",

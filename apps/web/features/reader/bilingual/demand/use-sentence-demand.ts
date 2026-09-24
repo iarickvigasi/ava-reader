@@ -1,3 +1,5 @@
+import { subscribeVisibility } from "./subscribe-visibility";
+import { useDemandActivity } from "./use-demand-activity";
 import { useAuth } from "@clerk/nextjs";
 import {
   useCallback,
@@ -9,17 +11,6 @@ import {
 import type { BilingualChapter } from "@/lib/api-types/bilingual";
 import { ensureSentenceTranslations } from "@/features/offline/buckets/translations";
 import { runSentenceDemand } from "./run-sentence-demand";
-
-const subscribeVisibility = (notify: () => void) => {
-  document.addEventListener("visibilitychange", notify);
-  window.addEventListener("online", notify);
-  window.addEventListener("offline", notify);
-  return () => {
-    document.removeEventListener("visibilitychange", notify);
-    window.removeEventListener("online", notify);
-    window.removeEventListener("offline", notify);
-  };
-};
 
 export function useSentenceDemand(
   chapter: BilingualChapter | null,
@@ -63,19 +54,24 @@ export function useSentenceDemand(
     !translated &&
     isLoaded &&
     !!isSignedIn;
+  const { track, activeIds } = useDemandActivity(key, desired);
   useEffect(() => {
     if (!desired) return;
     const controller = new AbortController();
-    void runSentenceDemand(async () => {
-      const current = latest.current;
-      if (current.chapter && current.sentenceId) {
-        await ensureSentenceTranslations(
-          current.chapter,
-          [current.sentenceId],
-          controller.signal,
-        );
-      }
-    }, controller.signal).catch((error: unknown) => {
+    void track(
+      { key, ids: [latest.current.sentenceId!], signal: controller.signal },
+      () =>
+        runSentenceDemand(async () => {
+          const current = latest.current;
+          if (current.chapter && current.sentenceId) {
+            await ensureSentenceTranslations(
+              current.chapter,
+              [current.sentenceId],
+              controller.signal,
+            );
+          }
+        }, controller.signal),
+    ).catch((error: unknown) => {
       if (!controller.signal.aborted)
         setFailure({
           key,
@@ -86,7 +82,7 @@ export function useSentenceDemand(
     return () => {
       controller.abort();
     };
-  }, [desired, attempt, key]);
+  }, [desired, attempt, key, track]);
   const retry = useCallback(() => {
     setFailure(null);
     setAttempt((value) => value + 1);
@@ -95,5 +91,6 @@ export function useSentenceDemand(
     error: !translated && failure?.key === key ? failure.message : null,
     retry,
     available,
+    activeIds,
   };
 }

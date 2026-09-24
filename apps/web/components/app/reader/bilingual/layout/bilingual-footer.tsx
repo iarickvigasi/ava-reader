@@ -1,3 +1,4 @@
+import { BilingualRegenerationActions } from "./bilingual-regeneration-actions";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { useReaderUi } from "@/components/app/core/reader-ui-context";
@@ -14,7 +15,7 @@ export function BilingualFooter({
   retry,
   redoTranslation,
   redoPairs,
-  regenerating,
+  generation,
   redoDisabled,
   previousDisabled,
   nextDisabled,
@@ -30,7 +31,7 @@ export function BilingualFooter({
   retry: () => void;
   redoTranslation: () => void;
   redoPairs: () => void;
-  regenerating: "translation" | "pairs" | null;
+  generation: { translation: boolean; pairs: boolean };
   redoDisabled: boolean;
   previousDisabled: boolean;
   nextDisabled: boolean;
@@ -49,28 +50,13 @@ export function BilingualFooter({
         !isPhone && "sm:h-24 sm:py-2",
       )}
     >
-      <div className="flex w-full shrink-0 items-center gap-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          disabled={redoDisabled}
-          onClick={redoTranslation}
-        >
-          {t(
-            regenerating === "translation"
-              ? "redoTranslationBusy"
-              : "redoTranslation",
-          )}
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          disabled={redoDisabled || pending}
-          onClick={redoPairs}
-        >
-          {t(regenerating === "pairs" ? "redoPairsBusy" : "redoPairs")}
-        </Button>
-      </div>
+      <BilingualRegenerationActions
+        generation={generation}
+        redoDisabled={redoDisabled}
+        pending={pending}
+        redoTranslation={redoTranslation}
+        redoPairs={redoPairs}
+      />
       <BilingualStatus
         error={error}
         alignmentFailed={alignmentFailed}
