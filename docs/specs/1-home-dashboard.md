@@ -63,6 +63,8 @@ discovery. The daily entry point into the habit.
     Date/arrow controls use compact vertical spacing. Chart height, including date controls, is
     11rem on mobile and 15rem on desktop. Bars, goal lines, and loading skeletons occupy 85% of
     the available plot height, anchored to the bottom; labels and controls keep their positions.
+    Loading columns match the actual bars' top-only rounding: `rounded-t-xs` on mobile and
+    `rounded-t-sm` on desktop, with square bottom corners.
     Prepending preserves the viewed dates; today’s summary remains fixed. Stop at the earliest
     recorded day, not an empty week. Earlier weeks stay in memory only and are never persisted.
     Offline users can browse already loaded weeks; missing weeks show a connection/retry message.

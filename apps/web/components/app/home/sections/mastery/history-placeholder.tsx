@@ -33,7 +33,12 @@ export function HistoryPlaceholder({
             isMobile ? "gap-1" : "gap-3",
           )}
         >
-          <div className="h-[85%] self-end animate-pulse rounded-control bg-surface-strong motion-reduce:animate-none" />
+          <div
+            className={cn(
+              "h-[85%] self-end animate-pulse bg-surface-strong motion-reduce:animate-none",
+              isMobile ? "rounded-t-xs" : "rounded-t-sm",
+            )}
+          />
           <div
             className={cn(
               "text-center",
