@@ -6,7 +6,6 @@ const state = vi.hoisted(() => ({
     clientWidth: 700,
     scrollWidth: 1400,
     scrollLeft: 0,
-    scrollBy: vi.fn(),
     scrollTo: vi.fn(),
   },
   previous: { count: 0, more: false, width: 0 },
@@ -88,4 +87,14 @@ it("preserves partial-day scrolling until today has fully left the viewport", ()
   state.element.scrollLeft = 600;
   scroll.onScroll();
   expect(state.offset).toBe(1);
+});
+it.each([-1, 1])("aligns a week move in direction %s", (direction) => {
+  state.element.scrollWidth = 2800;
+  const scroll = useMasteryScroll(21, true, vi.fn(), true);
+  state.element.scrollLeft = 1325;
+  scroll.move(direction);
+  expect(state.element.scrollTo).toHaveBeenLastCalledWith({
+    left: 1400 + direction * 700,
+    behavior: "instant",
+  });
 });

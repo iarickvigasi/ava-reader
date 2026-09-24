@@ -53,11 +53,16 @@ export function useMasteryScroll(
       hasMore
     )
       void load();
-    if (element)
-      element.scrollBy({
-        left: direction * element.clientWidth,
-        behavior: "smooth",
+    if (element && element.clientWidth) {
+      const width = element.clientWidth;
+      const end = element.scrollWidth - width;
+      const week = Math.round((end - element.scrollLeft) / width);
+      element.scrollTo({
+        left: Math.max(0, Math.min(end, end - (week - direction) * width)),
+        // Prepending history cancels smooth scrolling at an intermediate day.
+        behavior: "instant",
       });
+    }
   }
   function today() {
     ref.current?.scrollTo({
