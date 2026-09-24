@@ -1,6 +1,6 @@
 # Home dashboard
 
-> Status: shipped · Updated: 2026-09-15 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
+> Status: shipped · Updated: 2026-09-24 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
 > apps/web/components/app/home, apps/web/features/offline/buckets/home
 
 ## Summary
@@ -54,6 +54,19 @@ discovery. The daily entry point into the habit.
     The existing 30-second stats refresh and tab-resume refresh advance stale windows.
     Initial rendering retains the cached window to keep server/client hydration consistent.
 
+11. Mastery scrolls horizontally through seven-day UTC windows, initially ending today. Older
+    weeks load on demand with seven-column skeletons and weekday labels, with no visible loading,
+    previous-week prompt, or error text. The previous arrow retries failures.
+    Scrollbars stay hidden on desktop and mobile using scoped native scrollbar rules; horizontal
+    scrolling remains enabled and vertical chart overflow is clipped. Once today leaves the viewport,
+    “Back to today” replaces the daily-goal message; otherwise the message stays visible.
+    Date/arrow controls use compact vertical spacing. Chart height, including date controls, is
+    11rem on mobile and 15rem on desktop. Bars, goal lines, and loading skeletons occupy 85% of
+    the available plot height, anchored to the bottom; labels and controls keep their positions.
+    Prepending preserves the viewed dates; today’s summary remains fixed. Stop at the earliest
+    recorded day, not an empty week. Earlier weeks stay in memory only and are never persisted.
+    Offline users can browse already loaded weeks; missing weeks show a connection/retry message.
+
 ## Data & sync
 
 home bucket (single payload row keyed to the user); composed with stats deltas. Service worker
@@ -66,6 +79,8 @@ current book.
 
 ## Acceptance criteria
 
+- [ ] Mastery loads older dates seven at a time, with skeletons and retry, without persisting
+      history or shifting the viewed dates. Controls work on mobile, desktop, and keyboard.
 - [ ] Home renders offline from the cached payload.
 - [ ] Stats reflect local deltas without double-counting after sync.
 - [ ] Mastery uses the saved goal on first load and responds to local goal edits while offline.

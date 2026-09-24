@@ -28,7 +28,7 @@ export function MasteryDayColumn({
         isMobile ? "gap-1" : "gap-3",
       )}
     >
-      <div className="relative flex h-full w-full items-end rounded-sm bg-transparent">
+      <div className="relative flex h-[85%] w-full self-end items-end rounded-sm bg-transparent">
         <div
           className="pointer-events-none absolute inset-x-0 border-t border-dashed border-line/45"
           style={{ bottom: `${GOAL_BAR_HEIGHT_PERCENT}%` }}
@@ -42,7 +42,9 @@ export function MasteryDayColumn({
           style={{ height: `${heightPercent}%` }}
         />
       </div>
-      <div className={cn("text-center", isMobile ? "space-y-0.5" : "space-y-1")}>
+      <div
+        className={cn("text-center", isMobile ? "space-y-0.5" : "space-y-1")}
+      >
         <p
           className={cn(
             "uppercase text-muted",

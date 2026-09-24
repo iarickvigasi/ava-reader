@@ -22,5 +22,10 @@ export function StatsPanelWithDeltas({ home }: { home: HomePayload }) {
 
 export function MasteryPanelWithDeltas({ home }: { home: HomePayload }) {
   const mastery = useComposedMastery(home) ?? home.mastery;
-  return <MasteryPanel mastery={mastery} />;
+  return (
+    <MasteryPanel
+      key={`${home.user.id}:${mastery.days[0].key}`}
+      mastery={mastery}
+    />
+  );
 }

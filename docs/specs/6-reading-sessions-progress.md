@@ -91,6 +91,10 @@ reading reconciliation metadata retain their server reading totals until refresh
 and daily-minute rounding happens after adding seconds. Home metadata never reconciles book-info
 against a different snapshot.
 
+Historical mastery pages use a seven-day exclusive `before` UTC cursor and snapshot session IDs
+for local reconciliation. They remain in page memory only (explicit exception to persisted history);
+the existing home snapshot and local session storage are unchanged.
+
 ## Edge cases
 
 Offline across multiple days; multiple devices for one book; clock changes; session never stopped

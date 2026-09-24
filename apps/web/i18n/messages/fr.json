@@ -213,7 +213,13 @@
       "minToday": "Min aujourd'hui",
       "minutesAbbrev": "MIN",
       "remainingToGoal": "Encore {remaining} minutes pour atteindre votre objectif quotidien",
-      "goalMet": "Objectif quotidien atteint. Continuez sur votre lancée."
+      "goalMet": "Objectif quotidien atteint. Continuez sur votre lancée.",
+      "previousWeek": "Semaine précédente",
+      "nextWeek": "Semaine suivante",
+      "backToToday": "Revenir à aujourd’hui",
+      "loadingHistory": "Chargement des jours précédents",
+      "historyError": "Impossible de charger les jours précédents. Vérifiez votre connexion.",
+      "retryHistory": "Réessayer"
     }
   },
   "reader": {
