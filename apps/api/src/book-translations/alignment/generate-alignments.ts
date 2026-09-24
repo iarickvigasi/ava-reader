@@ -49,6 +49,7 @@ export async function generateAlignments(
     previousAttempt?: unknown[],
   ) => requestAlignment({ ...args, signal }, batch, feedback, previousAttempt);
   const logger = new Logger('SentenceAlignments');
+  let failure: { reason: unknown } | undefined;
   try {
     const outputs = await request(inputs);
     const results = await Promise.allSettled(
@@ -63,26 +64,27 @@ export async function generateAlignments(
           } catch (error) {
             if (signal.aborted) throw error;
             // Only deterministic validation failures should be sent back to the model.
-            const reason =
-              error instanceof Error ? error.message : 'Unknown error';
             if (!(error instanceof AlignmentValidationError)) throw error;
             logger.warn(
-              `Sentence ${row.sentenceId}, attempt ${attempt + 1}: ${reason}`,
+              `Sentence ${row.sentenceId}, attempt ${attempt + 1}: ${error.message}`,
             );
             if (attempt === 2) return;
             candidates = await request(
               [row],
-              reason,
+              error.message,
               candidates.filter((candidate) => candidate.id === row.sentenceId),
             );
           }
         }
       }),
     );
-    const failed = results.find((result) => result.status === 'rejected');
-    if (failed?.status === 'rejected') throw failed.reason;
+    failure = results.find((result) => result.status === 'rejected');
     args.signal.throwIfAborted();
   } catch (error) {
+    failure = { reason: error };
+  }
+  if (failure) {
+    const error = failure.reason;
     if (args.signal.aborted) throw error;
     logger.error(
       `Alignment generation failed: ${error instanceof Error ? error.name : 'Unknown error'}`,

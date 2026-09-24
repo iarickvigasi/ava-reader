@@ -7,6 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { useReaderMode } from "@/features/reader/modes/use-reader-mode";
 import { useReaderDevice } from "@/features/reader/modes/use-reader-device";
 
 export type ReaderPanel =
@@ -31,23 +32,22 @@ const ReaderUiContext = createContext<ReaderUiContextValue | null>(null);
 
 export function ReaderUiProvider({ children }: { children: ReactNode }) {
   const [activePanel, setActivePanel] = useState<ReaderPanel | null>(null);
-  const [manualBilingual, setManualBilingual] = useState(false);
+  const [isBilingual, toggleBilingual] = useReaderMode();
   const device = useReaderDevice();
   const isPhone = device !== "desktop";
-  const isBilingual = manualBilingual;
 
   const value = useMemo<ReaderUiContextValue>(
     () => ({
       isBilingual,
       isPhone,
-      toggleBilingual: () => setManualBilingual((current) => !current),
+      toggleBilingual,
       activePanel,
       closePanel: () => setActivePanel(null),
       openPanel: (panel) => setActivePanel(panel),
       togglePanel: (panel) =>
         setActivePanel((current) => (current === panel ? null : panel)),
     }),
-    [activePanel, isBilingual, isPhone],
+    [activePanel, isBilingual, isPhone, toggleBilingual],
   );
 
   return (
