@@ -104,52 +104,8 @@ async function paragraphFlowsInline(page) {
   expect(Math.abs(result[0].firstTop - result[0].secondTop)).toBeLessThan(1);
 }
 
-async function compactPhoneRail(page) {
-  const rail = page.locator('[data-reader-mobile-navigation="rail"]');
-  await expect(rail).toBeVisible();
-  const metrics = await rail.evaluate((element) => {
-    const box = element.getBoundingClientRect();
-    return {
-      left: box.left,
-      top: box.top,
-      width: box.width,
-      height: box.height,
-      overflow: element.scrollHeight - element.clientHeight,
-      buttons: Array.from(element.querySelectorAll("nav button"), (button) => {
-        const rect = button.getBoundingClientRect();
-        return {
-          left: rect.left,
-          top: rect.top,
-          bottom: rect.bottom,
-          width: rect.width,
-          height: rect.height,
-        };
-      }),
-    };
-  });
-  expect(metrics.left).toBe(0);
-  expect(metrics.top).toBe(0);
-  expect(metrics.width).toBe(44);
-  expect(metrics.overflow).toBeLessThanOrEqual(1);
-  expect(metrics.buttons).toHaveLength(5);
-  for (let index = 0; index < metrics.buttons.length; index++) {
-    const button = metrics.buttons[index];
-    expect(button.width).toBe(32);
-    expect(button.height).toBe(32);
-    expect(button.left).toBe(metrics.buttons[0].left);
-    if (index) expect(button.top - metrics.buttons[index - 1].bottom).toBe(4);
-  }
-  const column = await page
-    .locator('[data-bilingual-column="source"]')
-    .boundingBox();
-  expect(column.x).toBeGreaterThanOrEqual(metrics.width);
-  expect(column.y).toBeLessThan(24);
-  expect(column.height).toBeGreaterThan(280);
-}
-
 module.exports = {
   fits,
   readerMetrics,
   paragraphFlowsInline,
-  compactPhoneRail,
 };

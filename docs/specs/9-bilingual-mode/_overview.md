@@ -1,6 +1,6 @@
 # Bilingual reading mode
 
-> Status: active · Updated: 2026-09-21 · ADRs: [[2-openrouter-and-byo-key]],
+> Status: active · Updated: 2026-09-24 · ADRs: [[2-openrouter-and-byo-key]],
 > [[3-offline-first-dexie-buckets]], [[5-per-user-offline-database]]
 
 ## Summary
@@ -11,10 +11,12 @@ Build a translated book incrementally, saving reusable sentence translations in 
 ## Behaviour
 
 1. Desktop: the reader sidebar bilingual button toggles the mode with an accurate pressed state.
-2. Phone: landscape enables bilingual mode; portrait disables it, including initial landscape open.
-   Rotation never writes a synced account preference. Tablets use the manual toggle.
-3. Original is physically left; translation is right. Both pages fit within the viewport. Neither
-   column scrolls. Left/right swipes and arrow keys turn pages as in ordinary mode.
+2. Phone: the header bilingual button uses the desktop icon and toggles session-only mode.
+   Initial mode is original in either orientation. Rotation never changes the selected mode.
+   Tablets also use the manual toggle; no synced account preference is written.
+3. Phone: original above translation in equal-height panes in both orientations, separated by a
+   small divider. Split the reading area after header/footer space. Desktop retains original left
+   and translation right. Neither pane scrolls. Left/right swipes and arrow keys turn both together.
 4. Sentences retain their paragraph flow and ordinary reader typography; no sentence rows or
    height matching between paragraphs. Both columns paginate the same range to fit both languages.
    A sentence taller than one page uses continuation pages; no text is truncated or font shrunk.
@@ -51,7 +53,8 @@ generated for saved translations and described in 9.4.
 
 Checked items reflect unit tests and desktop/phone-emulated checks; physical checks remain below.
 
-- [x] Desktop toggle and phone rotation produce original-left/translation-right pages.
+- [ ] Desktop and phone buttons toggle mode; phone rotation preserves the chosen mode.
+- [ ] Phone panes stack original above translation equally; desktop panes stay side by side.
 - [x] Neither column scrolls, including long translations and oversized sentences.
 - [x] Horizontal gestures navigate both columns together.
 - [x] Font changes and rotation reuse sentence translations without repeating AI work.
@@ -67,3 +70,7 @@ Web tests cover demand bounds, continuations, source offsets, cache/account isol
 cache → database GET → AI ordering, and atomic measured-page updates.
 Manual /dev/bilingual-fixture checks on 2026-09-21 verified desktop toggle, simulated phone rotation,
 cached re-entry, and stable arrivals. Standalone Playwright rerun and iPhone checks remain pending.
+
+2026-09-24: manual phone mode and stacked-pane geometry have unit coverage. Browser regression
+checks cover toggling, rotation, paging, and header fit; execution is pending because the local
+fixture server timed out before page load. Physical-device checks remain pending.

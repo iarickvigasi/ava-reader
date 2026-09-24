@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { BILINGUAL_COLUMN_GAP } from "@/features/reader/bilingual/measurement/use-bilingual-size";
+import { BilingualPanes } from "./layout/bilingual-panes";
 import { bilingualLanguageTag } from "@/features/reader/bilingual/content/language-tag";
 import type { ReadyReaderProps } from "../shared/types";
 import { IosSelectionOverlay } from "../selection/ios/ios-selection-overlay";
@@ -36,10 +36,8 @@ export function BilingualReader(props: ReadyReaderProps) {
       <ReaderFrame {...props}>
         <ReaderPageViewport>
           <div ref={surfaceRef} className="relative h-full">
-            <div
+            <BilingualPanes
               ref={gestureRef}
-              className="flex h-full"
-              style={{ gap: BILINGUAL_COLUMN_GAP, touchAction: "none" }}
               onTouchStart={reader.handleTouchStart}
               onTouchEnd={reader.handleTouchEnd}
             >
@@ -71,7 +69,7 @@ export function BilingualReader(props: ReadyReaderProps) {
               ) : (
                 <BilingualPreparingPage {...props} />
               )}
-            </div>
+            </BilingualPanes>
           </div>
         </ReaderPageViewport>
         <BilingualReaderFooter reader={reader} props={props} />

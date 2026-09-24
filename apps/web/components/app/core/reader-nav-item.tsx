@@ -17,7 +17,7 @@ export function ReaderNavItem({
 }) {
   const t = useTranslations("nav.reader");
   const { isBilingual, isPhone, toggleBilingual } = useReaderUi();
-  const compactSize = isPhone && isBilingual ? "size-8" : "size-9";
+  const compactSize = isPhone ? "size-8" : "size-9";
   const label = t(item.id);
   const Icon = item.icon;
   const isPanelItem = "panel" in item;

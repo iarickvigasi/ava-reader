@@ -1,19 +1,20 @@
+import { useReaderUi } from "@/components/app/core/reader-ui-context";
+import { bilingualPaneSize } from "./bilingual-pane-size";
 import { useLayoutEffect, useRef, useState } from "react";
 
-export const BILINGUAL_COLUMN_GAP = 48;
-
 export function useBilingualSize() {
+  const { isPhone } = useReaderUi();
   const surfaceRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
   useLayoutEffect(() => {
     const element = surfaceRef.current;
     if (!element) return;
     const measure = () => {
-      const width = Math.max(
-        0,
-        Math.floor((element.clientWidth - BILINGUAL_COLUMN_GAP) / 2),
+      const { width, height } = bilingualPaneSize(
+        element.clientWidth,
+        element.clientHeight,
+        isPhone,
       );
-      const height = Math.max(0, Math.floor(element.clientHeight));
       setSize((current) =>
         current.width === width && current.height === height
           ? current
@@ -27,6 +28,6 @@ export function useBilingualSize() {
       observer.disconnect();
       cancelAnimationFrame(frame);
     };
-  }, []);
+  }, [isPhone]);
   return { surfaceRef, size };
 }

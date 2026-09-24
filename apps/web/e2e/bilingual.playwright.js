@@ -4,7 +4,6 @@ const {
   fits,
   readerMetrics,
   paragraphFlowsInline,
-  compactPhoneRail,
 } = require("./bilingual-assertions");
 const TARGET = '[data-bilingual-column="translation"]';
 const RESUME = "ava-reader:resume:bilingual-fixture";
@@ -91,48 +90,4 @@ test("desktop paginates long translations without scrolling and reuses cache aft
   await page.locator(TARGET).waitFor();
   await fits(page);
   expect(generations).toEqual([]);
-});
-
-test.describe("phone rotation", () => {
-  test.use({
-    hasTouch: true,
-    isMobile: true,
-    viewport: { width: 844, height: 390 },
-  });
-  test("landscape enables columns and horizontal touch swipes turn them together", async ({
-    page,
-    context,
-  }) => {
-    await page.addInitScript(() => {
-      Object.defineProperty(screen, "width", { get: () => innerWidth });
-      Object.defineProperty(screen, "height", { get: () => innerHeight });
-      Object.defineProperty(screen.orientation, "type", {
-        get: () =>
-          innerWidth > innerHeight ? "landscape-primary" : "portrait-primary",
-      });
-    });
-    await open(page, true);
-    await fits(page);
-    await compactPhoneRail(page);
-    await page.screenshot({ path: "/tmp/ava-bilingual-phone.png" });
-    const client = await context.newCDPSession(page);
-    for (const [type, x] of [
-      ["touchStart", 650],
-      ["touchMove", 400],
-      ["touchEnd", 200],
-    ]) {
-      await client.send("Input.dispatchTouchEvent", {
-        type,
-        touchPoints: type === "touchEnd" ? [] : [{ x, y: 150 }],
-      });
-    }
-    await expect(label(page)).toHaveText("Page 2");
-    await fits(page);
-    await page.setViewportSize({ width: 390, height: 844 });
-    await expect(page.locator(TARGET)).toHaveCount(0);
-    await expect(page.locator('[data-fixture-mode="original"]')).toBeVisible();
-    await expect(
-      page.locator('[data-reader-mobile-navigation="header"]'),
-    ).toBeVisible();
-  });
 });

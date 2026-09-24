@@ -34,7 +34,7 @@ export function ReaderUiProvider({ children }: { children: ReactNode }) {
   const [manualBilingual, setManualBilingual] = useState(false);
   const device = useReaderDevice();
   const isPhone = device !== "desktop";
-  const isBilingual = isPhone ? device === "phone-landscape" : manualBilingual;
+  const isBilingual = manualBilingual;
 
   const value = useMemo<ReaderUiContextValue>(
     () => ({

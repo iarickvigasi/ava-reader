@@ -44,8 +44,13 @@ export function BilingualPageColumn({
       lang={lang}
       dir="auto"
       data-bilingual-column={side}
-      className={`h-full min-w-0 ${isIosSelection ? "select-none" : ""}`}
-      style={{ width: size.width, clipPath: `inset(-${INK_BLEED_PX}px)`, ...(isIosSelection ? { WebkitTouchCallout: "none" } : {}) }}
+      className={`shrink-0 min-w-0 ${isIosSelection ? "select-none" : ""}`}
+      style={{
+        height: size.height,
+        width: size.width,
+        clipPath: `inset(-${INK_BLEED_PX}px)`,
+        ...(isIosSelection ? { WebkitTouchCallout: "none" } : {}),
+      }}
     >
       {!blank && (
         <div
