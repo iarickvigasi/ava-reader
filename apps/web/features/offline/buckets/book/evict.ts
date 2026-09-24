@@ -4,7 +4,7 @@
 // open, online, and its own content is cached, every *other* auto-saved
 // (non-sticky) book is disposable and gets dropped. The currently-open book is
 // always exempt — you never lose the book you're reading. Explicit saves
-// (`savedOffline`) are never candidates. It runs only when online, so a switch
+// (`savedOffline` or `offlineRequested`) are never candidates. It runs online, so a switch
 // made offline keeps the previous cache and is reclaimed later, on reconnect.
 //
 // See [[4.1-offline-reading]].

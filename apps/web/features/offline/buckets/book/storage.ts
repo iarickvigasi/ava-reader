@@ -37,13 +37,15 @@ export async function applyBookContent(
 ): Promise<void> {
   const db = getDb();
   const nowIso = new Date().toISOString();
-  await writeUnlessDeleted(db, content.libraryItemId, [db.books], () => db.books.put({
-    libraryItemId: content.libraryItemId,
-    toc: content.toc,
-    chapterIds: content.chapterIds,
-    metadata: content.metadata,
-    fetchedAt: nowIso,
-  }));
+  await writeUnlessDeleted(db, content.libraryItemId, [db.books], () =>
+    db.books.put({
+      libraryItemId: content.libraryItemId,
+      toc: content.toc,
+      chapterIds: content.chapterIds,
+      metadata: content.metadata,
+      fetchedAt: nowIso,
+    }),
+  );
 }
 
 export async function applyChapter(input: {
@@ -55,14 +57,16 @@ export async function applyChapter(input: {
 }): Promise<void> {
   const db = getDb();
   const nowIso = new Date().toISOString();
-  await writeUnlessDeleted(db, input.libraryItemId, [db.bookChapters], () => db.bookChapters.put({
-    libraryItemId: input.libraryItemId,
-    chapterId: input.chapterId,
-    index: input.index,
-    blocks: input.blocks,
-    aux: input.aux,
-    fetchedAt: nowIso,
-  }));
+  await writeUnlessDeleted(db, input.libraryItemId, [db.bookChapters], () =>
+    db.bookChapters.put({
+      libraryItemId: input.libraryItemId,
+      chapterId: input.chapterId,
+      index: input.index,
+      blocks: input.blocks,
+      aux: input.aux,
+      fetchedAt: nowIso,
+    }),
+  );
 }
 
 export async function readBookContent(libraryItemId: string) {
@@ -98,10 +102,7 @@ export async function readCachedChapterIds(
   const db = getDb();
   const rows = await db.bookChapters
     .where("[libraryItemId+chapterId]")
-    .between(
-      [libraryItemId, ""],
-      [libraryItemId, "￿"],
-    )
+    .between([libraryItemId, ""], [libraryItemId, "￿"])
     .toArray();
   return new Set(rows.map((row) => row.chapterId));
 }
@@ -158,7 +159,9 @@ export async function markBookSaved(
     savedAutomatically: kind === "auto" ? true : row.savedAutomatically,
     savedAt: row.savedAt ?? nowIso,
   };
-  await writeUnlessDeleted(db, libraryItemId, [db.libraryItems], () => db.libraryItems.put(next));
+  await writeUnlessDeleted(db, libraryItemId, [db.libraryItems], () =>
+    db.libraryItems.put(next),
+  );
 }
 
 export async function attachCoverBlob(
@@ -170,31 +173,20 @@ export async function attachCoverBlob(
   if (!row) {
     return;
   }
-  await writeUnlessDeleted(db, libraryItemId, [db.libraryItems], () => db.libraryItems.put({ ...row, coverBlob: blob }));
+  await writeUnlessDeleted(db, libraryItemId, [db.libraryItems], () =>
+    db.libraryItems.put({ ...row, coverBlob: blob }),
+  );
 }
 
-export async function readCoverBlob(libraryItemId: string): Promise<Blob | null> {
+export async function readCoverBlob(
+  libraryItemId: string,
+): Promise<Blob | null> {
   const db = getDb();
   const row = await db.libraryItems.get(libraryItemId);
   return row?.coverBlob ?? null;
 }
 
-// Returns the libraryItemIds of every "auto-saved, not explicit" book other
-// than the one currently open. In steady state there's at most one, but a
-// release ([[4.3-save-button]]) can briefly leave a second, so this
-// returns all of them. The reader uses it to drop stale auto-caches when the
-// user opens another book (see ./evict).
-export async function findEvictableAutoSavedIds(
-  currentLibraryItemId: string,
-): Promise<string[]> {
-  const db = getDb();
-  const rows = await db.libraryItems
-    .filter((row) => row.savedAutomatically && !row.savedOffline)
-    .toArray();
-  return rows
-    .filter((row) => row.libraryItemId !== currentLibraryItemId)
-    .map((row) => row.libraryItemId);
-}
+export { findEvictableAutoSavedIds } from "./find-evictable-auto-saved-ids";
 
 // True when the book has its full content (book row + at least one chapter)
 // — what the BookContext uses to decide "missing-offline" vs "ready".
@@ -212,10 +204,7 @@ export async function hasBookContent(libraryItemId: string): Promise<boolean> {
   if (book.chapterIds.length === 0) {
     return true;
   }
-  const first = await db.bookChapters.get([
-    libraryItemId,
-    book.chapterIds[0],
-  ]);
+  const first = await db.bookChapters.get([libraryItemId, book.chapterIds[0]]);
   return !!first;
 }
 
