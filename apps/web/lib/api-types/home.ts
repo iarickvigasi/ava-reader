@@ -1,3 +1,4 @@
+import type { ReadingDaySource } from "@/lib/api-types/reading-day-source";
 import type { CompletionItem, LibraryCardBook } from "./library";
 import type { BookFileFormat } from "./shared";
 import type { UserRole } from "./user";
@@ -12,10 +13,9 @@ export type CurrentEngagement = LibraryCardBook & {
 };
 
 export type HomePayload = {
-  readingSnapshot?: {
+  readingSnapshot?: ReadingDaySource & {
     clientSessionIds: string[];
     totalSeconds: number;
-    days: Array<{ key: string; seconds: number }>;
   };
   completionItems?: CompletionItem[];
   collections: {

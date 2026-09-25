@@ -1,6 +1,6 @@
 # Home dashboard
 
-> Status: shipped · Updated: 2026-09-24 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
+> Status: shipped · Updated: 2026-09-25 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
 > apps/web/components/app/home, apps/web/features/offline/buckets/home
 
 ## Summary
@@ -49,12 +49,15 @@ discovery. The daily entry point into the habit.
 9. Daily mastery uses the user's saved reading goal (60 minutes when unset). Local goal edits
    immediately update remaining minutes, the chart scale, and completion for all displayed days,
    including days without new reading activity. Reading minutes are preserved.
-10. After hydration, mastery shows seven UTC dates ending today, retaining matching cached days
+10. After hydration, mastery shows seven device-local dates ending today, retaining matching cached days
     and adding unsynced reading per date. New dates show locally known activity until refresh.
     The existing 30-second stats refresh and tab-resume refresh advance stale windows.
     Initial rendering retains the cached window to keep server/client hydration consistent.
+    Detect the device IANA timezone on hydration/resume; only today follows the current device zone.
+    Historical minutes retain the local dates of each session’s saved start timezone.
+    Calendar-day changes and timezone changes refresh the cache and chart without a reload.
 
-11. Mastery scrolls horizontally through seven-day UTC windows, initially ending today.
+11. Mastery scrolls horizontally through seven-day device-local windows, initially ending today.
     Arrow and keyboard navigation jumps to exact week boundaries anchored to today's window;
     loading earlier dates must not interrupt a move and leave partially clipped days.
     Older weeks load on demand with seven-column skeletons and weekday labels, with no visible loading,

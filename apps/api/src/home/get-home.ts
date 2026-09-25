@@ -12,8 +12,9 @@ import type { HomeUser } from './types';
 export async function getHome(options: {
   prisma: PrismaService;
   user: HomeUser;
+  timeZone?: string;
 }) {
-  const { prisma, user } = options;
+  const { prisma, user, timeZone } = options;
   const [
     libraryItems,
     featuredCatalogEntries,
@@ -23,7 +24,7 @@ export async function getHome(options: {
   ] = await Promise.all([
     loadHomeLibraryItems(prisma, user.id),
     loadHomeCatalog(prisma),
-    loadHomeActivity(prisma, user.id),
+    loadHomeActivity(prisma, user.id, timeZone),
     loadHomeCollections(prisma, user.id),
     prisma.userPreferences.findUnique({
       where: { userId: user.id },
@@ -49,6 +50,7 @@ export async function getHome(options: {
     mastery: createMasteryPayload(
       activity.recentReadingSessions,
       preferences?.readingGoalMinutes,
+      timeZone,
     ),
     recentAnnotations: { items: annotations },
     state: libraryItems.length > 0 ? 'POPULATED' : 'EMPTY',

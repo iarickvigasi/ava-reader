@@ -12,6 +12,7 @@ export async function postSession(
     libraryItemId: string;
     clientSessionId: string;
     startedAt: string;
+    timeZone?: string;
     endedAt: string | null;
   },
 ): Promise<ReplayResult> {
@@ -30,6 +31,7 @@ export async function postSession(
         clientInstanceId,
         clientSessionId: row.clientSessionId,
         startedAt: row.startedAt,
+        timeZone: row.timeZone,
         endedAt: row.endedAt,
       }),
     });

@@ -1,9 +1,11 @@
+import { deviceTimeZone } from "../../stats/device-time-zone";
 import { getDb, type SessionRow } from "../../db";
 
 export async function createLocalSession(input: {
   clientSessionId: string;
   libraryItemId: string;
   startedAt: string;
+  timeZone?: string;
 }): Promise<void> {
   const db = getDb();
   await db.sessions.put({
@@ -11,6 +13,7 @@ export async function createLocalSession(input: {
     serverSessionId: null,
     libraryItemId: input.libraryItemId,
     startedAt: input.startedAt,
+    timeZone: input.timeZone ?? deviceTimeZone(),
     endedAt: null,
     lastHeartbeatAt: input.startedAt,
     state: "open",

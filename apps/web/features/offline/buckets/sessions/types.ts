@@ -5,6 +5,7 @@ export type SessionRow = {
   serverSessionId: string | null;
   libraryItemId: string;
   startedAt: string;
+  timeZone?: string;
   endedAt: string | null;
   lastHeartbeatAt: string;
   state: "open" | "closed";

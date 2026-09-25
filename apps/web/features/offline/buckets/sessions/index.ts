@@ -9,3 +9,5 @@ export {
 export { generateClientSessionId } from "./id";
 
 export { syncPendingSessions } from "./sync";
+
+export { beginLocalSession } from "./begin-local-session";

@@ -58,7 +58,9 @@ it.each(["translations", "highlightMutations", "aiCommentMutations"])(
     expect(fetchMock.mock.calls.map(([url]) => String(url))).toEqual([
       "http://localhost:4000/api/library/lib-2",
       "http://localhost:4000/api/library",
-      "http://localhost:4000/api/home",
+      expect.stringMatching(
+        /^http:\/\/localhost:4000\/api\/home\?timeZone=.+$/,
+      ),
     ]);
   },
 );

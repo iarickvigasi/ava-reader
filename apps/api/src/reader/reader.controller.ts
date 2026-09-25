@@ -79,11 +79,8 @@ export class ReaderController {
     @Body()
     body: {
       clientInstanceId?: string;
-      // Phase 4 (offline-first): stable client-generated session id. When
-      // supplied the server upserts by (userId, clientSessionId). When
-      // startedAt/endedAt are supplied, the server treats this as a
-      // completed-session replay from the offline queue and records those
-      // exact timestamps instead of "now."
+      // Offline replay preserves its original identity, timestamps and timezone.
+      timeZone?: string;
       clientSessionId?: string;
       startedAt?: string;
       endedAt?: string;
@@ -94,6 +91,7 @@ export class ReaderController {
       libraryItemId,
       body.clientInstanceId as string,
       {
+        timeZone: body.timeZone,
         clientSessionId: body.clientSessionId ?? null,
         startedAt: body.startedAt ?? null,
         endedAt: body.endedAt ?? null,

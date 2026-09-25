@@ -1,3 +1,4 @@
+import { deviceTimeZone } from "../../stats/device-time-zone";
 // Client-side revalidation of the home payload. Runs after the page hydrates
 // while online and on every transition back online, refreshing the Dexie
 // cache so the next offline open shows recent data.
@@ -14,20 +15,24 @@ type GetToken = () => Promise<string | null>;
 
 export async function revalidateHome(getToken: GetToken): Promise<void> {
   const db = getDb();
+  const timeZone = deviceTimeZone();
   const expectedCompletionRevision = await readCompletionRevision(db);
   const token = await getToken();
   if (!token || db !== getDb()) {
     return;
   }
   try {
-    const response = await fetch(`${getPublicApiBaseUrl()}/api/home`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await fetch(
+      `${getPublicApiBaseUrl()}/api/home?timeZone=${encodeURIComponent(timeZone)}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    );
     if (!response.ok) {
       return;
     }
     const payload = (await response.json()) as HomePayload;
-    if (db !== getDb()) return;
+    if (db !== getDb() || timeZone !== deviceTimeZone()) return;
     await applyHome(payload, { db, expectedCompletionRevision });
   } catch {
     // Network blip — the cached payload stays. Next online tick retries.

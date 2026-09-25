@@ -1,5 +1,6 @@
+import { readingSnapshotDays } from "@/features/offline/stats/reading-snapshot";
 import type { SessionRow } from "@/features/offline/db";
-import { splitSecondsByUtcDay } from "@/features/offline/stats/split-seconds-by-utc-day";
+import { splitSessionDays } from "@/features/offline/stats/split-session-days";
 import type { MasteryHistoryPage } from "./types";
 
 export function composeHistory(
@@ -8,7 +9,7 @@ export function composeHistory(
   goal: number,
 ) {
   const covered = new Set(page.clientSessionIds);
-  const seconds = new Map(page.days.map((day) => [day.key, day.seconds]));
+  const seconds = readingSnapshotDays(page);
   for (const row of sessions) {
     if (
       row.state !== "closed" ||
@@ -18,15 +19,16 @@ export function composeHistory(
       (row.syncedAt !== null && row.replayStatus !== "acknowledged")
     )
       continue;
-    for (const [key, value] of splitSecondsByUtcDay(
+    for (const [key, value] of splitSessionDays(
       row.startedAt,
       row.endedAt,
+      row.timeZone ?? "UTC",
     )) {
-      if (seconds.has(key)) seconds.set(key, seconds.get(key)! + value);
+      seconds.set(key, (seconds.get(key) ?? 0) + value);
     }
   }
   return page.days.map(({ key }) => {
-    const minutes = Math.floor(seconds.get(key)! / 60);
+    const minutes = Math.floor((seconds.get(key) ?? 0) / 60);
     return { key, minutes, goalMet: minutes >= goal };
   });
 }

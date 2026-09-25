@@ -11,13 +11,17 @@ export class HomeService {
     private readonly usersService: UsersService,
   ) {}
 
-  async getMasteryHistory(clerkUserId: string, before: string) {
+  async getMasteryHistory(
+    clerkUserId: string,
+    before: string,
+    timeZone?: string,
+  ) {
     const user = await this.usersService.getCurrentUserRecord(clerkUserId);
-    return loadMasteryHistory(this.prisma, user.id, before);
+    return loadMasteryHistory(this.prisma, user.id, before, timeZone);
   }
 
-  async getHome(clerkUserId: string) {
+  async getHome(clerkUserId: string, timeZone?: string) {
     const user = await this.usersService.getCurrentUserRecord(clerkUserId);
-    return getHome({ prisma: this.prisma, user });
+    return getHome({ prisma: this.prisma, user, timeZone });
   }
 }

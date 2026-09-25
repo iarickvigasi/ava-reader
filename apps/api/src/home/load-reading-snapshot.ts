@@ -1,3 +1,4 @@
+import { loadZonedReading } from './load-zoned-reading';
 import type { PrismaService } from '../prisma/prisma.service';
 import { daysAgo, startOfDay } from '../shared/date-utils';
 
@@ -6,7 +7,18 @@ const HOME_ACTIVITY_DAYS = 7;
 export async function loadReadingSnapshot(
   prisma: PrismaService,
   userId: string,
+  timeZone?: string,
 ) {
+  if (timeZone !== undefined) {
+    const readingSnapshot = await loadZonedReading(prisma, userId, timeZone);
+    return {
+      readingSnapshot,
+      recentReadingSessions: readingSnapshot.days.map((day) => ({
+        trackedDay: new Date(`${day.key}T00:00:00Z`),
+        durationSeconds: day.seconds,
+      })),
+    };
+  }
   // IDs and aggregates must see the same committed sessions, including a replay
   // committed while this GET is running. ReadCommitted is not sufficient.
   const [recentReadingSessions, total, sessions] = await prisma.$transaction(

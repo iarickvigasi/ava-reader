@@ -247,28 +247,28 @@ model CatalogEntry {
 }
 
 model LibraryItem {
-  id                         String                      @id @default(cuid())
-  userId                     String
-  bookId                     String
-  slug                       String
-  source                     LibrarySource
-  originCatalogEntryId       String?
-  addedAt                    DateTime                    @default(now())
-  lastOpenedAt               DateTime?
+  id                   String            @id @default(cuid())
+  userId               String
+  bookId               String
+  slug                 String
+  source               LibrarySource
+  originCatalogEntryId String?
+  addedAt              DateTime          @default(now())
+  lastOpenedAt         DateTime?
   // Explicit reading finish date, independent of position-based progress.
-  finishedAt                 DateTime?
-  isArchived                 Boolean                     @default(false)
-  offlineRequested           Boolean                     @default(false)
-  createdAt                  DateTime                    @default(now())
-  updatedAt                  DateTime                    @updatedAt
-  user                       User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  book                       Book                        @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  originCatalogEntry         CatalogEntry?               @relation(fields: [originCatalogEntryId], references: [id], onDelete: SetNull)
-  progress                   ReadingProgress?
-  annotations                Annotation[]
-  aiComments                 AiComment[]
-  bookTranslations           BookTranslation[]
-  collectionItems            CollectionItem[]
+  finishedAt           DateTime?
+  isArchived           Boolean           @default(false)
+  offlineRequested     Boolean           @default(false)
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+  user                 User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book                 Book              @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  originCatalogEntry   CatalogEntry?     @relation(fields: [originCatalogEntryId], references: [id], onDelete: SetNull)
+  progress             ReadingProgress?
+  annotations          Annotation[]
+  aiComments           AiComment[]
+  bookTranslations     BookTranslation[]
+  collectionItems      CollectionItem[]
 
   @@unique([userId, bookId])
   @@unique([userId, slug])
@@ -302,6 +302,8 @@ model ReadingSession {
   startedAt       DateTime
   lastTrackedAt   DateTime?
   endedAt         DateTime?
+  // Captured once at session start; NULL preserves unknown historical UTC allocation.
+  timeZone        String?
   // Client-generated stable id for the session. Lets the offline-first
   // client replay a completed session after reconnect: the start call
   // upserts by (userId, clientSessionId), so a session created offline
@@ -314,6 +316,7 @@ model ReadingSession {
   user            User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
   participants    ReadingSessionParticipant[]
   segments        ReadingSessionSegment[]
+  intervals       ReadingSessionInterval[]
 
   @@unique([userId, clientSessionId])
   @@index([userId, trackedDay])
@@ -483,5 +486,18 @@ model DeletedLibraryItem {
   userId    String
   deletedAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
+}
+
+// Exact credited activity; adjacent heartbeat intervals are merged under the session lock.
+model ReadingSessionInterval {
+  id               String         @id @default(cuid())
+  readingSessionId String
+  startedAt        DateTime
+  endedAt          DateTime
+  readingSession   ReadingSession @relation(fields: [readingSessionId], references: [id], onDelete: Cascade)
+
+  @@index([readingSessionId, endedAt])
+  @@index([startedAt, endedAt])
 }

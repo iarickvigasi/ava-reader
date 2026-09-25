@@ -3,7 +3,7 @@
 // React hooks that wire the Dexie deltas (./local-deltas) through the pure
 // composers (./compose) and return UI-ready values.
 //
-// Book-session/highlight delta and UTC-date refresh:
+// Book-session/highlight delta and local-date refresh:
 //   - recompute on mount,
 //   - recompute on `visibilitychange → visible` (user came back from
 //     reader),
@@ -12,6 +12,7 @@
 // Home reading and completion totals come from the home live subscription;
 // its transactional read reconciles sessions without waiting for this timer.
 
+import { useReadingCalendar } from "./use-reading-calendar";
 import { useCallback, useEffect, useState } from "react";
 
 import {
@@ -31,7 +32,7 @@ type DeltaBundle = {
   todayKey: string | null;
 };
 
-async function readBundle(): Promise<DeltaBundle> {
+async function readBundle(): Promise<Omit<DeltaBundle, "todayKey">> {
   const [sessions, highlightsNet] = await Promise.all([
     readUnsyncedSessionDeltas(),
     readHighlightCountDelta(),
@@ -39,24 +40,23 @@ async function readBundle(): Promise<DeltaBundle> {
   return {
     sessions,
     highlightsNet,
-    todayKey: new Date().toISOString().slice(0, 10),
   };
 }
 
-const EMPTY_BUNDLE: DeltaBundle = {
+const EMPTY_BUNDLE: Omit<DeltaBundle, "todayKey"> = {
   sessions: {
     totalSeconds: 0,
     byBookSeconds: new Map(),
     byUtcDaySeconds: new Map(),
   },
   highlightsNet: 0,
-  todayKey: null,
 };
 
-// Refresh the UTC date with the deltas so mounted charts advance after midnight.
+// Refresh the local date with the deltas so mounted charts advance after midnight.
 // Keep it unset on the initial render to preserve the server hydration snapshot.
 export function useDeltaBundle(): DeltaBundle {
-  const [bundle, setBundle] = useState<DeltaBundle>(EMPTY_BUNDLE);
+  const calendar = useReadingCalendar();
+  const [bundle, setBundle] = useState(EMPTY_BUNDLE);
 
   const recompute = useCallback(() => {
     void readBundle().then((next) => setBundle(next));
@@ -79,5 +79,5 @@ export function useDeltaBundle(): DeltaBundle {
     };
   }, [recompute]);
 
-  return bundle;
+  return { ...bundle, todayKey: calendar?.split("|")[1] ?? null };
 }

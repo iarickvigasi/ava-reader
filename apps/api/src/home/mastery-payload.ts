@@ -1,4 +1,4 @@
-import { daysAgo, startOfDay } from '../shared/date-utils';
+import { dayKey } from '../shared/reading-days';
 
 const MASTERY_DAYS = 7;
 const DEFAULT_DAILY_GOAL_MINUTES = 60;
@@ -7,6 +7,7 @@ const SECONDS_PER_MINUTE = 60;
 export function createMasteryPayload(
   readingSessions: Array<{ durationSeconds: number; trackedDay: Date }>,
   readingGoalMinutes: number | null = null,
+  timeZone = 'UTC',
 ) {
   const dailyGoalMinutes = readingGoalMinutes ?? DEFAULT_DAILY_GOAL_MINUTES;
   const daySecondsMap = new Map<string, number>();
@@ -20,7 +21,8 @@ export function createMasteryPayload(
   }
 
   const days = Array.from({ length: MASTERY_DAYS }, (_, index) => {
-    const date = startOfDay(daysAgo(MASTERY_DAYS - 1 - index));
+    const today = Date.parse(`${dayKey(new Date(), timeZone)}T00:00:00Z`);
+    const date = new Date(today - (MASTERY_DAYS - 1 - index) * 86_400_000);
     const key = date.toISOString().slice(0, 10);
     const minutes = Math.floor(
       (daySecondsMap.get(key) ?? 0) / SECONDS_PER_MINUTE,

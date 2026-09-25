@@ -1,7 +1,10 @@
+import { deviceTimeZone } from "./device-time-zone";
+import { dayKey } from "./reading-days";
+import { readingSnapshotDays } from "./reading-snapshot";
 import type { HomePayload } from "@/lib/api-types/home";
 import type { SessionRow } from "../db";
 import { composeMastery } from "./compose-mastery";
-import { splitSecondsByUtcDay } from "./split-seconds-by-utc-day";
+import { splitSessionDays } from "./split-session-days";
 
 const SECONDS_PER_HOUR = 3600;
 
@@ -10,15 +13,13 @@ const SECONDS_PER_HOUR = 3600;
 export function composeHomeReading(
   home: HomePayload,
   sessions: SessionRow[],
+  timeZone = deviceTimeZone(),
 ): HomePayload {
   const snapshot = home.readingSnapshot;
   if (!snapshot) return home;
   const included = new Set(snapshot.clientSessionIds);
-  const dailySeconds = new Map<string, number>();
+  const dailySeconds = readingSnapshotDays(snapshot);
   let totalSeconds = snapshot.totalSeconds;
-  for (const day of snapshot.days) {
-    dailySeconds.set(day.key, (dailySeconds.get(day.key) ?? 0) + day.seconds);
-  }
   for (const row of sessions) {
     if (
       row.state !== "closed" ||
@@ -28,9 +29,10 @@ export function composeHomeReading(
       (row.syncedAt !== null && row.replayStatus !== "acknowledged")
     )
       continue;
-    for (const [day, seconds] of splitSecondsByUtcDay(
+    for (const [day, seconds] of splitSessionDays(
       row.startedAt,
       row.endedAt,
+      row.timeZone ?? "UTC",
     )) {
       totalSeconds += seconds;
       dailySeconds.set(day, (dailySeconds.get(day) ?? 0) + seconds);
@@ -42,6 +44,11 @@ export function composeHomeReading(
       ...home.stats,
       hoursReading: Math.floor(totalSeconds / SECONDS_PER_HOUR),
     },
-    mastery: composeMastery({ ...home.mastery, days: [] }, dailySeconds),
+    mastery: composeMastery(
+      { ...home.mastery, days: [] },
+      dailySeconds,
+      home.mastery.dailyGoalMinutes,
+      dayKey(new Date(), timeZone),
+    ),
   };
 }

@@ -12,6 +12,7 @@ export async function findOrCreateActiveSessionTx(
   tx: Prisma.TransactionClient,
   params: {
     clientSessionId: string | null;
+    timeZone: string | null;
     libraryItemId: string;
     replayEnd: Date | null;
     startedAt: Date;
@@ -39,6 +40,7 @@ export async function findOrCreateActiveSessionTx(
         trackedDay: startOfUtcDay(params.startedAt),
         userId: params.userId,
         clientSessionId: params.clientSessionId,
+        timeZone: params.timeZone,
       },
       select: lockedSessionSelect,
     });
