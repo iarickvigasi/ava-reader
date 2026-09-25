@@ -1,13 +1,7 @@
 import type { BilingualChapter } from "@/lib/api-types/bilingual";
-import {
-  resolvePageCount,
-  type PageMetrics,
-} from "@/features/reader/measurement/geometry";
+import { measureContinuationPages } from "./measure-continuation-pages";
 import { resolvePageIndexFromLocator } from "@/features/reader/measurement/resolve";
-import {
-  BILINGUAL_CONTINUATION_GAP,
-  bilingualColumnStyle,
-} from "./column-style";
+import { bilingualColumnMetrics, applyBilingualColumns } from "./column-style";
 import { cloneFlowRange } from "./clone-flow-range";
 
 export function createFlowMeasurer(
@@ -55,10 +49,13 @@ export function createFlowMeasurer(
     const cached = cache.get(key);
     if (cached !== undefined) return cached;
     const candidate = create(start, end, side, fillMissing);
-    if (paged) applyColumns(candidate, width, height);
+    if (paged) applyBilingualColumns(candidate, width, height);
     probe.replaceChildren(candidate);
     const result = paged
-      ? resolvePageCount(candidate, metrics(candidate, width))
+      ? measureContinuationPages(
+          candidate,
+          bilingualColumnMetrics(candidate, width),
+        )
       : Math.ceil(candidate.getBoundingClientRect().height);
     probe.replaceChildren();
     cache.set(key, result);
@@ -80,11 +77,11 @@ export function createFlowMeasurer(
     const unit = chapter.units[unitIndex];
     if (!unit) return 0;
     const candidate = create(unitIndex, unitIndex + 1, 0, false);
-    applyColumns(candidate, width, height);
+    applyBilingualColumns(candidate, width, height);
     probe.replaceChildren(candidate);
     const result = resolvePageIndexFromLocator({
       article: candidate,
-      metrics: metrics(candidate, width),
+      metrics: bilingualColumnMetrics(candidate, width),
       locator: {
         chapterId: chapter.chapterId,
         blockId: unit.blockId,
@@ -95,25 +92,4 @@ export function createFlowMeasurer(
     return result.status === "missing-block" ? 0 : result.pageIndex;
   };
   return { measure, measureRange, resolveContinuation };
-}
-
-function applyColumns(element: HTMLElement, width: number, height: number) {
-  const style = bilingualColumnStyle(width, height);
-  Object.assign(element.style, {
-    ...style,
-    width: `${width}px`,
-    height: `${height}px`,
-    columnWidth: `${width}px`,
-    columnGap: `${BILINGUAL_CONTINUATION_GAP}px`,
-    left: "0px",
-  });
-}
-
-function metrics(element: HTMLElement, width: number): PageMetrics {
-  return {
-    columnCount: 1,
-    pageBoxLeft: element.getBoundingClientRect().left,
-    pageWidth: width,
-    pageSpan: width + BILINGUAL_CONTINUATION_GAP,
-  };
 }
