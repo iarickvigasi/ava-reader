@@ -1,5 +1,7 @@
 "use client";
 
+import { isOnline } from "@/features/offline/net/net-state";
+
 import { useCallback, useEffect } from "react";
 import { useOfflineAuth } from "./use-offline-auth";
 import { useSyncTriggers } from "@/features/offline/net/use-sync-triggers";
@@ -9,7 +11,7 @@ export function AccountSyncRunner() {
   const { getToken, isLoaded, isSignedIn } = useOfflineAuth();
   const ready = isLoaded && isSignedIn;
   const sync = useCallback(() => {
-    if (navigator.onLine && document.visibilityState === "visible")
+    if (isOnline() && document.visibilityState === "visible")
       void resumePendingWork(getToken).catch(() => undefined);
   }, [getToken]);
   useSyncTriggers(ready ? sync : null, { kickOnAttach: true });

@@ -1,3 +1,4 @@
+import { fetchWithConnectivityCheck } from "../../net/fetch-with-connectivity-check";
 import { deviceTimeZone } from "../../stats/device-time-zone";
 // Client-side revalidation of the home payload. Runs after the page hydrates
 // while online and on every transition back online, refreshing the Dexie
@@ -22,7 +23,7 @@ export async function revalidateHome(getToken: GetToken): Promise<void> {
     return;
   }
   try {
-    const response = await fetch(
+    const response = await fetchWithConnectivityCheck(
       `${getPublicApiBaseUrl()}/api/home?timeZone=${encodeURIComponent(timeZone)}`,
       {
         headers: { Authorization: `Bearer ${token}` },

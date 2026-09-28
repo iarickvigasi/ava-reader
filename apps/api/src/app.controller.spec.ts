@@ -25,6 +25,17 @@ describe('AppController', () => {
     appController = app.get<AppController>(AppController);
   });
 
+  it('serves an uncached reachability marker without querying health', () => {
+    getHealth.mockClear();
+    expect(appController.getReachability()).toEqual({
+      service: 'ava-reader-api',
+    });
+    expect(getHealth).not.toHaveBeenCalled();
+    expect(
+      Reflect.getMetadata('__headers__', appController.getReachability),
+    ).toContainEqual({ name: 'Cache-Control', value: 'no-store' });
+  });
+
   describe('health', () => {
     it('should return the API health payload', async () => {
       await expect(appController.getHealth()).resolves.toEqual({

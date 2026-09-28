@@ -1,5 +1,7 @@
 "use client";
 
+import { NetworkMonitor } from "@/features/offline/net/network-monitor";
+
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { AppNavigation } from "@/components/app/core/app-navigation";
@@ -55,6 +57,7 @@ export function AppShell({
   // modal can fire from any route and the header chip's `open()` works.
   return (
     <OfflineModalProvider>
+      <NetworkMonitor />
       <ServiceWorkerRegistrar />
       <SignedOutRedirectRunner />
       <AuthStatusNotice />
