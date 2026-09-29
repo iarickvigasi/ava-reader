@@ -38,7 +38,7 @@ removed after rollout verification; they consume storage until explicitly cleane
 
 This script changes server packages only. Deploy the web app's `DownloadedChapterLabelMigration`
 runner as well: on authenticated startup, reconnect, or tab return it fetches server labels and
-patches legacy names without a full-book download (the reader response includes a chapter window,
-which the migration discards). Offline
-devices update after they load this app version and reconnect; already-open readers see the names
+patches legacy names and encoded XML/numeric references without a full-book download. The reader
+response includes a chapter window, which the migration discards. Offline devices update after
+they load this app version and reconnect; already-open readers see the names
 on their next cached load. No user database or pending mutation is cleared.
