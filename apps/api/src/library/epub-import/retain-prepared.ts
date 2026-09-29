@@ -72,7 +72,7 @@ export async function retainPreparedEpub(
       tx,
       run.bookId,
       source.blob.originalFilename,
-      prepared.reader.book.metadata,
+      prepared.reader.book,
     );
     await requireEpubClaim(tx, claim);
     await tx.bookProcessingRun.update({

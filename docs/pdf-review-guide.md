@@ -40,7 +40,19 @@ included upload, background status, metadata, Ready notification, separate chapt
 chapter-local/shared/cold notes, Return/Back, illustration/caption and original/EPUB downloads.
 A downloaded generated EPUB also succeeded through ordinary EPUB reimport and actual reading.
 A separate database readback checked byte identity and immutable content/resource bindings.
-Those observations belong to the earlier build. The merged reader requires fresh runtime evidence.
+Fresh merged-reader checks now cover desktop and 390px phone emulation: Contents, chapter-local
+notes, Return/Back, illustration/caption, a saved highlight after reload and navigation back to its
+exact passage. Database readback passed 32 identity/location checks. A second highlight queued while
+the API was paused and synchronized exactly once afterward (18 recovery checks).
+
+The API-outage test initially exposed a stalled full reload. Server API reads now abort after five
+seconds, including response-body reads, allowing the existing cached-identity/content fallback.
+The repeated normal-browser test reopened the saved chapter with both highlights and its saved
+position while the API process remained paused; note navigation also worked. This tests API loss,
+not total network loss or production service-worker installation. Clerk/auth semantics remain intact.
+A separate import fix preserves the validated EPUB language in Library metadata without replacing
+canonical content or overriding reader edits. A fresh normal upload of the authored generated EPUB
+now shows English, the correct title and author in Book details.
 
 Failures are retained in the private work record: an ID/slug navigation mismatch, a static notification
 route shadowed by a parameter route, and a local reimport helper missing runtime configuration. The

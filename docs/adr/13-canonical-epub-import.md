@@ -33,6 +33,11 @@ fresh transaction rechecks source bytes, live attempt and ownership before retai
 immutable canonical import and its exact reader/resource blobs. Portable source evidence is
 content provenance, not a server path, owner, job, or imported publication authority.
 
+Library metadata fills preserve nonempty values and explicit user edits. Language comes from the
+validated generated package: its accepted English language claim, or `en` for this English profile
+when no accepted language claim exists. This fills the display language without adding a
+source-edition metadata claim or changing the immutable canonical content.
+
 ## Availability and lifecycle
 
 Validated content can wait for a qualified reader without changing its bytes or final identity.
