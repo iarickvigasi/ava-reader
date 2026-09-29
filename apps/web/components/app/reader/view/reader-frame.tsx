@@ -34,7 +34,7 @@ export function ReaderFrame({
       data-reader-phone={isPhone}
       className={cn(
         "h-full",
-        !embedded && "px-4 pb-2 pt-2",
+        !embedded && "px-4 pb-2 pt-1",
         !embedded &&
           !isPhone &&
           "sm:px-6 sm:pb-5 sm:pt-8 md:px-7 md:pt-8 lg:px-8",
@@ -44,19 +44,24 @@ export function ReaderFrame({
       <section className="mx-auto flex h-full max-w-312 min-w-0 flex-col">
         <div
           className={cn(
-            "hidden items-start justify-between gap-6",
-            !embedded && !isPhone && "sm:flex",
+            "shrink-0 items-start justify-between gap-2",
+            embedded ? "hidden" : "flex",
+            !isPhone && "sm:gap-6",
           )}
         >
           <ReadyReaderHeader
+            compact={isPhone}
             activeChapter={props.activeChapter}
             payload={props.payload}
           />
-          <ReadyReaderActivityStatus {...props} />
+          <div className={cn("hidden", !isPhone && "sm:block")}>
+            <ReadyReaderActivityStatus {...props} />
+          </div>
         </div>
         <div
           className={cn(
             "flex min-h-0 flex-1 flex-col gap-0",
+            !embedded && "mt-2",
             !embedded && !isPhone && "sm:mt-8 sm:gap-4",
           )}
         >

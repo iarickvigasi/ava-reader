@@ -1,12 +1,15 @@
+import { cn } from "@/lib/cn";
 import type { ReaderChapterPayload } from "@/lib/api-types";
 import { HeaderStatusChip } from "@/components/app/core/header-status-chip";
 import type { ReadyReaderPayload } from "../shared/types";
-import { formatReaderHeaderParts } from "../shared/utils";
+import { formatReaderHeaderParts } from "../shared/format-reader-header-parts";
 
 export function ReadyReaderHeader({
   activeChapter,
   payload,
+  compact = false,
 }: {
+  compact?: boolean;
   activeChapter: ReaderChapterPayload;
   payload: ReadyReaderPayload;
 }) {
@@ -16,9 +19,26 @@ export function ReadyReaderHeader({
   );
 
   return (
-    <header className="flex min-w-0 flex-1 items-center gap-3 pt-1">
-      <h1 className="flex min-w-0 flex-1 items-center gap-1 font-ui text-[1.05rem] leading-[1.35] tracking-[0.01em] text-title sm:text-[1.2rem] md:min-h-9">
-        <span className="min-w-0 truncate max-w-[25ch]">{title}</span>
+    <header
+      className={cn(
+        "flex min-w-0 flex-1 items-center gap-2",
+        !compact && "sm:gap-3 sm:pt-1",
+      )}
+    >
+      <h1
+        className={cn(
+          "flex min-w-0 flex-1 items-center gap-1 font-sans text-[0.65rem] font-bold uppercase leading-[1.35] tracking-[0.12em] text-muted",
+          !compact && "sm:text-xs sm:tracking-[0.24em] md:min-h-9",
+        )}
+      >
+        <span
+          className={cn(
+            "min-w-0 truncate max-w-[25ch]",
+            !compact && "md:max-w-[75ch]",
+          )}
+        >
+          {title}
+        </span>
 
         <span className="shrink-0">,</span>
 
@@ -30,7 +50,7 @@ export function ReadyReaderHeader({
           {chapter}
         </span>
       </h1>
-      <div className="hidden shrink-0 md:flex">
+      <div className={cn("hidden shrink-0", !compact && "md:flex")}>
         <HeaderStatusChip />
       </div>
     </header>

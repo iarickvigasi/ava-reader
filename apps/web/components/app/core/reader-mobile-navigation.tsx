@@ -15,11 +15,11 @@ export function ReaderMobileNavigation() {
     <header
       data-reader-mobile-navigation="header"
       className={cn(
-        "sticky top-0 z-40 shrink-0 bg-paper/95 px-2 py-2 backdrop-blur",
+        "sticky top-0 z-40 shrink-0 bg-paper/95 pl-4 pr-2 py-2 backdrop-blur",
         !isPhone && "md:hidden",
       )}
       style={{
-        paddingLeft: "max(0.5rem, env(safe-area-inset-left, 0px))",
+        paddingLeft: "max(1rem, env(safe-area-inset-left, 0px))",
         paddingRight: "max(0.5rem, env(safe-area-inset-right, 0px))",
         paddingTop: "max(0.5rem, env(safe-area-inset-top, 0px))",
       }}
