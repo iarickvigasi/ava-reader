@@ -42,12 +42,14 @@ def reconstruction_report(result: ReconstructedBook, tasks: int) -> Reconstructi
             "canonical_semantic_graph": "pass",
             "source_region_coverage": "pass",
             "note_list_table_relationships": "pass",
-            "source_structure_signals_consistent": "pass",
+            "source_structure_signals_consistent": "not_run"
+            if result.structure_findings
+            else "pass",
             "explicit_source_references_resolved": "pass",
             "required_resource_byte_hashes": "pass",
             "declared_ocr_uncertainty_resolved": "pass",
             "epubcheck": "not_run",
             "independent_visual_source_fidelity": "not_run",
         },
-        findings=[],
+        findings=result.structure_findings,
     )

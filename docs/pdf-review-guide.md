@@ -27,16 +27,20 @@ No production provider route, reader qualification or cleanup activation is impl
 
 ## Verification on 29 September 2026
 
-The local implementation snapshot passed API/web typechecking and lint (one existing web warning),
-1,276 web tests, 945 API tests and 228 Python worker tests. Worker Ruff and strict mypy also passed.
-These are snapshot results; later integration changes require their own checks.
+The local implementation snapshot passed API/web typechecking and lint (two existing/upstream web warnings),
+1,353 web tests, 995 API tests and 234 Python worker tests. Worker Ruff and strict mypy also passed.
+All 39 migrations also passed on fresh PostgreSQL 16; 13 database checks covered canonical
+maintenance exclusions and the upstream session/timezone changes. The merged snapshot required
+fixing a moved segmenter import and a recursive Dexie test-fixture update. Later changes require
+their own checks.
 
-Normal signed-in local app checks used original authored native fixtures and an explicit **TEST**
+The earlier normal signed-in local app checks used original authored native fixtures and an explicit **TEST**
 qualification. Both one- and two-column paths reached one readable Library entry. The observed flows
 included upload, background status, metadata, Ready notification, separate chapter navigation,
 chapter-local/shared/cold notes, Return/Back, illustration/caption and original/EPUB downloads.
 A downloaded generated EPUB also succeeded through ordinary EPUB reimport and actual reading.
 A separate database readback checked byte identity and immutable content/resource bindings.
+Those observations belong to the earlier build. The merged reader requires fresh runtime evidence.
 
 Failures are retained in the private work record: an ID/slug navigation mismatch, a static notification
 route shadowed by a parameter route, and a local reimport helper missing runtime configuration. The
@@ -45,6 +49,9 @@ work so missing setup cannot consume attempts. Passing local flows do not establ
 
 ## Remaining gates
 
+- Follow-up scan repair joins the observed gutter-split paragraph using reading-order and source-pixel
+  evidence, conserving words, note ranges and source aliases. It also stops certifying uncorroborated
+  OCR heading ranks. These are scoped repairs; book-wide structure/style refinement remains open.
 - Scanned/mixed books: two live recognition pages returned, but no completed scanned-book conversion
   was qualified. Source review found an incorrect column paragraph break and incomplete relative
   typography. A controlled fixture also exposes uncorroborated cross-page OCR heading hierarchy.
@@ -59,7 +66,7 @@ See [worker checks](pdf-worker-checks.md), [runtime](pdf-runtime-checks.md),
 [provider checks](pdf-provider-checks.md), [publication](pdf-publication-checks.md),
 [reader checks](pdf-reader-checks.md) and [metadata](pdf-metadata-checks.md) for reproducible boundaries.
 Historical check documents describe their scoped runs; this guide is the current overall status.
-Private source books, provider payloads, credentials, account data and local evidence are not PR assets.
+Private source books, raw provider payloads, credentials, account data and local evidence are not PR assets.
 
 ## Reproduce checks
 

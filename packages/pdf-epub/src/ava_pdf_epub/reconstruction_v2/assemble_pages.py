@@ -20,6 +20,7 @@ def assemble_pages(
         regions = []
         for index, item in enumerate(placements):
             segment = item.segment
+            state.placements[segment.id] = (page.number, item.band, item.column)
             region_id = f"page{page.number}-region{index}"
             region = dict(
                 id=region_id,

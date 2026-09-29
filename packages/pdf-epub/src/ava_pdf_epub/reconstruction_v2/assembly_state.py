@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from ..contracts.styles import Style
+from .findings import Finding
 
 
 @dataclass
@@ -20,6 +21,9 @@ class AssemblyState:
     segments: dict[str, Any] = field(default_factory=dict)
     internal_targets: list[tuple[str, int, int, str, int]] = field(default_factory=list)
     aliases: dict[str, tuple[str, int]] = field(default_factory=dict)
+    placements: dict[str, tuple[int, int, int]] = field(default_factory=dict)
+    flush_starts: dict[str, bool] = field(default_factory=dict)
+    structure_findings: list[Finding] = field(default_factory=list)
     page_labels: dict[int, str] = field(default_factory=dict)
 
     def style_id(self, style: Style | None) -> str | None:

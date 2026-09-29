@@ -14,6 +14,8 @@ from .assemble_lists import assemble_lists
 from .assemble_metadata import assemble_metadata
 from .assemble_pages import assemble_pages
 from .assembly_state import AssemblyState
+from .continuation_margins import continuation_margins
+from .findings import Finding
 from .prepared import PreparedPage
 from .printed_markers import printed_markers
 from .qualify_pages import qualify_pages
@@ -27,6 +29,7 @@ class ReconstructedBook:
     book: CanonicalBookV2
     epub: bytes
     assets: dict[str, bytes]
+    structure_findings: list[Finding]
 
 
 def reconstruct(
@@ -41,6 +44,7 @@ def reconstruct(
     segments = printed_markers(segments, state)
     for segment in segments:
         state.segments[segment.id] = segment
+    continuation_margins(segments, prepared, scratch, state)
     segments = stream_joins(segments, state)
     assemble_blocks(segments, prepared, scratch, state)
     chapters, toc = assemble_chapters(state)
@@ -66,4 +70,9 @@ def reconstruct(
             metadata=assemble_metadata(source, state, document_id),
         )
     )
-    return ReconstructedBook(book=book, epub=export_epub(book, state.assets), assets=state.assets)
+    return ReconstructedBook(
+        book=book,
+        epub=export_epub(book, state.assets),
+        assets=state.assets,
+        structure_findings=state.structure_findings,
+    )

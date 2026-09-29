@@ -1,0 +1,9 @@
+{
+  "source": "Parsed semantic observations for a public AVA-authored source page. No semantic values repaired. Provider envelope, generation/usage/cost/account data are excluded.",
+  "source_sha256": "ead57e233d0159460a7a8b63b15fe8ad8c9888be7a1989885a9536696c2d363b",
+  "files": {
+    "observed-two-column-page1-semantics.json": "ce91fd7c9751fb0e9d44dc253ba130c3804a6699be3b01066e23be3f6766c601",
+    "observed-two-column-page1-task.json": "e87853d9020b2d8b58a37eec691d50ad0f08831d5e2e9e3790f2789bc764a5ef",
+    "observed-two-column-page1.png": "bdde746006f87b45b3ee40a69407eee9588ab3fe8fcf34d215c6e2c8c3cf7bc1"
+  }
+}

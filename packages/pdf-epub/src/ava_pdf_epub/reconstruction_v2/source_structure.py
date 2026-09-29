@@ -9,6 +9,7 @@ from .segments import Segment
 from .source_folios import source_folios
 from .source_references import source_references
 from .structure_claims import outline_claims, printed_contents, title_key
+from .structure_evidence import structure_findings
 
 
 def source_structure(
@@ -24,6 +25,7 @@ def source_structure(
     printed = printed_contents(segments)
     claims = [*printed, *outline_claims(source)]
     promoted: dict[str, int] = {}
+    ranked: set[str] = set()
     for claim in claims:
         page = (
             claim.pdf_page
@@ -46,6 +48,8 @@ def source_structure(
         if target.id in promoted and promoted[target.id] != depth:
             raise ValueError("Contents and outline hierarchy disagree")
         promoted[target.id] = depth
+        if claim.depth is not None:
+            ranked.add(target.id)
         if claim.source_id:
             owner = next(s for s in segments if s.id == claim.source_id)
             at = owner.text.find(claim.title)
@@ -82,5 +86,6 @@ def source_structure(
     result = heading_hierarchy(
         result, prepared, {key for key, depth in promoted.items() if depth > 0}
     )
+    state.structure_findings = structure_findings(result, ranked)
     source_references(result, folios, state)
     return result

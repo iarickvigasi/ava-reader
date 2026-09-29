@@ -1,28 +1,17 @@
 """Join explicit continuation or visibly incomplete prose across column/page boundaries only."""
 
-import re
-
 from .assembly_state import AssemblyState
+from .continuation_boundary import inferred_continuation
 from .segments import Segment
 
 
 def stream_joins(segments: list[Segment], state: AssemblyState) -> list[Segment]:
     output: list[Segment] = []
+    previous_source = None
     for segment in segments:
         previous = output[-1] if output else None
-        boundary = previous and (
-            previous.page != segment.page
-            or segment.box.y0 < previous.box.y0
-            and segment.box.x0 > previous.box.x0
-        )
-        native_join = (
-            previous
-            and previous.method == segment.method == "native"
-            and boundary
-            and (
-                not re.search(r"[.!?:;][\"'’”)]*$", previous.text.rstrip())
-                and bool(re.match(r"[a-z]", segment.text))
-            )
+        inferred = previous_source is not None and inferred_continuation(
+            previous_source, segment, state
         )
         declared = previous and previous.continues_to_next and segment.continues_from_previous
         if (
@@ -36,7 +25,7 @@ def stream_joins(segments: list[Segment], state: AssemblyState) -> list[Segment]
                     and previous.note_label == segment.note_label
                 )
             )
-            and (native_join or declared)
+            and (inferred or declared)
         ):
             offset = len(previous.text) + 1
             updated = previous.model_copy(
@@ -62,6 +51,7 @@ def stream_joins(segments: list[Segment], state: AssemblyState) -> list[Segment]
             output[-1] = updated
         else:
             output.append(segment)
+        previous_source = segment
     if any(s.continues_from_previous or s.continues_to_next for s in output):
         raise ValueError("Unresolved prose continuation")
     return output
