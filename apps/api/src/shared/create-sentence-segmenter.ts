@@ -1,4 +1,4 @@
-import { normalizeBookLanguage } from '../../shared/book-utils';
+import { normalizeBookLanguage } from './book-utils';
 
 export function createSentenceSegmenter(sourceLanguage: string | null) {
   const language = normalizeBookLanguage(sourceLanguage);

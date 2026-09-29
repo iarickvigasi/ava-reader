@@ -266,18 +266,18 @@ describe('buildReaderPackageFromEpub', () => {
 
     expect(readerPackage.chapters).toHaveLength(2);
     expect(readerPackage.chapters[0]).toMatchObject({
-      label: 'Chapter 1',
-      title: 'Example Title',
+      label: '1. First chapter…',
+      title: '1. First chapter…',
     });
     expect(readerPackage.chapters[1]).toMatchObject({
-      label: 'Chapter 2',
-      title: 'Example Title',
+      label: '2. Second chapter…',
+      title: '2. Second chapter…',
     });
     expect(readerPackage.toc[0]).toMatchObject({
-      label: 'Chapter 1',
+      label: '1. First chapter…',
     });
     expect(readerPackage.toc[1]).toMatchObject({
-      label: 'Chapter 2',
+      label: '2. Second chapter…',
     });
   });
 
@@ -308,7 +308,7 @@ describe('buildReaderPackageFromEpub', () => {
     });
   });
 
-  it('uses generic chapter labels when the parsed toc is sparse and chapter title extraction is unreliable', async () => {
+  it('uses opening excerpts when the parsed toc is sparse and chapter title extraction is unreliable', async () => {
     const epubBuffer = await createReaderEpubBufferWithPartialNcx();
 
     const readerPackage = await buildReaderPackageFromEpub({
@@ -324,14 +324,14 @@ describe('buildReaderPackageFromEpub', () => {
     // Sparse NCX (2 entries vs 5 spine docs) is untrusted for labels. Title
     // extraction succeeds for only 1 of 5 chapters (the one with a short
     // first dialogue line), well below the 80% threshold, so we fall
-    // through to uniform "Chapter N" labels for the whole book — avoiding
+    // through to numbered opening excerpts for the whole book — avoiding
     // the noisy mix where one chapter is labeled with a stray dialogue line.
     expect(readerPackage.toc.map((node) => node.label)).toEqual([
-      'Chapter 1',
-      'Chapter 2',
-      'Chapter 3',
-      'Chapter 4',
-      'Chapter 5',
+      '1. Коли я повертався додому, я ще…',
+      '2. Коли я повертався додому, я ще…',
+      '3. Коли я повертався додому, я ще…',
+      '4. — Колись пізніше покажу…',
+      '5. Коли я повертався додому, я ще…',
     ]);
     expect(readerPackage.toc[0]).toMatchObject({
       chapterId: readerPackage.chapters[0]?.chapterId,

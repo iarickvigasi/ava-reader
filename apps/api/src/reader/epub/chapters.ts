@@ -63,30 +63,6 @@ export function getChapterTitleFromBlocks(blocks: ReaderBlock[]) {
   return null;
 }
 
-export function resolveChapterFallbackLabel(input: {
-  bookTitle: string;
-  candidateLabel: string | null;
-  chapterTitle: string | null;
-  spineIndex: number;
-}) {
-  const normalizedBookTitle = normalizeTitleForComparison(input.bookTitle);
-  const candidateLabels = [input.candidateLabel, input.chapterTitle];
-
-  for (const candidate of candidateLabels) {
-    if (!candidate) {
-      continue;
-    }
-
-    if (normalizeTitleForComparison(candidate) === normalizedBookTitle) {
-      continue;
-    }
-
-    return candidate;
-  }
-
-  return `Chapter ${input.spineIndex + 1}`;
-}
-
 /**
  * Build a `spinePathKey -> Set<normalizedAnchorId>` index from the parsed TOC.
  *
@@ -195,8 +171,4 @@ function toSlug(value: string) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
-}
-
-function normalizeTitleForComparison(value: string) {
-  return value.replace(/\s+/g, ' ').trim().toLowerCase();
 }

@@ -31,9 +31,9 @@ import {
   collectTocAnchorsBySpinePath,
   createChapterId,
   getChapterTitleFromBlocks,
-  resolveChapterFallbackLabel,
   splitBlocksAtTocAnchors,
 } from './chapters';
+import { resolveChapterFallbackLabel } from './resolve-chapter-fallback-label';
 import { normalizeBlocksFromNodes } from './blocks';
 import { normalizeHrefForLookup } from './archive';
 
@@ -148,12 +148,8 @@ export async function buildReaderPackageFromEpub(input: {
   const isParsedTocRichEnough =
     parsedTocNodeCount >= nonEmptyRawChapters.length;
 
-  // When NCX is sparse, we'd otherwise rely on per-chapter title extraction
-  // (heading or short first paragraph). That works well when the book is
-  // consistently structured (Demian: every body chapter has an <h1>) but
-  // produces noise when extraction succeeds for only a handful of chapters
-  // (Степовий вовк: a stray dialogue line gets picked up). Require a
-  // confident success rate; otherwise label every chapter generically.
+  // Sparse TOCs need consistent heading/short-paragraph extraction to trust
+  // titles; otherwise stray dialogue can become a title. Use excerpts instead.
   const CHAPTER_TITLE_COVERAGE_THRESHOLD = 0.8;
   const titleExtractionCoverage =
     nonEmptyRawChapters.length === 0
@@ -188,6 +184,8 @@ export async function buildReaderPackageFromEpub(input: {
         : raw.href;
       const segmentTitle = getChapterTitleFromBlocks(segment.blocks);
       const fallbackLabel = resolveChapterFallbackLabel({
+        blocks: segment.blocks,
+        language: input.language,
         bookTitle: input.title,
         candidateLabel: isParsedTocRichEnough
           ? findTocLabelForChapterCoord(
@@ -219,7 +217,7 @@ export async function buildReaderPackageFromEpub(input: {
         nextChapterId: null,
         previousChapterId: null,
         spineIndex: segmentIndex,
-        title: segmentTitle ?? fallbackLabel,
+        title: fallbackLabel,
       });
     }
   }
@@ -235,7 +233,7 @@ export async function buildReaderPackageFromEpub(input: {
   // Use the parsed TOC if it was rich enough to trust (Pride & Prejudice-style
   // EPUBs where TOC anchors already drove chapter splitting). Otherwise, build
   // a fallback TOC with one entry per chapter using each chapter's own label
-  // — which by now reflects either its <h1> heading or a generic "Chapter N".
+  // — which by now reflects either its <h1> heading or a numbered opening excerpt.
   const resolvedToc = isParsedTocRichEnough
     ? resolveTocNodes(parsedToc, chapters)
     : resolveTocNodes(createFallbackToc(chapters), chapters);

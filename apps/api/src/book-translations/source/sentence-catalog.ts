@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import type { ReaderChapter, ReaderInline } from '../../reader/reader-types';
-import { createSentenceSegmenter } from './create-sentence-segmenter';
+import { createSentenceSegmenter } from '../../shared/create-sentence-segmenter';
 import type { BilingualUnit } from '../types';
 
 export function buildSentenceCatalog(
