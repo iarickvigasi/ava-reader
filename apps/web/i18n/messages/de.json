@@ -669,6 +669,7 @@
       "returnToSplash": "Zurück zum Startbildschirm"
     },
     "device": {
+      "closeNotice": "Benachrichtigung schließen",
       "menu": "Kontomenü",
       "manage": "Konto verwalten",
       "signIn": "Anmelden",

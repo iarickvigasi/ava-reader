@@ -669,6 +669,7 @@
       "returnToSplash": "Voltar à tela inicial"
     },
     "device": {
+      "closeNotice": "Fechar notificação",
       "menu": "Menu da conta",
       "manage": "Gerenciar conta",
       "signIn": "Entrar",

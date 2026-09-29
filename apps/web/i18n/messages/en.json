@@ -669,6 +669,7 @@
       "returnToSplash": "Return to splash"
     },
     "device": {
+      "closeNotice": "Close notification",
       "menu": "Account menu",
       "manage": "Manage account",
       "signIn": "Sign in",
