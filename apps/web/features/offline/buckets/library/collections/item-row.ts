@@ -56,5 +56,6 @@ export function mergeListPayloadItemRow(
         ? { ...prior.details, finishedAt }
         : prior.details,
     detailsFetchedAt: prior.detailsFetchedAt,
+    pdfDetailsRevision: prior.pdfDetailsRevision,
   } satisfies LibraryItemRow;
 }

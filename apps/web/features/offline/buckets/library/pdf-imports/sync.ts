@@ -1,3 +1,4 @@
+import { refreshPdfDetails } from "./refresh-details";
 import { syncPdfNotices } from "./notifications/sync";
 import { setPdfObservationHealth } from "./observation-health";
 import { getDb } from "../../../db";
@@ -40,8 +41,9 @@ export async function observePdfImports(getToken: GetToken) {
       }
     }
     if (changed && db === getDb()) await revalidateLibrary(getToken);
+    const refreshedDetails = await refreshPdfDetails(db, getToken);
     setPdfObservationHealth(db, true);
-    return ids.length > 0;
+    return ids.length > 0 || refreshedDetails;
   } catch (error) {
     setPdfObservationHealth(db, false);
     throw error;

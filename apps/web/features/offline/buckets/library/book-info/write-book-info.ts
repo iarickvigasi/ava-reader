@@ -1,3 +1,4 @@
+import { pdfDetailsRevision } from "../pdf-imports/details-revision";
 import { mergePdfImportStatus } from "../pdf-imports/merge-status";
 import { keepPriorMetadata } from "../pdf-imports/metadata/version";
 import { isLibraryItemDeleted } from "../deleted-items";
@@ -44,6 +45,12 @@ export async function applyBookInfoPayload(
       const keepMetadata =
         prior &&
         keepPriorMetadata(prior.metadataEditVersion, book.metadataEditVersion);
+      const keepDetails =
+        prior?.details &&
+        prior.pdfImport &&
+        prior.pdfDetailsRevision === pdfDetailsRevision(prior) &&
+        mergePdfImportStatus(prior.pdfImport, book.pdfImport) ===
+          prior.pdfImport;
       if (options.seedOnly && prior?.details) return;
       const pending = await db.collectionMembershipMutations.get(
         book.libraryItemId,
@@ -81,28 +88,34 @@ export async function applyBookInfoPayload(
         offlineRequestedBaseline:
           book.offlineRequested ?? prior?.offlineRequestedBaseline ?? false,
         serverUpdatedAt: prior?.serverUpdatedAt ?? nowIso,
-        details: {
-          addedAt: book.addedAt,
-          approximateBodyPageCount: book.approximateBodyPageCount ?? null,
-          approximatePageCount: book.approximatePageCount,
-          chapterLabel: book.chapterLabel,
-          collections:
-            pending && prior?.details
-              ? prior.details.collections
-              : book.collections,
-          description: book.description,
-          genres: book.genres,
-          finishedAt,
-          language:
-            keepMetadata && prior.details
-              ? prior.details.language
-              : book.language,
-          lastReadAt: book.lastReadAt,
-          minutesRead: book.minutesRead,
-          publishedYear: book.publishedYear,
-          source: book.source,
-        },
+        details: keepDetails
+          ? prior.details
+          : {
+              addedAt: book.addedAt,
+              approximateBodyPageCount: book.approximateBodyPageCount ?? null,
+              approximatePageCount: book.approximatePageCount,
+              chapterLabel: book.chapterLabel,
+              collections:
+                pending && prior?.details
+                  ? prior.details.collections
+                  : book.collections,
+              description: book.description,
+              genres: book.genres,
+              finishedAt,
+              language:
+                keepMetadata && prior.details
+                  ? prior.details.language
+                  : book.language,
+              lastReadAt: book.lastReadAt,
+              minutesRead: book.minutesRead,
+              publishedYear: book.publishedYear,
+              source: book.source,
+            },
         detailsFetchedAt: nowIso,
+        pdfDetailsRevision:
+          keepMetadata || keepDetails
+            ? prior.pdfDetailsRevision
+            : pdfDetailsRevision(book),
       };
       await db.libraryItems.put(next);
     },
