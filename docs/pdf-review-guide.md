@@ -28,9 +28,10 @@ No production provider route, reader qualification or cleanup activation is impl
 ## Verification on 29 September 2026
 
 The local implementation snapshot passed API/web typechecking and lint (two existing/upstream web warnings),
-1,361 web tests and 249 Python worker tests. The merged API baseline passed 995 tests;
+1,361 web tests and 260 Python worker tests. The merged API baseline passed 995 tests;
 197 affected provider/reconstruction/runtime checks pass after refinement, with 17 focused metadata
-checks for the native-language follow-up. Worker Ruff and strict mypy also passed.
+checks for the native-language follow-up. The later details-cache repair passes 26 focused web checks,
+with typecheck and scoped lint. Worker Ruff and strict mypy also passed.
 All 39 migrations also passed on fresh PostgreSQL 16; 13 database checks covered canonical
 maintenance exclusions and the upstream session/timezone changes. The merged snapshot required
 fixing a moved segmenter import and a recursive Dexie test-fixture update. Later changes require
@@ -55,7 +56,14 @@ not total network loss or production service-worker installation. Clerk/auth sem
 A separate import fix preserves the validated EPUB language in Library metadata without replacing
 canonical content or overriding reader edits. A fresh normal upload of the authored generated EPUB
 now shows English, the correct title and author in Book details. Native PDF metadata now uses the
-same validated-package language mapping for future imports; its fresh import check remains pending.
+same validated-package language mapping for future imports. A fresh native upload initially exposed
+publication-report schema drift: a hand-maintained parser refused the worker's refinement evidence.
+The publication boundary now consumes the generated contract; 26 publication checks and 21 independent
+saved-report checks pass. A subsequent normal native upload reached Ready and opened the correct book.
+Its language was stored correctly but initially required a reload to appear. The reviewed status-cache
+repair now passes another normal upload: Processing → Ready, English/title/author and both formats
+appear without a reload, then Read opens the correct book. The failed import remains Failed, and
+its candidate was never exposed.
 
 The structured native fixture also passes Unicode-prefix and table-cell mark reload/reopen, with
 17 database checks confirming exact UTF-16 ranges and immutable identity. Hidden measurement copies
@@ -74,7 +82,15 @@ work so missing setup cannot consume attempts. Passing local flows do not establ
 - Follow-up scan repair joins the observed gutter-split paragraph using reading-order and source-pixel
   evidence, conserving words, note ranges and source aliases. It also stops certifying uncorroborated
   OCR heading ranks. The separate [book-wide refinement phase](pdf-refinement-checks.md) is now implemented and
-  independently reviewed with authored responses; live-model qualification remains open.
+  independently reviewed with authored responses. One live Gemini Flash comparison recovered the expected
+  first-task heading hierarchy and visible sizes/weights/italics but invented style identifiers. Strict
+  semantic checks rejected it and stopped the second request; cost was $0.04558545 in 26.243 seconds.
+  The response schema now expresses the existing fixed-ID requirement; 17 Python and 9 API checks
+  pass, including the provider generation grammar. The untouched
+  failed response is retained. A corrected two-request run then produced an unpublished candidate in
+  118 seconds for $0.08624. Independent checks and visual review confirm exact text, chapters, hierarchy
+  and Contents; EPUBCheck/roundtrip pass. Body line spacing differs between model batches despite a
+  consistent source. Typography is partial, and full live OCR/scanned-book qualification remains open.
 - Scanned/mixed books: two live recognition pages returned, but no completed scanned-book conversion
   was qualified. Source review found an incorrect column paragraph break and incomplete relative
   typography. A controlled fixture also exposes uncorroborated cross-page OCR heading hierarchy.

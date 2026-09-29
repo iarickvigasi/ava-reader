@@ -39,3 +39,12 @@ claim image/resource ceiling constants establish 200 MiB phone performance or vi
 Legacy `runNative` resource canaries remain a direct, explicitly armed sandbox test. The production
 reconstruction coordinator rejects fault configuration before claiming work; prior PDF06 fault
 receipts do not claim coverage of the new reconstruction task loop.
+
+The final publication boundary now validates reconstruction reports using the generated worker
+contract. A normal native import exposed an outdated duplicate schema rejecting the newly emitted
+`refinement_evidence` field. The failed import and its unpublished candidate were retained. Twenty-six
+publication checks and 21 independent saved-report checks pass after the repair, including empty
+native evidence, nonempty refinement evidence, unknown fields and incomplete source checks. A fresh
+normal native import then reached Ready and actual reading under TEST qualification; the earlier
+Failed operation remained terminal. The shared schema does not replace source, resource, EPUB or
+reader-capability validation.
