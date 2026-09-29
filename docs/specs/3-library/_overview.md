@@ -6,18 +6,30 @@
 > apps/web/features/offline/buckets/library, apps/api/src/library
 
 ## Summary
+
 The user's personal book collection: importing books, organizing them into collections, a per-book
 info page, and the server payloads behind all of it. Serves the "organize a library, collections,
 reading lists" job. Split by subsystem, like [[2-reader/_overview]].
 
 ## Sub-specs
+
 - 7.1 library-screen — the library page: collection sections, book cards, offline rendering.
 - 7.2 book-info — per-book detail page: stats, collections, read/save actions.
 - 7.3 collections — collection model and rules: CUSTOM vs SMART, guards, membership.
-- 7.4 import — server ingest: upload → metadata → blobs → processing run → shelves.
+- 7.4 import — upload, source storage and preparation; generated EPUBs retain canonical content
+  through a separately owned immutable import (integration candidate, qualification pending).
 - 7.5 library-payloads — server reads and the serialized shapes.
+- [[3.6-pdf-jobs]] — durable initial PDF conversion authority, recovery and failure.
+- [[3.7-provider-ledger]] — funded dispatch, fixed routes and cumulative cost accounting.
+- [[3.8-pdf-publication]] — candidate validation and immutable first publication.
+- [[3.10-pdf-retention]] — private-file eligibility and content-free replay receipts; activation pending.
+- [[3.9-pdf-import-status]] — minimal import choice, Library status, formats and details editing.
+
+The PDF conversion additions are in progress and gated by reader qualification; the shipped
+Library overview does not establish their release readiness.
 
 ## Shared data model
+
 - **LibraryItem** — the user↔book link: per-user slug, source (IMPORTED | CATALOG),
   offlineRequested, isArchived, addedAt/lastOpenedAt, one ReadingProgress row.
 - **Collection** {kind: CUSTOM | SMART, smartKey?, name, slug, sortOrder} with CollectionItem
@@ -33,15 +45,18 @@ reading lists" job. Split by subsystem, like [[2-reader/_overview]].
   collections themselves ([[3.1-library-screen]] §3).
 
 ## Scope (whole feature)
-- In: everything in the five sub-specs.
+
+- In: everything in the sub-specs.
 - Non-goals: reading itself ([[2-reader/_overview]]), catalog/discovery (explore — future),
   sharing collections (social — future), offline content download ([[4.1-offline-reading]]).
 
 ## Cross-cutting acceptance
+
 - [ ] Library, collections, and book-info render offline from cache.
 - [ ] An imported or catalog-added book appears in its smart shelf with progress at 0.
 - [ ] Every book list orders by engagement recency and excludes archived items.
 
 ## Open questions
+
 Collection create / add-remove / reorder (no endpoints yet); smart-collection rule editor;
 collection sharing (depends on social).

@@ -1,0 +1,340 @@
+{
+  "$comment": "Generated from ava_pdf_epub.contracts. Graph, digest, normalization and authority semantics require the pinned Python validator; structural success never grants readiness.",
+  "$defs": {
+    "Artifact": {
+      "additionalProperties": false,
+      "properties": {
+        "byte_length": {
+          "maximum": 2147483648,
+          "minimum": 1,
+          "title": "Byte Length",
+          "type": "integer"
+        },
+        "format": {
+          "enum": [
+            "PDF",
+            "CANONICAL_JSON",
+            "EPUB",
+            "READER_PACKAGE",
+            "REPORT_JSON",
+            "IMAGE"
+          ],
+          "title": "Format",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "media_type": {
+          "enum": [
+            "application/pdf",
+            "application/json",
+            "application/epub+zip",
+            "image/png",
+            "image/jpeg"
+          ],
+          "title": "Media Type",
+          "type": "string"
+        },
+        "path": {
+          "maxLength": 240,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*(/[A-Za-z0-9][A-Za-z0-9._-]*)*$",
+          "title": "Path",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "SOURCE_PDF",
+            "CANONICAL_BOOK",
+            "DERIVED_EPUB",
+            "DERIVED_READER",
+            "VALIDATION_REPORT",
+            "DIAGNOSTIC",
+            "RESOURCE"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "role",
+        "format",
+        "media_type",
+        "path",
+        "sha256",
+        "byte_length"
+      ],
+      "title": "Artifact",
+      "type": "object"
+    },
+    "CandidateOutcome": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate_id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Candidate Id",
+          "type": "string"
+        },
+        "canonical_book": {
+          "$ref": "#/$defs/Artifact"
+        },
+        "canonical_schema": {
+          "enum": [
+            "ava-book-1",
+            "ava-book-2"
+          ],
+          "title": "Canonical Schema",
+          "type": "string"
+        },
+        "cli_exit_code": {
+          "enum": [
+            0,
+            2
+          ],
+          "title": "Cli Exit Code",
+          "type": "integer"
+        },
+        "epub": {
+          "$ref": "#/$defs/Artifact"
+        },
+        "finding_codes": {
+          "items": {
+            "pattern": "^[A-Z][A-Z0-9_]{0,79}$",
+            "type": "string"
+          },
+          "maxItems": 1000,
+          "title": "Finding Codes",
+          "type": "array"
+        },
+        "publication_eligible": {
+          "const": false,
+          "title": "Publication Eligible",
+          "type": "boolean"
+        },
+        "resources": {
+          "items": {
+            "$ref": "#/$defs/Artifact"
+          },
+          "maxItems": 1000,
+          "title": "Resources",
+          "type": "array"
+        },
+        "status": {
+          "const": "candidate",
+          "title": "Status",
+          "type": "string"
+        },
+        "validation_report": {
+          "$ref": "#/$defs/Artifact"
+        }
+      },
+      "required": [
+        "status",
+        "cli_exit_code",
+        "canonical_schema",
+        "publication_eligible",
+        "candidate_id",
+        "canonical_book",
+        "epub",
+        "validation_report",
+        "resources",
+        "finding_codes"
+      ],
+      "title": "CandidateOutcome",
+      "type": "object"
+    },
+    "FailureOutcome": {
+      "additionalProperties": false,
+      "properties": {
+        "cli_exit_code": {
+          "const": 1,
+          "title": "Cli Exit Code",
+          "type": "integer"
+        },
+        "code": {
+          "maxLength": 80,
+          "pattern": "^[A-Z][A-Z0-9_]{0,79}$",
+          "title": "Code",
+          "type": "string"
+        },
+        "diagnostic": {
+          "$ref": "#/$defs/Artifact"
+        },
+        "failure_id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Failure Id",
+          "type": "string"
+        },
+        "investigation_required": {
+          "const": true,
+          "title": "Investigation Required",
+          "type": "boolean"
+        },
+        "notification_required": {
+          "const": true,
+          "title": "Notification Required",
+          "type": "boolean"
+        },
+        "reader_retry_allowed": {
+          "const": false,
+          "title": "Reader Retry Allowed",
+          "type": "boolean"
+        },
+        "safe_reason": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Safe Reason",
+          "type": "string"
+        },
+        "stage": {
+          "enum": [
+            "preflight",
+            "extraction",
+            "reconstruction",
+            "assembly",
+            "validation"
+          ],
+          "title": "Stage",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "failed",
+            "unsupported"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "cli_exit_code",
+        "failure_id",
+        "code",
+        "stage",
+        "safe_reason",
+        "diagnostic",
+        "investigation_required",
+        "notification_required",
+        "reader_retry_allowed"
+      ],
+      "title": "FailureOutcome",
+      "type": "object"
+    }
+  },
+  "$id": "urn:ava:contract:ava-pdf-worker-result-1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "attempt_fence": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "title": "Attempt Fence",
+      "type": "integer"
+    },
+    "cancellation_epoch": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Cancellation Epoch",
+      "type": "integer"
+    },
+    "config_sha256": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Config Sha256",
+      "type": "string"
+    },
+    "generation": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "title": "Generation",
+      "type": "integer"
+    },
+    "operation_id": {
+      "maxLength": 120,
+      "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+      "title": "Operation Id",
+      "type": "string"
+    },
+    "outcome": {
+      "discriminator": {
+        "mapping": {
+          "candidate": "#/$defs/CandidateOutcome",
+          "failed": "#/$defs/FailureOutcome",
+          "unsupported": "#/$defs/FailureOutcome"
+        },
+        "propertyName": "status"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/CandidateOutcome"
+        },
+        {
+          "$ref": "#/$defs/FailureOutcome"
+        }
+      ],
+      "title": "Outcome"
+    },
+    "profile_id": {
+      "const": "ava-pdf-prose-en-v2",
+      "title": "Profile Id",
+      "type": "string"
+    },
+    "request_sha256": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "ava-pdf-worker-result-1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_sha256": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Sha256",
+      "type": "string"
+    },
+    "worker_fingerprint": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Worker Fingerprint",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "operation_id",
+    "source_sha256",
+    "request_sha256",
+    "config_sha256",
+    "worker_fingerprint",
+    "profile_id",
+    "generation",
+    "attempt_fence",
+    "cancellation_epoch",
+    "outcome"
+  ],
+  "title": "WorkerResultV1",
+  "type": "object"
+}

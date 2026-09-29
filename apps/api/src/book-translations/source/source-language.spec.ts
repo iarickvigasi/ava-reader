@@ -1,3 +1,6 @@
+jest.mock('../../reader/canonical/load', () => ({
+  loadCanonicalReader: jest.fn().mockResolvedValue(null),
+}));
 import type { PrismaService } from '../../prisma/prisma.service';
 import type { UsersService } from '../../users/users.service';
 import {

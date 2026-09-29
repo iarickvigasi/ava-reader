@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdminCatalogManager } from "@/components/app/admin/admin-catalog-manager";
 import { OfflineRouteFallback } from "@/components/app/core/offline-route-fallback";
@@ -47,6 +48,9 @@ export default async function AdminCatalogPage() {
         </p>
       </div>
 
+      <Link href="/app/admin/pdf-imports" className="underline">
+        Review PDF imports
+      </Link>
       <AdminCatalogManager initialEntries={entries} />
     </div>
   );

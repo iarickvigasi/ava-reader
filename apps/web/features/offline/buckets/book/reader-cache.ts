@@ -1,3 +1,4 @@
+import { readCanonicalCache } from "./canonical-cache";
 // Synthesises a `ReaderStatusPayload` from cached Dexie rows so the reader
 // can render fully offline (or skip a network round-trip when online) when
 // a book has been saved. Mirrors the windowed shape the API returns:
@@ -30,6 +31,7 @@ export async function loadReaderPayloadFromCache(
   if (orderedIds.length === 0) {
     return null;
   }
+  if (chapterId && !orderedIds.includes(chapterId)) return null;
   const activeId =
     chapterId && orderedIds.includes(chapterId) ? chapterId : orderedIds[0]!;
   const activeIndex = orderedIds.indexOf(activeId);
@@ -67,7 +69,7 @@ export async function loadReaderPayloadFromCache(
     });
   }
 
-  if (chapters.length === 0) {
+  if (!chapters.some((chapter) => chapter.chapterId === activeId)) {
     return null;
   }
 
@@ -83,7 +85,7 @@ export async function loadReaderPayloadFromCache(
   const progressRow = await readProgress(libraryItemId);
   if (getDb() !== db) return null;
 
-  return {
+  return readCanonicalCache(book, {
     status: "READY",
     activeChapterId: activeId,
     book: metadata,
@@ -95,5 +97,5 @@ export async function loadReaderPayloadFromCache(
       locator: progressRow?.locator ?? null,
     },
     toc,
-  };
+  });
 }

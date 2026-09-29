@@ -1,3 +1,5 @@
+import { ReaderProcessingLoop } from './reader-processing-loop';
+import { processCanonicalEpubOnce } from '../library/epub-import/process-once';
 import {
   BlobPurpose,
   BookFileFormat,
@@ -24,7 +26,7 @@ const READER_PROCESSING_TRANSACTION_TIMEOUT_MS = 30_000;
 export class ReaderProcessingService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(ReaderProcessingService.name);
   private poller: NodeJS.Timeout | null = null;
-  private isTickRunning = false;
+  private readonly processingLoop = new ReaderProcessingLoop();
 
   constructor(private readonly prisma: PrismaService) {}
 
@@ -45,49 +47,37 @@ export class ReaderProcessingService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  async processPendingRunsOnce() {
-    if (this.isTickRunning) {
-      return false;
-    }
+  processPendingRunsOnce() {
+    return this.processingLoop.run(
+      () => this.processPendingRun(),
+      (code, retryMs) =>
+        this.logger.warn(
+          `Reader background processing unavailable (${code}); retrying after ${retryMs}ms.`,
+        ),
+    );
+  }
 
-    this.isTickRunning = true;
-
-    try {
-      const pendingRun = await this.prisma.bookProcessingRun.findFirst({
-        where: {
-          pipeline: 'normalize-reader-package-v1',
-          status: ProcessingStatus.PENDING,
-        },
-        orderBy: {
-          createdAt: 'asc',
-        },
-      });
-
-      if (!pendingRun) {
-        return false;
-      }
-
-      const claimed = await this.prisma.bookProcessingRun.updateMany({
-        where: {
-          id: pendingRun.id,
-          status: ProcessingStatus.PENDING,
-        },
-        data: {
-          completedAt: null,
-          errorMessage: null,
-          status: ProcessingStatus.PROCESSING,
-        },
-      });
-
-      if (claimed.count === 0) {
-        return false;
-      }
-
-      await this.processRunById(pendingRun.id);
-      return true;
-    } finally {
-      this.isTickRunning = false;
-    }
+  private async processPendingRun() {
+    if (await processCanonicalEpubOnce(this.prisma)) return true;
+    const pendingRun = await this.prisma.bookProcessingRun.findFirst({
+      where: {
+        pipeline: 'normalize-reader-package-v1',
+        status: ProcessingStatus.PENDING,
+      },
+      orderBy: { createdAt: 'asc' },
+    });
+    if (!pendingRun) return false;
+    const claimed = await this.prisma.bookProcessingRun.updateMany({
+      where: { id: pendingRun.id, status: ProcessingStatus.PENDING },
+      data: {
+        completedAt: null,
+        errorMessage: null,
+        status: ProcessingStatus.PROCESSING,
+      },
+    });
+    if (claimed.count === 0) return false;
+    await this.processRunById(pendingRun.id);
+    return true;
   }
 
   private async processRunById(runId: string) {

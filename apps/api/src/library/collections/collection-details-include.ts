@@ -1,3 +1,4 @@
+import { pdfLibrarySummarySelect } from '../pdf-import/operations/library-summary';
 import type { Prisma } from '@prisma/client';
 
 // Full collection cards omit cover bytes and BookFile.readingProgressIndex;
@@ -9,6 +10,7 @@ export const collectionDetailsInclude = {
         include: {
           book: {
             include: {
+              pdfImport: { select: pdfLibrarySummarySelect },
               coverBlob: { select: { mimeType: true } },
               files: { select: { format: true, isPrimary: true, kind: true } },
             },

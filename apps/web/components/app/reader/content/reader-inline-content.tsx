@@ -1,3 +1,4 @@
+import { ReaderInternalLink } from "./reader-internal-link";
 import type { ReaderInline } from "@/lib/api-types";
 import { cn } from "@/lib/cn";
 import { ReaderInlineImage } from "./reader-inline-image";
@@ -29,11 +30,30 @@ export function ReaderInlineContent({ inlines }: { inlines: ReaderInline[] }) {
         }
 
         const content = (
-          <ReaderInlineScript script={inline.script}>
+          <ReaderInlineScript
+            inheritSize={inline.presentation?.relative_size != null}
+            script={
+              inline.script ??
+              (inline.presentation?.vertical_align === "super" ||
+              inline.presentation?.vertical_align === "sub"
+                ? inline.presentation.vertical_align
+                : undefined)
+            }
+          >
             <ReaderInlineText inline={inline} />
           </ReaderInlineScript>
         );
 
+        if (inline.target)
+          return (
+            <ReaderInternalLink
+              key={key}
+              target={inline.target}
+              sourceOffset={inline.sourceOffset}
+            >
+              {content}
+            </ReaderInternalLink>
+          );
         return inline.href ? (
           <a
             key={key}

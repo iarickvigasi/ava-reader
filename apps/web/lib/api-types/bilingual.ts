@@ -7,7 +7,7 @@ export type BilingualUnit = {
   startOffset: number;
   endOffset: number;
   text: string;
-  kind: "sentence" | "image";
+  kind: "sentence" | "image" | "literal";
 };
 
 export type BilingualIdentity = {

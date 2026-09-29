@@ -48,11 +48,9 @@ export type ReadyReaderProps = {
   onDecreaseFont: () => void;
   onIncreaseFont: () => void;
   onSelectChapter: (chapterId: string, target?: ReaderNavigationTarget) => void;
+  onTurnChapter?: (chapterId: string, target?: ReaderNavigationTarget) => void;
   onVisibleLocatorChange: (locator: ReaderLocator | null) => void;
-  payload: Extract<
-    ReaderStatusPayload,
-    { status: typeof READER_STATUS_READY }
-  >;
+  payload: Extract<ReaderStatusPayload, { status: typeof READER_STATUS_READY }>;
   pendingChapterId: string | null;
   restoreIntent: RestoreIntent | null;
   visibleLocator: ReaderLocator | null;

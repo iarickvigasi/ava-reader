@@ -1,0 +1,27 @@
+{
+  "schema": "ava-worker-build-inputs-1",
+  "python": "3.12.14",
+  "uv": "0.9.26",
+  "build_backend": "setuptools==80.9.0",
+  "python_image": "python:3.12.14-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e",
+  "uv_image": "ghcr.io/astral-sh/uv:0.9.26@sha256:9a23023be68b2ed09750ae636228e903a54a05ea56ed03a934d00fe9fbeded4b",
+  "debian_snapshot": "20260927T000000Z",
+  "debian_suite": "bookworm",
+  "apt_direct": {
+    "poppler-utils": "22.12.0-2+deb12u3",
+    "default-jre-headless": "2:1.17-74"
+  },
+  "observed_openjdk": "17.0.20.1+1-1~deb12u1",
+  "native_inventory_in_image": "/usr/share/ava/native-dependencies.tsv",
+  "epubcheck": {
+    "version": "5.4.0",
+    "jar_sha256": "2146665a124998dc6c908010ffe0d09dc4f4c8014f2c8fd6a1aa11f64c40ac93",
+    "bundled": false,
+    "required_companions": "Mount the complete EPUBCheck distribution, including lib/; the JAR alone is not a standalone distribution.",
+    "distribution_manifest_sha256": "41710888ac4c99ef9325ab07570d7acdaa907e2110a532aceca66f4f52a0b6c9",
+    "distribution_file_count": 49,
+    "distribution_manifest": "epubcheck-distribution.json"
+  },
+  "source_date_epoch": 1790553600,
+  "scope": "Reproducible dependency selection. Does not assert byte-identical OCI layers or supply-chain vulnerability clearance."
+}

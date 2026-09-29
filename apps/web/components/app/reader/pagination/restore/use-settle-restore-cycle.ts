@@ -21,11 +21,12 @@ export function useSettleRestoreCycle() {
   }, []);
 
   const scheduleSettle = useCallback(
-    (restoreCycleKey: string) => {
+    (restoreCycleKey: string, onSettled?: () => void) => {
       cancelSettle();
       frameRef.current = window.requestAnimationFrame(() => {
         frameRef.current = null;
         setSettledRestoreCycleKey(restoreCycleKey);
+        onSettled?.();
       });
     },
     [cancelSettle],

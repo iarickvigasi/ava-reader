@@ -1,3 +1,8 @@
+import { loadCanonicalResources } from "@/features/reader/canonical/resources";
+import {
+  READER_SCHEMA,
+  READER_BUILD_FINGERPRINT,
+} from "@/features/reader/canonical/build";
 import type { ReaderStatusPayload } from "@/lib/api-types/reader";
 
 import { type ReaderAuthInput, resolveReaderAuthToken } from "./reader-auth";
@@ -20,11 +25,17 @@ export async function fetchReaderPayloadFromNetwork(
 
   const response = await fetch(url.toString(), {
     cache: "no-store",
-    headers: withAuthHeader(token),
+    headers: withAuthHeader(token, {
+      "X-AVA-Reader-Schema": READER_SCHEMA,
+      "X-AVA-Reader-Build": READER_BUILD_FINGERPRINT,
+    }),
     signal: input.signal,
   });
   if (!response.ok) {
     throw new Error("The reader payload could not be loaded.");
   }
-  return (await response.json()) as ReaderStatusPayload;
+  return loadCanonicalResources(
+    (await response.json()) as ReaderStatusPayload,
+    { token, apiBase: url.origin, signal: input.signal },
+  );
 }

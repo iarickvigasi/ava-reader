@@ -1,3 +1,4 @@
+import { pdfLibrarySummarySelect } from '../pdf-import/operations/library-summary';
 import type { Prisma } from '@prisma/client';
 
 export type LibraryPreviewBookRecord = Prisma.LibraryItemGetPayload<{
@@ -13,6 +14,7 @@ export type LibraryPreviewBookRecord = Prisma.LibraryItemGetPayload<{
         files: { select: { format: true; isPrimary: true; kind: true } };
         id: true;
         title: true;
+        metadataEditVersion: true;
       };
     };
   };
@@ -38,12 +40,14 @@ export async function loadPreviewItems(
       book: {
         select: {
           authors: true,
+          pdfImport: { select: pdfLibrarySummarySelect },
           coverBlob: { select: { mimeType: true } },
           files: {
             select: { format: true, isPrimary: true, kind: true },
           },
           id: true,
           title: true,
+          metadataEditVersion: true,
         },
       },
     },

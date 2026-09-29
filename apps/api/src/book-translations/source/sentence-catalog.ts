@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { identifyTranslationUnit as identify } from './unit-identity';
 import type { ReaderChapter, ReaderInline } from '../../reader/reader-types';
 import { createSentenceSegmenter } from './create-sentence-segmenter';
 import type { BilingualUnit } from '../types';
@@ -67,15 +67,4 @@ function inlineText(inlines: ReaderInline[]) {
   return inlines
     .map((inline) => (inline.kind === 'text' ? inline.text : ''))
     .join('');
-}
-
-function identify(
-  unit: Omit<BilingualUnit, 'id'>,
-  chapterId: string,
-  revision: string,
-): BilingualUnit {
-  const id = createHash('sha256')
-    .update(JSON.stringify([revision, chapterId, unit]))
-    .digest('hex');
-  return { id, ...unit };
 }

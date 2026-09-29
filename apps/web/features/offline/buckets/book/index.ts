@@ -47,3 +47,6 @@ export { persistCoverFromNetwork } from "./persist-cover-blob";
 export { loadReaderPayloadFromCache } from "./reader-cache";
 export { refreshReaderLanguage } from "./refresh-reader-language";
 export { useRefreshReaderLanguage } from "./use-refresh-reader-language";
+
+export { ownedCoverItemId } from "./owned-cover-url";
+export { useOwnedCoverUrl } from "./use-owned-cover-url";

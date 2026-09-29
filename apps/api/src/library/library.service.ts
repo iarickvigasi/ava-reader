@@ -12,6 +12,7 @@ import { setFinishedAt } from './items/set-finished-at';
 import { setOfflineRequested } from './items/set-offline-requested';
 import { addCatalogBook } from './membership/add-catalog-book';
 import { getLibraryOverview } from './overview/get-library-overview';
+import { getPublicBookCover } from './covers/get-public-book-cover';
 
 @Injectable()
 export class LibraryService {
@@ -46,12 +47,8 @@ export class LibraryService {
     );
   }
 
-  async getBookCover(bookId: string) {
-    const book = await this.prisma.book.findUnique({
-      where: { id: bookId },
-      select: { coverBlob: { select: { bytes: true, mimeType: true } } },
-    });
-    return book?.coverBlob ?? null;
+  getBookCover(bookId: string) {
+    return getPublicBookCover(this.prisma, bookId);
   }
 
   async getCollection(clerkUserId: string, collectionId: string) {

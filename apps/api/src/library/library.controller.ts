@@ -41,10 +41,9 @@ export class LibraryController {
     );
   }
 
-  // Public read endpoint. Covers are not sensitive (often marketing artwork),
-  // bookIds are unpredictable CUIDs, and skipping auth lets `<img>` tags load
-  // without juggling Clerk tokens. The long-lived Cache-Control header lets
-  // the browser skip repeat downloads as the user scrolls a collection.
+  // Legacy cover route. PDF-import books are explicitly denied by the service;
+  // their covers require the owned route. Broader legacy EPUB cover delivery
+  // remains a separate authenticated-client migration.
   @Get('covers/:bookId')
   async getBookCover(
     @Param('bookId') bookId: string,

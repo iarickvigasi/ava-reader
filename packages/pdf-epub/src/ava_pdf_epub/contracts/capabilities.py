@@ -1,0 +1,30 @@
+"""Capabilities derive from actual content, never a caller's optimistic claim."""
+
+from .blocks import FigureBlock, ListItemBlock, NoteBlock, ProseBlock, TableBlock
+from .book import CanonicalBookV2
+from .graph_index import index_book
+from .graph_links import TEXT_NODES
+
+
+def required_capabilities(book: CanonicalBookV2) -> set[str]:
+    result = {"text"}
+    nodes, _ = index_book(book)
+    if any(n.style_id is not None for n in nodes.values()):
+        result.add("styles")
+    for node in nodes.values():
+        if isinstance(node, TEXT_NODES):
+            if any(s.style_id is not None for s in node.content.spans):
+                result.add("styles")
+            if any(s.link is not None for s in node.content.spans):
+                result.add("links")
+        if isinstance(node, NoteBlock):
+            result.add("notes")
+        if isinstance(node, FigureBlock):
+            result.add("figures")
+        if isinstance(node, TableBlock):
+            result.add("tables")
+        if isinstance(node, ListItemBlock):
+            result.add("lists")
+        if isinstance(node, ProseBlock) and node.kind in {"code", "verse"}:
+            result.add("literal-text")
+    return result

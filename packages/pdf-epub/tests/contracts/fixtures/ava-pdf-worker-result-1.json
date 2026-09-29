@@ -1,0 +1,50 @@
+{
+  "operation_id": "operation-fixture",
+  "request_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "config_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "worker_fingerprint": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "profile_id": "ava-pdf-prose-en-v2",
+  "generation": 1,
+  "attempt_fence": 1,
+  "cancellation_epoch": 0,
+  "schema_version": "ava-pdf-worker-result-1",
+  "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "outcome": {
+    "status": "candidate",
+    "cli_exit_code": 2,
+    "canonical_schema": "ava-book-1",
+    "publication_eligible": false,
+    "candidate_id": "candidate-fixture",
+    "canonical_book": {
+      "id": "artifact-canonical",
+      "role": "CANONICAL_BOOK",
+      "format": "CANONICAL_JSON",
+      "media_type": "application/json",
+      "path": "candidate/book.json",
+      "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "byte_length": 128
+    },
+    "epub": {
+      "id": "artifact-epub",
+      "role": "DERIVED_EPUB",
+      "format": "EPUB",
+      "media_type": "application/epub+zip",
+      "path": "candidate/book.epub",
+      "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "byte_length": 128
+    },
+    "validation_report": {
+      "id": "artifact-report",
+      "role": "VALIDATION_REPORT",
+      "format": "REPORT_JSON",
+      "media_type": "application/json",
+      "path": "candidate/report.json",
+      "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "byte_length": 128
+    },
+    "resources": [],
+    "finding_codes": [
+      "REVIEW_REQUIRED"
+    ]
+  }
+}

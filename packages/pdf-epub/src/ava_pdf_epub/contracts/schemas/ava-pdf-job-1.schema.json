@@ -1,0 +1,226 @@
+{
+  "$comment": "Generated from ava_pdf_epub.contracts. Graph, digest, normalization and authority semantics require the pinned Python validator; structural success never grants readiness.",
+  "$defs": {
+    "Artifact": {
+      "additionalProperties": false,
+      "properties": {
+        "byte_length": {
+          "maximum": 2147483648,
+          "minimum": 1,
+          "title": "Byte Length",
+          "type": "integer"
+        },
+        "format": {
+          "enum": [
+            "PDF",
+            "CANONICAL_JSON",
+            "EPUB",
+            "READER_PACKAGE",
+            "REPORT_JSON",
+            "IMAGE"
+          ],
+          "title": "Format",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "media_type": {
+          "enum": [
+            "application/pdf",
+            "application/json",
+            "application/epub+zip",
+            "image/png",
+            "image/jpeg"
+          ],
+          "title": "Media Type",
+          "type": "string"
+        },
+        "path": {
+          "maxLength": 240,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*(/[A-Za-z0-9][A-Za-z0-9._-]*)*$",
+          "title": "Path",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "SOURCE_PDF",
+            "CANONICAL_BOOK",
+            "DERIVED_EPUB",
+            "DERIVED_READER",
+            "VALIDATION_REPORT",
+            "DIAGNOSTIC",
+            "RESOURCE"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "role",
+        "format",
+        "media_type",
+        "path",
+        "sha256",
+        "byte_length"
+      ],
+      "title": "Artifact",
+      "type": "object"
+    }
+  },
+  "$id": "urn:ava:contract:ava-pdf-job-1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "active_deadline_seconds": {
+      "maximum": 1800,
+      "minimum": 1,
+      "title": "Active Deadline Seconds",
+      "type": "integer"
+    },
+    "attempt_fence": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "title": "Attempt Fence",
+      "type": "integer"
+    },
+    "cancellation_epoch": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Cancellation Epoch",
+      "type": "integer"
+    },
+    "config_sha256": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Config Sha256",
+      "type": "string"
+    },
+    "dispatch_authority_id": {
+      "anyOf": [
+        {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Dispatch Authority Id"
+    },
+    "generation": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "title": "Generation",
+      "type": "integer"
+    },
+    "intent": {
+      "const": "initial_pdf_import",
+      "title": "Intent",
+      "type": "string"
+    },
+    "library_item_id": {
+      "maxLength": 120,
+      "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+      "title": "Library Item Id",
+      "type": "string"
+    },
+    "operation_id": {
+      "maxLength": 120,
+      "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+      "title": "Operation Id",
+      "type": "string"
+    },
+    "owner_id": {
+      "maxLength": 120,
+      "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+      "title": "Owner Id",
+      "type": "string"
+    },
+    "profile_id": {
+      "const": "ava-pdf-prose-en-v2",
+      "title": "Profile Id",
+      "type": "string"
+    },
+    "provider_mode": {
+      "enum": [
+        "native",
+        "stub",
+        "replay",
+        "live"
+      ],
+      "title": "Provider Mode",
+      "type": "string"
+    },
+    "request_sha256": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "ava-pdf-job-1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scratch_byte_limit": {
+      "maximum": 2147483648,
+      "minimum": 1,
+      "title": "Scratch Byte Limit",
+      "type": "integer"
+    },
+    "source": {
+      "$ref": "#/$defs/Artifact"
+    },
+    "source_page_limit": {
+      "maximum": 500,
+      "minimum": 1,
+      "title": "Source Page Limit",
+      "type": "integer"
+    },
+    "worker_fingerprint": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Worker Fingerprint",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "operation_id",
+    "owner_id",
+    "library_item_id",
+    "intent",
+    "profile_id",
+    "source",
+    "request_sha256",
+    "config_sha256",
+    "worker_fingerprint",
+    "generation",
+    "attempt_fence",
+    "cancellation_epoch",
+    "provider_mode",
+    "active_deadline_seconds",
+    "source_page_limit",
+    "scratch_byte_limit"
+  ],
+  "title": "JobInputV1",
+  "type": "object"
+}

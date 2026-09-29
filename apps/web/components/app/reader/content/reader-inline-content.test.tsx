@@ -8,6 +8,22 @@ function render(inlines: ReaderInline[]) {
 }
 
 describe("ReaderInlineContent", () => {
+  it("applies a canonical script baseline and explicit relative size only once", () => {
+    const html = render([
+      {
+        kind: "text",
+        text: "2",
+        presentation: {
+          id: "super",
+          vertical_align: "super",
+          relative_size: 0.7,
+        },
+      },
+    ]);
+    expect(html).toContain('<sup style="font-size:inherit">');
+    expect(html).toContain("font-size:0.7em");
+    expect(html).not.toContain("vertical-align:super");
+  });
   it("raises a superscript run so an exponent reads as a power", () => {
     const html = render([
       { kind: "text", text: "10" },

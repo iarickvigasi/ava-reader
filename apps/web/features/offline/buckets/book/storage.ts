@@ -9,11 +9,7 @@ import { writeUnlessDeleted } from "../library/deleted-items";
 //                          book evicts it (reader-driven, online only — never
 //                          offline). See ./evict.
 
-import type {
-  ReaderBookPayload,
-  ReaderBlock,
-  ReaderTocNode,
-} from "@/lib/api-types/reader";
+import type { ReaderBlock, ReaderBookPayload } from "@/lib/api-types/reader";
 
 import { getDb, type LibraryItemRow } from "../../db";
 
@@ -25,28 +21,7 @@ export type SaveKind = "auto" | "explicit";
 
 // ----- BookRow / ChapterRow helpers ------------------------------------------
 
-export type SavedBookContent = {
-  libraryItemId: string;
-  toc: ReaderTocNode[];
-  chapterIds: string[];
-  metadata: ReaderBookPayload;
-};
-
-export async function applyBookContent(
-  content: SavedBookContent,
-): Promise<void> {
-  const db = getDb();
-  const nowIso = new Date().toISOString();
-  await writeUnlessDeleted(db, content.libraryItemId, [db.books], () =>
-    db.books.put({
-      libraryItemId: content.libraryItemId,
-      toc: content.toc,
-      chapterIds: content.chapterIds,
-      metadata: content.metadata,
-      fetchedAt: nowIso,
-    }),
-  );
-}
+export { applyBookContent, type SavedBookContent } from "./write-book-content";
 
 export async function applyChapter(input: {
   libraryItemId: string;

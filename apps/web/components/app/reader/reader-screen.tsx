@@ -11,7 +11,7 @@ import { BookContextProvider } from "@/features/offline/buckets/book/context";
 import { useRefreshReaderLanguage } from "@/features/offline/buckets/book";
 import { AiCommentsProvider } from "./overlays/ai-comments/ai-comments-context";
 import { HighlightsProvider } from "./overlays/highlights/highlights-context";
-import { ReaderModeRouter } from "./view/reader-mode-router";
+import { ReaderNavigationSession } from "./view/reader-navigation-session";
 import { ReaderSelectionProvider } from "./selection/reader-selection-context";
 import { ReaderStatusState } from "./view/reader-status-state";
 import {
@@ -75,7 +75,7 @@ export function ReaderScreen({
             <AiCommentsProvider libraryItemId={libraryItemId}>
               <HighlightsProvider libraryItemId={libraryItemId}>
                 <ReaderSelectionProvider>
-                  <ReaderModeRouter
+                  <ReaderNavigationSession
                     key={libraryItemId}
                     activeChapter={activeChapter}
                     displayLocator={displayLocator}

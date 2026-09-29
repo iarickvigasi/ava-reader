@@ -1,3 +1,5 @@
+import { useId } from "react";
+import { figureDescription } from "@/features/reader/bilingual/content/figure-description";
 import type { BilingualFlowBlockProps } from "@/features/reader/bilingual/content/flow-types";
 import { flowSourceAttributes } from "@/features/reader/bilingual/content/flow-source-attributes";
 
@@ -7,7 +9,9 @@ export function BilingualFlowImage({
   side,
   pageHeight,
 }: BilingualFlowBlockProps) {
+  const descriptionId = useId();
   const { block, units } = group;
+  const description = figureDescription(group.descriptions, chapter, side);
   if (block.kind !== "image") return null;
   const attributes =
     side === "source"
@@ -19,6 +23,7 @@ export function BilingualFlowImage({
   return (
     <figure
       {...attributes}
+      aria-describedby={description ? descriptionId : undefined}
       data-bilingual-flow-content
       data-bilingual-unit-id={units[0].unit.id}
       data-bilingual-unit-index={units[0].index}
@@ -31,6 +36,15 @@ export function BilingualFlowImage({
         className="w-full rounded-card object-contain"
         style={{ maxHeight: pageHeight > 0 ? pageHeight : undefined }}
       />
+      {description && (
+        <figcaption
+          data-bilingual-figure-description
+          id={descriptionId}
+          className="sr-only"
+        >
+          {description}
+        </figcaption>
+      )}
     </figure>
   );
 }

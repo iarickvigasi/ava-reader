@@ -42,12 +42,12 @@ export function useBilingualSourceLocator(input: {
         },
       });
       const offset = found
-        ? unit.startOffset + found.textOffset
+        ? found.textOffset
         : Math.max(unit.startOffset, unit.endOffset - 1);
-      rememberOffset(offset);
+      if (!found || found.blockId === unit.blockId) rememberOffset(offset);
       onVisibleLocatorChange({
         chapterId: chapter.chapterId,
-        blockId: unit.blockId,
+        blockId: found?.blockId ?? unit.blockId,
         textOffset: offset,
       });
     });

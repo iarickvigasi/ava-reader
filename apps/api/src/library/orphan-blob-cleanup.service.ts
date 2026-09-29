@@ -4,6 +4,8 @@ import {
   OnModuleDestroy,
   OnModuleInit,
 } from '@nestjs/common';
+import { cleanupDeletedProviderPayloads } from './pdf-import/providers/cleanup-deleted-payloads';
+import { cleanupExpiredPdfStaging } from './pdf-import/artifacts/cleanup-staging';
 import { PrismaService } from '../prisma/prisma.service';
 
 // Blobs are written outside the metadata transaction (see
@@ -46,12 +48,17 @@ export class OrphanBlobCleanupService implements OnModuleInit, OnModuleDestroy {
     this.isTickRunning = true;
 
     try {
+      await cleanupExpiredPdfStaging(this.prisma);
+      await cleanupDeletedProviderPayloads(this.prisma);
       const cutoff = new Date(Date.now() - ORPHAN_BLOB_AGE_MS);
       const result = await this.prisma.storedBlob.deleteMany({
         where: {
           createdAt: { lt: cutoff },
           bookCoverFor: { none: {} },
           bookFiles: { none: {} },
+          pdfArtifacts: { none: {} },
+          canonicalEpubResources: { none: {} },
+          pdfProviderPayloads: { none: {} },
           feedbackAttachments: { none: {} },
         },
       });

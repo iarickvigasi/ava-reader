@@ -7,7 +7,13 @@ export function configureApp(app: INestApplication) {
   app.enableCors({
     origin: webOrigin.split(',').map((origin) => origin.trim()),
     credentials: true,
-    allowedHeaders: ['Authorization', 'Content-Type'],
+    allowedHeaders: [
+      'Authorization',
+      'Content-Type',
+      'Idempotency-Key',
+      'X-AVA-Reader-Schema',
+      'X-AVA-Reader-Build',
+    ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   });
 }

@@ -44,7 +44,10 @@ export {
 export { readWithRevalidate } from "./read-with-revalidate";
 export { setBookFinishedAt } from "./finish-date/mutation";
 export { flushFinishDates } from "./finish-date/sync";
-export { clearFinishDateRuntime, subscribeToFinishDateSyncFailures } from "./finish-date/runtime";
+export {
+  clearFinishDateRuntime,
+  subscribeToFinishDateSyncFailures,
+} from "./finish-date/runtime";
 export { readLibraryItemIdBySlug } from "./slug-lookup";
 export { collectionViewToLibraryCollection } from "./collections/view-to-collection";
 export type { CollectionView, LibraryBookView, LibraryView } from "./types";
@@ -56,3 +59,13 @@ export {
   clearCollectionMembershipRuntime,
   type MembershipDropEvent,
 } from "./membership";
+
+export { importPdfFile } from "./pdf-imports/mutations";
+export { observePdfImports } from "./pdf-imports/sync";
+export { downloadPdfFormat } from "./pdf-imports/download";
+export {
+  pdfObservationIsFresh,
+  subscribePdfObservationHealth,
+} from "./pdf-imports/observation-health";
+
+export { usePdfNotices } from "./pdf-imports/notifications/use-notices";

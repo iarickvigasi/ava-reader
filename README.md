@@ -32,7 +32,6 @@ Monorepo scaffold for a web-first AI book reader.
    ```
 
 4. Open the apps:
-
    - Web landing: `http://localhost:3000`
    - Sign in: `http://localhost:3000/sign-in`
    - Protected shell: `http://localhost:3000/app`
@@ -106,7 +105,6 @@ keeping the backend database and API inside Docker.
    ```
 
 3. Open the apps:
-
    - Web: `http://localhost:3000`
    - API health: `http://localhost:4000/api/health`
 
@@ -193,11 +191,9 @@ Use this flow when you come back later and want to verify the app quickly end to
    ```
 
 5. Refresh and open the internal catalog route:
-
    - `http://localhost:3000/app/admin/catalog`
 
 6. Choose one of two paths:
-
    - Manual catalog path: create public-domain titles in the admin UI, publish them, then add them from the home screen.
    - Demo-data path: seed a realistic populated dashboard immediately:
 
@@ -226,3 +222,31 @@ pnpm build
 pnpm --filter api admin:grant you@example.com
 pnpm --filter api db:seed:home-demo you@example.com
 ```
+
+## PDF conversion integration
+
+Start with the [current review guide](docs/pdf-review-guide.md) for implemented behavior, actual
+local user-flow evidence and remaining release gates.
+
+The [PDF worker and contracts](docs/pdf-worker-checks.md), [owned upload boundary](docs/pdf-import-checks.md)
+and [canonical reader/EPUB adapter](docs/pdf-content-checks.md) are integrated for development.
+[Durable jobs](docs/pdf-job-checks.md) and the [isolated native runtime](docs/pdf-runtime-checks.md)
+provide opt-in background execution and bounded recovery. The local integration now includes
+canonical reconstruction, funded-dispatch accounting, validation/publication and typed reader support.
+[Generated EPUB reimport](docs/adr/13-canonical-epub-import.md) uses ordinary Library upload with
+recoverable isolated preparation and a new owned, immutable content identity. A validated cover
+can appear before reader qualification; it does not enable Read.
+
+Runtime checks currently use isolated TEST qualifications; the PRODUCT reader catalog remains empty.
+Live provider activation and production private-file cleanup remain disabled. No deployment or
+complete authenticated upload-to-reading/device qualification is implied by this implementation.
+
+### PDF conversion integration checks
+
+The PDF import candidate is not yet release-qualified. See
+[reader checks](docs/pdf-reader-checks.md), [metadata checks](docs/pdf-metadata-checks.md),
+and [provider checks](docs/pdf-provider-checks.md) for scoped evidence and limits.
+Regenerate the reconstruction host schemas from the locked Python worker with
+`AVA_PDF_CONTRACT_PYTHON=/absolute/path/to/python pnpm --filter api pdf:reconstruction:generate`;
+use `pdf:reconstruction:check` to detect drift. These commands do not authorize provider calls
+or qualify a reader build.

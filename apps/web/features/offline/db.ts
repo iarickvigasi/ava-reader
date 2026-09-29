@@ -125,6 +125,7 @@ export type HomeRow = {
 // not two. Tables stay empty until phase 2 starts populating them.
 
 export type BookRow = {
+  canonical?: import("./buckets/book/canonical-cache").CanonicalCache;
   libraryItemId: string;
   // Full table of contents — needed offline so the contents panel works.
   toc: unknown;

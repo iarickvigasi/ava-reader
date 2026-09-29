@@ -1,0 +1,63 @@
+{
+  "schema_version": "ava-accepted-content-1",
+  "authority": "server_first_publication",
+  "operation_id": "operation-fixture",
+  "owner_id": "owner-fixture",
+  "library_item_id": "item-fixture",
+  "final_content_id": "content-fixture",
+  "profile_id": "ava-pdf-prose-en-v2",
+  "canonical_schema": "ava-book-2",
+  "reader_schema": "ava-reader-3",
+  "source": {
+    "id": "artifact-source",
+    "role": "SOURCE_PDF",
+    "format": "PDF",
+    "media_type": "application/pdf",
+    "path": "source/input.pdf",
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "byte_length": 128
+  },
+  "canonical_book": {
+    "id": "artifact-canonical",
+    "role": "CANONICAL_BOOK",
+    "format": "CANONICAL_JSON",
+    "media_type": "application/json",
+    "path": "candidate/book.json",
+    "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "byte_length": 128
+  },
+  "reader_package": {
+    "id": "artifact-reader",
+    "role": "DERIVED_READER",
+    "format": "READER_PACKAGE",
+    "media_type": "application/json",
+    "path": "candidate/reader.json",
+    "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "byte_length": 128
+  },
+  "epub": {
+    "id": "artifact-epub",
+    "role": "DERIVED_EPUB",
+    "format": "EPUB",
+    "media_type": "application/epub+zip",
+    "path": "candidate/book.epub",
+    "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "byte_length": 128
+  },
+  "validation_report": {
+    "id": "artifact-report",
+    "role": "VALIDATION_REPORT",
+    "format": "REPORT_JSON",
+    "media_type": "application/json",
+    "path": "candidate/report.json",
+    "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "byte_length": 128
+  },
+  "resources": [],
+  "config_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "capability_report_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "adapter_fingerprint": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "reader_build_fingerprint": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "publication_fence": 2,
+  "cancellation_epoch": 0
+}

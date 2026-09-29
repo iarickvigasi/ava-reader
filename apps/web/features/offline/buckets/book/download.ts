@@ -1,3 +1,4 @@
+import { canonicalChapters } from "@/features/reader/canonical/chapters";
 // Save-a-book-offline orchestrator. Walks the book's TOC and fetches every
 // chapter the reader exposes, writing each into Dexie as it lands. Designed
 // to be:
@@ -80,9 +81,8 @@ async function withConcurrency<T, R>(
       out[i] = await worker(items[i]!, i);
     }
   }
-  const runners = Array.from(
-    { length: Math.min(limit, items.length) },
-    () => step(),
+  const runners = Array.from({ length: Math.min(limit, items.length) }, () =>
+    step(),
   );
   await Promise.all(runners);
   return out;
@@ -116,11 +116,9 @@ export function pickStrideTargets(
   // catches the first chapter). Single-chapter book uses index 0.
   let i = ordered.length === 1 ? 0 : 1;
   for (; i < ordered.length; i += 3) {
-    const slice = [
-      ordered[i - 1],
-      ordered[i],
-      ordered[i + 1],
-    ].filter((id): id is string => !!id);
+    const slice = [ordered[i - 1], ordered[i], ordered[i + 1]].filter(
+      (id): id is string => !!id,
+    );
     if (slice.every((id) => willCover.has(id))) {
       continue;
     }
@@ -177,7 +175,10 @@ async function persistChaptersFromPayload(
     chapterOrder.map((id, index) => [id, index] as const),
   );
   const written: string[] = [];
-  for (const chapter of payload.chapters) {
+  const chapters = payload.readerPackage
+    ? canonicalChapters(payload.readerPackage.book, payload.resourceUrls ?? {})
+    : payload.chapters;
+  for (const chapter of chapters) {
     const index = orderById.get(chapter.chapterId);
     if (index === undefined) {
       // Chapter the reader knows about but the TOC doesn't list. Save it
@@ -315,7 +316,8 @@ export async function saveBookOffline(
       );
     }
 
-    const chapterIds = flattenTocChapterIds(initial.toc);
+    const chapterIds =
+      initial.readerPackage?.book.spine ?? flattenTocChapterIds(initial.toc);
     // Fall back to whatever the initial window contained if the TOC has no
     // chapter ids (some malformed feeds): saving just those is better than
     // saving nothing.
@@ -414,6 +416,12 @@ export async function saveBookOffline(
       toc: initial.toc,
       chapterIds: ordered,
       metadata: initial.book,
+      canonical: initial.readerPackage
+        ? {
+            readerPackage: initial.readerPackage,
+            resourceUrls: initial.resourceUrls,
+          }
+        : undefined,
     });
 
     // Step 4 — cache the cover blob. Best-effort; a missing cover doesn't

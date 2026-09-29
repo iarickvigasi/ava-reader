@@ -1,0 +1,31 @@
+import type { RecognitionResponse } from './generated/RecognitionResponse';
+// Authored observation for boundary tests; no provider output is normalized here.
+export const wireSegment: RecognitionResponse['segments'][number] = {
+  id: 's0001',
+  page: 1,
+  kind: 'paragraph',
+  method: 'ocr',
+  text: 'A😀B',
+  box: {
+    coordinate_space: 'render_normalized_1000',
+    x0: 0,
+    y0: 0,
+    x1: 1000,
+    y1: 1000,
+  },
+  style: null,
+  spans: [],
+  heading_level: null,
+  chapter_start: false,
+  chapter_role: null,
+  note_label: null,
+  note_role: null,
+  list_ordered: null,
+  list_start: null,
+  list_depth: null,
+  continues_from_previous: false,
+  continues_to_next: false,
+  cells: [],
+  related_to: null,
+  alt: '',
+};

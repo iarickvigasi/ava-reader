@@ -1,3 +1,4 @@
+import { canonicalStyle } from "@/features/reader/canonical/style";
 import type { CSSProperties } from "react";
 import type { ReaderInline } from "@/lib/api-types";
 import { cn } from "@/lib/cn";
@@ -9,10 +10,18 @@ type TextInline = Extract<ReaderInline, { kind: "text" }>;
 // it via inline style so it overrides the `font-bold` Tailwind class.
 // Falls back to the bold class when only the boolean flag is set.
 function resolveInlineStyle(inline: TextInline): CSSProperties | undefined {
+  const presentation = canonicalStyle(inline.presentation);
+  // The semantic sup/sub wrapper already moves the baseline. Applying the
+  // token again to its child would raise/lower the same glyph twice.
+  if (["super", "sub"].includes(inline.presentation?.vertical_align ?? ""))
+    delete presentation.verticalAlign;
   if (typeof inline.fontWeight === "number") {
-    return { fontWeight: inline.fontWeight };
+    return {
+      fontWeight: inline.fontWeight,
+      ...presentation,
+    };
   }
-  return undefined;
+  return inline.presentation ? presentation : undefined;
 }
 
 export function ReaderInlineText({ inline }: { inline: TextInline }) {

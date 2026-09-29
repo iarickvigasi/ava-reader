@@ -16,6 +16,7 @@ export function useTranslationChapter(
   libraryItemId: string,
   chapterId: string | null,
   targetLang: string,
+  expectedContentRevision?: string,
 ) {
   const { getToken, isLoaded, isSignedIn, userId } = useAuth();
   const tokenGetter = useRef(getToken);
@@ -31,9 +32,10 @@ export function useTranslationChapter(
             libraryItemId,
             chapterId,
             targetLang: language,
+            expectedContentRevision,
           })
         : null,
-    [libraryItemId, chapterId, language],
+    [libraryItemId, chapterId, language, expectedContentRevision],
   );
   const getSnapshot = useCallback(
     () => getBucket()?.snapshot ?? EMPTY_TRANSLATION_SNAPSHOT,

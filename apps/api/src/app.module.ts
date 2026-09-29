@@ -1,3 +1,7 @@
+import { EpubResourcesController } from './library/epub-import/epub-resources.controller';
+import { PdfReviewController } from './library/pdf-import/pdf-review.controller';
+import { PdfNotificationsController } from './library/pdf-import/pdf-notifications.controller';
+import { PdfObservationsController } from './library/pdf-import/pdf-observations.controller';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AiCommentsController } from './ai-comments/ai-comments.controller';
@@ -19,6 +23,9 @@ import { FeedbackController } from './feedback/feedback.controller';
 import { FeedbackService } from './feedback/feedback.service';
 import { HomeController } from './home/home.controller';
 import { HomeService } from './home/home.service';
+import { PdfArtifactsController } from './library/pdf-import/pdf-artifacts.controller';
+import { PdfImportController } from './library/pdf-import/pdf-import.controller';
+import { PdfMetadataController } from './library/pdf-import/pdf-metadata.controller';
 import { LibraryController } from './library/library.controller';
 import { LibraryService } from './library/library.service';
 import { CollectionMembershipController } from './library/membership/collection-membership.controller';
@@ -38,6 +45,14 @@ import { UsersService } from './users/users.service';
     UsersController,
     HomeController,
     LibraryController,
+    PdfReviewController,
+    PdfMetadataController,
+    PdfObservationsController,
+    PdfNotificationsController,
+    // Static PDF endpoints must precede the generic :operationId GET.
+    PdfImportController,
+    PdfArtifactsController,
+    EpubResourcesController,
     CollectionMembershipController,
     ReaderController,
     CatalogController,

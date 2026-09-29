@@ -1,3 +1,4 @@
+import { canonicalPayload } from "@/features/reader/canonical/payload";
 import type { CSSProperties } from "react";
 import type {
   ReaderChapterPayload,
@@ -40,9 +41,7 @@ export function createReaderColumnLayoutStyle({
 }): CSSProperties {
   const columnsPerPage = resolveReaderColumnCount(width);
   const columnWidth =
-    width > 0
-      ? (width - PAGE_GAP * (columnsPerPage - 1)) / columnsPerPage
-      : 0;
+    width > 0 ? (width - PAGE_GAP * (columnsPerPage - 1)) / columnsPerPage : 0;
 
   return {
     // WebKit can treat column-count:1 as a single clipped column instead of
@@ -72,7 +71,7 @@ export function shouldRefreshChapterWindow(
 
   return Boolean(
     (chapterIndex === 0 && chapter.previousChapterId) ||
-      (chapterIndex === payload.chapters.length - 1 && chapter.nextChapterId),
+    (chapterIndex === payload.chapters.length - 1 && chapter.nextChapterId),
   );
 }
 
@@ -101,7 +100,9 @@ export function createLocatorKey(locator: ReaderLocator | null) {
   return `${locator.chapterId}:${locator.blockId}:${locator.textOffset}`;
 }
 
-export function createLocatorFromRestoreIntent(restoreIntent: RestoreIntent | null) {
+export function createLocatorFromRestoreIntent(
+  restoreIntent: RestoreIntent | null,
+) {
   if (!restoreIntent || restoreIntent.kind !== RESTORE_INTENT_KIND_BLOCK) {
     return null;
   }
@@ -122,7 +123,10 @@ export function clamp(value: number, minimum: number, maximum: number) {
 }
 
 export function isAbortError(error: unknown) {
-  return error instanceof DOMException && error.name === DOM_EXCEPTION_ABORT_ERROR_NAME;
+  return (
+    error instanceof DOMException &&
+    error.name === DOM_EXCEPTION_ABORT_ERROR_NAME
+  );
 }
 
 export function isReadyReaderPayload(
@@ -149,7 +153,11 @@ export function normalizeReaderStatusPayload(
   };
 
   if (isReadyReaderPayload(candidate)) {
-    return payload;
+    try {
+      return canonicalPayload(payload);
+    } catch {
+      /* fail closed below */
+    }
   }
 
   return {

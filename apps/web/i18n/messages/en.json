@@ -713,5 +713,53 @@
       "body": "The link may be incorrect, or the page may have moved. Head back home to continue reading.",
       "hint": "Check the address for a typo, or return to your dashboard."
     }
+  },
+  "pdfImport": {
+    "title": "Import PDF",
+    "convert": "Convert to EPUB",
+    "cancel": "Cancel",
+    "import": "Import",
+    "processingDetails": "Processing details",
+    "privacy": "Pages that need recognition are sent to AVA’s processing providers. Your source PDF and finished book stay in your private library.",
+    "accepted": "Added to your library.",
+    "existing": "This PDF is already in your library.",
+    "uncertain": "Checking whether your upload was received. You can return to your library.",
+    "rejected": "This PDF could not be imported.",
+    "connect": "Connect to the internet to import a book.",
+    "status": {
+      "QUEUED": "Queued",
+      "RUNNING": "Processing",
+      "WAITING": "Needs check",
+      "READY": "Ready",
+      "FAILED": "Failed",
+      "STOPPED": "Needs check"
+    },
+    "lastKnown": "Last known status",
+    "progress": "{completed} of {total} in this stage",
+    "investigating": "Recorded for AVA to investigate.",
+    "reference": "Reference: {id}",
+    "formats": "Formats",
+    "originalPdf": "Original PDF",
+    "downloadFailed": "Download failed. Please try the download again.",
+    "readyNotice": "“{title}” is ready to read.",
+    "failedNotice": "“{title}” could not be converted.",
+    "dismiss": "Dismiss",
+    "metadata": {
+      "edit": "Edit details",
+      "title": "Title",
+      "authors": "Authors",
+      "authorsHint": "One author per line. Leave blank if unknown.",
+      "language": "Language",
+      "languageHint": "Language code, for example en or fr. Leave blank if unknown.",
+      "offline": "Go online to edit details. Your draft is not queued.",
+      "working": "Loading or saving details…",
+      "close": "Close",
+      "save": "Save details",
+      "reload": "Reload saved details",
+      "loadFailed": "Details could not be loaded. Go online and reload.",
+      "saveFailed": "The update could not be confirmed. Your draft is kept. Reload saved details before saving again.",
+      "conflict": "These details changed elsewhere. Your draft is kept. Reload saved details to review the latest version.",
+      "invalid": "Check the title, authors and language."
+    }
   }
 }

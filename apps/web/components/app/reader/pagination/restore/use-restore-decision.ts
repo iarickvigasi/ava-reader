@@ -1,3 +1,5 @@
+import { restoreSucceeded } from "./restore-succeeded";
+import { useReaderNavigationActions } from "../../state/reader-navigation-context";
 import { useLayoutEffect, useRef } from "react";
 import { isStickyRestoreIntent } from "@/features/reader/navigation";
 import { READER_MEASUREMENT_STATUS_PENDING } from "../measurement/resolve-measurement";
@@ -25,6 +27,8 @@ export function useRestoreDecision({
   cancelSettle,
   scheduleSettle,
 }: UseRestoreDecisionInput) {
+  const navigation = useReaderNavigationActions();
+  const navigationRef = useRenderSyncedRef(navigation);
   const consumedRestoreIntentKeyRef = useRef<string | null>(null);
   const keepCommittedRestorePinnedRef = useRef(false);
   // Page the last restore placed the user on; reset on intent/chapter change.
@@ -39,7 +43,8 @@ export function useRestoreDecision({
   useLayoutEffect(() => {
     cancelSettle();
     consumedRestoreIntentKeyRef.current = null;
-    keepCommittedRestorePinnedRef.current = isStickyRestoreIntent(restoreIntent);
+    keepCommittedRestorePinnedRef.current =
+      isStickyRestoreIntent(restoreIntent);
     lastAppliedRestorePageIndexRef.current = null;
   }, [activeChapter.chapterId, cancelSettle, restoreIntent]);
 
@@ -81,7 +86,13 @@ export function useRestoreDecision({
       lastAppliedRestorePageIndexRef.current = decision.nextPageIndex;
     }
 
-    scheduleSettle(activeRestoreCycleKey);
+    scheduleSettle(activeRestoreCycleKey, () => {
+      if (currentRestoreIntent && decision.shouldConsumeRestoreIntent)
+        navigationRef.current?.settle(
+          currentRestoreIntent,
+          restoreSucceeded(currentRestoreIntent, activeMeasurementEntry),
+        );
+    });
   }, [
     activeChapter.chapterId,
     activeMeasurementEntry,
@@ -90,6 +101,7 @@ export function useRestoreDecision({
     currentPageIndexRef,
     pageCount,
     prefixPageCount,
+    navigationRef,
     restoreIntentRef,
     scheduleSettle,
     setCurrentPageIndex,

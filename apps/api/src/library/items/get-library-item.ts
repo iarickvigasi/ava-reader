@@ -1,7 +1,11 @@
+import {
+  pdfLibrarySummarySelect,
+  pdfLibrarySummary,
+} from '../pdf-import/operations/library-summary';
 import { BookFileFormat } from '@prisma/client';
 import { NotFoundException } from '@nestjs/common';
 import type { PrismaService } from '../../prisma/prisma.service';
-import { buildCoverImageUrl } from '../../shared/cover-image-url';
+import { libraryCoverUrl } from '../covers/library-cover-url';
 import { findPrimarySourceFile } from '../../shared/primary-book-file';
 import { ownedLibraryItemWhere } from './library-item-access';
 import { sortAndSerializeCollections } from './serialize-item-collections';
@@ -17,6 +21,7 @@ export async function getLibraryItem(options: {
     include: {
       book: {
         include: {
+          pdfImport: { select: pdfLibrarySummarySelect },
           coverBlob: { select: { mimeType: true } },
           // files.readingProgressIndex is a multi-KB JSON we never render
           // here — see the note in collections/get-collection.ts.
@@ -54,12 +59,12 @@ export async function getLibraryItem(options: {
       approximateBodyPageCount: item.book.estimatedBodyPageCount ?? null,
       approximatePageCount: item.book.estimatedPageCount ?? null,
       authors: item.book.authors,
+      metadataEditVersion: item.book.metadataEditVersion,
+      pdfImport: pdfLibrarySummary(item.book.pdfImport),
       chapterLabel: item.progress?.chapterLabel ?? null,
       collections: sortAndSerializeCollections(item.collectionItems),
       completionPercent: item.progress?.completionPercent ?? 0,
-      coverImageUrl: item.book.coverBlob
-        ? buildCoverImageUrl(item.book.id)
-        : null,
+      coverImageUrl: libraryCoverUrl(item.book, item.id),
       description: item.book.description,
       finishedAt: item.finishedAt?.toISOString() ?? null,
       genres: item.book.genres,

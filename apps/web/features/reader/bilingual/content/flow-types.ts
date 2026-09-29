@@ -8,6 +8,7 @@ export type BilingualFlowUnit = { unit: BilingualUnit; index: number };
 export type BilingualFlowGroup = {
   block: ReaderBlock;
   units: BilingualFlowUnit[];
+  descriptions?: ReaderBlock[];
 };
 export type BilingualFlowProps = {
   chapter: BilingualChapter;

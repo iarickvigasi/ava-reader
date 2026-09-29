@@ -23,5 +23,5 @@ export type UseRestoreControllerInput = {
 
 export type UseRestoreDecisionInput = UseRestoreControllerInput & {
   cancelSettle: () => void;
-  scheduleSettle: (restoreCycleKey: string) => void;
+  scheduleSettle: (restoreCycleKey: string, onSettled?: () => void) => void;
 };

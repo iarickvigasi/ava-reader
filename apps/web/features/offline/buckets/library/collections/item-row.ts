@@ -1,3 +1,5 @@
+import { mergePdfImportStatus } from "../pdf-imports/merge-status";
+import { keepPriorMetadata } from "../pdf-imports/metadata/version";
 // The one rule for overwriting a cached LibraryItemRow with a library or
 // collection *list* payload: which fields the server owns, and which are local
 // and must survive. Both list write paths (write-library.ts) apply it — a
@@ -16,10 +18,22 @@ export function mergeListPayloadItemRow(
   if (!prior) {
     return next;
   }
-  const finishedAt = next.finishedAt !== undefined ? next.finishedAt
-    : prior.finishedAt !== undefined ? prior.finishedAt : prior.details?.finishedAt;
+  const finishedAt =
+    next.finishedAt !== undefined
+      ? next.finishedAt
+      : prior.finishedAt !== undefined
+        ? prior.finishedAt
+        : prior.details?.finishedAt;
   return {
     ...next,
+    ...(keepPriorMetadata(prior.metadataEditVersion, next.metadataEditVersion)
+      ? {
+          title: prior.title,
+          authors: prior.authors,
+          metadataEditVersion: prior.metadataEditVersion,
+        }
+      : {}),
+    pdfImport: mergePdfImportStatus(prior.pdfImport, next.pdfImport),
     ...(finishedAt !== undefined ? { finishedAt } : {}),
     coverBlob: prior.coverBlob,
     savedOffline: prior.savedOffline,
@@ -35,8 +49,12 @@ export function mergeListPayloadItemRow(
       : {}),
     // Lists now carry the canonical finish date too. Keep the remaining
     // details and retain legacy dates when an older list omits this field.
-    details: prior.details && finishedAt !== undefined && prior.details.finishedAt !== finishedAt
-      ? { ...prior.details, finishedAt } : prior.details,
+    details:
+      prior.details &&
+      finishedAt !== undefined &&
+      prior.details.finishedAt !== finishedAt
+        ? { ...prior.details, finishedAt }
+        : prior.details,
     detailsFetchedAt: prior.detailsFetchedAt,
   } satisfies LibraryItemRow;
 }

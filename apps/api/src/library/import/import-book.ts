@@ -1,3 +1,6 @@
+import { hasCanonicalEpubProfile } from '../epub-import/detect-profile';
+import { enqueueCanonicalEpub } from '../epub-import/enqueue';
+import { titleFromFilename } from '../../shared/blob-utils';
 import { LibrarySource } from '@prisma/client';
 import { BadRequestException } from '@nestjs/common';
 import type { PrismaService } from '../../prisma/prisma.service';
@@ -23,7 +26,8 @@ export async function importBook(options: {
     throw new BadRequestException('A book file is required.');
   }
 
-  const format = detectBookFileFormat(options.file);
+  const file = { ...options.file, buffer: Buffer.from(options.file.buffer) };
+  const format = detectBookFileFormat(file);
 
   if (!isSupportedSourceFormat(format)) {
     throw new BadRequestException('Only EPUB and PDF files are supported.');
@@ -32,7 +36,20 @@ export async function importBook(options: {
   const user = await options.usersService.getCurrentUserRecord(
     options.clerkUserId,
   );
-  const metadata = await extractBookMetadata(options.file);
+  const canonicalEpub =
+    format === 'EPUB' && (await hasCanonicalEpubProfile(file.buffer));
+  const metadata = canonicalEpub
+    ? {
+        title: titleFromFilename(file.originalname),
+        authors: [],
+        language: null,
+        coverImage: null,
+        description: null,
+        genres: [],
+        publishedYear: null,
+        format,
+      }
+    : await extractBookMetadata(file);
 
   // Write the blob bytes outside the metadata transaction. Multi-MB writes
   // can blow past the default interactive-transaction timeout and would also
@@ -41,7 +58,7 @@ export async function importBook(options: {
   // relational integrity holds.
   const { blob, coverBlob } = await storeBookBlobs({
     coverImage: metadata.coverImage,
-    file: options.file,
+    file,
     format,
     prisma: options.prisma,
   });
@@ -53,13 +70,17 @@ export async function importBook(options: {
         coverBlobId: coverBlob?.id,
         format,
         metadata,
+        canonicalEpub,
       });
 
-      return addBookToUserLibraryTx(tx, {
+      const item = await addBookToUserLibraryTx(tx, {
         bookId: book.id,
         source: LibrarySource.IMPORTED,
         userId: user.id,
       });
+      if (canonicalEpub)
+        await enqueueCanonicalEpub(tx, book.id, user.id, item.libraryItemId);
+      return item;
     });
   } catch (error) {
     await deleteBookBlobsBestEffort(options.prisma, [

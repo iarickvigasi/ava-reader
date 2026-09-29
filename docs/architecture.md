@@ -93,9 +93,10 @@ their implementations, with shared fixtures in `testing/`.
 
 - **User** → UserPreferences, LibraryItem[], ReadingProgress[], ReadingSession[], Annotation[],
   AiComment[], Collection[]. UserRole gates admin/curator.
-- **Book** → BookFile[] (EPUB | PDF | READER_PACKAGE | UNKNOWN), StoredBlob (cover/content via
-  BlobPurpose), BookProcessingRun (ProcessingStatus). CatalogEntry (DRAFT | PUBLISHED | ARCHIVED)
-  publishes a Book.
+- **Book** → typed source/derived BookFile[], StoredBlob, BookProcessingRun and optional owned PDF
+  import/artifact lineage or CanonicalEpubImport with resources and one qualified acceptance.
+  Permanent PDF/canonical-import privacy markers survive account/operation deletion.
+  CatalogEntry (DRAFT | PUBLISHED | ARCHIVED) publishes a Book.
 - **LibraryItem** — User↔Book join (source IMPORTED | CATALOG); the scope for ReadingProgress
   (unique, locator + completion % + minutes), ReadingSession (clientSessionId ULID, Participant +
   per-day Segment), Annotation (highlight: excerpt, color, locator), AiComment (kind TRANSLATE |
@@ -128,3 +129,19 @@ Postgres. CI: .github/workflows/deploy.yml.
 - Mutations are idempotent and coalesced (one pending per id); never assume network success.
 - Locators are the only stable reference into content — don't anchor to DOM indices.
 - Stats = server baseline + local deltas; never sum raw sessions client-side.
+
+## PDF conversion and canonical EPUB import
+
+The isolated worker shares [versioned contracts](adr/7-pdf-worker-contracts.md),
+[canonical content](adr/8-canonical-content-adapter.md) and [owned PDF intake](adr/9-owned-pdf-imports.md).
+[Durable jobs](adr/10-durable-pdf-jobs.md) run bounded, network-isolated reconstruction; a separate
+[provider ledger](adr/11-provider-dispatch-ledger.md) owns any external dispatch and cumulative cost.
+[Publication](adr/12-first-pdf-publication.md) validates private candidates and atomically accepts
+one fixed book only with current authority, settled spending and a qualified compatible reader.
+[Generated EPUB reimport](adr/13-canonical-epub-import.md) is wired into ordinary Library upload:
+retain the owned source/item, prepare in a recoverable isolated job, verify exact content/resources,
+and mint a separate immutable canonical identity. Validation may precede reader qualification;
+owned covers can appear while Read remains unavailable. Ordinary EPUB normalization stays separate.
+Current runtime evidence uses isolated TEST qualifications; the PRODUCT catalog remains empty.
+Live provider activation and production private-file cleanup remain disabled. Source/contract tests
+and scoped browser fixtures do not qualify normal upload, offline, accessibility or device flows.

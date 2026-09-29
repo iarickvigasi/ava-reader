@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Headers,
   Param,
   Patch,
   Post,
@@ -24,11 +25,14 @@ export class ReaderController {
     @Req() request: AuthenticatedRequest,
     @Param('libraryItemId') libraryItemId: string,
     @Query('chapter') chapter?: string,
+    @Headers('x-ava-reader-schema') schema = '',
+    @Headers('x-ava-reader-build') build = '',
   ) {
     return this.readerService.getReaderPayload(
       request.auth.clerkUserId,
       libraryItemId,
       chapter,
+      { schema, build },
     );
   }
 
@@ -50,12 +54,15 @@ export class ReaderController {
     @Req() request: AuthenticatedRequest,
     @Param('libraryItemId') libraryItemId: string,
     @Body() body: { locator?: ReaderLocator; readAt?: string },
+    @Headers('x-ava-reader-schema') schema = '',
+    @Headers('x-ava-reader-build') build = '',
   ) {
     return this.readerService.updateProgress(
       request.auth.clerkUserId,
       libraryItemId,
       body.locator as ReaderLocator,
       body.readAt,
+      { schema, build },
     );
   }
 
