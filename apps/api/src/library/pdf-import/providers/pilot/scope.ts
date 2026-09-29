@@ -1,9 +1,10 @@
 import { PdfProviderError } from '../errors';
 export const PILOT_IMAGE =
-  '83f95aa2d512e1ee72eaf8a94f2338065c29071891627a8016a40eb917c41813';
+  '725dc4c5fee1d7addf289484d7def37d8d8aff43dceba16bfd18d0d8f1cb66d3';
 export const PILOT_SOURCES = [
-  'ead57e233d0159460a7a8b63b15fe8ad8c9888be7a1989885a9536696c2d363b',
+  'e651d6255b5b8ba8000c3ca195a17f1521b60764ac922b64eb05ac784fed6b18',
 ];
+export const PILOT_REQUESTS = 2;
 // Diagnostic authored-fixture path only; never called by public API/background loops.
 export function requirePilotOperator(env: NodeJS.ProcessEnv = process.env) {
   let database: URL;

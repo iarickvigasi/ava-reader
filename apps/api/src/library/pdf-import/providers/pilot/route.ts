@@ -2,7 +2,12 @@ import type { Tx } from '../../jobs/types';
 import { databaseNow } from '../../jobs/transaction';
 import { routePolicy } from '../route-policy';
 import { PdfProviderError } from '../errors';
-import { PILOT_IMAGE, PILOT_SOURCES, requirePilotOperator } from './scope';
+import {
+  PILOT_IMAGE,
+  PILOT_SOURCES,
+  PILOT_REQUESTS,
+  requirePilotOperator,
+} from './scope';
 export async function loadAuthoredPilotRoute(tx: Tx, routeId: string) {
   requirePilotOperator();
   const [database] = await tx.$queryRaw<
@@ -32,13 +37,13 @@ export async function loadAuthoredPilotRoute(tx: Tx, routeId: string) {
   if (
     !pilot ||
     pilot.workerFingerprint !== PILOT_IMAGE ||
-    pilot.maxRequests !== 3 ||
+    pilot.maxRequests !== PILOT_REQUESTS ||
     maximumNano !== 199066950n ||
     pilot.operations.length !== 1 ||
     config.timeoutMs !== 300000 ||
     PILOT_SOURCES.some((s) => {
       const op = pilot.operations.find((o) => o.sourceSha256 === s);
-      return !op || op.tasks.length !== 3;
+      return !op || op.tasks.length !== PILOT_REQUESTS;
     })
   )
     throw new PdfProviderError('PDF_PROVIDER_PILOT_UNAUTHORIZED');
