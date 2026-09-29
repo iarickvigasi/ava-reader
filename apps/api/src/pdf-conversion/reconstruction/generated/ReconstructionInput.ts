@@ -16,13 +16,13 @@ export type HeadingLevel = number | null;
 export type NodeId = string;
 export type ParentId = string | null;
 export type Align = ('start' | 'left' | 'right' | 'center' | 'justify') | null;
-export type Bold = boolean | null;
+export type Bold = boolean;
 export type Family = ('serif' | 'sans-serif' | 'monospace') | null;
-export type Id = string;
+export type Id = 'observed';
 export type IndentEm = number | null;
 export type Italic = boolean | null;
 export type LineHeight = number | null;
-export type RelativeSize = number | null;
+export type RelativeSize = number;
 export type SmallCaps = boolean | null;
 export type SpaceAfterEm = number | null;
 export type SpaceBeforeEm = number | null;
@@ -199,6 +199,18 @@ export type HeaderAxis = ('row' | 'column' | 'both') | null;
 export type End = number;
 export type NoteLabel = string | null;
 export type Start = number;
+export type Align1 = ('start' | 'left' | 'right' | 'center' | 'justify') | null;
+export type Bold1 = boolean | null;
+export type Family1 = ('serif' | 'sans-serif' | 'monospace') | null;
+export type Id1 = string;
+export type IndentEm1 = number | null;
+export type Italic1 = boolean | null;
+export type LineHeight1 = number | null;
+export type RelativeSize1 = number | null;
+export type SmallCaps1 = boolean | null;
+export type SpaceAfterEm1 = number | null;
+export type SpaceBeforeEm1 = number | null;
+export type VerticalAlign1 = ('baseline' | 'super' | 'sub') | null;
 export type TargetText = string | null;
 export type Url = string | null;
 /**
@@ -218,7 +230,7 @@ export type HeadingLevel1 = number | null;
 /**
  * Unique within this response; s0001, s0002, ...
  */
-export type Id1 = string;
+export type Id2 = string;
 export type Kind =
   | 'paragraph'
   | 'heading'
@@ -288,18 +300,21 @@ export interface RefinementDecision {
   heading_level: HeadingLevel;
   node_id: NodeId;
   parent_id: ParentId;
-  style: Style;
+  style: RefinementStyle;
   text_sha256: TextSha256;
 }
-export interface Style {
+/**
+ * Sparse source typography with the wire observations required by acceptance.
+ */
+export interface RefinementStyle {
   align?: Align;
-  bold?: Bold;
+  bold: Bold;
   family?: Family;
   id: Id;
   indent_em?: IndentEm;
   italic?: Italic;
   line_height?: LineHeight;
-  relative_size?: RelativeSize;
+  relative_size: RelativeSize;
   small_caps?: SmallCaps;
   space_after_em?: SpaceAfterEm;
   space_before_em?: SpaceBeforeEm;
@@ -328,7 +343,7 @@ export interface RecognitionSegment1 {
   continues_from_previous: ContinuesFromPrevious;
   continues_to_next: ContinuesToNext;
   heading_level?: HeadingLevel1;
-  id: Id1;
+  id: Id2;
   kind: Kind;
   list_depth?: ListDepth;
   list_ordered?: ListOrdered;
@@ -363,4 +378,18 @@ export interface RecognitionSpan {
   style: Style | null;
   target_text: TargetText;
   url: Url;
+}
+export interface Style {
+  align?: Align1;
+  bold?: Bold1;
+  family?: Family1;
+  id: Id1;
+  indent_em?: IndentEm1;
+  italic?: Italic1;
+  line_height?: LineHeight1;
+  relative_size?: RelativeSize1;
+  small_caps?: SmallCaps1;
+  space_after_em?: SpaceAfterEm1;
+  space_before_em?: SpaceBeforeEm1;
+  vertical_align?: VerticalAlign1;
 }

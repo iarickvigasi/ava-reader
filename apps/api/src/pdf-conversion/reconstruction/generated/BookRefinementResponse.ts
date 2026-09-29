@@ -16,13 +16,13 @@ export type HeadingLevel = number | null;
 export type NodeId = string;
 export type ParentId = string | null;
 export type Align = ('start' | 'left' | 'right' | 'center' | 'justify') | null;
-export type Bold = boolean | null;
+export type Bold = boolean;
 export type Family = ('serif' | 'sans-serif' | 'monospace') | null;
-export type Id = string;
+export type Id = 'observed';
 export type IndentEm = number | null;
 export type Italic = boolean | null;
 export type LineHeight = number | null;
-export type RelativeSize = number | null;
+export type RelativeSize = number;
 export type SmallCaps = boolean | null;
 export type SpaceAfterEm = number | null;
 export type SpaceBeforeEm = number | null;
@@ -66,18 +66,21 @@ export interface RefinementDecision {
   heading_level: HeadingLevel;
   node_id: NodeId;
   parent_id: ParentId;
-  style: Style;
+  style: RefinementStyle;
   text_sha256: TextSha256;
 }
-export interface Style {
+/**
+ * Sparse source typography with the wire observations required by acceptance.
+ */
+export interface RefinementStyle {
   align?: Align;
-  bold?: Bold;
+  bold: Bold;
   family?: Family;
   id: Id;
   indent_em?: IndentEm;
   italic?: Italic;
   line_height?: LineHeight;
-  relative_size?: RelativeSize;
+  relative_size: RelativeSize;
   small_caps?: SmallCaps;
   space_after_em?: SpaceAfterEm;
   space_before_em?: SpaceBeforeEm;

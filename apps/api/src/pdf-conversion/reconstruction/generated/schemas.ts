@@ -54,7 +54,7 @@ export const recognitionSchemas = {
             ],
             title: 'Parent Id',
           },
-          style: { $ref: '#/$defs/Style' },
+          style: { $ref: '#/$defs/RefinementStyle' },
           text_sha256: {
             maxLength: 64,
             minLength: 64,
@@ -102,8 +102,10 @@ export const recognitionSchemas = {
         title: 'RefinementJoin',
         type: 'object',
       },
-      Style: {
+      RefinementStyle: {
         additionalProperties: false,
+        description:
+          'Sparse source typography with the wire observations required by acceptance.',
         properties: {
           align: {
             anyOf: [
@@ -116,11 +118,7 @@ export const recognitionSchemas = {
             default: null,
             title: 'Align',
           },
-          bold: {
-            anyOf: [{ type: 'boolean' }, { type: 'null' }],
-            default: null,
-            title: 'Bold',
-          },
+          bold: { title: 'Bold', type: 'boolean' },
           family: {
             anyOf: [
               { enum: ['serif', 'sans-serif', 'monospace'], type: 'string' },
@@ -129,12 +127,7 @@ export const recognitionSchemas = {
             default: null,
             title: 'Family',
           },
-          id: {
-            maxLength: 120,
-            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
-            title: 'Id',
-            type: 'string',
-          },
+          id: { const: 'observed', title: 'Id', type: 'string' },
           indent_em: {
             anyOf: [
               { maximum: 6, minimum: -3, type: 'number' },
@@ -157,12 +150,10 @@ export const recognitionSchemas = {
             title: 'Line Height',
           },
           relative_size: {
-            anyOf: [
-              { maximum: 3, minimum: 0.5, type: 'number' },
-              { type: 'null' },
-            ],
-            default: null,
+            maximum: 3,
+            minimum: 0.5,
             title: 'Relative Size',
+            type: 'number',
           },
           small_caps: {
             anyOf: [{ type: 'boolean' }, { type: 'null' }],
@@ -194,8 +185,8 @@ export const recognitionSchemas = {
             title: 'Vertical Align',
           },
         },
-        required: ['id'],
-        title: 'Style',
+        required: ['id', 'bold', 'relative_size'],
+        title: 'RefinementStyle',
         type: 'object',
       },
     },
@@ -2251,7 +2242,7 @@ export const recognitionSchemas = {
             ],
             title: 'Parent Id',
           },
-          style: { $ref: '#/$defs/Style' },
+          style: { $ref: '#/$defs/RefinementStyle' },
           text_sha256: {
             maxLength: 64,
             minLength: 64,
@@ -2297,6 +2288,93 @@ export const recognitionSchemas = {
         },
         required: ['edge_id', 'join', 'evidence_ids'],
         title: 'RefinementJoin',
+        type: 'object',
+      },
+      RefinementStyle: {
+        additionalProperties: false,
+        description:
+          'Sparse source typography with the wire observations required by acceptance.',
+        properties: {
+          align: {
+            anyOf: [
+              {
+                enum: ['start', 'left', 'right', 'center', 'justify'],
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Align',
+          },
+          bold: { title: 'Bold', type: 'boolean' },
+          family: {
+            anyOf: [
+              { enum: ['serif', 'sans-serif', 'monospace'], type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Family',
+          },
+          id: { const: 'observed', title: 'Id', type: 'string' },
+          indent_em: {
+            anyOf: [
+              { maximum: 6, minimum: -3, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Indent Em',
+          },
+          italic: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Italic',
+          },
+          line_height: {
+            anyOf: [
+              { maximum: 3, minimum: 0.5, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Line Height',
+          },
+          relative_size: {
+            maximum: 3,
+            minimum: 0.5,
+            title: 'Relative Size',
+            type: 'number',
+          },
+          small_caps: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Small Caps',
+          },
+          space_after_em: {
+            anyOf: [
+              { maximum: 5, minimum: 0, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Space After Em',
+          },
+          space_before_em: {
+            anyOf: [
+              { maximum: 5, minimum: 0, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Space Before Em',
+          },
+          vertical_align: {
+            anyOf: [
+              { enum: ['baseline', 'super', 'sub'], type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Vertical Align',
+          },
+        },
+        required: ['id', 'bold', 'relative_size'],
+        title: 'RefinementStyle',
         type: 'object',
       },
       Style: {

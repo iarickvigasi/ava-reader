@@ -69,6 +69,14 @@ class RefinementBatch(Record):
     tasks: list[BookRefinementTask] = Field(max_length=32)
 
 
+class RefinementStyle(Style):
+    """Sparse source typography with the wire observations required by acceptance."""
+
+    id: Literal["observed"]
+    relative_size: float = Field(ge=0.5, le=3)
+    bold: bool = Field()
+
+
 class RefinementDecision(Record):
     node_id: Id
     text_sha256: Digest
@@ -77,7 +85,7 @@ class RefinementDecision(Record):
     parent_id: Id | None
     chapter_start: bool | None
     chapter_role: Literal["frontmatter", "bodymatter", "backmatter"] | None
-    style: Style
+    style: RefinementStyle
 
 
 class RefinementJoin(Record):
