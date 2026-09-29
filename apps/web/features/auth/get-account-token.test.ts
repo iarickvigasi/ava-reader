@@ -1,9 +1,17 @@
 import { afterEach, expect, it, vi } from "vitest";
 import { getAccountToken } from "./get-account-token";
 
-const identity = vi.hoisted(() => ({ owner: "a", blocked: false }));
+const identity = vi.hoisted(() => ({
+  owner: "a",
+  blocked: false,
+  access: "ready",
+}));
+vi.mock("@/features/offline/compatibility/database-access", () => ({
+  databaseAccess: () => ({ state: identity.access }),
+}));
 vi.mock("@/features/offline/db", () => ({
   getActiveUserId: () => identity.owner,
+  getDb: () => ({}),
   ACTIVE_USER_STORAGE_KEY: "owner",
 }));
 vi.mock("./local-sign-out", () => ({
@@ -14,6 +22,7 @@ afterEach(() => {
   vi.useRealTimers();
   identity.owner = "a";
   identity.blocked = false;
+  identity.access = "ready";
 });
 function browser(loaded = true, user = "a") {
   vi.stubGlobal("navigator", { onLine: true });
@@ -71,4 +80,19 @@ it("a rejected refresh preserves retryability", async () => {
     }),
   ).toBeNull();
   expect(await getAccountToken("a", async () => "renewed")).toBe("renewed");
+});
+
+it("blocks background sync tokens after a schema upgrade, including during refresh", async () => {
+  browser();
+  const getToken = vi.fn(async () => "token");
+  identity.access = "update-required";
+  expect(await getAccountToken("a", getToken)).toBeNull();
+  expect(getToken).not.toHaveBeenCalled();
+  identity.access = "ready";
+  expect(
+    await getAccountToken("a", async () => {
+      identity.access = "update-required";
+      return "token";
+    }),
+  ).toBeNull();
 });

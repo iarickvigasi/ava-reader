@@ -1,7 +1,9 @@
 import {
   getActiveUserId,
+  getDb,
   ACTIVE_USER_STORAGE_KEY,
 } from "@/features/offline/db";
+import { databaseAccess } from "@/features/offline/compatibility/database-access";
 import { isLocallySignedOut } from "./local-sign-out";
 import { withDeadline } from "./with-deadline";
 
@@ -28,6 +30,8 @@ export async function getAccountToken(
     )
       return false;
     if (isLocallySignedOut(userId, clerk.session?.id)) return false;
+    const access = databaseAccess(getDb()).state;
+    if (access === "update-required" || access === "unavailable") return false;
     try {
       const storedOwner = window.localStorage.getItem(ACTIVE_USER_STORAGE_KEY);
       if (storedOwner && storedOwner !== userId) return false;
