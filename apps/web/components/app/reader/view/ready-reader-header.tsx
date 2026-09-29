@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { getLibraryBookInfoHref } from "@/lib/app-routes";
 import { cn } from "@/lib/cn";
 import type { ReaderChapterPayload } from "@/lib/api-types";
 import { HeaderStatusChip } from "@/components/app/core/header-status-chip";
@@ -25,31 +27,36 @@ export function ReadyReaderHeader({
         !compact && "sm:gap-3 sm:pt-1",
       )}
     >
-      <h1
-        className={cn(
-          "flex min-w-0 flex-1 items-center gap-1 font-sans text-[0.65rem] font-bold uppercase leading-[1.35] tracking-[0.12em] text-muted",
-          !compact && "sm:text-xs sm:tracking-[0.24em] md:min-h-9",
-        )}
+      <Link
+        href={getLibraryBookInfoHref(payload.book.slug)}
+        className="min-w-0 flex-1 rounded-control transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-fill"
       >
-        <span
+        <h1
           className={cn(
-            "min-w-0 truncate max-w-[25ch]",
-            !compact && "md:max-w-[75ch]",
+            "flex min-w-0 flex-1 items-center gap-1 font-sans text-[0.65rem] font-bold uppercase leading-[1.35] tracking-[0.12em] text-muted",
+            !compact && "sm:text-xs sm:tracking-[0.24em] md:min-h-9",
           )}
         >
-          {title}
-        </span>
+          <span
+            className={cn(
+              "min-w-0 truncate max-w-[25ch]",
+              !compact && "md:max-w-[75ch]",
+            )}
+          >
+            {title}
+          </span>
 
-        <span className="shrink-0">,</span>
+          <span className="shrink-0">,</span>
 
-        <span className="min-w-0 truncate">{author}</span>
+          <span className="min-w-0 truncate">{author}</span>
 
-        <span className="shrink-0">–</span>
+          <span className="shrink-0">–</span>
 
-        <span className="min-w-0 truncate" title={chapter}>
-          {chapter}
-        </span>
-      </h1>
+          <span className="min-w-0 truncate" title={chapter}>
+            {chapter}
+          </span>
+        </h1>
+      </Link>
       <div className={cn("hidden shrink-0", !compact && "md:flex")}>
         <HeaderStatusChip />
       </div>
