@@ -9,6 +9,11 @@ from pathlib import Path
 from ava_pdf_epub.reconstruction_v2.protocol import ReconstructionInput
 from ava_pdf_epub.reconstruction_v2.reconstruct_source import reconstruct_source
 
+from .supplemental_metadata_checks import (
+    assert_qualification_metadata,
+    assert_supplemental_metadata,
+)
+
 FIXTURES = Path(__file__).parent / "fixtures"
 
 
@@ -58,19 +63,7 @@ class SupplementalTests(unittest.TestCase):
         # The reference crop includes optional whitespace, not required figure ink.
         self.assertLessEqual(box.x0, 64)
         self.assertGreaterEqual(box.x1, 402.5)
-        accepted = {(m.field, m.value) for m in book.metadata if m.status == "accepted"}
-        for field, value in [
-            ("title", "Atlas Supplements"),
-            ("contributor", "F. Sample"),
-            ("contributor", "E. Example"),
-            ("edition", "fixture edition 1"),
-            ("date", "2026-09-28"),
-            ("identifier", "9780000000002"),
-        ]:
-            self.assertIn((field, value), accepted)
-        self.assertTrue(
-            any(m.value == "9780000000019" and m.status == "candidate" for m in book.metadata)
-        )
+        assert_supplemental_metadata(self, book)
 
     def test_inherited_resets_spacing_table_headers_and_metadata(self):
         result = convert("qualification")
@@ -104,14 +97,4 @@ class SupplementalTests(unittest.TestCase):
                     cell.header_axis,
                 )
             self.assertIsNotNone(table.caption_id)
-        accepted = {(m.field, m.value) for m in book.metadata if m.status == "accepted"}
-        for field, key in [
-            ("subtitle", "subtitle"),
-            ("rights", "rights_statement"),
-            ("language", "language"),
-        ]:
-            self.assertIn((field, oracle["metadata"][key]), accepted)
-
-
-if __name__ == "__main__":
-    unittest.main()
+        assert_qualification_metadata(self, book, oracle)

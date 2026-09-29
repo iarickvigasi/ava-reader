@@ -7,6 +7,7 @@ from typing import Any
 from pypdf import PdfReader
 
 from .assembly_state import AssemblyState
+from .metadata_scope import metadata_scope
 from .printed_metadata import printed_metadata
 
 
@@ -23,7 +24,8 @@ def assemble_metadata(source: Path, state: AssemblyState, document_id: str) -> l
             identifier_scheme="uri",
         )
     ]
-    alltext = " ".join(b.get("content", {}).get("text", "") for b in state.blocks)
+    printed = printed_metadata(state, getattr(info, "author", None))
+    _, eligible = metadata_scope(state)
     mapping = [
         ("title", getattr(info, "title", None)),
         ("contributor", getattr(info, "author", None)),
@@ -33,14 +35,20 @@ def assemble_metadata(source: Path, state: AssemblyState, document_id: str) -> l
         if not value or not isinstance(value, str) or not value.strip():
             continue
         visible = next(
-            (b for b in state.blocks if value in b.get("content", {}).get("text", "")), None
+            (
+                b
+                for b in state.blocks
+                if b["id"] in eligible
+                and value.strip() == b.get("content", {}).get("text", "").strip()
+            ),
+            None,
         )
         evidence = visible["evidence"] if visible else state.blocks[0]["evidence"]
         claim = dict(
             id=f"metadata-{field}",
             field=field,
             value=value[:4000],
-            status="accepted" if value in alltext else "candidate",
+            status="accepted" if field == "contributor" and visible else "candidate",
             scope="work",
             origin="source",
             evidence=evidence,
@@ -65,21 +73,28 @@ def assemble_metadata(source: Path, state: AssemblyState, document_id: str) -> l
                     evidence=state.blocks[0]["evidence"],
                 )
             )
-    printed = printed_metadata(state, getattr(info, "author", None))
     for claim in claims:
         if claim["field"] in {"title", "contributor"} and any(
-            p["field"] == claim["field"]
+            p["status"] == "accepted"
+            and p["field"] == claim["field"]
             and p["value"] != claim["value"]
             and p.get("contributor_role") == claim.get("contributor_role")
             for p in printed
         ):
             claim["status"] = "conflict"
     for value in printed:
-        if not any(
-            c["field"] == value["field"]
-            and c.get("value") == value["value"]
-            and c.get("contributor_role") == value.get("contributor_role")
-            for c in claims
-        ):
+        existing = next(
+            (
+                c
+                for c in claims
+                if c["field"] == value["field"]
+                and c.get("value") == value["value"]
+                and c.get("contributor_role") == value.get("contributor_role")
+            ),
+            None,
+        )
+        if existing is None:
             claims.append(dict(id=f"metadata-printed-{len(claims)}", **value))
+        elif value["status"] == "accepted" and existing["status"] != "conflict":
+            existing.update(value)
     return claims

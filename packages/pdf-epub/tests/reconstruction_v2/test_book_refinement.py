@@ -37,6 +37,9 @@ class BookRefinementTest(unittest.TestCase):
                 [s.text for s in segments], [b.content.text for b in result.book.blocks]
             )
             self.assertEqual(2, len(result.book.chapters))
+            self.assertFalse(
+                any(m.field == "title" and m.status == "accepted" for m in result.book.metadata)
+            )
             self.assertTrue(result.epub.startswith(b"PK"))
             for task in tasks:
                 with Image.open(io.BytesIO(base64.b64decode(task.image.base64))) as sheet:

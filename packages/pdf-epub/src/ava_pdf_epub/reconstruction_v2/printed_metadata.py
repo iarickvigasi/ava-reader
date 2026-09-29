@@ -4,6 +4,7 @@ import re
 from typing import Any
 
 from .assembly_state import AssemblyState
+from .metadata_scope import metadata_scope
 
 LABELS = {
     "author": ("contributor", "author"),
@@ -26,15 +27,8 @@ PATTERN = re.compile(
 
 def printed_metadata(state: AssemblyState, source_author: str | None) -> list[dict[str, Any]]:
     output = []
-    candidates = [
-        b
-        for b in state.blocks
-        if b["kind"] == "heading"
-        and b["evidence"][0]["page"] == 1
-        and not state.segments[b["id"]].chapter_start
-    ]
-    if candidates:
-        title = candidates[0]
+    title, eligible = metadata_scope(state)
+    if title is not None:
         output.append(_claim("title", title["content"]["text"], title))
         index = state.blocks.index(title)
         if index + 1 < len(state.blocks):
@@ -43,7 +37,8 @@ def printed_metadata(state: AssemblyState, source_author: str | None) -> list[di
             segment = state.segments[following["id"]]
             gap = segment.box.y0 - state.segments[title["id"]].box.y1
             if (
-                following["kind"] == "paragraph"
+                following["id"] in eligible
+                and following["kind"] == "paragraph"
                 and 0 < gap < 35
                 and segment.style
                 and segment.style.align == "center"
@@ -57,6 +52,9 @@ def printed_metadata(state: AssemblyState, source_author: str | None) -> list[di
                 output.append(_claim("subtitle", text, following))
     for block in state.blocks:
         text = block.get("content", {}).get("text", "")
+        if block["kind"] != "paragraph" or not PATTERN.match(text):
+            continue
+        status = "accepted" if block["id"] in eligible else "candidate"
         matches = list(PATTERN.finditer(text))
         for index, match in enumerate(matches):
             end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
@@ -66,7 +64,7 @@ def printed_metadata(state: AssemblyState, source_author: str | None) -> list[di
                 continue
             field, role = LABELS[label.lower()]
             if value:
-                claim = _claim(field, value, block)
+                claim = _claim(field, value, block, status)
                 if role:
                     claim["contributor_role"] = role
                 output.append(claim)
@@ -74,15 +72,19 @@ def printed_metadata(state: AssemblyState, source_author: str | None) -> list[di
         if isbn:
             value = re.sub(r"[^0-9Xx]", "", isbn[1])
             if len(value) in {10, 13}:
-                output.append({**_claim("identifier", value, block), "identifier_scheme": "isbn"})
+                output.append(
+                    {**_claim("identifier", value, block, status), "identifier_scheme": "isbn"}
+                )
     return output
 
 
-def _claim(field: str, value: str, block: dict[str, Any]) -> dict[str, Any]:
+def _claim(
+    field: str, value: str, block: dict[str, Any], status: str = "accepted"
+) -> dict[str, Any]:
     return dict(
         field=field,
         value=value[:4000],
-        status="accepted",
+        status=status,
         origin="source",
         evidence=block["evidence"],
         scope="source_edition"

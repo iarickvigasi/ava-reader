@@ -27,3 +27,18 @@ Actual authenticated UI verification remains required: open details, edit, save,
 a concurrent edit and confirm draft retention/Reload, go offline, switch account and delete during
 a delayed response. Source tests and fake IndexedDB are not that product-flow evidence.
 Retained initial/final logs live in the original workspace `output/pdf-epub-integration-10/`.
+
+Printed metadata is confirmed only within supported bibliographic context: an opening centered, nonchapter title
+before the body, a copyright/publication-details section before the body, or an
+explicit backmatter colophon. A section heading or frontmatter chapter role alone cannot become the book title. Labelled
+body paragraphs remain source candidates; quoted or embedded narrative labels are not extracted.
+PDF Info text appearing in the body does not corroborate title, author or subject. Ambiguous
+layouts remain unconfirmed; this conservative scope does not identify every real copyright page.
+
+The supplemental fixture's “Source claims” block is inside body chapter 2. Its edition, date and
+ISBN strings are preserved as candidates. Earlier tests incorrectly treated their presence as
+bibliographic confirmation. The original independent source oracle and PDF remain unchanged;
+this correction changes authority, not source text. Genuine title, subtitle and copyright-page
+controls still confirm their fields. Thirteen focused metadata/source reconstruction tests pass;
+the combined worker snapshot passes 260 tests, including the separate refinement-style repair.
+These checks do not establish arbitrary-book metadata fidelity or an updated deployed image.
