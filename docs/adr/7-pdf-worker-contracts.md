@@ -1,6 +1,6 @@
 # PDF worker and content contracts
 
-Status: selected for implementation · 2026-09-28 · PDF-02 (AVA-2).
+Status: implemented contract boundary · selected 2026-09-28 · PDF-02 (AVA-2).
 
 ## Context and choice
 
@@ -20,9 +20,9 @@ installed module, bounded JSON, deadline and no provider environment. Unavailabl
 acceptance. A structural schema pass alone cannot establish graph or content validity.
 
 The extended reader envelope carries the complete canonical spine, addresses and resource inventory,
-plus one final content identity. It is a contract for PDF-03/04, not a second running renderer. Current
-v2 consumers cannot receive v3 as if it were v2. Ordinary EPUBs keep their existing single parser
-and legacy-author normalization. Actual v1 package rejection on main remains unchanged; the earlier
+plus one final content identity. The integrated canonical reader now consumes this envelope; legacy
+v2 consumers cannot receive v3 as if it were v2. Ordinary EPUBs keep their existing parser and
+legacy-author normalization; declared generated EPUBs use the separate validated [ADR13](13-canonical-epub-import.md) path. Actual v1 package rejection on main remains unchanged; the earlier
 spec's claimed v1 adaptation was stale.
 
 Offsets bind exact UTF-8 text hashes to Unicode codepoint boundaries and UTF-16 mappings. Explicit
@@ -34,7 +34,7 @@ explicit zero/false versus unknown. Resources retain occurrence identity separat
 
 No upload/controller, database migration, job queue, OCR fallback, publication endpoint or reader
 renderer is activated by these contracts. The v1 worker remains a conservative extraction/export tool;
-PDF-03/08 implement migration/production of the complete v2 content model. Representable does not mean
+PDF-03/08 now implement migration/production of the complete v2 content model. Representable does not mean
 supported or qualified. PDF-09 enforces ownership and actual-reader publication gates.
 
 Reproduction and exact limits live in [worker integration checks](../pdf-worker-checks.md). Generated

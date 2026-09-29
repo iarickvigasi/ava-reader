@@ -7,10 +7,14 @@ import { loadReadingSnapshot } from './load-reading-snapshot';
 
 const SECONDS_PER_HOUR = 3_600;
 
-export async function loadHomeActivity(prisma: PrismaService, userId: string) {
+export async function loadHomeActivity(
+  prisma: PrismaService,
+  userId: string,
+  timeZone?: string,
+) {
   const [reading, highlightsCount, completionItems, aiCommentsCount] =
     await Promise.all([
-      loadReadingSnapshot(prisma, userId),
+      loadReadingSnapshot(prisma, userId, timeZone),
       prisma.annotation.count({ where: { userId } }),
       // All-time totals preserve archived books. Derive the count and its
       // reconciliation snapshot from one read so they cannot race each other.

@@ -11,8 +11,10 @@ Build a translated book incrementally, saving reusable sentence translations in 
 ## Behaviour
 
 1. Desktop: the reader sidebar bilingual button toggles the mode with an accurate pressed state.
-2. Phone: the header bilingual button uses the desktop icon and toggles the saved device mode.
-   Store plain/bilingual in localStorage across books, reopening, and refreshes; default to plain.
+2. Phone: the header bilingual button uses the desktop icon and toggles the saved book mode.
+   Store plain/bilingual in localStorage per book reader URL, across reopening and refreshes.
+   Books without a saved mode default to plain; ignore the legacy global mode. Switching books
+   restores that book’s mode immediately, including navigation within the shared reader shell.
    Rotation never changes the selected mode. Storage failures preserve session toggling.
    Tablets also use the manual toggle; no synced account preference is written.
 3. Phone: original above translation in equal-height panes in both orientations, separated by a
@@ -55,6 +57,7 @@ generated for saved translations and described in 9.4.
 
 Checked items reflect unit tests and desktop/phone-emulated checks; physical checks remain below.
 
+- [x] Each book restores its own mode on navigation/reopen; unset books ignore the legacy mode.
 - [ ] Desktop and phone buttons toggle mode; phone rotation preserves the chosen mode.
 - [ ] Phone panes stack original above translation equally; desktop panes stay side by side.
 - [x] Neither column scrolls, including long translations and oversized sentences.

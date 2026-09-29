@@ -1,5 +1,7 @@
 "use client";
 
+import { dayKey } from "@/features/offline/stats/reading-days";
+
 import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { liveQuery } from "dexie";
 import { useEffect, useRef, useState } from "react";
@@ -34,7 +36,8 @@ export function useMasteryHistory(firstDay: string, goal: number) {
         row.state === "closed" &&
         !!row.endedAt &&
         row.replayStatus !== "dropped" &&
-        row.startedAt.slice(0, 10) < (pages[0]?.days[0].key ?? firstDay),
+        dayKey(new Date(row.startedAt), row.timeZone ?? "UTC") <
+          (pages[0]?.days[0].key ?? firstDay),
     );
   async function load() {
     if (pending.current || !hasLocalHistory) return;

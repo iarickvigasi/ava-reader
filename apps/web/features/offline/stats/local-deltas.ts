@@ -2,7 +2,7 @@
 // composer adds on top of the cached server stats. Each function makes one
 // scan and returns plain values so the composer stays trivially testable.
 
-import { splitSecondsByUtcDay } from "./split-seconds-by-utc-day";
+import { splitSessionDays } from "./split-session-days";
 import { getDb } from "../db";
 import {
   completionTables,
@@ -38,7 +38,7 @@ export async function readUnsyncedSessionDeltas(): Promise<UnsyncedSessionDeltas
     if (!row.endedAt) {
       continue;
     }
-    const slices = splitSecondsByUtcDay(row.startedAt, row.endedAt);
+    const slices = splitSessionDays(row.startedAt, row.endedAt);
     const seconds = [...slices.values()].reduce((sum, value) => sum + value, 0);
     if (seconds === 0) {
       continue;

@@ -1,3 +1,4 @@
+import { sessionTimeZone } from './session-time-zone';
 import { computeElapsedSeconds } from './session-segments';
 import {
   clampReplayDuration,
@@ -5,12 +6,14 @@ import {
 } from './session-validators';
 
 export type OfflineReplayRequest = {
+  timeZone?: string | null;
   clientSessionId: string | null;
   endedAt: string | null;
   startedAt: string | null;
 };
 
 export type ResolvedOfflineReplay = {
+  timeZone: string | null;
   clamped: boolean;
   clientSessionId: string | null;
   durationSeconds: number;
@@ -32,6 +35,7 @@ export function resolveOfflineReplay(
   // stable id and stays on the participant-tracked path.
   const isReplay = Boolean(request.clientSessionId && startedAt && endedAt);
   const base = {
+    timeZone: sessionTimeZone(request.timeZone),
     clientSessionId: request.clientSessionId,
     endedAt,
     startedAt,

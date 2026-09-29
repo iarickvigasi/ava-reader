@@ -1,8 +1,5 @@
+// Builds the cached reader payload: active chapter and immediate neighbours.
 import { readCanonicalCache } from "./canonical-cache";
-// Synthesises a `ReaderStatusPayload` from cached Dexie rows so the reader
-// can render fully offline (or skip a network round-trip when online) when
-// a book has been saved. Mirrors the windowed shape the API returns:
-// `chapters[]` is the requested chapter plus its immediate neighbours.
 
 import type {
   ReaderChapterPayload,
@@ -10,6 +7,7 @@ import type {
   ReaderTocNode,
 } from "@/lib/api-types/reader";
 
+import { collectTocChapterEntries } from "@/features/reader/toc";
 import { getDb } from "../../db";
 import { readProgress } from "../progress/storage";
 import { readReaderMetadata } from "./reader-metadata";
@@ -49,6 +47,7 @@ export async function loadReaderPayloadFromCache(
     windowIds.map((id) => db.bookChapters.get([libraryItemId, id])),
   );
 
+  const labels = collectTocChapterEntries((book.toc ?? []) as ReaderTocNode[]);
   const chapters: ReaderChapterPayload[] = [];
   for (let i = 0; i < windowIds.length; i++) {
     const row = rows[i];
@@ -61,8 +60,8 @@ export async function loadReaderPayloadFromCache(
       chapterId: id,
       blocks: row.blocks,
       href: `#${id}`,
-      label: id,
-      title: id,
+      label: labels.get(id)?.label ?? id,
+      title: labels.get(id)?.label ?? id,
       previousChapterId: orderedIds[idx - 1] ?? null,
       nextChapterId: orderedIds[idx + 1] ?? null,
       spineIndex: idx,

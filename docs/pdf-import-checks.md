@@ -37,4 +37,9 @@ mypy src/ava_pdf_epub/admission.py src/ava_pdf_epub/admission_actions.py
 ```
 
 See [actual backend evidence](pdf-import-evidence.md), [migration/rollback](pdf-import-migration.md),
-[AC boundaries](pdf-import-acceptance.md) and [dormant reader selection](pdf-import-selection.md).
+[AC boundaries](pdf-import-acceptance.md) and [accepted reader selection](pdf-import-selection.md).
+
+Accepted EPUB downloads use `GET /library/pdf-imports/:operationId/formats/epub`; canonical
+resources use `GET /library/pdf-imports/:operationId/resources/:resourceId`. Both require current
+ownership and accepted immutable publication. The original-artifact route is not a candidate bypass.
+See the [current review guide](pdf-review-guide.md) for actual local flows and remaining gates.

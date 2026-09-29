@@ -1,6 +1,7 @@
 # Reading sessions, progress & stats
 
-> Status: shipped · Updated: 2026-09-23 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
+> Status: shipped · Updated: 2026-09-25
+> ADRs: [[3-offline-first-dexie-buckets]], [[7-reading-time-intervals]] · Code:
 > apps/web/features/offline/buckets/{sessions,progress}, apps/web/features/offline/stats,
 > apps/web/components/app/home/sections/mastery, apps/api/src/reader/{sessions,progress}
 
@@ -78,7 +79,7 @@ Timestamps are validated (invalid date or `endedAt < startedAt` → 400); an ove
 to 24h and logged. This path never routes through the live `start` action.
 
 Closed unsynced sessions use the same rounded seconds and 24h cap as server replay. Split
-from the whole-second UTC start at each midnight; daily slices sum to book and overall totals.
+from the whole-second start at midnight in the saved timezone; slices sum to book/overall totals.
 Invalid or reversed local timestamps contribute no time.
 
 Home reading totals carry all-time client session IDs, exact total seconds, and recent daily
@@ -91,14 +92,19 @@ reading reconciliation metadata retain their server reading totals until refresh
 and daily-minute rounding happens after adding seconds. Home metadata never reconciles book-info
 against a different snapshot.
 
-Historical mastery pages use a seven-day exclusive `before` UTC cursor and snapshot session IDs
+Historical mastery pages use a seven-day exclusive `before` local-date cursor and snapshot session IDs
 for local reconciliation. They remain in page memory only (explicit exception to persisted history);
 the existing home snapshot and local session storage are unchanged.
 
-## Edge cases
-
-Offline across multiple days; multiple devices for one book; clock changes; session never stopped
-(crash) → heartbeat bounds it.
+New sessions capture the device IANA timezone once, locally and on the server. Heartbeat, stop,
+retry and offline replay preserve it. Shared multi-device sessions keep the first creator's zone.
+Credited UTC intervals are merged when adjacent and written with UTC totals in one transaction.
+Home/history split intervals at midnight in each session's saved timezone, including DST. Travel
+changes only today/window, never historical day assignment. UTC totals remain authoritative;
+subtract interval-covered UTC seconds before grouping. Version 3 snapshots retain interval zones.
+Old sessions without a saved timezone retain UTC allocation; never infer it from the viewer.
+Version 2 caches retain their supplied daily allocation until refresh. A session keeps its start
+zone across a device-zone change; the next session captures the new zone.
 
 ## Acceptance criteria
 
@@ -108,9 +114,10 @@ Offline across multiple days; multiple devices for one book; clock changes; sess
 - [ ] Completion % and resume position survive reload and reconnect.
 - [ ] A stale offline progress sync never rewinds a position advanced on another device
       (most-recent-reading wins); a genuine later read does win.
-- [ ] Daily mastery chart reflects per-day minutes against the goal.
-- [ ] A 23:40–00:30 UTC offline session credits 20 minutes then 30 minutes, unchanged after
-      the split server baseline replaces its local delta.
+- [x] At 00:58 Sep 25 in Belgrade, today is Friday; 00:10–00:50 credits Friday 40 minutes.
+- [x] Local midnight splits and DST preserve totals; travel/replay never reassign historical dates.
+- [ ] A session saved in UTC at 23:40–00:30 credits 20 then 30 minutes, unchanged
+      after the split server baseline replaces its local delta.
 - [ ] Home's Books Read includes dated books or books at 100%, each once, including uncached and
       archived books. Clearing a date at 100% keeps the book counted.
 - [ ] Pending additions/removals update counts immediately and survive queue acknowledgment,

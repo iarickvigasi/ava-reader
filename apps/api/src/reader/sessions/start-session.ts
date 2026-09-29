@@ -47,6 +47,7 @@ export async function startReadingSession(params: {
       return replayCompletedSessionTx(tx, {
         clientSessionId: replay.clientSessionId,
         durationSeconds: replay.durationSeconds,
+        timeZone: replay.timeZone,
         endedAt: replay.endedAt,
         libraryItemId,
         startedAt: replay.startedAt,
@@ -77,6 +78,7 @@ export async function startReadingSession(params: {
       clientSessionId: replay.clientSessionId,
       libraryItemId,
       replayEnd: replay.endedAt,
+      timeZone: replay.timeZone,
       startedAt: sessionStartedAt,
       userId,
     });

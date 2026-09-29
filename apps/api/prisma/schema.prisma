@@ -335,6 +335,8 @@ model ReadingSession {
   startedAt       DateTime
   lastTrackedAt   DateTime?
   endedAt         DateTime?
+  // Captured once at session start; NULL preserves unknown historical UTC allocation.
+  timeZone        String?
   // Client-generated stable id for the session. Lets the offline-first
   // client replay a completed session after reconnect: the start call
   // upserts by (userId, clientSessionId), so a session created offline
@@ -347,6 +349,7 @@ model ReadingSession {
   user            User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
   participants    ReadingSessionParticipant[]
   segments        ReadingSessionSegment[]
+  intervals       ReadingSessionInterval[]
 
   @@unique([userId, clientSessionId])
   @@index([userId, trackedDay])
@@ -1041,4 +1044,16 @@ model PdfImportReceipt {
 
   @@unique([ownerId, idempotencyKey])
   @@index([ownerId, sourceSha256])
+}
+
+// Exact credited activity; adjacent heartbeat intervals are merged under the session lock.
+model ReadingSessionInterval {
+  id               String         @id @default(cuid())
+  readingSessionId String
+  startedAt        DateTime
+  endedAt          DateTime
+  readingSession   ReadingSession @relation(fields: [readingSessionId], references: [id], onDelete: Cascade)
+
+  @@index([readingSessionId, endedAt])
+  @@index([startedAt, endedAt])
 }

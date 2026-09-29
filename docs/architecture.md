@@ -99,8 +99,9 @@ their implementations, with shared fixtures in `testing/`.
   CatalogEntry (DRAFT | PUBLISHED | ARCHIVED) publishes a Book.
 - **LibraryItem** — User↔Book join (source IMPORTED | CATALOG); the scope for ReadingProgress
   (unique, locator + completion % + minutes), ReadingSession (clientSessionId ULID, Participant +
-  per-day Segment), Annotation (highlight: excerpt, color, locator), AiComment (kind TRANSLATE |
-  ETYMOLOGY | EXPLAIN; dedup by (user, sourceHash)).
+  per-day UTC Segment + credited UTC Interval + saved session timezone; adr/7), Annotation
+  (highlight: excerpt, color, locator), AiComment (kind TRANSLATE | ETYMOLOGY | EXPLAIN;
+  dedup by (user, sourceHash)).
 - **Collection** (SMART | CUSTOM) → CollectionItem[]. **FeedbackSubmission** captures user feedback.
 - **BookTranslation** → SentenceTranslation[]: per-user/item/source/language/prompt version;
   populated as pages are read. Sentence IDs and source offsets are independent of page geometry.

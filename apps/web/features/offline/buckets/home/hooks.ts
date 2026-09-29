@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 
 import type { HomePayload } from "@/lib/api-types/home";
 
+import { useReadingCalendar } from "../../stats/use-reading-calendar";
 import { useNetworkState } from "../../net/use-network-state";
 
 import { revalidateHome } from "./revalidate";
@@ -19,6 +20,7 @@ import { applyHome, readHome } from "./storage";
 export function useHydrateHome(initial: HomePayload | null): void {
   const { getToken, isLoaded } = useAuth();
   const online = useNetworkState();
+  const calendar = useReadingCalendar();
 
   useEffect(() => {
     if (!initial) {
@@ -32,7 +34,7 @@ export function useHydrateHome(initial: HomePayload | null): void {
       return;
     }
     void revalidateHome(getToken);
-  }, [getToken, isLoaded, online]);
+  }, [getToken, isLoaded, online, calendar]);
 }
 
 // Read state for the offline render path. `status` distinguishes:
@@ -46,6 +48,7 @@ export type HomeCacheState =
   | { status: "empty"; payload: null };
 
 export function useHomeFromCache(): HomeCacheState {
+  const calendar = useReadingCalendar();
   const [state, setState] = useState<HomeCacheState>({
     status: "loading",
     payload: null,
@@ -62,7 +65,7 @@ export function useHomeFromCache(): HomeCacheState {
       error: () => {},
     });
     return () => subscription.unsubscribe();
-  }, []);
+  }, [calendar]);
 
   return state;
 }

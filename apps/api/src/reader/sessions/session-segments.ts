@@ -1,3 +1,4 @@
+import { recordReadingInterval } from './record-reading-interval';
 import type { Prisma } from '@prisma/client';
 import type { LockedSessionRecord } from './session-record';
 
@@ -54,6 +55,7 @@ export async function incrementSessionSegmentsTx(
   startTimestamp: Date,
   elapsedSeconds: number,
 ) {
+  await recordReadingInterval(tx, session.id, startTimestamp, elapsedSeconds);
   const segmentDeltas = splitElapsedSecondsByUtcDay(
     startTimestamp,
     elapsedSeconds,

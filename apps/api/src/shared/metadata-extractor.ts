@@ -420,7 +420,7 @@ function dedupeTextsPreserveOrder(values: string[]) {
 
 function splitGenreTokens(value: string) {
   return value
-    .split(/\s+(?:--|-)\s+/g)
+    .split(/,|\s+(?:--|-)\s+/g)
     .map((token) => token.trim())
     .filter((token) => token.length > 0);
 }

@@ -1,6 +1,12 @@
 import { useCallback, type MutableRefObject } from "react";
-import type { ReaderSessionPayload, ReaderStatusPayload } from "@/lib/api-types";
-import { createLocalSession, generateClientSessionId, markSessionSynced } from "@/features/offline/buckets/sessions";
+import type {
+  ReaderSessionPayload,
+  ReaderStatusPayload,
+} from "@/lib/api-types";
+import {
+  beginLocalSession,
+  markSessionSynced,
+} from "@/features/offline/buckets/sessions";
 import { startReaderSession } from "../../../data/reader-client";
 import {
   READER_SESSION_HEARTBEAT_INTERVAL_MS,
@@ -60,20 +66,11 @@ export function useStartSession({
     const controller = new AbortController();
     sessionStartAbortRef.current = controller;
 
-    // Phase 4: write the session locally before talking to the server.
-    // Even if the network is dead, this row exists and the sync runner
-    // will replay it on reconnect (as a single POST with startedAt +
-    // endedAt) so reading hours stay accurate.
-    const clientSessionId = generateClientSessionId();
-    const startedAt = new Date().toISOString();
+    const { clientSessionId, startedAt, timeZone } =
+      beginLocalSession(libraryItemId);
     clientSessionIdRef.current = clientSessionId;
     sessionStartedAtRef.current = startedAt;
     lastActiveAtRef.current = startedAt;
-    void createLocalSession({
-      clientSessionId,
-      libraryItemId,
-      startedAt,
-    });
 
     try {
       const session = await startReaderSession({
@@ -85,6 +82,7 @@ export function useStartSession({
         libraryItemId,
         signal: controller.signal,
         startedAt,
+        timeZone,
       });
 
       if (controller.signal.aborted) {

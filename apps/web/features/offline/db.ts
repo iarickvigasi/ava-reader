@@ -11,11 +11,11 @@
 //   need transforming.
 // - Never silently drop user-intent rows (anything in a *Mutations table).
 //   keep what we recognize, drop only unparseable entries.
-// - The `meta` table records the schema version we last saw, which lets us
-//   detect a downgrade (older app version reading a newer DB) and refuse
-//   instead of corrupting data.
+// - Native database versions guard against downgrades before Dexie can inspect
+//   or patch a newer schema. Refusal preserves cached data and pending mutations.
 
 import Dexie, { type Table } from "dexie";
+import { GuardedDatabase } from "./compatibility/guarded-database";
 import type { SessionRow } from "./buckets/sessions/types";
 export type { SessionRow } from "./buckets/sessions/types";
 import type { MembershipMutation } from "./buckets/library/membership/types";
@@ -318,7 +318,7 @@ export function dbNameForUser(userId: string): string {
 // window, and tests (which run without setActiveUser).
 export const DB_NAME = dbNameForUser(ANONYMOUS_DB_USER);
 
-export class AvaReaderDB extends Dexie {
+export class AvaReaderDB extends GuardedDatabase {
   libraryItems!: Table<LibraryItemRow, string>;
   collections!: Table<CollectionRow, string>;
   collectionMembership!: Table<CollectionMembershipRow, [string, string]>;
@@ -348,7 +348,7 @@ export class AvaReaderDB extends Dexie {
   meta!: Table<MetaRow, string>;
 
   constructor(name: string) {
-    super(name);
+    super(name, SCHEMA_VERSION);
 
     // v1 — initial schema. Indexes:
     // - libraryItems: primary `libraryItemId`, secondary `slug` for slug

@@ -1,7 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 import type { CanonicalBookV2 } from '../../pdf-conversion/contracts/generated/ava-reader-3';
 import type { BilingualUnit } from '../types';
-import { createSentenceSegmenter } from './create-sentence-segmenter';
+import { createSentenceSegmenter } from '../../shared/create-sentence-segmenter';
 import { identifyTranslationUnit } from './unit-identity';
 export function canonicalSentenceCatalog(
   book: CanonicalBookV2,

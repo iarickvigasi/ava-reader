@@ -5,6 +5,10 @@ import { syncPendingSessions } from "../sessions";
 import { applyHome, readHome } from "./storage";
 import { readingHome, seedReading } from "./reading-test-fixture";
 
+vi.mock("../../stats/device-time-zone", () => ({
+  deviceTimeZone: () => "UTC",
+}));
+
 beforeEach(seedReading);
 afterEach(async () => {
   await getDb().delete();

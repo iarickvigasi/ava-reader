@@ -1,7 +1,7 @@
 # Dev environment & workflows
 
-How the dev setup behaves and the traps it hides — for developers and agents. Product behaviour
-lives in specs/, architecture in architecture.md, setup commands in README.md. Keep ≤60 lines.
+Dev workflows and pitfalls; product behaviour lives in specs/. Setup commands: README.md.
+Temporary maintenance: [EPUB label backfill](../apps/api/src/scripts/chapter-label-backfill/README.md).
 
 ## Split dev workflow (commands: README → Split Dev Workflow)
 

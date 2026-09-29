@@ -8,19 +8,7 @@ const MACHINE_LABEL_PATTERN =
   /^(section|split|part|item|text|page)[\s_.-]*\d+$/i;
 const NUMERIC_ONLY_PATTERN = /^[\d\s.:_-]+$/;
 
-/**
- * Chapter titles are untrusted input.
- *
- * When a book has no usable TOC and no extractable heading,
- * `resolveChapterFallbackLabel` fabricates `Chapter <spineIndex + 1>`. A
- * bibliography can therefore arrive labelled "Chapter 41" — not a missing
- * title but a confidently wrong one, which a model will happily over-trust.
- *
- * Dropping a title that exactly equals the synthesized value is lossless: it
- * conveys nothing beyond the position, which the digest already sends as its
- * own signal. A real TOC label of "Chapter 5" sitting at a different spine
- * index survives, because there it genuinely means "numbered body chapter".
- */
+// Generated opening excerpts and legacy numbered labels are not authored titles.
 export function normalizeChapterTitle(input: {
   label: null | string;
   spineIndex: number;
@@ -35,7 +23,10 @@ export function normalizeChapterTitle(input: {
       continue;
     }
 
-    if (trimmed.toLowerCase() === synthesized) {
+    if (
+      trimmed.toLowerCase() === synthesized ||
+      (trimmed.startsWith(`${input.spineIndex + 1}. `) && trimmed.endsWith('…'))
+    ) {
       continue;
     }
 

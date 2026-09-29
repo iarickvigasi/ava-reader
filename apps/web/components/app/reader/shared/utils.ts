@@ -1,10 +1,6 @@
 import { canonicalPayload } from "@/features/reader/canonical/payload";
 import type { CSSProperties } from "react";
-import type {
-  ReaderChapterPayload,
-  ReaderLocator,
-  ReaderStatusPayload,
-} from "@/lib/api-types";
+import type { ReaderLocator, ReaderStatusPayload } from "@/lib/api-types";
 import type { RestoreIntent } from "@/features/reader/navigation";
 import {
   PAGE_GAP,
@@ -73,17 +69,6 @@ export function shouldRefreshChapterWindow(
     (chapterIndex === 0 && chapter.previousChapterId) ||
     (chapterIndex === payload.chapters.length - 1 && chapter.nextChapterId),
   );
-}
-
-export function formatReaderHeaderParts(
-  payload: Extract<ReaderStatusPayload, { status: typeof READER_STATUS_READY }>,
-  activeChapter: ReaderChapterPayload,
-) {
-  return {
-    title: payload.book.title,
-    author: payload.book.authors[0],
-    chapter: formatReaderChapterLabel(activeChapter.label),
-  };
 }
 
 export function formatReaderChapterLabel(label: string) {

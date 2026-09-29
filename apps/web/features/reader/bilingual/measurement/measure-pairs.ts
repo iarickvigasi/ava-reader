@@ -13,6 +13,9 @@ export function measurePairs(
   const units: MeasuredBilingualUnit[] = chapter.units.map((unit, index) => {
     const translated =
       unit.kind !== "sentence" || chapter.translations[unit.id] !== undefined;
+    const needsColumns = () =>
+      flow.measure(index, index + 1, 0) > height ||
+      (translated && flow.measure(index, index + 1, 1) > height);
     return {
       id: unit.id,
       kind: unit.kind,
@@ -23,16 +26,16 @@ export function measurePairs(
         return translated ? flow.measure(index, index + 1, 1) : null;
       },
       get sourcePageCount() {
-        return flow.measure(index, index + 1, 0) <= height
-          ? 1
-          : flow.measure(index, index + 1, 0, false, true);
+        return needsColumns()
+          ? flow.measure(index, index + 1, 0, false, true)
+          : 1;
       },
       get translationPageCount() {
         return !translated
           ? undefined
-          : flow.measure(index, index + 1, 1) <= height
-            ? 1
-            : flow.measure(index, index + 1, 1, false, true);
+          : needsColumns()
+            ? flow.measure(index, index + 1, 1, false, true)
+            : 1;
       },
     };
   });

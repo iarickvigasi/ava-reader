@@ -1,3 +1,4 @@
+import { deviceTimeZone } from "@/features/offline/stats/device-time-zone";
 import { getPublicApiBaseUrl } from "@/lib/api";
 import { withDeadline } from "@/features/auth/with-deadline";
 import type { MasteryHistoryPage } from "./types";
@@ -13,7 +14,7 @@ export async function fetchMasteryHistory(
     controller.signal.throwIfAborted();
     if (!token) throw new Error("authentication unavailable");
     const response = await fetch(
-      `${getPublicApiBaseUrl()}/api/home/mastery?before=${before}`,
+      `${getPublicApiBaseUrl()}/api/home/mastery?before=${before}&timeZone=${encodeURIComponent(deviceTimeZone())}`,
       {
         headers: { Authorization: `Bearer ${token}` },
         cache: "no-store",

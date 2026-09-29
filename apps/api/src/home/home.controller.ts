@@ -13,13 +13,21 @@ export class HomeController {
   getMasteryHistory(
     @Req() request: AuthenticatedRequest,
     @Query('before') before: string,
+    @Query('timeZone') timeZone?: string,
   ) {
-    return this.homeService.getMasteryHistory(request.auth.clerkUserId, before);
+    return this.homeService.getMasteryHistory(
+      request.auth.clerkUserId,
+      before,
+      timeZone,
+    );
   }
 
   @Get()
   @UseGuards(ClerkAuthGuard)
-  getHome(@Req() request: AuthenticatedRequest) {
-    return this.homeService.getHome(request.auth.clerkUserId);
+  getHome(
+    @Req() request: AuthenticatedRequest,
+    @Query('timeZone') timeZone?: string,
+  ) {
+    return this.homeService.getHome(request.auth.clerkUserId, timeZone);
   }
 }

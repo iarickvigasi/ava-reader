@@ -1,3 +1,4 @@
+import { isOnline } from "@/features/offline/net/net-state";
 import { getPublicApiBaseUrl } from "@/lib/api";
 import { getDb } from "./db";
 import * as highlights from "./buckets/highlights";
@@ -25,7 +26,7 @@ export function resumePendingWork(getToken: () => Promise<string | null>) {
 
 async function resume(getToken: () => Promise<string | null>) {
   const db = getDb();
-  if (!navigator.onLine || !(await getToken()) || db !== getDb()) return;
+  if (!isOnline() || !(await getToken()) || db !== getDb()) return;
   const [highlightRows, commentRows] = await Promise.all([
     db.highlightMutations.toArray(),
     db.aiCommentMutations.toArray(),

@@ -9,6 +9,10 @@ import {
   seedReading,
 } from "./reading-test-fixture";
 
+vi.mock("../../stats/device-time-zone", () => ({
+  deviceTimeZone: () => "UTC",
+}));
+
 beforeEach(seedReading);
 afterEach(async () => {
   await getDb().delete();

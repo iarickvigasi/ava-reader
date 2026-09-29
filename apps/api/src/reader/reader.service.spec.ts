@@ -1,3 +1,4 @@
+import { intervalDelegate } from './sessions/interval-test-fixture';
 import { BookFileFormat, BookFileKind, ProcessingStatus } from '@prisma/client';
 import { BadRequestException, Logger } from '@nestjs/common';
 import { __resetReaderPackageCacheForTesting } from './package/reader-package-cache';
@@ -27,9 +28,6 @@ describe('ReaderService', () => {
   const upsertReadingSessionSegment = jest.fn();
   const aggregateReadingSessionSegment = jest.fn();
   const queryRaw = jest.fn();
-  // Reading a book lazily enqueues its chapter-purpose analysis
-  // (see specs/8-chapter-purpose-analysis). Stubbed so the reader payload
-  // tests exercise that path instead of silently swallowing a mock failure.
   const findUniqueBookAnalysis = jest.fn();
   const findFirstBookProcessingRun = jest.fn();
   const createBookProcessingRun = jest.fn();
@@ -51,6 +49,7 @@ describe('ReaderService', () => {
       updateMany: updateManyReadingSessionParticipant,
       upsert: upsertReadingSessionParticipant,
     },
+    readingSessionInterval: intervalDelegate,
     readingSessionSegment: {
       aggregate: aggregateReadingSessionSegment,
       upsert: upsertReadingSessionSegment,

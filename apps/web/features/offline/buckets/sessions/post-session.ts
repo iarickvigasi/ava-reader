@@ -1,3 +1,4 @@
+import { fetchWithConnectivityCheck } from "../../net/fetch-with-connectivity-check";
 import { getPublicApiBaseUrl } from "@/lib/api";
 
 type ReplayOk = { kind: "ok" };
@@ -12,6 +13,7 @@ export async function postSession(
     libraryItemId: string;
     clientSessionId: string;
     startedAt: string;
+    timeZone?: string;
     endedAt: string | null;
   },
 ): Promise<ReplayResult> {
@@ -19,7 +21,7 @@ export async function postSession(
     row.libraryItemId,
   )}/reader/session`;
   try {
-    const response = await fetch(url, {
+    const response = await fetchWithConnectivityCheck(url, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -30,6 +32,7 @@ export async function postSession(
         clientInstanceId,
         clientSessionId: row.clientSessionId,
         startedAt: row.startedAt,
+        timeZone: row.timeZone,
         endedAt: row.endedAt,
       }),
     });

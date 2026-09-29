@@ -13,6 +13,7 @@ export async function replayCompletedSessionTx(
   tx: Prisma.TransactionClient,
   params: {
     clientSessionId: string;
+    timeZone: string | null;
     durationSeconds: number;
     endedAt: Date;
     libraryItemId: string;
@@ -44,6 +45,7 @@ export async function replayCompletedSessionTx(
     session = await tx.readingSession.create({
       data: {
         clientSessionId,
+        timeZone: params.timeZone,
         durationMinutes: Math.floor(durationSeconds / 60),
         durationSeconds,
         endedAt,

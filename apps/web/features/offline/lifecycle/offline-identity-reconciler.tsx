@@ -3,6 +3,7 @@
 import { Fragment, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { useDeviceIdentity } from "@/features/auth/use-device-identity";
+import { DatabaseAccessGate } from "../compatibility/database-access-gate";
 import { LocalSignOutRecovery } from "@/features/auth/local-sign-out-recovery";
 
 // Expiry preserves the device owner. Gate hydration until its DB is selected,
@@ -20,7 +21,13 @@ export function OfflineIdentityReconciler({
     <>
       <LocalSignOutRecovery blocked={blocked} />
       {(!pathname.startsWith("/app") || (ready && !blocked)) && (
-        <Fragment key={owner ?? "visitor"}>{children}</Fragment>
+        <Fragment key={owner ?? "visitor"}>
+          {pathname.startsWith("/app") ? (
+            <DatabaseAccessGate>{children}</DatabaseAccessGate>
+          ) : (
+            children
+          )}
+        </Fragment>
       )}
     </>
   );

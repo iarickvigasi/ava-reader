@@ -101,7 +101,7 @@ describe('extractBookMetadata', () => {
         'Self-Help',
         'Personal Growth - Success',
       ],
-      subjects: ['Management', 'Business & Economics'],
+      subjects: [',Management,,Business & Economics,Management,'],
     });
 
     const metadata = await extractBookMetadata({
@@ -111,10 +111,13 @@ describe('extractBookMetadata', () => {
     });
 
     expect(metadata.genres).toEqual([
-      'Novelists, English',
+      'Novelists',
+      'English',
       '19th century',
       'Correspondence',
-      'Austen, Jane, 1775-1817',
+      'Austen',
+      'Jane',
+      '1775-1817',
       'Management',
       'General',
       'Self-Help',

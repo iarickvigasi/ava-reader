@@ -1,3 +1,4 @@
+import { loadZonedReading } from './load-zoned-reading';
 import { BadRequestException } from '@nestjs/common';
 import type { PrismaService } from '../prisma/prisma.service';
 
@@ -8,10 +9,15 @@ export async function loadMasteryHistory(
   prisma: PrismaService,
   userId: string,
   before: string,
+  timeZone?: string,
 ) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(before)) {
+    throw new BadRequestException('before must be a valid YYYY-MM-DD date');
+  }
+  if (timeZone !== undefined)
+    return loadZonedReading(prisma, userId, timeZone, before);
   const end = new Date(`${before}T00:00:00Z`);
   if (
-    !/^\d{4}-\d{2}-\d{2}$/.test(before) ||
     !Number.isFinite(end.getTime()) ||
     end.toISOString().slice(0, 10) !== before
   ) {

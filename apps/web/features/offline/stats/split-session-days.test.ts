@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { splitSecondsByUtcDay } from "./split-seconds-by-utc-day";
+import { splitSessionDays } from "./split-session-days";
 
-describe("splitSecondsByUtcDay", () => {
+describe("splitSessionDays", () => {
   it.each([
     [
       "2026-04-12T23:40:00Z",
@@ -57,6 +57,6 @@ describe("splitSecondsByUtcDay", () => {
     ["invalid", "2026-04-12T00:00:00Z", []],
     ["2026-04-12T00:00:00Z", "invalid", []],
   ])("splits %s → %s like server replay", (start, end, expected) => {
-    expect([...splitSecondsByUtcDay(start, end)]).toEqual(expected);
+    expect([...splitSessionDays(start, end)]).toEqual(expected);
   });
 });

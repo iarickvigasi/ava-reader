@@ -1,6 +1,6 @@
 import JSZip from 'jszip';
 import { resolveZipPath } from '../../shared/zip-utils';
-import type { ReaderChapter, ReaderPackage } from '../reader-types';
+import type { ReaderPackage } from '../reader-types';
 import {
   xmlParser,
   orderedXmlParser,
@@ -20,22 +20,11 @@ import {
   buildManifestById,
   resolveReadingOrderItems,
 } from './manifest';
-import {
-  readTocEntries,
-  findTocLabelForChapterCoord,
-  createFallbackToc,
-  resolveTocNodes,
-} from './toc';
+import { readTocEntries, createFallbackToc, resolveTocNodes } from './toc';
 import type { ParsedTocNode } from './toc';
-import {
-  collectTocAnchorsBySpinePath,
-  createChapterId,
-  getChapterTitleFromBlocks,
-  resolveChapterFallbackLabel,
-  splitBlocksAtTocAnchors,
-} from './chapters';
+import { buildReaderChapters } from './build-reader-chapters';
+import { getChapterTitleFromBlocks } from './get-chapter-title-from-blocks';
 import { normalizeBlocksFromNodes } from './blocks';
-import { normalizeHrefForLookup } from './archive';
 
 export async function buildReaderPackageFromEpub(input: {
   authors: string[];
@@ -148,12 +137,8 @@ export async function buildReaderPackageFromEpub(input: {
   const isParsedTocRichEnough =
     parsedTocNodeCount >= nonEmptyRawChapters.length;
 
-  // When NCX is sparse, we'd otherwise rely on per-chapter title extraction
-  // (heading or short first paragraph). That works well when the book is
-  // consistently structured (Demian: every body chapter has an <h1>) but
-  // produces noise when extraction succeeds for only a handful of chapters
-  // (Степовий вовк: a stray dialogue line gets picked up). Require a
-  // confident success rate; otherwise label every chapter generically.
+  // Only paragraph guesses need book-wide consistency; explicit opening
+  // headings remain trustworthy even among untitled front matter.
   const CHAPTER_TITLE_COVERAGE_THRESHOLD = 0.8;
   const titleExtractionCoverage =
     nonEmptyRawChapters.length === 0
@@ -164,78 +149,24 @@ export async function buildReaderPackageFromEpub(input: {
     isParsedTocRichEnough ||
     titleExtractionCoverage >= CHAPTER_TITLE_COVERAGE_THRESHOLD;
 
-  // Second pass: split each spine document at TOC-anchor boundaries (so that
-  // EPUBs which pack many logical chapters into one big XHTML still produce
-  // one ReaderChapter per chapter), then assign sequential IDs and labels.
-  const tocAnchorsBySpinePath = collectTocAnchorsBySpinePath(parsedToc);
-  let totalBlocks = 0;
-  const chapters: ReaderChapter[] = [];
-
-  for (const raw of nonEmptyRawChapters) {
-    const spineKey = normalizeHrefForLookup(raw.href);
-    const tocAnchors = tocAnchorsBySpinePath.get(spineKey) ?? new Set<string>();
-    const segments = splitBlocksAtTocAnchors(raw.blocks, tocAnchors);
-
-    for (const segment of segments) {
-      const segmentIndex = chapters.length;
-      const chapterId = createChapterId(
-        segmentIndex,
-        raw.href,
-        segment.leadingAnchorId,
-      );
-      const chapterHref = segment.leadingAnchorId
-        ? `${raw.href}#${segment.leadingAnchorId}`
-        : raw.href;
-      const segmentTitle = getChapterTitleFromBlocks(segment.blocks);
-      const fallbackLabel = resolveChapterFallbackLabel({
-        bookTitle: input.title,
-        candidateLabel: isParsedTocRichEnough
-          ? findTocLabelForChapterCoord(
-              parsedToc,
-              raw.href,
-              segment.leadingAnchorId,
-            )
-          : null,
-        chapterTitle: useExtractedChapterTitles ? segmentTitle : null,
-        spineIndex: segmentIndex,
-      });
-
-      // Re-number each segment's blocks from 1 so that every chapter's blocks
-      // are numbered `chapterId::b1, ::b2, …` regardless of where the segment
-      // started inside its source spine doc.
-      const segmentBlocks = segment.blocks.map((block, blockIndex) =>
-        block.id.startsWith('temp-id')
-          ? { ...block, id: `${chapterId}::b${blockIndex + 1}` }
-          : block,
-      );
-
-      totalBlocks += segmentBlocks.length;
-
-      chapters.push({
-        blocks: segmentBlocks,
-        chapterId,
-        href: chapterHref,
-        label: fallbackLabel,
-        nextChapterId: null,
-        previousChapterId: null,
-        spineIndex: segmentIndex,
-        title: segmentTitle ?? fallbackLabel,
-      });
-    }
-  }
-
-  for (let index = 0; index < chapters.length; index += 1) {
-    chapters[index] = {
-      ...chapters[index],
-      nextChapterId: chapters[index + 1]?.chapterId ?? null,
-      previousChapterId: chapters[index - 1]?.chapterId ?? null,
-    };
-  }
+  // Split at TOC anchors and label each logical chapter independently.
+  const chapters = buildReaderChapters({
+    rawChapters: nonEmptyRawChapters,
+    parsedToc,
+    trustTocLabels: isParsedTocRichEnough,
+    allowParagraphTitles: useExtractedChapterTitles,
+    bookTitle: input.title,
+    language: input.language,
+  });
+  const totalBlocks = chapters.reduce(
+    (sum, chapter) => sum + chapter.blocks.length,
+    0,
+  );
 
   // Use the parsed TOC if it was rich enough to trust (Pride & Prejudice-style
   // EPUBs where TOC anchors already drove chapter splitting). Otherwise, build
   // a fallback TOC with one entry per chapter using each chapter's own label
-  // — which by now reflects either its <h1> heading or a generic "Chapter N".
+  // — which by now reflects either its <h1> heading or a numbered opening excerpt.
   const resolvedToc = isParsedTocRichEnough
     ? resolveTocNodes(parsedToc, chapters)
     : resolveTocNodes(createFallbackToc(chapters), chapters);
