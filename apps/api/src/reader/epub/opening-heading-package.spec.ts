@@ -14,19 +14,21 @@ it('keeps number-plus-title headings with a sparse TOC and untitled front matter
     ${[0, 1, 2, 3].map((i) => `<item id="c${i}" href="c${i}.xhtml" media-type="application/xhtml+xml"/>`).join('')}
     </manifest><spine>${[0, 1, 2, 3].map((i) => `<itemref idref="c${i}"/>`).join('')}</spine></package>`,
   );
+  // EPUB attributes and archive-relative links are not understood by HTML inspections.
+  //noinspection HtmlUnknownAttribute,HtmlUnknownTarget
   zip.file(
     'nav.xhtml',
-    '<html><body><nav epub:type="toc"><ol><li><a href="c0.xhtml">Start</a></li></ol></nav></body></html>',
+    '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" lang="en"><body><nav epub:type="toc"><ol><li><a href="c0.xhtml">Start</a></li></ol></nav></body></html>',
   );
   for (const i of [0, 1, 2]) {
     zip.file(
       `c${i}.xhtml`,
-      '<html><body><p>This deliberately long front matter paragraph is ordinary prose, without any heading or chapter title to extract.</p></body></html>',
+      '<html lang="en"><body><p>This deliberately long front matter paragraph is ordinary prose, without any heading or chapter title to extract.</p></body></html>',
     );
   }
   zip.file(
     'c3.xhtml',
-    '<html><body><h2>1</h2><h2>Wanted: Men Who Love</h2><p>Every female wants to be loved by a male.</p></body></html>',
+    '<html lang="en"><body><h2>1</h2><h2>Wanted: Men Who Love</h2><p>Every female wants to be loved by a male.</p></body></html>',
   );
   const readerPackage = await buildReaderPackageFromEpub({
     authors: ['bell hooks'],
