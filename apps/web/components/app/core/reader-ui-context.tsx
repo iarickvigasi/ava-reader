@@ -7,6 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { usePathname } from "next/navigation";
 import { useReaderMode } from "@/features/reader/modes/use-reader-mode";
 import { useReaderDevice } from "@/features/reader/modes/use-reader-device";
 
@@ -32,7 +33,11 @@ const ReaderUiContext = createContext<ReaderUiContextValue | null>(null);
 
 export function ReaderUiProvider({ children }: { children: ReactNode }) {
   const [activePanel, setActivePanel] = useState<ReaderPanel | null>(null);
-  const [isBilingual, toggleBilingual] = useReaderMode();
+  const pathname = usePathname();
+  // Use the actual URL even when an offline fallback serves another book’s shell.
+  const bookPath =
+    typeof window === "undefined" ? pathname : window.location.pathname;
+  const [isBilingual, toggleBilingual] = useReaderMode(bookPath);
   const device = useReaderDevice();
   const isPhone = device !== "desktop";
 
