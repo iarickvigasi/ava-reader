@@ -1,6 +1,6 @@
 import { PdfProviderError } from '../errors';
 export const PILOT_IMAGE =
-  '725dc4c5fee1d7addf289484d7def37d8d8aff43dceba16bfd18d0d8f1cb66d3';
+  '0cf576ebc50f7be1a11c60ee25b51b46df526dd9b61e128ef7e5446200845193';
 export const PILOT_SOURCES = [
   'e651d6255b5b8ba8000c3ca195a17f1521b60764ac922b64eb05ac784fed6b18',
 ];

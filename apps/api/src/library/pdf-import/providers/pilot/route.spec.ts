@@ -70,7 +70,7 @@ describe('current finite authored refinement scope', () => {
       const f = fixture();
       if (change === 'old image')
         f.pilot.workerFingerprint =
-          '83f95aa2d512e1ee72eaf8a94f2338065c29071891627a8016a40eb917c41813';
+          '725dc4c5fee1d7addf289484d7def37d8d8aff43dceba16bfd18d0d8f1cb66d3';
       if (change === 'old source') {
         f.op.sourceSha256 =
           'ead57e233d0159460a7a8b63b15fe8ad8c9888be7a1989885a9536696c2d363b';
