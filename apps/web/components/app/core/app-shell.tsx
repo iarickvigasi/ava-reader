@@ -16,6 +16,7 @@ import { AuthStatusNotice } from "@/components/auth/auth-status-notice";
 import { SignedOutRedirectRunner } from "@/components/app/core/signed-out-redirect-runner";
 import { ProgressSyncRunner } from "@/components/app/core/progress-sync-runner";
 import { PreferencesSyncRunner } from "@/components/app/preferences/preferences-sync-runner";
+import { DownloadedChapterLabelMigration } from "@/features/offline/buckets/book";
 import { BackgroundPrimer } from "@/features/offline/prime";
 import { ReaderUiProvider } from "@/components/app/core/reader-ui-context";
 import { ReaderShell } from "./reader-shell";
@@ -48,13 +49,8 @@ export function AppShell({
   // is pure rubber-band — and that viewport travel re-paginates mid-swipe.
   useLockDocumentOverscroll(isReaderRoute);
 
-  // The global islands below must live on EVERY app route, not just the
-  // reader: AppToast surfaces save/quota toasts from library + home, the sync
-  // / cleanup runners are app-wide, and the offline modals are dispatched from
-  // non-reader surfaces too (ReadBookLink on book-info / home fires the
-  // missing-book modal). Only the page chrome differs by route, so just the
-  // layout branches. OfflineModalProvider wraps everything so the offline
-  // modal can fire from any route and the header chip's `open()` works.
+  // Global sync, migration, and offline islands run on every app route.
+  // Only the page chrome differs between the reader and other screens.
   return (
     <OfflineModalProvider>
       <NetworkMonitor />
@@ -64,6 +60,7 @@ export function AppShell({
       <AccountSyncRunner />
       <RoutePrecacheRunner />
       <BackgroundPrimer />
+      <DownloadedChapterLabelMigration />
       <LegacyLocalStorageCleanupRunner />
       <PreferencesSyncRunner />
       <ProgressSyncRunner />

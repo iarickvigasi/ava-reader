@@ -47,3 +47,6 @@ export { persistCoverFromNetwork } from "./persist-cover-blob";
 export { loadReaderPayloadFromCache } from "./reader-cache";
 export { refreshReaderLanguage } from "./refresh-reader-language";
 export { useRefreshReaderLanguage } from "./use-refresh-reader-language";
+
+export { DownloadedChapterLabelMigration } from "./chapter-labels/migration-runner";
+export { refreshDownloadedChapterLabels } from "./chapter-labels/refresh-labels";
