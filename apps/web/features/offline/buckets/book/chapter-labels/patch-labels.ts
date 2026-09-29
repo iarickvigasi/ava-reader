@@ -4,6 +4,7 @@ import type { ReaderTocNode } from "@/lib/api-types/reader";
 export function patchLegacyLabels(
   toc: ReaderTocNode[],
   source: ReaderTocNode[],
+  headingExcerpts: ReadonlyMap<string, string> = new Map(),
 ) {
   const labels = collectTocChapterEntries(source);
   const nodesById = indexNodes(source);
@@ -11,21 +12,25 @@ export function patchLegacyLabels(
   const visit = (nodes: ReaderTocNode[]): ReaderTocNode[] =>
     nodes.map((node) => {
       const sourceNode = nodesById.get(node.id);
+      const isHeadingExcerpt = Boolean(
+        node.chapterId && headingExcerpts.get(node.chapterId) === node.label,
+      );
       const sameTarget =
         sourceNode &&
         sourceNode.chapterId === node.chapterId &&
         sourceNode.anchorId === node.anchorId &&
         sourceNode.blockId === node.blockId &&
         sourceNode.href === node.href;
-      const next = hasEncodedLabel(node)
-        ? sameTarget
-          ? sourceNode
-          : undefined
-        : node.chapterId
-          ? labels.get(node.chapterId)
-          : undefined;
+      const next =
+        hasEncodedLabel(node) || isHeadingExcerpt
+          ? sameTarget
+            ? sourceNode
+            : undefined
+          : node.chapterId
+            ? labels.get(node.chapterId)
+            : undefined;
       const replace =
-        isLegacyLabel(node) &&
+        (isLegacyLabel(node) || isHeadingExcerpt) &&
         next &&
         next.spineIndex === node.spineIndex &&
         next.label.trim() &&

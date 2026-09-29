@@ -6,6 +6,7 @@ import type {
 import { getActiveUserId, getDb, type AvaReaderDB } from "../../../db";
 import { writeUnlessDeleted } from "../../library/deleted-items";
 import { hasLegacyLabels, patchLegacyLabels } from "./patch-labels";
+import { findHeadingExcerpts } from "./find-heading-excerpts";
 
 type Input = {
   userId: string;
@@ -33,7 +34,12 @@ async function refreshBooks(db: AvaReaderDB, input: Input) {
       const book = await db.books.get(id);
       if (
         !book ||
-        (book.metadata as ReaderBookPayload)?.primaryFormat !== "EPUB" ||
+        (book.metadata as ReaderBookPayload)?.primaryFormat !== "EPUB"
+      )
+        continue;
+      const headingExcerpts = await findHeadingExcerpts(db, book);
+      if (
+        !headingExcerpts.size &&
         !hasLegacyLabels((book.toc ?? []) as ReaderTocNode[])
       )
         continue;
@@ -52,6 +58,7 @@ async function refreshBooks(db: AvaReaderDB, input: Input) {
             const toc = patchLegacyLabels(
               (row.toc ?? []) as ReaderTocNode[],
               payload.toc,
+              headingExcerpts,
             );
             if (toc) row.toc = toc;
           });

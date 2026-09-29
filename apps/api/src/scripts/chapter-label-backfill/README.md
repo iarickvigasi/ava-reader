@@ -15,8 +15,10 @@ The script scans READY primary reader files of EPUB books held by any user's lib
 archived items. Shared catalog books are processed once, regardless of how many users hold them.
 Books without a READY package, PDFs, and unused historical packages are excluded.
 
-Only labels matching `Chapter <spineIndex + 1>` are replaced. This old format has no provenance
-marker, so an authored title with the exact same wording is indistinguishable and also replaced.
+Labels matching `Chapter <spineIndex + 1>` or the exact excerpt regenerated from the stored blocks
+are eligible. Prefer explicit opening headings (skip a separate chapter number when a title follows),
+then the excerpt. No body text gives a number-only fallback. These old formats have no provenance
+marker, so an authored title with exactly the same wording is indistinguishable and also eligible.
 Meaningful names remain. Titles and matching nested TOC labels are patched alongside the stored
 progress index, preserving analysis counts. Content, IDs, source checksums, progress positions,
 translations, annotations, and reading statistics are unchanged. Historical saved progress labels
@@ -38,7 +40,8 @@ removed after rollout verification; they consume storage until explicitly cleane
 
 This script changes server packages only. Deploy the web app's `DownloadedChapterLabelMigration`
 runner as well: on authenticated startup, reconnect, or tab return it fetches server labels and
-patches legacy names and encoded XML/numeric references without a full-book download. The reader
+patches legacy names, encoded XML/numeric references, and numbered excerpts with cached opening
+headings without a full-book download. Excerpt repairs require the same TOC node and target. The reader
 response includes a chapter window, which the migration discards. Offline devices update after
 they load this app version and reconnect; already-open readers see the names
 on their next cached load. No user database or pending mutation is cleared.
