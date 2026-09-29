@@ -14,6 +14,9 @@ def stream_joins(segments: list[Segment], state: AssemblyState) -> list[Segment]
             previous_source, segment, state
         )
         declared = previous and previous.continues_to_next and segment.continues_from_previous
+        if previous_source and (previous_source.id, segment.id) in state.refined_joins:
+            inferred = state.refined_joins[(previous_source.id, segment.id)]
+            declared = inferred
         if (
             previous
             and previous.kind in {"paragraph", "note"}

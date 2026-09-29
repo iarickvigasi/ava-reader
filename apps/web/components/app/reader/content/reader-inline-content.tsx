@@ -1,3 +1,4 @@
+import { useReaderMeasurement } from "./reader-measurement-context";
 import { ReaderInternalLink } from "./reader-internal-link";
 import type { ReaderInline } from "@/lib/api-types";
 import { cn } from "@/lib/cn";
@@ -12,6 +13,7 @@ const LINK_CLASS = "underline decoration-line/60 underline-offset-4";
 // Dispatches each run to the component for its text type. A run's styling
 // nests outwards: text, then its vertical script, then the link wrapper.
 export function ReaderInlineContent({ inlines }: { inlines: ReaderInline[] }) {
+  const measurement = useReaderMeasurement();
   return (
     <>
       {inlines.map((inline, index) => {
@@ -19,7 +21,11 @@ export function ReaderInlineContent({ inlines }: { inlines: ReaderInline[] }) {
 
         if (inline.kind === READER_INLINE_KIND_IMAGE) {
           return inline.href ? (
-            <a key={key} href={inline.href} className={LINK_CLASS}>
+            <a
+              key={key}
+              href={measurement ? undefined : inline.href}
+              className={LINK_CLASS}
+            >
               <ReaderInlineImage inline={inline} />
             </a>
           ) : (
@@ -57,7 +63,7 @@ export function ReaderInlineContent({ inlines }: { inlines: ReaderInline[] }) {
         return inline.href ? (
           <a
             key={key}
-            href={inline.href}
+            href={measurement ? undefined : inline.href}
             className={cn(LINK_CLASS, "hover:text-title")}
           >
             {content}

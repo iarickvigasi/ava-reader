@@ -7,7 +7,14 @@ import type { ReconstructionInput } from './generated/ReconstructionInput';
 import type { ReconstructionReport } from './generated/ReconstructionReport';
 import { PdfRuntimeError } from '../runtime/runtime-error';
 
+import type { BookRefinementTask } from './generated/BookRefinementTask';
+import type { BookRefinementResponse } from './generated/BookRefinementResponse';
+import type { RefinementBatch } from './generated/RefinementBatch';
+
 type Packets = {
+  BookRefinementTask: BookRefinementTask;
+  BookRefinementResponse: BookRefinementResponse;
+  RefinementBatch: RefinementBatch;
   PrepareResult: PrepareResult;
   RecognitionTask: RecognitionTask;
   RecognitionResponse: RecognitionResponse;

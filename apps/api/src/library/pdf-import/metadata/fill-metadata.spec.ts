@@ -32,8 +32,26 @@ it('increments snapshot version when extracted details change', async () => {
       'operation',
       operation.sourceSha256,
       { expectedVersion: 0, title: 'Source title', language: 'en' },
+      'validated-package',
     ),
   ).toEqual({ applied: true, metadataEditVersion: 1 });
+  expect(tx.pdfMetadataClaim.createMany.mock.calls).toMatchObject([
+    [
+      {
+        data: [
+          { field: 'title', origin: 'extraction' },
+          {
+            field: 'language',
+            origin: 'validated-package',
+            evidence: {
+              source: 'validated-package-language',
+              sourceSha256: operation.sourceSha256,
+            },
+          },
+        ],
+      },
+    ],
+  ]);
   expect(tx.book.updateMany).toHaveBeenCalledWith({
     where: { id: 'book', metadataEditVersion: 0 },
     data: {

@@ -1,8 +1,60 @@
 /* Generated from Python recognition models; do not edit. */
 
+/**
+ * @minItems 1
+ * @maxItems 24
+ */
+export type Decisions = [RefinementDecision, ...RefinementDecision[]];
+export type ChapterRole = ('frontmatter' | 'bodymatter' | 'backmatter') | null;
+export type ChapterStart = boolean | null;
+/**
+ * @minItems 1
+ * @maxItems 48
+ */
+export type EvidenceIds = [string, ...string[]];
+export type HeadingLevel = number | null;
+export type NodeId = string;
+export type ParentId = string | null;
+export type Align = ('start' | 'left' | 'right' | 'center' | 'justify') | null;
+export type Bold = boolean | null;
+export type Family = ('serif' | 'sans-serif' | 'monospace') | null;
+export type Id = string;
+export type IndentEm = number | null;
+export type Italic = boolean | null;
+export type LineHeight = number | null;
+export type RelativeSize = number | null;
+export type SmallCaps = boolean | null;
+export type SpaceAfterEm = number | null;
+export type SpaceBeforeEm = number | null;
+export type VerticalAlign = ('baseline' | 'super' | 'sub') | null;
+export type TextSha256 = string;
+export type ImageSha256 = string;
+export type EdgeId = string;
+/**
+ * @minItems 2
+ * @maxItems 48
+ */
+export type EvidenceIds1 = [string, string, ...string[]];
+export type Join = boolean;
+/**
+ * @maxItems 16
+ */
+export type Joins = RefinementJoin[];
+export type ObservationSha256 = string;
+export type SchemaVersion = 'ava-book-refinement-response-1';
+export type SourceSha256 = string;
+export type TaskId = string;
+/**
+ * @maxItems 100
+ */
+export type Unresolved = string[];
+/**
+ * @maxItems 32
+ */
+export type Refinements = BookRefinementResponse[];
 export type Language = string;
 export type RenderSha256 = string;
-export type SchemaVersion = 'ava-recognition-response-2';
+export type SchemaVersion1 = 'ava-recognition-response-2';
 export type RecognitionSegment = RecognitionSegment1 &
   (
     | {
@@ -147,18 +199,6 @@ export type HeaderAxis = ('row' | 'column' | 'both') | null;
 export type End = number;
 export type NoteLabel = string | null;
 export type Start = number;
-export type Align = ('start' | 'left' | 'right' | 'center' | 'justify') | null;
-export type Bold = boolean | null;
-export type Family = ('serif' | 'sans-serif' | 'monospace') | null;
-export type Id = string;
-export type IndentEm = number | null;
-export type Italic = boolean | null;
-export type LineHeight = number | null;
-export type RelativeSize = number | null;
-export type SmallCaps = boolean | null;
-export type SpaceAfterEm = number | null;
-export type SpaceBeforeEm = number | null;
-export type VerticalAlign = ('baseline' | 'super' | 'sub') | null;
 export type TargetText = string | null;
 export type Url = string | null;
 /**
@@ -170,11 +210,11 @@ export type Text = string;
  * @maxItems 20
  */
 export type Cells = RecognitionCell[][];
-export type ChapterRole = ('frontmatter' | 'bodymatter' | 'backmatter') | null;
-export type ChapterStart = boolean;
+export type ChapterRole1 = ('frontmatter' | 'bodymatter' | 'backmatter') | null;
+export type ChapterStart1 = boolean;
 export type ContinuesFromPrevious = boolean;
 export type ContinuesToNext = boolean;
-export type HeadingLevel = number | null;
+export type HeadingLevel1 = number | null;
 /**
  * Unique within this response; s0001, s0002, ...
  */
@@ -212,42 +252,82 @@ export type Text1 = string;
  * @maxItems 2000
  */
 export type Segments = RecognitionSegment[];
-export type SourceSha256 = string;
-export type TaskId = string;
+export type SourceSha2561 = string;
+export type TaskId1 = string;
 /**
  * @maxItems 100
  */
-export type Unresolved = string[];
+export type Unresolved1 = string[];
 /**
  * @maxItems 25000
  */
 export type Responses = RecognitionResponse[];
-export type SchemaVersion1 = 'ava-reconstruct-input-1';
-export type SourceSha2561 = string;
+export type SchemaVersion2 = 'ava-reconstruct-input-1';
+export type SourceSha2562 = string;
 
 export interface ReconstructionInput {
+  refinements?: Refinements;
   responses: Responses;
-  schema_version: SchemaVersion1;
-  source_sha256: SourceSha2561;
+  schema_version: SchemaVersion2;
+  source_sha256: SourceSha2562;
+}
+export interface BookRefinementResponse {
+  decisions: Decisions;
+  image_sha256: ImageSha256;
+  joins: Joins;
+  observation_sha256: ObservationSha256;
+  schema_version: SchemaVersion;
+  source_sha256: SourceSha256;
+  task_id: TaskId;
+  unresolved: Unresolved;
+}
+export interface RefinementDecision {
+  chapter_role: ChapterRole;
+  chapter_start: ChapterStart;
+  evidence_ids: EvidenceIds;
+  heading_level: HeadingLevel;
+  node_id: NodeId;
+  parent_id: ParentId;
+  style: Style;
+  text_sha256: TextSha256;
+}
+export interface Style {
+  align?: Align;
+  bold?: Bold;
+  family?: Family;
+  id: Id;
+  indent_em?: IndentEm;
+  italic?: Italic;
+  line_height?: LineHeight;
+  relative_size?: RelativeSize;
+  small_caps?: SmallCaps;
+  space_after_em?: SpaceAfterEm;
+  space_before_em?: SpaceBeforeEm;
+  vertical_align?: VerticalAlign;
+}
+export interface RefinementJoin {
+  edge_id: EdgeId;
+  evidence_ids: EvidenceIds1;
+  join: Join;
 }
 export interface RecognitionResponse {
   language: Language;
   render_sha256: RenderSha256;
-  schema_version: SchemaVersion;
+  schema_version: SchemaVersion1;
   segments: Segments;
-  source_sha256: SourceSha256;
-  task_id: TaskId;
-  unresolved: Unresolved;
+  source_sha256: SourceSha2561;
+  task_id: TaskId1;
+  unresolved: Unresolved1;
 }
 export interface RecognitionSegment1 {
   alt?: Alt;
   box: RecognitionBox;
   cells?: Cells;
-  chapter_role?: ChapterRole;
-  chapter_start?: ChapterStart;
+  chapter_role?: ChapterRole1;
+  chapter_start?: ChapterStart1;
   continues_from_previous: ContinuesFromPrevious;
   continues_to_next: ContinuesToNext;
-  heading_level?: HeadingLevel;
+  heading_level?: HeadingLevel1;
   id: Id1;
   kind: Kind;
   list_depth?: ListDepth;
@@ -283,18 +363,4 @@ export interface RecognitionSpan {
   style: Style | null;
   target_text: TargetText;
   url: Url;
-}
-export interface Style {
-  align?: Align;
-  bold?: Bold;
-  family?: Family;
-  id: Id;
-  indent_em?: IndentEm;
-  italic?: Italic;
-  line_height?: LineHeight;
-  relative_size?: RelativeSize;
-  small_caps?: SmallCaps;
-  space_after_em?: SpaceAfterEm;
-  space_before_em?: SpaceBeforeEm;
-  vertical_align?: VerticalAlign;
 }

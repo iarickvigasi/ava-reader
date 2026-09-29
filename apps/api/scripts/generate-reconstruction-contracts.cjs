@@ -14,8 +14,10 @@ from ava_pdf_epub.reconstruction_v2.protocol import PrepareResult, Reconstructio
 from ava_pdf_epub.reconstruction_v2.recognition_contract import RecognitionTask, RecognitionResponse
 from ava_pdf_epub.reconstruction_v2.recognition_prompt import SYSTEM_PROMPT, PROMPT_VERSION
 from ava_pdf_epub.reconstruction_v2.report import ReconstructionReport
-classes = [PrepareResult, ReconstructionInput, RecognitionTask, RecognitionResponse, ReconstructionReport]
-print(json.dumps(dict(schemas={c.__name__: c.model_json_schema() for c in classes}, prompt=SYSTEM_PROMPT, promptVersion=PROMPT_VERSION),sort_keys=True,separators=(',',':')))
+from ava_pdf_epub.reconstruction_v2.refinement_contract import BookRefinementTask, BookRefinementResponse, RefinementBatch
+from ava_pdf_epub.reconstruction_v2.refinement_prompt import REFINEMENT_PROMPT, REFINEMENT_PROMPT_VERSION
+classes = [PrepareResult, ReconstructionInput, RecognitionTask, RecognitionResponse, ReconstructionReport, BookRefinementTask, BookRefinementResponse, RefinementBatch]
+print(json.dumps(dict(schemas={c.__name__: c.model_json_schema() for c in classes}, prompt=SYSTEM_PROMPT, promptVersion=PROMPT_VERSION, refinementPrompt=REFINEMENT_PROMPT, refinementPromptVersion=REFINEMENT_PROMPT_VERSION),sort_keys=True,separators=(',',':')))
 `;
 async function emit(name, content) {
   const formatted = await prettier.format(content, {
@@ -53,6 +55,14 @@ async function main() {
     'schemas.ts',
     '/* Generated; do not edit. */\nexport const recognitionSchemas = ' +
       JSON.stringify(data.schemas) +
+      ';\n',
+  );
+  await emit(
+    'refinement-prompt.ts',
+    '/* Generated; do not edit. */\nexport const REFINEMENT_PROMPT = ' +
+      JSON.stringify(data.refinementPrompt) +
+      ';\nexport const REFINEMENT_PROMPT_VERSION = ' +
+      JSON.stringify(data.refinementPromptVersion) +
       ';\n',
   );
   await emit(

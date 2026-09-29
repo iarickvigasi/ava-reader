@@ -3,24 +3,25 @@
 import hashlib
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 from ..contracts.book import CanonicalBookV2
 from ..epub_v2.export import export_epub
+from .apply_refinement import apply_refinement
 from .assemble_addresses import assemble_addresses
 from .assemble_blocks import assemble_blocks
 from .assemble_chapters import assemble_chapters
 from .assemble_links import assemble_links
 from .assemble_lists import assemble_lists
 from .assemble_metadata import assemble_metadata
-from .assemble_pages import assemble_pages
-from .assembly_state import AssemblyState
 from .continuation_margins import continuation_margins
 from .findings import Finding
+from .prepare_refinement import prepare_refinement
 from .prepared import PreparedPage
 from .printed_markers import printed_markers
-from .qualify_pages import qualify_pages
 from .recognition_contract import RecognitionResponse
-from .source_structure import source_structure
+from .refinement_contract import BookRefinementResponse
+from .source_segments import source_segments
 from .stream_joins import stream_joins
 
 
@@ -30,15 +31,21 @@ class ReconstructedBook:
     epub: bytes
     assets: dict[str, bytes]
     structure_findings: list[Finding]
+    refinement_evidence: list[dict[str, Any]]
 
 
 def reconstruct(
-    source: Path, scratch: Path, prepared: list[PreparedPage], responses: list[RecognitionResponse]
+    source: Path,
+    scratch: Path,
+    prepared: list[PreparedPage],
+    responses: list[RecognitionResponse],
+    refinements: list[BookRefinementResponse] | None = None,
 ) -> ReconstructedBook:
-    qualified = qualify_pages(source, scratch, prepared, responses)
-    state = AssemblyState()
-    pages, segments = assemble_pages(prepared, qualified, state)
-    segments = source_structure(source, prepared, qualified, segments, state)
+    pages, segments, state = source_segments(source, scratch, prepared, responses)
+    if refinements is not None:
+        tasks = prepare_refinement(source, scratch, prepared, segments, state)
+        if tasks or refinements:
+            segments = apply_refinement(segments, tasks, refinements, state)
     for page in pages:
         page["label"] = state.page_labels.get(page["number"])
     segments = printed_markers(segments, state)
@@ -75,4 +82,5 @@ def reconstruct(
         epub=export_epub(book, state.assets),
         assets=state.assets,
         structure_findings=state.structure_findings,
+        refinement_evidence=state.refinement_evidence,
     )

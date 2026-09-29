@@ -1,3 +1,4 @@
+import { useReaderMeasurement } from "./reader-measurement-context";
 import type { CSSProperties } from "react";
 import type { ReaderBlockBase } from "@/lib/api-types/reader-content";
 
@@ -16,4 +17,16 @@ export function blockProps(
     tabIndex: -1,
     style,
   };
+}
+
+export function useReaderBlockProps() {
+  const measurement = useReaderMeasurement();
+  return (
+    block: ReaderBlockBase,
+    chapterId: string,
+    style?: CSSProperties,
+  ) => ({
+    ...blockProps(block, chapterId, style),
+    ...(measurement ? { id: undefined, tabIndex: undefined } : {}),
+  });
 }

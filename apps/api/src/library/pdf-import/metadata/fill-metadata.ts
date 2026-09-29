@@ -15,6 +15,7 @@ export async function fillPdfMetadata(
   operationId: string,
   sourceSha256: string,
   input: unknown,
+  languageOrigin?: 'validated-package',
 ) {
   authority = { ...authority };
   const { expectedVersion, ...candidate } = parsePdfMetadata(input);
@@ -42,10 +43,19 @@ export async function fillPdfMetadata(
         operationId,
         field,
         value: value === null ? Prisma.JsonNull : value,
-        origin: 'extraction',
+        origin:
+          field === 'language' && languageOrigin
+            ? languageOrigin
+            : 'extraction',
         sourceSha256,
         observedVersion: expectedVersion,
-        evidence: { source: 'source-backed-worker', sourceSha256 },
+        evidence: {
+          source:
+            field === 'language' && languageOrigin
+              ? 'validated-package-language'
+              : 'source-backed-worker',
+          sourceSha256,
+        },
       })),
     });
     const fill: {

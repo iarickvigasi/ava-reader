@@ -1,7 +1,7 @@
 import type { CSSProperties, ElementType } from "react";
 import type { ReaderBlock } from "@/lib/api-types";
 import { ReaderInlineContent } from "./reader-inline-content";
-import { blockProps } from "./block-props";
+import { useReaderBlockProps } from "./block-props";
 import {
   HEADING_CLASS,
   BLOCKQUOTE_CLASS,
@@ -20,6 +20,7 @@ export function ReaderTextBlockView({
   chapterId: string;
   style?: CSSProperties;
 }) {
+  const blockProps = useReaderBlockProps();
   const literal = block.kind === "code" || block.kind === "verse";
   const Tag: ElementType =
     block.kind === "heading"

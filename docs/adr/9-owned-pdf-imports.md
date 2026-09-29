@@ -45,6 +45,10 @@ PDF document-info fields start as source-hash-bound provenance candidates. User 
 edits use compare-and-set versions and explicit owned-field markers. Delayed extraction records its
 candidates but fills only untouched defaults at the expected version. Empty user values retain edit
 ownership. Neither extraction metadata nor a filename becomes verified bibliographic truth.
+Validated reconstructed package language fills an empty, unedited display language using accepted
+English locale metadata or the selected English profile default. It records separate
+`validated-package` provenance, keeps metadata version/attempt checks, and does not invent a
+source-edition claim or change accepted content. The same rule serves generated EPUB reimports.
 
 Database triggers freeze pinned artifact bytes/descriptors and import identity. Terminal outcome
 fields cannot reopen or acquire content; READY requires a final identity and other states have none.

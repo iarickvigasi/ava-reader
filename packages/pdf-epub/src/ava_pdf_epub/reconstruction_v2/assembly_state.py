@@ -25,6 +25,8 @@ class AssemblyState:
     flush_starts: dict[str, bool] = field(default_factory=dict)
     structure_findings: list[Finding] = field(default_factory=list)
     page_labels: dict[int, str] = field(default_factory=dict)
+    refinement_evidence: list[dict[str, Any]] = field(default_factory=list)
+    refined_joins: dict[tuple[str, str], bool] = field(default_factory=dict)
 
     def style_id(self, style: Style | None) -> str | None:
         if style is None:

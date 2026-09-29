@@ -3,7 +3,7 @@ import { ReaderTextBlockView } from "./reader-text-block";
 import { ReaderStructuredList } from "./reader-structured-list";
 import { ReaderStructuredTable } from "./reader-structured-table";
 import { ReaderFigure } from "./reader-figure";
-import { blockProps } from "./block-props";
+import { useReaderBlockProps } from "./block-props";
 import { resolveBlockStyle } from "./reader-block-style";
 
 export function ReaderBlockView(props: {
@@ -12,6 +12,7 @@ export function ReaderBlockView(props: {
   pageHeight: number;
   forceColumnBreakBefore?: boolean;
 }) {
+  const blockProps = useReaderBlockProps();
   const { block, chapterId, forceColumnBreakBefore } = props;
   const style = {
     ...resolveBlockStyle(block),

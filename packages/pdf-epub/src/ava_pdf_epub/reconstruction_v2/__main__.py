@@ -7,10 +7,12 @@ from pathlib import Path
 from ..contracts.common import document_digest
 from ..contracts.private_files import snapshot
 from .prepare_page import prepare_page
+from .prepare_refinement_source import prepare_refinement_source
 from .protocol import PrepareResult, ReconstructionInput
 from .protocol_output import candidate_packet, encode_packet
 from .reconstruct_source import reconstruct_source
 from .stream_output import stream_artifacts
+from .validate_refinement import validate_refinement
 from .validate_tasks import validate_tasks
 
 
@@ -20,9 +22,13 @@ def main() -> None:
         root.mkdir(exist_ok=True)
         raw_request = snapshot(Path("/input"), "reconstruction-request.json", 64 * 1024 * 1024)
         request = json.loads(raw_request)
-        if request.get("mode") == "validate_tasks":
-            receipt = validate_tasks(raw_request)
-            sys.stdout.buffer.write(encode_packet(receipt.model_dump(mode="json"), 1024))
+        if request.get("mode") in {"validate_tasks", "validate_refinement"}:
+            receipt = (
+                validate_tasks(raw_request).model_dump(mode="json")
+                if request["mode"] == "validate_tasks"
+                else validate_refinement(raw_request)
+            )
+            sys.stdout.buffer.write(encode_packet(receipt, 1024))
             sys.stdout.buffer.flush()
             return
         source = root / "source.pdf"
@@ -41,6 +47,10 @@ def main() -> None:
                 tasks=prepared.tasks,
             )
             output = encode_packet(result.model_dump(mode="json"), 8 * 1024 * 1024)
+        elif request.get("mode") == "prepare_refinement" and set(request) == {"mode", "input"}:
+            parsed = ReconstructionInput.model_validate(request["input"])
+            batch = prepare_refinement_source(source, root, parsed)
+            output = encode_packet(batch.model_dump(mode="json"), 24 * 1024 * 1024)
         elif request.get("mode") in {"reconstruct", "reconstruct_stream"} and set(request) == {
             "mode",
             "input",

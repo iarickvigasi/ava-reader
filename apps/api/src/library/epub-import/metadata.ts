@@ -1,6 +1,6 @@
 import type { Prisma } from '@prisma/client';
 import type { CanonicalBookV2 } from '../../pdf-conversion/contracts/generated/ava-book-2';
-import { validatedEpubLanguage } from './package-language';
+import { validatedPackageLanguage } from '../../pdf-conversion/metadata/package-language';
 import { sourceDisplayMetadata } from '../../pdf-conversion/runtime/fill-reconstructed-metadata';
 import { titleFromFilename } from '../../shared/blob-utils';
 export async function fillImportedMetadata(
@@ -11,7 +11,7 @@ export async function fillImportedMetadata(
 ) {
   const book = await tx.book.findUniqueOrThrow({ where: { id: bookId } });
   const candidate = sourceDisplayMetadata(canonical.metadata);
-  const language = validatedEpubLanguage(canonical);
+  const language = validatedPackageLanguage(canonical);
   const fill: { title?: string; authors?: string[]; language?: string } = {};
   if (
     candidate.title &&

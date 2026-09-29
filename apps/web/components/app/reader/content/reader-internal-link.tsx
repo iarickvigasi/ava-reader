@@ -1,3 +1,4 @@
+import { useReaderMeasurement } from "./reader-measurement-context";
 import type { MouseEvent, ReactNode } from "react";
 import type { ReaderLinkTarget } from "@/lib/api-types/reader-content";
 import { useReaderNavigationActions } from "../state/reader-navigation-context";
@@ -11,6 +12,7 @@ export function ReaderInternalLink({
   sourceOffset?: number;
   children: ReactNode;
 }) {
+  const measurement = useReaderMeasurement();
   const navigation = useReaderNavigationActions();
   const activate = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
@@ -24,10 +26,14 @@ export function ReaderInternalLink({
   };
   return (
     <a
-      href={`#reader-${target.chapterId}-${target.blockId}`}
+      href={
+        measurement
+          ? undefined
+          : `#reader-${target.chapterId}-${target.blockId}`
+      }
       role={target.note ? "doc-noteref" : undefined}
       className="underline decoration-line/60 underline-offset-4 hover:text-title"
-      onClick={activate}
+      onClick={measurement ? undefined : activate}
     >
       {children}
     </a>

@@ -12,6 +12,8 @@ The integrated route uses `reconstruction_v2` to preserve source order, structur
 measured styles in `ava-book-2`, then emits a generated EPUB profile and reader-v3-compatible graph.
 The host coordinates page/region tasks, provider reservations and review. Native, scan and mixed
 routing exists, but ordinary imports do not automatically activate live OCR/provider dispatch.
+The [book-level refinement phase](../../docs/pdf-refinement-checks.md) preserves original page
+observations and accepts only source-bound structure/style/join decisions, never replacement prose.
 [Runtime checks](../../docs/pdf-runtime-checks.md) and
 [publication checks](../../docs/pdf-publication-checks.md) describe the executable boundary.
 

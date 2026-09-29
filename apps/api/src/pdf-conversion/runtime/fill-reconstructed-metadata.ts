@@ -1,5 +1,9 @@
+import { validatedPackageLanguage } from '../metadata/package-language';
 import type { PrismaService } from '../../prisma/prisma.service';
-import type { MetadataClaim } from '../contracts/generated/ava-book-2';
+import type {
+  CanonicalBookV2,
+  MetadataClaim,
+} from '../contracts/generated/ava-book-2';
 import type { ClaimedPdfJob } from '../../library/pdf-import/jobs';
 import { fillPdfMetadata } from '../../library/pdf-import/metadata/fill-metadata';
 import { jobTransaction } from '../../library/pdf-import/jobs/transaction';
@@ -58,9 +62,12 @@ export async function fillReconstructedMetadata(
   prisma: PrismaService,
   claim: ClaimedPdfJob,
   expectedVersion: number,
-  claims: MetadataClaim[],
+  book: Pick<CanonicalBookV2, 'metadata' | 'profile_id'>,
 ) {
-  const details = sourceDisplayMetadata(claims);
+  const details = {
+    ...sourceDisplayMetadata(book.metadata),
+    language: validatedPackageLanguage(book),
+  };
   if (!Object.keys(details).length) return;
   await fillPdfMetadata(
     prisma,
@@ -69,5 +76,6 @@ export async function fillReconstructedMetadata(
     claim.job.operation_id,
     claim.job.source.sha256,
     { ...details, expectedVersion },
+    'validated-package',
   );
 }

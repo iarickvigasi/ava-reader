@@ -5,9 +5,17 @@ from typing import Literal
 
 from pydantic import Field
 
-from ..contracts.common import Digest, Record, document_digest
+from ..contracts.common import Digest, Id, Record, document_digest
 from .findings import Finding
 from .reconstruct import ReconstructedBook
+
+
+class RefinementEvidence(Record):
+    task_id: Id
+    task_sha256: Digest
+    response_sha256: Digest
+    observation_sha256: Digest
+    node_ids: list[Id] = Field(min_length=1, max_length=24)
 
 
 class ReconstructionReport(Record):
@@ -22,6 +30,7 @@ class ReconstructionReport(Record):
     recognition_task_count: int = Field(ge=0, le=25000)
     checks: dict[str, Literal["pass", "not_run"]]
     findings: list[Finding] = Field(max_length=10000)
+    refinement_evidence: list[RefinementEvidence] = Field(default_factory=list, max_length=32)
 
 
 def reconstruction_report(result: ReconstructedBook, tasks: int) -> ReconstructionReport:
@@ -52,4 +61,7 @@ def reconstruction_report(result: ReconstructedBook, tasks: int) -> Reconstructi
             "independent_visual_source_fidelity": "not_run",
         },
         findings=result.structure_findings,
+        refinement_evidence=[
+            RefinementEvidence.model_validate(v) for v in result.refinement_evidence
+        ],
     )

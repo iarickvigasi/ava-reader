@@ -28,7 +28,9 @@ No production provider route, reader qualification or cleanup activation is impl
 ## Verification on 29 September 2026
 
 The local implementation snapshot passed API/web typechecking and lint (two existing/upstream web warnings),
-1,353 web tests, 995 API tests and 234 Python worker tests. Worker Ruff and strict mypy also passed.
+1,361 web tests and 249 Python worker tests. The merged API baseline passed 995 tests;
+197 affected provider/reconstruction/runtime checks pass after refinement, with 17 focused metadata
+checks for the native-language follow-up. Worker Ruff and strict mypy also passed.
 All 39 migrations also passed on fresh PostgreSQL 16; 13 database checks covered canonical
 maintenance exclusions and the upstream session/timezone changes. The merged snapshot required
 fixing a moved segmenter import and a recursive Dexie test-fixture update. Later changes require
@@ -52,7 +54,15 @@ position while the API process remained paused; note navigation also worked. Thi
 not total network loss or production service-worker installation. Clerk/auth semantics remain intact.
 A separate import fix preserves the validated EPUB language in Library metadata without replacing
 canonical content or overriding reader edits. A fresh normal upload of the authored generated EPUB
-now shows English, the correct title and author in Book details.
+now shows English, the correct title and author in Book details. Native PDF metadata now uses the
+same validated-package language mapping for future imports; its fresh import check remains pending.
+
+The structured native fixture also passes Unicode-prefix and table-cell mark reload/reopen, with
+17 database checks confirming exact UTF-16 ranges and immutable identity. Hidden measurement copies
+previously duplicated passage IDs; the scoped rendering fix now passes actual DOM uniqueness and
+cross-chapter note/Return checks while retaining hidden measurement coordinates. An independently
+reviewed, author-written French fixture passes normal bilingual paragraph/note/Return/reload checks.
+It does not qualify live translation generation, word-pair interactions or full offline behavior.
 
 Failures are retained in the private work record: an ID/slug navigation mismatch, a static notification
 route shadowed by a parameter route, and a local reimport helper missing runtime configuration. The
@@ -63,7 +73,8 @@ work so missing setup cannot consume attempts. Passing local flows do not establ
 
 - Follow-up scan repair joins the observed gutter-split paragraph using reading-order and source-pixel
   evidence, conserving words, note ranges and source aliases. It also stops certifying uncorroborated
-  OCR heading ranks. These are scoped repairs; book-wide structure/style refinement remains open.
+  OCR heading ranks. The separate [book-wide refinement phase](pdf-refinement-checks.md) is now implemented and
+  independently reviewed with authored responses; live-model qualification remains open.
 - Scanned/mixed books: two live recognition pages returned, but no completed scanned-book conversion
   was qualified. Source review found an incorrect column paragraph break and incomplete relative
   typography. A controlled fixture also exposes uncorroborated cross-page OCR heading hierarchy.

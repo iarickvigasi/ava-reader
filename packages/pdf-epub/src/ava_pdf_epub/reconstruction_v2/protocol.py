@@ -6,6 +6,7 @@ from pydantic import Field
 
 from ..contracts.common import Digest, Record
 from .recognition_contract import RecognitionResponse, RecognitionTask
+from .refinement_contract import BookRefinementResponse
 
 
 class PrepareResult(Record):
@@ -22,3 +23,4 @@ class ReconstructionInput(Record):
     schema_version: Literal["ava-reconstruct-input-1"]
     source_sha256: Digest
     responses: list[RecognitionResponse] = Field(max_length=25000)
+    refinements: list[BookRefinementResponse] = Field(default_factory=list, max_length=32)

@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import type { ReaderListBlock } from "@/lib/api-types/reader-content";
 import { ReaderInlineContent } from "./reader-inline-content";
 import { LIST_CLASS } from "./reader-block-classes";
-import { blockProps } from "./block-props";
+import { useReaderBlockProps } from "./block-props";
 import { canonicalStyle } from "@/features/reader/canonical/style";
 
 export function ReaderStructuredList({
@@ -14,6 +14,7 @@ export function ReaderStructuredList({
   chapterId: string;
   style?: CSSProperties;
 }) {
+  const blockProps = useReaderBlockProps();
   const Tag = block.ordered ? "ol" : "ul";
   const props = block.canonical
     ? { style }

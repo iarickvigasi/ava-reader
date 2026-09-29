@@ -1,6 +1,7 @@
+import { useReaderMeasurement } from "./reader-measurement-context";
 import type { CSSProperties } from "react";
 import type { ReaderBlock } from "@/lib/api-types";
-import { blockProps } from "./block-props";
+import { useReaderBlockProps } from "./block-props";
 import { ReaderInlineContent } from "./reader-inline-content";
 import { canonicalStyle } from "@/features/reader/canonical/style";
 
@@ -13,6 +14,8 @@ export function ReaderStructuredTable({
   chapterId: string;
   style?: CSSProperties;
 }) {
+  const measurement = useReaderMeasurement();
+  const blockProps = useReaderBlockProps();
   const rows = [...new Set(block.cells.map((cell) => cell.row))].sort(
     (a, b) => a - b,
   );
@@ -21,7 +24,9 @@ export function ReaderStructuredTable({
       {...blockProps(block, chapterId)}
       data-reader-block-kind="image"
       aria-describedby={
-        block.captionId ? `reader-${chapterId}-${block.captionId}` : undefined
+        !measurement && block.captionId
+          ? `reader-${chapterId}-${block.captionId}`
+          : undefined
       }
       className="w-full table-fixed border-collapse text-[calc(1rem*var(--reader-font-scale)*var(--reader-block-scale,1))]"
       style={style}
@@ -50,7 +55,7 @@ export function ReaderStructuredTable({
                         : undefined
                     }
                     headers={
-                      cell.headerIds.length
+                      !measurement && cell.headerIds.length
                         ? cell.headerIds
                             .map((id) => `reader-${chapterId}-${id}`)
                             .join(" ")

@@ -1,6 +1,7 @@
+import { useReaderMeasurement } from "./reader-measurement-context";
 import type { CSSProperties } from "react";
 import type { ReaderBlock } from "@/lib/api-types";
-import { blockProps } from "./block-props";
+import { useReaderBlockProps } from "./block-props";
 
 export function ReaderFigure({
   block,
@@ -13,6 +14,8 @@ export function ReaderFigure({
   pageHeight: number;
   style?: CSSProperties;
 }) {
+  const measurement = useReaderMeasurement();
+  const blockProps = useReaderBlockProps();
   const description = [block.captionId, block.creditId]
     .filter(Boolean)
     .map((id) => `reader-${chapterId}-${id}`)
@@ -21,7 +24,7 @@ export function ReaderFigure({
     <figure
       {...blockProps(block, chapterId, style)}
       data-reader-block-kind="image"
-      aria-describedby={description || undefined}
+      aria-describedby={measurement ? undefined : description || undefined}
       className="break-inside-avoid-column"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}

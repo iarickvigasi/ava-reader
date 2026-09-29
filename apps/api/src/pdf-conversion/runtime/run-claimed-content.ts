@@ -62,12 +62,10 @@ export async function runClaimedContent(
   );
   await underLease(
     () =>
-      fillReconstructedMetadata(
-        prisma,
-        claim,
-        metadataVersion,
-        result.metadata,
-      ),
+      fillReconstructedMetadata(prisma, claim, metadataVersion, {
+        metadata: result.metadata,
+        profile_id: result.profileId,
+      }),
     guard.signal,
   );
   return result;

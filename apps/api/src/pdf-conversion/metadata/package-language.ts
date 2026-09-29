@@ -1,8 +1,8 @@
-import type { CanonicalBookV2 } from '../../pdf-conversion/contracts/generated/ava-book-2';
+import type { CanonicalBookV2 } from '../contracts/generated/ava-book-2';
 
 // The validated generated OPF uses accepted language, or the English profile default.
 // This is the package language; it does not create a source-edition metadata claim.
-export function validatedEpubLanguage(
+export function validatedPackageLanguage(
   book: Pick<CanonicalBookV2, 'metadata' | 'profile_id'>,
 ): string {
   const languages = book.metadata

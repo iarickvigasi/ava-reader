@@ -18,7 +18,10 @@ const record = (value: unknown): Schema => {
   return value as Schema;
 };
 // Generation grammar only. Full canonical JSON Schema and Python checks remain authoritative.
-export function geminiRecognitionSchema(input: Schema): Schema {
+export function geminiRecognitionSchema(
+  input: Schema,
+  version = 'ava-recognition-response-2',
+): Schema {
   const definitions = record(input.$defs);
   function lower(value: unknown, references: string[] = []): Schema {
     let node = record(value);
@@ -57,6 +60,8 @@ export function geminiRecognitionSchema(input: Schema): Schema {
   }
   const output = lower(input);
   output.description =
-    'AVA recognition v2. Kind-specific observations are mandatory when applicable: headings need heading_level and chapter_start; chapter starts need level 1 and chapter_role; notes need note_label and note_role; list items need list_ordered and list_depth, numbered items also list_start; tables need cells; figures need alt; captions and credits need related_to. Preserve core fields and sparse styles. The host independently validates all bounds and relationships.';
+    version === 'ava-book-refinement-response-1'
+      ? 'AVA structure-only source comparison. Decide exact supplied IDs, source-evidenced heading ancestry and sparse typography. Never return replacement text or new nodes. Host validates complete scope and relationships.'
+      : 'AVA recognition v2. Kind-specific observations are mandatory when applicable: headings need heading_level and chapter_start; chapter starts need level 1 and chapter_role; notes need note_label and note_role; list items need list_ordered and list_depth, numbered items also list_start; tables need cells; figures need alt; captions and credits need related_to. Preserve core fields and sparse styles. The host independently validates all bounds and relationships.';
   return output;
 }

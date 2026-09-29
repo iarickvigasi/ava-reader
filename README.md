@@ -233,6 +233,8 @@ and [canonical reader/EPUB adapter](docs/pdf-content-checks.md) are integrated f
 [Durable jobs](docs/pdf-job-checks.md) and the [isolated native runtime](docs/pdf-runtime-checks.md)
 provide opt-in background execution and bounded recovery. The local integration now includes
 canonical reconstruction, funded-dispatch accounting, validation/publication and typed reader support.
+[Whole-book refinement](docs/pdf-refinement-checks.md) compares source-bound structure/styles after OCR
+without retranscribing accepted page text.
 [Generated EPUB reimport](docs/adr/13-canonical-epub-import.md) uses ordinary Library upload with
 recoverable isolated preparation and a new owned, immutable content identity. A validated cover
 can appear before reader qualification; it does not enable Read.

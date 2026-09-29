@@ -1,5 +1,689 @@
 /* Generated; do not edit. */
 export const recognitionSchemas = {
+  BookRefinementResponse: {
+    $defs: {
+      RefinementDecision: {
+        additionalProperties: false,
+        properties: {
+          chapter_role: {
+            anyOf: [
+              {
+                enum: ['frontmatter', 'bodymatter', 'backmatter'],
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            title: 'Chapter Role',
+          },
+          chapter_start: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            title: 'Chapter Start',
+          },
+          evidence_ids: {
+            items: {
+              maxLength: 120,
+              pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+              type: 'string',
+            },
+            maxItems: 48,
+            minItems: 1,
+            title: 'Evidence Ids',
+            type: 'array',
+          },
+          heading_level: {
+            anyOf: [
+              { maximum: 6, minimum: 1, type: 'integer' },
+              { type: 'null' },
+            ],
+            title: 'Heading Level',
+          },
+          node_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Node Id',
+            type: 'string',
+          },
+          parent_id: {
+            anyOf: [
+              {
+                maxLength: 120,
+                pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            title: 'Parent Id',
+          },
+          style: { $ref: '#/$defs/Style' },
+          text_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Text Sha256',
+            type: 'string',
+          },
+        },
+        required: [
+          'node_id',
+          'text_sha256',
+          'evidence_ids',
+          'heading_level',
+          'parent_id',
+          'chapter_start',
+          'chapter_role',
+          'style',
+        ],
+        title: 'RefinementDecision',
+        type: 'object',
+      },
+      RefinementJoin: {
+        additionalProperties: false,
+        properties: {
+          edge_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Edge Id',
+            type: 'string',
+          },
+          evidence_ids: {
+            items: {
+              maxLength: 120,
+              pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+              type: 'string',
+            },
+            maxItems: 48,
+            minItems: 2,
+            title: 'Evidence Ids',
+            type: 'array',
+          },
+          join: { title: 'Join', type: 'boolean' },
+        },
+        required: ['edge_id', 'join', 'evidence_ids'],
+        title: 'RefinementJoin',
+        type: 'object',
+      },
+      Style: {
+        additionalProperties: false,
+        properties: {
+          align: {
+            anyOf: [
+              {
+                enum: ['start', 'left', 'right', 'center', 'justify'],
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Align',
+          },
+          bold: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Bold',
+          },
+          family: {
+            anyOf: [
+              { enum: ['serif', 'sans-serif', 'monospace'], type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Family',
+          },
+          id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Id',
+            type: 'string',
+          },
+          indent_em: {
+            anyOf: [
+              { maximum: 6, minimum: -3, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Indent Em',
+          },
+          italic: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Italic',
+          },
+          line_height: {
+            anyOf: [
+              { maximum: 3, minimum: 0.5, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Line Height',
+          },
+          relative_size: {
+            anyOf: [
+              { maximum: 3, minimum: 0.5, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Relative Size',
+          },
+          small_caps: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Small Caps',
+          },
+          space_after_em: {
+            anyOf: [
+              { maximum: 5, minimum: 0, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Space After Em',
+          },
+          space_before_em: {
+            anyOf: [
+              { maximum: 5, minimum: 0, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Space Before Em',
+          },
+          vertical_align: {
+            anyOf: [
+              { enum: ['baseline', 'super', 'sub'], type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Vertical Align',
+          },
+        },
+        required: ['id'],
+        title: 'Style',
+        type: 'object',
+      },
+    },
+    additionalProperties: false,
+    properties: {
+      decisions: {
+        items: { $ref: '#/$defs/RefinementDecision' },
+        maxItems: 24,
+        minItems: 1,
+        title: 'Decisions',
+        type: 'array',
+      },
+      image_sha256: {
+        maxLength: 64,
+        minLength: 64,
+        pattern: '^[0-9a-f]{64}$',
+        title: 'Image Sha256',
+        type: 'string',
+      },
+      joins: {
+        items: { $ref: '#/$defs/RefinementJoin' },
+        maxItems: 16,
+        title: 'Joins',
+        type: 'array',
+      },
+      observation_sha256: {
+        maxLength: 64,
+        minLength: 64,
+        pattern: '^[0-9a-f]{64}$',
+        title: 'Observation Sha256',
+        type: 'string',
+      },
+      schema_version: {
+        const: 'ava-book-refinement-response-1',
+        title: 'Schema Version',
+        type: 'string',
+      },
+      source_sha256: {
+        maxLength: 64,
+        minLength: 64,
+        pattern: '^[0-9a-f]{64}$',
+        title: 'Source Sha256',
+        type: 'string',
+      },
+      task_id: {
+        maxLength: 120,
+        pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+        title: 'Task Id',
+        type: 'string',
+      },
+      unresolved: {
+        items: { type: 'string' },
+        maxItems: 100,
+        title: 'Unresolved',
+        type: 'array',
+      },
+    },
+    required: [
+      'schema_version',
+      'task_id',
+      'source_sha256',
+      'observation_sha256',
+      'image_sha256',
+      'decisions',
+      'joins',
+      'unresolved',
+    ],
+    title: 'BookRefinementResponse',
+    type: 'object',
+  },
+  BookRefinementTask: {
+    $defs: {
+      Box: {
+        additionalProperties: false,
+        properties: {
+          coordinate_space: {
+            enum: ['page_points_top_left', 'normalized_top_left'],
+            title: 'Coordinate Space',
+            type: 'string',
+          },
+          x0: { maximum: 20000, minimum: 0, title: 'X0', type: 'number' },
+          x1: {
+            exclusiveMinimum: 0,
+            maximum: 20000,
+            title: 'X1',
+            type: 'number',
+          },
+          y0: { maximum: 20000, minimum: 0, title: 'Y0', type: 'number' },
+          y1: {
+            exclusiveMinimum: 0,
+            maximum: 20000,
+            title: 'Y1',
+            type: 'number',
+          },
+        },
+        required: ['coordinate_space', 'x0', 'y0', 'x1', 'y1'],
+        title: 'Box',
+        type: 'object',
+      },
+      RecognitionImage: {
+        additionalProperties: false,
+        properties: {
+          base64: {
+            maxLength: 22369624,
+            minLength: 4,
+            title: 'Base64',
+            type: 'string',
+          },
+          byte_length: {
+            maximum: 16777216,
+            minimum: 1,
+            title: 'Byte Length',
+            type: 'integer',
+          },
+          height: {
+            maximum: 6000,
+            minimum: 1,
+            title: 'Height',
+            type: 'integer',
+          },
+          media_type: {
+            enum: ['image/png', 'image/jpeg'],
+            title: 'Media Type',
+            type: 'string',
+          },
+          sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Sha256',
+            type: 'string',
+          },
+          width: { maximum: 6000, minimum: 1, title: 'Width', type: 'integer' },
+        },
+        required: [
+          'media_type',
+          'sha256',
+          'byte_length',
+          'width',
+          'height',
+          'base64',
+        ],
+        title: 'RecognitionImage',
+        type: 'object',
+      },
+      RefinementCrop: {
+        additionalProperties: false,
+        properties: {
+          id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Id',
+            type: 'string',
+          },
+          image_box: {
+            items: { type: 'integer' },
+            maxItems: 4,
+            minItems: 4,
+            title: 'Image Box',
+            type: 'array',
+          },
+          node_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Node Id',
+            type: 'string',
+          },
+          page: { maximum: 500, minimum: 1, title: 'Page', type: 'integer' },
+          part: { enum: ['head', 'tail'], title: 'Part', type: 'string' },
+          render_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Render Sha256',
+            type: 'string',
+          },
+          source_box: { $ref: '#/$defs/Box' },
+        },
+        required: [
+          'id',
+          'part',
+          'node_id',
+          'page',
+          'source_box',
+          'render_sha256',
+          'image_box',
+        ],
+        title: 'RefinementCrop',
+        type: 'object',
+      },
+      RefinementEdge: {
+        additionalProperties: false,
+        properties: {
+          id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Id',
+            type: 'string',
+          },
+          next_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Next Id',
+            type: 'string',
+          },
+          previous_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Previous Id',
+            type: 'string',
+          },
+        },
+        required: ['id', 'previous_id', 'next_id'],
+        title: 'RefinementEdge',
+        type: 'object',
+      },
+      RefinementNode: {
+        additionalProperties: false,
+        properties: {
+          body_reference_id: {
+            anyOf: [
+              {
+                maxLength: 120,
+                pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            title: 'Body Reference Id',
+          },
+          id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Id',
+            type: 'string',
+          },
+          kind: {
+            enum: ['heading', 'paragraph'],
+            title: 'Kind',
+            type: 'string',
+          },
+          observed_chapter: { title: 'Observed Chapter', type: 'boolean' },
+          observed_level: {
+            anyOf: [
+              { maximum: 6, minimum: 1, type: 'integer' },
+              { type: 'null' },
+            ],
+            title: 'Observed Level',
+          },
+          observed_role: {
+            anyOf: [
+              {
+                enum: ['frontmatter', 'bodymatter', 'backmatter'],
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            title: 'Observed Role',
+          },
+          observed_style: {
+            anyOf: [{ $ref: '#/$defs/Style' }, { type: 'null' }],
+          },
+          page: { maximum: 500, minimum: 1, title: 'Page', type: 'integer' },
+          ranked_source: { title: 'Ranked Source', type: 'boolean' },
+          text_excerpt: {
+            maxLength: 500,
+            title: 'Text Excerpt',
+            type: 'string',
+          },
+          text_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Text Sha256',
+            type: 'string',
+          },
+        },
+        required: [
+          'id',
+          'page',
+          'kind',
+          'text_sha256',
+          'text_excerpt',
+          'observed_level',
+          'observed_chapter',
+          'observed_role',
+          'observed_style',
+          'ranked_source',
+          'body_reference_id',
+        ],
+        title: 'RefinementNode',
+        type: 'object',
+      },
+      Style: {
+        additionalProperties: false,
+        properties: {
+          align: {
+            anyOf: [
+              {
+                enum: ['start', 'left', 'right', 'center', 'justify'],
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Align',
+          },
+          bold: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Bold',
+          },
+          family: {
+            anyOf: [
+              { enum: ['serif', 'sans-serif', 'monospace'], type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Family',
+          },
+          id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Id',
+            type: 'string',
+          },
+          indent_em: {
+            anyOf: [
+              { maximum: 6, minimum: -3, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Indent Em',
+          },
+          italic: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Italic',
+          },
+          line_height: {
+            anyOf: [
+              { maximum: 3, minimum: 0.5, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Line Height',
+          },
+          relative_size: {
+            anyOf: [
+              { maximum: 3, minimum: 0.5, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Relative Size',
+          },
+          small_caps: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Small Caps',
+          },
+          space_after_em: {
+            anyOf: [
+              { maximum: 5, minimum: 0, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Space After Em',
+          },
+          space_before_em: {
+            anyOf: [
+              { maximum: 5, minimum: 0, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Space Before Em',
+          },
+          vertical_align: {
+            anyOf: [
+              { enum: ['baseline', 'super', 'sub'], type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Vertical Align',
+          },
+        },
+        required: ['id'],
+        title: 'Style',
+        type: 'object',
+      },
+    },
+    additionalProperties: false,
+    properties: {
+      crops: {
+        items: { $ref: '#/$defs/RefinementCrop' },
+        maxItems: 48,
+        minItems: 1,
+        title: 'Crops',
+        type: 'array',
+      },
+      decision_ids: {
+        items: {
+          maxLength: 120,
+          pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+          type: 'string',
+        },
+        maxItems: 24,
+        minItems: 1,
+        title: 'Decision Ids',
+        type: 'array',
+      },
+      edges: {
+        items: { $ref: '#/$defs/RefinementEdge' },
+        maxItems: 16,
+        title: 'Edges',
+        type: 'array',
+      },
+      image: { $ref: '#/$defs/RecognitionImage' },
+      nodes: {
+        items: { $ref: '#/$defs/RefinementNode' },
+        maxItems: 256,
+        minItems: 1,
+        title: 'Nodes',
+        type: 'array',
+      },
+      observation_sha256: {
+        maxLength: 64,
+        minLength: 64,
+        pattern: '^[0-9a-f]{64}$',
+        title: 'Observation Sha256',
+        type: 'string',
+      },
+      pixels_per_point: {
+        const: 2,
+        title: 'Pixels Per Point',
+        type: 'integer',
+      },
+      profile_id: {
+        const: 'ava-pdf-prose-en-v2',
+        title: 'Profile Id',
+        type: 'string',
+      },
+      prompt_version: {
+        const: 'ava-book-refinement-1',
+        title: 'Prompt Version',
+        type: 'string',
+      },
+      response_schema_version: {
+        const: 'ava-book-refinement-response-1',
+        title: 'Response Schema Version',
+        type: 'string',
+      },
+      schema_version: {
+        const: 'ava-book-refinement-task-1',
+        title: 'Schema Version',
+        type: 'string',
+      },
+      source_sha256: {
+        maxLength: 64,
+        minLength: 64,
+        pattern: '^[0-9a-f]{64}$',
+        title: 'Source Sha256',
+        type: 'string',
+      },
+      task_id: {
+        maxLength: 120,
+        pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+        title: 'Task Id',
+        type: 'string',
+      },
+    },
+    required: [
+      'schema_version',
+      'task_id',
+      'source_sha256',
+      'observation_sha256',
+      'profile_id',
+      'prompt_version',
+      'response_schema_version',
+      'nodes',
+      'pixels_per_point',
+      'decision_ids',
+      'edges',
+      'crops',
+      'image',
+    ],
+    title: 'BookRefinementTask',
+    type: 'object',
+  },
   PrepareResult: {
     $defs: {
       Box: {
@@ -971,6 +1655,74 @@ export const recognitionSchemas = {
   },
   ReconstructionInput: {
     $defs: {
+      BookRefinementResponse: {
+        additionalProperties: false,
+        properties: {
+          decisions: {
+            items: { $ref: '#/$defs/RefinementDecision' },
+            maxItems: 24,
+            minItems: 1,
+            title: 'Decisions',
+            type: 'array',
+          },
+          image_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Image Sha256',
+            type: 'string',
+          },
+          joins: {
+            items: { $ref: '#/$defs/RefinementJoin' },
+            maxItems: 16,
+            title: 'Joins',
+            type: 'array',
+          },
+          observation_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Observation Sha256',
+            type: 'string',
+          },
+          schema_version: {
+            const: 'ava-book-refinement-response-1',
+            title: 'Schema Version',
+            type: 'string',
+          },
+          source_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Source Sha256',
+            type: 'string',
+          },
+          task_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Task Id',
+            type: 'string',
+          },
+          unresolved: {
+            items: { type: 'string' },
+            maxItems: 100,
+            title: 'Unresolved',
+            type: 'array',
+          },
+        },
+        required: [
+          'schema_version',
+          'task_id',
+          'source_sha256',
+          'observation_sha256',
+          'image_sha256',
+          'decisions',
+          'joins',
+          'unresolved',
+        ],
+        title: 'BookRefinementResponse',
+        type: 'object',
+      },
       RecognitionBox: {
         additionalProperties: false,
         properties: {
@@ -1447,6 +2199,106 @@ export const recognitionSchemas = {
         title: 'RecognitionSpan',
         type: 'object',
       },
+      RefinementDecision: {
+        additionalProperties: false,
+        properties: {
+          chapter_role: {
+            anyOf: [
+              {
+                enum: ['frontmatter', 'bodymatter', 'backmatter'],
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            title: 'Chapter Role',
+          },
+          chapter_start: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            title: 'Chapter Start',
+          },
+          evidence_ids: {
+            items: {
+              maxLength: 120,
+              pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+              type: 'string',
+            },
+            maxItems: 48,
+            minItems: 1,
+            title: 'Evidence Ids',
+            type: 'array',
+          },
+          heading_level: {
+            anyOf: [
+              { maximum: 6, minimum: 1, type: 'integer' },
+              { type: 'null' },
+            ],
+            title: 'Heading Level',
+          },
+          node_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Node Id',
+            type: 'string',
+          },
+          parent_id: {
+            anyOf: [
+              {
+                maxLength: 120,
+                pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            title: 'Parent Id',
+          },
+          style: { $ref: '#/$defs/Style' },
+          text_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Text Sha256',
+            type: 'string',
+          },
+        },
+        required: [
+          'node_id',
+          'text_sha256',
+          'evidence_ids',
+          'heading_level',
+          'parent_id',
+          'chapter_start',
+          'chapter_role',
+          'style',
+        ],
+        title: 'RefinementDecision',
+        type: 'object',
+      },
+      RefinementJoin: {
+        additionalProperties: false,
+        properties: {
+          edge_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Edge Id',
+            type: 'string',
+          },
+          evidence_ids: {
+            items: {
+              maxLength: 120,
+              pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+              type: 'string',
+            },
+            maxItems: 48,
+            minItems: 2,
+            title: 'Evidence Ids',
+            type: 'array',
+          },
+          join: { title: 'Join', type: 'boolean' },
+        },
+        required: ['edge_id', 'join', 'evidence_ids'],
+        title: 'RefinementJoin',
+        type: 'object',
+      },
       Style: {
         additionalProperties: false,
         properties: {
@@ -1546,6 +2398,12 @@ export const recognitionSchemas = {
     },
     additionalProperties: false,
     properties: {
+      refinements: {
+        items: { $ref: '#/$defs/BookRefinementResponse' },
+        maxItems: 32,
+        title: 'Refinements',
+        type: 'array',
+      },
       responses: {
         items: { $ref: '#/$defs/RecognitionResponse' },
         maxItems: 25000,
@@ -1635,6 +2493,58 @@ export const recognitionSchemas = {
         title: 'Finding',
         type: 'object',
       },
+      RefinementEvidence: {
+        additionalProperties: false,
+        properties: {
+          node_ids: {
+            items: {
+              maxLength: 120,
+              pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+              type: 'string',
+            },
+            maxItems: 24,
+            minItems: 1,
+            title: 'Node Ids',
+            type: 'array',
+          },
+          observation_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Observation Sha256',
+            type: 'string',
+          },
+          response_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Response Sha256',
+            type: 'string',
+          },
+          task_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Task Id',
+            type: 'string',
+          },
+          task_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Task Sha256',
+            type: 'string',
+          },
+        },
+        required: [
+          'task_id',
+          'task_sha256',
+          'response_sha256',
+          'observation_sha256',
+          'node_ids',
+        ],
+        title: 'RefinementEvidence',
+        type: 'object',
+      },
     },
     additionalProperties: false,
     properties: {
@@ -1681,6 +2591,12 @@ export const recognitionSchemas = {
         title: 'Recognition Task Count',
         type: 'integer',
       },
+      refinement_evidence: {
+        items: { $ref: '#/$defs/RefinementEvidence' },
+        maxItems: 32,
+        title: 'Refinement Evidence',
+        type: 'array',
+      },
       resource_hashes: {
         additionalProperties: {
           maxLength: 64,
@@ -1718,6 +2634,450 @@ export const recognitionSchemas = {
       'findings',
     ],
     title: 'ReconstructionReport',
+    type: 'object',
+  },
+  RefinementBatch: {
+    $defs: {
+      BookRefinementTask: {
+        additionalProperties: false,
+        properties: {
+          crops: {
+            items: { $ref: '#/$defs/RefinementCrop' },
+            maxItems: 48,
+            minItems: 1,
+            title: 'Crops',
+            type: 'array',
+          },
+          decision_ids: {
+            items: {
+              maxLength: 120,
+              pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+              type: 'string',
+            },
+            maxItems: 24,
+            minItems: 1,
+            title: 'Decision Ids',
+            type: 'array',
+          },
+          edges: {
+            items: { $ref: '#/$defs/RefinementEdge' },
+            maxItems: 16,
+            title: 'Edges',
+            type: 'array',
+          },
+          image: { $ref: '#/$defs/RecognitionImage' },
+          nodes: {
+            items: { $ref: '#/$defs/RefinementNode' },
+            maxItems: 256,
+            minItems: 1,
+            title: 'Nodes',
+            type: 'array',
+          },
+          observation_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Observation Sha256',
+            type: 'string',
+          },
+          pixels_per_point: {
+            const: 2,
+            title: 'Pixels Per Point',
+            type: 'integer',
+          },
+          profile_id: {
+            const: 'ava-pdf-prose-en-v2',
+            title: 'Profile Id',
+            type: 'string',
+          },
+          prompt_version: {
+            const: 'ava-book-refinement-1',
+            title: 'Prompt Version',
+            type: 'string',
+          },
+          response_schema_version: {
+            const: 'ava-book-refinement-response-1',
+            title: 'Response Schema Version',
+            type: 'string',
+          },
+          schema_version: {
+            const: 'ava-book-refinement-task-1',
+            title: 'Schema Version',
+            type: 'string',
+          },
+          source_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Source Sha256',
+            type: 'string',
+          },
+          task_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Task Id',
+            type: 'string',
+          },
+        },
+        required: [
+          'schema_version',
+          'task_id',
+          'source_sha256',
+          'observation_sha256',
+          'profile_id',
+          'prompt_version',
+          'response_schema_version',
+          'nodes',
+          'pixels_per_point',
+          'decision_ids',
+          'edges',
+          'crops',
+          'image',
+        ],
+        title: 'BookRefinementTask',
+        type: 'object',
+      },
+      Box: {
+        additionalProperties: false,
+        properties: {
+          coordinate_space: {
+            enum: ['page_points_top_left', 'normalized_top_left'],
+            title: 'Coordinate Space',
+            type: 'string',
+          },
+          x0: { maximum: 20000, minimum: 0, title: 'X0', type: 'number' },
+          x1: {
+            exclusiveMinimum: 0,
+            maximum: 20000,
+            title: 'X1',
+            type: 'number',
+          },
+          y0: { maximum: 20000, minimum: 0, title: 'Y0', type: 'number' },
+          y1: {
+            exclusiveMinimum: 0,
+            maximum: 20000,
+            title: 'Y1',
+            type: 'number',
+          },
+        },
+        required: ['coordinate_space', 'x0', 'y0', 'x1', 'y1'],
+        title: 'Box',
+        type: 'object',
+      },
+      RecognitionImage: {
+        additionalProperties: false,
+        properties: {
+          base64: {
+            maxLength: 22369624,
+            minLength: 4,
+            title: 'Base64',
+            type: 'string',
+          },
+          byte_length: {
+            maximum: 16777216,
+            minimum: 1,
+            title: 'Byte Length',
+            type: 'integer',
+          },
+          height: {
+            maximum: 6000,
+            minimum: 1,
+            title: 'Height',
+            type: 'integer',
+          },
+          media_type: {
+            enum: ['image/png', 'image/jpeg'],
+            title: 'Media Type',
+            type: 'string',
+          },
+          sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Sha256',
+            type: 'string',
+          },
+          width: { maximum: 6000, minimum: 1, title: 'Width', type: 'integer' },
+        },
+        required: [
+          'media_type',
+          'sha256',
+          'byte_length',
+          'width',
+          'height',
+          'base64',
+        ],
+        title: 'RecognitionImage',
+        type: 'object',
+      },
+      RefinementCrop: {
+        additionalProperties: false,
+        properties: {
+          id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Id',
+            type: 'string',
+          },
+          image_box: {
+            items: { type: 'integer' },
+            maxItems: 4,
+            minItems: 4,
+            title: 'Image Box',
+            type: 'array',
+          },
+          node_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Node Id',
+            type: 'string',
+          },
+          page: { maximum: 500, minimum: 1, title: 'Page', type: 'integer' },
+          part: { enum: ['head', 'tail'], title: 'Part', type: 'string' },
+          render_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Render Sha256',
+            type: 'string',
+          },
+          source_box: { $ref: '#/$defs/Box' },
+        },
+        required: [
+          'id',
+          'part',
+          'node_id',
+          'page',
+          'source_box',
+          'render_sha256',
+          'image_box',
+        ],
+        title: 'RefinementCrop',
+        type: 'object',
+      },
+      RefinementEdge: {
+        additionalProperties: false,
+        properties: {
+          id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Id',
+            type: 'string',
+          },
+          next_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Next Id',
+            type: 'string',
+          },
+          previous_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Previous Id',
+            type: 'string',
+          },
+        },
+        required: ['id', 'previous_id', 'next_id'],
+        title: 'RefinementEdge',
+        type: 'object',
+      },
+      RefinementNode: {
+        additionalProperties: false,
+        properties: {
+          body_reference_id: {
+            anyOf: [
+              {
+                maxLength: 120,
+                pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            title: 'Body Reference Id',
+          },
+          id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Id',
+            type: 'string',
+          },
+          kind: {
+            enum: ['heading', 'paragraph'],
+            title: 'Kind',
+            type: 'string',
+          },
+          observed_chapter: { title: 'Observed Chapter', type: 'boolean' },
+          observed_level: {
+            anyOf: [
+              { maximum: 6, minimum: 1, type: 'integer' },
+              { type: 'null' },
+            ],
+            title: 'Observed Level',
+          },
+          observed_role: {
+            anyOf: [
+              {
+                enum: ['frontmatter', 'bodymatter', 'backmatter'],
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            title: 'Observed Role',
+          },
+          observed_style: {
+            anyOf: [{ $ref: '#/$defs/Style' }, { type: 'null' }],
+          },
+          page: { maximum: 500, minimum: 1, title: 'Page', type: 'integer' },
+          ranked_source: { title: 'Ranked Source', type: 'boolean' },
+          text_excerpt: {
+            maxLength: 500,
+            title: 'Text Excerpt',
+            type: 'string',
+          },
+          text_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Text Sha256',
+            type: 'string',
+          },
+        },
+        required: [
+          'id',
+          'page',
+          'kind',
+          'text_sha256',
+          'text_excerpt',
+          'observed_level',
+          'observed_chapter',
+          'observed_role',
+          'observed_style',
+          'ranked_source',
+          'body_reference_id',
+        ],
+        title: 'RefinementNode',
+        type: 'object',
+      },
+      Style: {
+        additionalProperties: false,
+        properties: {
+          align: {
+            anyOf: [
+              {
+                enum: ['start', 'left', 'right', 'center', 'justify'],
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Align',
+          },
+          bold: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Bold',
+          },
+          family: {
+            anyOf: [
+              { enum: ['serif', 'sans-serif', 'monospace'], type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Family',
+          },
+          id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Id',
+            type: 'string',
+          },
+          indent_em: {
+            anyOf: [
+              { maximum: 6, minimum: -3, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Indent Em',
+          },
+          italic: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Italic',
+          },
+          line_height: {
+            anyOf: [
+              { maximum: 3, minimum: 0.5, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Line Height',
+          },
+          relative_size: {
+            anyOf: [
+              { maximum: 3, minimum: 0.5, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Relative Size',
+          },
+          small_caps: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Small Caps',
+          },
+          space_after_em: {
+            anyOf: [
+              { maximum: 5, minimum: 0, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Space After Em',
+          },
+          space_before_em: {
+            anyOf: [
+              { maximum: 5, minimum: 0, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Space Before Em',
+          },
+          vertical_align: {
+            anyOf: [
+              { enum: ['baseline', 'super', 'sub'], type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Vertical Align',
+          },
+        },
+        required: ['id'],
+        title: 'Style',
+        type: 'object',
+      },
+    },
+    additionalProperties: false,
+    properties: {
+      schema_version: {
+        const: 'ava-book-refinement-batch-1',
+        title: 'Schema Version',
+        type: 'string',
+      },
+      source_sha256: {
+        maxLength: 64,
+        minLength: 64,
+        pattern: '^[0-9a-f]{64}$',
+        title: 'Source Sha256',
+        type: 'string',
+      },
+      tasks: {
+        items: { $ref: '#/$defs/BookRefinementTask' },
+        maxItems: 32,
+        title: 'Tasks',
+        type: 'array',
+      },
+    },
+    required: ['schema_version', 'source_sha256', 'tasks'],
+    title: 'RefinementBatch',
     type: 'object',
   },
 };
