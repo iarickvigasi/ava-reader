@@ -2,8 +2,8 @@
 
 A separate Python package for source-linked book reconstruction and deterministic EPUB 3 assembly.
 It does not import NestJS, alter AVA's database, replace a reader revision, or publish a library item.
-The [integration decision](../../docs/adr/7-pdf-worker-contracts.md) defines the versioned boundary;
-[worker verification](../../docs/pdf-worker-checks.md) records scoped integration checks.
+The [integration decision](../../docs/pdf-conversion.md) defines the versioned boundary;
+[worker verification](../../docs/pdf-conversion-verification.md) records scoped integration checks.
 This package implements standalone tooling and the integrated reconstruction/assembly layer.
 The host API now connects upload, durable jobs, validation/publication and typed reader delivery;
 those responsibilities remain outside this Python package.
@@ -12,10 +12,10 @@ The integrated route uses `reconstruction_v2` to preserve source order, structur
 measured styles in `ava-book-2`, then emits a generated EPUB profile and reader-v3-compatible graph.
 The host coordinates page/region tasks, provider reservations and review. Native, scan and mixed
 routing exists, but ordinary imports do not automatically activate live OCR/provider dispatch.
-The [book-level refinement phase](../../docs/pdf-refinement-checks.md) preserves original page
+The [book-level refinement phase](../../docs/pdf-conversion.md) preserves original page
 observations and accepts only source-bound structure/style/join decisions, never replacement prose.
-[Runtime checks](../../docs/pdf-runtime-checks.md) and
-[publication checks](../../docs/pdf-publication-checks.md) describe the executable boundary.
+[Runtime checks](../../docs/pdf-conversion-operations.md) and
+[publication checks](../../docs/pdf-conversion-verification.md) describe the executable boundary.
 
 Actual signed-in desktop native imports, owned downloads and ordinary generated-EPUB reimport
 passed in the local task environment using TEST qualifications. The PRODUCT reader catalog remains
@@ -214,7 +214,7 @@ Tests include text preservation, styles, chapters/TOC/notes, traversal/unsafe li
 real SQLite connection races, cancellation, stale leases, restart, corrupted checkpoints, budget
 reservations/unknown charges, and conservative source handling. The task's actual supplied-book
 measurements and review findings live in the
-[worker verification guide](../../docs/pdf-worker-checks.md). Historical standalone evidence does
+[worker verification guide](../../docs/pdf-conversion-verification.md). Historical standalone evidence does
 not certify the integration branch or a deployed import flow.
 
 ## Package and container smoke
@@ -278,10 +278,10 @@ versioned independently of package version `0.1.0`; the legacy standalone result
 
 Canonical v2 has an isolated `epub_v2` export/reimport boundary, separate from the legacy extraction
 CLI. It preserves structured content and source evidence in a declared generated EPUB profile.
-[Content checks and limits](../../docs/pdf-content-checks.md) distinguish authored-fixture conservation
+[Content checks and limits](../../docs/pdf-conversion-verification.md) distinguish authored-fixture conservation
 from PDF reconstruction, ordinary import, publication and renderer qualification.
 
-The opt-in [durable runtime](../../docs/pdf-runtime-checks.md) wraps admission, reconstruction,
+The opt-in [durable runtime](../../docs/pdf-conversion-operations.md) wraps admission, reconstruction,
 generated-EPUB reimport and EPUB validation in a pinned container with network denial, resource
 quotas and a lease-expiry supervisor. Reconstruction streams hash-checked canonical/EPUB/resources
 to the host as a candidate. Only separate source validation, required review and a qualified reader

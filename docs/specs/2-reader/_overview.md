@@ -20,8 +20,6 @@ below.
 - 1.6 selection-bridge — DOM selection → overlay-anchored intent.
 - 1.7 reader-payload — server payload statuses, package format/versioning, chapter window.
 - [Bilingual mode](../9-bilingual-mode/_overview.md) — paragraph flow and cached sentence translations.
-- [Canonical PDF reader](2.8-canonical-reader.md) — v3 candidate rendering and session Back;
-  fixture implementation is separate from accepted import/reader qualification.
 
 ## Shared data model (apps/web/lib/api-types/reader.ts)
 

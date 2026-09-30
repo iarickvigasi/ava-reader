@@ -223,32 +223,17 @@ pnpm --filter api admin:grant you@example.com
 pnpm --filter api db:seed:home-demo you@example.com
 ```
 
-## PDF conversion integration
+## PDF conversion
 
-Start with the [current review guide](docs/pdf-review-guide.md) for implemented behavior, actual
-local user-flow evidence and remaining release gates.
+Select **Convert to EPUB** during PDF import to prepare one finished readable book. Its Library
+entry retains the original PDF and accepted EPUB; conversion occurs once and finished content stays
+fixed. The implementation is a development candidate, with scoped native-flow evidence and remaining
+scanned/mixed, typography, offline/device and release gates.
 
-The [PDF worker and contracts](docs/pdf-worker-checks.md), [owned upload boundary](docs/pdf-import-checks.md)
-and [canonical reader/EPUB adapter](docs/pdf-content-checks.md) are integrated for development.
-[Durable jobs](docs/pdf-job-checks.md) and the [isolated native runtime](docs/pdf-runtime-checks.md)
-provide opt-in background execution and bounded recovery. The local integration now includes
-canonical reconstruction, funded-dispatch accounting, validation/publication and typed reader support.
-[Whole-book refinement](docs/pdf-refinement-checks.md) compares source-bound structure/styles after OCR
-without retranscribing accepted page text.
-[Generated EPUB reimport](docs/adr/13-canonical-epub-import.md) uses ordinary Library upload with
-recoverable isolated preparation and a new owned, immutable content identity. A validated cover
-can appear before reader qualification; it does not enable Read.
+- [Product behavior and pipeline](docs/pdf-conversion.md)
+- [Build, worker configuration and operations](docs/pdf-conversion-operations.md)
+- [Verification, normal-app walkthrough and current limitations](docs/pdf-conversion-verification.md)
+- [Standalone worker package](packages/pdf-epub/README.md)
 
-Runtime checks currently use isolated TEST qualifications; the PRODUCT reader catalog remains empty.
-Live provider activation and production private-file cleanup remain disabled. No deployment or
-complete authenticated upload-to-reading/device qualification is implied by this implementation.
-
-### PDF conversion integration checks
-
-The PDF import candidate is not yet release-qualified. See
-[reader checks](docs/pdf-reader-checks.md), [metadata checks](docs/pdf-metadata-checks.md),
-and [provider checks](docs/pdf-provider-checks.md) for scoped evidence and limits.
-Regenerate the reconstruction host schemas from the locked Python worker with
-`AVA_PDF_CONTRACT_PYTHON=/absolute/path/to/python pnpm --filter api pdf:reconstruction:generate`;
-use `pdf:reconstruction:check` to detect drift. These commands do not authorize provider calls
-or qualify a reader build.
+The PRODUCT reader qualification catalog is empty; installing or merging code does not enable a
+production provider route, reader qualification or private-file cleanup.

@@ -62,9 +62,3 @@ Temporary maintenance: [EPUB label backfill](../apps/api/src/scripts/chapter-lab
   Next translation / Run arrivals release sentences; metrics count removals after column mount.
 - Device-only bugs (iOS Safari): tools/iphone-inspector/ evaluates JS inside the real logged-in
   Safari tab over USB — recorders, pitfalls, and the full workflow are in its README.
-
-## PDF integration
-
-[Contract checks](pdf-worker-checks.md), [job administration](pdf-job-checks.md) and
-[isolated runtime](pdf-runtime-checks.md) own build, run and fault commands. Use a disposable database
-for fault tests. Candidate checks do not establish completed app/reader conversion.

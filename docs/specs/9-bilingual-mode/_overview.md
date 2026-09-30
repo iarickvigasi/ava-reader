@@ -43,7 +43,6 @@ Build a translated book incrementally, saving reusable sentence translations in 
 - [9.1 Layout](9.1-layout.md): paragraph flow, measurement, gestures, position preservation.
 - [9.2 AI API](9.2-ai-api.md): stable IDs, translated-book storage, generation prompt.
 - [9.3 Cache](9.3-cache.md): offline storage and bounded demand.
-- [9.5 Canonical books](9.5-canonical-pdf.md): PDF/AVA EPUB immutable source and cache identity.
 - [9.4 Alignment](9.4-alignment.md): phrase matching, tap/selection gestures, and AI language context.
 
 ## Scope
