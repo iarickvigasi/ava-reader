@@ -3,6 +3,8 @@ import type { TocChapterEntry } from "@/features/reader/toc";
 
 const MIN_HEADING_SCALE = 1.2;
 const MAX_HEADING_LENGTH = 80;
+const MAX_OPENING_HEADINGS = 3;
+const MAX_COMBINED_TITLE_LENGTH = 240;
 
 export function hasRepairableOpening(
   blocks: ReaderBlock[],
@@ -41,7 +43,14 @@ function openingHeadings(blocks: ReaderBlock[]) {
       (block.fontSizeScale ?? 1) >= MIN_HEADING_SCALE &&
       block.text.trim().length <= MAX_HEADING_LENGTH;
     if (block.kind !== "heading" && !styled) break;
-    headings.push(normalize(block.text));
+    const text = normalize(block.text);
+    if (!headings.includes(text)) headings.push(text);
+    // Match the server's conservative grouping; rejected groups cannot enrich names.
+    if (
+      headings.length > MAX_OPENING_HEADINGS ||
+      headings.join(" / ").length > MAX_COMBINED_TITLE_LENGTH
+    )
+      return headings.slice(0, 1);
   }
   return headings;
 }
