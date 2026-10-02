@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from .blocks import BlockBase, ListItemBlock, TableBlock
 from .common import unique
+from .table_coverage import covered_slots, header_covers
 
 if TYPE_CHECKING:
     from .book import CanonicalBookV2
@@ -11,8 +12,17 @@ if TYPE_CHECKING:
 
 def validate_tables(nodes: dict[str, BlockBase]) -> None:
     for table in (n for n in nodes.values() if isinstance(n, TableBlock)):
-        expected = [(r, c) for r in range(table.row_count) for c in range(table.column_count)]
-        if [(c.row, c.column) for c in table.cells] != expected:
+        origins = [(c.row, c.column) for c in table.cells]
+        if origins != sorted(origins):
+            raise ValueError("Table cells must follow row-major order")
+        owned: set[tuple[int, int]] = set()
+        for cell in table.cells:
+            slots = covered_slots(cell, table.row_count, table.column_count)
+            if owned & slots:
+                raise ValueError("Overlapping table cells")
+            owned.update(slots)
+        expected = {(r, c) for r in range(table.row_count) for c in range(table.column_count)}
+        if owned != expected:
             raise ValueError("Table cells must cover the exact row-major rectangular grid")
         headers = [c for c in table.cells if c.header_axis is not None]
         if not headers:
@@ -23,12 +33,7 @@ def validate_tables(nodes: dict[str, BlockBase]) -> None:
                 h.id
                 for h in headers
                 if h.id != cell.id
-                and (
-                    h.column == cell.column
-                    and h.header_axis in {"column", "both"}
-                    or h.row == cell.row
-                    and h.header_axis in {"row", "both"}
-                )
+                and header_covers(h, cell)
             }
             if set(cell.header_ids) != wanted:
                 raise ValueError("Incorrect table header association")

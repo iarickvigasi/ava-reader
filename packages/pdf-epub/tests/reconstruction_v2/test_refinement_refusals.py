@@ -68,3 +68,20 @@ class RefinementRefusalsTest(unittest.TestCase):
         changed = [segments[0].model_copy(update={"text": "other text"}), *segments[1:]]
         with self.assertRaisesRegex(ValueError, "observation identity"):
             apply_refinement(changed, tasks, self.receipts, state)
+
+    def test_section_requires_explicit_false_chapter_flag(self):
+        tasks = self.case[-1]
+        checked = 0
+        for task, receipt in zip(tasks, self.receipts, strict=True):
+            accept_refinement(task, receipt)
+            for decision in receipt.decisions:
+                if decision.heading_level is None or decision.heading_level < 2:
+                    continue
+                raw = receipt.model_dump(mode="json")
+                target = next(d for d in raw["decisions"] if d["node_id"] == decision.node_id)
+                self.assertFalse(target["chapter_start"])
+                target["chapter_start"] = None
+                with self.assertRaisesRegex(ValueError, "Heading decision incomplete"):
+                    accept_refinement(task, BookRefinementResponse.model_validate(raw))
+                checked += 1
+        self.assertGreater(checked, 0)

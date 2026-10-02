@@ -1,5 +1,6 @@
 """Check incoming OCR line indentation from immutable pixels, not an omitted style field."""
 
+from collections.abc import Sequence
 from pathlib import Path
 
 from PIL import Image
@@ -12,7 +13,7 @@ CROP_PADDING_PT = 3
 
 
 def continuation_margins(
-    segments: list[Segment], prepared: list[PreparedPage], scratch: Path, state: AssemblyState
+    segments: list[Segment], prepared: Sequence[PreparedPage], scratch: Path, state: AssemblyState
 ) -> None:
     candidates = set()
     for previous, current in zip(segments, segments[1:], strict=False):

@@ -9,7 +9,7 @@ export function providerResponseSchema(modelId: string, task: ProviderTask) {
   const schema =
     task.schemaVersion === 'ava-recognition-response-2'
       ? recognitionSchemas.RecognitionResponse
-      : task.schemaVersion === 'ava-book-refinement-response-1'
+      : task.schemaVersion === 'ava-book-refinement-response-3'
         ? recognitionSchemas.BookRefinementResponse
         : null;
   if (!modelId.startsWith('google/gemini-') || !schema)

@@ -152,7 +152,10 @@
       "type": "string"
     },
     "profile_id": {
-      "const": "ava-pdf-prose-en-v2",
+      "enum": [
+        "ava-pdf-prose-en-v2",
+        "ava-pdf-prose-en-uk-v3"
+      ],
       "title": "Profile Id",
       "type": "string"
     },

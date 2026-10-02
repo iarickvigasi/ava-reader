@@ -56,6 +56,7 @@ export function useImportUpload({ onNoticeAction }: UseImportUploadOptions) {
 
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("originalFilename", file.name);
 
     const response = await fetch(
       `${getPublicApiBaseUrl()}/api/library/import`,

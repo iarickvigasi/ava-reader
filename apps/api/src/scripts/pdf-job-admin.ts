@@ -6,6 +6,7 @@ import {
   stopPdfJob,
   pdfJobMetrics,
 } from '../library/pdf-import/jobs';
+import { configuredWorkerModes } from '../library/pdf-import/jobs/worker-modes';
 async function main() {
   if (!process.env.DATABASE_URL) throw new Error('DATABASE_REQUIRED');
   const [command, arg, fingerprint, ...extra] = process.argv.slice(2);
@@ -27,6 +28,7 @@ async function main() {
             name: arg,
             workerFingerprint: fingerprint,
             token: process.env.AVA_PDF_WORKER_TOKEN ?? '',
+            modes: configuredWorkerModes(),
           })
         : command === 'revoke'
           ? await revokePdfWorker(prisma, arg)

@@ -1,6 +1,7 @@
 import Ajv2020 from 'ajv/dist/2020';
 import { recognitionSchemas } from '../../../pdf-conversion/reconstruction/generated/schemas';
 import { response } from '../../../pdf-conversion/reconstruction/test-fixture';
+import { refinementResponse } from '../../../pdf-conversion/reconstruction/refinement-fixture';
 import { wireSegment } from '../../../pdf-conversion/reconstruction/wire-segment-fixture';
 import { validatePacket } from '../../../pdf-conversion/reconstruction/validate-packet';
 import { geminiRecognitionSchema } from './gemini-schema';
@@ -62,4 +63,49 @@ it('refuses unknown composition instead of silently weakening a future contract'
   expect(() =>
     geminiRecognitionSchema({ $defs: {}, allOf: [{ type: 'object' }] }),
   ).toThrow();
+});
+
+it('requires native null-style and OCR observed-style forms in the generation grammar', () => {
+  const schema = geminiRecognitionSchema(
+    recognitionSchemas.BookRefinementResponse,
+    'ava-book-refinement-response-3',
+  );
+  const check = new Ajv2020({ strict: true }).compile(schema);
+  const ocr = { ...refinementResponse.decisions[0], role_kind: null };
+  const native = { ...ocr, role_kind: 'heading', style: null };
+  const packet = (decision: unknown) => ({
+    ...refinementResponse,
+    decisions: [decision],
+  });
+  expect(check(packet(ocr))).toBe(true);
+  expect(check(packet(native))).toBe(true);
+  expect(check(packet({ ...native, style: ocr.style }))).toBe(false);
+  expect(check(packet({ ...ocr, style: null }))).toBe(false);
+  expect(() =>
+    validatePacket('BookRefinementResponse', packet({ ...ocr, style: null })),
+  ).toThrow('INVALID_RESULT');
+});
+
+it('requires an explicit chapter flag for a non-chapter heading before generation', () => {
+  const complete = packet({
+    kind: 'heading',
+    heading_level: 2,
+    chapter_start: false,
+  });
+  expect(validate(complete)).toBe(true);
+  const missing: Record<string, unknown> = { ...complete.segments[0] };
+  delete missing.chapter_start;
+  const incomplete = { ...complete, segments: [missing] };
+  expect(validate(incomplete)).toBe(false);
+  expect(() => validatePacket('RecognitionResponse', incomplete)).toThrow(
+    'INVALID_RESULT',
+  );
+});
+
+it('refuses implicit style references even under the lowered generation grammar', () => {
+  const response = packet({ style: 'body' });
+  expect(validate(response)).toBe(false);
+  expect(() => validatePacket('RecognitionResponse', response)).toThrow(
+    'INVALID_RESULT',
+  );
 });

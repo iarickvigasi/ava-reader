@@ -1,5 +1,6 @@
 """Bibliographic authority is contextual; a word appearing in body prose is not metadata."""
 
+import re
 from typing import Any
 
 from .assembly_state import AssemblyState
@@ -15,6 +16,13 @@ NON_TITLE_HEADINGS = BIBLIOGRAPHIC_HEADINGS | {
     "acknowledgments",
     "acknowledgements",
     "dedication",
+    "передмова",
+    "вступ",
+    "зміст",
+    "подяки",
+    "присвята",
+    "пролог",
+    "післямова",
 }
 
 
@@ -33,14 +41,22 @@ def metadata_scope(state: AssemblyState) -> tuple[dict[str, Any] | None, set[str
     if blocks and first_body > 0:
         first = blocks[0]
         segment = state.segments[first["id"]]
+        prominent_cover = bool(
+            segment.chapter_start
+            and segment.chapter_role == "frontmatter"
+            and segment.style
+            and segment.style.relative_size is not None
+            and segment.style.relative_size >= 1.5
+            and segment.style.align in {"left", "center", "right"}
+            and not re.match(r"^\d+[.):]\s", segment.text.strip())
+        )
         if (
             first["kind"] == "heading"
             and segment.heading_level == 1
             and segment.text.strip().casefold() not in NON_TITLE_HEADINGS
-            and not segment.chapter_start
             and segment.page == 1
             and segment.style
-            and segment.style.align == "center"
+            and ((not segment.chapter_start and segment.style.align == "center") or prominent_cover)
             and first_body < len(blocks)
         ):
             title = first
@@ -53,6 +69,6 @@ def metadata_scope(state: AssemblyState) -> tuple[dict[str, Any] | None, set[str
                 i < first_body or segment.chapter_role == "backmatter"
             )
         front = i < first_body and (title is not None or segment.chapter_role == "frontmatter")
-        if (front or bibliographic) and block["kind"] in {"heading", "paragraph"}:
+        if (front or bibliographic) and block["kind"] in {"heading", "paragraph", "credit"}:
             eligible.add(block["id"])
     return title, eligible

@@ -32,7 +32,19 @@ def native_spacing(page: PageObservation, segments: list[Segment]) -> list[Segme
             else margin
         )
         indent = max(-3, min(6, (first.box.x0 - min(local_margin, segment.box.x0)) / size))
-        center = abs((segment.box.x0 + segment.box.x1) / 2 - page.width_pt / 2) < 3
+        block_indent = None
+        # Aligned multiline insets belong to the whole block. Keep first-line
+        # displacement relative to that inset. Qualified paired boundary fragments
+        # retain the same inset; other single lines remain ambiguous.
+        if len(lines) >= 2 or segment.preserve_line_breaks:
+            inset = min(line.box.x0 for line in lines) - local_margin
+            if inset >= size * 0.5:
+                block_indent = max(0, min(6, inset / size))
+                indent = max(-3, min(6, (first.box.x0 - min(line.box.x0 for line in lines)) / size))
+        center = (
+            not segment.preserve_line_breaks
+            and abs((segment.box.x0 + segment.box.x1) / 2 - page.width_pt / 2) < 3
+        )
         align = (
             "center"
             if center and segment.box.x1 - segment.box.x0 < page.width_pt * 0.8
@@ -40,6 +52,7 @@ def native_spacing(page: PageObservation, segments: list[Segment]) -> list[Segme
         )
         if align == "center":
             indent = 0
+            block_indent = None
         kind = segment.kind
         if kind == "paragraph" and segment.style.italic and indent >= 1.2:
             kind = "quote"
@@ -57,6 +70,7 @@ def native_spacing(page: PageObservation, segments: list[Segment]) -> list[Segme
             update={
                 "align": align,
                 "indent_em": indent,
+                "block_indent_em": block_indent,
                 "space_before_em": None,
                 "space_after_em": after,
                 "line_height": leading,

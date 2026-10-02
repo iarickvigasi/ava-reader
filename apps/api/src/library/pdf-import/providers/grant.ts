@@ -5,7 +5,9 @@ import { costLock } from './cost-lock';
 import { routePolicy } from './route-policy';
 import { nanoValue } from './money';
 import { PdfProviderError } from './errors';
-import { requirePilotOperation } from './pilot-authority';
+import { requireRouteOperation } from './route-authority';
+import { requireOwnedImportSource } from './import-source';
+import { requireImportBudgets } from './import-policy';
 import { requirePilotBudgets } from './pilot-budgets';
 export async function grantPdfProvider(
   tx: Tx,
@@ -25,12 +27,18 @@ export async function grantPdfProvider(
   )
     throw new PdfProviderError('PDF_PROVIDER_ROUTE_UNAVAILABLE');
   const { config } = routePolicy(route.configuration, route.tariff);
-  if (!config.authorizedSourceSha256.includes(op.sourceSha256))
+  if (
+    !config.importPolicy &&
+    !config.authorizedSourceSha256.includes(op.sourceSha256)
+  )
     throw new PdfProviderError('PDF_PROVIDER_SOURCE_NOT_AUTHORIZED');
-  const pilotOp = requirePilotOperation(config, route.mode, {
+  if (config.importPolicy) await requireOwnedImportSource(tx, op);
+  const pilotOp = requireRouteOperation(config, route.mode, {
     operationId: op.id,
     ownerId: op.ownerId,
     sourceSha256: op.sourceSha256,
+    profileId: op.profileId,
+    configSha256: op.configSha256,
   });
   const scopes = [
     { scope: 'GLOBAL', scopeKey: 'ava' },
@@ -43,6 +51,7 @@ export async function grantPdfProvider(
   if (budgets.length !== 3)
     throw new PdfProviderError('PDF_PROVIDER_BUDGET_UNCONFIGURED');
   requirePilotBudgets(config, budgets);
+  requireImportBudgets(config, budgets);
   const cap = nanoValue(
     pilotOp?.operationLimitNano ?? config.operationLimitNano,
   );

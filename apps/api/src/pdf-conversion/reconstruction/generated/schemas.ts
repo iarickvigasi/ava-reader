@@ -2,7 +2,72 @@
 export const recognitionSchemas = {
   BookRefinementResponse: {
     $defs: {
-      RefinementDecision: {
+      BibliographicDecision: {
+        additionalProperties: false,
+        properties: {
+          end: {
+            anyOf: [
+              { exclusiveMinimum: 0, maximum: 500, type: 'integer' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'End',
+          },
+          evidence_ids: {
+            items: {
+              maxLength: 120,
+              pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+              type: 'string',
+            },
+            maxItems: 48,
+            minItems: 1,
+            title: 'Evidence Ids',
+            type: 'array',
+          },
+          node_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Node Id',
+            type: 'string',
+          },
+          role: {
+            anyOf: [
+              {
+                enum: [
+                  'author',
+                  'translator',
+                  'editor',
+                  'illustrator',
+                  'subtitle',
+                  'publisher',
+                ],
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            title: 'Role',
+          },
+          start: {
+            anyOf: [
+              { maximum: 500, minimum: 0, type: 'integer' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Start',
+          },
+          text_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Text Sha256',
+            type: 'string',
+          },
+        },
+        required: ['node_id', 'text_sha256', 'evidence_ids', 'role'],
+        title: 'BibliographicDecision',
+        type: 'object',
+      },
+      NativeRefinementDecision: {
         additionalProperties: false,
         properties: {
           chapter_role: {
@@ -54,6 +119,87 @@ export const recognitionSchemas = {
             ],
             title: 'Parent Id',
           },
+          role_kind: {
+            enum: ['heading', 'paragraph', 'list_item', 'verse', 'quote'],
+            title: 'Role Kind',
+            type: 'string',
+          },
+          style: { title: 'Style', type: 'null' },
+          text_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Text Sha256',
+            type: 'string',
+          },
+        },
+        required: [
+          'node_id',
+          'text_sha256',
+          'evidence_ids',
+          'heading_level',
+          'parent_id',
+          'chapter_start',
+          'chapter_role',
+          'role_kind',
+          'style',
+        ],
+        title: 'NativeRefinementDecision',
+        type: 'object',
+      },
+      OcrRefinementDecision: {
+        additionalProperties: false,
+        properties: {
+          chapter_role: {
+            anyOf: [
+              {
+                enum: ['frontmatter', 'bodymatter', 'backmatter'],
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            title: 'Chapter Role',
+          },
+          chapter_start: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            title: 'Chapter Start',
+          },
+          evidence_ids: {
+            items: {
+              maxLength: 120,
+              pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+              type: 'string',
+            },
+            maxItems: 48,
+            minItems: 1,
+            title: 'Evidence Ids',
+            type: 'array',
+          },
+          heading_level: {
+            anyOf: [
+              { maximum: 6, minimum: 1, type: 'integer' },
+              { type: 'null' },
+            ],
+            title: 'Heading Level',
+          },
+          node_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Node Id',
+            type: 'string',
+          },
+          parent_id: {
+            anyOf: [
+              {
+                maxLength: 120,
+                pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            title: 'Parent Id',
+          },
+          role_kind: { default: null, title: 'Role Kind', type: 'null' },
           style: { $ref: '#/$defs/RefinementStyle' },
           text_sha256: {
             maxLength: 64,
@@ -73,7 +219,7 @@ export const recognitionSchemas = {
           'chapter_role',
           'style',
         ],
-        title: 'RefinementDecision',
+        title: 'OcrRefinementDecision',
         type: 'object',
       },
       RefinementJoin: {
@@ -118,7 +264,39 @@ export const recognitionSchemas = {
             default: null,
             title: 'Align',
           },
+          background_color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Background Color',
+          },
+          block_indent_em: {
+            anyOf: [
+              { maximum: 6, minimum: 0, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Block Indent Em',
+          },
           bold: { title: 'Bold', type: 'boolean' },
+          color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Color',
+          },
+          decoration_color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Decoration Color',
+          },
           family: {
             anyOf: [
               { enum: ['serif', 'sans-serif', 'monospace'], type: 'string' },
@@ -176,6 +354,16 @@ export const recognitionSchemas = {
             default: null,
             title: 'Space Before Em',
           },
+          strike_through: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Strike Through',
+          },
+          underline: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Underline',
+          },
           vertical_align: {
             anyOf: [
               { enum: ['baseline', 'super', 'sub'], type: 'string' },
@@ -193,9 +381,13 @@ export const recognitionSchemas = {
     additionalProperties: false,
     properties: {
       decisions: {
-        items: { $ref: '#/$defs/RefinementDecision' },
+        items: {
+          anyOf: [
+            { $ref: '#/$defs/NativeRefinementDecision' },
+            { $ref: '#/$defs/OcrRefinementDecision' },
+          ],
+        },
         maxItems: 24,
-        minItems: 1,
         title: 'Decisions',
         type: 'array',
       },
@@ -212,6 +404,12 @@ export const recognitionSchemas = {
         title: 'Joins',
         type: 'array',
       },
+      metadata_decisions: {
+        items: { $ref: '#/$defs/BibliographicDecision' },
+        maxItems: 24,
+        title: 'Metadata Decisions',
+        type: 'array',
+      },
       observation_sha256: {
         maxLength: 64,
         minLength: 64,
@@ -220,7 +418,7 @@ export const recognitionSchemas = {
         type: 'string',
       },
       schema_version: {
-        const: 'ava-book-refinement-response-1',
+        const: 'ava-book-refinement-response-3',
         title: 'Schema Version',
         type: 'string',
       },
@@ -417,6 +615,26 @@ export const recognitionSchemas = {
             ],
             title: 'Body Reference Id',
           },
+          candidate_original_kind: {
+            anyOf: [
+              { enum: ['paragraph', 'list_item', 'verse'], type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Candidate Original Kind',
+          },
+          context_after: {
+            default: '',
+            maxLength: 200,
+            title: 'Context After',
+            type: 'string',
+          },
+          context_before: {
+            default: '',
+            maxLength: 200,
+            title: 'Context Before',
+            type: 'string',
+          },
           id: {
             maxLength: 120,
             pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
@@ -451,6 +669,11 @@ export const recognitionSchemas = {
           },
           page: { maximum: 500, minimum: 1, title: 'Page', type: 'integer' },
           ranked_source: { title: 'Ranked Source', type: 'boolean' },
+          structure_candidate: {
+            default: false,
+            title: 'Structure Candidate',
+            type: 'boolean',
+          },
           text_excerpt: {
             maxLength: 500,
             title: 'Text Excerpt',
@@ -494,10 +717,42 @@ export const recognitionSchemas = {
             default: null,
             title: 'Align',
           },
+          background_color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Background Color',
+          },
+          block_indent_em: {
+            anyOf: [
+              { maximum: 6, minimum: 0, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Block Indent Em',
+          },
           bold: {
             anyOf: [{ type: 'boolean' }, { type: 'null' }],
             default: null,
             title: 'Bold',
+          },
+          color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Color',
+          },
+          decoration_color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Decoration Color',
           },
           family: {
             anyOf: [
@@ -563,6 +818,16 @@ export const recognitionSchemas = {
             default: null,
             title: 'Space Before Em',
           },
+          strike_through: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Strike Through',
+          },
+          underline: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Underline',
+          },
           vertical_align: {
             anyOf: [
               { enum: ['baseline', 'super', 'sub'], type: 'string' },
@@ -593,7 +858,6 @@ export const recognitionSchemas = {
           type: 'string',
         },
         maxItems: 24,
-        minItems: 1,
         title: 'Decision Ids',
         type: 'array',
       },
@@ -604,6 +868,16 @@ export const recognitionSchemas = {
         type: 'array',
       },
       image: { $ref: '#/$defs/RecognitionImage' },
+      metadata_ids: {
+        items: {
+          maxLength: 120,
+          pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+          type: 'string',
+        },
+        maxItems: 24,
+        title: 'Metadata Ids',
+        type: 'array',
+      },
       nodes: {
         items: { $ref: '#/$defs/RefinementNode' },
         maxItems: 256,
@@ -624,22 +898,26 @@ export const recognitionSchemas = {
         type: 'integer',
       },
       profile_id: {
-        const: 'ava-pdf-prose-en-v2',
+        enum: ['ava-pdf-prose-en-v2', 'ava-pdf-prose-en-uk-v3'],
         title: 'Profile Id',
         type: 'string',
       },
       prompt_version: {
-        const: 'ava-book-refinement-1',
+        enum: [
+          'ava-book-refinement-3',
+          'ava-book-refinement-4',
+          'ava-book-refinement-5',
+        ],
         title: 'Prompt Version',
         type: 'string',
       },
       response_schema_version: {
-        const: 'ava-book-refinement-response-1',
+        const: 'ava-book-refinement-response-3',
         title: 'Response Schema Version',
         type: 'string',
       },
       schema_version: {
-        const: 'ava-book-refinement-task-1',
+        const: 'ava-book-refinement-task-3',
         title: 'Schema Version',
         type: 'string',
       },
@@ -785,12 +1063,22 @@ export const recognitionSchemas = {
             type: 'number',
           },
           profile_id: {
-            const: 'ava-pdf-prose-en-v2',
+            enum: ['ava-pdf-prose-en-v2', 'ava-pdf-prose-en-uk-v3'],
             title: 'Profile Id',
             type: 'string',
           },
           prompt_version: {
-            const: 'ava-prose-region-2',
+            enum: [
+              'ava-prose-region-2',
+              'ava-prose-region-3',
+              'ava-prose-region-4',
+              'ava-prose-region-5',
+              'ava-prose-region-6',
+              'ava-prose-region-7',
+              'ava-prose-region-8',
+              'ava-prose-region-9',
+              'ava-prose-region-10',
+            ],
             title: 'Prompt Version',
             type: 'string',
           },
@@ -864,6 +1152,12 @@ export const recognitionSchemas = {
         minimum: 1,
         title: 'Page Number',
         type: 'integer',
+      },
+      profile_id: {
+        default: 'ava-pdf-prose-en-v2',
+        enum: ['ava-pdf-prose-en-v2', 'ava-pdf-prose-en-uk-v3'],
+        title: 'Profile Id',
+        type: 'string',
       },
       schema_version: {
         const: 'ava-prepare-result-1',
@@ -944,13 +1238,37 @@ export const recognitionSchemas = {
       RecognitionCell: {
         additionalProperties: false,
         properties: {
-          box: { $ref: '#/$defs/RecognitionBox' },
+          box: {
+            anyOf: [{ $ref: '#/$defs/RecognitionBox' }, { type: 'null' }],
+          },
+          column_span: {
+            default: 1,
+            maximum: 8,
+            minimum: 1,
+            title: 'Column Span',
+            type: 'integer',
+          },
           header_axis: {
             anyOf: [
               { enum: ['row', 'column', 'both'], type: 'string' },
               { type: 'null' },
             ],
             title: 'Header Axis',
+          },
+          row_span: {
+            default: 1,
+            maximum: 20,
+            minimum: 1,
+            title: 'Row Span',
+            type: 'integer',
+          },
+          source_cell_id: {
+            anyOf: [
+              { maxLength: 120, minLength: 1, type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Source Cell Id',
           },
           spans: {
             items: { $ref: '#/$defs/RecognitionSpan' },
@@ -1150,7 +1468,7 @@ export const recognitionSchemas = {
               {
                 properties: {
                   cells: {
-                    items: { maxItems: 8, minItems: 1, type: 'array' },
+                    items: { maxItems: 8, minItems: 0, type: 'array' },
                     minItems: 1,
                     type: 'array',
                   },
@@ -1291,21 +1609,32 @@ export const recognitionSchemas = {
       RecognitionSpan: {
         additionalProperties: false,
         properties: {
+          anchor: {
+            anyOf: [
+              { $ref: '#/$defs/RecognitionTextAnchor' },
+              { type: 'null' },
+            ],
+            default: null,
+          },
           end: {
-            exclusiveMinimum: 0,
-            maximum: 200000,
+            anyOf: [
+              { exclusiveMinimum: 0, maximum: 200000, type: 'integer' },
+              { type: 'null' },
+            ],
+            default: null,
             title: 'End',
-            type: 'integer',
           },
           note_label: {
             anyOf: [{ maxLength: 100, type: 'string' }, { type: 'null' }],
             title: 'Note Label',
           },
           start: {
-            maximum: 200000,
-            minimum: 0,
+            anyOf: [
+              { maximum: 200000, minimum: 0, type: 'integer' },
+              { type: 'null' },
+            ],
+            default: null,
             title: 'Start',
-            type: 'integer',
           },
           style: { anyOf: [{ $ref: '#/$defs/Style' }, { type: 'null' }] },
           target_text: {
@@ -1317,8 +1646,34 @@ export const recognitionSchemas = {
             title: 'Url',
           },
         },
-        required: ['start', 'end', 'style', 'note_label', 'target_text', 'url'],
+        required: ['style', 'note_label', 'target_text', 'url'],
         title: 'RecognitionSpan',
+        type: 'object',
+      },
+      RecognitionTextAnchor: {
+        additionalProperties: false,
+        properties: {
+          after: {
+            default: '',
+            maxLength: 128,
+            title: 'After',
+            type: 'string',
+          },
+          before: {
+            default: '',
+            maxLength: 128,
+            title: 'Before',
+            type: 'string',
+          },
+          exact_text: {
+            maxLength: 1000,
+            minLength: 1,
+            title: 'Exact Text',
+            type: 'string',
+          },
+        },
+        required: ['exact_text'],
+        title: 'RecognitionTextAnchor',
         type: 'object',
       },
       Style: {
@@ -1335,10 +1690,42 @@ export const recognitionSchemas = {
             default: null,
             title: 'Align',
           },
+          background_color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Background Color',
+          },
+          block_indent_em: {
+            anyOf: [
+              { maximum: 6, minimum: 0, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Block Indent Em',
+          },
           bold: {
             anyOf: [{ type: 'boolean' }, { type: 'null' }],
             default: null,
             title: 'Bold',
+          },
+          color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Color',
+          },
+          decoration_color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Decoration Color',
           },
           family: {
             anyOf: [
@@ -1403,6 +1790,16 @@ export const recognitionSchemas = {
             ],
             default: null,
             title: 'Space Before Em',
+          },
+          strike_through: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Strike Through',
+          },
+          underline: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Underline',
           },
           vertical_align: {
             anyOf: [
@@ -1586,12 +1983,22 @@ export const recognitionSchemas = {
         type: 'number',
       },
       profile_id: {
-        const: 'ava-pdf-prose-en-v2',
+        enum: ['ava-pdf-prose-en-v2', 'ava-pdf-prose-en-uk-v3'],
         title: 'Profile Id',
         type: 'string',
       },
       prompt_version: {
-        const: 'ava-prose-region-2',
+        enum: [
+          'ava-prose-region-2',
+          'ava-prose-region-3',
+          'ava-prose-region-4',
+          'ava-prose-region-5',
+          'ava-prose-region-6',
+          'ava-prose-region-7',
+          'ava-prose-region-8',
+          'ava-prose-region-9',
+          'ava-prose-region-10',
+        ],
         title: 'Prompt Version',
         type: 'string',
       },
@@ -1646,13 +2053,82 @@ export const recognitionSchemas = {
   },
   ReconstructionInput: {
     $defs: {
+      BibliographicDecision: {
+        additionalProperties: false,
+        properties: {
+          end: {
+            anyOf: [
+              { exclusiveMinimum: 0, maximum: 500, type: 'integer' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'End',
+          },
+          evidence_ids: {
+            items: {
+              maxLength: 120,
+              pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+              type: 'string',
+            },
+            maxItems: 48,
+            minItems: 1,
+            title: 'Evidence Ids',
+            type: 'array',
+          },
+          node_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Node Id',
+            type: 'string',
+          },
+          role: {
+            anyOf: [
+              {
+                enum: [
+                  'author',
+                  'translator',
+                  'editor',
+                  'illustrator',
+                  'subtitle',
+                  'publisher',
+                ],
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            title: 'Role',
+          },
+          start: {
+            anyOf: [
+              { maximum: 500, minimum: 0, type: 'integer' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Start',
+          },
+          text_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Text Sha256',
+            type: 'string',
+          },
+        },
+        required: ['node_id', 'text_sha256', 'evidence_ids', 'role'],
+        title: 'BibliographicDecision',
+        type: 'object',
+      },
       BookRefinementResponse: {
         additionalProperties: false,
         properties: {
           decisions: {
-            items: { $ref: '#/$defs/RefinementDecision' },
+            items: {
+              anyOf: [
+                { $ref: '#/$defs/NativeRefinementDecision' },
+                { $ref: '#/$defs/OcrRefinementDecision' },
+              ],
+            },
             maxItems: 24,
-            minItems: 1,
             title: 'Decisions',
             type: 'array',
           },
@@ -1669,6 +2145,12 @@ export const recognitionSchemas = {
             title: 'Joins',
             type: 'array',
           },
+          metadata_decisions: {
+            items: { $ref: '#/$defs/BibliographicDecision' },
+            maxItems: 24,
+            title: 'Metadata Decisions',
+            type: 'array',
+          },
           observation_sha256: {
             maxLength: 64,
             minLength: 64,
@@ -1677,7 +2159,7 @@ export const recognitionSchemas = {
             type: 'string',
           },
           schema_version: {
-            const: 'ava-book-refinement-response-1',
+            const: 'ava-book-refinement-response-3',
             title: 'Schema Version',
             type: 'string',
           },
@@ -1712,6 +2194,161 @@ export const recognitionSchemas = {
           'unresolved',
         ],
         title: 'BookRefinementResponse',
+        type: 'object',
+      },
+      NativeRefinementDecision: {
+        additionalProperties: false,
+        properties: {
+          chapter_role: {
+            anyOf: [
+              {
+                enum: ['frontmatter', 'bodymatter', 'backmatter'],
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            title: 'Chapter Role',
+          },
+          chapter_start: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            title: 'Chapter Start',
+          },
+          evidence_ids: {
+            items: {
+              maxLength: 120,
+              pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+              type: 'string',
+            },
+            maxItems: 48,
+            minItems: 1,
+            title: 'Evidence Ids',
+            type: 'array',
+          },
+          heading_level: {
+            anyOf: [
+              { maximum: 6, minimum: 1, type: 'integer' },
+              { type: 'null' },
+            ],
+            title: 'Heading Level',
+          },
+          node_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Node Id',
+            type: 'string',
+          },
+          parent_id: {
+            anyOf: [
+              {
+                maxLength: 120,
+                pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            title: 'Parent Id',
+          },
+          role_kind: {
+            enum: ['heading', 'paragraph', 'list_item', 'verse', 'quote'],
+            title: 'Role Kind',
+            type: 'string',
+          },
+          style: { title: 'Style', type: 'null' },
+          text_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Text Sha256',
+            type: 'string',
+          },
+        },
+        required: [
+          'node_id',
+          'text_sha256',
+          'evidence_ids',
+          'heading_level',
+          'parent_id',
+          'chapter_start',
+          'chapter_role',
+          'role_kind',
+          'style',
+        ],
+        title: 'NativeRefinementDecision',
+        type: 'object',
+      },
+      OcrRefinementDecision: {
+        additionalProperties: false,
+        properties: {
+          chapter_role: {
+            anyOf: [
+              {
+                enum: ['frontmatter', 'bodymatter', 'backmatter'],
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            title: 'Chapter Role',
+          },
+          chapter_start: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            title: 'Chapter Start',
+          },
+          evidence_ids: {
+            items: {
+              maxLength: 120,
+              pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+              type: 'string',
+            },
+            maxItems: 48,
+            minItems: 1,
+            title: 'Evidence Ids',
+            type: 'array',
+          },
+          heading_level: {
+            anyOf: [
+              { maximum: 6, minimum: 1, type: 'integer' },
+              { type: 'null' },
+            ],
+            title: 'Heading Level',
+          },
+          node_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Node Id',
+            type: 'string',
+          },
+          parent_id: {
+            anyOf: [
+              {
+                maxLength: 120,
+                pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            title: 'Parent Id',
+          },
+          role_kind: { default: null, title: 'Role Kind', type: 'null' },
+          style: { $ref: '#/$defs/RefinementStyle' },
+          text_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Text Sha256',
+            type: 'string',
+          },
+        },
+        required: [
+          'node_id',
+          'text_sha256',
+          'evidence_ids',
+          'heading_level',
+          'parent_id',
+          'chapter_start',
+          'chapter_role',
+          'style',
+        ],
+        title: 'OcrRefinementDecision',
         type: 'object',
       },
       RecognitionBox: {
@@ -1754,13 +2391,37 @@ export const recognitionSchemas = {
       RecognitionCell: {
         additionalProperties: false,
         properties: {
-          box: { $ref: '#/$defs/RecognitionBox' },
+          box: {
+            anyOf: [{ $ref: '#/$defs/RecognitionBox' }, { type: 'null' }],
+          },
+          column_span: {
+            default: 1,
+            maximum: 8,
+            minimum: 1,
+            title: 'Column Span',
+            type: 'integer',
+          },
           header_axis: {
             anyOf: [
               { enum: ['row', 'column', 'both'], type: 'string' },
               { type: 'null' },
             ],
             title: 'Header Axis',
+          },
+          row_span: {
+            default: 1,
+            maximum: 20,
+            minimum: 1,
+            title: 'Row Span',
+            type: 'integer',
+          },
+          source_cell_id: {
+            anyOf: [
+              { maxLength: 120, minLength: 1, type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Source Cell Id',
           },
           spans: {
             items: { $ref: '#/$defs/RecognitionSpan' },
@@ -2019,7 +2680,7 @@ export const recognitionSchemas = {
               {
                 properties: {
                   cells: {
-                    items: { maxItems: 8, minItems: 1, type: 'array' },
+                    items: { maxItems: 8, minItems: 0, type: 'array' },
                     minItems: 1,
                     type: 'array',
                   },
@@ -2160,21 +2821,32 @@ export const recognitionSchemas = {
       RecognitionSpan: {
         additionalProperties: false,
         properties: {
+          anchor: {
+            anyOf: [
+              { $ref: '#/$defs/RecognitionTextAnchor' },
+              { type: 'null' },
+            ],
+            default: null,
+          },
           end: {
-            exclusiveMinimum: 0,
-            maximum: 200000,
+            anyOf: [
+              { exclusiveMinimum: 0, maximum: 200000, type: 'integer' },
+              { type: 'null' },
+            ],
+            default: null,
             title: 'End',
-            type: 'integer',
           },
           note_label: {
             anyOf: [{ maxLength: 100, type: 'string' }, { type: 'null' }],
             title: 'Note Label',
           },
           start: {
-            maximum: 200000,
-            minimum: 0,
+            anyOf: [
+              { maximum: 200000, minimum: 0, type: 'integer' },
+              { type: 'null' },
+            ],
+            default: null,
             title: 'Start',
-            type: 'integer',
           },
           style: { anyOf: [{ $ref: '#/$defs/Style' }, { type: 'null' }] },
           target_text: {
@@ -2186,82 +2858,34 @@ export const recognitionSchemas = {
             title: 'Url',
           },
         },
-        required: ['start', 'end', 'style', 'note_label', 'target_text', 'url'],
+        required: ['style', 'note_label', 'target_text', 'url'],
         title: 'RecognitionSpan',
         type: 'object',
       },
-      RefinementDecision: {
+      RecognitionTextAnchor: {
         additionalProperties: false,
         properties: {
-          chapter_role: {
-            anyOf: [
-              {
-                enum: ['frontmatter', 'bodymatter', 'backmatter'],
-                type: 'string',
-              },
-              { type: 'null' },
-            ],
-            title: 'Chapter Role',
-          },
-          chapter_start: {
-            anyOf: [{ type: 'boolean' }, { type: 'null' }],
-            title: 'Chapter Start',
-          },
-          evidence_ids: {
-            items: {
-              maxLength: 120,
-              pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
-              type: 'string',
-            },
-            maxItems: 48,
-            minItems: 1,
-            title: 'Evidence Ids',
-            type: 'array',
-          },
-          heading_level: {
-            anyOf: [
-              { maximum: 6, minimum: 1, type: 'integer' },
-              { type: 'null' },
-            ],
-            title: 'Heading Level',
-          },
-          node_id: {
-            maxLength: 120,
-            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
-            title: 'Node Id',
+          after: {
+            default: '',
+            maxLength: 128,
+            title: 'After',
             type: 'string',
           },
-          parent_id: {
-            anyOf: [
-              {
-                maxLength: 120,
-                pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
-                type: 'string',
-              },
-              { type: 'null' },
-            ],
-            title: 'Parent Id',
+          before: {
+            default: '',
+            maxLength: 128,
+            title: 'Before',
+            type: 'string',
           },
-          style: { $ref: '#/$defs/RefinementStyle' },
-          text_sha256: {
-            maxLength: 64,
-            minLength: 64,
-            pattern: '^[0-9a-f]{64}$',
-            title: 'Text Sha256',
+          exact_text: {
+            maxLength: 1000,
+            minLength: 1,
+            title: 'Exact Text',
             type: 'string',
           },
         },
-        required: [
-          'node_id',
-          'text_sha256',
-          'evidence_ids',
-          'heading_level',
-          'parent_id',
-          'chapter_start',
-          'chapter_role',
-          'style',
-        ],
-        title: 'RefinementDecision',
+        required: ['exact_text'],
+        title: 'RecognitionTextAnchor',
         type: 'object',
       },
       RefinementJoin: {
@@ -2306,7 +2930,39 @@ export const recognitionSchemas = {
             default: null,
             title: 'Align',
           },
+          background_color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Background Color',
+          },
+          block_indent_em: {
+            anyOf: [
+              { maximum: 6, minimum: 0, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Block Indent Em',
+          },
           bold: { title: 'Bold', type: 'boolean' },
+          color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Color',
+          },
+          decoration_color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Decoration Color',
+          },
           family: {
             anyOf: [
               { enum: ['serif', 'sans-serif', 'monospace'], type: 'string' },
@@ -2364,6 +3020,16 @@ export const recognitionSchemas = {
             default: null,
             title: 'Space Before Em',
           },
+          strike_through: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Strike Through',
+          },
+          underline: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Underline',
+          },
           vertical_align: {
             anyOf: [
               { enum: ['baseline', 'super', 'sub'], type: 'string' },
@@ -2391,10 +3057,42 @@ export const recognitionSchemas = {
             default: null,
             title: 'Align',
           },
+          background_color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Background Color',
+          },
+          block_indent_em: {
+            anyOf: [
+              { maximum: 6, minimum: 0, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Block Indent Em',
+          },
           bold: {
             anyOf: [{ type: 'boolean' }, { type: 'null' }],
             default: null,
             title: 'Bold',
+          },
+          color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Color',
+          },
+          decoration_color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Decoration Color',
           },
           family: {
             anyOf: [
@@ -2460,6 +3158,16 @@ export const recognitionSchemas = {
             default: null,
             title: 'Space Before Em',
           },
+          strike_through: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Strike Through',
+          },
+          underline: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Underline',
+          },
           vertical_align: {
             anyOf: [
               { enum: ['baseline', 'super', 'sub'], type: 'string' },
@@ -2476,6 +3184,12 @@ export const recognitionSchemas = {
     },
     additionalProperties: false,
     properties: {
+      profile_id: {
+        default: 'ava-pdf-prose-en-v2',
+        enum: ['ava-pdf-prose-en-v2', 'ava-pdf-prose-en-uk-v3'],
+        title: 'Profile Id',
+        type: 'string',
+      },
       refinements: {
         items: { $ref: '#/$defs/BookRefinementResponse' },
         maxItems: 32,
@@ -2580,7 +3294,7 @@ export const recognitionSchemas = {
               pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
               type: 'string',
             },
-            maxItems: 24,
+            maxItems: 48,
             minItems: 1,
             title: 'Node Ids',
             type: 'array',
@@ -2659,7 +3373,7 @@ export const recognitionSchemas = {
         type: 'integer',
       },
       profile_id: {
-        const: 'ava-pdf-prose-en-v2',
+        enum: ['ava-pdf-prose-en-v2', 'ava-pdf-prose-en-uk-v3'],
         title: 'Profile Id',
         type: 'string',
       },
@@ -2733,7 +3447,6 @@ export const recognitionSchemas = {
               type: 'string',
             },
             maxItems: 24,
-            minItems: 1,
             title: 'Decision Ids',
             type: 'array',
           },
@@ -2744,6 +3457,16 @@ export const recognitionSchemas = {
             type: 'array',
           },
           image: { $ref: '#/$defs/RecognitionImage' },
+          metadata_ids: {
+            items: {
+              maxLength: 120,
+              pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+              type: 'string',
+            },
+            maxItems: 24,
+            title: 'Metadata Ids',
+            type: 'array',
+          },
           nodes: {
             items: { $ref: '#/$defs/RefinementNode' },
             maxItems: 256,
@@ -2764,22 +3487,26 @@ export const recognitionSchemas = {
             type: 'integer',
           },
           profile_id: {
-            const: 'ava-pdf-prose-en-v2',
+            enum: ['ava-pdf-prose-en-v2', 'ava-pdf-prose-en-uk-v3'],
             title: 'Profile Id',
             type: 'string',
           },
           prompt_version: {
-            const: 'ava-book-refinement-1',
+            enum: [
+              'ava-book-refinement-3',
+              'ava-book-refinement-4',
+              'ava-book-refinement-5',
+            ],
             title: 'Prompt Version',
             type: 'string',
           },
           response_schema_version: {
-            const: 'ava-book-refinement-response-1',
+            const: 'ava-book-refinement-response-3',
             title: 'Response Schema Version',
             type: 'string',
           },
           schema_version: {
-            const: 'ava-book-refinement-task-1',
+            const: 'ava-book-refinement-task-3',
             title: 'Schema Version',
             type: 'string',
           },
@@ -2973,6 +3700,26 @@ export const recognitionSchemas = {
             ],
             title: 'Body Reference Id',
           },
+          candidate_original_kind: {
+            anyOf: [
+              { enum: ['paragraph', 'list_item', 'verse'], type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Candidate Original Kind',
+          },
+          context_after: {
+            default: '',
+            maxLength: 200,
+            title: 'Context After',
+            type: 'string',
+          },
+          context_before: {
+            default: '',
+            maxLength: 200,
+            title: 'Context Before',
+            type: 'string',
+          },
           id: {
             maxLength: 120,
             pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
@@ -3007,6 +3754,11 @@ export const recognitionSchemas = {
           },
           page: { maximum: 500, minimum: 1, title: 'Page', type: 'integer' },
           ranked_source: { title: 'Ranked Source', type: 'boolean' },
+          structure_candidate: {
+            default: false,
+            title: 'Structure Candidate',
+            type: 'boolean',
+          },
           text_excerpt: {
             maxLength: 500,
             title: 'Text Excerpt',
@@ -3050,10 +3802,42 @@ export const recognitionSchemas = {
             default: null,
             title: 'Align',
           },
+          background_color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Background Color',
+          },
+          block_indent_em: {
+            anyOf: [
+              { maximum: 6, minimum: 0, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Block Indent Em',
+          },
           bold: {
             anyOf: [{ type: 'boolean' }, { type: 'null' }],
             default: null,
             title: 'Bold',
+          },
+          color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Color',
+          },
+          decoration_color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Decoration Color',
           },
           family: {
             anyOf: [
@@ -3118,6 +3902,16 @@ export const recognitionSchemas = {
             ],
             default: null,
             title: 'Space Before Em',
+          },
+          strike_through: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Strike Through',
+          },
+          underline: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Underline',
           },
           vertical_align: {
             anyOf: [

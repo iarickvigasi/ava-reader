@@ -1,3 +1,4 @@
+import { MAX_CONTRACT_BYTES } from '../contracts/parse-json';
 import type { StreamArtifact } from './stream-schema';
 import { PdfRuntimeError } from './runtime-error';
 export function checkStreamProfile(
@@ -7,12 +8,12 @@ export function checkStreamProfile(
   const required = new Map(
     profile === 'epub-import'
       ? [
-          ['canonical.json', 20 * 1024 ** 2],
-          ['reader.json', 32 * 1024 ** 2],
+          ['canonical.json', MAX_CONTRACT_BYTES],
+          ['reader.json', MAX_CONTRACT_BYTES],
           ['import-report.json', 65536],
         ]
       : [
-          ['canonical.json', 20 * 1024 ** 2],
+          ['canonical.json', MAX_CONTRACT_BYTES],
           ['book.epub', 256 * 1024 ** 2],
           ['reconstruction-report.json', 4 * 1024 ** 2],
         ],

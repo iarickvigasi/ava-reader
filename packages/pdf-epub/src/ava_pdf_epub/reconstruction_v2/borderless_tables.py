@@ -49,7 +49,10 @@ def borderless_tables(page: PageObservation) -> list[TableObservation]:
         ]
         output.append(
             TableObservation(
-                box=box, cells=cells, line_ids=[line.id for r in selected for line in r]
+                box=box,
+                cells=cells,
+                line_ids=[line.id for r in selected for line in r],
+                ruled=False,
             )
         )
     return output

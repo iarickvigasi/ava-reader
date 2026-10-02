@@ -32,6 +32,15 @@ async function main() {
       name + '.ts',
       await prettier.format(types, { parser: 'typescript', singleQuote: true }),
     );
+    if (name === 'ava-reader-3') {
+      emitFile(
+        resolve(
+          __dirname,
+          '../../web/lib/api-types/canonical-reader.generated.ts',
+        ),
+        await prettier.format(types, { parser: 'typescript' }),
+      );
+    }
   }
   const prettier = require('prettier');
   emit(
@@ -45,10 +54,12 @@ async function main() {
   );
 }
 function emit(name, content) {
-  const path = resolve(target, name);
+  emitFile(resolve(target, name), content);
+}
+function emitFile(path, content) {
   if (process.argv.includes('--check')) {
     if (readFileSync(path, 'utf8') !== content)
-      throw new Error('Stale generated contract: ' + name);
+      throw new Error('Stale generated contract: ' + path);
   } else writeFileSync(path, content);
 }
 main().catch((error) => {

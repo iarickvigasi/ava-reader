@@ -40,7 +40,7 @@ class SourceRegion(Record):
     box: Box
     band: int = Field(ge=0, le=2000)
     column: Literal[0, 1, 2]
-    role: Literal["content", "furniture", "blank", "unsupported"]
+    role: Literal["content", "cover", "furniture", "blank", "unsupported"]
     route: Literal["native", "ocr", "replay", "render", "blank", "unresolved"]
 
 

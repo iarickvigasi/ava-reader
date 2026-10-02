@@ -8,6 +8,7 @@ from .blocks import Block
 from .common import Id, Record
 from .links import Address
 from .metadata import MetadataClaim
+from .profiles import ProfileId
 from .resources import ImageResource
 from .source import SourcePage, SourcePdf
 from .structure import Chapter, ListGroup, TocEntry
@@ -16,7 +17,7 @@ from .styles import Style
 
 class CanonicalBookV2(Record):
     schema_version: Literal["ava-book-2"]
-    profile_id: Literal["ava-pdf-prose-en-v2"]
+    profile_id: ProfileId
     document_id: Id
     source: SourcePdf
     pages: list[SourcePage] = Field(min_length=1, max_length=500)

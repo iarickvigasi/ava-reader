@@ -3,7 +3,7 @@ import { requireAttempt } from '../jobs/authority';
 import type { AttemptAuthority } from '../jobs';
 import { PdfProviderError } from './errors';
 import { routePolicy } from './route-policy';
-import { requirePilotOperation } from './pilot-authority';
+import { requireRouteOperation } from './route-authority';
 export async function loadProviderGrant(
   tx: Tx,
   authority: AttemptAuthority,
@@ -39,13 +39,15 @@ export async function loadProviderGrant(
   )
     throw new PdfProviderError('PDF_PROVIDER_ROUTE_UNAVAILABLE');
   const { config } = routePolicy(grant.route.configuration, grant.route.tariff);
-  requirePilotOperation(
+  requireRouteOperation(
     config,
     grant.route.mode,
     {
       operationId: scope.job.operation_id,
       ownerId: scope.job.owner_id,
       sourceSha256: scope.job.source.sha256,
+      profileId: scope.job.profile_id,
+      configSha256: scope.job.config_sha256,
     },
     scope.job.worker_fingerprint,
   );

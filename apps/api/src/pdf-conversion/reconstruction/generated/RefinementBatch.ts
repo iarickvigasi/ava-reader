@@ -23,10 +23,9 @@ export type X1 = number;
 export type Y0 = number;
 export type Y1 = number;
 /**
- * @minItems 1
  * @maxItems 24
  */
-export type DecisionIds = [string, ...string[]];
+export type DecisionIds = string[];
 export type Id1 = string;
 export type NextId = string;
 export type PreviousId = string;
@@ -41,18 +40,31 @@ export type MediaType = 'image/png' | 'image/jpeg';
 export type Sha256 = string;
 export type Width = number;
 /**
+ * @maxItems 24
+ */
+export type MetadataIds = string[];
+/**
  * @minItems 1
  * @maxItems 256
  */
 export type Nodes = [RefinementNode, ...RefinementNode[]];
 export type BodyReferenceId = string | null;
+export type CandidateOriginalKind =
+  | ('paragraph' | 'list_item' | 'verse')
+  | null;
+export type ContextAfter = string;
+export type ContextBefore = string;
 export type Id2 = string;
 export type Kind = 'heading' | 'paragraph';
 export type ObservedChapter = boolean;
 export type ObservedLevel = number | null;
 export type ObservedRole = ('frontmatter' | 'bodymatter' | 'backmatter') | null;
 export type Align = ('start' | 'left' | 'right' | 'center' | 'justify') | null;
+export type BackgroundColor = string | null;
+export type BlockIndentEm = number | null;
 export type Bold = boolean | null;
+export type Color = string | null;
+export type DecorationColor = string | null;
 export type Family = ('serif' | 'sans-serif' | 'monospace') | null;
 export type Id3 = string;
 export type IndentEm = number | null;
@@ -62,17 +74,23 @@ export type RelativeSize = number | null;
 export type SmallCaps = boolean | null;
 export type SpaceAfterEm = number | null;
 export type SpaceBeforeEm = number | null;
+export type StrikeThrough = boolean | null;
+export type Underline = boolean | null;
 export type VerticalAlign = ('baseline' | 'super' | 'sub') | null;
 export type Page1 = number;
 export type RankedSource = boolean;
+export type StructureCandidate = boolean;
 export type TextExcerpt = string;
 export type TextSha256 = string;
 export type ObservationSha256 = string;
 export type PixelsPerPoint = 2;
-export type ProfileId = 'ava-pdf-prose-en-v2';
-export type PromptVersion = 'ava-book-refinement-1';
-export type ResponseSchemaVersion = 'ava-book-refinement-response-1';
-export type SchemaVersion1 = 'ava-book-refinement-task-1';
+export type ProfileId = 'ava-pdf-prose-en-v2' | 'ava-pdf-prose-en-uk-v3';
+export type PromptVersion =
+  | 'ava-book-refinement-3'
+  | 'ava-book-refinement-4'
+  | 'ava-book-refinement-5';
+export type ResponseSchemaVersion = 'ava-book-refinement-response-3';
+export type SchemaVersion1 = 'ava-book-refinement-task-3';
 export type SourceSha2561 = string;
 export type TaskId = string;
 /**
@@ -90,6 +108,7 @@ export interface BookRefinementTask {
   decision_ids: DecisionIds;
   edges: Edges;
   image: RecognitionImage;
+  metadata_ids?: MetadataIds;
   nodes: Nodes;
   observation_sha256: ObservationSha256;
   pixels_per_point: PixelsPerPoint;
@@ -131,6 +150,9 @@ export interface RecognitionImage {
 }
 export interface RefinementNode {
   body_reference_id: BodyReferenceId;
+  candidate_original_kind?: CandidateOriginalKind;
+  context_after?: ContextAfter;
+  context_before?: ContextBefore;
   id: Id2;
   kind: Kind;
   observed_chapter: ObservedChapter;
@@ -139,12 +161,17 @@ export interface RefinementNode {
   observed_style: Style | null;
   page: Page1;
   ranked_source: RankedSource;
+  structure_candidate?: StructureCandidate;
   text_excerpt: TextExcerpt;
   text_sha256: TextSha256;
 }
 export interface Style {
   align?: Align;
+  background_color?: BackgroundColor;
+  block_indent_em?: BlockIndentEm;
   bold?: Bold;
+  color?: Color;
+  decoration_color?: DecorationColor;
   family?: Family;
   id: Id3;
   indent_em?: IndentEm;
@@ -154,5 +181,7 @@ export interface Style {
   small_caps?: SmallCaps;
   space_after_em?: SpaceAfterEm;
   space_before_em?: SpaceBeforeEm;
+  strike_through?: StrikeThrough;
+  underline?: Underline;
   vertical_align?: VerticalAlign;
 }

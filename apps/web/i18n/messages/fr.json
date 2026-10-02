@@ -223,6 +223,17 @@
     }
   },
   "reader": {
+    "search": {
+      "title": "Rechercher",
+      "close": "Fermer la recherche",
+      "query": "Rechercher dans ce livre",
+      "hint": "Saisissez un mot ou une phrase.",
+      "loading": "Recherche…",
+      "unavailable": "La recherche dans tout le livre est indisponible. Connectez-vous et réessayez.",
+      "retry": "Réessayer",
+      "count": "{count, plural, =0 {Aucun résultat} one {1 résultat} other {# résultats}}",
+      "limited": "Les {count} premiers résultats sont affichés. Précisez la recherche."
+    },
     "contents": {
       "title": "Sommaire",
       "closePanel": "Fermer le panneau du sommaire",

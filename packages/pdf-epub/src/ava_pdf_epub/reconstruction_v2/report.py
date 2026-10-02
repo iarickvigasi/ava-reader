@@ -6,6 +6,7 @@ from typing import Literal
 from pydantic import Field
 
 from ..contracts.common import Digest, Id, Record, document_digest
+from ..contracts.profiles import ProfileId
 from .findings import Finding
 from .reconstruct import ReconstructedBook
 
@@ -15,7 +16,7 @@ class RefinementEvidence(Record):
     task_sha256: Digest
     response_sha256: Digest
     observation_sha256: Digest
-    node_ids: list[Id] = Field(min_length=1, max_length=24)
+    node_ids: list[Id] = Field(min_length=1, max_length=48)
 
 
 class ReconstructionReport(Record):
@@ -24,7 +25,7 @@ class ReconstructionReport(Record):
     canonical_sha256: Digest
     epub_sha256: Digest
     resource_hashes: dict[str, Digest]
-    profile_id: Literal["ava-pdf-prose-en-v2"]
+    profile_id: ProfileId
     outcome: Literal["candidate"]
     page_count: int = Field(ge=1, le=500)
     recognition_task_count: int = Field(ge=0, le=25000)
@@ -40,7 +41,7 @@ def reconstruction_report(result: ReconstructedBook, tasks: int) -> Reconstructi
         canonical_sha256=document_digest(result.book),
         epub_sha256=hashlib.sha256(result.epub).hexdigest(),
         resource_hashes={r.id: r.sha256 for r in result.book.resources},
-        profile_id="ava-pdf-prose-en-v2",
+        profile_id=result.book.profile_id,
         outcome="candidate",
         page_count=len(result.book.pages),
         recognition_task_count=tasks,
@@ -52,7 +53,7 @@ def reconstruction_report(result: ReconstructedBook, tasks: int) -> Reconstructi
             "source_region_coverage": "pass",
             "note_list_table_relationships": "pass",
             "source_structure_signals_consistent": "not_run"
-            if result.structure_findings
+            if any(f.severity != "information" for f in result.structure_findings)
             else "pass",
             "explicit_source_references_resolved": "pass",
             "required_resource_byte_hashes": "pass",

@@ -40,6 +40,7 @@ export type Blocks = [
  * @maxItems 200001
  */
 export type CodepointUtf16 = [number, ...number[]];
+export type Language = ('en' | 'uk' | 'und') | null;
 export type CanonicalEnd = number;
 export type CanonicalStart = number;
 export type Kind1 = 'identity' | 'nfc' | 'ligature' | 'line_wrap';
@@ -152,6 +153,7 @@ export type CaptionId1 = string | null;
  */
 export type Cells = [TableCell, ...TableCell[]];
 export type Column = number;
+export type ColumnSpan = number;
 /**
  * @minItems 1
  * @maxItems 500
@@ -164,6 +166,7 @@ export type HeaderAxis = ('row' | 'column' | 'both') | null;
 export type HeaderIds = string[];
 export type Id7 = string;
 export type Row = number;
+export type RowSpan = number;
 export type StyleId7 = string | null;
 export type ColumnCount = number;
 /**
@@ -265,7 +268,7 @@ export type Regions = [SourceRegion, ...SourceRegion[]];
 export type Band = number;
 export type Column1 = 0 | 1 | 2;
 export type Id12 = string;
-export type Role1 = 'content' | 'furniture' | 'blank' | 'unsupported';
+export type Role1 = 'content' | 'cover' | 'furniture' | 'blank' | 'unsupported';
 export type Route =
   | 'native'
   | 'ocr'
@@ -274,7 +277,7 @@ export type Route =
   | 'blank'
   | 'unresolved';
 export type WidthPt = number;
-export type ProfileId = 'ava-pdf-prose-en-v2';
+export type ProfileId = 'ava-pdf-prose-en-v2' | 'ava-pdf-prose-en-uk-v3';
 export type ByteLength = number;
 /**
  * @minItems 1
@@ -301,7 +304,11 @@ export type Sha2562 = string;
  */
 export type Spine = [string, ...string[]];
 export type Align = ('start' | 'left' | 'right' | 'center' | 'justify') | null;
+export type BackgroundColor = string | null;
+export type BlockIndentEm = number | null;
 export type Bold = boolean | null;
+export type Color = string | null;
+export type DecorationColor = string | null;
 export type Family = ('serif' | 'sans-serif' | 'monospace') | null;
 export type Id14 = string;
 export type IndentEm = number | null;
@@ -311,6 +318,8 @@ export type RelativeSize = number | null;
 export type SmallCaps = boolean | null;
 export type SpaceAfterEm = number | null;
 export type SpaceBeforeEm = number | null;
+export type StrikeThrough = boolean | null;
+export type Underline = boolean | null;
 export type VerticalAlign = ('baseline' | 'super' | 'sub') | null;
 /**
  * @maxItems 5000
@@ -362,6 +371,7 @@ export interface ProseBlock {
 }
 export interface TextValue {
   codepoint_utf16: CodepointUtf16;
+  language?: Language;
   normalization?: NormalizationMap | null;
   sha256: Sha256;
   spans?: Spans;
@@ -464,12 +474,14 @@ export interface TableBlock {
 }
 export interface TableCell {
   column: Column;
+  column_span?: ColumnSpan;
   content: TextValue;
   evidence: Evidence7;
   header_axis?: HeaderAxis;
   header_ids?: HeaderIds;
   id: Id7;
   row: Row;
+  row_span?: RowSpan;
   style_id?: StyleId7;
 }
 export interface Chapter {
@@ -532,7 +544,11 @@ export interface SourcePdf {
 }
 export interface Style {
   align?: Align;
+  background_color?: BackgroundColor;
+  block_indent_em?: BlockIndentEm;
   bold?: Bold;
+  color?: Color;
+  decoration_color?: DecorationColor;
   family?: Family;
   id: Id14;
   indent_em?: IndentEm;
@@ -542,6 +558,8 @@ export interface Style {
   small_caps?: SmallCaps;
   space_after_em?: SpaceAfterEm;
   space_before_em?: SpaceBeforeEm;
+  strike_through?: StrikeThrough;
+  underline?: Underline;
   vertical_align?: VerticalAlign;
 }
 export interface TocEntry {

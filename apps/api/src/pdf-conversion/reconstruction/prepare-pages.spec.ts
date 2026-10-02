@@ -3,7 +3,11 @@ import { preparePages } from './prepare-pages';
 import type { CoordinatorDependencies } from './coordinator-types';
 import type { SandboxInput } from '../runtime/container-arguments';
 import { prepared, response, task } from './test-fixture';
-function setup(packet = prepared) {
+function setup(
+  packet: typeof prepared & {
+    profile_id?: 'ava-pdf-prose-en-v2' | 'ava-pdf-prose-en-uk-v3';
+  } = prepared,
+) {
   const deps = {
     sandbox: jest.fn().mockImplementation((input: SandboxInput) => {
       const auxiliary = JSON.parse(input.auxiliaryBytes!.toString()) as {
@@ -107,4 +111,43 @@ it('does not spend on a second page after an explicit first response refusal', a
   );
   expect(deps.dispatch).toHaveBeenCalledTimes(1);
   expect(deps.progress).not.toHaveBeenCalled();
+});
+
+it('refuses mismatched extended-profile pages or tasks before any paid dispatch', async () => {
+  for (const packet of [
+    { ...prepared, tasks: [] },
+    { ...prepared, profile_id: 'ava-pdf-prose-en-uk-v3' as const },
+  ]) {
+    const { input, deps } = setup(packet);
+    await expect(
+      preparePages({ ...input, profileId: 'ava-pdf-prose-en-uk-v3' }),
+    ).rejects.toThrow('SOURCE_MISMATCH');
+    expect(deps.dispatch).not.toHaveBeenCalled();
+  }
+});
+it('passes the extended profile to native preparation without provider overhead', async () => {
+  const { input, deps } = setup({
+    ...prepared,
+    profile_id: 'ava-pdf-prose-en-uk-v3' as const,
+    tasks: [],
+  });
+  expect(
+    await preparePages({
+      ...input,
+      profileId: 'ava-pdf-prose-en-uk-v3',
+      providerMode: 'native',
+    }),
+  ).toEqual({ responses: [], pageCount: 1, taskCount: 0 });
+  expect(deps.sandbox).toHaveBeenCalledWith(
+    expect.objectContaining({
+      auxiliaryBytes: Buffer.from(
+        JSON.stringify({
+          mode: 'prepare',
+          page_number: 1,
+          profile_id: 'ava-pdf-prose-en-uk-v3',
+        }),
+      ),
+    }),
+  );
+  expect(deps.dispatch).not.toHaveBeenCalled();
 });

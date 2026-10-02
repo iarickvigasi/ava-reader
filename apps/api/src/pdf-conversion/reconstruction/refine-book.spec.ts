@@ -2,12 +2,24 @@ import { refineBook } from './refine-book';
 import { refinementSetup } from './refinement-test-setup';
 import { refinementResponse } from './refinement-fixture';
 
-it('native-only books have no comparison sandbox or provider overhead', async () => {
+it('qualified native-only structure incurs no provider calls', async () => {
   const { input, sandbox, dispatch } = refinementSetup();
+  sandbox.mockResolvedValueOnce({
+    exitCode: 0,
+    faultAcknowledged: false,
+    faultAcknowledgement: undefined,
+    stdout: Buffer.from(
+      JSON.stringify({
+        schema_version: 'ava-book-refinement-batch-1',
+        source_sha256: input.sourceSha256,
+        tasks: [],
+      }),
+    ),
+  });
   expect(
     await refineBook({ ...input, responses: [], providerMode: 'native' }),
   ).toEqual([]);
-  expect(sandbox).not.toHaveBeenCalled();
+  expect(sandbox).toHaveBeenCalledTimes(1);
   expect(dispatch).not.toHaveBeenCalled();
 });
 it('dispatches source comparison only after semantic validation and revalidates decisions', async () => {
@@ -22,7 +34,7 @@ it('dispatches source comparison only after semantic validation and revalidates 
   expect(dispatch.mock.calls[0][0]).toMatchObject({
     purpose: 'resolve_structure',
     pageIndices: [0],
-    schemaVersion: 'ava-book-refinement-response-1',
+    schemaVersion: 'ava-book-refinement-response-3',
   });
 });
 it('a native-only authority cannot dispatch a requested comparison', async () => {
@@ -78,5 +90,13 @@ it('replacement prose is refused by the canonical schema, never silently strippe
     }),
   });
   await expect(refineBook(input)).rejects.toThrow('INVALID_RESULT');
+  expect(dispatch).toHaveBeenCalledTimes(1);
+});
+
+it('native text alone does not bypass requested structure comparison', async () => {
+  const { input, dispatch } = refinementSetup();
+  expect(await refineBook({ ...input, responses: [] })).toEqual([
+    refinementResponse,
+  ]);
   expect(dispatch).toHaveBeenCalledTimes(1);
 });

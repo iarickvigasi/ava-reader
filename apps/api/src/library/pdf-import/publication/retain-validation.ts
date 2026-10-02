@@ -43,6 +43,7 @@ export async function retainValidation(
     Buffer.from(
       JSON.stringify({
         schema_version: 'ava-publication-report-1',
+        cover_resource_id: book.cover_resource_id ?? null,
         source: sourceReport,
         epubcheck: checked.epubcheck,
         source_artifact_sha256: c.op.sourceSha256,

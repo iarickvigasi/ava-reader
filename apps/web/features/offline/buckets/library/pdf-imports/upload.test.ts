@@ -19,6 +19,7 @@ it("reconciles an accepted upload whose response was lost without another POST",
   let accepted = false;
   const fetcher = vi.fn(async (_url: string, init: RequestInit) => {
     if (init.method === "POST") {
+      expect((init.body as FormData).get("originalFilename")).toBe("Книга ґрунт.pdf");
       accepted = true;
       throw new Error("lost response");
     }
@@ -27,7 +28,7 @@ it("reconciles an accepted upload whose response was lost without another POST",
       : new Response(null, { status: 404 });
   });
   vi.stubGlobal("fetch", fetcher);
-  const file = new File(["%PDF-test"], "test.pdf", { type: "application/pdf" });
+  const file = new File(["%PDF-test"], "Книга ґрунт.pdf", { type: "application/pdf" });
   expect((await importPdfFile(file, async () => "token")).state).toBe(
     "uncertain",
   );

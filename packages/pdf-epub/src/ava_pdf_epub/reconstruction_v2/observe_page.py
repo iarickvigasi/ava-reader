@@ -30,7 +30,26 @@ def observe_page(
         raw.load()
         image = raw.convert("L")
     glyphs, risks = observe_glyphs(page.chars, image, (left, top, right, bottom))
-    risks += display_risks(reader.pages[number - 1], reader)
+    source_page = reader.pages[number - 1]
+    native_bounds = None
+    crop = source_page.cropbox
+    if (
+        glyphs
+        and source_page.rotation % 360 == 0
+        and float(crop.left) == float(crop.bottom) == 0
+        and list(crop) == list(source_page.mediabox)
+    ):
+        # Includes every observed glyph, not only those with visible ink. The
+        # single clip must contain the whole source envelope, without tolerance.
+        # Offset crops/rotation retain conservative review until independently
+        # qualified in the PDF-to-native coordinate mapping.
+        native_bounds = (
+            float(crop.left) + min(g.box.x0 for g in glyphs),
+            float(crop.top) - max(g.box.y1 for g in glyphs),
+            float(crop.left) + max(g.box.x1 for g in glyphs),
+            float(crop.top) - min(g.box.y0 for g in glyphs),
+        )
+    risks += display_risks(source_page, reader, glyph_bounds=native_bounds)
     graphics: list[Graphic] = []
     for kind, objects in [
         ("image", page.images),

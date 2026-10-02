@@ -1,8 +1,8 @@
 """Hash and ranges refer to the exact text stored here, with no implicit trimming."""
 
-from typing import Self
+from typing import Any, Literal, Self
 
-from pydantic import Field, model_validator
+from pydantic import Field, SerializerFunctionWrapHandler, model_serializer, model_validator
 
 from .common import Digest, Id, Record, text_digest, unique
 from .links import LinkTarget
@@ -19,6 +19,15 @@ class InlineSpan(Record):
 
 
 class TextValue(Record):
+    language: Literal["en", "uk", "und"] | None = None
+
+    @model_serializer(mode="wrap")
+    def compatible_wire(self, handler: SerializerFunctionWrapHandler) -> dict[str, Any]:
+        values: dict[str, Any] = handler(self)
+        if values.get("language") is None:
+            values.pop("language", None)
+        return values
+
     text: str = Field(max_length=200000)
     sha256: Digest
     spans: list[InlineSpan] = Field(default_factory=list, max_length=20000)

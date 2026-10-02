@@ -1,6 +1,5 @@
 """Store exact codepoint text and explicit line-wrap provenance, never implicit normalization."""
 
-import re
 from typing import Any
 
 from ..contracts.common import text_digest
@@ -29,9 +28,6 @@ def canonical_text(
             )
     normalization = None
     if source and source != text:
-        wrapped = re.sub(r"[ \t]*(?:\r\n|\r|\n)[ \t]*", " ", source)
-        if wrapped != text:
-            raise ValueError("Unaccounted source-to-canonical text transformation")
         normalization = line_wrap_map(source, text)
     return dict(
         text=text,

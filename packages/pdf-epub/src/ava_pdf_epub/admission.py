@@ -26,11 +26,11 @@ def inspect_admission(path: Path) -> dict[str, object]:
     root = reader.trailer["/Root"]
     inspect_catalog(root)
     pages = []
-    for page in reader.pages:
+    for page_number, page in enumerate(reader.pages, 1):
         width, height = float(page.cropbox.width), float(page.cropbox.height)
         if not all(math.isfinite(v) and 0 < v <= 20000 for v in (width, height)):
             raise AdmissionError("PDF_PAGE_DIMENSIONS_UNSUPPORTED")
-        inspect_annotations(page)
+        inspect_annotations(page, page_number=page_number, page_count=len(reader.pages))
         pages.append({"width": width, "height": height})
     metadata = {
         str(k).removeprefix("/"): str(v)[:4000]
@@ -53,7 +53,7 @@ def main() -> None:
     try:
         result = {"accepted": True, "inspection": inspect_admission(Path(sys.argv[1]))}
     except AdmissionError as error:
-        result = {"accepted": False, "code": str(error)}
+        result = error.refusal()
     except (
         ValueError,
         OSError,

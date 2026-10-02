@@ -14,7 +14,7 @@ def prepare_refinement_source(
 ) -> RefinementBatch:
     if request.refinements:
         raise ValueError("Comparison preparation cannot consume previous refinement decisions")
-    prepared = prepare_source(source, scratch, request.source_sha256)
+    prepared = prepare_source(source, scratch, request.source_sha256, request.profile_id)
     _, segments, state = source_segments(source, scratch, prepared, request.responses)
     return RefinementBatch(
         schema_version="ava-book-refinement-batch-1",

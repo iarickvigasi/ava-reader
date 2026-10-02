@@ -1,5 +1,7 @@
 """Corroborate whole-book chapter structure with printed contents/outline and exact openings."""
 
+import re
+from collections.abc import Sequence
 from pathlib import Path
 
 from .assembly_state import AssemblyState
@@ -14,7 +16,7 @@ from .structure_evidence import structure_findings
 
 def source_structure(
     source: Path,
-    prepared: list[PreparedPage],
+    prepared: Sequence[PreparedPage],
     qualified: dict[int, list[Segment]],
     segments: list[Segment],
     state: AssemblyState,
@@ -37,7 +39,7 @@ def source_structure(
         matches = [
             s
             for s in segments
-            if s.kind == "heading"
+            if (s.kind == "heading" or s.structure_candidate)
             and s.page == page
             and title_key(s.text) == title_key(claim.title)
         ]
@@ -61,14 +63,22 @@ def source_structure(
         raise ValueError("Printed contents or outline omits a detected chapter")
     if not starts and not promoted:
         major = [s for s in segments if s.kind == "heading" and s.heading_level == 1]
-        if len({s.page for s in major}) > 1:
+        if len({s.page for s in major}) > 1 and any(s.method != "ocr" for s in major):
             raise ValueError("Unnumbered chapter hierarchy requires whole-book source review")
+        # OCR ranks already receive blocking source findings below. Let those
+        # findings route to whole-book source-crop refinement instead of refusing
+        # before the review task can be prepared. No rank is corroborated here.
     result = []
     for segment in segments:
         if segment.id in promoted:
             depth = promoted[segment.id]
             segment = segment.model_copy(
                 update={
+                    "kind": "heading",
+                    "structure_candidate": False,
+                    "list_ordered": None,
+                    "list_start": None,
+                    "list_depth": None,
                     "chapter_start": depth == 0,
                     "heading_level": depth + 1,
                     "chapter_role": "bodymatter" if depth == 0 else None,
@@ -86,6 +96,25 @@ def source_structure(
     result = heading_hierarchy(
         result, prepared, {key for key, depth in promoted.items() if depth > 0}
     )
-    state.structure_findings = structure_findings(result, ranked)
+    # A source-observed notes heading already establishes the numbered entry role;
+    # do not ask a second model to reinterpret those entries as chapters.
+    notes = False
+    resolved = []
+    for segment in result:
+        if segment.chapter_start:
+            notes = False
+        if (
+            segment.kind == "heading"
+            and segment.method == "native"
+            and re.fullmatch(
+                r"(?:end)?notes?|примітки|кінцеві примітки", segment.text.strip(), re.I
+            )
+        ):
+            notes = True
+        if notes and segment.structure_candidate and segment.kind == "list_item":
+            segment = segment.model_copy(update={"structure_candidate": False})
+        resolved.append(segment)
+    result = resolved
+    state.structure_findings.extend(structure_findings(result, ranked))
     source_references(result, folios, state)
     return result

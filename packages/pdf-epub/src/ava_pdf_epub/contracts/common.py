@@ -16,7 +16,7 @@ RelativePath = Annotated[
         max_length=240,
     ),
 ]
-MAX_WIRE_BYTES = 32 * 1024 * 1024
+MAX_WIRE_BYTES = 128 * 1024 * 1024
 
 
 class Record(BaseModel):

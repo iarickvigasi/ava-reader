@@ -4,6 +4,7 @@ import base64
 import hashlib
 import io
 import math
+from collections.abc import Mapping
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
@@ -25,7 +26,7 @@ from .segments import Segment
 def refinement_sheet(
     ids: list[str],
     segments: dict[str, Segment],
-    pages: dict[int, PreparedPage],
+    pages: Mapping[int, PreparedPage],
     scratch: Path,
     tail_ids: set[str] | None = None,
 ) -> tuple[list[RefinementCrop], RecognitionImage]:
@@ -47,14 +48,14 @@ def refinement_sheet(
                 )
             )
             crop = crop.resize((width, height), Image.Resampling.LANCZOS)
-        pieces.append((segment, page, crop_box, crop, part))
-    heights = sheet_row_heights([piece[3].height for piece in pieces])
+        pieces.append((segment, page.number, page.render_sha256, crop_box, crop, part))
+    heights = sheet_row_heights([piece[4].height for piece in pieces])
     total = sum(heights)
     if not pieces or len(pieces) > 48 or total > 2048 or SLOT_WIDTH * 2 * total > 20000000:
         raise ValueError("Refinement contact sheet exceeds limits")
     sheet = Image.new("RGB", (SLOT_WIDTH * 2, total), "white")
     draw, crops, y = ImageDraw.Draw(sheet), [], 0
-    for index, (segment, page, box, pixels, part) in enumerate(pieces):
+    for index, (segment, page_number, render_sha256, box, pixels, part) in enumerate(pieces):
         x = (index % 2) * SLOT_WIDTH
         crop_id = ("crop-" if part == "head" else "tail-") + segment.id
         draw.text((x + 4, y + 4), crop_id, fill="black", font=ImageFont.load_default(size=18))
@@ -64,9 +65,9 @@ def refinement_sheet(
                 id=crop_id,
                 part=part,
                 node_id=segment.id,
-                page=segment.page,
+                page=page_number,
                 source_box=box,
-                render_sha256=page.render_sha256,
+                render_sha256=render_sha256,
                 image_box=[x, y + LABEL_HEIGHT, x + pixels.width, y + LABEL_HEIGHT + pixels.height],
             )
         )

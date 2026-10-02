@@ -13,3 +13,23 @@ export const PDF_IMPORT_PROFILE = Object.freeze({
 export const PDF_CONFIG_HASH = checksumBuffer(
   Buffer.from(JSON.stringify(PDF_IMPORT_PROFILE)),
 );
+
+// New profiles are selected by the server only for new imports. The legacy configuration
+// and checksum remain exact; persisted operations always execute their captured profile.
+export const PDF_IMPORT_PROFILE_V3 = Object.freeze({
+  ...PDF_IMPORT_PROFILE,
+  profileId: 'ava-pdf-prose-en-uk-v3',
+  schemaVersion: 3,
+});
+export type PdfImportConfiguration =
+  | typeof PDF_IMPORT_PROFILE
+  | typeof PDF_IMPORT_PROFILE_V3;
+export function pdfImportConfiguration(
+  profileId?: string,
+): PdfImportConfiguration {
+  if (!profileId || profileId === PDF_IMPORT_PROFILE.profileId)
+    return PDF_IMPORT_PROFILE;
+  if (profileId === PDF_IMPORT_PROFILE_V3.profileId)
+    return PDF_IMPORT_PROFILE_V3;
+  throw new Error('PDF_IMPORT_PROFILE_INVALID');
+}

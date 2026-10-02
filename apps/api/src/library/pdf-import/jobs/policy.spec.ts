@@ -39,6 +39,16 @@ describe('immutable bounded job policy and credentials', () => {
       parseJobPolicy({ ...DEFAULT_JOB_POLICY, principalConcurrency: 2 }),
     ).toThrow();
   });
+  it('allows a complete book two hours but rejects an unbounded extension', () => {
+    expect(DEFAULT_JOB_POLICY.totalTimeoutMs).toBe(7200000);
+    expect(
+      parseJobPolicy({ ...DEFAULT_JOB_POLICY, totalTimeoutMs: 7200000 })
+        .totalTimeoutMs,
+    ).toBe(7200000);
+    expect(() =>
+      parseJobPolicy({ ...DEFAULT_JOB_POLICY, totalTimeoutMs: 7200001 }),
+    ).toThrow('PDF_JOB_POLICY_INVALID');
+  });
   it('compares only bounded hashed secrets', () => {
     const token = 'a'.repeat(43);
     expect(matchesSecret(token, secretDigest(token))).toBe(true);

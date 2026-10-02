@@ -19,6 +19,8 @@ class ObservedSpan(Record):
 
 
 class ObservedCell(Record):
+    row_span: int = Field(default=1, ge=1, le=20, exclude_if=lambda value: value == 1)
+    column_span: int = Field(default=1, ge=1, le=8, exclude_if=lambda value: value == 1)
     text: str = Field(max_length=200000)
     box: Box
     style: Style | None = None
@@ -53,6 +55,8 @@ class Segment(Record):
     spans: list[ObservedSpan] = Field(default_factory=list, max_length=20000)
     native_line_ids: list[str] = Field(default_factory=list, max_length=10000)
     method: Literal["native", "ocr", "render"]
+    preserve_line_breaks: bool = Field(default=False, exclude_if=lambda value: not value)
+    structure_candidate: bool = False
     heading_level: int | None = Field(default=None, ge=1, le=6)
     chapter_start: bool = False
     chapter_role: Literal["frontmatter", "bodymatter", "backmatter"] | None = None

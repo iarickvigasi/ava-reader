@@ -29,7 +29,10 @@ export function ReaderInlineText({ inline }: { inline: TextInline }) {
 
   return (
     <span
+      lang={inline.language ?? undefined}
       className={cn(
+        // Keep source line breaks and spacing across styled runs without changing offsets.
+        "whitespace-pre-wrap",
         // Only apply the bold class when no numeric weight was
         // supplied — otherwise the inline style takes over.
         inline.bold && inlineStyle === undefined && "font-bold",

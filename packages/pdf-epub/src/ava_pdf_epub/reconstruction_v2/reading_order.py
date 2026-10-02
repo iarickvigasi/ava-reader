@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 
+from .native_review import NativeReviewRequired
 from .segments import Segment
 
 
@@ -27,7 +28,9 @@ def reading_order(segments: list[Segment], width: float) -> list[Placement]:
         above = [s for s in pending if s.box.y1 <= span.box.y0 + 0.1]
         remaining = [s for s in pending if s not in above]
         if any(s.box.y0 < span.box.y1 - 0.1 for s in remaining):
-            raise ValueError("Overlapping full-width and column content requires layout review")
+            raise NativeReviewRequired(
+                "Overlapping full-width and column content requires layout review"
+            )
         if above:
             result.extend(_columns(above, midpoint, band))
             band += 1

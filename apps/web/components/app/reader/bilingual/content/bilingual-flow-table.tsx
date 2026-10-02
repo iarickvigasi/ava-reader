@@ -7,9 +7,10 @@ export function BilingualFlowTable(props: BilingualFlowBlockProps) {
   const prefix = useId();
   const block = props.group.block;
   if (block.kind !== "table") return null;
-  const rows = [...new Set(block.cells.map((cell) => cell.row))].sort(
-    (a, b) => a - b,
+  const rowCount = Math.max(
+    ...block.cells.map((cell) => cell.row + (cell.rowSpan ?? 1)),
   );
+  const rows = Array.from({ length: rowCount }, (_, row) => row);
   return (
     <table
       data-bilingual-table={block.id}
@@ -31,6 +32,8 @@ export function BilingualFlowTable(props: BilingualFlowBlockProps) {
                 return (
                   <Tag
                     key={cell.id}
+                    rowSpan={cell.rowSpan}
+                    colSpan={cell.columnSpan}
                     id={`${prefix}-${cell.id}`}
                     data-bilingual-cell={cell.id}
                     scope={

@@ -1,10 +1,6 @@
 /* Generated from Python recognition models; do not edit. */
 
-/**
- * @minItems 1
- * @maxItems 24
- */
-export type Decisions = [RefinementDecision, ...RefinementDecision[]];
+export type ProfileId = 'ava-pdf-prose-en-v2' | 'ava-pdf-prose-en-uk-v3';
 export type ChapterRole = ('frontmatter' | 'bodymatter' | 'backmatter') | null;
 export type ChapterStart = boolean | null;
 /**
@@ -15,8 +11,31 @@ export type EvidenceIds = [string, ...string[]];
 export type HeadingLevel = number | null;
 export type NodeId = string;
 export type ParentId = string | null;
+export type RoleKind =
+  | 'heading'
+  | 'paragraph'
+  | 'list_item'
+  | 'verse'
+  | 'quote';
+export type Style = null;
+export type TextSha256 = string;
+export type ChapterRole1 = ('frontmatter' | 'bodymatter' | 'backmatter') | null;
+export type ChapterStart1 = boolean | null;
+/**
+ * @minItems 1
+ * @maxItems 48
+ */
+export type EvidenceIds1 = [string, ...string[]];
+export type HeadingLevel1 = number | null;
+export type NodeId1 = string;
+export type ParentId1 = string | null;
+export type RoleKind1 = null;
 export type Align = ('start' | 'left' | 'right' | 'center' | 'justify') | null;
+export type BackgroundColor = string | null;
+export type BlockIndentEm = number | null;
 export type Bold = boolean;
+export type Color = string | null;
+export type DecorationColor = string | null;
 export type Family = ('serif' | 'sans-serif' | 'monospace') | null;
 export type Id = 'observed';
 export type IndentEm = number | null;
@@ -26,22 +45,51 @@ export type RelativeSize = number;
 export type SmallCaps = boolean | null;
 export type SpaceAfterEm = number | null;
 export type SpaceBeforeEm = number | null;
+export type StrikeThrough = boolean | null;
+export type Underline = boolean | null;
 export type VerticalAlign = ('baseline' | 'super' | 'sub') | null;
-export type TextSha256 = string;
+export type TextSha2561 = string;
+/**
+ * @maxItems 24
+ */
+export type Decisions = (NativeRefinementDecision | OcrRefinementDecision)[];
 export type ImageSha256 = string;
 export type EdgeId = string;
 /**
  * @minItems 2
  * @maxItems 48
  */
-export type EvidenceIds1 = [string, string, ...string[]];
+export type EvidenceIds2 = [string, string, ...string[]];
 export type Join = boolean;
 /**
  * @maxItems 16
  */
 export type Joins = RefinementJoin[];
+export type End = number | null;
+/**
+ * @minItems 1
+ * @maxItems 48
+ */
+export type EvidenceIds3 = [string, ...string[]];
+export type NodeId2 = string;
+export type Role =
+  | (
+      | 'author'
+      | 'translator'
+      | 'editor'
+      | 'illustrator'
+      | 'subtitle'
+      | 'publisher'
+    )
+  | null;
+export type Start = number | null;
+export type TextSha2562 = string;
+/**
+ * @maxItems 24
+ */
+export type MetadataDecisions = BibliographicDecision[];
 export type ObservationSha256 = string;
-export type SchemaVersion = 'ava-book-refinement-response-1';
+export type SchemaVersion = 'ava-book-refinement-response-3';
 export type SourceSha256 = string;
 export type TaskId = string;
 /**
@@ -87,7 +135,7 @@ export type RecognitionSegment = RecognitionSegment1 &
         /**
          * @minItems 1
          */
-        cells: [[unknown, ...unknown[]], ...[unknown, ...unknown[]][]];
+        cells: [unknown[], ...unknown[][]];
         kind?: 'table';
       }
     | {
@@ -195,12 +243,22 @@ export type X0 = number;
 export type X1 = number;
 export type Y0 = number;
 export type Y1 = number;
+export type ColumnSpan = number;
 export type HeaderAxis = ('row' | 'column' | 'both') | null;
-export type End = number;
+export type RowSpan = number;
+export type SourceCellId = string | null;
+export type After = string;
+export type Before = string;
+export type ExactText = string;
+export type End1 = number | null;
 export type NoteLabel = string | null;
-export type Start = number;
+export type Start1 = number | null;
 export type Align1 = ('start' | 'left' | 'right' | 'center' | 'justify') | null;
+export type BackgroundColor1 = string | null;
+export type BlockIndentEm1 = number | null;
 export type Bold1 = boolean | null;
+export type Color1 = string | null;
+export type DecorationColor1 = string | null;
 export type Family1 = ('serif' | 'sans-serif' | 'monospace') | null;
 export type Id1 = string;
 export type IndentEm1 = number | null;
@@ -210,6 +268,8 @@ export type RelativeSize1 = number | null;
 export type SmallCaps1 = boolean | null;
 export type SpaceAfterEm1 = number | null;
 export type SpaceBeforeEm1 = number | null;
+export type StrikeThrough1 = boolean | null;
+export type Underline1 = boolean | null;
 export type VerticalAlign1 = ('baseline' | 'super' | 'sub') | null;
 export type TargetText = string | null;
 export type Url = string | null;
@@ -222,11 +282,11 @@ export type Text = string;
  * @maxItems 20
  */
 export type Cells = RecognitionCell[][];
-export type ChapterRole1 = ('frontmatter' | 'bodymatter' | 'backmatter') | null;
-export type ChapterStart1 = boolean;
+export type ChapterRole2 = ('frontmatter' | 'bodymatter' | 'backmatter') | null;
+export type ChapterStart2 = boolean;
 export type ContinuesFromPrevious = boolean;
 export type ContinuesToNext = boolean;
-export type HeadingLevel1 = number | null;
+export type HeadingLevel2 = number | null;
 /**
  * Unique within this response; s0001, s0002, ...
  */
@@ -278,6 +338,7 @@ export type SchemaVersion2 = 'ava-reconstruct-input-1';
 export type SourceSha2562 = string;
 
 export interface ReconstructionInput {
+  profile_id?: ProfileId;
   refinements?: Refinements;
   responses: Responses;
   schema_version: SchemaVersion2;
@@ -287,28 +348,45 @@ export interface BookRefinementResponse {
   decisions: Decisions;
   image_sha256: ImageSha256;
   joins: Joins;
+  metadata_decisions?: MetadataDecisions;
   observation_sha256: ObservationSha256;
   schema_version: SchemaVersion;
   source_sha256: SourceSha256;
   task_id: TaskId;
   unresolved: Unresolved;
 }
-export interface RefinementDecision {
+export interface NativeRefinementDecision {
   chapter_role: ChapterRole;
   chapter_start: ChapterStart;
   evidence_ids: EvidenceIds;
   heading_level: HeadingLevel;
   node_id: NodeId;
   parent_id: ParentId;
-  style: RefinementStyle;
+  role_kind: RoleKind;
+  style: Style;
   text_sha256: TextSha256;
+}
+export interface OcrRefinementDecision {
+  chapter_role: ChapterRole1;
+  chapter_start: ChapterStart1;
+  evidence_ids: EvidenceIds1;
+  heading_level: HeadingLevel1;
+  node_id: NodeId1;
+  parent_id: ParentId1;
+  role_kind?: RoleKind1;
+  style: RefinementStyle;
+  text_sha256: TextSha2561;
 }
 /**
  * Sparse source typography with the wire observations required by acceptance.
  */
 export interface RefinementStyle {
   align?: Align;
+  background_color?: BackgroundColor;
+  block_indent_em?: BlockIndentEm;
   bold: Bold;
+  color?: Color;
+  decoration_color?: DecorationColor;
   family?: Family;
   id: Id;
   indent_em?: IndentEm;
@@ -318,12 +396,22 @@ export interface RefinementStyle {
   small_caps?: SmallCaps;
   space_after_em?: SpaceAfterEm;
   space_before_em?: SpaceBeforeEm;
+  strike_through?: StrikeThrough;
+  underline?: Underline;
   vertical_align?: VerticalAlign;
 }
 export interface RefinementJoin {
   edge_id: EdgeId;
-  evidence_ids: EvidenceIds1;
+  evidence_ids: EvidenceIds2;
   join: Join;
+}
+export interface BibliographicDecision {
+  end?: End;
+  evidence_ids: EvidenceIds3;
+  node_id: NodeId2;
+  role: Role;
+  start?: Start;
+  text_sha256: TextSha2562;
 }
 export interface RecognitionResponse {
   language: Language;
@@ -338,11 +426,11 @@ export interface RecognitionSegment1 {
   alt?: Alt;
   box: RecognitionBox;
   cells?: Cells;
-  chapter_role?: ChapterRole1;
-  chapter_start?: ChapterStart1;
+  chapter_role?: ChapterRole2;
+  chapter_start?: ChapterStart2;
   continues_from_previous: ContinuesFromPrevious;
   continues_to_next: ContinuesToNext;
-  heading_level?: HeadingLevel1;
+  heading_level?: HeadingLevel2;
   id: Id2;
   kind: Kind;
   list_depth?: ListDepth;
@@ -354,7 +442,7 @@ export interface RecognitionSegment1 {
   page: Page;
   related_to?: RelatedTo;
   spans: Spans1;
-  style: Style | null;
+  style: Style1 | null;
   text: Text1;
 }
 export interface RecognitionBox {
@@ -365,23 +453,36 @@ export interface RecognitionBox {
   y1: Y1;
 }
 export interface RecognitionCell {
-  box: RecognitionBox;
+  box: RecognitionBox | null;
+  column_span?: ColumnSpan;
   header_axis: HeaderAxis;
+  row_span?: RowSpan;
+  source_cell_id?: SourceCellId;
   spans: Spans;
-  style: Style | null;
+  style: Style1 | null;
   text: Text;
 }
 export interface RecognitionSpan {
-  end: End;
+  anchor?: RecognitionTextAnchor | null;
+  end?: End1;
   note_label: NoteLabel;
-  start: Start;
-  style: Style | null;
+  start?: Start1;
+  style: Style1 | null;
   target_text: TargetText;
   url: Url;
 }
-export interface Style {
+export interface RecognitionTextAnchor {
+  after?: After;
+  before?: Before;
+  exact_text: ExactText;
+}
+export interface Style1 {
   align?: Align1;
+  background_color?: BackgroundColor1;
+  block_indent_em?: BlockIndentEm1;
   bold?: Bold1;
+  color?: Color1;
+  decoration_color?: DecorationColor1;
   family?: Family1;
   id: Id1;
   indent_em?: IndentEm1;
@@ -391,5 +492,7 @@ export interface Style {
   small_caps?: SmallCaps1;
   space_after_em?: SpaceAfterEm1;
   space_before_em?: SpaceBeforeEm1;
+  strike_through?: StrikeThrough1;
+  underline?: Underline1;
   vertical_align?: VerticalAlign1;
 }

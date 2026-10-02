@@ -65,7 +65,7 @@ def segment_shape(schema: dict[str, Any]) -> None:
                     cells={
                         "type": "array",
                         "minItems": 1,
-                        "items": {"type": "array", "minItems": 1, "maxItems": 8},
+                        "items": {"type": "array", "minItems": 0, "maxItems": 8},
                     },
                 ),
                 *[

@@ -38,6 +38,10 @@ def printed_metadata(state: AssemblyState, source_author: str | None) -> list[di
             gap = segment.box.y0 - state.segments[title["id"]].box.y1
             if (
                 following["id"] in eligible
+                and (
+                    following["id"] not in state.bibliographic_roles
+                    or state.bibliographic_roles[following["id"]][0] == "subtitle"
+                )
                 and following["kind"] == "paragraph"
                 and 0 < gap < 35
                 and segment.style
@@ -50,6 +54,22 @@ def printed_metadata(state: AssemblyState, source_author: str | None) -> list[di
                 )
             ):
                 output.append(_claim("subtitle", text, following))
+    for block in state.blocks:
+        selected = state.bibliographic_roles.get(block["id"])
+        if selected and selected[0] is not None and block["id"] in eligible:
+            classified_role, selected_text = selected
+            assert classified_role is not None
+            text = selected_text.strip()
+            metadata_field = (
+                "contributor"
+                if classified_role in {"author", "translator", "editor", "illustrator"}
+                else classified_role
+            )
+            if text:
+                claim = _claim(metadata_field, text, block)
+                if metadata_field == "contributor":
+                    claim["contributor_role"] = classified_role
+                output.append(claim)
     for block in state.blocks:
         text = block.get("content", {}).get("text", "")
         if block["kind"] != "paragraph" or not PATTERN.match(text):

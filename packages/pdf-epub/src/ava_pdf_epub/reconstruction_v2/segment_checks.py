@@ -20,20 +20,18 @@ def validate_spans(text: str, spans: list["ObservedSpan"]) -> None:
 
 def validate_segment(segment: "Segment") -> None:
     validate_spans(segment.text, segment.spans)
+    if segment.preserve_line_breaks and (segment.kind != "paragraph" or segment.method != "native"):
+        raise ValueError("Preserved comparison lines require native paragraphs")
     if segment.box.coordinate_space != "page_points_top_left":
         raise ValueError("Observation coordinates must be page points")
     if segment.kind == "table":
-        rows = segment.cells
-        if not rows or not 1 <= len(rows[0]) <= 8:
-            raise ValueError("Table must contain bounded rectangular cells")
-        for row in rows:
-            if len(row) != len(rows[0]):
-                raise ValueError("Irregular table is unsupported")
-            for cell in row:
-                validate_spans(cell.text, cell.spans)
-                a, b = segment.box, cell.box
-                if not (a.x0 <= b.x0 < b.x1 <= a.x1 and a.y0 <= b.y0 < b.y1 <= a.y1):
-                    raise ValueError("Table cell outside table")
+        from .observed_table_grid import observed_table_grid
+
+        for _, _, cell in observed_table_grid(segment.cells):
+            validate_spans(cell.text, cell.spans)
+            a, b = segment.box, cell.box
+            if not (a.x0 <= b.x0 < b.x1 <= a.x1 and a.y0 <= b.y0 < b.y1 <= a.y1):
+                raise ValueError("Table cell outside table")
     elif segment.cells:
         raise ValueError("Cells belong only to table segments")
     if segment.kind in {"verse", "code"} and len(segment.text.splitlines()) > 80:

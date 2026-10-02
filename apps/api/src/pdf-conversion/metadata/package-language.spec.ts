@@ -35,3 +35,21 @@ it.each([[claim('en'), claim('en-GB')], [claim('fr')], [claim(null)]])(
     );
   },
 );
+
+it('requires explicit supported language for extended books and never defaults to English', () => {
+  const extended = (metadata: MetadataClaim[]) => ({
+    profile_id: 'ava-pdf-prose-en-uk-v3' as const,
+    metadata,
+  });
+  expect(validatedPackageLanguage(extended([claim('uk-UA')]))).toBe('uk-UA');
+  expect(validatedPackageLanguage(extended([claim('en')]))).toBe('en');
+  for (const metadata of [
+    [],
+    [claim('uk', 'candidate')],
+    [claim('ru')],
+    [claim('uk'), claim('en')],
+  ])
+    expect(() => validatedPackageLanguage(extended(metadata))).toThrow(
+      'EPUB_PACKAGE_LANGUAGE_INVALID',
+    );
+});

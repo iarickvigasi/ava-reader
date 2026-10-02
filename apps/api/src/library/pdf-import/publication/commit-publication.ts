@@ -2,6 +2,7 @@ import { promotePublicationArtifacts } from './promote-publication';
 import type { WorkerCredential } from '../jobs/types';
 import { authenticateWorker } from '../jobs/authenticate-worker';
 import { installPublishedFiles } from './install-files';
+import { bindPublishedCover } from './bind-cover';
 import type { PrismaService } from '../../../prisma/prisma.service';
 import { checksumBuffer, toPrismaBytes } from '../../../shared/blob-utils';
 import type { AcceptedContentV1 } from '../../../pdf-conversion/contracts/generated/ava-accepted-content-1';
@@ -88,6 +89,7 @@ export async function commitPublication(
         cancellationEpoch: v.cancellationEpoch,
       },
     });
+    await bindPublishedCover(tx, scope.op.bookId, accepted, v.resourceMap);
     await installPublishedFiles(tx, scope, v);
     return publication;
   });

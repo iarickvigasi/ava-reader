@@ -6,6 +6,7 @@ from pydantic import Field, model_validator
 
 from .artifacts import Artifact, require_role
 from .common import Digest, Id, Record
+from .profiles import ProfileId
 
 
 class JobInputV1(Record):
@@ -14,7 +15,7 @@ class JobInputV1(Record):
     owner_id: Id
     library_item_id: Id
     intent: Literal["initial_pdf_import"]
-    profile_id: Literal["ava-pdf-prose-en-v2"]
+    profile_id: ProfileId
     source: Artifact
     request_sha256: Digest
     config_sha256: Digest
@@ -24,7 +25,7 @@ class JobInputV1(Record):
     cancellation_epoch: int = Field(ge=0, le=9007199254740991)
     provider_mode: Literal["native", "stub", "replay", "live"]
     dispatch_authority_id: Id | None = None
-    active_deadline_seconds: int = Field(ge=1, le=1800)
+    active_deadline_seconds: int = Field(ge=1, le=7200)
     source_page_limit: int = Field(ge=1, le=500)
     scratch_byte_limit: int = Field(ge=1, le=2147483648)
 

@@ -1,6 +1,16 @@
 import { createHash } from 'node:crypto';
 import type { ProviderTask } from '../../library/pdf-import/providers/types';
-import { RECOGNITION_PROMPT } from './generated/prompt';
+import {
+  RECOGNITION_PROMPT,
+  MERGED_TABLE_PROMPT,
+  PINNED_TABLE_PROMPT,
+  EXPLICIT_STYLE_PROMPT,
+  PINNED_STYLE_PROMPT,
+  ANCHORED_STYLE_PROMPT,
+  BOUNDARY_STYLE_PROMPT,
+  PINNED_BOUNDARY_PROMPT,
+  PINNED_ANCHORED_PROMPT,
+} from './generated/prompt';
 import { recognitionSchemas } from './generated/schemas';
 import type { RecognitionTask } from './generated/RecognitionTask';
 import { validatePacket } from './validate-packet';
@@ -42,7 +52,27 @@ export function providerTask(
     promptVersion: task.prompt_version,
     schemaVersion: task.response_schema_version,
     messages: [
-      { role: 'system', content: RECOGNITION_PROMPT },
+      {
+        role: 'system',
+        content:
+          task.prompt_version === 'ava-prose-region-10'
+            ? PINNED_BOUNDARY_PROMPT
+            : task.prompt_version === 'ava-prose-region-9'
+              ? BOUNDARY_STYLE_PROMPT
+              : task.prompt_version === 'ava-prose-region-8'
+                ? PINNED_ANCHORED_PROMPT
+                : task.prompt_version === 'ava-prose-region-7'
+                  ? ANCHORED_STYLE_PROMPT
+                  : task.prompt_version === 'ava-prose-region-6'
+                    ? PINNED_STYLE_PROMPT
+                    : task.prompt_version === 'ava-prose-region-5'
+                      ? EXPLICIT_STYLE_PROMPT
+                      : task.prompt_version === 'ava-prose-region-4'
+                        ? PINNED_TABLE_PROMPT
+                        : task.prompt_version === 'ava-prose-region-3'
+                          ? MERGED_TABLE_PROMPT
+                          : RECOGNITION_PROMPT,
+      },
       {
         role: 'user',
         content: [

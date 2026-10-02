@@ -2,6 +2,7 @@
 
 import xml.etree.ElementTree as ET
 
+from ..contracts.profiles import BILINGUAL_PROFILE, package_language
 from .context import Context
 from .xml import EPUB, document, element
 
@@ -40,4 +41,8 @@ def navigation(ctx: Context) -> bytes:
                 seen.add(evidence.page)
     pages.append(listing)
     body.append(pages)
-    return document("Contents", body)
+    return document(
+        "Contents",
+        body,
+        package_language(ctx.book) if ctx.book.profile_id == BILINGUAL_PROFILE else "en",
+    )

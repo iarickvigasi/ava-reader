@@ -35,10 +35,21 @@ def validate_refinement_task(task: "BookRefinementTask") -> None:
     for values, label in [
         ([n.id for n in task.nodes], "nodes"),
         (task.decision_ids, "decisions"),
+        (task.metadata_ids, "metadata decisions"),
         ([c.id for c in task.crops], "crops"),
         ([e.id for e in task.edges], "edges"),
     ]:
         unique(values, label)
+    if any(
+        n.structure_candidate != (n.candidate_original_kind is not None)
+        or (n.structure_candidate and (n.ranked_source or n.observed_style is None))
+        for n in task.nodes
+    ):
+        raise ValueError("Native structure candidate lacks immutable role/style observations")
+    if not task.decision_ids and not task.metadata_ids:
+        raise ValueError("Refinement task has no decisions")
+    if task.metadata_ids and task.prompt_version != "ava-book-refinement-4":
+        raise ValueError("Bibliographic decisions require the contextual metadata prompt")
     nodes = {n.id for n in task.nodes}
     unique([c.node_id + ":" + c.part for c in task.crops], "crop parts")
     page_by_node = {n.id: n.page for n in task.nodes}
@@ -48,7 +59,7 @@ def validate_refinement_task(task: "BookRefinementTask") -> None:
         for c in task.crops
     ):
         raise ValueError("Refinement crop source page differs")
-    if not set(task.decision_ids).issubset(nodes):
+    if not set(task.decision_ids + task.metadata_ids).issubset(nodes):
         raise ValueError("Refinement decisions outside catalogue")
     if any(n.body_reference_id and n.body_reference_id not in nodes for n in task.nodes):
         raise ValueError("Refinement body reference absent")

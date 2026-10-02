@@ -40,15 +40,31 @@ export async function inspectPdf(
           .regex(/^PDF_[A-Z_]+$/)
           .optional(),
         inspection: inspectionSchema.optional(),
+        finding: z
+          .object({
+            page_number: z.number().int().min(1).max(500),
+            annotation_number: z.number().int().min(1).max(1000).optional(),
+            relationship_path: z
+              .array(z.enum(['/Popup', '/Parent', '/IRT']))
+              .max(20)
+              .optional(),
+          })
+          .strict()
+          .optional(),
       })
       .strict()
       .parse(
         JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(stdout)),
       );
+    if (envelope.accepted && (envelope.code || envelope.finding))
+      throw new Error('Inconsistent admission result');
+    if (envelope.finding && !envelope.code)
+      throw new Error('Missing refusal code');
     if (!envelope.accepted)
       throw new UnprocessableEntityException({
         code: envelope.code ?? 'PDF_UNSUPPORTED',
         message: 'This PDF is not supported for import.',
+        ...(envelope.finding ? { finding: envelope.finding } : {}),
       });
     const result = inspectionSchema.parse(envelope.inspection);
     if (

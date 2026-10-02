@@ -7,6 +7,9 @@ import { fileURLToPath } from "node:url";
 const web = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const root = resolve(web, "../..");
 const target = resolve(web, "features/reader/canonical/build.ts");
+// Build output contains chunk hashes, including the compiled source identity.
+// Binding it would make every production build invalidate its own fingerprint.
+const precacheOutput = resolve(web, "public/precache-assets.json");
 const ignored = new Set([
   "node_modules",
   ".next",
@@ -24,6 +27,7 @@ function files(directory) {
     if (
       !entry.isFile() ||
       path === target ||
+      path === precacheOutput ||
       entry.name === "next-env.d.ts" ||
       /\.(test|spec)\./.test(path)
     )

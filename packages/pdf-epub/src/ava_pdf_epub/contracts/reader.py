@@ -8,7 +8,16 @@ from .book import CanonicalBookV2
 from .common import Digest, Id, Record, document_digest, unique
 
 Capability = Literal[
-    "text", "styles", "links", "notes", "figures", "tables", "lists", "literal-text"
+    "text",
+    "styles",
+    "links",
+    "notes",
+    "figures",
+    "tables",
+    "lists",
+    "literal-text",
+    "annotation-styles",
+    "language",
 ]
 
 
@@ -18,7 +27,7 @@ class ReaderPackageV3(Record):
     final_content_id: Id
     canonical_hash_algorithm: Literal["ava-json-v1"]
     canonical_sha256: Digest
-    required_capabilities: list[Capability] = Field(min_length=1, max_length=8)
+    required_capabilities: list[Capability] = Field(min_length=1, max_length=10)
     book: CanonicalBookV2
 
     @model_validator(mode="after")

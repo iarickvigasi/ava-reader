@@ -3,6 +3,7 @@
 export type NativeSegmentCount = number;
 export type ObservationSha256 = string;
 export type PageNumber = number;
+export type ProfileId = 'ava-pdf-prose-en-v2' | 'ava-pdf-prose-en-uk-v3';
 export type SchemaVersion = 'ava-prepare-result-1';
 export type SourcePageCount = number;
 export type SourceSha256 = string;
@@ -17,8 +18,17 @@ export type NativeEvidenceSha256 = string;
 export type PageHeightPt = number;
 export type PageNumber1 = number;
 export type PageWidthPt = number;
-export type ProfileId = 'ava-pdf-prose-en-v2';
-export type PromptVersion = 'ava-prose-region-2';
+export type ProfileId1 = 'ava-pdf-prose-en-v2' | 'ava-pdf-prose-en-uk-v3';
+export type PromptVersion =
+  | 'ava-prose-region-2'
+  | 'ava-prose-region-3'
+  | 'ava-prose-region-4'
+  | 'ava-prose-region-5'
+  | 'ava-prose-region-6'
+  | 'ava-prose-region-7'
+  | 'ava-prose-region-8'
+  | 'ava-prose-region-9'
+  | 'ava-prose-region-10';
 export type Purpose = 'pdf_region_recognition' | 'pdf_structure_repair';
 export type CoordinateSpace = 'page_points_top_left' | 'normalized_top_left';
 export type X0 = number;
@@ -38,6 +48,7 @@ export interface PrepareResult {
   native_segment_count: NativeSegmentCount;
   observation_sha256: ObservationSha256;
   page_number: PageNumber;
+  profile_id?: ProfileId;
   schema_version: SchemaVersion;
   source_page_count: SourcePageCount;
   source_sha256: SourceSha256;
@@ -50,7 +61,7 @@ export interface RecognitionTask {
   page_height_pt: PageHeightPt;
   page_number: PageNumber1;
   page_width_pt: PageWidthPt;
-  profile_id: ProfileId;
+  profile_id: ProfileId1;
   prompt_version: PromptVersion;
   purpose: Purpose;
   region_box: Box;

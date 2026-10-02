@@ -11,7 +11,15 @@ those responsibilities remain outside this Python package.
 The integrated route uses `reconstruction_v2` to preserve source order, structured content and
 measured styles in `ava-book-2`, then emits a generated EPUB profile and reader-v3-compatible graph.
 The host coordinates page/region tasks, provider reservations and review. Native, scan and mixed
-routing exists, but ordinary imports do not automatically activate live OCR/provider dispatch.
+routing exists. Ordinary imports default to native-only execution; the host can select a registered
+normal import route with `AVA_PDF_PROVIDER_ROUTE_ID`. The host then binds a grant to the owned
+source/profile and pins the worker build. Native text needs no recognition call; ambiguous same-font
+chapter/list roles may require bounded structure comparison. Qualified structure remains zero-call.
+Native-only execution refuses unresolved required comparisons. Route mechanics
+have isolated database evidence. A scoped two-page scanned Underline fixture also completed normal
+signed-in live recognition, automatic publication, Read and owned EPUB export/reimport. Broader book,
+annotation and production qualification remains open. Source first-line and whole-block
+indentation are represented separately; complete supplied-book/reader qualification is ongoing.
 The [book-level refinement phase](../../docs/pdf-conversion.md) preserves original page
 observations and accepts only source-bound structure/style/join decisions, never replacement prose.
 [Runtime checks](../../docs/pdf-conversion-operations.md) and
@@ -116,6 +124,21 @@ Other public functions:
 - `epub.build_epub(book, asset_root, output)` — deterministic, network-free assembly and structural checks.
 - `state.JobStore` / `state.BudgetStore` — resumable artifact jobs and cumulative cost authorization.
 
+## Source-bound bibliographic refinement
+
+The integrated English/Ukrainian profile can classify short eligible credits on a recognized title
+page and its next two pages. A scanned cover may prepare credit comparisons before title
+typography is refined; final metadata acceptance still requires refined title-page authority.
+It supports author, translator, editor, illustrator, subtitle and
+publisher roles; uncertain roles remain unknown. Exact observed text and source crops bind each
+decision. Providers select code-point ranges, never replacement names or metadata from filenames.
+Locally parsed labels require no classification call. Named frontmatter section boundaries exclude ordinary preface prose; readable sheets coalesce
+within the24decision contract limit and split on actual geometry. Separate compact tasks preserve
+existing structure-task identities and legacy-profile behavior. Equivalent contributor whitespace merges
+identity/evidence while preserving printed text.
+This does not implement a complete metadata inventory, all language-specific labels, or credits
+without recognized title-page context. Validate accepted fields in both EPUB output and AVA import.
+
 ## Optional recognition
 
 For the standalone interface, `recognition.OpenRouterProvider` and `recognition.recognize_page`
@@ -183,15 +206,46 @@ The library assumes a trusted calling service and a private workspace. `owner` s
 it is not authentication. Do not expose the CLI or arbitrary file paths directly to browser input.
 Run PDF parsers in an OS/container sandbox with CPU, memory, disk, page-count and wall-time limits.
 The subprocess applies memory/CPU limits on Linux; macOS requires external resource isolation.
+
+The integrated isolated worker defaults to 2 GiB/no swap and one CPU for full-book processing.
+Canonical and reader wire documents are bounded at 128 MiB; this does not remove source, archive,
+resource, hash, semantic or deadline checks. EPUB import finishes EPUBCheck before expanding the
+canonical/reader models. See [operational limits](../../docs/pdf-conversion-operations.md).
 This is not a hostile multi-tenant service boundary. SQLite on NFS/distributed replicas is unsupported.
 
 ## Deliberate unsupported/review paths
 
-- Annotation-bearing, encrypted or unqualified concealed/clipped/rotated native content requires safe
-  source handling. Refusal does not mean the PDF is corrupt. No hidden text is deliberately exposed.
+- Annotation policy is shared by admission and v2 preparation. Verified empty FreeText is inert;
+  visible passive appearances require recognition and explicit region coverage. Personal sticky-note
+  text/popups remain in the original, with content-free information findings; no AVA mark migration.
+  A source/policy/output-hash-bound private view excludes those personal objects without changing the
+  original. Redactions, hidden/clipped appearances and unrenderable essential content fail explicitly.
+  Linked popup/parent/reply annotations receive bounded action checks. Appearance resources share
+  worker raster limits, and required appearances cannot become skipped blank pages. Personal linked
+  popups are excluded and accounted for; rendering-cache receipts are atomic.
+  Coverage requires localized text for text boxes and a localized source-pixel figure for other
+  appearances; body overlap alone cannot claim preservation. Genuine Ink/QuadPoints highlight
+  fixtures exercise real pixels and selectable prose. Finite inline annotation style transport is
+  implemented; wider appearance and full reader qualification remain open. Source-pixel coverage
+  alone is not full style fidelity.
+  The legacy native exporter refuses visible/personal annotations rather than dropping them.
+- Link URI/GoTo and narrowly bounded literal page-jump actions are interpreted as data, never
+  executed. External/internal targets require exact source-bound text/geometry mapping. Accepted
+  visual text may corroborate unique visible native geometry, allowing only line-edge layout
+  whitespace differences with offsets accounted for. Otherwise bounded local word OCR supplies
+  geometry without rewriting accepted text. Confidence/visibility/ambiguity gates stay intact.
+  Arbitrary scripts/chains/additional actions, scanned table-cell links and unqualified coordinate
+  destinations remain explicit review/refusal paths. See [navigation policy](../../docs/pdf-conversion.md#source-bound-pdf-navigation).
+- Encrypted or unqualified concealed/clipped/rotated content requires safe source handling. Refusal
+  does not mean the PDF is corrupt. No hidden text is deliberately exposed.
 - Scans need an explicitly configured recognizer or reviewed/replayed extraction. Native extraction
   preserves measured line candidates and flags paragraph order/structure for review.
-- Synthetic OCR fonts do not establish original font weight, family or italics.
+- Synthetic OCR fonts do not establish original font weight, family or italics. Exact visible source
+  glyph runs can corroborate family/bold/italic without rewriting OCR text or existing links. Mixed
+  runs require a proven source-region clip; only bounded uncolored-outline Type3 programs with known
+  consistent descriptors qualify. Arbitrary painted glyphs, hidden scan layers and ambiguous mappings
+  remain unqualified. This does not waive the conservative whole-page native routing guard. See
+  [source font roles](../../docs/pdf-conversion.md#source-font-roles-for-ocr).
 - Cross-page ambiguous hyphens, unmatched headings, note references and uncertain blank pages remain
   visible issues. Repeated numbers are resolved by source occurrence, not global label matching.
 - Complex tables/math, general vector-semantic reconstruction, fixed-layout output, embedded licensed
@@ -288,3 +342,176 @@ to the host as a candidate. Only separate source validation, required review and
 permit the host to publish one immutable Ready book. Standalone legacy canaries remain candidates.
 Host-side provider dispatch exists behind explicit route/source/budget authority; no live route is
 enabled merely by starting the ordinary worker, and no model call occurs inside this container.
+
+Annotation admission refusals carry a stable `PDF_*` code and bounded, content-free `finding`
+location: one-based `page_number`, optional `annotation_number` and a related-object path
+(`/Popup`, `/Parent`, `/IRT`, at most 20 steps). Source-order traversal makes the first refusal
+reproducible. Parser exception text and annotation contents are not emitted. The API validates
+the same bounds and preserves the location in its refusal response. This response is not yet a
+durable conversion log; PDF-18 owns persistence and operator investigation.
+
+### Finite annotation style transport
+
+Canonical styles now carry optional lowercase six-digit hex `color`/`background_color`/`decoration_color` and
+nullable boolean `underline`/`strike_through`. EPUB CSS, AVA inline rendering and exact generated
+EPUB reimport preserve these observations. Unknown new fields are omitted from serialized styles
+so pre-extension book digests and deterministic EPUB bytes remain unchanged; explicit false resets
+are retained. Colors cannot contain arbitrary CSS or resource URLs. Referenced extension styles
+require the additional `annotation-styles` reader capability, not merely baseline `styles`.
+Older qualifications cannot authorize that content. Worker, API and web generated types must be
+updated together; the API contract generator now checks/emits the shared web reader types too.
+
+Native Highlight, Underline and StrikeOut quads now map through source glyph geometry to exact
+Unicode spans, preserving emphasis and link destinations. Multiple quads do not style intervening
+unmarked text. Explicit RGB and grayscale colors and continuous strokes are checked against rendered source pixels;
+highlights retain contrasting source glyph ink. Reliable native marks need no model call. Partial
+glyph boundaries, conflicting overlapping colors and ambiguous text mappings require review rather
+than guessed offsets. OCR segments now use independently observed Tesseract word boxes for inline
+annotation localization. The worker pins Tesseract 5.3.0 and English/Ukrainian traineddata. Legacy English v2
+uses `eng`; the opt-in bilingual profile uses the fixed `eng+ukr` inventory for scanned word
+localization. Source hash, confidence, visible-pixel and exact-offset checks remain; no provider call is
+needed for word geometry. A source-hashed private PDF view excludes only inline Highlight,
+Underline and StrikeOut objects for local word localization; the original PDF and its rendered
+appearance remain unchanged. Authorial textboxes and other required appearances remain in that view.
+This avoids annotation strokes obscuring the OCR input without erasing and reconstructing letter
+pixels. An original-raster visibility check additionally requires at least half the observed glyph
+ink to remain visible before a selected word can receive markup; an opaque cover cannot authorize
+underlying prose merely because the private view removed its annotation. This check is a conservative
+mapping gate, not a general proof of transcription accuracy. Near-exact corroborated highlight-fill
+treatment remains confined to declared regions; there is no global luminance threshold.
+The image hash/dimensions are checked before execution; timeout is
+20 seconds, output is capped at 4 MiB, and native diagnostics are suppressed. Matching is exact
+Unicode with whitespace-only alignment, unique geometry/text correspondence and confidence checks.
+Private OCR PNGs preserve measured physical resolution from source page geometry; dropping this
+metadata can cause automatic OCR to omit clearly visible ruled-table words. Pixel content is not
+rescaled by this metadata repair. Scanned table-cell marks use fully contained independent word
+boxes and exact cell-local text offsets; a printed line crossing columns cannot style the gap or
+neighboring cells. Ambiguous/partially bounded cell mappings require review. Existing header
+association requirements remain in force.
+Partial words, duplicate matches and inconsistent text require review. A packaged true-scan fixture
+and authored transcription oracle establish scoped reconstruction/reimport evidence, not live VLM
+transcription quality or general scanned-book support. Wider appearance/color cases remain unfinished.
+
+This is source mapping and finite transport, not full product qualification. Actual normal reader
+flows for the remaining appearances at dark/light themes and large text, broader live annotation OCR
+and independent review remain required
+before declaring annotation conversion supported. Source-pixel crops alone are not the final
+inline-style representation.
+
+### Native visibility and Ukrainian extension status
+
+The v2 observer can qualify an enclosing single identity rectangle and strictly inert Normal/opacity-one
+graphics state. It still reviews partial/compound/Form clips, masks, offsets, rotation and unknown state;
+native ink checks remain independent. The opt-in `ava-pdf-prose-en-uk-v3` profile carries source-derived
+language evidence through preparation, canonical content, EPUB metadata and reader language tags.
+It requires explicit accepted book language and passage tags; conflicting catalog metadata is retained.
+Authored native single/two-column fixtures verify exact text, chapters, TOC and canonical reimport.
+Legacy English v2 behavior/serialization remain unchanged. Full Ukrainian native/scanned/mixed and
+supplied-book normal reader qualification, independent review and production activation remain open.
+
+The bilingual annotation localization change requires a newly built worker image and actual
+scanned Ukrainian fixtures before installed support is claimed. The earlier native profile image
+does not contain Ukrainian traineddata. Package version: [Debian Ukrainian OCR data](https://packages.debian.org/bookworm/tesseract-ocr-ukr);
+fixed multiple-language invocation follows [Tesseract CLI documentation](https://tesseract-ocr.github.io/tessdoc/Command-Line-Usage.html).
+
+Source-cover candidate: a single first-page `cover` render layer may overlap selectable title
+text while ordered content bands retain their original validation. The layer must be bound to
+the identified cover resource. Artwork is preserved from source pixels; cover extraction does
+not rewrite OCR text. The integrated publisher uses the validated resource in the first private
+PDF publication and serves it through an owned Library cover route. Normal reader qualification
+must be refreshed with the changed structural contracts before activation.
+
+Page checkpoints retain at most two decoded observations within32MiB aggregate serialized bytes.
+Every read, including cache hits, rechecks the private-file snapshot and hash; eviction bounds
+remain enforced. This avoids redundant first/destination-page decoding without enlarging the
+former aggregate serialized cache bound. Geometry-only passes use validated scalar projections
+and still verify checkpoint identity on every access. Native spans allocate validated models per
+identical contiguous style run rather than per glyph; text, whitespace, offsets and style IDs remain
+unchanged. A frozen126-page offline replay completes in794.274s versus1310.294s, with the entire
+canonical JSON, EPUB and cover bytes identical. This local result does not qualify normal Library
+publication, all books, independent review or source/reader fidelity.
+
+
+### Whole-book time and paired native lines
+
+The candidate total job deadline is bounded at120minutes/7200seconds across durable job policy,
+sandbox admission and the generated worker contract. Extraction, model review and assembly share
+this deadline; lease renewal does not extend it. Existing jobs keep their captured shorter policy.
+A normal126-page test exhausted its former30-minute ceiling after extraction; retain this failure
+separately from RESOURCE_LIMIT/OOM and from successful offline assembly. The larger ceiling is
+headroom pending corpus measurements, not a promised time for every supported book. Monetary
+limits are separate and remain enforced before dispatch.
+
+Source-corroborated native comparison runs preserve printed pair line breaks as paragraph text.
+The bounded guard requires a broad body reference, aligned lines, matching known typography,
+five pairs and two distinct exact repetitions. It keeps all words/repetitions and existing spans,
+without declaring a table or poetry. A private marker retains newline joins across pages and
+prevents mixing with ordinary prose. Isolated/unconfirmed pairs are not automatically classified.
+Authored canonical/EPUB/reimport controls and original pages97/98 checks pass; full new-candidate
+normal import and reader/source qualification remain required before completion.
+
+
+### Language-only uncertainty
+
+In the opt-in English/Ukrainian profile, uncertain language alone does not request a new
+transcription of reliable native text. Keep its measured typography and source finding.
+The unchanged whole-book validator still requires a source-supported primary language
+covering at least80percent of source letters; uncertain or foreign passages retainund tags.
+Other extraction/visibility/annotation risks, missing native text and text-bearing rasters
+still require recognition. Legacy English routing is unchanged. This avoids introducing
+guessed OCR styles solely to identify language; it does not qualify other primary languages.
+
+Source typography uses `indent_em` for first-line displacement and optional `block_indent_em`
+for the entire paragraph inset. Native multiline insets and source-qualified comparison boundary
+fragments preserve the latter; other single lines stay ambiguous. Unknown block indentation is
+omitted from wire output so legacy immutable digests remain unchanged. EPUB uses
+`margin-inline-start`; AVA maps the same value separately from `text-indent`.
+
+
+Structure comparison uses versioned prompt5: every heading has an explicit boolean chapter
+flag, sections use false and a null chapter role, and non-headings use null fields. Historical
+prompt3 remains immutable for its tasks; bibliographic prompt4 is separate. Invalid decisions
+are rejected before assembly, with their provider cost retained. A prompt revision changes task
+identity; an old response cannot be edited or rebound to a new task. This preserves finished
+content and does not introduce later reconversion.
+
+
+### Bounded merged table cells
+
+Canonical cells may carry positive `row_span` / `column_span` within the existing20×8 grid.
+Default1 is omitted from the wire to preserve legacy ordinary-table digests. Validation requires
+row-major physical origins, exactly one owner per logical slot, in-bounds spans and exact
+span-aware header relationships. EPUB exports selectable th/td with rowspan/colspan; AVA's
+ordinary and bilingual views preserve spans and rows covered entirely by earlier cells.
+
+Ruled PDF rectangles qualify merged origins; the existing borderless pattern retains separate
+geometry and does not acquire guessed merges. Unqualified visual tables route as complete tables.
+Span-bearing source pages select `ava-prose-region-4`; historical region2/3 instructions remain
+unchanged. The source-bound task pins measured physical origins/rectangles and cell IDs, including
+blank cells. OCR returns text/styles against those IDs with `box:null`; acceptance binds the exact
+measured geometry and rejects unknown/duplicate IDs, changed spans or missing physical cells.
+This avoids asking the model to redraw ruled cells, especially intentionally empty ones.
+OCR must preserve their count, spans and unique geometry match; missing/duplicated/guessed cells
+are refused. Source glyphs crossing native cell boundaries require visual review.
+
+This implementation is a candidate. Installed whole-book, live OCR, semantic header/accessibility,
+normal PDF publication/reimport/reader and independent review remain separate acceptance gates.
+Update installed host validators, generated API/web contracts and worker images together before
+using new span-bearing candidates. Finished books are never reconverted or replaced.
+
+
+### Exact inline text anchors
+
+New recognition tasks use `ava-prose-region-9` for prose and `ava-prose-region-10` for pinned
+ruled-table geometry. Inline spans quote `anchor.exact_text` from their own segment/cell;
+`anchor.before` / `anchor.after` provide exact adjacent context when a quotation repeats.
+The host computes Unicode code-point positions without changing transcription. Ambiguous or absent
+quotations and mixed numeric/quoted authority fail acceptance. Historical region2–6 tasks continue
+using numeric offsets and their original prompt bytes. Region7/8 remains the historical initial anchor prompt; region9/10 adds complete style-run
+boundary instructions, including plain connectors and punctuation. New anchored responses cannot
+reinterpret old tasks. Styles are explicit objects, never implicit string IDs.
+
+Exact offsets establish positioning, not visual accuracy: compare complete emphasized phrases,
+notes and links against rendered source pages before qualifying a model/profile. Installed validators,
+generated API contracts and worker images must be refreshed together. Do not treat schema acceptance
+as proof that the model observed every styled word or that a full book is ready for publication.

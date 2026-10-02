@@ -1,7 +1,11 @@
 import type { Prisma, PdfArtifact } from '@prisma/client';
 import { titleFromFilename } from '../../../shared/blob-utils';
 import { addBookToUserLibraryTx } from '../../membership/add-book-to-user-library';
-import { PDF_IMPORT_PROFILE } from '../admission/profile';
+import {
+  PDF_IMPORT_PROFILE,
+  type PdfImportConfiguration,
+} from '../admission/profile';
+import { checksumBuffer } from '../../../shared/blob-utils';
 import type { PdfInspection } from '../admission/inspect-pdf';
 
 export async function createOwnedPdfImport(
@@ -15,9 +19,16 @@ export async function createOwnedPdfImport(
     sourceSha256: string;
     requestSha256: string;
     configSha256: string;
+    configuration?: PdfImportConfiguration;
   },
   operationId?: string,
 ) {
+  const configuration = input.configuration ?? PDF_IMPORT_PROFILE;
+  if (
+    checksumBuffer(Buffer.from(JSON.stringify(configuration))) !==
+    input.configSha256
+  )
+    throw new Error('PDF_IMPORT_CONFIGURATION_MISMATCH');
   const book = await tx.book.create({
     data: {
       pdfImportPrivate: true,
@@ -47,8 +58,8 @@ export async function createOwnedPdfImport(
       requestSha256: input.requestSha256,
       sourceSha256: input.sourceSha256,
       configSha256: input.configSha256,
-      configuration: PDF_IMPORT_PROFILE,
-      profileId: PDF_IMPORT_PROFILE.profileId,
+      configuration,
+      profileId: configuration.profileId,
       bookId: book.id,
       libraryItemId: item.libraryItemId,
       sourceArtifactId: input.artifact.id,

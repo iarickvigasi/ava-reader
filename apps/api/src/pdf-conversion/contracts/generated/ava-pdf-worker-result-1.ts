@@ -58,7 +58,7 @@ export type Stage =
   | 'assembly'
   | 'validation';
 export type Status1 = 'failed' | 'unsupported';
-export type ProfileId = 'ava-pdf-prose-en-v2';
+export type ProfileId = 'ava-pdf-prose-en-v2' | 'ava-pdf-prose-en-uk-v3';
 export type RequestSha256 = string;
 export type SchemaVersion = 'ava-pdf-worker-result-1';
 export type SourceSha256 = string;

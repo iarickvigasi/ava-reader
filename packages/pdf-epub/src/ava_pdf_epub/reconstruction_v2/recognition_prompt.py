@@ -65,3 +65,102 @@ must conserve letters/punctuation, but the visible image wins over hidden/broken
 Report uncertainty for illegible content or essential ambiguous structure/references.
 Unknown optional font/style properties may remain null/omitted; they alone are not failure.
 """
+
+
+MERGED_TABLE_PROMPT_VERSION = "ava-prose-region-3"
+MERGED_TABLE_PROMPT = (
+    SYSTEM_PROMPT.replace(
+        "Tables preserve rectangular rows/cells and header axes.",
+        "Tables preserve their measured logical grid, physical cells and header axes.",
+    ).replace(
+        "Merged/complex or essential unsupported material requires unresolved "
+        "and kind unsupported;",
+        "Complex or essential unsupported material requires unresolved and kind unsupported;",
+    )
+    + """
+MERGED TABLES: Bounded ruled tables may have horizontal or vertical merged headers.
+Emit cells as row arrays of physical cell origins in left-to-right order, without null
+placeholders or duplicated text in covered slots. Include empty origin rows as [] when
+entirely covered by preceding vertical spans. Each physical cell may declare row_span
+and column_span as positive integers; omit them only for span1. First origin row spans
+establish the column count. Subsequent cells occupy the next unoccupied logical column.
+All grid positions must be covered exactly once within20rows/8columns. Preserve every
+intentional blank physical cell as text:""; a slot covered by a merge is not a blank cell.
+Bound each cell box to its full physical ruled rectangle, including the merged area.
+Preserve multi-level header axes only when visibly supported; do not invent relationships.
+Uncertain cell boundaries/spans or ambiguous essential header axes require unresolved.
+"""
+)
+
+
+PINNED_TABLE_PROMPT_VERSION = "ava-prose-region-4"
+PINNED_TABLE_PROMPT = (
+    MERGED_TABLE_PROMPT
+    + """
+PINNED PHYSICAL CELLS: native_evidence.ruled_tables declares source_cell_id and measured
+page-point boxes for every physical ruled cell. For each declared cell, return its exact
+source_cell_id with box:null. Do NOT estimate or emit replacement coordinates for it,
+even for text:"" blank cells. The host owns and resolves its source geometry.
+Copy the declared row_span/column_span and return physical origins in their declared row
+order, exactly once each. Do not omit blank cells or duplicate IDs. Transcribe visible
+cell text and its styles/spans/header_axis; source rectangles do not authorize guessing text.
+Ordinary cells lacking pinned declarations retain their usual render_normalized_1000 box
+and omit source_cell_id. Non-table segment boxes remain render_normalized_1000.
+"""
+)
+
+
+# Historical prompts remain exact; new task identities make style encoding explicit.
+STYLE_OBJECT_INSTRUCTIONS = """
+STYLE ENCODING: Each segment.style, cell.style and span.style is an inline JSON OBJECT
+or null, never a string ID. There is no style registry or implicit reference lookup.
+Even when several observations have the same style ID, repeat their sparse observed style
+OBJECT at each occurrence. For example: "style":{"id":"body","bold":false,"italic":false}.
+Never write "style":"body". Do not add a top-level styles dictionary. Unknown properties
+may remain omitted/null; do not invent typography just to fill an object.
+Before returning, check that every style value is an object or null, including inline spans.
+"""
+EXPLICIT_STYLE_PROMPT_VERSION = "ava-prose-region-5"
+EXPLICIT_STYLE_PROMPT = SYSTEM_PROMPT + STYLE_OBJECT_INSTRUCTIONS
+PINNED_STYLE_PROMPT_VERSION = "ava-prose-region-6"
+PINNED_STYLE_PROMPT = PINNED_TABLE_PROMPT + STYLE_OBJECT_INSTRUCTIONS
+
+
+_NUMERIC_SPAN_INSTRUCTIONS = (
+    "Span start/end are half-open Unicode CODE POINT offsets in the exact segment/cell text\n"
+    "(Python string indexes, not UTF-16 units, bytes or grapheme clusters). A😀B has length3."
+)
+_ANCHORED_SPAN_INSTRUCTIONS = (
+    'Every inline exception/reference span uses anchor:{"exact_text":"the styled words"}.\n'
+    """
+Copy exact_text verbatim from its own segment/cell text, preserving Unicode and spaces.
+Do not count characters or emit start/end offsets; omit them or use null. The host computes
+code-point positions. If the same substring occurs more than once, add anchor.before and/or
+anchor.after as exact adjacent context (up to128characters) identifying exactly one occurrence.
+Never guess a numeric position or normalize anchor text. Absent/ambiguous anchors are rejected.
+Choose the words visibly styled in the image, not a similar phrase elsewhere in the paragraph."""
+)
+ANCHORED_STYLE_PROMPT_VERSION = "ava-prose-region-7"
+ANCHORED_STYLE_PROMPT = EXPLICIT_STYLE_PROMPT.replace(
+    _NUMERIC_SPAN_INSTRUCTIONS, _ANCHORED_SPAN_INSTRUCTIONS
+)
+PINNED_ANCHORED_PROMPT_VERSION = "ava-prose-region-8"
+PINNED_ANCHORED_PROMPT = PINNED_STYLE_PROMPT.replace(
+    _NUMERIC_SPAN_INSTRUCTIONS, _ANCHORED_SPAN_INSTRUCTIONS
+)
+
+
+STYLE_BOUNDARY_INSTRUCTIONS = """
+STYLE RUN BOUNDARIES: inspect the complete visible emphasized run, from its first word
+through its last word. Do not omit earlier words of an italic or bold phrase. Split anchors
+where the image returns to the paragraph's base style, even for a connector or punctuation.
+Do not combine two emphasized phrases across a plain connector. Include a colon, period,
+space or conjunction only when that character visibly shares the emphasized typeface.
+For example, if ONLY "first" and "second" are italic in "first and second.", return two
+italic anchors, exact_text:"first" and exact_text:"second"; leave " and " and "." plain.
+Check the left and right boundary of each anchor against the image before returning.
+"""
+BOUNDARY_STYLE_PROMPT_VERSION = "ava-prose-region-9"
+BOUNDARY_STYLE_PROMPT = ANCHORED_STYLE_PROMPT + STYLE_BOUNDARY_INSTRUCTIONS
+PINNED_BOUNDARY_PROMPT_VERSION = "ava-prose-region-10"
+PINNED_BOUNDARY_PROMPT = PINNED_ANCHORED_PROMPT + STYLE_BOUNDARY_INSTRUCTIONS

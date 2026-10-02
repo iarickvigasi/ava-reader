@@ -1,5 +1,6 @@
 """Turn qualified source segments into typed content nodes, retaining every source region."""
 
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
@@ -8,14 +9,15 @@ from .assemble_table import assemble_table
 from .assembly_state import AssemblyState
 from .associate_figures import associate_figures
 from .canonical_text import canonical_text
+from .page_checkpoints import PreparedPageMap
 from .prepared import PreparedPage
 from .segments import Segment
 
 
 def assemble_blocks(
-    segments: list[Segment], prepared: list[PreparedPage], scratch: Path, state: AssemblyState
+    segments: list[Segment], prepared: Sequence[PreparedPage], scratch: Path, state: AssemblyState
 ) -> None:
-    pages = {p.observation.number: p for p in prepared}
+    pages = PreparedPageMap(prepared)
     for segment in segments:
         if segment.kind in {"unsupported", "furniture"}:
             raise ValueError("Unresolved essential content cannot become a candidate")

@@ -4,14 +4,22 @@ from pathlib import Path
 
 from PIL import Image
 
+from ..contracts.profiles import BILINGUAL_PROFILE, LEGACY_PROFILE, ProfileId
 from ..contracts.source import Box
 from .geometry import overlap, rectangle, union
 from .observations import PageObservation
 
 
-def raster_regions(page: PageObservation, scratch: Path) -> list[Box]:
+def raster_regions(
+    page: PageObservation, scratch: Path, profile_id: ProfileId = LEGACY_PROFILE
+) -> list[Box]:
     full = rectangle((0, 0, page.width_pt, page.height_pt), page.width_pt, page.height_pt)
-    if page.risks or not page.lines:
+    blocking = set(page.risks)
+    if profile_id == BILINGUAL_PROFILE:
+        # Uncertain language is not unreadable text. Whole-book primary_language still
+        # requires source-supported language; foreign/unknown passages retain und tags.
+        blocking.discard("language_uncertain")
+    if blocking or not page.lines:
         return [full]
     regions = []
     with Image.open(scratch / page.render_path) as source:

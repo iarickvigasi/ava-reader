@@ -1,5 +1,6 @@
 """Join explicit continuation or visibly incomplete prose across column/page boundaries only."""
 
+from ..contracts.layout_wrap import compound_wrap
 from .assembly_state import AssemblyState
 from .continuation_boundary import inferred_continuation
 from .segments import Segment
@@ -28,12 +29,22 @@ def stream_joins(segments: list[Segment], state: AssemblyState) -> list[Segment]
                     and previous.note_label == segment.note_label
                 )
             )
+            and previous.preserve_line_breaks == segment.preserve_line_breaks
             and (inferred or declared)
         ):
-            offset = len(previous.text) + 1
+            separator = "\n" if previous.preserve_line_breaks else " "
+            if (
+                not previous.preserve_line_breaks
+                and previous.method == segment.method == "native"
+                and compound_wrap(
+                    previous.text + "\n" + segment.text, len(previous.text), len(previous.text) + 1
+                )
+            ):
+                separator = ""
+            offset = len(previous.text) + len(separator)
             updated = previous.model_copy(
                 update={
-                    "text": previous.text + " " + segment.text,
+                    "text": previous.text + separator + segment.text,
                     "source_text": (previous.source_text or previous.text)
                     + "\n"
                     + (segment.source_text or segment.text),

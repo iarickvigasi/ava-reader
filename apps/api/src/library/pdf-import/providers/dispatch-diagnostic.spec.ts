@@ -65,3 +65,47 @@ it('preserves private HTTP evidence only after marking the reservation uncertain
     else process.env.AVA_PDF_TEST_HOOKS = previous;
   }
 });
+
+it('persists known HTTP rate-limit classification without settlement or a second send', async () => {
+  const previous = process.env.AVA_PDF_TEST_HOOKS;
+  process.env.AVA_PDF_TEST_HOOKS = '1';
+  jest.clearAllMocks();
+  try {
+    const diagnostic = {
+      httpStatus: 429,
+      complete: true,
+      classification: 'RATE_LIMIT' as const,
+      limitSource: 'upstream_provider_shared_pool',
+      retryAfterSeconds: 60,
+    };
+    const receipt = Buffer.from('{"status":429,"body":"private detail"}');
+    const transport = jest.fn(() =>
+      Promise.reject(new ProviderTransportFailure(receipt, diagnostic)),
+    );
+    await expect(
+      dispatchPdfProvider(
+        {} as PrismaService,
+        {
+          task,
+          authority: {
+            principalId: 'principal',
+            token: 'synthetic',
+            attemptId: 'attempt',
+            attemptToken: 'synthetic',
+          },
+        },
+        transport,
+      ),
+    ).rejects.toThrow('PDF_PROVIDER_OUTCOME_UNCERTAIN');
+    expect(markPdfProviderUncertain).toHaveBeenCalledWith(
+      expect.anything(),
+      'call',
+      diagnostic,
+    );
+    expect(settlePdfProvider).not.toHaveBeenCalled();
+    expect(transport).toHaveBeenCalledTimes(1);
+  } finally {
+    if (previous === undefined) delete process.env.AVA_PDF_TEST_HOOKS;
+    else process.env.AVA_PDF_TEST_HOOKS = previous;
+  }
+});

@@ -10,6 +10,7 @@ export type ReaderInline =
   | {
       kind: "text";
       text: string;
+      language?: TextValue["language"];
       bold?: boolean;
       fontWeight?: number;
       href?: string;
@@ -66,6 +67,8 @@ export type ReaderTextBlock = ReaderBlockBase & {
   returns?: { label: string; target: ReaderLinkTarget }[];
 };
 export type ReaderTableCell = ReaderBlockBase & {
+  rowSpan?: number;
+  columnSpan?: number;
   row: number;
   column: number;
   headerAxis?: "row" | "column" | "both" | null;

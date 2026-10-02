@@ -7,6 +7,7 @@ from typing import Literal, Self
 from pydantic import Field, model_validator
 
 from .common import Digest, Record, text_digest
+from .layout_wrap import compound_wrap
 
 LIGATURES = str.maketrans(
     {"ﬀ": "ff", "ﬁ": "fi", "ﬂ": "fl", "ﬃ": "ffi", "ﬄ": "ffl", "ﬅ": "st", "ﬆ": "st"}
@@ -39,7 +40,15 @@ class NormalizationMap(Record):
                 raise ValueError("Normalization segments must cover contiguous ranges")
             if not item.source_start < item.source_end <= len(self.source_text):
                 raise ValueError("Normalization source range outside text")
-            if not item.canonical_start < item.canonical_end <= len(text):
+            deleted_wrap = (
+                item.kind == "line_wrap"
+                and item.canonical_start == item.canonical_end
+                and compound_wrap(self.source_text, item.source_start, item.source_end)
+            )
+            if not (
+                item.canonical_start < item.canonical_end <= len(text)
+                or (deleted_wrap and item.canonical_end <= len(text))
+            ):
                 raise ValueError("Normalization canonical range outside text")
             source = self.source_text[item.source_start : item.source_end]
             if item.kind == "nfc":
@@ -47,7 +56,7 @@ class NormalizationMap(Record):
             elif item.kind == "ligature":
                 source = source.translate(LIGATURES)
             elif item.kind == "line_wrap":
-                source = re.sub(r"[ \t]*(?:\r\n|\r|\n)[ \t]*", " ", source)
+                source = "" if deleted_wrap else re.sub(r"[ \t]*(?:\r\n|\r|\n)[ \t]*", " ", source)
             if source != text[item.canonical_start : item.canonical_end]:
                 raise ValueError("Declared normalization does not produce canonical text")
             source_end, canonical_end = item.source_end, item.canonical_end

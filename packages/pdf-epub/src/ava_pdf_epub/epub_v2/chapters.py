@@ -3,6 +3,7 @@
 import xml.etree.ElementTree as ET
 
 from ..contracts.blocks import ListItemBlock
+from ..contracts.profiles import BILINGUAL_PROFILE, package_language
 from .blocks import render_block
 from .context import Context, ident
 from .page_anchors import add_page_anchors
@@ -45,5 +46,9 @@ def chapter_documents(ctx: Context) -> dict[str, bytes]:
             else:
                 body.append(render_block(block_id, ctx))
         add_page_anchors(body, ctx, seen_pages)
-        output["EPUB/" + ctx.paths[chapter.id]] = document(chapter.title, body)
+        output["EPUB/" + ctx.paths[chapter.id]] = document(
+            chapter.title,
+            body,
+            package_language(ctx.book) if ctx.book.profile_id == BILINGUAL_PROFILE else "en",
+        )
     return output

@@ -16,6 +16,10 @@ def render_table(block: TableBlock, attrs: dict[str, str], ctx: Context) -> ET.E
         line = element("tr")
         for cell in (c for c in block.cells if c.row == row):
             props = {"id": ident("b", cell.id), "data-ava-cell": cell.id}
+            if cell.row_span != 1:
+                props["rowspan"] = str(cell.row_span)
+            if cell.column_span != 1:
+                props["colspan"] = str(cell.column_span)
             if cell.header_ids:
                 props["headers"] = " ".join(ident("b", i) for i in cell.header_ids)
             if cell.header_axis in {"row", "column"}:

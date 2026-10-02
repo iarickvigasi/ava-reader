@@ -1216,6 +1216,7 @@
         "role": {
           "enum": [
             "content",
+            "cover",
             "furniture",
             "blank",
             "unsupported"
@@ -1269,6 +1270,33 @@
           "default": null,
           "title": "Align"
         },
+        "background_color": {
+          "anyOf": [
+            {
+              "pattern": "^#[0-9a-f]{6}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Background Color"
+        },
+        "block_indent_em": {
+          "anyOf": [
+            {
+              "maximum": 6,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Block Indent Em"
+        },
         "bold": {
           "anyOf": [
             {
@@ -1280,6 +1308,32 @@
           ],
           "default": null,
           "title": "Bold"
+        },
+        "color": {
+          "anyOf": [
+            {
+              "pattern": "^#[0-9a-f]{6}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Color"
+        },
+        "decoration_color": {
+          "anyOf": [
+            {
+              "pattern": "^#[0-9a-f]{6}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Decoration Color"
         },
         "family": {
           "anyOf": [
@@ -1398,6 +1452,30 @@
           "default": null,
           "title": "Space Before Em"
         },
+        "strike_through": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Strike Through"
+        },
+        "underline": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Underline"
+        },
         "vertical_align": {
           "anyOf": [
             {
@@ -1515,6 +1593,13 @@
           "title": "Column",
           "type": "integer"
         },
+        "column_span": {
+          "default": 1,
+          "maximum": 8,
+          "minimum": 1,
+          "title": "Column Span",
+          "type": "integer"
+        },
         "content": {
           "$ref": "#/$defs/TextValue"
         },
@@ -1566,6 +1651,13 @@
           "title": "Row",
           "type": "integer"
         },
+        "row_span": {
+          "default": 1,
+          "maximum": 20,
+          "minimum": 1,
+          "title": "Row Span",
+          "type": "integer"
+        },
         "style_id": {
           "anyOf": [
             {
@@ -1602,6 +1694,23 @@
           "minItems": 1,
           "title": "Codepoint Utf16",
           "type": "array"
+        },
+        "language": {
+          "anyOf": [
+            {
+              "enum": [
+                "en",
+                "uk",
+                "und"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Language"
         },
         "normalization": {
           "anyOf": [
@@ -1802,7 +1911,10 @@
       "type": "array"
     },
     "profile_id": {
-      "const": "ava-pdf-prose-en-v2",
+      "enum": [
+        "ava-pdf-prose-en-v2",
+        "ava-pdf-prose-en-uk-v3"
+      ],
       "title": "Profile Id",
       "type": "string"
     },

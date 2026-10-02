@@ -36,9 +36,10 @@ def ambiguous_boundary(previous: Segment, current: Segment, state: AssemblyState
         return False  # Already source-qualified; no model tokens needed.
     if current.style and (
         current.style.indent_em not in {None, 0}
+        or current.style.block_indent_em not in {None, 0}
         or current.style.align not in {None, "start", "left", "justify"}
     ):
         return False
     return not re.search(r"[.!?:;][\"'’”)]*$", previous.text.rstrip()) and bool(
-        re.match(r"[a-z]", current.text)
+        current.text[:1].islower()
     )

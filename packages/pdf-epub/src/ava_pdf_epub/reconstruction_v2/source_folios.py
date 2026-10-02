@@ -1,6 +1,7 @@
 """Printed page labels require visible marginal evidence; physical indices are not substitutes."""
 
 import re
+from collections.abc import Sequence
 from statistics import median
 
 from .font_style import glyph_size
@@ -9,7 +10,7 @@ from .segments import Segment
 
 
 def source_folios(
-    prepared: list[PreparedPage], segments: dict[int, list[Segment]]
+    prepared: Sequence[PreparedPage], segments: dict[int, list[Segment]]
 ) -> dict[str, int]:
     labels: dict[str, int] = {}
     for checkpoint in prepared:

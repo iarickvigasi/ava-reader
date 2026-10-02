@@ -5,6 +5,7 @@ import { ReaderAiCommentsOverlay } from "../overlays/ai-comments/reader-ai-comme
 import { ReaderAiToolboxOverlay } from "../overlays/ai-toolbox/reader-ai-toolbox-overlay";
 import { ReaderContentsOverlay } from "../overlays/contents/reader-contents-overlay";
 import { ReaderHighlightsOverlay } from "../overlays/highlights/reader-highlights-overlay";
+import { ReaderSearchOverlay } from "../overlays/search/reader-search-overlay";
 import { ReaderPreferencesOverlay } from "../overlays/preferences/reader-preferences-overlay";
 import { useAiCommentsContext } from "../overlays/ai-comments/ai-comments-context";
 import { useHighlightsContext } from "../overlays/highlights/highlights-context";
@@ -34,6 +35,20 @@ export function ReadyReaderOverlays(props: ReadyReaderProps) {
           onSelectChapter={(id, target) => {
             closePanel();
             props.onSelectChapter(id, target);
+          }}
+        />
+      );
+    case "search":
+      return (
+        <ReaderSearchOverlay
+          payload={props.payload}
+          onClose={closePanel}
+          onSelect={(locator) => {
+            closePanel();
+            props.onSelectChapter(locator.chapterId, {
+              blockId: locator.blockId,
+              textOffset: locator.textOffset,
+            });
           }}
         />
       );

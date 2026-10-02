@@ -21,6 +21,17 @@ def validate_source(book: "CanonicalBookV2", nodes: dict[str, BlockBase]) -> Non
     regions = {(p.number, r.id): (p, r) for p in book.pages for r in p.regions}
     if len(regions) > 20000:
         raise ValueError("Aggregate region bound exceeded")
+    covers = [(p, r) for p in book.pages for r in p.regions if r.role == "cover"]
+    if len(covers) > 1 or any(p.number != 1 or r.route != "render" for p, r in covers):
+        raise ValueError("A cover layer is a single first-page source render")
+    cover_evidence = {
+        (e.page, e.region_id)
+        for resource in book.resources
+        if resource.id == book.cover_resource_id
+        for e in resource.evidence
+    }
+    if any((p.number, r.id) not in cover_evidence for p, r in covers):
+        raise ValueError("A cover layer must belong to the identified cover asset")
     evidence = [e for n in nodes.values() for e in n.evidence]
     evidence += [e for r in book.resources for e in r.evidence]
     evidence += [e for claim in book.metadata for e in claim.evidence]

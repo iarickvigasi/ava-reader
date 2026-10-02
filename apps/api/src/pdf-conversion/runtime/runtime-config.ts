@@ -52,7 +52,7 @@ export function runtimeConfigFromEnvironment(
         : env.NODE_ENV === 'test'
           ? 'test'
           : 'development',
-    memoryBytes: Number(env.AVA_PDF_MEMORY_BYTES ?? 536870912),
+    memoryBytes: Number(env.AVA_PDF_MEMORY_BYTES ?? 2147483648),
     cpus: Number(env.AVA_PDF_CPUS ?? 1),
     ...(env.AVA_PDF_RUNTIME_FAULT
       ? {

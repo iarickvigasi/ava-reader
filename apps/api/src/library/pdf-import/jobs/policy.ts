@@ -1,11 +1,12 @@
 import { z } from 'zod';
 import { PdfJobError } from './errors';
+import { MAX_ACTIVE_DEADLINE_MS } from '../../../pdf-conversion/contracts/execution-limits';
 export const ARTIFACT_BYTE_LIMIT = 64 * 1024 * 1024;
 export const DEFAULT_JOB_POLICY = Object.freeze({
   version: 1,
   maxAttempts: 3,
   leaseMs: 30000,
-  totalTimeoutMs: 1800000,
+  totalTimeoutMs: MAX_ACTIVE_DEADLINE_MS,
   retryDelayMs: 1000,
   globalConcurrency: 2,
   ownerConcurrency: 1,
@@ -19,7 +20,7 @@ const schema = z
     version: z.literal(1),
     maxAttempts: z.number().int().min(1).max(3),
     leaseMs: z.number().int().min(100).max(30000),
-    totalTimeoutMs: z.number().int().min(1000).max(1800000),
+    totalTimeoutMs: z.number().int().min(1000).max(MAX_ACTIVE_DEADLINE_MS),
     retryDelayMs: z.number().int().min(0).max(30000),
     globalConcurrency: z.number().int().min(1).max(2),
     ownerConcurrency: z.literal(1),

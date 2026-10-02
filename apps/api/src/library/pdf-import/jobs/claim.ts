@@ -17,11 +17,32 @@ export function claimPdfJob(
     await recoverExpired(tx, now);
     const jobs = await tx.pdfConversionJob.findMany({
       where: {
+        AND: [
+          {
+            OR: [
+              { providerMode: { not: 'live' } },
+              {
+                providerMode: 'live',
+                workerFingerprint: principal.workerFingerprint,
+                dispatchAuthorization: {
+                  state: 'ACTIVE',
+                  route: {
+                    state: 'ACTIVE',
+                    configuration: {
+                      path: ['importPolicy', 'version'],
+                      equals: 1,
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        ],
         state: 'QUEUED',
         availableAt: { lte: now },
         providerMode: {
           in: principal.modes.filter((mode) =>
-            ['native', 'stub', 'replay'].includes(mode),
+            ['native', 'stub', 'replay', 'live'].includes(mode),
           ),
         },
         OR: [

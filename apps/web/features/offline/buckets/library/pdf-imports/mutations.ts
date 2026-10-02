@@ -40,6 +40,7 @@ export async function importPdfFile(
     }
     const body = new FormData();
     body.append("file", file);
+    body.append("originalFilename", file.name);
     body.append("convertToEpub", "true");
     const response = await pdfImportRequest(db, getToken, "", {
       method: "POST",

@@ -55,6 +55,12 @@ export async function reservePdfProvider(
       return { call: previous, prepared, grant };
     }
     await loadProviderGrant(tx, credential);
+    if (
+      prepared.config.importPolicy &&
+      (await tx.pdfProviderCall.count({ where: { grantId: grant.id } })) >=
+        prepared.config.importPolicy.maxRequestsPerOperation
+    )
+      throw new PdfProviderError('PDF_PROVIDER_REQUEST_LIMIT');
     const call = await tx.pdfProviderCall.create({
       data: {
         grantId: grant.id,

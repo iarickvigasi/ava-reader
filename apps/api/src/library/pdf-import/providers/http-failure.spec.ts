@@ -1,5 +1,8 @@
 import { openRouterTransport } from './openrouter-transport';
-import { privateTransportReceipt } from './transport-failure';
+import {
+  privateTransportReceipt,
+  providerFailureDiagnostic,
+} from './transport-failure';
 const input = {
   request: Buffer.from('{}'),
   apiKey: 'secret-for-test',
@@ -32,6 +35,33 @@ describe('private non-success transport evidence', () => {
       expect(fetcher).toHaveBeenCalledTimes(1);
     },
   );
+  it('captures retry hints privately and returns only safe machine diagnostics', async () => {
+    jest.spyOn(global, 'fetch').mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          error: {
+            message: input.apiKey,
+            metadata: { limit_source: 'upstream_provider_shared_pool' },
+          },
+        }),
+        { status: 429, headers: { 'Retry-After': '60' } },
+      ),
+    );
+    const error: unknown = await openRouterTransport(input).catch(
+      (e: unknown) => e,
+    );
+    expect(providerFailureDiagnostic(error)).toEqual({
+      httpStatus: 429,
+      complete: true,
+      classification: 'RATE_LIMIT',
+      limitSource: 'upstream_provider_shared_pool',
+      retryAfterSeconds: 60,
+    });
+    expect(JSON.stringify(error)).not.toContain('RATE_LIMIT');
+    expect(privateTransportReceipt(error)?.toString()).not.toContain(
+      input.apiKey,
+    );
+  });
   it('caps body evidence and cancels excess without a second send', async () => {
     const cancel = jest.fn();
     const body = new ReadableStream<Uint8Array>({

@@ -1,6 +1,7 @@
 """Require all source pages and all dispatched regions before whole-book reconstruction."""
 
 import hashlib
+from collections.abc import Sequence
 from pathlib import Path
 
 from .accept_response import accept_response
@@ -14,7 +15,7 @@ from .segments import Segment
 
 
 def qualify_pages(
-    source: Path, scratch: Path, pages: list[PreparedPage], responses: list[RecognitionResponse]
+    source: Path, scratch: Path, pages: Sequence[PreparedPage], responses: list[RecognitionResponse]
 ) -> dict[int, list[Segment]]:
     digest = hashlib.sha256(source.read_bytes()).hexdigest()
     if not pages or [p.observation.number for p in pages] != list(
@@ -22,7 +23,9 @@ def qualify_pages(
     ):
         raise ValueError("Prepared source pages must be complete and ordered")
     if any(
-        p.source_sha256 != digest
+        p.profile_id != pages[0].profile_id
+        or any(t.profile_id != p.profile_id for t in p.tasks)
+        or p.source_sha256 != digest
         or p.source_byte_length != source.stat().st_size
         or p.source_page_count != len(pages)
         for p in pages
@@ -32,7 +35,7 @@ def qualify_pages(
     lookup = {r.task_id: r for r in responses}
     if len(lookup) != len(responses) or set(lookup) != {task.task_id for task in tasks}:
         raise ValueError("Recognition task coverage is incomplete or contains unexpected receipts")
-    furniture = furniture_ids([p.observation for p in pages])
+    furniture = furniture_ids((p.observation for p in pages), pages[0].profile_id)
     output: dict[int, list[Segment]] = {}
     for page in pages:
         render = scratch / page.observation.render_path
@@ -44,7 +47,11 @@ def qualify_pages(
             output[page.observation.number] = []
             continue
         content = native_page(
-            page.observation, page.tables, furniture, [t.region_box for t in page.tasks]
+            page.observation,
+            page.tables,
+            furniture,
+            [t.region_box for t in page.tasks],
+            page.profile_id,
         )
         native_conservation(page.observation, content, [t.region_box for t in page.tasks])
         for task in page.tasks:

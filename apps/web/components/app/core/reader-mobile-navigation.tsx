@@ -9,7 +9,8 @@ import { useReaderUi } from "./reader-ui-context";
 export function ReaderMobileNavigation() {
   const { activePanel, togglePanel, isPhone } = useReaderUi();
   const items = readerNavItems.filter(
-    (item, index) => index < 5 || item.id === "bilingualMode",
+    (item, index) =>
+      index < 5 || item.id === "search" || item.id === "bilingualMode",
   );
   return (
     <header

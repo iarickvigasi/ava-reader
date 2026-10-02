@@ -92,3 +92,33 @@ Back/structured/offline/account/translation/download/deletion/error flows, final
 and actual phone/assistive evidence. PRODUCT qualification is empty; cleanup remains disabled.
 No merge/deployment or valid EPUB file is itself a release, whole-book fidelity or capacity PASS.
 Private books, payloads, credentials, account data and local evidence are not repository assets.
+
+### Reader whitespace qualification
+
+Canonical text can contain intentional newlines even in ordinary paragraphs and headings.
+The shared text-inline renderer preserves whitespace across styled runs; this matches the
+EPUB text-leaf behavior without inserting characters or changing source offsets. Qualification
+must inspect browser line geometry as well as serialized text: a text-equality assertion alone
+missed a real paired-line rendering failure. The supplied Ukrainian book passed normal import
+and EPUBCheck5.4.0 in the isolated local environment; its reader-only fix passes1380web tests
+and typecheck, with two retained lint warnings. Exact source indentation, subsection semantics,
+metadata completeness, owned round trip, device/continuity coverage and independent review
+remain separate gates. A regenerated reader fingerprint requires a matching consumer
+qualification; a TEST-only record enables local QA and never authorizes production.
+
+Measured canonical heading size must be compared with the reader's prose baseline; it must not be multiplied by a second semantic heading enlargement. Native inline size remains relative to its containing line. Scoped correction is covered by source/unknown/ordinary EPUB regression cases and actual desktop/390px viewport measurements; full web1383tests and typecheck pass, lint retains two warnings. Source identity cb5ad0af…f019c9 is TEST-only and does not replace immutable publication bytes or establish independent review. At125% text, large title words still break within words; retain this readability finding and complete source metadata, style/TOC, device and whole-book qualification before release.
+
+### Whole-book search and production identity
+
+The candidate searches complete fixed canonical text without provider calls. Legacy EPUB search
+follows checked chapter adjacency and refuses incomplete content. Literal Unicode matching retains
+source offsets; results identify chapter/excerpt, and exact result navigation uses the existing Back
+session. Verify distant occurrences beyond the active chapter, larger text, result limits, no-match
+and unavailable states, keyboard dismissal, cached content, account isolation and physical phones.
+
+Scoped signed-in desktop checks pass for legacy/canonical distant result and Back, measured135% text
+and cached canonical reload with the API unavailable. These are separate from physical/production
+offline, phone and assistive-use qualification. The post-build source-identity check caught generated
+precache output contaminating the fingerprint; the explicit output exclusion, regression and actual
+production rebuild now pass. No accepted publication was replaced and independent review remains
+pending. Private source, screenshots and diagnostic records remain outside repository assets.

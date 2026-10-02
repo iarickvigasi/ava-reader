@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { pilotInventorySchema } from './pilot-schema';
+import { importPolicySchema, validateImportPolicy } from './import-policy';
 import { validatePilotPolicy } from './pilot-policy';
 import { PdfProviderError } from './errors';
 import type { RouteConfiguration, RouteTariff } from './types';
@@ -26,10 +27,14 @@ const configSchema = z
     dataCollection: z.literal('deny'),
     zeroDataRetention: z.boolean(),
     promptHashes: z.record(z.string(), hash),
+    reasoningEffortByPrompt: z
+      .record(z.string().min(1).max(100), z.enum(['low', 'medium', 'high']))
+      .optional(),
     schemaHashes: z.record(z.string(), hash),
     operationLimitNano: z.string(),
-    authorizedSourceSha256: z.array(hash).min(1).max(500),
+    authorizedSourceSha256: z.array(hash).max(500),
     pilotInventory: pilotInventorySchema.optional(),
+    importPolicy: importPolicySchema.optional(),
   })
   .strict();
 const tariffSchema = z
@@ -54,7 +59,10 @@ export function routePolicy(
     !t.success ||
     c.data.maxOutputTokens > c.data.maxContextTokens ||
     !Object.keys(c.data.promptHashes).length ||
-    !Object.keys(c.data.schemaHashes).length
+    !Object.keys(c.data.schemaHashes).length ||
+    Object.keys(c.data.reasoningEffortByPrompt ?? {}).some(
+      (prompt) => !Object.hasOwn(c.data.promptHashes, prompt),
+    )
   )
     throw new PdfProviderError('PDF_PROVIDER_ROUTE_INVALID');
   nanoValue(c.data.operationLimitNano);
@@ -68,6 +76,7 @@ export function routePolicy(
     usdToNano(t.data.imageUsd) * BigInt(c.data.maxImages);
   if (maximumNano < 1n)
     throw new PdfProviderError('PDF_PROVIDER_ROUTE_INVALID');
+  validateImportPolicy(c.data);
   validatePilotPolicy(c.data, t.data, maximumNano);
   return { config: c.data, tariff: t.data, maximumNano };
 }

@@ -45,6 +45,7 @@ export async function runReconstruction(
     sourceSha256: job.source.sha256,
     pageLimit: job.source_page_limit,
     providerMode: job.provider_mode,
+    profileId: job.profile_id,
   });
   await deps.progress({ stage: 'RECONSTRUCTION' });
   const refinements = await refineBook({
@@ -53,12 +54,14 @@ export async function runReconstruction(
     sandboxInput,
     sourceSha256: job.source.sha256,
     providerMode: job.provider_mode,
+    profileId: job.profile_id,
   });
   const auxiliaryBytes = Buffer.from(
     JSON.stringify({
       mode: 'reconstruct_stream',
       input: {
         schema_version: 'ava-reconstruct-input-1',
+        profile_id: job.profile_id,
         source_sha256: job.source.sha256,
         responses: prepared.responses,
         refinements,
@@ -73,6 +76,8 @@ export async function runReconstruction(
     !book ||
     !reportBytes ||
     JSON.stringify(reportBytes) !== JSON.stringify(report) ||
+    report.profile_id !== job.profile_id ||
+    book.profile_id !== job.profile_id ||
     report.page_count !== prepared.pageCount ||
     report.recognition_task_count !== prepared.taskCount
   )

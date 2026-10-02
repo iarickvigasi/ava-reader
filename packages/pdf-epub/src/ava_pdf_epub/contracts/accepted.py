@@ -6,6 +6,7 @@ from pydantic import Field, model_validator
 
 from .artifacts import Artifact, bound_artifacts, distinct_artifacts, require_role
 from .common import Digest, Id, Record
+from .profiles import ProfileId
 
 
 class AcceptedContentV1(Record):
@@ -15,7 +16,7 @@ class AcceptedContentV1(Record):
     owner_id: Id
     library_item_id: Id
     final_content_id: Id
-    profile_id: Literal["ava-pdf-prose-en-v2"]
+    profile_id: ProfileId
     canonical_schema: Literal["ava-book-2"]
     reader_schema: Literal["ava-reader-3"]
     source: Artifact

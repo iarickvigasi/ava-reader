@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from ava_pdf_epub.reconstruction_v2.native_review import NativeReviewRequired
 from ava_pdf_epub.reconstruction_v2.prepare_page import prepare_page
 from ava_pdf_epub.reconstruction_v2.reconstruct import reconstruct
 from ava_pdf_epub.reconstruction_v2.route_native import route_native
@@ -29,7 +30,7 @@ class Routing(unittest.TestCase):
             page = prepare_page(FIXTURES / "native.pdf", scratch, 3)
             with patch(
                 "ava_pdf_epub.reconstruction_v2.route_native.native_page",
-                side_effect=ValueError("Ambiguous layout"),
+                side_effect=NativeReviewRequired("Ambiguous layout"),
             ):
                 segments, tasks = route_native(
                     page.observation, page.tables, [], page.source_sha256, scratch

@@ -10,9 +10,11 @@ from types import SimpleNamespace
 
 from PIL import Image, ImageDraw
 
+from ava_pdf_epub.contracts.styles import Style
 from ava_pdf_epub.reconstruction_v2.assembly_state import AssemblyState
 from ava_pdf_epub.reconstruction_v2.prepare_refinement import prepare_refinement
 from ava_pdf_epub.reconstruction_v2.refinement_contract import BookRefinementResponse
+from ava_pdf_epub.reconstruction_v2.refinement_identity import refinement_identifier
 from ava_pdf_epub.reconstruction_v2.refinement_response import accept_refinement
 
 from .refinement_evidence import join_decisions
@@ -32,13 +34,14 @@ class RefinementTailTest(unittest.TestCase):
             render_sha = hashlib.sha256(source.read_bytes()).hexdigest()
             pages = [
                 SimpleNamespace(
+                    profile_id="ava-pdf-prose-en-v2",
                     observation=SimpleNamespace(
                         number=number,
                         width_pt=500,
                         height_pt=720,
                         render_path=source.name,
                         render_sha256=render_sha,
-                    )
+                    ),
                 )
                 for number in (1, 2)
             ]
@@ -65,7 +68,7 @@ class RefinementTailTest(unittest.TestCase):
             self.assertNotIn((255, 0, 0), tail_pixels)
             response = BookRefinementResponse.model_validate(
                 dict(
-                    schema_version="ava-book-refinement-response-1",
+                    schema_version="ava-book-refinement-response-3",
                     task_id=task.task_id,
                     source_sha256=task.source_sha256,
                     observation_sha256=task.observation_sha256,
@@ -88,6 +91,71 @@ class RefinementTailTest(unittest.TestCase):
                 )
             )
             accept_refinement(task, response)
+            # The same sparse response must fail here when only its native endpoint
+            # has known paragraph typography, rather than failing during assembly.
+            sparse = task.nodes[0].model_copy(
+                update={
+                    "observed_style": Style(
+                        id="native",
+                        relative_size=1,
+                        bold=False,
+                        italic=False,
+                        align="start",
+                        line_height=1.15,
+                    )
+                }
+            )
+            values = task.model_dump()
+            values["nodes"][0] = sparse.model_dump()
+            values["task_id"] = refinement_identifier(values)
+            typed_task = type(task).model_validate(values)
+            typed_response = response.model_copy(update={"task_id": typed_task.task_id})
+            with self.assertRaisesRegex(ValueError, "fragment typography"):
+                accept_refinement(typed_task, typed_response)
+            separate = typed_response.model_copy(
+                update={
+                    "joins": [
+                        join.model_copy(update={"join": False}) for join in typed_response.joins
+                    ]
+                }
+            )
+            accept_refinement(typed_task, separate)
+            # A separate decorative endpoint is not a body baseline and may be smaller.
+            measured = separate.model_copy(
+                update={
+                    "decisions": [
+                        decision.model_copy(
+                            update={
+                                "style": decision.style.model_copy(update={"relative_size": 0.85})
+                            }
+                        )
+                        for decision in separate.decisions
+                    ]
+                }
+            )
+            accept_refinement(typed_task, measured)
+            matching = typed_response.model_copy(
+                update={
+                    "decisions": [
+                        decision.model_copy(
+                            update={
+                                "style": type(decision.style).model_validate(
+                                    {
+                                        "id": "observed",
+                                        "relative_size": 1,
+                                        "bold": False,
+                                        "italic": False,
+                                        "align": "start",
+                                        "line_height": 1.15,
+                                    }
+                                )
+                            }
+                        )
+                        for decision in typed_response.decisions
+                    ]
+                }
+            )
+            accept_refinement(typed_task, matching)
             wrong_join = response.joins[0].model_copy(
                 update={"evidence_ids": [head.id, parts["following", "head"].id]}
             )

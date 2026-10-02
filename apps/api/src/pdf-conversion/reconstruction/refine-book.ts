@@ -1,3 +1,4 @@
+import type { RecognitionTask } from './generated/RecognitionTask';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
 import type { BookRefinementResponse } from './generated/BookRefinementResponse';
 import type { CoordinatorDependencies } from './coordinator-types';
@@ -11,15 +12,18 @@ export async function refineBook(input: {
   responses: RecognitionResponse[];
   sourceSha256: string;
   providerMode: string;
+  profileId?: RecognitionTask['profile_id'];
   deps: CoordinatorDependencies;
   sandboxInput: () => SandboxInput;
 }): Promise<BookRefinementResponse[]> {
-  if (!input.responses.length) return []; // Native-only books retain the zero-provider path.
+  // Native text can still contain unresolved same-font chapter/list roles.
+  // The source comparison stage returns no tasks for already-qualified structure.
   const auxiliaryBytes = Buffer.from(
     JSON.stringify({
       mode: 'prepare_refinement',
       input: {
         schema_version: 'ava-reconstruct-input-1',
+        profile_id: input.profileId ?? 'ava-pdf-prose-en-v2',
         source_sha256: input.sourceSha256,
         responses: input.responses,
       },
@@ -33,7 +37,12 @@ export async function refineBook(input: {
   });
   if (prepared.exitCode !== 0) throw new PdfRuntimeError('INVALID_RESULT');
   const batch = parsePacket('RefinementBatch', prepared.stdout, 24 * 1024 ** 2);
-  if (batch.source_sha256 !== input.sourceSha256)
+  if (
+    batch.source_sha256 !== input.sourceSha256 ||
+    batch.tasks.some(
+      (task) => task.profile_id !== (input.profileId ?? 'ava-pdf-prose-en-v2'),
+    )
+  )
     throw new PdfRuntimeError('SOURCE_MISMATCH');
   if (batch.tasks.length && input.providerMode === 'native')
     throw new PdfRuntimeError('DISPATCH_NOT_AUTHORIZED');

@@ -3,6 +3,8 @@
 import re
 import unicodedata
 
+from ..contracts.profiles import BILINGUAL_PROFILE, LEGACY_PROFILE, ProfileId
+from .language_evidence import ukrainian_evidence
 from .observations import NativeLine
 
 ENGLISH_HINTS = {
@@ -26,8 +28,10 @@ ENGLISH_HINTS = {
 }
 
 
-def language_uncertain(lines: list[NativeLine]) -> bool:
+def language_uncertain(lines: list[NativeLine], profile_id: ProfileId = LEGACY_PROFILE) -> bool:
     text = " ".join(line.text for line in lines)
+    if profile_id == BILINGUAL_PROFILE and ukrainian_evidence(text).language == "uk":
+        return False
     letters = [char for char in text if char.isalpha()]
     nonlatin = sum("LATIN" not in unicodedata.name(char, "") for char in letters)
     if len(letters) > 100 and nonlatin / len(letters) > 0.2:

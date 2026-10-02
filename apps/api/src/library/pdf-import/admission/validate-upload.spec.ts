@@ -55,3 +55,19 @@ describe('initial PDF request boundary', () => {
     expect(() => validatePdfUpload(input)).toThrow(PayloadTooLargeException);
   });
 });
+
+it('captures a separate server-selected profile without changing legacy configuration identity', () => {
+  const legacy = validatePdfUpload(upload());
+  const extended = validatePdfUpload({
+    ...upload(),
+    profileId: 'ava-pdf-prose-en-uk-v3',
+  });
+  expect(legacy.configuration).toBe(PDF_IMPORT_PROFILE);
+  expect(extended.configuration.profileId).toBe('ava-pdf-prose-en-uk-v3');
+  expect(extended.configSha256).not.toBe(legacy.configSha256);
+  expect(extended.requestSha256).not.toBe(legacy.requestSha256);
+  expect(validatePdfUpload(upload())).toEqual(legacy);
+  expect(() =>
+    validatePdfUpload({ ...upload(), profileId: 'invented' }),
+  ).toThrow('PDF_IMPORT_PROFILE_INVALID');
+});

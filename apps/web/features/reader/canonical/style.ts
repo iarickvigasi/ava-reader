@@ -3,7 +3,21 @@ import type { Style } from "@/lib/api-types/canonical-reader.generated";
 
 export function canonicalStyle(style?: Style): CSSProperties {
   if (!style) return {};
+  const decoration = [
+    ...(style.underline ? ["underline"] : []),
+    ...(style.strike_through ? ["line-through"] : []),
+  ].join(" ");
   return {
+    ...(style.decoration_color == null
+      ? {}
+      : { textDecorationColor: style.decoration_color }),
+    ...(style.color == null ? {} : { color: style.color }),
+    ...(style.background_color == null
+      ? {}
+      : { backgroundColor: style.background_color }),
+    ...(style.underline == null && style.strike_through == null
+      ? {}
+      : { textDecorationLine: decoration || "none" }),
     ...(style.bold == null ? {} : { fontWeight: style.bold ? 700 : 400 }),
     ...(style.italic == null
       ? {}
@@ -25,6 +39,9 @@ export function canonicalStyle(style?: Style): CSSProperties {
       ? {}
       : { fontSize: `${style.relative_size}em` }),
     ...(style.indent_em == null ? {} : { textIndent: `${style.indent_em}em` }),
+    ...(style.block_indent_em == null
+      ? {}
+      : { marginInlineStart: `${style.block_indent_em}em` }),
     ...(style.line_height == null ? {} : { lineHeight: style.line_height }),
     ...(style.space_before_em == null
       ? {}

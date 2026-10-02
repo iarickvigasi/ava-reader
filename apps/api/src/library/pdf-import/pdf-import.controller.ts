@@ -15,6 +15,7 @@ import type { AuthenticatedRequest } from '../../auth/authenticated-request';
 import { ClerkAuthGuard } from '../../auth/clerk-auth.guard';
 import { PrismaService } from '../../prisma/prisma.service';
 import { UsersService } from '../../users/users.service';
+import { withUploadedFilename } from '../../shared/uploaded-filename';
 import { importPdf } from './import-pdf';
 import { PdfIntakeCapacityInterceptor } from './admission/intake-capacity.interceptor';
 import { PDF_IMPORT_PROFILE } from './admission/profile';
@@ -36,7 +37,7 @@ export class PdfImportController {
       limits: {
         fileSize: PDF_IMPORT_PROFILE.maxSourceBytes,
         files: 1,
-        fields: 1,
+        fields: 2,
       },
     }),
   )
@@ -44,7 +45,7 @@ export class PdfImportController {
     @Req() request: AuthenticatedRequest,
     @UploadedFile() file: Express.Multer.File,
     @Headers('idempotency-key') idempotencyKey: string,
-    @Body() body: { convertToEpub?: unknown },
+    @Body() body: { convertToEpub?: unknown; originalFilename?: unknown },
   ) {
     const user = await this.users.getCurrentUserRecord(
       request.auth.clerkUserId,
@@ -52,7 +53,7 @@ export class PdfImportController {
     return importPdf({
       prisma: this.prisma,
       userId: user.id,
-      file,
+      file: withUploadedFilename(file, body.originalFilename),
       idempotencyKey,
       convertToEpub: body.convertToEpub,
     });

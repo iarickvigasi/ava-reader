@@ -76,7 +76,7 @@ def observed_decisions(tasks):
         output.append(
             BookRefinementResponse.model_validate(
                 dict(
-                    schema_version="ava-book-refinement-response-1",
+                    schema_version="ava-book-refinement-response-3",
                     task_id=task.task_id,
                     source_sha256=task.source_sha256,
                     observation_sha256=task.observation_sha256,

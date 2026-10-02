@@ -910,7 +910,7 @@ export const contractSchemas = {
             type: 'string',
           },
           role: {
-            enum: ['content', 'furniture', 'blank', 'unsupported'],
+            enum: ['content', 'cover', 'furniture', 'blank', 'unsupported'],
             title: 'Role',
             type: 'string',
           },
@@ -938,10 +938,42 @@ export const contractSchemas = {
             default: null,
             title: 'Align',
           },
+          background_color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Background Color',
+          },
+          block_indent_em: {
+            anyOf: [
+              { maximum: 6, minimum: 0, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Block Indent Em',
+          },
           bold: {
             anyOf: [{ type: 'boolean' }, { type: 'null' }],
             default: null,
             title: 'Bold',
+          },
+          color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Color',
+          },
+          decoration_color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Decoration Color',
           },
           family: {
             anyOf: [
@@ -1006,6 +1038,16 @@ export const contractSchemas = {
             ],
             default: null,
             title: 'Space Before Em',
+          },
+          strike_through: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Strike Through',
+          },
+          underline: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Underline',
           },
           vertical_align: {
             anyOf: [
@@ -1096,6 +1138,13 @@ export const contractSchemas = {
         additionalProperties: false,
         properties: {
           column: { maximum: 7, minimum: 0, title: 'Column', type: 'integer' },
+          column_span: {
+            default: 1,
+            maximum: 8,
+            minimum: 1,
+            title: 'Column Span',
+            type: 'integer',
+          },
           content: { $ref: '#/$defs/TextValue' },
           evidence: {
             items: { $ref: '#/$defs/Evidence' },
@@ -1129,6 +1178,13 @@ export const contractSchemas = {
             type: 'string',
           },
           row: { maximum: 19, minimum: 0, title: 'Row', type: 'integer' },
+          row_span: {
+            default: 1,
+            maximum: 20,
+            minimum: 1,
+            title: 'Row Span',
+            type: 'integer',
+          },
           style_id: {
             anyOf: [
               {
@@ -1155,6 +1211,14 @@ export const contractSchemas = {
             minItems: 1,
             title: 'Codepoint Utf16',
             type: 'array',
+          },
+          language: {
+            anyOf: [
+              { enum: ['en', 'uk', 'und'], type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Language',
           },
           normalization: {
             anyOf: [{ $ref: '#/$defs/NormalizationMap' }, { type: 'null' }],
@@ -1304,7 +1368,7 @@ export const contractSchemas = {
         type: 'array',
       },
       profile_id: {
-        const: 'ava-pdf-prose-en-v2',
+        enum: ['ava-pdf-prose-en-v2', 'ava-pdf-prose-en-uk-v3'],
         title: 'Profile Id',
         type: 'string',
       },
@@ -1453,7 +1517,7 @@ export const contractSchemas = {
     additionalProperties: false,
     properties: {
       active_deadline_seconds: {
-        maximum: 1800,
+        maximum: 7200,
         minimum: 1,
         title: 'Active Deadline Seconds',
         type: 'integer',
@@ -1515,7 +1579,7 @@ export const contractSchemas = {
         type: 'string',
       },
       profile_id: {
-        const: 'ava-pdf-prose-en-v2',
+        enum: ['ava-pdf-prose-en-v2', 'ava-pdf-prose-en-uk-v3'],
         title: 'Profile Id',
         type: 'string',
       },
@@ -1840,7 +1904,7 @@ export const contractSchemas = {
         title: 'Outcome',
       },
       profile_id: {
-        const: 'ava-pdf-prose-en-v2',
+        enum: ['ava-pdf-prose-en-v2', 'ava-pdf-prose-en-uk-v3'],
         title: 'Profile Id',
         type: 'string',
       },
@@ -2039,7 +2103,7 @@ export const contractSchemas = {
         type: 'string',
       },
       profile_id: {
-        const: 'ava-pdf-prose-en-v2',
+        enum: ['ava-pdf-prose-en-v2', 'ava-pdf-prose-en-uk-v3'],
         title: 'Profile Id',
         type: 'string',
       },
@@ -2246,7 +2310,7 @@ export const contractSchemas = {
             type: 'array',
           },
           profile_id: {
-            const: 'ava-pdf-prose-en-v2',
+            enum: ['ava-pdf-prose-en-v2', 'ava-pdf-prose-en-uk-v3'],
             title: 'Profile Id',
             type: 'string',
           },
@@ -3162,7 +3226,7 @@ export const contractSchemas = {
             type: 'string',
           },
           role: {
-            enum: ['content', 'furniture', 'blank', 'unsupported'],
+            enum: ['content', 'cover', 'furniture', 'blank', 'unsupported'],
             title: 'Role',
             type: 'string',
           },
@@ -3190,10 +3254,42 @@ export const contractSchemas = {
             default: null,
             title: 'Align',
           },
+          background_color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Background Color',
+          },
+          block_indent_em: {
+            anyOf: [
+              { maximum: 6, minimum: 0, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Block Indent Em',
+          },
           bold: {
             anyOf: [{ type: 'boolean' }, { type: 'null' }],
             default: null,
             title: 'Bold',
+          },
+          color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Color',
+          },
+          decoration_color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Decoration Color',
           },
           family: {
             anyOf: [
@@ -3258,6 +3354,16 @@ export const contractSchemas = {
             ],
             default: null,
             title: 'Space Before Em',
+          },
+          strike_through: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Strike Through',
+          },
+          underline: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Underline',
           },
           vertical_align: {
             anyOf: [
@@ -3348,6 +3454,13 @@ export const contractSchemas = {
         additionalProperties: false,
         properties: {
           column: { maximum: 7, minimum: 0, title: 'Column', type: 'integer' },
+          column_span: {
+            default: 1,
+            maximum: 8,
+            minimum: 1,
+            title: 'Column Span',
+            type: 'integer',
+          },
           content: { $ref: '#/$defs/TextValue' },
           evidence: {
             items: { $ref: '#/$defs/Evidence' },
@@ -3381,6 +3494,13 @@ export const contractSchemas = {
             type: 'string',
           },
           row: { maximum: 19, minimum: 0, title: 'Row', type: 'integer' },
+          row_span: {
+            default: 1,
+            maximum: 20,
+            minimum: 1,
+            title: 'Row Span',
+            type: 'integer',
+          },
           style_id: {
             anyOf: [
               {
@@ -3407,6 +3527,14 @@ export const contractSchemas = {
             minItems: 1,
             title: 'Codepoint Utf16',
             type: 'array',
+          },
+          language: {
+            anyOf: [
+              { enum: ['en', 'uk', 'und'], type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Language',
           },
           normalization: {
             anyOf: [{ $ref: '#/$defs/NormalizationMap' }, { type: 'null' }],
@@ -3499,10 +3627,12 @@ export const contractSchemas = {
             'tables',
             'lists',
             'literal-text',
+            'annotation-styles',
+            'language',
           ],
           type: 'string',
         },
-        maxItems: 8,
+        maxItems: 10,
         minItems: 1,
         title: 'Required Capabilities',
         type: 'array',

@@ -9,7 +9,10 @@ import { loadProviderReceipt } from './load-receipt';
 import { openRouterTransport } from './openrouter-transport';
 import { preserveUnconfirmedReceipt } from './unconfirmed-receipt';
 import { PdfProviderError } from './errors';
-import { privateTransportReceipt } from './transport-failure';
+import {
+  privateTransportReceipt,
+  providerFailureDiagnostic,
+} from './transport-failure';
 export async function dispatchPdfProvider(
   prisma: PrismaService,
   input: ProviderDispatch,
@@ -66,7 +69,9 @@ export async function dispatchPdfProvider(
     await settlePdfProvider(prisma, call.id, response);
   } catch (error) {
     response ??= privateTransportReceipt(error);
-    await markPdfProviderUncertain(prisma, call.id);
+    const diagnostic = providerFailureDiagnostic(error);
+    if (diagnostic) await markPdfProviderUncertain(prisma, call.id, diagnostic);
+    else await markPdfProviderUncertain(prisma, call.id);
     await preserveUnconfirmedReceipt(prisma, grant.ownerId, call.id, response);
     throw new PdfProviderError('PDF_PROVIDER_OUTCOME_UNCERTAIN');
   }

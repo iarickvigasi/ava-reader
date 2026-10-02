@@ -85,7 +85,7 @@
   "additionalProperties": false,
   "properties": {
     "active_deadline_seconds": {
-      "maximum": 1800,
+      "maximum": 7200,
       "minimum": 1,
       "title": "Active Deadline Seconds",
       "type": "integer"
@@ -153,7 +153,10 @@
       "type": "string"
     },
     "profile_id": {
-      "const": "ava-pdf-prose-en-v2",
+      "enum": [
+        "ava-pdf-prose-en-v2",
+        "ava-pdf-prose-en-uk-v3"
+      ],
       "title": "Profile Id",
       "type": "string"
     },

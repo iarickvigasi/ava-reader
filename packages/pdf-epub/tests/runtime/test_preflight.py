@@ -89,3 +89,30 @@ class PreflightTests(unittest.TestCase):
                 set(),
                 0,
             )
+
+    def test_annotation_appearance_cannot_hide_oversized_image(self):
+        from admission.appearance_fixture import annotated_document
+
+        document = annotated_document()
+        appearance = document.pages[0]["/Annots"][0].get_object()["/AP"]["/N"]
+        image = DecodedStreamObject()
+        image.set_data(b"must not decode")
+        image.update(
+            {
+                NameObject("/Subtype"): NameObject("/Image"),
+                NameObject("/Width"): NumberObject(6001),
+                NameObject("/Height"): NumberObject(1),
+            }
+        )
+        appearance[NameObject("/Resources")] = DictionaryObject(
+            {
+                NameObject("/XObject"): DictionaryObject(
+                    {NameObject("/I"): document._add_object(image)}
+                )
+            }
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "source.pdf"
+            document.write(source)
+            with self.assertRaisesRegex(ValueError, "PDF_RASTER_LIMIT"):
+                preflight(source)

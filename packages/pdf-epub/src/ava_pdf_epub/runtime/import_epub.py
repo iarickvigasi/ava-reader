@@ -22,8 +22,6 @@ def main() -> None:
             raise ValueError("Invalid import request")
         if hashlib.sha256(data).hexdigest() != request["source_sha256"]:
             raise ValueError("Imported EPUB bytes changed")
-        book, assets = portable_epub(data)
-        reader = prepare_reader(book, request["final_content_id"])
         root = Path("/scratch")
         (root / "tmp").mkdir(exist_ok=True)
         epub = root / "import.epub"
@@ -31,6 +29,9 @@ def main() -> None:
         errors, warnings = epub_verdict(
             epubcheck(epub, Path("/opt/epubcheck/epubcheck.jar"), timeout=120)
         )
+        # EPUBCheck must not share its heap with the expanded canonical/reader models.
+        book, assets = portable_epub(data)
+        reader = prepare_reader(book, request["final_content_id"])
         report = {
             "schema_version": "ava-epub-import-1",
             "source_sha256": request["source_sha256"],

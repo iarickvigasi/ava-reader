@@ -7,6 +7,11 @@ from .segments import Segment
 
 JOIN_STYLE = {
     "family",
+    "color",
+    "background_color",
+    "decoration_color",
+    "underline",
+    "strike_through",
     "bold",
     "italic",
     "small_caps",
@@ -15,13 +20,16 @@ JOIN_STYLE = {
     "align",
     "line_height",
     "space_after_em",
+    "block_indent_em",
 }
 
 
 def inferred_continuation(previous: Segment, current: Segment, state: AssemblyState) -> bool:
-    if re.search(r"[.!?:;][\"'’”)]*$", previous.text.rstrip()) or not re.match(
-        r"[a-z]", current.text
-    ):
+    if previous.preserve_line_breaks != current.preserve_line_breaks:
+        return False
+    if previous.structure_candidate or current.structure_candidate:
+        return False
+    if re.search(r"[.!?:;][\"'’”)]*$", previous.text.rstrip()) or not current.text[:1].islower():
         return False
     if previous.method == current.method == "native":
         return previous.page != current.page or (

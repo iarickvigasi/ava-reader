@@ -5,6 +5,7 @@ from typing import Literal
 from pydantic import Field, model_validator
 
 from ..contracts.common import Digest, Id, Record
+from ..contracts.profiles import ProfileId
 from ..contracts.source import Box
 from .recognition_segment import RecognitionSegment
 
@@ -23,7 +24,7 @@ class RecognitionTask(Record):
     task_id: Id
     purpose: Literal["pdf_region_recognition", "pdf_structure_repair"]
     source_sha256: Digest
-    profile_id: Literal["ava-pdf-prose-en-v2"]
+    profile_id: ProfileId
     page_number: int = Field(ge=1, le=500)
     page_width_pt: float = Field(gt=0, le=20000)
     page_height_pt: float = Field(gt=0, le=20000)
@@ -31,7 +32,17 @@ class RecognitionTask(Record):
     image: RecognitionImage
     native_evidence: str = Field(max_length=200000)
     native_evidence_sha256: Digest
-    prompt_version: Literal["ava-prose-region-2"]
+    prompt_version: Literal[
+        "ava-prose-region-2",
+        "ava-prose-region-3",
+        "ava-prose-region-4",
+        "ava-prose-region-5",
+        "ava-prose-region-6",
+        "ava-prose-region-7",
+        "ava-prose-region-8",
+        "ava-prose-region-9",
+        "ava-prose-region-10",
+    ]
     response_schema_version: Literal["ava-recognition-response-2"]
 
     @model_validator(mode="after")

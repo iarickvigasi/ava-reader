@@ -54,6 +54,8 @@ class SeparatorBlock(BlockBase):
 
 
 class TableCell(BlockBase):
+    row_span: int = Field(default=1, ge=1, le=20, exclude_if=lambda value: value == 1)
+    column_span: int = Field(default=1, ge=1, le=8, exclude_if=lambda value: value == 1)
     row: int = Field(ge=0, le=19)
     column: int = Field(ge=0, le=7)
     header_axis: Literal["row", "column", "both"] | None = None

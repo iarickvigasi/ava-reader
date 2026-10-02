@@ -11,6 +11,6 @@ from .report import ReconstructionReport, reconstruction_report
 def reconstruct_source(
     source: Path, scratch: Path, request: ReconstructionInput
 ) -> tuple[ReconstructedBook, ReconstructionReport]:
-    prepared = prepare_source(source, scratch, request.source_sha256)
+    prepared = prepare_source(source, scratch, request.source_sha256, request.profile_id)
     result = reconstruct(source, scratch, prepared, request.responses, request.refinements)
     return result, reconstruction_report(result, sum(len(p.tasks) for p in prepared))

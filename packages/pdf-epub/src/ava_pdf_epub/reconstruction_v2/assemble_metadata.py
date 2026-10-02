@@ -13,7 +13,7 @@ from .printed_metadata import printed_metadata
 
 def assemble_metadata(source: Path, state: AssemblyState, document_id: str) -> list[dict[str, Any]]:
     info = PdfReader(source).metadata
-    claims = [
+    claims: list[dict[str, Any]] = [
         dict(
             id="metadata-conversion-id",
             field="identifier",
@@ -77,7 +77,7 @@ def assemble_metadata(source: Path, state: AssemblyState, document_id: str) -> l
         if claim["field"] in {"title", "contributor"} and any(
             p["status"] == "accepted"
             and p["field"] == claim["field"]
-            and p["value"] != claim["value"]
+            and _comparison_value(p) != _comparison_value(claim)
             and p.get("contributor_role") == claim.get("contributor_role")
             for p in printed
         ):
@@ -88,7 +88,7 @@ def assemble_metadata(source: Path, state: AssemblyState, document_id: str) -> l
                 c
                 for c in claims
                 if c["field"] == value["field"]
-                and c.get("value") == value["value"]
+                and _comparison_value(c) == _comparison_value(value)
                 and c.get("contributor_role") == value.get("contributor_role")
             ),
             None,
@@ -96,5 +96,17 @@ def assemble_metadata(source: Path, state: AssemblyState, document_id: str) -> l
         if existing is None:
             claims.append(dict(id=f"metadata-printed-{len(claims)}", **value))
         elif value["status"] == "accepted" and existing["status"] != "conflict":
-            existing.update(value)
+            if existing["status"] == "accepted":
+                # Compare credit whitespace only for identity; preserve the first printed spelling.
+                evidence = [*existing.get("evidence", []), *value.get("evidence", [])]
+                existing["evidence"] = [
+                    item for i, item in enumerate(evidence) if item not in evidence[:i]
+                ]
+            else:
+                existing.update(value)
     return claims
+
+
+def _comparison_value(claim: dict[str, Any]) -> str:
+    text = str(claim["value"])
+    return " ".join(text.split()) if claim["field"] == "contributor" else text

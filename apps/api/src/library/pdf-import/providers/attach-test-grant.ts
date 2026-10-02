@@ -2,7 +2,7 @@ import type { PrismaService } from '../../../prisma/prisma.service';
 import { jobTransaction, lockLibraryItem } from '../jobs/transaction';
 import { grantPdfProvider } from './grant';
 import { PdfProviderError } from './errors';
-// Test-only setup. Product enqueue remains native until explicitly qualified activation.
+// Test-only setup. Normal imports use a separately configured production import route.
 export async function attachTestProviderGrant(
   prisma: PrismaService,
   operationId: string,

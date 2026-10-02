@@ -14,7 +14,10 @@ export async function importPdf(input: {
   idempotencyKey: unknown;
   convertToEpub: unknown;
 }) {
-  const identity = validatePdfUpload(input);
+  const identity = validatePdfUpload({
+    ...input,
+    profileId: process.env.AVA_PDF_IMPORT_PROFILE,
+  });
   const captured = {
     ...input,
     file: { ...input.file, buffer: Buffer.from(input.file.buffer) },

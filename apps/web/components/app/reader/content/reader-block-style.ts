@@ -44,8 +44,16 @@ export function resolveBlockStyle(
   const canonical = canonicalStyle(block.presentation);
   delete canonical.fontSize;
   Object.assign(style, canonical);
-  if (block.presentation?.relative_size != null)
+  if (block.presentation?.relative_size != null) {
     style["--reader-block-scale"] = block.presentation.relative_size;
+    // Canonical heading sizes are measured against prose, not the default
+    // semantic heading enlargement. Native inline sizes remain relative to
+    // their containing line and must still inherit this resolved block size.
+    if (block.canonical && block.kind === "heading") {
+      style["--reader-heading-base-small"] = "1.16rem";
+      style["--reader-heading-base-large"] = "1.34rem";
+    }
+  }
   return Object.keys(style).length > 0 ? (style as CSSProperties) : undefined;
 }
 

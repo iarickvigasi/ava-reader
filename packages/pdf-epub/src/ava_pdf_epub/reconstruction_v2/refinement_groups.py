@@ -12,7 +12,7 @@ def refinement_groups(
 ) -> list[tuple[list[str], list[str], list[RefinementEdge]]]:
     nodes = {n.id: n for n in catalogue.nodes}
     order = {n.id: i for i, n in enumerate(catalogue.nodes)}
-    headings = [n for n in catalogue.nodes if n.kind == "heading"]
+    headings = [n for n in catalogue.nodes if n.kind == "heading" or n.structure_candidate]
     pending = [catalogue.decisions[i : i + 8] for i in range(0, len(catalogue.decisions), 8)]
     assigned: set[str] = set()
     groups: list[tuple[list[str], list[str], list[RefinementEdge]]] = []
@@ -25,7 +25,7 @@ def refinement_groups(
         ]
         wanted = set(decisions) | {v for e in edges for v in (e.previous_id, e.next_id)}
         for ident in decisions:
-            if nodes[ident].kind != "heading":
+            if nodes[ident].kind != "heading" and not nodes[ident].structure_candidate:
                 continue
             before = [h for h in headings if order[h.id] < order[ident]]
             after = [h for h in headings if order[h.id] > order[ident]]

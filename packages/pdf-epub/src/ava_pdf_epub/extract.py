@@ -16,6 +16,9 @@ from PIL import Image
 from pypdf import PdfReader
 from pypdf.generic import ContentStream, DictionaryObject
 
+from .admission_actions import inspect_annotations, inspect_catalog
+from .annotation_kind import annotation_kind
+from .annotation_view_cache import POLICY as ANNOTATION_POLICY
 from .models import Asset, Block, Book, Claim, Evidence, Issue, Page, Span, Style
 from .reconstruction import chapters_from_plan, digest_text
 
@@ -62,10 +65,15 @@ def inspect_pdf(path: Path) -> dict[str, Any]:
             raise ValueError("Non-cardinal PDF page rotation requires review")
         if rotation in {90, 270}:
             width, height = height, width
+        inspect_annotations(page, page_number=index, page_count=len(reader.pages))
         found = page.get("/Annots", [])
         if found:
             annotations.extend(
-                {"page": index, "subtype": str(a.get_object().get("/Subtype", "unknown"))}
+                {
+                    "page": index,
+                    "subtype": str(a.get_object().get("/Subtype", "unknown")),
+                    "disposition": annotation_kind(a.get_object()),
+                }
                 for a in found
             )
         resources = page.get("/Resources", {})
@@ -81,14 +89,8 @@ def inspect_pdf(path: Path) -> dict[str, Any]:
                 "xobject_resource_count": len(resources.get("/XObject", {})),
             }
         )
-    if annotations:
-        # Initial scope intentionally includes links: no unsafe partial annotation policy.
-        raise ValueError(
-            "PDF annotations require review; this adapter requires annotation-free sources"
-        )
     root = cast(DictionaryObject, reader.trailer["/Root"])
-    if root.get("/OpenAction") or root.get("/AA"):
-        raise ValueError("Active PDF actions require review before conversion")
+    inspect_catalog(root)
     metadata = {str(k).removeprefix("/"): str(v)[:4000] for k, v in (reader.metadata or {}).items()}
     outlines: list[dict[str, Any]] = []
 
@@ -120,7 +122,7 @@ def inspect_pdf(path: Path) -> dict[str, Any]:
             "fonts": sum(p["font_resource_count"] for p in pages),
             "xobjects": sum(p["xobject_resource_count"] for p in pages),
         },
-        "appearance_policy": "annotation-free-only-v1",
+        "appearance_policy": ANNOTATION_POLICY,
     }
 
 
@@ -148,6 +150,8 @@ def render_page(path: Path, page_number: int, output: Path) -> None:
         timeout=60,
         check=False,
     )
+    if b"bad appearance for annotation" in result.stderr.lower():
+        raise ValueError("PDF_ANNOTATION_RENDER_FAILED")
     if result.returncode or not output.is_file():
         raise RuntimeError(f"Source page {page_number} rendering failed")
     if output.stat().st_size > 64 * 1024 * 1024:
@@ -396,6 +400,8 @@ def extract_native(path: Path, asset_root: Path) -> Book:
     import pdfplumber
 
     inspection = inspect_pdf(path)
+    if any(a["disposition"] in {"visible", "personal"} for a in inspection["annotations"]):
+        raise ValueError("PDF_ANNOTATIONS_REQUIRE_V2_RECONSTRUCTION")
     _qualify_native_graphics(path)
     source_hash = inspection["source_sha256"]
     producer = inspection["metadata"].get("Producer", "")

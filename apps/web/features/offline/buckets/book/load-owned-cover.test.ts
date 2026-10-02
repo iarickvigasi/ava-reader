@@ -56,3 +56,31 @@ it.each([
   );
   expect(fetch).not.toHaveBeenCalled();
 });
+
+it("authenticates a PDF cover through the same owned-library cache", async () => {
+  const fetch = vi.fn(async () => image());
+  vi.stubGlobal("fetch", fetch);
+  const src = `/api/library/pdf-imports/covers/${id}`;
+  const blob = await loadOwnedCover({ ...input(), src });
+  expect(blob.type).toBe("image/png");
+  expect(fetch).toHaveBeenCalledWith(
+    new URL(src, "http://localhost:4000"),
+    expect.objectContaining({
+      headers: { Authorization: "Bearer cover-token" },
+      redirect: "error",
+      credentials: "omit",
+    }),
+  );
+});
+it.each([
+  "https://other.invalid/api/library/pdf-imports/covers/cover-library",
+  "/api/library/pdf-imports/covers/other",
+  "/api/library/pdf-imports/covers/cover-library?source=https://other.invalid",
+])("refuses substituted PDF cover %s before transport", async (src) => {
+  const fetch = vi.fn();
+  vi.stubGlobal("fetch", fetch);
+  await expect(loadOwnedCover({ ...input(), src })).rejects.toThrow(
+    "COVER_UNAVAILABLE",
+  );
+  expect(fetch).not.toHaveBeenCalled();
+});

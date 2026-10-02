@@ -11,6 +11,7 @@ from .observations import NativeLine
 
 
 class TableObservation(Record):
+    ruled: bool = Field(default=True, exclude_if=lambda value: value)
     box: Box
     cells: list[list[Box | None]] = Field(max_length=500)
     line_ids: list[str] = Field(max_length=10000)

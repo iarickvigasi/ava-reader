@@ -1,7 +1,5 @@
 """Join adjacent same-column native lines with explicit line-wrap evidence and shifted spans."""
 
-import re
-
 from .geometry import union
 from .reading_order import Placement
 from .segments import Segment
@@ -26,12 +24,14 @@ def _compatible(a: Placement, b: Placement) -> bool:
         return False
     if left.kind not in {"paragraph", "code", "verse", "quote"}:
         return False
+    if left.structure_candidate or right.structure_candidate:
+        return False
     height = max(1, right.box.y1 - right.box.y0)
     gap = right.box.y0 - left.box.y1
     leading = 0.95 if left.kind in {"code", "verse"} else 0.65
     if (
         left.kind == "paragraph"
-        and re.match(r"[a-z]", right.text)
+        and right.text[:1].islower()
         and not left.text.endswith((".", "!", "?"))
     ):
         leading = 1.2

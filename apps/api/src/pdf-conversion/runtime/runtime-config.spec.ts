@@ -37,6 +37,20 @@ describe('isolated PDF runtime configuration', () => {
       OPENROUTER_API_KEY: 'not-forwarded',
     });
     expect(Object.isFrozen(result)).toBe(true);
+    expect(result.memoryBytes).toBe(2 * 1024 ** 3);
+    const args = containerArguments(
+      result,
+      {
+        source: Buffer.from('x'),
+        module: 'ava_pdf_epub.runtime',
+        deadlineMs: 1500,
+        scratchBytes: 67108864,
+      },
+      'bounded-book',
+      '/private/input',
+    );
+    expect(args).toContain('--memory=2147483648');
+    expect(args).toContain('--memory-swap=2147483648');
     expect(JSON.stringify(result)).not.toContain('not-forwarded');
   });
   it('cannot override real production mode with a development object', () => {

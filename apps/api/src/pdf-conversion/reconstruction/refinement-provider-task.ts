@@ -1,9 +1,14 @@
 import { createHash } from 'node:crypto';
 import type { ProviderTask } from '../../library/pdf-import/providers/types';
-import { REFINEMENT_PROMPT } from './generated/refinement-prompt';
+import {
+  BIBLIOGRAPHIC_PROMPT,
+  LEGACY_REFINEMENT_PROMPT,
+  REFINEMENT_PROMPT,
+} from './generated/refinement-prompt';
 import { recognitionSchemas } from './generated/schemas';
 import type { BookRefinementTask } from './generated/BookRefinementTask';
 import { validatePacket } from './validate-packet';
+import { refinementEvidence } from './refinement-evidence';
 import { PdfRuntimeError } from '../runtime/runtime-error';
 
 export function refinementProviderTask(
@@ -30,7 +35,15 @@ export function refinementProviderTask(
     promptVersion: task.prompt_version,
     schemaVersion: task.response_schema_version,
     messages: [
-      { role: 'system', content: REFINEMENT_PROMPT },
+      {
+        role: 'system',
+        content:
+          task.prompt_version === 'ava-book-refinement-4'
+            ? BIBLIOGRAPHIC_PROMPT
+            : task.prompt_version === 'ava-book-refinement-3'
+              ? LEGACY_REFINEMENT_PROMPT
+              : REFINEMENT_PROMPT,
+      },
       {
         role: 'user',
         content: [
@@ -38,6 +51,9 @@ export function refinementProviderTask(
             type: 'text',
             text: JSON.stringify({
               ...context,
+              ...refinementEvidence(task),
+              evidence_instruction:
+                "Copy the required evidence IDs for EACH node/edge from these maps. Different nodes on the same page may have different body references. Do not substitute another node's reference crop.",
               image_sha256: pixels.sha256,
               image: {
                 width: pixels.width,

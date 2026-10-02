@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { MAX_ACTIVE_DEADLINE_MS } from '../contracts/execution-limits';
 import { privateInputs } from './private-inputs';
 import type { SandboxInput } from './container-arguments';
 import { dockerCommand } from './docker-command';
@@ -14,7 +15,7 @@ export async function runSandbox(
   if (
     !Number.isSafeInteger(input.deadlineMs) ||
     input.deadlineMs < 1 ||
-    input.deadlineMs > 1800000 ||
+    input.deadlineMs > MAX_ACTIVE_DEADLINE_MS ||
     !Number.isSafeInteger(input.scratchBytes) ||
     input.scratchBytes < 1 ||
     input.scratchBytes > 2147483648 ||

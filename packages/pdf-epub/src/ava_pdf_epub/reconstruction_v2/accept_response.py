@@ -3,8 +3,12 @@
 import json
 import re
 
+from ..contracts.profiles import response_language
+from ..contracts.source import Box
+from .annotation_coverage import annotation_coverage
 from .recognition_contract import RecognitionResponse, RecognitionTask
 from .recognition_coordinates import source_segment
+from .recognition_tables import qualify_recognized_tables
 from .segments import Segment
 
 
@@ -17,11 +21,37 @@ def accept_response(task: RecognitionTask, response: RecognitionResponse) -> lis
         or response.render_sha256 != task.image.sha256
     ):
         raise ValueError("Recognition response belongs to another source/task/render")
-    if response.unresolved or response.language.lower().split("-")[0] not in {"en", "english"}:
+    anchored = task.prompt_version in {
+        "ava-prose-region-7",
+        "ava-prose-region-8",
+        "ava-prose-region-9",
+        "ava-prose-region-10",
+    }
+    for observation in response.segments:
+        spans = [
+            *observation.spans,
+            *(span for row in observation.cells for cell in row for span in cell.spans),
+        ]
+        if any((span.anchor is not None) != anchored for span in spans):
+            raise ValueError("Inline offset authority does not match task version")
+    response_language(response.language, task.profile_id)
+    if response.unresolved:
         raise ValueError("Essential recognition uncertainty or language requires source review")
     if len({s.id for s in response.segments}) != len(response.segments):
         raise ValueError("Repeated recognition segment identity")
-    segments = [source_segment(segment, task.region_box) for segment in response.segments]
+    evidence = json.loads(task.native_evidence)
+    pinned = (
+        {
+            c["source_cell_id"]: Box.model_validate(c["box"])
+            for table in evidence.get("ruled_tables", [])
+            for c in table["cells"]
+            if "source_cell_id" in c
+        }
+        if task.prompt_version
+        in {"ava-prose-region-4", "ava-prose-region-6", "ava-prose-region-8", "ava-prose-region-10"}
+        else {}
+    )
+    segments = [source_segment(segment, task.region_box, pinned) for segment in response.segments]
     for segment in segments:
         a, b = task.region_box, segment.box
         if (
@@ -34,7 +64,8 @@ def accept_response(task: RecognitionTask, response: RecognitionResponse) -> lis
             raise ValueError("Recognition relationship has no source target")
         if segment.kind == "unsupported":
             raise ValueError("Essential unsupported source content")
-    evidence = json.loads(task.native_evidence)
+    annotation_coverage(evidence, segments)
+    qualify_recognized_tables(evidence.get("ruled_tables", []), segments)
     if evidence["reliable"]:
         for line in evidence["lines"]:
             box = line["box"]

@@ -72,6 +72,7 @@ export function canonicalInlines(
         content.codepoint_utf16[end],
       ),
       presentation,
+      ...(content.language ? { language: content.language } : {}),
       sourceOffset: content.codepoint_utf16[linked?.start ?? start],
       spanId: linked?.id,
       ...(linked?.link?.kind === "external"

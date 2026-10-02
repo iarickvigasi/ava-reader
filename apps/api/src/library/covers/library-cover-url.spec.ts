@@ -29,7 +29,7 @@ it('preserves ordinary EPUB/public and PDF cover behavior', () => {
   ).toBe('/api/library/covers/book');
   expect(
     libraryCoverUrl({ ...book, pdfImport: { id: 'operation' } }, 'library'),
-  ).toBeNull();
+  ).toBe('/api/library/pdf-imports/covers/library');
   expect(libraryCoverUrl({ ...book, coverBlob: null }, 'library')).toBeNull();
 });
 it('never serves the private EPUB cover through the public route', async () => {

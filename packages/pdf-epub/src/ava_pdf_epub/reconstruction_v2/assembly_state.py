@@ -26,6 +26,7 @@ class AssemblyState:
     structure_findings: list[Finding] = field(default_factory=list)
     page_labels: dict[int, str] = field(default_factory=dict)
     refinement_evidence: list[dict[str, Any]] = field(default_factory=list)
+    bibliographic_roles: dict[str, tuple[str | None, str]] = field(default_factory=dict)
     refined_joins: dict[tuple[str, str], bool] = field(default_factory=dict)
 
     def style_id(self, style: Style | None) -> str | None:
@@ -36,3 +37,24 @@ class AssemblyState:
         ident = "style-" + digest
         self.styles[ident] = {"id": ident, **value}
         return ident
+
+    def release_observations(self) -> None:
+        """After relationships/addresses are compiled, raw observations are no longer used."""
+        self.evidence.clear()
+        self.marker_styles.clear()
+        self.segments.clear()
+        self.internal_targets.clear()
+        self.aliases.clear()
+        self.placements.clear()
+        self.flush_starts.clear()
+        self.page_labels.clear()
+        self.refined_joins.clear()
+        self.bibliographic_roles.clear()
+
+    def release_source_workspace(self) -> None:
+        """After canonical validation, retain only assets and report evidence for export."""
+        self.blocks.clear()
+        self.styles.clear()
+        self.resources.clear()
+        self.lists.clear()
+        self.release_observations()

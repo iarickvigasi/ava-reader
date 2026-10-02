@@ -11,8 +11,17 @@ export type NativeEvidenceSha256 = string;
 export type PageHeightPt = number;
 export type PageNumber = number;
 export type PageWidthPt = number;
-export type ProfileId = 'ava-pdf-prose-en-v2';
-export type PromptVersion = 'ava-prose-region-2';
+export type ProfileId = 'ava-pdf-prose-en-v2' | 'ava-pdf-prose-en-uk-v3';
+export type PromptVersion =
+  | 'ava-prose-region-2'
+  | 'ava-prose-region-3'
+  | 'ava-prose-region-4'
+  | 'ava-prose-region-5'
+  | 'ava-prose-region-6'
+  | 'ava-prose-region-7'
+  | 'ava-prose-region-8'
+  | 'ava-prose-region-9'
+  | 'ava-prose-region-10';
 export type Purpose = 'pdf_region_recognition' | 'pdf_structure_repair';
 export type CoordinateSpace = 'page_points_top_left' | 'normalized_top_left';
 export type X0 = number;

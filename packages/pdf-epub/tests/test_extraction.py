@@ -19,6 +19,7 @@ from pypdf.generic import (
     TextStringObject,
 )
 
+from ava_pdf_epub.annotation_view_cache import POLICY as ANNOTATION_POLICY
 from ava_pdf_epub.benchmark import import_benchmark
 from ava_pdf_epub.extract import extract_native, inspect_pdf
 from ava_pdf_epub.models import Block, Chapter, Evidence, Page, Span
@@ -213,6 +214,7 @@ class ExtractionTests(unittest.TestCase):
             pdf = root / "fixture.pdf"
             fixture_pdf(pdf)
             info = inspect_pdf(pdf)
+            self.assertEqual(ANNOTATION_POLICY, info["appearance_policy"])
             self.assertEqual(info["page_count"], 1)
             book = extract_native(pdf, root / "assets")
             self.assertEqual(book.source_sha256, hashlib.sha256(pdf.read_bytes()).hexdigest())
@@ -342,13 +344,15 @@ class ExtractionTests(unittest.TestCase):
             self.assertAlmostEqual(bbox[0], 20.0 / 360.0)
             self.assertAlmostEqual(bbox[1], 270.0 / 540.0)
 
-    def test_annotations_rejected_without_leaking_contents(self) -> None:
+    def test_personal_annotations_accounted_without_leaking_contents(self) -> None:
         with tempfile.TemporaryDirectory() as folder:
             pdf = Path(folder) / "annotated.pdf"
             fixture_pdf(pdf, annotation=True)
-            with self.assertRaisesRegex(ValueError, "annotations require review") as error:
-                inspect_pdf(pdf)
-            self.assertNotIn("private", str(error.exception))
+            inspection = inspect_pdf(pdf)
+            self.assertEqual("personal", inspection["annotations"][0]["disposition"])
+            self.assertNotIn("private", json.dumps(inspection))
+            with self.assertRaisesRegex(ValueError, "REQUIRE_V2_RECONSTRUCTION"):
+                extract_native(pdf, Path(folder) / "assets")
 
     @unittest.skipUnless(shutil.which("pdftoppm"), "Poppler required for source cover fixture")
     def test_replay_hashes_and_chapter_binding(self) -> None:

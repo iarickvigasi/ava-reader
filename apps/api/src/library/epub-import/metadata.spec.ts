@@ -5,6 +5,7 @@ import { fillImportedMetadata } from './metadata';
 async function run(input: {
   language: string | null;
   metadataUserFields: string[];
+  estimatedPageCount?: number | null;
 }) {
   const { book } = fixture();
   book.metadata = [];
@@ -12,6 +13,7 @@ async function run(input: {
     id: 'book',
     title: 'My title',
     authors: ['My author'],
+    estimatedPageCount: 20,
     metadataEditVersion: 4,
     ...input,
   });
@@ -49,6 +51,29 @@ it('preserves an explicitly cleared user language', async () => {
   const { updateMany } = await run({
     language: null,
     metadataUserFields: ['language'],
+  });
+  expect(updateMany).not.toHaveBeenCalled();
+});
+
+it('fills the original PDF page count from the validated embedded source', async () => {
+  const { updateMany, book } = await run({
+    language: 'en',
+    metadataUserFields: [],
+    estimatedPageCount: null,
+  });
+  expect(updateMany).toHaveBeenCalledWith({
+    where: { id: 'book', metadataEditVersion: 4 },
+    data: {
+      estimatedPageCount: book.source.page_count,
+      metadataEditVersion: { increment: 1 },
+    },
+  });
+});
+it('preserves a reader-edited page count, including an explicitly cleared value', async () => {
+  const { updateMany } = await run({
+    language: 'en',
+    metadataUserFields: ['estimatedPageCount'],
+    estimatedPageCount: null,
   });
   expect(updateMany).not.toHaveBeenCalled();
 });

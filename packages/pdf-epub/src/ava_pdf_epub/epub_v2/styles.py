@@ -22,12 +22,28 @@ def declarations(style: Style) -> str:
     for key, css in [
         ("relative_size", "font-size"),
         ("indent_em", "text-indent"),
+        ("block_indent_em", "margin-inline-start"),
         ("space_before_em", "margin-top"),
         ("space_after_em", "margin-bottom"),
     ]:
         value = getattr(style, key)
         if value is not None:
             values.append((css, f"{value:g}em"))
+    for key, css in [
+        ("color", "color"),
+        ("background_color", "background-color"),
+        ("decoration_color", "text-decoration-color"),
+    ]:
+        value = getattr(style, key)
+        if value is not None:
+            values.append((css, value))
+    if style.underline is not None or style.strike_through is not None:
+        decoration = []
+        if style.underline:
+            decoration.append("underline")
+        if style.strike_through:
+            decoration.append("line-through")
+        values.append(("text-decoration-line", " ".join(decoration) or "none"))
     if style.line_height is not None:
         values.append(("line-height", f"{style.line_height:g}"))
     return ";".join(f"{k}:{v}" for k, v in values)

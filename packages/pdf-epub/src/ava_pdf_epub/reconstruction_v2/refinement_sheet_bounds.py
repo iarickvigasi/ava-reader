@@ -1,6 +1,7 @@
 """Measure contact-sheet geometry before image allocation; split decisions instead of shrinking."""
 
 import math
+from collections.abc import Mapping
 from typing import Literal
 
 from ..contracts.source import Box
@@ -23,6 +24,9 @@ def crop_geometry(
             top = max(box.y0, box.y1 - 100)
         else:
             bottom = min(box.y1, box.y0 + 100)
+    if segment.structure_candidate:
+        top = max(0, top - 24)
+        bottom = min(observed.height_pt, bottom + 36)
     region = rectangle(
         (box.x0 - 4, top - 4, box.x1 + 4, bottom + 4), observed.width_pt, observed.height_pt
     )
@@ -52,7 +56,7 @@ def crop_parts(
 def sheet_fits(
     ids: list[str],
     segments: dict[str, Segment],
-    pages: dict[int, PreparedPage],
+    pages: Mapping[int, PreparedPage],
     tail_ids: set[str] | None = None,
 ) -> bool:
     dimensions = [

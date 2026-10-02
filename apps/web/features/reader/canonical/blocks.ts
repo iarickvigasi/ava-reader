@@ -44,6 +44,8 @@ export function canonicalBlock(
         presentation: cell.style_id
           ? index.styles.get(cell.style_id)
           : undefined,
+        rowSpan: cell.row_span ?? 1,
+        columnSpan: cell.column_span ?? 1,
         row: cell.row,
         column: cell.column,
         headerAxis: cell.header_axis,

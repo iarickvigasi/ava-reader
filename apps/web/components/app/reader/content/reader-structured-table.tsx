@@ -16,9 +16,10 @@ export function ReaderStructuredTable({
 }) {
   const measurement = useReaderMeasurement();
   const blockProps = useReaderBlockProps();
-  const rows = [...new Set(block.cells.map((cell) => cell.row))].sort(
-    (a, b) => a - b,
+  const rowCount = Math.max(
+    ...block.cells.map((cell) => cell.row + (cell.rowSpan ?? 1)),
   );
+  const rows = Array.from({ length: rowCount }, (_, row) => row);
   return (
     <table
       {...blockProps(block, chapterId)}
@@ -42,6 +43,8 @@ export function ReaderStructuredTable({
                 return (
                   <Tag
                     key={cell.id}
+                    rowSpan={cell.rowSpan}
+                    colSpan={cell.columnSpan}
                     {...blockProps(
                       cell,
                       chapterId,

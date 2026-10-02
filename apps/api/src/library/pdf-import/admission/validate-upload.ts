@@ -1,11 +1,12 @@
 import { BadRequestException, PayloadTooLargeException } from '@nestjs/common';
 import { checksumBuffer } from '../../../shared/blob-utils';
-import { PDF_IMPORT_PROFILE, PDF_CONFIG_HASH } from './profile';
+import { PDF_IMPORT_PROFILE, pdfImportConfiguration } from './profile';
 
 export function validatePdfUpload(input: {
   file: Express.Multer.File;
   idempotencyKey: unknown;
   convertToEpub: unknown;
+  profileId?: string;
 }) {
   const { file, idempotencyKey, convertToEpub } = input;
   if (convertToEpub !== 'true' && convertToEpub !== true)
@@ -35,6 +36,10 @@ export function validatePdfUpload(input: {
     )
   )
     throw new BadRequestException('The source filename is invalid.');
+  const configuration = pdfImportConfiguration(input.profileId);
+  const configSha256 = checksumBuffer(
+    Buffer.from(JSON.stringify(configuration)),
+  );
   const sourceSha256 = checksumBuffer(file.buffer);
   const requestSha256 = checksumBuffer(
     Buffer.from(
@@ -43,14 +48,15 @@ export function validatePdfUpload(input: {
         size: file.buffer.length,
         filename: file.originalname,
         conversion: true,
-        configSha256: PDF_CONFIG_HASH,
+        configSha256,
       }),
     ),
   );
   return {
     idempotencyKey,
+    configuration,
     sourceSha256,
     requestSha256,
-    configSha256: PDF_CONFIG_HASH,
+    configSha256,
   };
 }

@@ -4,9 +4,10 @@ export function ownedCoverItemId(src: string | null): string | null {
   try {
     const base = new URL(getPublicApiBaseUrl());
     const url = new URL(src, base);
-    const match = /^\/api\/library\/epub-imports\/covers\/([^/]+)$/.exec(
-      url.pathname,
-    );
+    const match =
+      /^\/api\/library\/(?:epub-imports|pdf-imports)\/covers\/([^/]+)$/.exec(
+        url.pathname,
+      );
     if (
       url.origin !== base.origin ||
       url.username ||

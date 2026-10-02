@@ -1,3 +1,4 @@
+import type { RecognitionTask } from './generated/RecognitionTask';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
 import type { CoordinatorDependencies } from './coordinator-types';
 import type { SandboxInput } from '../runtime/container-arguments';
@@ -13,7 +14,9 @@ export async function preparePages(input: {
   sourceSha256: string;
   pageLimit: number;
   providerMode: string;
+  profileId?: RecognitionTask['profile_id'];
 }) {
+  const profileId = input.profileId ?? 'ava-pdf-prose-en-v2';
   const responses: RecognitionResponse[] = [],
     taskIds = new Set<string>();
   let pages = input.pageLimit,
@@ -22,12 +25,18 @@ export async function preparePages(input: {
     const result = await input.deps.sandbox({
       ...input.sandboxInput(),
       auxiliaryBytes: Buffer.from(
-        JSON.stringify({ mode: 'prepare', page_number: page }),
+        JSON.stringify({
+          mode: 'prepare',
+          page_number: page,
+          profile_id: profileId,
+        }),
       ),
     });
     if (result.exitCode !== 0) throw new PdfRuntimeError('INVALID_RESULT');
     const prepared = parsePacket('PrepareResult', result.stdout, 8 * 1024 ** 2);
     if (
+      (prepared.profile_id ?? 'ava-pdf-prose-en-v2') !== profileId ||
+      prepared.tasks.some((task) => task.profile_id !== profileId) ||
       prepared.source_sha256 !== input.sourceSha256 ||
       prepared.page_number !== page ||
       prepared.source_page_count > input.pageLimit ||

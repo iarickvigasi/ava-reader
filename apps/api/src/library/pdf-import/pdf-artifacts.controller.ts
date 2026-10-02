@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Headers,
+  NotFoundException,
   Param,
   Req,
   Res,
@@ -78,6 +79,27 @@ export class PdfArtifactsController {
         schema,
         build,
       ),
+      false,
+    );
+  }
+
+  @Get('covers/:libraryItemId')
+  async libraryCover(
+    @Req() request: AuthenticatedRequest,
+    @Param('libraryItemId') libraryItemId: string,
+    @Res() response: Response,
+  ) {
+    const user = await this.users.getCurrentUserRecord(
+      request.auth.clerkUserId,
+    );
+    const operation = await this.prisma.pdfImportOperation.findFirst({
+      where: { libraryItemId, ownerId: user.id, deletedAt: null },
+      select: { id: true },
+    });
+    if (!operation) throw new NotFoundException('Cover not found.');
+    sendOwnedBlob(
+      response,
+      await getPdfCover(this.prisma, user.id, operation.id),
       false,
     );
   }

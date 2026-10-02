@@ -14,7 +14,7 @@ def main() -> None:
             "inspection": preflight(Path("/input/source.pdf")),
         }
     except AdmissionError as error:
-        result = {"accepted": False, "code": str(error)}
+        result = error.refusal()
     except ValueError as error:
         code = str(error)
         result = {

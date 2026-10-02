@@ -21,8 +21,10 @@ def append_text(node: ET.Element, text: str) -> None:
         node.text = (node.text or "") + text
 
 
-def document(title: str, body: ET.Element) -> bytes:
-    root = element("html", {"lang": "en", "{http://www.w3.org/XML/1998/namespace}lang": "en"})
+def document(title: str, body: ET.Element, language: str = "en") -> bytes:
+    root = element(
+        "html", {"lang": language, "{http://www.w3.org/XML/1998/namespace}lang": language}
+    )
     head = ET.SubElement(root, f"{{{XHTML}}}head")
     head.append(element("title", text=title))
     head.append(element("link", {"rel": "stylesheet", "href": "../styles/book.css"}))

@@ -59,13 +59,18 @@ class RecognitionSegment(Record):
     @model_validator(mode="before")
     @classmethod
     def explicit_kind_fields(cls, value: Any) -> Any:
-        return require_kind_fields(value)
+        from .literal_url_anchor import anchor_literal_url
+
+        return require_kind_fields(anchor_literal_url(value))
 
     @model_validator(mode="after")
     def semantic_shape(self) -> Self:
-        source_segment(
-            self, Box(coordinate_space="page_points_top_left", x0=0, y0=0, x1=1000, y1=1000)
-        )
+        # Pinned physical cells can only be resolved against the exact task.
+        # Full observed-grid and geometry validation remains mandatory in acceptance.
+        if not any(cell.source_cell_id for row in self.cells for cell in row):
+            source_segment(
+                self, Box(coordinate_space="page_points_top_left", x0=0, y0=0, x1=1000, y1=1000)
+            )
         if self.kind == "note" and self.note_role is None:
             raise ValueError("Note requires its observed role")
         if self.kind == "list_item" and self.list_depth is None:

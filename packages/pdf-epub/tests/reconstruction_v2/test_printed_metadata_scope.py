@@ -90,3 +90,48 @@ class PrintedMetadataScopeTests(unittest.TestCase):
                     self.assertFalse(
                         any(c["field"] == "title" for c in printed_metadata(state, None))
                     )
+
+    def test_prominent_left_aligned_cover_title_can_start_its_frontmatter_file(self):
+        state = metadata_state(
+            [
+                heading(
+                    "ЖІНКИ,\nЯКІ КОХАЮТЬ\nДО НЕСТЯМИ",
+                    chapter_start=True,
+                    chapter_role="frontmatter",
+                    style=dict(id="cover", align="left", relative_size=2.2),
+                ),
+                paragraph("Робін Норвуд", style=dict(id="credit", align="left", relative_size=1.4)),
+                body(),
+            ]
+        )
+        claims = printed_metadata(state, None)
+        self.assertEqual(
+            [("title", "ЖІНКИ,\nЯКІ КОХАЮТЬ\nДО НЕСТЯМИ")],
+            [(c["field"], c["value"]) for c in claims],
+        )
+        self.assertEqual("accepted", claims[0]["status"])
+
+    def test_prominent_ukrainian_frontmatter_and_numbered_chapters_are_not_titles(self):
+        for label in [
+            "Передмова",
+            "ВСТУП",
+            "Зміст",
+            "Подяки",
+            "Присвята",
+            "Пролог",
+            "Післямова",
+            "1. A chapter",
+        ]:
+            with self.subTest(label=label):
+                state = metadata_state(
+                    [
+                        heading(
+                            label,
+                            chapter_start=True,
+                            chapter_role="frontmatter",
+                            style=dict(id="cover", align="left", relative_size=2.2),
+                        ),
+                        body(),
+                    ]
+                )
+                self.assertFalse(any(c["field"] == "title" for c in printed_metadata(state, None)))

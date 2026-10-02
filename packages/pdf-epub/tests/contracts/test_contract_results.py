@@ -80,7 +80,7 @@ class BoundaryContractTests(unittest.TestCase):
         for field, value in [
             ("dispatch_authority_id", "spend-one"),
             ("intent", "reconversion"),
-            ("active_deadline_seconds", 1801),
+            ("active_deadline_seconds", 7201),
             ("provider_key", "secret"),
         ]:
             raw = fixture("ava-pdf-job-1")

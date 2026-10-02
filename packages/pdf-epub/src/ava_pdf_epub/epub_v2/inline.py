@@ -10,7 +10,15 @@ from .xml import EPUB, append_text, element
 
 def render_text(node: TextNode, ctx: Context) -> ET.Element:
     content = node.content
-    root = element("span", {"data-ava-text": node.id})
+    attrs = {"data-ava-text": node.id}
+    if content.language is not None:
+        attrs.update(
+            {
+                "lang": content.language,
+                "{http://www.w3.org/XML/1998/namespace}lang": content.language,
+            }
+        )
+    root = element("span", attrs)
     positions = {0, len(content.text), *ctx.offsets.get(node.id, set())}
     for span in content.spans:
         positions.update([span.start, span.end])

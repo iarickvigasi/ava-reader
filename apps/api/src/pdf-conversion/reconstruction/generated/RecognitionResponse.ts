@@ -35,7 +35,7 @@ export type RecognitionSegment = RecognitionSegment1 &
         /**
          * @minItems 1
          */
-        cells: [[unknown, ...unknown[]], ...[unknown, ...unknown[]][]];
+        cells: [unknown[], ...unknown[][]];
         kind?: 'table';
       }
     | {
@@ -143,12 +143,22 @@ export type X0 = number;
 export type X1 = number;
 export type Y0 = number;
 export type Y1 = number;
+export type ColumnSpan = number;
 export type HeaderAxis = ('row' | 'column' | 'both') | null;
-export type End = number;
+export type RowSpan = number;
+export type SourceCellId = string | null;
+export type After = string;
+export type Before = string;
+export type ExactText = string;
+export type End = number | null;
 export type NoteLabel = string | null;
-export type Start = number;
+export type Start = number | null;
 export type Align = ('start' | 'left' | 'right' | 'center' | 'justify') | null;
+export type BackgroundColor = string | null;
+export type BlockIndentEm = number | null;
 export type Bold = boolean | null;
+export type Color = string | null;
+export type DecorationColor = string | null;
 export type Family = ('serif' | 'sans-serif' | 'monospace') | null;
 export type Id = string;
 export type IndentEm = number | null;
@@ -158,6 +168,8 @@ export type RelativeSize = number | null;
 export type SmallCaps = boolean | null;
 export type SpaceAfterEm = number | null;
 export type SpaceBeforeEm = number | null;
+export type StrikeThrough = boolean | null;
+export type Underline = boolean | null;
 export type VerticalAlign = ('baseline' | 'super' | 'sub') | null;
 export type TargetText = string | null;
 export type Url = string | null;
@@ -259,23 +271,36 @@ export interface RecognitionBox {
   y1: Y1;
 }
 export interface RecognitionCell {
-  box: RecognitionBox;
+  box: RecognitionBox | null;
+  column_span?: ColumnSpan;
   header_axis: HeaderAxis;
+  row_span?: RowSpan;
+  source_cell_id?: SourceCellId;
   spans: Spans;
   style: Style | null;
   text: Text;
 }
 export interface RecognitionSpan {
-  end: End;
+  anchor?: RecognitionTextAnchor | null;
+  end?: End;
   note_label: NoteLabel;
-  start: Start;
+  start?: Start;
   style: Style | null;
   target_text: TargetText;
   url: Url;
 }
+export interface RecognitionTextAnchor {
+  after?: After;
+  before?: Before;
+  exact_text: ExactText;
+}
 export interface Style {
   align?: Align;
+  background_color?: BackgroundColor;
+  block_indent_em?: BlockIndentEm;
   bold?: Bold;
+  color?: Color;
+  decoration_color?: DecorationColor;
   family?: Family;
   id: Id;
   indent_em?: IndentEm;
@@ -285,5 +310,7 @@ export interface Style {
   small_caps?: SmallCaps;
   space_after_em?: SpaceAfterEm;
   space_before_em?: SpaceBeforeEm;
+  strike_through?: StrikeThrough;
+  underline?: Underline;
   vertical_align?: VerticalAlign;
 }

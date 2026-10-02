@@ -6,6 +6,7 @@ from typing import Any
 from pypdf import PdfReader
 
 from ..admission import inspect_admission
+from ..annotation_kind import annotation_kind
 
 MAX_PIXELS = 20_000_000
 MAX_EDGE = 6000
@@ -20,6 +21,11 @@ def preflight(source: Path, page_limit: int = 500) -> dict[str, object]:
     for page in reader.pages:
         resources = page.get("/Resources", {})
         _resources(resources, visited, 0)
+        for reference in page.get("/Annots", []):
+            annotation = reference.get_object()
+            if annotation_kind(annotation) == "visible":
+                appearance = annotation["/AP"]["/N"]
+                _resources(appearance.get("/Resources", {}), visited, 0)
     return inspection
 
 

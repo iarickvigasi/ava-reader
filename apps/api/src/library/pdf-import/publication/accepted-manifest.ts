@@ -56,6 +56,11 @@ export function acceptedManifest(
     Object.values(map).some((id) => typeof id !== 'string')
   )
     throw new PdfPublicationError('PDF_PUBLICATION_ARTIFACT_INVALID');
+  if (
+    op.profileId !== 'ava-pdf-prose-en-v2' &&
+    op.profileId !== 'ava-pdf-prose-en-uk-v3'
+  )
+    throw new PdfPublicationError('PDF_PUBLICATION_ARTIFACT_INVALID');
   return {
     schema_version: 'ava-accepted-content-1',
     authority: 'server_first_publication',
@@ -63,7 +68,7 @@ export function acceptedManifest(
     owner_id: op.ownerId,
     library_item_id: op.libraryItemId,
     final_content_id: v.finalContentId,
-    profile_id: 'ava-pdf-prose-en-v2',
+    profile_id: op.profileId,
     canonical_schema: 'ava-book-2',
     reader_schema: 'ava-reader-3',
     config_sha256: op.configSha256,

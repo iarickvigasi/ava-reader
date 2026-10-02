@@ -1,3 +1,4 @@
+import { withUploadedFilename } from '../shared/uploaded-filename';
 import {
   Body,
   Controller,
@@ -151,7 +152,11 @@ export class LibraryController {
   importBook(
     @Req() request: AuthenticatedRequest,
     @UploadedFile() file: Express.Multer.File,
+    @Body() body: { originalFilename?: unknown } = {},
   ) {
-    return this.libraryService.importBook(request.auth.clerkUserId, file);
+    return this.libraryService.importBook(
+      request.auth.clerkUserId,
+      withUploadedFilename(file, body.originalFilename),
+    );
   }
 }

@@ -7,8 +7,12 @@ from .segments import Segment
 def structure_findings(segments: list[Segment], ranked: set[str]) -> list[Finding]:
     return [
         Finding(
-            code="OCR_HIERARCHY_UNCORROBORATED",
-            message=(
+            code="NATIVE_ROLE_UNCORROBORATED"
+            if segment.structure_candidate
+            else "OCR_HIERARCHY_UNCORROBORATED",
+            message="Native same-font opening needs source-backed role corroboration."
+            if segment.structure_candidate
+            else (
                 "OCR heading rank needs whole-book source corroboration; "
                 "page-local rank is not proof."
             ),
@@ -18,5 +22,6 @@ def structure_findings(segments: list[Segment], ranked: set[str]) -> list[Findin
             block_id=segment.id,
         )
         for segment in segments
-        if segment.kind == "heading" and segment.method == "ocr" and segment.id not in ranked
+        if segment.structure_candidate
+        or (segment.kind == "heading" and segment.method == "ocr" and segment.id not in ranked)
     ]

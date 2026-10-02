@@ -37,10 +37,12 @@ export function prepareProviderRequest(
     config.schemaHashes[value.schemaVersion] !== jsonHash(value.responseSchema)
   )
     throw new PdfProviderError('PDF_PROVIDER_REQUEST_UNAUTHORIZED');
+  const effort = config.reasoningEffortByPrompt?.[value.promptVersion];
   const request = jsonBytes({
     model: route.modelId,
     messages: value.messages,
     max_tokens: config.maxOutputTokens,
+    ...(effort ? { reasoning: { effort } } : {}),
     stream: false,
     response_format: {
       type: 'json_schema',

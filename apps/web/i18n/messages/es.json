@@ -223,6 +223,17 @@
     }
   },
   "reader": {
+    "search": {
+      "title": "Buscar",
+      "close": "Cerrar búsqueda",
+      "query": "Buscar en este libro",
+      "hint": "Introduce una palabra o frase.",
+      "loading": "Buscando…",
+      "unavailable": "No se puede buscar en todo el libro. Conéctate e inténtalo de nuevo.",
+      "retry": "Reintentar",
+      "count": "{count, plural, =0 {Sin coincidencias} one {1 coincidencia} other {# coincidencias}}",
+      "limited": "Se muestran las primeras {count} coincidencias. Acota la búsqueda."
+    },
     "contents": {
       "title": "Contenido",
       "closePanel": "Cerrar el panel de contenido",

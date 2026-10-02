@@ -1,20 +1,22 @@
 """Materialize source coverage and geometric order for every surviving segment."""
 
+from collections.abc import Sequence
 from typing import Any
 
 from .assembly_state import AssemblyState
 from .geometry import rectangle
+from .page_checkpoints import page_geometry
 from .prepared import PreparedPage
 from .reading_order import reading_order
 from .segments import Segment
 
 
 def assemble_pages(
-    prepared: list[PreparedPage], segments: dict[int, list[Segment]], state: AssemblyState
+    prepared: Sequence[PreparedPage], segments: dict[int, list[Segment]], state: AssemblyState
 ) -> tuple[list[dict[str, Any]], list[Segment]]:
     pages, ordered = [], []
-    for checkpoint in prepared:
-        page = checkpoint.observation
+    for number in range(len(prepared)):
+        page = page_geometry(prepared, number)
         content = [s for s in segments[page.number] if s.kind != "furniture"]
         placements = reading_order(content, page.width_pt)
         regions = []

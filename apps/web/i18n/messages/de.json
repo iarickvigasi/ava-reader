@@ -223,6 +223,17 @@
     }
   },
   "reader": {
+    "search": {
+      "title": "Suchen",
+      "close": "Suche schließen",
+      "query": "In diesem Buch suchen",
+      "hint": "Wort oder Ausdruck eingeben.",
+      "loading": "Suche läuft…",
+      "unavailable": "Die Suche im gesamten Buch ist nicht verfügbar. Stelle eine Verbindung her und versuche es erneut.",
+      "retry": "Erneut versuchen",
+      "count": "{count, plural, =0 {Keine Treffer} one {1 Treffer} other {# Treffer}}",
+      "limited": "Die ersten {count} Treffer werden angezeigt. Grenze die Suche ein."
+    },
     "contents": {
       "title": "Inhalt",
       "closePanel": "Inhaltsverzeichnis-Panel schließen",

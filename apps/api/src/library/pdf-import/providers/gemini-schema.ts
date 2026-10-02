@@ -41,6 +41,7 @@ export function geminiRecognitionSchema(
       node = record(branches[0]);
     }
     const output: Schema = {};
+    const recognitionSegment = node.title === 'RecognitionSegment';
     for (const [key, child] of Object.entries(node)) {
       if (!fields.has(key)) continue;
       if (key === 'properties')
@@ -55,12 +56,19 @@ export function geminiRecognitionSchema(
         output[key] = child.map((branch) => lower(branch, references));
       else output[key] = structuredClone(child);
     }
+    if (recognitionSegment) {
+      // Gemini lacks the host's allOf kind requirements. Make this inexpensive boolean
+      // explicit for every segment so non-chapter headings cannot omit their observation.
+      output.required = [
+        ...new Set([...(node.required as string[]), 'chapter_start']),
+      ];
+    }
     if (typeof node.const === 'string') output.enum = [node.const];
     return output;
   }
   const output = lower(input);
   output.description =
-    version === 'ava-book-refinement-response-1'
+    version === 'ava-book-refinement-response-3'
       ? 'AVA structure-only source comparison. Decide exact supplied IDs, source-evidenced heading ancestry and sparse typography. Never return replacement text or new nodes. Host validates complete scope and relationships.'
       : 'AVA recognition v2. Kind-specific observations are mandatory when applicable: headings need heading_level and chapter_start; chapter starts need level 1 and chapter_role; notes need note_label and note_role; list items need list_ordered and list_depth, numbered items also list_start; tables need cells; figures need alt; captions and credits need related_to. Preserve core fields and sparse styles. The host independently validates all bounds and relationships.';
   return output;

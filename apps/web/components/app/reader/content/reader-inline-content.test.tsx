@@ -8,6 +8,36 @@ function render(inlines: ReaderInline[]) {
 }
 
 describe("ReaderInlineContent", () => {
+  it("preserves passage language and exact Ukrainian characters without transliteration", () => {
+    const text = "Її пам’ять: є ґанок, і пісня 😀";
+    const html = render([{ kind: "text", language: "uk", text }]);
+    expect(html).toContain('lang="uk"');
+    expect(html).toContain(text);
+    expect(
+      render([{ kind: "text", language: "und", text: "Unknown" }]),
+    ).toContain('lang="und"');
+    expect(render([{ kind: "text", text: "Legacy" }])).not.toContain("lang=");
+  });
+  it("preserves source highlight and combined decorations without altering Unicode text", () => {
+    const html = render([
+      {
+        kind: "text",
+        text: "A😀B <source>",
+        presentation: {
+          id: "annotation",
+          color: "#000000",
+          background_color: "#ffff00",
+          underline: true,
+          strike_through: true,
+        },
+      },
+    ]);
+    expect(html).toContain("background-color:#ffff00");
+    expect(html).toContain("color:#000000");
+    expect(html).toContain("text-decoration-line:underline line-through");
+    expect(html).toContain("A😀B &lt;source&gt;");
+    expect(html).not.toContain("<img");
+  });
   it("applies a canonical script baseline and explicit relative size only once", () => {
     const html = render([
       {

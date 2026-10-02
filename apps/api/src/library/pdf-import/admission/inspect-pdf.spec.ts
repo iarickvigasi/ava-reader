@@ -81,3 +81,53 @@ it('refuses malformed UTF-8 instead of silently changing metadata', async () => 
     ServiceUnavailableException,
   );
 });
+
+const finding = {
+  page_number: 2,
+  annotation_number: 1,
+  relationship_path: ['/Popup'],
+};
+it('preserves a bounded content-free refusal location', async () => {
+  isolated.mockResolvedValue(
+    Buffer.from(
+      JSON.stringify({
+        accepted: false,
+        code: 'PDF_ACTIVE_CONTENT_UNSUPPORTED',
+        finding,
+      }),
+    ),
+  );
+  await expect(inspectPdf(source, digest)).rejects.toMatchObject({
+    response: { code: 'PDF_ACTIVE_CONTENT_UNSUPPORTED', finding },
+  });
+});
+it.each([
+  { ...finding, page_number: 0 },
+  { ...finding, annotation_number: 1001 },
+  { ...finding, relationship_path: ['/Contents'] },
+  { ...finding, relationship_path: Array(21).fill('/Popup') },
+  { ...finding, contents: 'private note' },
+])('refuses invalid or private diagnostic fields', async (invalid) => {
+  isolated.mockResolvedValue(
+    Buffer.from(
+      JSON.stringify({
+        accepted: false,
+        code: 'PDF_ANNOTATION_INVALID',
+        finding: invalid,
+      }),
+    ),
+  );
+  await expect(inspectPdf(source, digest)).rejects.toBeInstanceOf(
+    ServiceUnavailableException,
+  );
+});
+it.each([
+  { accepted: true, inspection, finding },
+  { accepted: true, inspection, code: 'PDF_INVALID' },
+  { accepted: false, finding },
+])('refuses inconsistent diagnostic envelopes', async (envelope) => {
+  isolated.mockResolvedValue(Buffer.from(JSON.stringify(envelope)));
+  await expect(inspectPdf(source, digest)).rejects.toBeInstanceOf(
+    ServiceUnavailableException,
+  );
+});

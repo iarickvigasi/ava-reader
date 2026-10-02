@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 
 from ..contracts.book import CanonicalBookV2
 from ..contracts.common import document_digest
+from ..contracts.profiles import package_language
 
 DC = "http://purl.org/dc/elements/1.1/"
 
@@ -22,10 +23,7 @@ def metadata_element(book: CanonicalBookV2) -> ET.Element:
     ET.SubElement(root, "dc:title", {"id": "main-title"}).text = (
         titles[0] if len(set(titles)) == 1 else "Untitled book"
     )
-    languages = [m.value for m in accepted if m.field == "language"]
-    if len(set(languages)) > 1 or any(not s or s.split("-")[0] != "en" for s in languages):
-        raise ValueError("Unsupported or ambiguous accepted language")
-    ET.SubElement(root, "dc:language").text = languages[0] if languages else "en"
+    ET.SubElement(root, "dc:language").text = package_language(book)
     ET.SubElement(root, "meta", {"property": "dcterms:modified"}).text = "2000-01-01T00:00:00Z"
     ET.SubElement(root, "meta", {"property": "rendition:layout"}).text = "reflowable"
     for claim in accepted:

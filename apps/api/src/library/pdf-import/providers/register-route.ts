@@ -24,7 +24,8 @@ export async function registerPdfRoute(
     !/^[A-Za-z0-9_.:/-]{1,160}$/.test(spec.modelId) ||
     !/^[A-Za-z0-9_.:/-]{1,100}$/.test(spec.providerSlug) ||
     !['live', 'stub', 'replay'].includes(spec.mode) ||
-    (spec.mode === 'live' && !config.pilotInventory) ||
+    (spec.mode === 'live' && !config.pilotInventory && !config.importPolicy) ||
+    (config.importPolicy && spec.mode !== 'live') ||
     !Number.isFinite(verifiedAt.getTime()) ||
     !Number.isFinite(validUntil.getTime()) ||
     validUntil <= verifiedAt ||

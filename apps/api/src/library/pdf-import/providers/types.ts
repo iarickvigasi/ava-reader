@@ -1,5 +1,6 @@
 import type { AttemptAuthority } from '../jobs';
 import type { PilotInventory } from './pilot-schema';
+import type { ImportPolicy } from './import-policy';
 export type ProviderMessage = {
   role: 'system' | 'user';
   content:
@@ -42,10 +43,12 @@ export type RouteConfiguration = {
   dataCollection: 'deny';
   zeroDataRetention: boolean;
   promptHashes: Record<string, string>;
+  reasoningEffortByPrompt?: Record<string, 'low' | 'medium' | 'high'>;
   schemaHashes: Record<string, string>;
   operationLimitNano: string;
   authorizedSourceSha256: string[];
   pilotInventory?: PilotInventory;
+  importPolicy?: ImportPolicy;
 };
 export type RouteTariff = {
   version: 1;

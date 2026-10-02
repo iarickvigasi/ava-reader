@@ -6,7 +6,7 @@ export function ReaderJumpControls() {
   if (!navigation) return null;
   // Keep the viewport stable while pending text becomes Back or the last return clears.
   return (
-    <div className="flex min-h-12 shrink-0 items-center gap-3 py-1 text-sm">
+    <div className="flex min-h-12 shrink-0 items-center gap-3 py-1 text-sm md:justify-end">
       {navigation.canBack && (
         <Button
           size="sm"

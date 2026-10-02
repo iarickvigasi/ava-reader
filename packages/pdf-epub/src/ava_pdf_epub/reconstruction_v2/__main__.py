@@ -6,6 +6,7 @@ from pathlib import Path
 
 from ..contracts.common import document_digest
 from ..contracts.private_files import snapshot
+from ..contracts.profiles import LEGACY_PROFILE, checked_profile
 from .prepare_page import prepare_page
 from .prepare_refinement_source import prepare_refinement_source
 from .protocol import PrepareResult, ReconstructionInput
@@ -33,12 +34,21 @@ def main() -> None:
             return
         source = root / "source.pdf"
         source.write_bytes(snapshot(Path("/input"), "source.pdf", 52428800))
-        if request.get("mode") == "prepare" and set(request) == {"mode", "page_number"}:
+        if request.get("mode") == "prepare" and set(request) in (
+            {"mode", "page_number"},
+            {"mode", "page_number", "profile_id"},
+        ):
             if type(request["page_number"]) is not int:
                 raise ValueError("Invalid page number")
-            prepared = prepare_page(source, root, request["page_number"])
+            prepared = prepare_page(
+                source,
+                root,
+                request["page_number"],
+                checked_profile(request.get("profile_id", LEGACY_PROFILE)),
+            )
             result = PrepareResult(
                 schema_version="ava-prepare-result-1",
+                profile_id=prepared.profile_id,
                 source_sha256=prepared.source_sha256,
                 source_page_count=prepared.source_page_count,
                 page_number=prepared.observation.number,

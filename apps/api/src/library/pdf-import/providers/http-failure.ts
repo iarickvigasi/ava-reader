@@ -1,4 +1,5 @@
 import { ProviderTransportFailure } from './transport-failure';
+import { httpFailureDiagnostic } from './http-failure-diagnostic';
 const MAX_DIAGNOSTIC_BYTES = 64 * 1024;
 export async function readHttpFailure(
   response: Response,
@@ -43,6 +44,13 @@ export async function readHttpFailure(
       }
     }
   }
+  const diagnostic = httpFailureDiagnostic(
+    response.status,
+    completeness === 'complete',
+    redacted,
+    response.headers.get('retry-after'),
+    response.headers.get('date'),
+  );
   return new ProviderTransportFailure(
     Buffer.from(
       JSON.stringify({
@@ -51,7 +59,9 @@ export async function readHttpFailure(
         completeness,
         captured_bytes: length,
         body: redacted,
+        diagnostic,
       }),
     ),
+    diagnostic,
   );
 }

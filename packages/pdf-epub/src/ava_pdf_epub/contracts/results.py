@@ -6,6 +6,7 @@ from pydantic import Field, model_validator
 
 from .artifacts import Artifact, bound_artifacts, distinct_artifacts, require_role
 from .common import Digest, Id, Record
+from .profiles import ProfileId
 
 
 class CandidateOutcome(Record):
@@ -61,7 +62,7 @@ class WorkerResultV1(Record):
     request_sha256: Digest
     config_sha256: Digest
     worker_fingerprint: Digest
-    profile_id: Literal["ava-pdf-prose-en-v2"]
+    profile_id: ProfileId
     generation: int = Field(ge=1, le=9007199254740991)
     attempt_fence: int = Field(ge=1, le=9007199254740991)
     cancellation_epoch: int = Field(ge=0, le=9007199254740991)

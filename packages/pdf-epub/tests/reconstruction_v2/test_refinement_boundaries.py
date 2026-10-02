@@ -3,6 +3,8 @@
 import unittest
 
 from ava_pdf_epub.contracts.styles import Style
+from ava_pdf_epub.reconstruction_v2.assembly_state import AssemblyState
+from ava_pdf_epub.reconstruction_v2.continuation_boundary import inferred_continuation
 from ava_pdf_epub.reconstruction_v2.refinement_joins import refined_boundaries
 
 from .test_refinement_grouping import segment
@@ -39,4 +41,22 @@ class RefinementBoundaryTest(unittest.TestCase):
         right = segment("right", "more text").model_copy(update={"style": left.style})
         self.assertEqual(
             [left, right], refined_boundaries([left, right], {("left", "right"): True})
+        )
+
+
+class UkrainianContinuation(unittest.TestCase):
+    def test_native_lowercase_ukrainian_continuation_and_unknown_role_boundary(self):
+        left = segment("before", "Річка зберігає ці слова").model_copy(update={"method": "native"})
+        right = segment("after", "і тихо тече далі.", page=2).model_copy(
+            update={"method": "native"}
+        )
+        self.assertTrue(inferred_continuation(left, right, AssemblyState()))
+        for patch in ({"text": "І новий абзац."}, {"structure_candidate": True}):
+            self.assertFalse(
+                inferred_continuation(left, right.model_copy(update=patch), AssemblyState())
+            )
+        self.assertFalse(
+            inferred_continuation(
+                left.model_copy(update={"text": "Кінець."}), right, AssemblyState()
+            )
         )

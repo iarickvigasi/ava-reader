@@ -2,13 +2,13 @@ import type { BookRefinementTask } from './generated/BookRefinementTask';
 import type { BookRefinementResponse } from './generated/BookRefinementResponse';
 import { task as pageTask } from './test-fixture';
 export const refinementTask: BookRefinementTask = {
-  schema_version: 'ava-book-refinement-task-1',
+  schema_version: 'ava-book-refinement-task-3',
   task_id: 'refine-test',
   source_sha256: pageTask.source_sha256,
   observation_sha256: 'b'.repeat(64),
   profile_id: 'ava-pdf-prose-en-v2',
-  prompt_version: 'ava-book-refinement-1',
-  response_schema_version: 'ava-book-refinement-response-1',
+  prompt_version: 'ava-book-refinement-3',
+  response_schema_version: 'ava-book-refinement-response-3',
   pixels_per_point: 2,
   nodes: [
     {
@@ -47,7 +47,7 @@ export const refinementTask: BookRefinementTask = {
   ],
 };
 export const refinementResponse: BookRefinementResponse = {
-  schema_version: 'ava-book-refinement-response-1',
+  schema_version: 'ava-book-refinement-response-3',
   task_id: refinementTask.task_id,
   source_sha256: refinementTask.source_sha256,
   observation_sha256: refinementTask.observation_sha256,

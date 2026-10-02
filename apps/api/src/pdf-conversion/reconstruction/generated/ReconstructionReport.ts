@@ -18,11 +18,11 @@ export type Severity = 'blocking' | 'review' | 'information';
 export type Findings = Finding[];
 export type Outcome = 'candidate';
 export type PageCount = number;
-export type ProfileId = 'ava-pdf-prose-en-v2';
+export type ProfileId = 'ava-pdf-prose-en-v2' | 'ava-pdf-prose-en-uk-v3';
 export type RecognitionTaskCount = number;
 /**
  * @minItems 1
- * @maxItems 24
+ * @maxItems 48
  */
 export type NodeIds = [string, ...string[]];
 export type ObservationSha256 = string;

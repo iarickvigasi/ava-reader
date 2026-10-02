@@ -26,6 +26,15 @@ def apply_refinement(
     for task in tasks:
         response = receipts[task.task_id]
         accept_refinement(task, response)
+        for metadata in response.metadata_decisions:
+            if metadata.node_id in state.bibliographic_roles:
+                raise ValueError("Repeated bibliographic decision")
+            text = ""
+            if metadata.role is not None:
+                assert metadata.start is not None and metadata.end is not None
+                node = next(n for n in task.nodes if n.id == metadata.node_id)
+                text = node.text_excerpt[metadata.start : metadata.end]
+            state.bibliographic_roles[metadata.node_id] = (metadata.role, text)
         for decision in response.decisions:
             if decision.node_id in updates:
                 raise ValueError("Repeated refinement decision")
@@ -41,15 +50,37 @@ def apply_refinement(
                 response_sha256=document_digest(response),
                 observation_sha256=task.observation_sha256,
                 task_id=task.task_id,
-                node_ids=[d.node_id for d in response.decisions],
+                node_ids=[d.node_id for d in response.decisions]
+                + [d.node_id for d in response.metadata_decisions],
             )
         )
     result = []
     for segment in segments:
         patch = updates.get(segment.id)
         if patch:
+            if segment.structure_candidate:
+                if patch.role_kind is None:
+                    raise ValueError("Native role decision absent")
+                values = segment.model_dump()
+                values.update(kind=patch.role_kind, structure_candidate=False)
+                if segment.kind == "verse" and patch.role_kind == "paragraph":
+                    # Unwrap only layout separators; glyph/span offsets are unchanged.
+                    values["text"] = segment.text.replace("\n", " ")
+                if patch.role_kind == "heading":
+                    values.update(
+                        heading_level=patch.heading_level,
+                        chapter_start=patch.chapter_start,
+                        chapter_role=patch.chapter_role,
+                    )
+                if patch.role_kind != "list_item":
+                    values.update(list_ordered=None, list_start=None, list_depth=None)
+                segment = Segment.model_validate(values)
+                result.append(segment)
+                continue
             if segment.method != "ocr":
                 raise ValueError("Refinement cannot override native source observations")
+            if patch.style is None:
+                raise ValueError("OCR refinement needs observed typography")
             style = segment.style.model_dump() if segment.style else {"id": "observed"}
             style.update(patch.style.model_dump(exclude_none=True))
             values = segment.model_dump()

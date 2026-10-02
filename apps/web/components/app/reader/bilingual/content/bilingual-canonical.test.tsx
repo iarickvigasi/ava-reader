@@ -65,3 +65,25 @@ it("retains table header context and exact column positions when only a body cel
     ),
   ).toHaveLength(1);
 });
+
+it("retains merged cells and empty rows covered by vertical spans", () => {
+  const { chapter, source } = canonicalBilingualFixture();
+  const table = source.blocks.find((b) => b.kind === "table")!;
+  if (table.kind !== "table") throw Error("fixture");
+  table.cells = [
+    { ...table.cells[0], columnSpan: 2, rowSpan: 2, headerIds: [] },
+  ];
+  const html = renderToStaticMarkup(
+    <BilingualFlowContent
+      chapter={chapter}
+      blocks={source.blocks}
+      unitIndexes={chapter.units.map((_, i) => i)}
+      side="source"
+      pageHeight={600}
+    />,
+  );
+  expect(markupNodes(html, "tr")).toHaveLength(2);
+  expect(markupNodes(html, "th")).toHaveLength(1);
+  expect(attribute(markupNodes(html, "th")[0], "colspan")).toBe("2");
+  expect(attribute(markupNodes(html, "th")[0], "rowspan")).toBe("2");
+});
