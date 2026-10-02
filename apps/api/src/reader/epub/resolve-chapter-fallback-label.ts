@@ -1,3 +1,4 @@
+import { enrichOpeningLabel } from './enrich-opening-label';
 import type { ReaderBlock } from '../reader-types';
 import { createChapterExcerptLabel } from './create-chapter-excerpt-label';
 
@@ -21,7 +22,7 @@ export function resolveChapterFallbackLabel(input: {
       continue;
     }
 
-    return candidate;
+    return enrichOpeningLabel(candidate, input.chapterTitle);
   }
 
   return createChapterExcerptLabel(input);

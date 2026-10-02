@@ -1,3 +1,5 @@
+import { enrichOpeningLabel } from '../../reader/epub/enrich-opening-label';
+import { labelImageOnlyChapters } from '../../reader/epub/label-image-only-chapters';
 import { createChapterExcerptLabel } from '../../reader/epub/create-chapter-excerpt-label';
 import { getChapterTitleFromBlocks } from '../../reader/epub/get-chapter-title-from-blocks';
 import { resolveChapterFallbackLabel } from '../../reader/epub/resolve-chapter-fallback-label';
@@ -6,33 +8,35 @@ import type { ReaderPackage, ReaderTocNode } from '../../reader/reader-types';
 export type LabelChange = { chapterId: string; before: string; after: string };
 
 export function relabelPackage(readerPackage: ReaderPackage) {
-  const changes: LabelChange[] = [];
-  const chapters = readerPackage.chapters.map((chapter) => {
+  const language = readerPackage.manifest.language;
+  const candidates = readerPackage.chapters.map((chapter) => {
+    const opening = getChapterTitleFromBlocks(chapter.blocks, false);
+    const enriched = enrichOpeningLabel(chapter.label, opening);
     const legacy = `Chapter ${chapter.spineIndex + 1}`;
-    const excerpt = createChapterExcerptLabel({
-      blocks: chapter.blocks,
-      language: readerPackage.manifest.language,
-      spineIndex: chapter.spineIndex,
-    });
+    const excerpt = createChapterExcerptLabel({ ...chapter, language });
     if (
       chapter.label.trim().toLowerCase() !== legacy.toLowerCase() &&
-      chapter.label !== excerpt
+      chapter.label !== excerpt &&
+      enriched === chapter.label
     )
       return chapter;
     const label = resolveChapterFallbackLabel({
       ...chapter,
-      language: readerPackage.manifest.language,
+      language,
       bookTitle: readerPackage.manifest.title,
-      candidateLabel: null,
-      chapterTitle: getChapterTitleFromBlocks(chapter.blocks, false),
+      candidateLabel: enriched !== chapter.label ? enriched : null,
+      chapterTitle: opening,
     });
-    if (label === chapter.label) return chapter;
-    changes.push({
-      chapterId: chapter.chapterId,
-      before: chapter.label,
-      after: label,
-    });
-    return { ...chapter, label, title: label };
+    return label === chapter.label
+      ? chapter
+      : { ...chapter, label, title: label };
+  });
+  const chapters = labelImageOnlyChapters(candidates, language);
+  const changes: LabelChange[] = chapters.flatMap((chapter, index) => {
+    const before = readerPackage.chapters[index].label;
+    return before === chapter.label
+      ? []
+      : [{ chapterId: chapter.chapterId, before, after: chapter.label }];
   });
   const labels = new Map(changes.map((change) => [change.chapterId, change]));
   return {

@@ -1,7 +1,7 @@
 import type { ReaderBlock } from '../reader-types';
 
 const PARAGRAPH_TITLE_MAX_LENGTH = 80;
-const CHAPTER_NUMBER = /^(?:(?:chapter|part)\s+)?(?:\d+|[ivxlcdm]+)[.:]?$/i;
+const STYLED_HEADING_MIN_SCALE = 1.2;
 
 export function getChapterTitleFromBlocks(
   blocks: ReaderBlock[],
@@ -12,17 +12,16 @@ export function getChapterTitleFromBlocks(
   );
   const first = opening[0];
   if (!first) return null;
-
-  if (first.kind === 'heading') {
-    const title = first.text.trim();
-    const next = opening[1];
-    // Publishers often separate the authored number from the actual title.
-    return CHAPTER_NUMBER.test(title) && next?.kind === 'heading'
-      ? next.text.trim()
-      : title;
+  const headings: string[] = [];
+  for (const block of opening) {
+    if (!isOpeningHeading(block)) break;
+    const text = block.text.replace(/\s+/gu, ' ').trim();
+    if (
+      !headings.some((heading) => heading.toLowerCase() === text.toLowerCase())
+    )
+      headings.push(text);
   }
-
-  // Only the opening can supply a title, never a later subsection heading.
+  if (headings.length) return headings.join(' / ');
   if (
     allowParagraphTitle &&
     (first.kind === 'paragraph' || first.kind === 'blockquote') &&
@@ -31,4 +30,14 @@ export function getChapterTitleFromBlocks(
   )
     return first.text.trim();
   return null;
+}
+
+function isOpeningHeading(block: ReaderBlock): boolean {
+  return (
+    block.kind === 'heading' ||
+    (block.kind === 'paragraph' &&
+      block.align === 'center' &&
+      (block.fontSizeScale ?? 1) >= STYLED_HEADING_MIN_SCALE &&
+      block.text.trim().length <= PARAGRAPH_TITLE_MAX_LENGTH)
+  );
 }

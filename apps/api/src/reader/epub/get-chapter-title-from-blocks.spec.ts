@@ -35,7 +35,7 @@ it.each(['1', 'I', 'Chapter 1', 'Part IV'])(
         ],
         false,
       ),
-    ).toBe('Wanted: Men Who Love');
+    ).toBe(`${number} / Wanted: Men Who Love`);
   },
 );
 
@@ -46,7 +46,7 @@ it('keeps a lone number and the first descriptive heading', () => {
       [heading('Opening'), heading('Subtitle'), paragraph('Body.')],
       false,
     ),
-  ).toBe('Opening');
+  ).toBe('Opening / Subtitle');
 });
 
 it('does not promote later subsection headings', () => {

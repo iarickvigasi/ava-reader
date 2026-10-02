@@ -18,7 +18,7 @@ afterEach(async () => {
 it("repairs an already-backfilled download, retries unchanged server data, and preserves user data", async () => {
   const db = await seedDownload();
   const cached = { ...tocNode, label: "1. Opening words…" };
-  const source = { ...tocNode, label: "Wanted: Men Who Love" };
+  const source = { ...tocNode, label: "1 / Wanted: Men Who Love" };
   await db.books.update("book", { toc: [cached] });
   await db.bookChapters.update(["book", "chapter-1"], {
     blocks: [
@@ -27,7 +27,7 @@ it("repairs an already-backfilled download, retries unchanged server data, and p
         id: "title",
         kind: "heading",
         level: 2,
-        text: source.label,
+        text: "Wanted: Men Who Love",
         inlines: [],
       },
       { id: "block-1", kind: "paragraph", text: "Opening words.", inlines: [] },
@@ -56,7 +56,7 @@ it("repairs an already-backfilled download, retries unchanged server data, and p
 it("requires the same TOC target and leaves authored nested labels alone", () => {
   const cached = { ...tocNode, label: "1. Opening words…" };
   const eligible = new Map([[cached.chapterId!, cached.label]]);
-  const source = { ...tocNode, label: "Wanted: Men Who Love" };
+  const source = { ...tocNode, label: "1 / Wanted: Men Who Love" };
   expect(patchLegacyLabels([cached], [source], eligible)).toEqual([source]);
   expect(
     patchLegacyLabels(
