@@ -9,7 +9,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { resolveHeaderChip, type ChipState } from "./header-chip-state";
-import { useNetworkState } from "../net/use-network-state";
+import { useBrowserConnectivity } from "../net/use-browser-connectivity";
 import { useSlowState } from "../net/use-slow-state";
 import { setPrimeProgress } from "./prime-progress";
 import { usePrimeProgress } from "./use-prime-progress";
@@ -20,7 +20,7 @@ import { useShellsReady } from "./use-shells-ready";
 const DWELL_MS = 5_000;
 
 export function useHeaderChip(): ChipState {
-  const online = useNetworkState();
+  const online = useBrowserConnectivity();
   const slow = useSlowState();
   const progress = usePrimeProgress();
   const shellsReady = useShellsReady();

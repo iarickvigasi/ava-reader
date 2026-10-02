@@ -8,7 +8,7 @@
 
 import { useTranslations } from "next-intl";
 
-import { useNetworkState } from "@/features/offline/net/use-network-state";
+import { useBrowserConnectivity } from "@/features/offline/net/use-browser-connectivity";
 import { useSlowState } from "@/features/offline/net/use-slow-state";
 
 import { useOfflineModal } from "./offline-modal-context";
@@ -25,7 +25,7 @@ export function SlowConnectionIndicator({
   iconOnly = false,
   className,
 }: SlowConnectionIndicatorProps) {
-  const online = useNetworkState();
+  const online = useBrowserConnectivity();
   const slow = useSlowState();
   const t = useTranslations("offline");
   const { open } = useOfflineModal();

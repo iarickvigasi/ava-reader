@@ -15,6 +15,7 @@ import {
   checkNetworkReachability,
   isOnline,
 } from "./net-state";
+import { isBrowserOnline } from "./browser-connectivity";
 import { useSyncTriggers } from "./use-sync-triggers";
 
 const effects = vi.hoisted(() => [] as Array<() => (() => void) | undefined>);
@@ -58,6 +59,7 @@ it("retains failed sessions and refreshes home/replays on confirmed recovery wit
   await syncPendingSessions(getToken, "device");
   await checkNetworkReachability();
   expect(isOnline()).toBe(false);
+  expect(isBrowserOnline()).toBe(true);
   expect(await listUnsyncedClosedSessions()).toHaveLength(1);
   let resumed: Promise<unknown> | undefined;
   const run = vi.fn(() => {
@@ -78,6 +80,7 @@ it("retains failed sessions and refreshes home/replays on confirmed recovery wit
   await checkNetworkReachability();
   await resumed;
   expect(run).toHaveBeenCalledTimes(1);
+  expect(isBrowserOnline()).toBe(true);
   expect(await listUnsyncedClosedSessions()).toHaveLength(0);
   expect((await readHome())?.user.displayName).toBe("Reader");
   await checkNetworkReachability();
