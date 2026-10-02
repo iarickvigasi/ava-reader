@@ -2,6 +2,7 @@ import { extname } from 'path';
 import { BookFileFormat } from '@prisma/client';
 import { XMLParser } from 'fast-xml-parser';
 import JSZip from 'jszip';
+import { splitGenreTokens } from './split-genre-tokens';
 import mime from 'mime-types';
 import { resolveZipPath } from './zip-utils';
 import { titleFromFilename } from './blob-utils';
@@ -416,13 +417,6 @@ function dedupeTextsPreserveOrder(values: string[]) {
   }
 
   return uniqueValues;
-}
-
-function splitGenreTokens(value: string) {
-  return value
-    .split(/,|\s+(?:--|-)\s+/g)
-    .map((token) => token.trim())
-    .filter((token) => token.length > 0);
 }
 
 function firstAsArray<T>(value: T | T[] | undefined) {

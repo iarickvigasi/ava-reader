@@ -1,3 +1,4 @@
+import { labelImageOnlyChapters } from './label-image-only-chapters';
 import type { ReaderBlock, ReaderChapter } from '../reader-types';
 import { normalizeHrefForLookup } from './archive';
 import {
@@ -65,9 +66,11 @@ export function buildReaderChapters(input: {
       });
     }
   }
-  return chapters.map((chapter, index) => ({
-    ...chapter,
-    nextChapterId: chapters[index + 1]?.chapterId ?? null,
-    previousChapterId: chapters[index - 1]?.chapterId ?? null,
-  }));
+  return labelImageOnlyChapters(chapters, input.language).map(
+    (chapter, index) => ({
+      ...chapter,
+      nextChapterId: chapters[index + 1]?.chapterId ?? null,
+      previousChapterId: chapters[index - 1]?.chapterId ?? null,
+    }),
+  );
 }

@@ -680,6 +680,7 @@
       "returnToSplash": "Retour à l'écran d'accueil"
     },
     "device": {
+      "closeNotice": "Fermer la notification",
       "menu": "Menu du compte",
       "manage": "Gérer le compte",
       "signIn": "Se connecter",

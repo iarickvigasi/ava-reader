@@ -22,6 +22,7 @@ import { BackgroundPrimer } from "@/features/offline/prime";
 import { ReaderUiProvider } from "@/components/app/core/reader-ui-context";
 import { ReaderShell } from "./reader-shell";
 import { useLockDocumentOverscroll } from "@/components/app/core/use-lock-document-overscroll";
+import { useResetPageScroll } from "./use-reset-page-scroll";
 import { useInterfaceLang } from "@/components/app/preferences/use-interface-lang";
 import { useCurrentUserCached } from "@/features/offline/buckets/me";
 import type { CurrentUserPayload } from "@/lib/api-types";
@@ -39,6 +40,7 @@ export function AppShell({
   currentUser: initialUser,
 }: AppShellProps) {
   const pathname = usePathname();
+  useResetPageScroll(pathname);
   const isReaderRoute = pathname.startsWith("/app/read/");
   const currentUser = useCurrentUserCached(initialUser);
   // Mount the interface-language hook globally so the locale cookie stays in

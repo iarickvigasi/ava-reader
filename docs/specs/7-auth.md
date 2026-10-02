@@ -19,6 +19,10 @@ books and pending offline changes; losing an online session never removes local 
 3. Online states are restoring, authenticated, temporarily unavailable, and sign-in required.
    Provider/network failure is not proof of sign-out. Confirmed expiry or revocation pauses sync
    and shows a nonblocking sign-in action. It never redirects a remembered reader or wipes data.
+   The reconnecting notice auto-hides after six seconds and has a keyboard-accessible close button.
+   Dismissal lasts through the same outage, including navigation and temporary offline/restoring
+   states; authenticated recovery or a device-account change resets it. Sign-in-required status
+   remains visible with its sign-in action, even after reconnecting was dismissed.
 4. Failed Clerk initialization retries with capped backoff, on reconnect and visible-tab resume.
    Token acquisition and history requests have deadlines; pending locks release on failure.
    Previously requested history retries after recovery without moving the viewed week.
@@ -46,6 +50,8 @@ Authentication failures retain mutation queues; permanent domain failures retain
 - [ ] Session expiry/revocation preserves downloaded books, progress, and pending annotations.
 - [ ] Same-account reauthentication resumes syncing; cross-account token acquisition is rejected.
 - [ ] Explicit sign-out wipes local data and blocks other tabs, including when offline.
+- [ ] Reconnecting auto-hides after six seconds or manual dismissal without stopping recovery.
+- [ ] Dismissal survives rerenders/navigation; recovery allows a new notice and expiry shows sign-in.
 - [ ] API access without valid authentication remains denied.
 
 ## Limits

@@ -3,6 +3,8 @@
 // orchestration behind injected seams so it's unit-testable without Dexie or
 // Clerk; the shell component wires the real implementations.
 
+import { ReaderPayloadError } from "@/components/app/reader/data/reader-payload-error";
+
 import type { ReaderStatusPayload } from "@/lib/api-types";
 
 export type ReaderLoadResult =
@@ -10,6 +12,7 @@ export type ReaderLoadResult =
   // Offline and the content isn't in Dexie. `libraryItemId` is null when the
   // slug isn't even in the cached library (deep link to an unknown book).
   | { kind: "missing-offline"; libraryItemId: string | null }
+  | { kind: "not-found" }
   | { kind: "error" };
 
 export type LoadReaderDeps = {
@@ -41,7 +44,10 @@ export async function loadReaderForSlug(
       payload,
       libraryItemId: payload.book.libraryItemId,
     };
-  } catch {
+  } catch (error) {
+    if (error instanceof ReaderPayloadError && error.status === 404) {
+      return { kind: "not-found" };
+    }
     // A failed fetch for a book we know locally means its content just isn't
     // available right now (offline that navigator.onLine failed to report,
     // server unreachable, auth never booted). Surface the instructional

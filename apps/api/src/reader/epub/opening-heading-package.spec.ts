@@ -38,8 +38,8 @@ it('keeps number-plus-title headings with a sparse TOC and untitled front matter
     buffer: await zip.generateAsync({ type: 'nodebuffer' }),
   });
   expect(readerPackage.chapters[3]).toMatchObject({
-    label: 'Wanted: Men Who Love',
-    title: 'Wanted: Men Who Love',
+    label: '1 / Wanted: Men Who Love',
+    title: '1 / Wanted: Men Who Love',
     spineIndex: 3,
     blocks: [
       { kind: 'heading', text: '1' },
@@ -47,7 +47,7 @@ it('keeps number-plus-title headings with a sparse TOC and untitled front matter
       { kind: 'paragraph', text: 'Every female wants to be loved by a male.' },
     ],
   });
-  expect(readerPackage.toc[3].label).toBe('Wanted: Men Who Love');
+  expect(readerPackage.toc[3].label).toBe('1 / Wanted: Men Who Love');
   expect(readerPackage.chapters[0].label).toBe(
     '1. This deliberately long front matter paragraph…',
   );

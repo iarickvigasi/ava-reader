@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Button, ButtonLink } from "@/components/ui/button";
 import type { CurrentUserPayload } from "@/lib/api-types/user";
 import { useLocalSignOut } from "@/features/auth/use-local-sign-out";
+import { useUserMenuDismissal } from "@/features/auth/use-user-menu-dismissal";
 import { UserAvatarFallback } from "./user-avatar-fallback";
 
 // App-owned sign-out distinguishes explicit intent from provider session loss.
@@ -17,8 +18,9 @@ export function UserMenuButton({
   const clerk = useClerk();
   const t = useTranslations("auth.device");
   const { signOut, busy, error } = useLocalSignOut();
+  const { menuRef, close } = useUserMenuDismissal();
   return (
-    <details className="relative">
+    <details ref={menuRef} className="relative">
       <summary
         aria-label={t("menu")}
         className="cursor-pointer list-none rounded-full [&::-webkit-details-marker]:hidden"
@@ -30,7 +32,10 @@ export function UserMenuButton({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => clerk.openUserProfile()}
+            onClick={() => {
+              close();
+              clerk.openUserProfile();
+            }}
           >
             {t("manage")}
           </Button>

@@ -1,14 +1,14 @@
 "use client";
 
 // Compact "Offline" pill rendered in the page header (web) and in the reader
-// header (web + mobile). Reads from the offline net-state store; renders
+// header (web + mobile). Reads browser connectivity; renders
 // nothing while online. Clicking opens the offline modal — the same one that
 // auto-shows on app open offline / connection drop. Pill markup is shared
 // with SlowConnectionIndicator via StatusPill.
 
 import { useTranslations } from "next-intl";
 
-import { useNetworkState } from "@/features/offline/net/use-network-state";
+import { useBrowserConnectivity } from "@/features/offline/net/use-browser-connectivity";
 
 import { useOfflineModal } from "./offline-modal-context";
 import { StatusPill } from "./status-pill";
@@ -25,7 +25,7 @@ export function OfflineIndicator({
   iconOnly = false,
   className,
 }: OfflineIndicatorProps) {
-  const online = useNetworkState();
+  const online = useBrowserConnectivity();
   const t = useTranslations("offline");
   const { open } = useOfflineModal();
 

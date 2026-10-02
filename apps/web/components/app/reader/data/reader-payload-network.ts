@@ -6,6 +6,7 @@ import {
 import type { ReaderStatusPayload } from "@/lib/api-types/reader";
 
 import { type ReaderAuthInput, resolveReaderAuthToken } from "./reader-auth";
+import { ReaderPayloadError } from "./reader-payload-error";
 import { buildReaderUrl, withAuthHeader } from "./reader-request";
 
 // The book bucket also uses this network-only path to fill missing metadata
@@ -32,7 +33,7 @@ export async function fetchReaderPayloadFromNetwork(
     signal: input.signal,
   });
   if (!response.ok) {
-    throw new Error("The reader payload could not be loaded.");
+    throw new ReaderPayloadError(response.status);
   }
   return loadCanonicalResources(
     (await response.json()) as ReaderStatusPayload,
