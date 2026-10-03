@@ -57,6 +57,8 @@ describe('ReaderService', () => {
   };
 
   const prisma = {
+    pdfImportOperation: { findFirst: jest.fn().mockResolvedValue(null) },
+    canonicalEpubImport: { findFirst: jest.fn().mockResolvedValue(null) },
     deletedLibraryItem: { findFirst: findDeletedLibraryItem },
     $transaction: jest.fn(
       async (callback: (transactionClient: typeof tx) => Promise<unknown>) =>

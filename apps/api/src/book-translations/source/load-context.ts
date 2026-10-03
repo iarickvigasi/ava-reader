@@ -1,3 +1,9 @@
+import { loadCanonicalReader } from '../../reader/canonical/load';
+import {
+  NO_READER_CAPABILITY,
+  type ReaderCapability,
+} from '../../reader/canonical/semantic';
+import { canonicalTranslationContext } from './canonical-context';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import type { PrismaService } from '../../prisma/prisma.service';
 import type { UsersService } from '../../users/users.service';
@@ -16,6 +22,7 @@ export async function loadTranslationContext(args: {
   libraryItemId: string;
   chapterId: string;
   targetLang: string;
+  capability?: ReaderCapability;
 }): Promise<TranslationContext> {
   const owned = await getOwnedLibraryItem(
     args.prisma,
@@ -23,6 +30,13 @@ export async function loadTranslationContext(args: {
     args.clerkUserId,
     args.libraryItemId,
   );
+  const capability = args.capability ?? NO_READER_CAPABILITY;
+  const canonical = await loadCanonicalReader(args.prisma, owned, capability);
+  if (canonical)
+    return canonicalTranslationContext(owned, canonical, {
+      ...args,
+      capability,
+    });
   const file = findReadyDerivedReader(owned);
   if (!file) throw new ConflictException('The reader package is not ready.');
   const readerPackage = await loadReaderPackage(args.prisma, file.blobId);

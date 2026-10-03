@@ -30,7 +30,14 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "pdf:contracts:generate": "node scripts/generate-pdf-contracts.cjs",
+    "pdf:contracts:check": "node scripts/generate-pdf-contracts.cjs --check",
+    "pdf:contracts:smoke": "node scripts/smoke-pdf-contracts.cjs",
+    "pdf:worker": "node scripts/pdf-worker.cjs",
+    "pdf:jobs:admin": "ts-node src/scripts/pdf-job-admin.ts",
+    "pdf:reconstruction:generate": "node scripts/generate-reconstruction-contracts.cjs",
+    "pdf:reconstruction:check": "node scripts/generate-reconstruction-contracts.cjs --check"
   },
   "dependencies": {
     "@clerk/backend": "^3.2.4",
@@ -42,6 +49,7 @@
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "ai": "^5.0.179",
+    "ajv": "8.18.0",
     "dotenv": "^17.2.3",
     "entities": "^6.0.1",
     "fast-xml-parser": "^5.7.2",
@@ -70,6 +78,7 @@
     "eslint-plugin-prettier": "^5.2.2",
     "globals": "^17.0.0",
     "jest": "^30.0.0",
+    "json-schema-to-typescript": "15.0.4",
     "prettier": "^3.4.2",
     "prisma": "^7.8.0",
     "source-map-support": "^0.5.21",

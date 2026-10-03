@@ -78,7 +78,9 @@ export function useBilingualPages(input: {
             ? props.activeChapter.nextChapterId
             : props.activeChapter.previousChapterId;
         if (id)
-          props.onSelectChapter(id, { edge: direction > 0 ? "start" : "end" });
+          (props.onTurnChapter ?? props.onSelectChapter)(id, {
+            edge: direction > 0 ? "start" : "end",
+          });
         return;
       }
       setPosition((previous) =>

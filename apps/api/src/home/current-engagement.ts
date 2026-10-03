@@ -1,4 +1,4 @@
-import { buildCoverImageUrl } from '../shared/cover-image-url';
+import { libraryCoverUrl } from '../library/covers/library-cover-url';
 import {
   compareByEngagementDesc,
   mostRecentEngagementDate,
@@ -7,7 +7,13 @@ import { findPrimarySourceFile } from '../shared/primary-book-file';
 import type { LibraryItemRecord } from './types';
 
 export function createCurrentEngagement(libraryItems: LibraryItemRecord[]) {
-  const item = [...libraryItems].sort(compareByEngagementDesc)[0];
+  const item = libraryItems
+    .filter(
+      ({ book }) =>
+        !book.pdfImport ||
+        (book.pdfImport.status === 'READY' && book.pdfImport.finalContentId),
+    )
+    .sort(compareByEngagementDesc)[0];
   if (!item) return { currentEngagement: null, listening: null };
 
   return {
@@ -25,12 +31,11 @@ function serializeCurrentEngagement(item: LibraryItemRecord) {
 
   return {
     authors: item.book.authors,
+    metadataEditVersion: item.book.metadataEditVersion,
     chapterLabel: item.progress?.chapterLabel ?? 'Opening chapters',
     completionPercent: item.progress?.completionPercent ?? 0,
     finishedAt: item.finishedAt?.toISOString() ?? null,
-    coverImageUrl: item.book.coverBlob
-      ? buildCoverImageUrl(item.book.id)
-      : null,
+    coverImageUrl: libraryCoverUrl(item.book, item.id),
     lastReadAt: mostRecentEngagementDate(item).toISOString(),
     libraryItemId: item.id,
     nextMilestone: item.progress?.chapterLabel ?? 'Continue where you left off',

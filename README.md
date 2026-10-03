@@ -32,7 +32,6 @@ Monorepo scaffold for a web-first AI book reader.
    ```
 
 4. Open the apps:
-
    - Web landing: `http://localhost:3000`
    - Sign in: `http://localhost:3000/sign-in`
    - Protected shell: `http://localhost:3000/app`
@@ -106,7 +105,6 @@ keeping the backend database and API inside Docker.
    ```
 
 3. Open the apps:
-
    - Web: `http://localhost:3000`
    - API health: `http://localhost:4000/api/health`
 
@@ -193,11 +191,9 @@ Use this flow when you come back later and want to verify the app quickly end to
    ```
 
 5. Refresh and open the internal catalog route:
-
    - `http://localhost:3000/app/admin/catalog`
 
 6. Choose one of two paths:
-
    - Manual catalog path: create public-domain titles in the admin UI, publish them, then add them from the home screen.
    - Demo-data path: seed a realistic populated dashboard immediately:
 
@@ -226,3 +222,21 @@ pnpm build
 pnpm --filter api admin:grant you@example.com
 pnpm --filter api db:seed:home-demo you@example.com
 ```
+
+## PDF conversion
+
+Select **Convert to EPUB** during PDF import to prepare one finished readable book. Its Library
+entry retains the original PDF and accepted EPUB; conversion occurs once and finished content stays
+fixed. The implementation is a development candidate, with scoped native-flow evidence and remaining
+scanned/mixed, typography, offline/device and release gates.
+
+Reader and Library format downloads use the same owned source/publication checks. The reader's
+Download panel offers existing available files; it does not start a new conversion.
+
+- [Product behavior and pipeline](docs/pdf-conversion.md)
+- [Build, worker configuration and operations](docs/pdf-conversion-operations.md)
+- [Verification, normal-app walkthrough and current limitations](docs/pdf-conversion-verification.md)
+- [Standalone worker package](packages/pdf-epub/README.md)
+
+The PRODUCT reader qualification catalog is empty; installing or merging code does not enable a
+production provider route, reader qualification or private-file cleanup.

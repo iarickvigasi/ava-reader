@@ -22,6 +22,8 @@ export type ReaderBookPayload = {
 };
 
 type ReaderReadyPayload = {
+  readerPackage?: import('../../pdf-conversion/contracts/generated/ava-reader-3').ReaderPackageV3;
+  resourceUrls?: Record<string, string>;
   activeChapterId: string;
   book: ReaderBookPayload;
   chapters: ReaderChapter[];

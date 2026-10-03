@@ -1,3 +1,4 @@
+import { ReaderMeasurementContext } from "../../content/reader-measurement-context";
 import type { CSSProperties } from "react";
 import { useCallback } from "react";
 import type { ReaderChapterPayload } from "@/lib/api-types";
@@ -39,13 +40,15 @@ export function PreloadedChapter({
         width: `${pageBoxWidth}px`,
       }}
     >
-      <ReaderArticle
-        articleRef={handleArticleRef}
-        blocks={chapter.blocks}
-        chapterId={chapter.chapterId}
-        pageHeight={pageBoxHeight}
-        style={articleStyle}
-      />
+      <ReaderMeasurementContext value={true}>
+        <ReaderArticle
+          articleRef={handleArticleRef}
+          blocks={chapter.blocks}
+          chapterId={chapter.chapterId}
+          pageHeight={pageBoxHeight}
+          style={articleStyle}
+        />
+      </ReaderMeasurementContext>
     </div>
   );
 }

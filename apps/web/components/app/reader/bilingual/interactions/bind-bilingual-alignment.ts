@@ -35,7 +35,9 @@ export function bindBilingualAlignment(
     },
   });
   const click = (event: MouseEvent) => {
-    // Text links and annotations never steal a bilingual alignment gesture.
+    // Navigation and saved marks retain their own activation before alignment capture.
+    if ((event.target as Element)?.closest?.("a, button, mark, [role=button]"))
+      return;
     // Selection capture listens for mouseup/touchend, independently of click.
     if ((event.target as Element)?.closest?.("[data-bilingual-unit-id]")) {
       event.preventDefault();

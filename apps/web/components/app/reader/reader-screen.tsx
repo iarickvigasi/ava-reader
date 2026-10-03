@@ -1,17 +1,14 @@
 "use client";
 
 import { useCallback, useMemo, type CSSProperties } from "react";
-import {
-  MAX_FONT_SCALE,
-  MIN_FONT_SCALE,
-  useFontScale,
-} from "@/components/app/preferences/use-font-scale";
+import { useFontScale } from "@/components/app/preferences/use-font-scale";
+import { stepFontScale } from "@/components/app/preferences/font-scale";
 import { useReaderDevice } from "@/features/reader/modes/use-reader-device";
 import { BookContextProvider } from "@/features/offline/buckets/book/context";
 import { useRefreshReaderLanguage } from "@/features/offline/buckets/book";
 import { AiCommentsProvider } from "./overlays/ai-comments/ai-comments-context";
 import { HighlightsProvider } from "./overlays/highlights/highlights-context";
-import { ReaderModeRouter } from "./view/reader-mode-router";
+import { ReaderNavigationSession } from "./view/reader-navigation-session";
 import { ReaderSelectionProvider } from "./selection/reader-selection-context";
 import { ReaderStatusState } from "./view/reader-status-state";
 import {
@@ -19,7 +16,6 @@ import {
   READER_STATUS_READY,
 } from "./shared/constants";
 import type { ReaderScreenProps } from "./shared/types";
-import { roundFontScale } from "./shared/utils";
 import { useReaderScreenController } from "./state/use-reader-screen-controller";
 
 export function ReaderScreen({
@@ -49,10 +45,10 @@ export function ReaderScreen({
   });
   const isReaderReady = payload.status === READER_STATUS_READY;
   const handleDecreaseFont = useCallback(() => {
-    setFontScale(Math.max(MIN_FONT_SCALE, roundFontScale(fontScale - 0.1)));
+    setFontScale(stepFontScale(fontScale, -1));
   }, [fontScale, setFontScale]);
   const handleIncreaseFont = useCallback(() => {
-    setFontScale(Math.min(MAX_FONT_SCALE, roundFontScale(fontScale + 0.1)));
+    setFontScale(stepFontScale(fontScale, 1));
   }, [fontScale, setFontScale]);
 
   const readerStyle = useMemo(
@@ -75,7 +71,7 @@ export function ReaderScreen({
             <AiCommentsProvider libraryItemId={libraryItemId}>
               <HighlightsProvider libraryItemId={libraryItemId}>
                 <ReaderSelectionProvider>
-                  <ReaderModeRouter
+                  <ReaderNavigationSession
                     key={libraryItemId}
                     activeChapter={activeChapter}
                     displayLocator={displayLocator}

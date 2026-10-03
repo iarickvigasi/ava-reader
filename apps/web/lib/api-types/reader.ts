@@ -2,79 +2,14 @@ import type { ReaderBookPayload } from "./reader-book";
 
 export type { ReaderBookPayload } from "./reader-book";
 
-export type ReaderInline =
-  | {
-      kind: "text";
-      text: string;
-      bold?: boolean;
-      fontWeight?: number;
-      href?: string;
-      italic?: boolean;
-      // Vertical position from a <sup>/<sub> wrapper. Absent means baseline.
-      // Carries no characters of its own, so locator textOffsets — counted
-      // over text data — are identical with or without it.
-      script?: "super" | "sub";
-    }
-  | {
-      alt: string | null;
-      href?: string;
-      kind: "image";
-      naturalWidth?: number | null;
-      src: string;
-    };
-
-export type ReaderListItem = {
-  id: string;
-  inlines: ReaderInline[];
-  text: string;
-};
-
-export type ReaderBlockAlign = "left" | "center" | "right" | "justify";
-
-export type ReaderBlock =
-  | {
-      align?: ReaderBlockAlign;
-      anchorId?: string | null;
-      fontSizeScale?: number;
-      fontWeight?: number;
-      id: string;
-      inlines: ReaderInline[];
-      kind: "paragraph" | "blockquote";
-      text: string;
-      textIndent?: number;
-    }
-  | {
-      align?: ReaderBlockAlign;
-      anchorId?: string | null;
-      fontSizeScale?: number;
-      fontWeight?: number;
-      id: string;
-      inlines: ReaderInline[];
-      kind: "heading";
-      level: number;
-      text: string;
-      textIndent?: number;
-    }
-  | {
-      align?: ReaderBlockAlign;
-      anchorId?: string | null;
-      fontSizeScale?: number;
-      fontWeight?: number;
-      id: string;
-      items: ReaderListItem[];
-      kind: "list";
-      ordered: boolean;
-      text: string;
-      textIndent?: number;
-    }
-  | {
-      alt: string | null;
-      anchorId?: string | null;
-      id: string;
-      kind: "image";
-      src: string;
-      text: string;
-    };
+import type { ReaderBlock } from "./reader-content";
+import type { ReaderPackageV3 } from "./canonical-reader.generated";
+export type {
+  ReaderBlock,
+  ReaderInline,
+  ReaderListItem,
+  ReaderBlockAlign,
+} from "./reader-content";
 
 export type ReaderTocNode = {
   anchorId: string | null;
@@ -85,6 +20,7 @@ export type ReaderTocNode = {
   id: string;
   label: string;
   spineIndex: number | null;
+  textOffset?: number;
 };
 
 export type ReaderChapterPayload = {
@@ -147,6 +83,8 @@ export type ReaderSessionPayload = {
 export type ReaderStatusPayload =
   | {
       activeChapterId: string;
+      readerPackage?: ReaderPackageV3;
+      resourceUrls?: Record<string, string>;
       book: ReaderBookPayload;
       chapters: ReaderChapterPayload[];
       progress: ReaderProgressPayload;

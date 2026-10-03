@@ -73,6 +73,11 @@ export function useReaderPagination({
     previousChapterPageCount,
     pageCount,
     pageBoxSize,
+    // Canonical chapters and explicit jumps use the same standalone geometry
+    // as their measurement. Prefix-skipping assumes prior sequential reading.
+    separateChapter:
+      activeChapter.blocks.some((block) => block.canonical) ||
+      restoreIntent?.requestId !== undefined,
   });
 
   const restorePhase = useRestoreController({

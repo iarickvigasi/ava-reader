@@ -1,0 +1,1984 @@
+{
+  "$comment": "Generated from ava_pdf_epub.contracts. Graph, digest, normalization and authority semantics require the pinned Python validator; structural success never grants readiness.",
+  "$defs": {
+    "Address": {
+      "additionalProperties": false,
+      "properties": {
+        "fragment": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Fragment",
+          "type": "string"
+        },
+        "resource_path": {
+          "maxLength": 240,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*(/[A-Za-z0-9][A-Za-z0-9._-]*)*$",
+          "title": "Resource Path",
+          "type": "string"
+        },
+        "target": {
+          "$ref": "#/$defs/InternalTarget"
+        }
+      },
+      "required": [
+        "resource_path",
+        "fragment",
+        "target"
+      ],
+      "title": "Address",
+      "type": "object"
+    },
+    "Box": {
+      "additionalProperties": false,
+      "properties": {
+        "coordinate_space": {
+          "enum": [
+            "page_points_top_left",
+            "normalized_top_left"
+          ],
+          "title": "Coordinate Space",
+          "type": "string"
+        },
+        "x0": {
+          "maximum": 20000,
+          "minimum": 0,
+          "title": "X0",
+          "type": "number"
+        },
+        "x1": {
+          "exclusiveMinimum": 0,
+          "maximum": 20000,
+          "title": "X1",
+          "type": "number"
+        },
+        "y0": {
+          "maximum": 20000,
+          "minimum": 0,
+          "title": "Y0",
+          "type": "number"
+        },
+        "y1": {
+          "exclusiveMinimum": 0,
+          "maximum": 20000,
+          "title": "Y1",
+          "type": "number"
+        }
+      },
+      "required": [
+        "coordinate_space",
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "title": "Box",
+      "type": "object"
+    },
+    "Chapter": {
+      "additionalProperties": false,
+      "properties": {
+        "block_ids": {
+          "items": {
+            "maxLength": 120,
+            "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+            "type": "string"
+          },
+          "maxItems": 20000,
+          "minItems": 1,
+          "title": "Block Ids",
+          "type": "array"
+        },
+        "id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "resource_paths": {
+          "items": {
+            "maxLength": 240,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*(/[A-Za-z0-9][A-Za-z0-9._-]*)*$",
+            "type": "string"
+          },
+          "maxItems": 128,
+          "minItems": 1,
+          "title": "Resource Paths",
+          "type": "array"
+        },
+        "role": {
+          "enum": [
+            "frontmatter",
+            "bodymatter",
+            "backmatter"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "resource_paths",
+        "role",
+        "block_ids"
+      ],
+      "title": "Chapter",
+      "type": "object"
+    },
+    "Evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "box": {
+          "$ref": "#/$defs/Box"
+        },
+        "method": {
+          "enum": [
+            "native",
+            "ocr",
+            "review",
+            "replay",
+            "render"
+          ],
+          "title": "Method",
+          "type": "string"
+        },
+        "page": {
+          "maximum": 500,
+          "minimum": 1,
+          "title": "Page",
+          "type": "integer"
+        },
+        "region_id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Region Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "page",
+        "region_id",
+        "method",
+        "box"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "ExternalTarget": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "external",
+          "title": "Kind",
+          "type": "string"
+        },
+        "url": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "url"
+      ],
+      "title": "ExternalTarget",
+      "type": "object"
+    },
+    "FigureBlock": {
+      "additionalProperties": false,
+      "properties": {
+        "alt": {
+          "maxLength": 4000,
+          "title": "Alt",
+          "type": "string"
+        },
+        "caption_id": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Caption Id"
+        },
+        "credit_id": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Credit Id"
+        },
+        "decorative": {
+          "title": "Decorative",
+          "type": "boolean"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          },
+          "maxItems": 500,
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "figure",
+          "title": "Kind",
+          "type": "string"
+        },
+        "resource_id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Resource Id",
+          "type": "string"
+        },
+        "style_id": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Style Id"
+        }
+      },
+      "required": [
+        "id",
+        "evidence",
+        "kind",
+        "resource_id",
+        "alt",
+        "decorative"
+      ],
+      "title": "FigureBlock",
+      "type": "object"
+    },
+    "HeadingBlock": {
+      "additionalProperties": false,
+      "properties": {
+        "content": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          },
+          "maxItems": 500,
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "heading",
+          "title": "Kind",
+          "type": "string"
+        },
+        "level": {
+          "maximum": 6,
+          "minimum": 1,
+          "title": "Level",
+          "type": "integer"
+        },
+        "style_id": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Style Id"
+        }
+      },
+      "required": [
+        "id",
+        "evidence",
+        "kind",
+        "level",
+        "content"
+      ],
+      "title": "HeadingBlock",
+      "type": "object"
+    },
+    "ImageResource": {
+      "additionalProperties": false,
+      "properties": {
+        "byte_length": {
+          "maximum": 209715200,
+          "minimum": 1,
+          "title": "Byte Length",
+          "type": "integer"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          },
+          "maxItems": 500,
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "height": {
+          "maximum": 6000,
+          "minimum": 1,
+          "title": "Height",
+          "type": "integer"
+        },
+        "id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "media_type": {
+          "enum": [
+            "image/png",
+            "image/jpeg"
+          ],
+          "title": "Media Type",
+          "type": "string"
+        },
+        "path": {
+          "maxLength": 240,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*(/[A-Za-z0-9][A-Za-z0-9._-]*)*$",
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "width": {
+          "maximum": 6000,
+          "minimum": 1,
+          "title": "Width",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "path",
+        "sha256",
+        "byte_length",
+        "media_type",
+        "width",
+        "height",
+        "evidence"
+      ],
+      "title": "ImageResource",
+      "type": "object"
+    },
+    "InlineSpan": {
+      "additionalProperties": false,
+      "properties": {
+        "end": {
+          "exclusiveMinimum": 0,
+          "maximum": 200000,
+          "title": "End",
+          "type": "integer"
+        },
+        "id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "link": {
+          "anyOf": [
+            {
+              "discriminator": {
+                "mapping": {
+                  "external": "#/$defs/ExternalTarget",
+                  "internal": "#/$defs/InternalTarget",
+                  "note": "#/$defs/NoteTarget"
+                },
+                "propertyName": "kind"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/InternalTarget"
+                },
+                {
+                  "$ref": "#/$defs/NoteTarget"
+                },
+                {
+                  "$ref": "#/$defs/ExternalTarget"
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Link"
+        },
+        "start": {
+          "maximum": 200000,
+          "minimum": 0,
+          "title": "Start",
+          "type": "integer"
+        },
+        "style_id": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Style Id"
+        }
+      },
+      "required": [
+        "id",
+        "start",
+        "end"
+      ],
+      "title": "InlineSpan",
+      "type": "object"
+    },
+    "InternalTarget": {
+      "additionalProperties": false,
+      "properties": {
+        "block_id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Block Id",
+          "type": "string"
+        },
+        "chapter_id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Chapter Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "internal",
+          "title": "Kind",
+          "type": "string"
+        },
+        "offset": {
+          "maximum": 200000,
+          "minimum": 0,
+          "title": "Offset",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "kind",
+        "chapter_id",
+        "block_id",
+        "offset"
+      ],
+      "title": "InternalTarget",
+      "type": "object"
+    },
+    "ListGroup": {
+      "additionalProperties": false,
+      "properties": {
+        "depth": {
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Depth",
+          "type": "integer"
+        },
+        "id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "item_ids": {
+          "items": {
+            "maxLength": 120,
+            "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+            "type": "string"
+          },
+          "maxItems": 20000,
+          "minItems": 1,
+          "title": "Item Ids",
+          "type": "array"
+        },
+        "marker_style": {
+          "anyOf": [
+            {
+              "enum": [
+                "decimal",
+                "lower-alpha",
+                "upper-alpha",
+                "lower-roman",
+                "upper-roman",
+                "bullet"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Marker Style"
+        },
+        "ordered": {
+          "title": "Ordered",
+          "type": "boolean"
+        },
+        "parent_item_id": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent Item Id"
+        },
+        "start": {
+          "anyOf": [
+            {
+              "maximum": 1000000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Start"
+        }
+      },
+      "required": [
+        "id",
+        "ordered",
+        "depth",
+        "item_ids"
+      ],
+      "title": "ListGroup",
+      "type": "object"
+    },
+    "ListItemBlock": {
+      "additionalProperties": false,
+      "properties": {
+        "content": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          },
+          "maxItems": 500,
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "list_item",
+          "title": "Kind",
+          "type": "string"
+        },
+        "list_id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "List Id",
+          "type": "string"
+        },
+        "style_id": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Style Id"
+        }
+      },
+      "required": [
+        "id",
+        "evidence",
+        "kind",
+        "list_id",
+        "content"
+      ],
+      "title": "ListItemBlock",
+      "type": "object"
+    },
+    "MetadataClaim": {
+      "additionalProperties": false,
+      "properties": {
+        "contributor_role": {
+          "anyOf": [
+            {
+              "enum": [
+                "author",
+                "editor",
+                "translator",
+                "illustrator",
+                "other"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Contributor Role"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          },
+          "maxItems": 500,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "field": {
+          "enum": [
+            "title",
+            "subtitle",
+            "contributor",
+            "publisher",
+            "date",
+            "language",
+            "identifier",
+            "rights",
+            "edition",
+            "description",
+            "subject"
+          ],
+          "title": "Field",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "identifier_scheme": {
+          "anyOf": [
+            {
+              "enum": [
+                "isbn",
+                "uuid",
+                "uri",
+                "other"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Identifier Scheme"
+        },
+        "origin": {
+          "enum": [
+            "source",
+            "user",
+            "generated"
+          ],
+          "title": "Origin",
+          "type": "string"
+        },
+        "scope": {
+          "enum": [
+            "work",
+            "source_edition",
+            "conversion"
+          ],
+          "title": "Scope",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "accepted",
+            "candidate",
+            "conflict",
+            "unknown"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "required": [
+        "id",
+        "field",
+        "status",
+        "scope",
+        "origin"
+      ],
+      "title": "MetadataClaim",
+      "type": "object"
+    },
+    "NormalizationMap": {
+      "additionalProperties": false,
+      "properties": {
+        "segments": {
+          "items": {
+            "$ref": "#/$defs/NormalizationSegment"
+          },
+          "maxItems": 200000,
+          "title": "Segments",
+          "type": "array"
+        },
+        "source_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "source_text": {
+          "maxLength": 200000,
+          "title": "Source Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_text",
+        "source_sha256",
+        "segments"
+      ],
+      "title": "NormalizationMap",
+      "type": "object"
+    },
+    "NormalizationSegment": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_end": {
+          "maximum": 200000,
+          "minimum": 0,
+          "title": "Canonical End",
+          "type": "integer"
+        },
+        "canonical_start": {
+          "maximum": 200000,
+          "minimum": 0,
+          "title": "Canonical Start",
+          "type": "integer"
+        },
+        "kind": {
+          "enum": [
+            "identity",
+            "nfc",
+            "ligature",
+            "line_wrap"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "source_end": {
+          "maximum": 200000,
+          "minimum": 0,
+          "title": "Source End",
+          "type": "integer"
+        },
+        "source_start": {
+          "maximum": 200000,
+          "minimum": 0,
+          "title": "Source Start",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "source_start",
+        "source_end",
+        "canonical_start",
+        "canonical_end",
+        "kind"
+      ],
+      "title": "NormalizationSegment",
+      "type": "object"
+    },
+    "NoteBlock": {
+      "additionalProperties": false,
+      "properties": {
+        "callout_ids": {
+          "items": {
+            "maxLength": 120,
+            "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+            "type": "string"
+          },
+          "maxItems": 20000,
+          "minItems": 1,
+          "title": "Callout Ids",
+          "type": "array"
+        },
+        "content": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          },
+          "maxItems": 500,
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "note",
+          "title": "Kind",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "note_role": {
+          "enum": [
+            "footnote",
+            "endnote"
+          ],
+          "title": "Note Role",
+          "type": "string"
+        },
+        "style_id": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Style Id"
+        }
+      },
+      "required": [
+        "id",
+        "evidence",
+        "kind",
+        "note_role",
+        "label",
+        "content",
+        "callout_ids"
+      ],
+      "title": "NoteBlock",
+      "type": "object"
+    },
+    "NoteTarget": {
+      "additionalProperties": false,
+      "properties": {
+        "block_id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Block Id",
+          "type": "string"
+        },
+        "chapter_id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Chapter Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "note",
+          "title": "Kind",
+          "type": "string"
+        },
+        "offset": {
+          "const": 0,
+          "title": "Offset",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "kind",
+        "chapter_id",
+        "block_id",
+        "offset"
+      ],
+      "title": "NoteTarget",
+      "type": "object"
+    },
+    "ProseBlock": {
+      "additionalProperties": false,
+      "properties": {
+        "content": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          },
+          "maxItems": 500,
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "paragraph",
+            "quote",
+            "aside",
+            "caption",
+            "credit",
+            "verse",
+            "code"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "style_id": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Style Id"
+        }
+      },
+      "required": [
+        "id",
+        "evidence",
+        "kind",
+        "content"
+      ],
+      "title": "ProseBlock",
+      "type": "object"
+    },
+    "SeparatorBlock": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          },
+          "maxItems": 500,
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "separator",
+          "title": "Kind",
+          "type": "string"
+        },
+        "style_id": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Style Id"
+        }
+      },
+      "required": [
+        "id",
+        "evidence",
+        "kind"
+      ],
+      "title": "SeparatorBlock",
+      "type": "object"
+    },
+    "SourcePage": {
+      "additionalProperties": false,
+      "properties": {
+        "height_pt": {
+          "exclusiveMinimum": 0,
+          "maximum": 20000,
+          "title": "Height Pt",
+          "type": "number"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Label"
+        },
+        "number": {
+          "maximum": 500,
+          "minimum": 1,
+          "title": "Number",
+          "type": "integer"
+        },
+        "original_rotation": {
+          "enum": [
+            0,
+            90,
+            180,
+            270
+          ],
+          "title": "Original Rotation",
+          "type": "integer"
+        },
+        "regions": {
+          "items": {
+            "$ref": "#/$defs/SourceRegion"
+          },
+          "maxItems": 2000,
+          "minItems": 1,
+          "title": "Regions",
+          "type": "array"
+        },
+        "width_pt": {
+          "exclusiveMinimum": 0,
+          "maximum": 20000,
+          "title": "Width Pt",
+          "type": "number"
+        }
+      },
+      "required": [
+        "number",
+        "width_pt",
+        "height_pt",
+        "original_rotation",
+        "regions"
+      ],
+      "title": "SourcePage",
+      "type": "object"
+    },
+    "SourcePdf": {
+      "additionalProperties": false,
+      "properties": {
+        "byte_length": {
+          "maximum": 52428800,
+          "minimum": 1,
+          "title": "Byte Length",
+          "type": "integer"
+        },
+        "page_count": {
+          "maximum": 500,
+          "minimum": 1,
+          "title": "Page Count",
+          "type": "integer"
+        },
+        "sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sha256",
+        "byte_length",
+        "page_count"
+      ],
+      "title": "SourcePdf",
+      "type": "object"
+    },
+    "SourceRegion": {
+      "additionalProperties": false,
+      "properties": {
+        "band": {
+          "maximum": 2000,
+          "minimum": 0,
+          "title": "Band",
+          "type": "integer"
+        },
+        "box": {
+          "$ref": "#/$defs/Box"
+        },
+        "column": {
+          "enum": [
+            0,
+            1,
+            2
+          ],
+          "title": "Column",
+          "type": "integer"
+        },
+        "id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "content",
+            "cover",
+            "furniture",
+            "blank",
+            "unsupported"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "route": {
+          "enum": [
+            "native",
+            "ocr",
+            "replay",
+            "render",
+            "blank",
+            "unresolved"
+          ],
+          "title": "Route",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "box",
+        "band",
+        "column",
+        "role",
+        "route"
+      ],
+      "title": "SourceRegion",
+      "type": "object"
+    },
+    "Style": {
+      "additionalProperties": false,
+      "properties": {
+        "align": {
+          "anyOf": [
+            {
+              "enum": [
+                "start",
+                "left",
+                "right",
+                "center",
+                "justify"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Align"
+        },
+        "background_color": {
+          "anyOf": [
+            {
+              "pattern": "^#[0-9a-f]{6}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Background Color"
+        },
+        "block_indent_em": {
+          "anyOf": [
+            {
+              "maximum": 6,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Block Indent Em"
+        },
+        "bold": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Bold"
+        },
+        "color": {
+          "anyOf": [
+            {
+              "pattern": "^#[0-9a-f]{6}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Color"
+        },
+        "decoration_color": {
+          "anyOf": [
+            {
+              "pattern": "^#[0-9a-f]{6}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Decoration Color"
+        },
+        "family": {
+          "anyOf": [
+            {
+              "enum": [
+                "serif",
+                "sans-serif",
+                "monospace"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Family"
+        },
+        "id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "indent_em": {
+          "anyOf": [
+            {
+              "maximum": 6,
+              "minimum": -3,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Indent Em"
+        },
+        "italic": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Italic"
+        },
+        "line_height": {
+          "anyOf": [
+            {
+              "maximum": 3,
+              "minimum": 0.5,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Line Height"
+        },
+        "relative_size": {
+          "anyOf": [
+            {
+              "maximum": 3,
+              "minimum": 0.5,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Relative Size"
+        },
+        "small_caps": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Small Caps"
+        },
+        "space_after_em": {
+          "anyOf": [
+            {
+              "maximum": 5,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Space After Em"
+        },
+        "space_before_em": {
+          "anyOf": [
+            {
+              "maximum": 5,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Space Before Em"
+        },
+        "strike_through": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Strike Through"
+        },
+        "underline": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Underline"
+        },
+        "vertical_align": {
+          "anyOf": [
+            {
+              "enum": [
+                "baseline",
+                "super",
+                "sub"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Vertical Align"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "Style",
+      "type": "object"
+    },
+    "TableBlock": {
+      "additionalProperties": false,
+      "properties": {
+        "caption_id": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Caption Id"
+        },
+        "cells": {
+          "items": {
+            "$ref": "#/$defs/TableCell"
+          },
+          "maxItems": 160,
+          "minItems": 1,
+          "title": "Cells",
+          "type": "array"
+        },
+        "column_count": {
+          "maximum": 8,
+          "minimum": 1,
+          "title": "Column Count",
+          "type": "integer"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          },
+          "maxItems": 500,
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "table",
+          "title": "Kind",
+          "type": "string"
+        },
+        "row_count": {
+          "maximum": 20,
+          "minimum": 1,
+          "title": "Row Count",
+          "type": "integer"
+        },
+        "style_id": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Style Id"
+        }
+      },
+      "required": [
+        "id",
+        "evidence",
+        "kind",
+        "row_count",
+        "column_count",
+        "cells"
+      ],
+      "title": "TableBlock",
+      "type": "object"
+    },
+    "TableCell": {
+      "additionalProperties": false,
+      "properties": {
+        "column": {
+          "maximum": 7,
+          "minimum": 0,
+          "title": "Column",
+          "type": "integer"
+        },
+        "column_span": {
+          "default": 1,
+          "maximum": 8,
+          "minimum": 1,
+          "title": "Column Span",
+          "type": "integer"
+        },
+        "content": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          },
+          "maxItems": 500,
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "header_axis": {
+          "anyOf": [
+            {
+              "enum": [
+                "row",
+                "column",
+                "both"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Header Axis"
+        },
+        "header_ids": {
+          "items": {
+            "maxLength": 120,
+            "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+            "type": "string"
+          },
+          "maxItems": 28,
+          "title": "Header Ids",
+          "type": "array"
+        },
+        "id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "row": {
+          "maximum": 19,
+          "minimum": 0,
+          "title": "Row",
+          "type": "integer"
+        },
+        "row_span": {
+          "default": 1,
+          "maximum": 20,
+          "minimum": 1,
+          "title": "Row Span",
+          "type": "integer"
+        },
+        "style_id": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Style Id"
+        }
+      },
+      "required": [
+        "id",
+        "evidence",
+        "row",
+        "column",
+        "content"
+      ],
+      "title": "TableCell",
+      "type": "object"
+    },
+    "TextValue": {
+      "additionalProperties": false,
+      "properties": {
+        "codepoint_utf16": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 200001,
+          "minItems": 1,
+          "title": "Codepoint Utf16",
+          "type": "array"
+        },
+        "language": {
+          "anyOf": [
+            {
+              "enum": [
+                "en",
+                "uk",
+                "und"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Language"
+        },
+        "normalization": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NormalizationMap"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "spans": {
+          "items": {
+            "$ref": "#/$defs/InlineSpan"
+          },
+          "maxItems": 20000,
+          "title": "Spans",
+          "type": "array"
+        },
+        "text": {
+          "maxLength": 200000,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "sha256",
+        "codepoint_utf16"
+      ],
+      "title": "TextValue",
+      "type": "object"
+    },
+    "TocEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "parent_id": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent Id"
+        },
+        "target": {
+          "$ref": "#/$defs/InternalTarget"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "target"
+      ],
+      "title": "TocEntry",
+      "type": "object"
+    }
+  },
+  "$id": "urn:ava:contract:ava-book-2",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "addresses": {
+      "items": {
+        "$ref": "#/$defs/Address"
+      },
+      "maxItems": 100000,
+      "minItems": 1,
+      "title": "Addresses",
+      "type": "array"
+    },
+    "blocks": {
+      "items": {
+        "discriminator": {
+          "mapping": {
+            "aside": "#/$defs/ProseBlock",
+            "caption": "#/$defs/ProseBlock",
+            "code": "#/$defs/ProseBlock",
+            "credit": "#/$defs/ProseBlock",
+            "figure": "#/$defs/FigureBlock",
+            "heading": "#/$defs/HeadingBlock",
+            "list_item": "#/$defs/ListItemBlock",
+            "note": "#/$defs/NoteBlock",
+            "paragraph": "#/$defs/ProseBlock",
+            "quote": "#/$defs/ProseBlock",
+            "separator": "#/$defs/SeparatorBlock",
+            "table": "#/$defs/TableBlock",
+            "verse": "#/$defs/ProseBlock"
+          },
+          "propertyName": "kind"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/$defs/ProseBlock"
+          },
+          {
+            "$ref": "#/$defs/HeadingBlock"
+          },
+          {
+            "$ref": "#/$defs/NoteBlock"
+          },
+          {
+            "$ref": "#/$defs/ListItemBlock"
+          },
+          {
+            "$ref": "#/$defs/FigureBlock"
+          },
+          {
+            "$ref": "#/$defs/SeparatorBlock"
+          },
+          {
+            "$ref": "#/$defs/TableBlock"
+          }
+        ]
+      },
+      "maxItems": 20000,
+      "minItems": 1,
+      "title": "Blocks",
+      "type": "array"
+    },
+    "chapters": {
+      "items": {
+        "$ref": "#/$defs/Chapter"
+      },
+      "maxItems": 20000,
+      "minItems": 1,
+      "title": "Chapters",
+      "type": "array"
+    },
+    "cover_resource_id": {
+      "anyOf": [
+        {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cover Resource Id"
+    },
+    "document_id": {
+      "maxLength": 120,
+      "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+      "title": "Document Id",
+      "type": "string"
+    },
+    "lists": {
+      "items": {
+        "$ref": "#/$defs/ListGroup"
+      },
+      "maxItems": 10000,
+      "title": "Lists",
+      "type": "array"
+    },
+    "metadata": {
+      "items": {
+        "$ref": "#/$defs/MetadataClaim"
+      },
+      "maxItems": 1000,
+      "title": "Metadata",
+      "type": "array"
+    },
+    "pages": {
+      "items": {
+        "$ref": "#/$defs/SourcePage"
+      },
+      "maxItems": 500,
+      "minItems": 1,
+      "title": "Pages",
+      "type": "array"
+    },
+    "profile_id": {
+      "enum": [
+        "ava-pdf-prose-en-v2",
+        "ava-pdf-prose-en-uk-v3"
+      ],
+      "title": "Profile Id",
+      "type": "string"
+    },
+    "resources": {
+      "items": {
+        "$ref": "#/$defs/ImageResource"
+      },
+      "maxItems": 1000,
+      "title": "Resources",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "ava-book-2",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/SourcePdf"
+    },
+    "spine": {
+      "items": {
+        "maxLength": 120,
+        "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+        "type": "string"
+      },
+      "maxItems": 20000,
+      "minItems": 1,
+      "title": "Spine",
+      "type": "array"
+    },
+    "styles": {
+      "items": {
+        "$ref": "#/$defs/Style"
+      },
+      "maxItems": 5000,
+      "title": "Styles",
+      "type": "array"
+    },
+    "toc": {
+      "items": {
+        "$ref": "#/$defs/TocEntry"
+      },
+      "maxItems": 20000,
+      "minItems": 1,
+      "title": "Toc",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "profile_id",
+    "document_id",
+    "source",
+    "pages",
+    "chapters",
+    "spine",
+    "blocks",
+    "toc",
+    "styles",
+    "resources",
+    "lists",
+    "addresses",
+    "metadata"
+  ],
+  "title": "CanonicalBookV2",
+  "type": "object"
+}

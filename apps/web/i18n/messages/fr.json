@@ -223,6 +223,24 @@
     }
   },
   "reader": {
+    "download": {
+      "title": "Télécharger le livre",
+      "close": "Fermer les téléchargements",
+      "offline": "Connectez-vous pour télécharger ce livre.",
+      "pending": "Téléchargement…",
+      "unavailable": "Aucun format téléchargeable disponible."
+    },
+    "search": {
+      "title": "Rechercher",
+      "close": "Fermer la recherche",
+      "query": "Rechercher dans ce livre",
+      "hint": "Saisissez un mot ou une phrase.",
+      "loading": "Recherche…",
+      "unavailable": "La recherche dans tout le livre est indisponible. Connectez-vous et réessayez.",
+      "retry": "Réessayer",
+      "count": "{count, plural, =0 {Aucun résultat} one {1 résultat} other {# résultats}}",
+      "limited": "Les {count} premiers résultats sont affichés. Précisez la recherche."
+    },
     "contents": {
       "title": "Sommaire",
       "closePanel": "Fermer le panneau du sommaire",
@@ -713,6 +731,54 @@
       "title": "Cette page n’est pas ici",
       "body": "Le lien est peut-être incorrect ou la page a été déplacée. Retournez à l’accueil pour continuer à lire.",
       "hint": "Vérifiez l’adresse ou retournez à l’accueil."
+    }
+  },
+  "pdfImport": {
+    "title": "Importer un PDF",
+    "convert": "Convertir en EPUB",
+    "cancel": "Annuler",
+    "import": "Importer",
+    "processingDetails": "Détails du traitement",
+    "privacy": "Les pages nécessitant une reconnaissance sont envoyées aux prestataires de traitement d’AVA. Le PDF original et le livre terminé restent dans votre bibliothèque privée.",
+    "accepted": "Ajouté à votre bibliothèque.",
+    "existing": "Ce PDF est déjà dans votre bibliothèque.",
+    "uncertain": "Vérification de la réception de votre fichier. Vous pouvez retourner à votre bibliothèque.",
+    "rejected": "Ce PDF n’a pas pu être importé.",
+    "connect": "Connectez-vous à Internet pour importer un livre.",
+    "status": {
+      "QUEUED": "En attente",
+      "RUNNING": "Traitement en cours",
+      "WAITING": "À vérifier",
+      "READY": "Prêt",
+      "FAILED": "Échec",
+      "STOPPED": "À vérifier"
+    },
+    "lastKnown": "Dernier état connu",
+    "progress": "{completed} sur {total} pour cette étape",
+    "investigating": "Enregistré pour investigation par AVA.",
+    "reference": "Référence : {id}",
+    "formats": "Formats",
+    "originalPdf": "PDF original",
+    "downloadFailed": "Le téléchargement a échoué. Réessayez le téléchargement.",
+    "readyNotice": "« {title} » est prêt à lire.",
+    "failedNotice": "« {title} » n’a pas pu être converti.",
+    "dismiss": "Fermer",
+    "metadata": {
+      "edit": "Modifier les détails",
+      "title": "Titre",
+      "authors": "Auteurs",
+      "authorsHint": "Un auteur par ligne. Laissez vide si inconnu.",
+      "language": "Langue",
+      "languageHint": "Code de langue, par exemple en ou fr. Laissez vide si inconnu.",
+      "offline": "Connectez-vous à Internet pour modifier les détails. Le brouillon ne sera pas envoyé automatiquement.",
+      "working": "Chargement ou enregistrement des détails…",
+      "close": "Fermer",
+      "save": "Enregistrer les détails",
+      "reload": "Recharger les détails enregistrés",
+      "loadFailed": "Impossible de charger les détails. Connectez-vous à Internet et réessayez.",
+      "saveFailed": "La modification n’a pas pu être confirmée. Votre brouillon est conservé. Rechargez les détails enregistrés avant de les enregistrer à nouveau.",
+      "conflict": "Ces détails ont été modifiés ailleurs. Votre brouillon est conservé. Rechargez les détails enregistrés pour consulter la dernière version.",
+      "invalid": "Vérifiez le titre, les auteurs et la langue."
     }
   }
 }

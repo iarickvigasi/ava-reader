@@ -1,6 +1,9 @@
 import { auth } from "@clerk/nextjs/server";
 import { getServerApiBaseUrl } from "@/lib/api";
 
+const SERVER_API_TIMEOUT_MS = 5_000;
+class ServerApiTimeoutError extends Error {}
+
 type ApiRequestOptions = Omit<RequestInit, "headers"> & {
   headers?: HeadersInit;
   returnBackUrl?: string;
@@ -41,21 +44,44 @@ async function fetchWithToken<T>(
   path: string,
   options: ApiRequestOptions,
 ): Promise<T> {
-  const response = await fetch(`${getServerApiBaseUrl()}${path}`, {
-    ...options,
-    cache: "no-store",
-    headers: {
-      ...(options.headers ?? {}),
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    const payload = await response.json().catch(() => null);
-    throw new ServerApiError(response.status, payload);
+  // A reachable but stalled API must not prevent the shell from hydrating
+  // its saved data. Keep this deadline through headers and body consumption.
+  const deadline = new AbortController();
+  const signal = options.signal
+    ? AbortSignal.any([options.signal, deadline.signal])
+    : deadline.signal;
+  const timer = setTimeout(
+    () => deadline.abort(new ServerApiTimeoutError("API read timed out")),
+    SERVER_API_TIMEOUT_MS,
+  );
+  try {
+    const response = await fetch(`${getServerApiBaseUrl()}${path}`, {
+      ...options,
+      signal,
+      cache: "no-store",
+      headers: {
+        ...(options.headers ?? {}),
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      const payload = await response.json().catch(() => null);
+      throw new ServerApiError(response.status, payload);
+    }
+    return (await response.json()) as T;
+  } catch (error) {
+    // Body reads can reject with AbortError instead of the signal's reason.
+    // An already received HTTP failure retains its status, including 401/403.
+    if (
+      !(error instanceof ServerApiError) &&
+      signal.reason instanceof ServerApiTimeoutError
+    ) {
+      throw signal.reason;
+    }
+    throw error;
+  } finally {
+    clearTimeout(timer);
   }
-
-  return (await response.json()) as T;
 }
 
 export type ServerApiResult<T> =
@@ -71,10 +97,16 @@ export async function fetchServerApiResult<T>(
   const token = await resolveServerAuthToken();
   if (!token) return { status: "authUnavailable" };
   try {
-    return { status: "ready", data: await fetchWithToken<T>(token, path, options) };
+    return {
+      status: "ready",
+      data: await fetchWithToken<T>(token, path, options),
+    };
   } catch (error) {
     if (isNetworkError(error)) return { status: "apiUnavailable" };
-    if (error instanceof ServerApiError && (error.status === 401 || error.status === 403)) {
+    if (
+      error instanceof ServerApiError &&
+      (error.status === 401 || error.status === 403)
+    ) {
       return { status: "authUnavailable" };
     }
     throw error;
@@ -98,10 +130,11 @@ export function isNetworkError(error: unknown): boolean {
   if (error instanceof ServerApiError) {
     return false;
   }
-  if (error instanceof TypeError) {
+  if (error instanceof TypeError || error instanceof ServerApiTimeoutError) {
     return true;
   }
-  return error instanceof Error &&
-    typeof (error as { cause?: unknown }).cause !== "undefined";
-
+  return (
+    error instanceof Error &&
+    typeof (error as { cause?: unknown }).cause !== "undefined"
+  );
 }

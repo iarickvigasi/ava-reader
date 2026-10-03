@@ -46,7 +46,8 @@ export function getLibraryBookInfoHref(
   if (input?.fromCollectionSlug) {
     params.set("fromCollection", input.fromCollectionSlug);
   }
-  if (input?.card) {
+  // PDF availability needs the authoritative bucket; incomplete URL snapshots can show Read too early.
+  if (input?.card && !input.card.pdfImport) {
     const card = input.card;
     params.set("title", card.title);
     for (const author of card.authors) {
@@ -63,4 +64,3 @@ export function getLibraryBookInfoHref(
   const qs = params.toString();
   return qs ? `${baseHref}?${qs}` : baseHref;
 }
-

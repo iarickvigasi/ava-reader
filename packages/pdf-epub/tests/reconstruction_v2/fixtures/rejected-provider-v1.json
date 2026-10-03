@@ -1,0 +1,149 @@
+{
+  "language": "en",
+  "render_sha256": "f2869bc51c2face998f661741cbc53e8580cbcd1fda447cc2346f4860bfa5d58",
+  "schema_version": "ava-recognition-response-1",
+  "segments": [
+    {
+      "box": {
+        "coordinate_space": "page_points_top_left",
+        "x0": 94,
+        "x1": 427,
+        "y0": 23,
+        "y1": 35
+      },
+      "id": "header",
+      "kind": "heading",
+      "method": "ocr",
+      "page": 1,
+      "text": "THE LANTERN ATLAS / SYNTHETIC FIXTURE"
+    },
+    {
+      "box": {
+        "coordinate_space": "page_points_top_left",
+        "x0": 367,
+        "x1": 628,
+        "y0": 37,
+        "y1": 62
+      },
+      "id": "title",
+      "kind": "heading",
+      "method": "ocr",
+      "page": 1,
+      "text": "The Lantern Atlas"
+    },
+    {
+      "box": {
+        "coordinate_space": "page_points_top_left",
+        "x0": 354,
+        "x1": 647,
+        "y0": 118,
+        "y1": 151
+      },
+      "id": "title",
+      "kind": "heading",
+      "method": "ocr",
+      "page": 1,
+      "text": "1. The Harbour"
+    },
+    {
+      "box": {
+        "coordinate_space": "page_points_top_left",
+        "x0": 302,
+        "x1": 698,
+        "y0": 157,
+        "y1": 169
+      },
+      "id": "subtitle",
+      "kind": "paragraph",
+      "method": "ocr",
+      "page": 1,
+      "text": "AVA Fixture Studio / Synthetic test edition 1 / 2026-09-28"
+    },
+    {
+      "box": {
+        "coordinate_space": "page_points_top_left",
+        "x0": 94,
+        "x1": 873,
+        "y0": 267,
+        "y1": 305
+      },
+      "id": "paragraph",
+      "kind": "paragraph",
+      "method": "ocr",
+      "page": 1,
+      "text": "Mira carried a lantern to the harbour before dawn. She counted four windows, then opened her notebook."
+    },
+    {
+      "box": {
+        "coordinate_space": "page_points_top_left",
+        "x0": 94,
+        "x1": 267,
+        "y0": 360,
+        "y1": 381
+      },
+      "id": "heading",
+      "kind": "heading",
+      "method": "ocr",
+      "page": 1,
+      "text": "A closer look"
+    },
+    {
+      "box": {
+        "coordinate_space": "page_points_top_left",
+        "x0": 120,
+        "x1": 553,
+        "y0": 398,
+        "y1": 412
+      },
+      "id": "paragraph",
+      "kind": "paragraph",
+      "method": "ocr",
+      "page": 1,
+      "text": "The harbour clock keeps the first quiet hour."
+    },
+    {
+      "box": {
+        "coordinate_space": "page_points_top_left",
+        "x0": 94,
+        "x1": 790,
+        "y0": 462,
+        "y1": 477
+      },
+      "id": "paragraph",
+      "kind": "paragraph",
+      "method": "ocr",
+      "page": 1,
+      "text": "The keeper called this a lantern[1], a word explained in the final chapter."
+    },
+    {
+      "box": {
+        "coordinate_space": "page_points_top_left",
+        "x0": 120,
+        "x1": 595,
+        "y0": 855,
+        "y1": 871
+      },
+      "id": "paragraph",
+      "kind": "paragraph",
+      "method": "ocr",
+      "page": 1,
+      "text": "At the edge of the quay Mira found a folded map,"
+    },
+    {
+      "box": {
+        "coordinate_space": "page_points_top_left",
+        "x0": 453,
+        "x1": 535,
+        "y0": 945,
+        "y1": 957
+      },
+      "id": "page_furniture",
+      "kind": "paragraph",
+      "method": "ocr",
+      "page": 1,
+      "text": "Print page 1"
+    }
+  ],
+  "source_sha256": "0946bf56e14b41786986a3cdcd6c763df1c21264b43465374435984e3ce79a57",
+  "task_id": "recognize-1fe421d26dc6a7386f0a3bf580d7418b193082188babfeea003e82e07262fccf"
+}

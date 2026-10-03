@@ -1,133 +1,72 @@
-import { useCallback, useEffect, useRef, type Dispatch, type SetStateAction } from "react";
-import type { ReaderStatusPayload } from "@/lib/api-types";
-import type {
-  ReaderNavigationTarget,
-  ReaderTraversalAction,
-} from "@/features/reader/navigation";
-import { fetchReaderPayload } from "../../../data/reader-client";
-import type { ReaderControllerAuth, ReadyReaderPayload } from "../../../shared/types";
-import {
-  isAbortError,
-  isReadyReaderPayload,
-  normalizeReaderStatusPayload,
-} from "../../../shared/utils";
-import {
-  shouldApplyBlockingResponse,
-  shouldFinalizeNavigationRequest,
-} from "./use-reader-chapter-navigation.helpers";
+import { useCallback } from "react";
+import type { ReaderNavigationTarget } from "@/features/reader/navigation";
+import type { ReadyReaderPayload } from "../../../shared/types";
+import { isAbortError } from "../../../shared/utils";
+import type { ChapterNavigationInput } from "./chapter-navigation.types";
+import { loadRequestedChapter } from "./load-requested-chapter";
+import { useChapterRequest } from "./use-chapter-request";
 
-type UseBlockingChapterLoadInput = ReaderControllerAuth & {
+type Input = Pick<
+  ChapterNavigationInput,
+  "getToken" | "isLoaded" | "isSignedIn" | "libraryItemId" | "dispatchTraversal"
+> & {
   cancelBackgroundRefresh: () => void;
   commitVisibleChapter: (
-    nextChapterId: string,
+    chapterId: string,
     target: ReaderNavigationTarget,
   ) => void;
-  dispatchTraversal: Dispatch<ReaderTraversalAction>;
-  libraryItemId: string;
-  mergeReadyPayload: (nextPayload: ReadyReaderPayload) => void;
-  setPayload: Dispatch<SetStateAction<ReaderStatusPayload>>;
+  mergeReadyPayload: (payload: ReadyReaderPayload) => void;
 };
-
-/**
- * Fetches a chapter the reader doesn't have loaded yet, blocking navigation
- * (shows a loading state) until it arrives.
- */
-export function useBlockingChapterLoad({
-  cancelBackgroundRefresh,
-  commitVisibleChapter,
-  dispatchTraversal,
-  getToken,
-  isLoaded,
-  isSignedIn,
-  libraryItemId,
-  mergeReadyPayload,
-  setPayload,
-}: UseBlockingChapterLoadInput) {
-  const blockingRequestIdRef = useRef(0);
-  const blockingAbortRef = useRef<AbortController | null>(null);
-
-  useEffect(() => {
-    return () => {
-      blockingAbortRef.current?.abort();
-    };
-  }, []);
-
+export function useBlockingChapterLoad(input: Input) {
+  const { start, cancel } = useChapterRequest();
+  const {
+    getToken,
+    isLoaded,
+    isSignedIn,
+    libraryItemId,
+    dispatchTraversal,
+    cancelBackgroundRefresh,
+    mergeReadyPayload,
+    commitVisibleChapter,
+  } = input;
   const loadChapterWindow = useCallback(
-    async (nextChapterId: string, target: ReaderNavigationTarget) => {
-      const requestId = blockingRequestIdRef.current + 1;
-      blockingRequestIdRef.current = requestId;
-      blockingAbortRef.current?.abort();
+    async (chapterId: string, target: ReaderNavigationTarget) => {
+      const request = start();
       cancelBackgroundRefresh();
-
-      const controller = new AbortController();
-      blockingAbortRef.current = controller;
-      dispatchTraversal({
-        chapterId: nextChapterId,
-        type: "start-pending",
-      });
-
+      dispatchTraversal({ chapterId, type: "start-pending" });
       try {
-        const nextPayload = await fetchReaderPayload({
-          chapterId: nextChapterId,
-          getToken,
-          isLoaded,
-          isSignedIn,
-          libraryItemId,
-          signal: controller.signal,
-        });
-
-        if (
-          !shouldApplyBlockingResponse({
-            currentRequestId: blockingRequestIdRef.current,
-            requestId,
-            requestWasAborted: controller.signal.aborted,
-          })
-        ) {
-          return;
-        }
-
-        const normalizedPayload = normalizeReaderStatusPayload(nextPayload);
-
-        if (isReadyReaderPayload(normalizedPayload)) {
-          mergeReadyPayload(normalizedPayload);
-          commitVisibleChapter(normalizedPayload.activeChapterId, target);
-          return;
-        }
-
-        setPayload(normalizedPayload);
-      } catch (error: unknown) {
-        if (!isAbortError(error)) {
-          throw error;
-        }
+        const next = await loadRequestedChapter(
+          {
+            getToken,
+            isLoaded,
+            isSignedIn,
+            libraryItemId,
+            chapterId,
+            signal: request.signal,
+          },
+          target,
+        );
+        if (!request.current()) return;
+        mergeReadyPayload(next);
+        commitVisibleChapter(chapterId, target);
+      } catch (error) {
+        if (!isAbortError(error)) throw error;
       } finally {
-        if (
-          shouldFinalizeNavigationRequest({
-            activeAbortController: blockingAbortRef.current,
-            currentRequestId: blockingRequestIdRef.current,
-            requestController: controller,
-            requestId,
-          })
-        ) {
-          blockingAbortRef.current = null;
-          dispatchTraversal({
-            chapterId: nextChapterId,
-            type: "clear-pending",
-          });
-        }
+        if (request.current())
+          dispatchTraversal({ chapterId, type: "clear-pending" });
       }
     },
     [
-      cancelBackgroundRefresh,
-      commitVisibleChapter,
-      dispatchTraversal,
       getToken,
       isLoaded,
       isSignedIn,
       libraryItemId,
+      dispatchTraversal,
+      cancelBackgroundRefresh,
       mergeReadyPayload,
-      setPayload,
+      commitVisibleChapter,
+      start,
     ],
   );
-
-  return { loadChapterWindow };
+  return { loadChapterWindow, cancelBlockingLoad: cancel };
 }

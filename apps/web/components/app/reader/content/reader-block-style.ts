@@ -1,3 +1,4 @@
+import { canonicalStyle } from "@/features/reader/canonical/style";
 import type { CSSProperties } from "react";
 import type { ReaderBlock, ReaderBlockAlign } from "@/lib/api-types";
 
@@ -22,7 +23,9 @@ const ALIGNMENT_CLASS_BY_VALUE: Record<ReaderBlockAlign, string> = {
 // font-weight. Inline styles override utility classes on purpose — a
 // heading's default `font-bold` should give way to `font-weight: 600`
 // when the source asks for semibold.
-export function resolveBlockStyle(block: ReaderBlock): CSSProperties | undefined {
+export function resolveBlockStyle(
+  block: ReaderBlock,
+): CSSProperties | undefined {
   const style: Record<string, unknown> = {};
 
   if ("fontSizeScale" in block && block.fontSizeScale) {
@@ -38,6 +41,19 @@ export function resolveBlockStyle(block: ReaderBlock): CSSProperties | undefined
     style.fontWeight = block.fontWeight;
   }
 
+  const canonical = canonicalStyle(block.presentation);
+  delete canonical.fontSize;
+  Object.assign(style, canonical);
+  if (block.presentation?.relative_size != null) {
+    style["--reader-block-scale"] = block.presentation.relative_size;
+    // Canonical heading sizes are measured against prose, not the default
+    // semantic heading enlargement. Native inline sizes remain relative to
+    // their containing line and must still inherit this resolved block size.
+    if (block.canonical && block.kind === "heading") {
+      style["--reader-heading-base-small"] = "1.16rem";
+      style["--reader-heading-base-large"] = "1.34rem";
+    }
+  }
   return Object.keys(style).length > 0 ? (style as CSSProperties) : undefined;
 }
 

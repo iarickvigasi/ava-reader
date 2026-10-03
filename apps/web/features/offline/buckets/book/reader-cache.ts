@@ -1,4 +1,5 @@
 // Builds the cached reader payload: active chapter and immediate neighbours.
+import { readCanonicalCache } from "./canonical-cache";
 
 import type {
   ReaderChapterPayload,
@@ -28,6 +29,7 @@ export async function loadReaderPayloadFromCache(
   if (orderedIds.length === 0) {
     return null;
   }
+  if (chapterId && !orderedIds.includes(chapterId)) return null;
   const activeId =
     chapterId && orderedIds.includes(chapterId) ? chapterId : orderedIds[0]!;
   const activeIndex = orderedIds.indexOf(activeId);
@@ -66,7 +68,7 @@ export async function loadReaderPayloadFromCache(
     });
   }
 
-  if (chapters.length === 0) {
+  if (!chapters.some((chapter) => chapter.chapterId === activeId)) {
     return null;
   }
 
@@ -82,7 +84,7 @@ export async function loadReaderPayloadFromCache(
   const progressRow = await readProgress(libraryItemId);
   if (getDb() !== db) return null;
 
-  return {
+  return readCanonicalCache(book, {
     status: "READY",
     activeChapterId: activeId,
     book: metadata,
@@ -94,5 +96,5 @@ export async function loadReaderPayloadFromCache(
       locator: progressRow?.locator ?? null,
     },
     toc,
-  };
+  });
 }

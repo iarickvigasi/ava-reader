@@ -2,17 +2,14 @@
 
 import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { UploadIcon } from "@/components/app/shared/app-icons";
-import { PendingLabel } from "@/components/app/shared/pending-label";
 import {
-  importButtonBase,
-  importButtonSizes,
-  importButtonVariants,
   type ImportButtonSize,
   type ImportButtonVariant,
 } from "@/components/app/shared/import-button-styles";
 import { useImportUpload } from "@/components/app/shared/use-import-upload";
-import { cn } from "@/lib/cn";
+import { useImportChoice } from "@/features/library/pdf-imports/use-import-choice";
+import { PdfImportConfirmation } from "./pdf-import/confirmation";
+import { ImportTrigger } from "./import-trigger";
 
 type ImportButtonProps = {
   className?: string;
@@ -42,10 +39,12 @@ export function ImportButton({
     onNoticeChangeAction?.(nextNotice);
   }
 
-  const { isUploading, upload } = useImportUpload({ onNoticeAction: publishNotice });
+  const { isUploading, upload } = useImportUpload({
+    onNoticeAction: publishNotice,
+  });
+  const choice = useImportChoice(upload);
   const resolvedNotice = notice ?? internalNotice;
   const resolvedLabel = label ?? t("defaultLabel");
-  const isIcon = variant === "icon";
 
   return (
     <div className="relative flex min-w-0 flex-col">
@@ -62,43 +61,34 @@ export function ImportButton({
             return;
           }
 
-          upload(file);
+          choice.choose(file);
         }}
       />
 
-      <button
-        type="button"
-        className={cn(
-          importButtonBase,
-          importButtonVariants[variant],
-          isIcon ? "" : importButtonSizes[size],
-          className,
-        )}
-        disabled={isUploading}
+      <ImportTrigger
+        className={className}
+        variant={variant}
+        size={size}
+        label={resolvedLabel}
+        pending={isUploading}
         onClick={() => inputRef.current?.click()}
-      >
-        {isIcon ? (
-          <>
-            <UploadIcon className="size-5 shrink-0" />
-            <span className="sr-only">{resolvedLabel}</span>
-          </>
-        ) : (
-          <PendingLabel pending={isUploading} pendingText={t("uploading")}>
-            <UploadIcon className="size-4 shrink-0" />
-            {resolvedLabel}
-          </PendingLabel>
-        )}
-      </button>
+      />
 
-      {/* Out of flow on purpose: in the library header the actions are
-          vertically centred, so a notice that grew this column would shove the
-          button upward (spec 3.1). Absolute keeps the button's box fixed
-          without reserving a blank line when there's no notice. */}
       {!hideNotice && resolvedNotice ? (
-        <p className="absolute left-0 right-0 top-full mt-2 truncate text-xs tracking-[0.08em] text-muted">
+        <p
+          role="status"
+          className="absolute left-0 right-0 top-full mt-2 truncate text-xs tracking-[0.08em] text-muted"
+        >
           {resolvedNotice}
         </p>
       ) : null}
+      {choice.pdf && (
+        <PdfImportConfirmation
+          filename={choice.pdf.name}
+          onClose={choice.dismiss}
+          onConfirm={choice.confirm}
+        />
+      )}
     </div>
   );
 }

@@ -2,6 +2,7 @@
 // orchestration functions that combine geometry math with DOM walking.
 
 import type { ReaderLocator } from "@/lib/api-types";
+import { pageLocatorBlocks } from "./page-blocks";
 import {
   findFirstVisibleBlockIndex,
   resolveTextOffsetTarget,
@@ -56,10 +57,12 @@ export function resolveLocatorFromPageIndex(input: {
   }
 
   const safePageIndex = clamp(input.pageIndex, 0, Math.max(0, pageCount - 1));
-  const pageWindow = createPageWindow(metrics, safePageIndex, input.columnOffset);
-  const blockElements = Array.from(
-    article.querySelectorAll<HTMLElement>("[data-reader-block='true']"),
+  const pageWindow = createPageWindow(
+    metrics,
+    safePageIndex,
+    input.columnOffset,
   );
+  const blockElements = pageLocatorBlocks(article);
 
   if (blockElements.length === 0) {
     return null;
@@ -104,7 +107,9 @@ export function resolveLocatorFromPageIndex(input: {
   return {
     blockId,
     chapterId,
-    textOffset: firstVisibleTextOffset ?? 0,
+    textOffset:
+      (Number(block.dataset.readerStartOffset) || 0) +
+      (firstVisibleTextOffset ?? 0),
   };
 }
 

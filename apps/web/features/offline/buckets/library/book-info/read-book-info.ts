@@ -14,11 +14,22 @@ export async function readBookInfoBySlug(
   slug: string,
 ): Promise<LibraryBookInfo | null> {
   const db = getDb();
-  return db.transaction("r", [db.libraryItems, db.finishDateMutations, db.collectionMembershipMutations, db.collections],
-    () => readBookInfoSnapshot(db, slug));
+  return db.transaction(
+    "r",
+    [
+      db.libraryItems,
+      db.finishDateMutations,
+      db.collectionMembershipMutations,
+      db.collections,
+    ],
+    () => readBookInfoSnapshot(db, slug),
+  );
 }
 
-async function readBookInfoSnapshot(db: AvaReaderDB, slug: string): Promise<LibraryBookInfo | null> {
+async function readBookInfoSnapshot(
+  db: AvaReaderDB,
+  slug: string,
+): Promise<LibraryBookInfo | null> {
   const row = await db.libraryItems.where("slug").equals(slug).first();
   if (!row || !row.details) {
     return null;
@@ -28,9 +39,11 @@ async function readBookInfoSnapshot(db: AvaReaderDB, slug: string): Promise<Libr
     libraryItemId: row.libraryItemId,
     slug: row.slug,
     title: row.title,
+    metadataEditVersion: row.metadataEditVersion,
     authors: row.authors,
     coverImageUrl: row.coverImageUrl,
     completionPercent: row.completionPercent,
+    pdfImport: row.pdfImport,
     primaryFormat: row.primaryFormat,
     addedAt: row.details.addedAt,
     // Rows persisted before this field existed read back as undefined; null
@@ -46,8 +59,11 @@ async function readBookInfoSnapshot(db: AvaReaderDB, slug: string): Promise<Libr
     description: row.details.description,
     genres: row.details.genres,
     // A queued clear (null) must win just as a queued date does.
-    finishedAt: finishDate ? finishDate.finishedAt
-      : row.finishedAt !== undefined ? row.finishedAt : row.details.finishedAt ?? null,
+    finishedAt: finishDate
+      ? finishDate.finishedAt
+      : row.finishedAt !== undefined
+        ? row.finishedAt
+        : (row.details.finishedAt ?? null),
     language: row.details.language,
     lastReadAt: row.details.lastReadAt,
     minutesRead: row.details.minutesRead,

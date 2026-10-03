@@ -18,6 +18,7 @@ export function useSpreadBlocks({
   previousChapterPageCount,
   pageCount,
   pageBoxSize,
+  separateChapter = false,
 }: {
   activeChapter: ReaderChapterPayload;
   previousChapter?: ReaderChapterPayload | null;
@@ -25,12 +26,14 @@ export function useSpreadBlocks({
   previousChapterPageCount: number | null;
   pageCount: number;
   pageBoxSize: PageBoxSize;
+  separateChapter?: boolean;
 }): {
   prefixBlocks: ReaderBlock[] | undefined;
   prefixPageCount: number;
   spilloverBlocks: ReaderBlock[] | undefined;
 } {
-  const isTwoColumnLayout = resolveReaderColumnCount(pageBoxSize.width) >= 2;
+  const isTwoColumnLayout =
+    !separateChapter && resolveReaderColumnCount(pageBoxSize.width) >= 2;
 
   const isPreviousSinglePageSpread =
     isTwoColumnLayout &&
@@ -53,12 +56,7 @@ export function useSpreadBlocks({
     }
 
     return nextChapter.blocks;
-  }, [
-    activeChapter.nextChapterId,
-    isTwoColumnLayout,
-    nextChapter,
-    pageCount,
-  ]);
+  }, [activeChapter.nextChapterId, isTwoColumnLayout, nextChapter, pageCount]);
 
   return { prefixBlocks, prefixPageCount, spilloverBlocks };
 }

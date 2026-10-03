@@ -1,3 +1,5 @@
+import type { CanonicalContentAuthority } from '../reader/canonical/content-authority';
+import type { ReaderCapability } from '../reader/canonical/semantic';
 export const TRANSLATION_VERSION = 1 as const;
 export const MAX_TRANSLATION_SENTENCES = 64;
 export const MAX_TRANSLATION_CHARACTERS = 32_768;
@@ -9,7 +11,7 @@ export type BilingualUnit = {
   startOffset: number;
   endOffset: number;
   text: string;
-  kind: 'sentence' | 'image';
+  kind: 'sentence' | 'image' | 'literal';
 };
 
 export type TranslationIdentity = {
@@ -40,6 +42,7 @@ export type SentenceAlignment = {
 export type ChapterTranslation = TranslationResult & { units: BilingualUnit[] };
 
 export type TranslationContext = TranslationIdentity & {
+  canonicalAuthority?: CanonicalContentAuthority & ReaderCapability;
   userId: string;
   title: string;
   authors: string[];

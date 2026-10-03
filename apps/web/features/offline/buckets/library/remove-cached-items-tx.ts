@@ -1,4 +1,5 @@
 import Dexie from "dexie";
+import { prunePdfNotices } from "./pdf-imports/notifications/prune";
 import { createReaderResumeStorageKey } from "@/features/reader/resume";
 import { abortSaveAndWait, setStatus } from "../book/bucket";
 import { getDb, type AvaReaderDB } from "../../db";
@@ -74,6 +75,7 @@ export async function removeCachedItemsTx(db: AvaReaderDB, ids: string[]) {
   for (const table of [db.highlightMutations, db.aiCommentMutations]) {
     await table.where("scopeId").anyOf(ids).delete();
   }
+  await prunePdfNotices(db, removed);
   await removeCachedHomeItems(db, removed, highlightIds);
   await bumpCompletionRevision(db);
 }

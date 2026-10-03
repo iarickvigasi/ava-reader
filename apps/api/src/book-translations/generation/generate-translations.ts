@@ -1,3 +1,4 @@
+import { assertCanonicalTranslationAuthority } from '../source/assert-canonical-authority';
 import { BadGatewayException, GatewayTimeoutException } from '@nestjs/common';
 import { generateObject } from 'ai';
 import type { PrismaService } from '../../prisma/prisma.service';
@@ -27,6 +28,7 @@ export async function generateTranslations(args: {
     (sentence) => args.regenerate || !cached[sentence.id],
   );
   if (!missing.length) return cached;
+  await assertCanonicalTranslationAuthority(args.prisma, args.context);
   args.signal.throwIfAborted();
   const modelId = args.openrouter.getModelId();
   const model = args.openrouter.getModel();

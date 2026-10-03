@@ -1,3 +1,4 @@
+import { canonicalPayload } from "@/features/reader/canonical/payload";
 import type { CSSProperties } from "react";
 import type { ReaderLocator, ReaderStatusPayload } from "@/lib/api-types";
 import type { RestoreIntent } from "@/features/reader/navigation";
@@ -137,7 +138,11 @@ export function normalizeReaderStatusPayload(
   };
 
   if (isReadyReaderPayload(candidate)) {
-    return payload;
+    try {
+      return canonicalPayload(payload);
+    } catch {
+      /* fail closed below */
+    }
   }
 
   return {

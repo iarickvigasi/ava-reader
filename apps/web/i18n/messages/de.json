@@ -223,6 +223,24 @@
     }
   },
   "reader": {
+    "download": {
+      "title": "Buch herunterladen",
+      "close": "Downloads schließen",
+      "offline": "Verbinde dich, um dieses Buch herunterzuladen.",
+      "pending": "Wird heruntergeladen…",
+      "unavailable": "Kein Format zum Herunterladen verfügbar."
+    },
+    "search": {
+      "title": "Suchen",
+      "close": "Suche schließen",
+      "query": "In diesem Buch suchen",
+      "hint": "Wort oder Ausdruck eingeben.",
+      "loading": "Suche läuft…",
+      "unavailable": "Die Suche im gesamten Buch ist nicht verfügbar. Stelle eine Verbindung her und versuche es erneut.",
+      "retry": "Erneut versuchen",
+      "count": "{count, plural, =0 {Keine Treffer} one {1 Treffer} other {# Treffer}}",
+      "limited": "Die ersten {count} Treffer werden angezeigt. Grenze die Suche ein."
+    },
     "contents": {
       "title": "Inhalt",
       "closePanel": "Inhaltsverzeichnis-Panel schließen",
@@ -713,6 +731,54 @@
       "title": "Diese Seite ist nicht hier",
       "body": "Der Link ist möglicherweise falsch oder die Seite wurde verschoben. Kehre zur Startseite zurück, um weiterzulesen.",
       "hint": "Prüfe die Adresse auf Tippfehler oder kehre zur Startseite zurück."
+    }
+  },
+  "pdfImport": {
+    "title": "PDF importieren",
+    "convert": "In EPUB umwandeln",
+    "cancel": "Abbrechen",
+    "import": "Importieren",
+    "processingDetails": "Details zur Verarbeitung",
+    "privacy": "Seiten, die Texterkennung benötigen, werden an AVAs Verarbeitungsanbieter gesendet. Die Original-PDF und das fertige Buch bleiben in deiner privaten Bibliothek.",
+    "accepted": "Zur Bibliothek hinzugefügt.",
+    "existing": "Diese PDF ist bereits in deiner Bibliothek.",
+    "uncertain": "Wir prüfen, ob dein Upload angekommen ist. Du kannst zur Bibliothek zurückkehren.",
+    "rejected": "Diese PDF konnte nicht importiert werden.",
+    "connect": "Verbinde dich mit dem Internet, um ein Buch zu importieren.",
+    "status": {
+      "QUEUED": "In Warteschlange",
+      "RUNNING": "Wird verarbeitet",
+      "WAITING": "Prüfung nötig",
+      "READY": "Bereit",
+      "FAILED": "Fehlgeschlagen",
+      "STOPPED": "Prüfung nötig"
+    },
+    "lastKnown": "Letzter bekannter Status",
+    "progress": "{completed} von {total} in diesem Schritt",
+    "investigating": "Zur Untersuchung durch AVA erfasst.",
+    "reference": "Referenz: {id}",
+    "formats": "Formate",
+    "originalPdf": "Original-PDF",
+    "downloadFailed": "Download fehlgeschlagen. Bitte versuche den Download erneut.",
+    "readyNotice": "„{title}“ ist zum Lesen bereit.",
+    "failedNotice": "„{title}“ konnte nicht konvertiert werden.",
+    "dismiss": "Schließen",
+    "metadata": {
+      "edit": "Details bearbeiten",
+      "title": "Titel",
+      "authors": "Autoren",
+      "authorsHint": "Ein Autor pro Zeile. Leer lassen, wenn unbekannt.",
+      "language": "Sprache",
+      "languageHint": "Sprachcode, z. B. en oder de. Leer lassen, wenn unbekannt.",
+      "offline": "Zum Bearbeiten ist eine Internetverbindung nötig. Dein Entwurf wird nicht automatisch gesendet.",
+      "working": "Details werden geladen oder gespeichert…",
+      "close": "Schließen",
+      "save": "Details speichern",
+      "reload": "Gespeicherte Details neu laden",
+      "loadFailed": "Die Details konnten nicht geladen werden. Stelle eine Internetverbindung her und lade sie erneut.",
+      "saveFailed": "Die Änderung konnte nicht bestätigt werden. Dein Entwurf bleibt erhalten. Lade vor dem erneuten Speichern die gespeicherten Details.",
+      "conflict": "Diese Details wurden andernorts geändert. Dein Entwurf bleibt erhalten. Lade die gespeicherten Details, um die aktuelle Version zu prüfen.",
+      "invalid": "Prüfe Titel, Autoren und Sprache."
     }
   }
 }

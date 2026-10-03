@@ -79,6 +79,8 @@ export type LibraryItemRow = LibraryCardBook & {
   // value cleanly signals "we don't know yet" vs. "server said null".
   details?: LibraryBookInfoDetails;
   detailsFetchedAt?: string;
+  // Snapshot whose full details were fetched; cards omit language and page counts.
+  pdfDetailsRevision?: string;
 };
 
 export type CollectionRow = Omit<LibraryCollection, "books"> & {
@@ -125,6 +127,7 @@ export type HomeRow = {
 // not two. Tables stay empty until phase 2 starts populating them.
 
 export type BookRow = {
+  canonical?: import("./buckets/book/canonical-cache").CanonicalCache;
   libraryItemId: string;
   // Full table of contents — needed offline so the contents panel works.
   toc: unknown;

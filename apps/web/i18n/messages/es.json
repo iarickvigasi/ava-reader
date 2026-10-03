@@ -223,6 +223,24 @@
     }
   },
   "reader": {
+    "download": {
+      "title": "Descargar libro",
+      "close": "Cerrar descargas",
+      "offline": "Conéctate para descargar este libro.",
+      "pending": "Descargando…",
+      "unavailable": "No hay un formato descargable disponible."
+    },
+    "search": {
+      "title": "Buscar",
+      "close": "Cerrar búsqueda",
+      "query": "Buscar en este libro",
+      "hint": "Introduce una palabra o frase.",
+      "loading": "Buscando…",
+      "unavailable": "No se puede buscar en todo el libro. Conéctate e inténtalo de nuevo.",
+      "retry": "Reintentar",
+      "count": "{count, plural, =0 {Sin coincidencias} one {1 coincidencia} other {# coincidencias}}",
+      "limited": "Se muestran las primeras {count} coincidencias. Acota la búsqueda."
+    },
     "contents": {
       "title": "Contenido",
       "closePanel": "Cerrar el panel de contenido",
@@ -713,6 +731,54 @@
       "title": "Esta página no está aquí",
       "body": "El enlace puede ser incorrecto o la página puede haberse movido. Vuelve al inicio para seguir leyendo.",
       "hint": "Comprueba si hay errores en la dirección o vuelve al inicio."
+    }
+  },
+  "pdfImport": {
+    "title": "Importar PDF",
+    "convert": "Convertir a EPUB",
+    "cancel": "Cancelar",
+    "import": "Importar",
+    "processingDetails": "Detalles del procesamiento",
+    "privacy": "Las páginas que necesitan reconocimiento se envían a los proveedores de procesamiento de AVA. El PDF original y el libro terminado permanecen en tu biblioteca privada.",
+    "accepted": "Añadido a tu biblioteca.",
+    "existing": "Este PDF ya está en tu biblioteca.",
+    "uncertain": "Comprobando si se recibió la carga. Puedes volver a tu biblioteca.",
+    "rejected": "No se pudo importar este PDF.",
+    "connect": "Conéctate a internet para importar un libro.",
+    "status": {
+      "QUEUED": "En cola",
+      "RUNNING": "Procesando",
+      "WAITING": "Requiere revisión",
+      "READY": "Listo",
+      "FAILED": "Error",
+      "STOPPED": "Requiere revisión"
+    },
+    "lastKnown": "Último estado conocido",
+    "progress": "{completed} de {total} en esta etapa",
+    "investigating": "Registrado para que AVA lo investigue.",
+    "reference": "Referencia: {id}",
+    "formats": "Formatos",
+    "originalPdf": "PDF original",
+    "downloadFailed": "La descarga falló. Vuelve a intentar la descarga.",
+    "readyNotice": "«{title}» está listo para leer.",
+    "failedNotice": "No se pudo convertir «{title}».",
+    "dismiss": "Cerrar",
+    "metadata": {
+      "edit": "Editar detalles",
+      "title": "Título",
+      "authors": "Autores",
+      "authorsHint": "Un autor por línea. Déjalo en blanco si no se conoce.",
+      "language": "Idioma",
+      "languageHint": "Código de idioma, por ejemplo en o es. Déjalo en blanco si no se conoce.",
+      "offline": "Conéctate para editar los detalles. El borrador no se enviará automáticamente.",
+      "working": "Cargando o guardando detalles…",
+      "close": "Cerrar",
+      "save": "Guardar detalles",
+      "reload": "Recargar detalles guardados",
+      "loadFailed": "No se pudieron cargar los detalles. Conéctate y vuelve a cargarlos.",
+      "saveFailed": "No se pudo confirmar el cambio. Tu borrador se conserva. Recarga los detalles guardados antes de volver a guardar.",
+      "conflict": "Estos detalles cambiaron en otro lugar. Tu borrador se conserva. Recarga los detalles guardados para revisar la última versión.",
+      "invalid": "Revisa el título, los autores y el idioma."
     }
   }
 }

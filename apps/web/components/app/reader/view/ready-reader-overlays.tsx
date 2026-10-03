@@ -5,6 +5,8 @@ import { ReaderAiCommentsOverlay } from "../overlays/ai-comments/reader-ai-comme
 import { ReaderAiToolboxOverlay } from "../overlays/ai-toolbox/reader-ai-toolbox-overlay";
 import { ReaderContentsOverlay } from "../overlays/contents/reader-contents-overlay";
 import { ReaderHighlightsOverlay } from "../overlays/highlights/reader-highlights-overlay";
+import { ReaderSearchOverlay } from "../overlays/search/reader-search-overlay";
+import { ReaderDownloadOverlay } from "../overlays/download/reader-download-overlay";
 import { ReaderPreferencesOverlay } from "../overlays/preferences/reader-preferences-overlay";
 import { useAiCommentsContext } from "../overlays/ai-comments/ai-comments-context";
 import { useHighlightsContext } from "../overlays/highlights/highlights-context";
@@ -37,6 +39,20 @@ export function ReadyReaderOverlays(props: ReadyReaderProps) {
           }}
         />
       );
+    case "search":
+      return (
+        <ReaderSearchOverlay
+          payload={props.payload}
+          onClose={closePanel}
+          onSelect={(locator) => {
+            closePanel();
+            props.onSelectChapter(locator.chapterId, {
+              blockId: locator.blockId,
+              textOffset: locator.textOffset,
+            });
+          }}
+        />
+      );
     case "preferences":
       return (
         <ReaderPreferencesOverlay
@@ -45,6 +61,10 @@ export function ReadyReaderOverlays(props: ReadyReaderProps) {
           onDecreaseFont={props.onDecreaseFont}
           onIncreaseFont={props.onIncreaseFont}
         />
+      );
+    case "download":
+      return (
+        <ReaderDownloadOverlay book={props.payload.book} onClose={closePanel} />
       );
     case "ai-chats":
       return <ReaderAiChatsOverlay onClose={closePanel} />;

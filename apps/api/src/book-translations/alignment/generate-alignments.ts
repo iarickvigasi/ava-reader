@@ -1,3 +1,4 @@
+import { assertCanonicalTranslationAuthority } from '../source/assert-canonical-authority';
 import { BadGatewayException, Logger } from '@nestjs/common';
 import type { OpenRouterClient } from '../../shared/openrouter-client';
 import type { BilingualUnit, SentenceAlignment } from '../types';
@@ -47,7 +48,12 @@ export async function generateAlignments(
     batch: AlignmentInput[],
     feedback?: string,
     previousAttempt?: unknown[],
-  ) => requestAlignment({ ...args, signal }, batch, feedback, previousAttempt);
+  ) => {
+    return assertCanonicalTranslationAuthority(args.prisma, args.context).then(
+      () =>
+        requestAlignment({ ...args, signal }, batch, feedback, previousAttempt),
+    );
+  };
   const logger = new Logger('SentenceAlignments');
   let failure: { reason: unknown } | undefined;
   try {
@@ -58,7 +64,15 @@ export async function generateAlignments(
         for (let attempt = 0; attempt <= 2; attempt++) {
           signal.throwIfAborted();
           try {
-            if (await saveAlignment(args.prisma, row, candidates, signal))
+            if (
+              await saveAlignment(
+                args.prisma,
+                row,
+                candidates,
+                signal,
+                args.context,
+              )
+            )
               regenerated.add(row.sentenceId);
             return;
           } catch (error) {

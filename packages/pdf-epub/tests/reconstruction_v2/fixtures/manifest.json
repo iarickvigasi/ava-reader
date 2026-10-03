@@ -1,0 +1,70 @@
+{
+  "origin": "Independently authored M1 synthetic source/oracle corpus; never model output.",
+  "rights": "AVA authored synthetic qualification fixtures. No private book content.",
+  "files": {
+    "native.pdf": {
+      "original": "FX-NATIVE.pdf",
+      "sha256": "239abbca9961443df6989eae8f12079e1df127b28a45666e5e9cf98575ac3c25"
+    },
+    "native-oracle.json": {
+      "original": "oracle.json",
+      "sha256": "0a7af726bec3d912364a1bf26e569993e61a8fcec6cb8fa7ee41dcabab6fdb04"
+    },
+    "two-column.pdf": {
+      "original": "two-column/FX-TWO-COLUMN-NATIVE.pdf",
+      "sha256": "df1a2a61832a1c3f450ceef0fcaa2b6dc858d2a03f04df2c81ec4caba35c0de9"
+    },
+    "two-column-scan.pdf": {
+      "original": "two-column/FX-TWO-COLUMN-SCAN.pdf",
+      "sha256": "ead57e233d0159460a7a8b63b15fe8ad8c9888be7a1989885a9536696c2d363b"
+    },
+    "two-column-mixed.pdf": {
+      "original": "two-column/FX-TWO-COLUMN-MIXED.pdf",
+      "sha256": "3a2a2772ddf4f7f389a1486de7e1ab36b86ffb85f913094fd6e52802f42ada76"
+    },
+    "two-column-oracle.json": {
+      "original": "two-column/oracle.json",
+      "sha256": "beb10cd7f95b8d01d13be987ed9bc2886f3f94678d8854ceef38a1edd5dccef9"
+    },
+    "supplemental.pdf": {
+      "original": "supplemental/FX-SUPPLEMENT.pdf",
+      "sha256": "3d173094b60ad7ffe1d270bd4e428963f1e1e7fe446eecbed07472483950c8cf"
+    },
+    "supplemental-oracle.json": {
+      "original": "supplemental/oracle.json",
+      "sha256": "ce2759ca4963898d2f4de447881b54f40db3f8d2b956dc2ca4b47625b2cf2193"
+    },
+    "qualification.pdf": {
+      "original": "qualification/FX-QUALIFICATION.pdf",
+      "sha256": "7b888ff85fcc3d02dde239bf53d2de636b59dd0fa4abb7eea75fc3e3c09f511f"
+    },
+    "qualification-oracle.json": {
+      "original": "qualification/oracle.json",
+      "sha256": "9dcbf3e92054c794f9ca94c9fc64fdd126a17fe738e1028c6b60e341f28a6c9d"
+    },
+    "fx-table-20x9.pdf": {
+      "original": "qualification/FX-TABLE-20x9.pdf",
+      "sha256": "0b3d6f9fedcf66997aa22be19abbe650763e36409b5dd17511ab02442b1847ba"
+    },
+    "fx-table-20x8.pdf": {
+      "original": "qualification/FX-TABLE-20x8.pdf",
+      "sha256": "2b5b6ffa673f8eda0b51ac2aca0d13daa031c042736cbad5c4e5a09457f47127"
+    },
+    "fx-table-21x8.pdf": {
+      "original": "qualification/FX-TABLE-21x8.pdf",
+      "sha256": "918d481de6e3b7d4fe040e061595717c27ace94cb26f1da1079e3194b9451eaf"
+    },
+    "unnumbered-chapters.pdf": {
+      "original": "Independent PDF08 structure-review-probe/unnumbered-chapters.pdf",
+      "sha256": "85352b928cb7e4b50a123f7102f9802c90c4fd3570b8b1d51dc41c9e2a778c24"
+    },
+    "unnumbered-chapters-author.py": {
+      "original": "Independent PDF08 structure-review-probe/unnumbered-chapters-author.py",
+      "sha256": "99ca506c7ceaf426fe7c57c79ebbe46297e89923dcde2a5a63494cb105eb761a"
+    },
+    "unnumbered-chapters-oracle.json": {
+      "original": "Independent PDF08 structure-review-probe/unnumbered-chapters-oracle.json",
+      "sha256": "3a505b6113f9f9da662effcb3633e63dcc0a22b25b2dda357505ff9d4be7d15e"
+    }
+  }
+}

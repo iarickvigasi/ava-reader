@@ -1,0 +1,28 @@
+{
+  "schema": "ava-independent-adapter-oracle-1",
+  "baseline_path": "/Users/iavi/.codex/worktrees/pdf-epub-integration/ava-reader/packages/pdf-epub/tests/contracts/fixtures/ava-book-2.json",
+  "baseline_sha256": "8050094df1967aba87291ab3a2871e8834abfbe15e0b2be6d7a9d0f7704326e1",
+  "files": {
+    "canonical.json": {
+      "sha256": "f6c7ab03119e38737520b91774786b420b6d45f0b1be80721d2a3482e68fbd77",
+      "bytes": 36020
+    },
+    "oracle.json": {
+      "sha256": "81fc943ab1f04008adb3d16f2854ce494ea7f9b4b7e8914cc8e391e4b23ecce7",
+      "bytes": 5498
+    },
+    "assets/images/window.png": {
+      "sha256": "371b46d7db9a0d763aa0d1467f49982e33c2b2a3a7092bb05686c08046d38914",
+      "bytes": 148
+    },
+    "author_oracle.py": {
+      "sha256": "0fae4837649ddfd7a05b14d8bf8a6d54a460270adfc3f9815955cfbea7a4fcba",
+      "bytes": 4529
+    },
+    "author_expectations.py": {
+      "sha256": "ac49d154915e85665d29f56da62fc7d79a539bae8cb08182b46566fabf626111",
+      "bytes": 4183
+    }
+  },
+  "limits": "Authored canonical graph and real PNG; placeholder source PDF descriptor is not an extraction or actual-PDF proof."
+}
