@@ -121,6 +121,16 @@ and restores the exact passage. Failed, superseded and no-op jumps add no histor
 changes preserve the landed passage; ordinary page turns, resume and browser Back remain separate.
 Hidden measurement copies are inert and carry no duplicate canonical IDs or navigable links.
 
+Reader Download opens a format panel using the same owned-download path as Library. Converted
+books offer the accepted EPUB and Original PDF; ordinary EPUBs offer their stored source EPUB.
+The authenticated `GET /api/library/:libraryItemId/formats/:format` endpoint checks active ownership,
+stored-file integrity and accepted-publication authority; candidates and internal reader packages
+are never downloadable formats. Closing the panel or switching account/book aborts pending client
+work. Unavailable downloads show a retryable download error, separate from terminal conversion
+failure. Keyboard dismissal returns to the visible initiating control after responsive reflow.
+Text-size steps include the existing endpoints and default, so reversing either endpoint can return
+to 100%; older saved intermediate preferences remain readable.
+
 Search uses the complete fixed canonical text graph, including notes, captions, list items and table
 cells, without OCR/LLM calls. Literal Unicode case matching preserves source UTF-16 target offsets.
 Results carry chapter labels and bounded excerpts; selecting one uses the same exact jump and Back

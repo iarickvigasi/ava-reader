@@ -5,6 +5,7 @@ import { HeaderStatusChip } from "./header-status-chip";
 import { ReaderNavItem } from "./reader-nav-item";
 import { readerNavItems } from "./reader-navigation-items";
 import { useReaderUi } from "./reader-ui-context";
+import { ReaderDownloadButton } from "./reader-download-button";
 
 export function ReaderMobileNavigation() {
   const { activePanel, togglePanel, isPhone } = useReaderUi();
@@ -42,6 +43,7 @@ export function ReaderMobileNavigation() {
               onTogglePanel={togglePanel}
             />
           ))}
+          <ReaderDownloadButton />
         </nav>
       </div>
     </header>

@@ -230,6 +230,9 @@ entry retains the original PDF and accepted EPUB; conversion occurs once and fin
 fixed. The implementation is a development candidate, with scoped native-flow evidence and remaining
 scanned/mixed, typography, offline/device and release gates.
 
+Reader and Library format downloads use the same owned source/publication checks. The reader's
+Download panel offers existing available files; it does not start a new conversion.
+
 - [Product behavior and pipeline](docs/pdf-conversion.md)
 - [Build, worker configuration and operations](docs/pdf-conversion-operations.md)
 - [Verification, normal-app walkthrough and current limitations](docs/pdf-conversion-verification.md)

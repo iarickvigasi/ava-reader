@@ -223,6 +223,13 @@
     }
   },
   "reader": {
+    "download": {
+      "title": "Buch herunterladen",
+      "close": "Downloads schließen",
+      "offline": "Verbinde dich, um dieses Buch herunterzuladen.",
+      "pending": "Wird heruntergeladen…",
+      "unavailable": "Kein Format zum Herunterladen verfügbar."
+    },
     "search": {
       "title": "Suchen",
       "close": "Suche schließen",

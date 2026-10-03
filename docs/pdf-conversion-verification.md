@@ -47,7 +47,11 @@ qualification is isolated test evidence; it cannot grant product readiness.
    provenance. Verify exact local/shared/cold note links and Return/Back origins, including A→B→C.
 4. Save marks across emphasis, emoji/combining text and structured passages; change font/theme/width,
    reload and reopen exact ranges. Check fixed book/chapter identity, progress and translations.
-5. Download original PDF and accepted EPUB; verify bytes. Open the EPUB in an independent reader
+5. Download original PDF and accepted EPUB from Library and reader; verify bytes. For an ordinary
+   EPUB, offer its original EPUB only. Test duplicate clicks, close/account/book changes during a
+   request, unavailable API with visible error/retry, offline unavailability and keyboard focus after
+   desktop/phone reflow. Candidate/internal formats and archived/foreign membership must be refused.
+   Open the EPUB in an independent reader
    and reimport it normally into AVA. Check structures/styles/links/images separately from EPUBCheck.
 6. Repeat scan/mixed/broken-OCR/rotation fixtures with real permitted recognition and source oracles.
    Record native versus provider routing, known/uncertain cost and per-stage time; no invented text.
@@ -122,3 +126,21 @@ offline, phone and assistive-use qualification. The post-build source-identity c
 precache output contaminating the fingerprint; the explicit output exclusion, regression and actual
 production rebuild now pass. No accepted publication was replaced and independent review remains
 pending. Private source, screenshots and diagnostic records remain outside repository assets.
+
+### Reader download and text-size checkpoint
+
+The isolated candidate connects the existing reader Download control on desktop and phone to
+owned original/accepted files. Server tests cover ownership, archive/removal races, ambiguous or
+damaged originals and accepted-publication delegation; client checks cover cancellation, account
+changes and response format. Font steps preserve the default when reversing either limit.
+The current source identity is `7b2a065ded49b794611d4eed56d7b5092dae0080820eb2e3f7049890b1af83df`.
+On 3 October, 1181 API tests and 1448 web tests, type checks and both builds pass. Lint has no errors
+and two retained warnings; existing test-helper timezone warnings are retained.
+
+Signed-in app observations verify endpoint reversal on the immediately preceding source, ordinary
+EPUB and converted PDF format choices, exact downloaded bytes, visible API-loss error and retry.
+The final source additionally verifies a fresh exact EPUB download at 390×844, keyboard reopening
+and focus return after desktop-to-phone reflow. This fixes the observed focus-loss defect; it is a
+desktop viewport check, not physical-phone or assistive-use qualification. TEST registration changes
+no accepted book/publication. Independent review, the remaining reader flows and frozen five-book
+regression remain open; this checkpoint does not close PDF-04 or qualify production.

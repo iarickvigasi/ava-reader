@@ -19,6 +19,7 @@ import type { Response } from 'express';
 import type { AuthenticatedRequest } from '../auth/authenticated-request';
 import { ClerkAuthGuard } from '../auth/clerk-auth.guard';
 import { LibraryService } from './library.service';
+import { sendOwnedBlob } from './pdf-import/artifacts/send-owned-blob';
 
 @Controller('library')
 export class LibraryController {
@@ -82,6 +83,24 @@ export class LibraryController {
       request.auth.clerkUserId,
       libraryItemId,
       body.requested,
+    );
+  }
+
+  @Get(':libraryItemId/formats/:format')
+  @UseGuards(ClerkAuthGuard)
+  async downloadFormat(
+    @Req() request: AuthenticatedRequest,
+    @Param('libraryItemId') ref: string,
+    @Param('format') format: string,
+    @Res() response: Response,
+  ) {
+    sendOwnedBlob(
+      response,
+      await this.libraryService.getLibraryFormat(
+        request.auth.clerkUserId,
+        ref,
+        format,
+      ),
     );
   }
 

@@ -223,6 +223,13 @@
     }
   },
   "reader": {
+    "download": {
+      "title": "Download book",
+      "close": "Close downloads",
+      "offline": "Connect to download this book.",
+      "pending": "Downloading…",
+      "unavailable": "No downloadable format is available."
+    },
     "search": {
       "title": "Search",
       "close": "Close search",

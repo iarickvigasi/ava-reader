@@ -223,6 +223,13 @@
     }
   },
   "reader": {
+    "download": {
+      "title": "Télécharger le livre",
+      "close": "Fermer les téléchargements",
+      "offline": "Connectez-vous pour télécharger ce livre.",
+      "pending": "Téléchargement…",
+      "unavailable": "Aucun format téléchargeable disponible."
+    },
     "search": {
       "title": "Rechercher",
       "close": "Fermer la recherche",
