@@ -17,8 +17,12 @@ it.each(["9", "1. 9…", "The Spies"])(
   "refreshes partial or excerpt label %s",
   async (label) => {
     const db = await seedDownload();
-    await db.books.update("book", { toc: [{ ...tocNode, label }] });
-    await db.bookChapters.update(["book", "chapter-1"], {
+    const book = await db.books.get("book");
+    const chapter = await db.bookChapters.get(["book", "chapter-1"]);
+    if (!book || !chapter) throw new Error("Missing seeded download");
+    await db.books.put({ ...book, toc: [{ ...tocNode, label }] });
+    await db.bookChapters.put({
+      ...chapter,
       blocks: [
         {
           id: "number",
@@ -56,8 +60,12 @@ it.each(["9", "1. 9…", "The Spies"])(
 
 it("refreshes a number-only image divider from server labels", async () => {
   const db = await seedDownload();
-  await db.books.update("book", { toc: [{ ...tocNode, label: "1." }] });
-  await db.bookChapters.update(["book", "chapter-1"], {
+  const book = await db.books.get("book");
+  const chapter = await db.bookChapters.get(["book", "chapter-1"]);
+  if (!book || !chapter) throw new Error("Missing seeded download");
+  await db.books.put({ ...book, toc: [{ ...tocNode, label: "1." }] });
+  await db.bookChapters.put({
+    ...chapter,
     blocks: [
       {
         id: "image",
