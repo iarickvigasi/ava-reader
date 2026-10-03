@@ -119,6 +119,9 @@ follows checked chapter adjacency and refuses incomplete content. Literal Unicod
 source offsets; results identify chapter/excerpt, and exact result navigation uses the existing Back
 session. Verify distant occurrences beyond the active chapter, larger text, result limits, no-match
 and unavailable states, keyboard dismissal, cached content, account isolation and physical phones.
+Open Search at desktop width, resize to phone width while it remains open, then dismiss with Escape
+and reopen with Enter. Repeat in the other direction; focus must return to the visible Search
+control. Leaving the book must not move focus back into an unrelated reader control.
 
 Scoped signed-in desktop checks pass for legacy/canonical distant result and Back, measured135% text
 and cached canonical reload with the API unavailable. These are separate from physical/production
@@ -126,6 +129,16 @@ offline, phone and assistive-use qualification. The post-build source-identity c
 precache output contaminating the fingerprint; the explicit output exclusion, regression and actual
 production rebuild now pass. No accepted publication was replaced and independent review remains
 pending. Private source, screenshots and diagnostic records remain outside repository assets.
+
+On 3 October, the updated candidate additionally passes a signed-in390×844 viewport check:
+uppercase Ukrainian distant-chapter search, exact result heading, Back to the origin, completed
+no-match feedback and the same navigation at130% text. Search initially lost keyboard focus after
+desktop-to-phone resizing; a shared visible-control return repairs it and preserves Download focus
+in both resize directions. The updated web source fingerprint is
+`f515c9088eed6c32607c5dc30af9e3788f45198ebaa26765ef177b2692198545`;1453web tests, typecheck,
+lint and production build pass, with the same two lint warnings. A sandbox refusal to write the
+TypeScript incremental cache was resolved by checking without incremental output. Viewport checks
+remain separate from physical phones, assistive use, full offline/account and corpus qualification.
 
 ### Reader download and text-size checkpoint
 

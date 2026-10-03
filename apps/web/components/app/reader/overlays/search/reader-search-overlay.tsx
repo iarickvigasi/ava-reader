@@ -9,6 +9,7 @@ import { MAX_SEARCH_QUERY } from "@/features/reader/search/types";
 import { searchExcerpt } from "@/features/reader/search/find";
 import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
+import { restoreControlFocus } from "../restore-control-focus";
 
 export function ReaderSearchOverlay({
   payload,
@@ -25,9 +26,10 @@ export function ReaderSearchOverlay({
   useCloseOnEscape(onClose);
   useEffect(() => {
     const origin = document.activeElement;
+    const pathname = window.location.pathname;
     input.current?.focus();
     return () => {
-      if (origin instanceof HTMLElement && origin.isConnected) origin.focus();
+      restoreControlFocus(origin, pathname, '[data-reader-panel-control="search"]');
     };
   }, []);
   const status = search.error

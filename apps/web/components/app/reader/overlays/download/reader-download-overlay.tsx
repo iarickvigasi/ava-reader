@@ -6,6 +6,7 @@ import { useBookDownload } from "@/features/library/downloads/use-book-download"
 import type { ReaderBookPayload } from "@/lib/api-types/reader";
 import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
+import { restoreControlFocus } from "../restore-control-focus";
 
 export function ReaderDownloadOverlay({
   book,
@@ -28,20 +29,7 @@ export function ReaderDownloadOverlay({
     const path = window.location.pathname;
     close.current?.focus();
     return () => {
-      if (path !== window.location.pathname) return;
-      // A responsive reflow can remove/hide the initiating navigation button.
-      // Return to its visible counterpart rather than the document body.
-      const target =
-        origin instanceof HTMLElement &&
-        origin.isConnected &&
-        origin.getClientRects().length
-          ? origin
-          : Array.from(
-              document.querySelectorAll<HTMLElement>(
-                "[data-reader-download-control]",
-              ),
-            ).find((element) => element.getClientRects().length > 0);
-      target?.focus();
+      restoreControlFocus(origin, path, "[data-reader-download-control]");
     };
   }, []);
   const available =

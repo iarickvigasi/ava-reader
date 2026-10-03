@@ -65,6 +65,7 @@ export function ReaderNavItem({
         type="button"
         aria-label={label}
         aria-pressed={isActive}
+        data-reader-panel-control={item.panel}
         className={className}
         onClick={() => onTogglePanel(item.panel)}
       >
