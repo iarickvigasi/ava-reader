@@ -2,6 +2,8 @@ import type { ReaderBlock } from '../reader-types';
 
 const PARAGRAPH_TITLE_MAX_LENGTH = 80;
 const STYLED_HEADING_MIN_SCALE = 1.2;
+const MAX_OPENING_HEADINGS = 3;
+const MAX_COMBINED_TITLE_LENGTH = 240;
 
 export function getChapterTitleFromBlocks(
   blocks: ReaderBlock[],
@@ -20,6 +22,13 @@ export function getChapterTitleFromBlocks(
       !headings.some((heading) => heading.toLowerCase() === text.toLowerCase())
     )
       headings.push(text);
+    // Some publishers mark entire copyright pages as semantic headings.
+    // Reject the whole group instead of retaining a partial publisher address.
+    if (
+      headings.length > MAX_OPENING_HEADINGS ||
+      headings.join(' / ').length > MAX_COMBINED_TITLE_LENGTH
+    )
+      return headings[0];
   }
   if (headings.length) return headings.join(' / ');
   if (

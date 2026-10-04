@@ -21,6 +21,7 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:seed:home-demo": "ts-node src/scripts/seed-home-demo.ts",
+    "db:backfill-epub-edges": "ts-node src/scripts/backfill-epub-edges.ts",
     "db:backfill-epub-chapter-labels": "ts-node src/scripts/backfill-epub-chapter-labels.ts",
     "db:backfill-book-slugs": "ts-node src/scripts/backfill-library-item-slugs.ts",
     "db:backfill-collection-slugs": "ts-node src/scripts/backfill-collection-slugs.ts",
@@ -40,7 +41,7 @@
     "pdf:reconstruction:check": "node scripts/generate-reconstruction-contracts.cjs --check"
   },
   "dependencies": {
-    "@clerk/backend": "^3.2.4",
+    "@clerk/backend": "^3.4.3",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",

@@ -1,7 +1,8 @@
 # Dev environment & workflows
 
 Dev workflows and pitfalls; product behaviour lives in specs/. Setup commands: README.md.
-Temporary maintenance: [EPUB label backfill](../apps/api/src/scripts/chapter-label-backfill/README.md).
+Temporary maintenance: [EPUB edge regrouping](../apps/api/src/scripts/chapter-edge-backfill/README.md).
+[EPUB label backfill](../apps/api/src/scripts/chapter-label-backfill/README.md).
 
 ## Split dev workflow (commands: README → Split Dev Workflow)
 

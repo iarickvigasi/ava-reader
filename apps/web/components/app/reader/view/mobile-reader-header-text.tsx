@@ -1,6 +1,5 @@
 import { useHeaderRotation } from "@/features/reader/use-header-rotation";
-import { HEADER_FADE_MS } from "@/features/reader/header-rotation";
-import { cn } from "@/lib/cn";
+import { MobileReaderHeaderRow } from "./mobile-reader-header-row";
 
 export function MobileReaderHeaderText({
   title,
@@ -16,26 +15,16 @@ export function MobileReaderHeaderText({
   return (
     <span
       aria-hidden="true"
-      className={cn(
-        "block w-full min-w-0 truncate transition-opacity ease-out motion-reduce:transition-none",
-        state.fading ? "opacity-0" : "opacity-100",
-      )}
-      style={{ transitionDuration: `${HEADER_FADE_MS}ms` }}
-      title={state.chapter ? chapter : book}
+      className="block w-full min-w-0 truncate"
+      title={state.chapter ? `${title}, ${chapter}` : book}
     >
-      {state.chapter ? (
-        chapter
-      ) : (
-        <span className="flex min-w-0 items-baseline">
-          <span className="min-w-0 truncate">{title}</span>
-          {author && (
-            <>
-              <span className="shrink-0 whitespace-pre">{", "}</span>
-              <span className="max-w-[40%] shrink-0 truncate">{author}</span>
-            </>
-          )}
-        </span>
-      )}
+      <MobileReaderHeaderRow
+        title={title}
+        author={author}
+        chapter={chapter}
+        showChapter={state.chapter}
+        fading={state.fading}
+      />
     </span>
   );
 }
