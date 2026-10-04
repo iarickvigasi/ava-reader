@@ -8,8 +8,9 @@ from PIL import Image
 from ..contracts.book import CanonicalBookV2
 from ..contracts.wire import decode_wire
 from .archive import read_archive
-from .export import PROFILE, SIDECAR, export_entries
+from .export import SIDECAR, export_entries
 from .paths import asset_path
+from .profiles import PROFILES
 
 
 def portable_epub(data: bytes) -> tuple[CanonicalBookV2, dict[str, bytes]]:
@@ -17,11 +18,12 @@ def portable_epub(data: bytes) -> tuple[CanonicalBookV2, dict[str, bytes]]:
     # Runtime input snapshots and EPUBCheck infrastructure remain outside this boundary.
     try:
         entries = read_archive(data)
-        if entries.get("META-INF/ava-profile") != PROFILE.encode() or SIDECAR not in entries:
+        marker = entries.get("META-INF/ava-profile")
+        if marker is None or marker not in {p.encode() for p in PROFILES} or SIDECAR not in entries:
             raise ValueError("Unsupported generated EPUB profile")
         book = CanonicalBookV2.model_validate(decode_wire(entries[SIDECAR]))
         assets = {r.id: entries.get("EPUB/" + asset_path(r), b"") for r in book.resources}
-        if entries != export_entries(book, assets):
+        if entries != export_entries(book, assets, profile=marker.decode("ascii")):
             raise ValueError("EPUB content/provenance conservation mismatch")
         return book, assets
     except (zipfile.BadZipFile, zlib.error, OSError, Image.DecompressionBombError):

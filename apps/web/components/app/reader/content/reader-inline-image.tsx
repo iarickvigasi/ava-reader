@@ -1,3 +1,4 @@
+import { canonicalStyle } from "@/features/reader/canonical/style";
 import type { ReaderInline } from "@/lib/api-types";
 
 type ImageInline = Extract<ReaderInline, { kind: "image" }>;
@@ -11,6 +12,7 @@ export function ReaderInlineImage({ inline }: { inline: ImageInline }) {
       // overflow into the next page exactly as a long word does.
       className="mx-1 inline-block max-h-32 max-w-full align-middle"
       src={inline.src}
+      style={canonicalStyle(inline.presentation)}
     />
   );
 }

@@ -1,5 +1,6 @@
+import { activateInternalLink } from "@/features/reader/activate-internal-link";
 import { useReaderMeasurement } from "./reader-measurement-context";
-import type { MouseEvent, ReactNode } from "react";
+import type { ReactNode } from "react";
 import type { ReaderLinkTarget } from "@/lib/api-types/reader-content";
 import { useReaderNavigationActions } from "../state/reader-navigation-context";
 
@@ -14,16 +15,6 @@ export function ReaderInternalLink({
 }) {
   const measurement = useReaderMeasurement();
   const navigation = useReaderNavigationActions();
-  const activate = (event: MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-    const block = event.currentTarget.closest<HTMLElement>(
-      "[data-reader-block='true']",
-    );
-    const chapterId = block?.dataset.chapterId,
-      blockId = block?.dataset.blockId;
-    if (navigation && chapterId && blockId)
-      navigation.jump(target, { chapterId, blockId, textOffset: sourceOffset });
-  };
   return (
     <a
       href={
@@ -33,7 +24,16 @@ export function ReaderInternalLink({
       }
       role={target.note ? "doc-noteref" : undefined}
       className="underline decoration-line/60 underline-offset-4 hover:text-title"
-      onClick={measurement ? undefined : activate}
+      onClick={
+        measurement
+          ? undefined
+          : (event) =>
+              activateInternalLink(event, {
+                target,
+                sourceOffset,
+                jump: navigation?.jump,
+              })
+      }
     >
       {children}
     </a>

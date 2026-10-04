@@ -18,16 +18,16 @@ reading order, rather than reproducing print-page geometry or promising exact fo
 
 ## Pipeline and responsibilities
 
-| Stage | Responsibility and checks | Source |
-|---|---|---|
-| Admit | Authenticate ownership; enforce file/page/resource limits; bind upload intent to immutable source/configuration; create one owned item and operation. | `apps/api/src/library/pdf-import/{admission,operations,artifacts}` |
-| Execute | Durable queue, registered worker/image, short leases and fences; bounded internal preterminal recovery; account/delete/revoke checks. | `apps/api/src/library/pdf-import/jobs`, `apps/api/src/pdf-conversion/runtime` |
-| Inspect and recognize | Inspect every page/region; trust native text only against visible geometry/content; route missing or unreliable regions to explicitly configured recognition. Native-only books need no model call. | `packages/pdf-epub/src/ava_pdf_epub/reconstruction_v2` |
-| Reconstruct | Conserve accepted text and source evidence; resolve columns/joins, global chapter/heading ancestry, notes, images, metadata and styles. Targeted book-level decisions cannot rewrite prose. | `reconstruction_v2`, host `apps/api/src/pdf-conversion/reconstruction` |
-| Assemble | Canonical `ava-book-2`, separate chapter XHTML/spine, nested TOC, allocated link targets/backlinks, owned resources and finite shared CSS; preserve generated-edition identity separately from print metadata. | `packages/pdf-epub/src/ava_pdf_epub/{contracts,epub_v2}` |
-| Validate/review | Verify source coverage, graph/resource hashes, conservation and EPUBCheck separately; retain blocking versus reviewable findings. Authenticated ADMIN decisions cannot waive hard blocks. | `apps/api/src/library/pdf-import/{publication,reviews}` |
-| Publish | Fresh transaction rechecks ownership, generation/fences, complete artifacts, provider settlement, review and qualified reader capabilities. Exactly one accepted manifest/final content identity becomes Ready. | `apps/api/src/library/pdf-import/publication` |
-| Read | Canonical reader v3 projects exact text/structures/resources; marks, resume, translations and offline bytes stay paired to fixed content. | `apps/api/src/reader`, `apps/web/features/reader` |
+| Stage                 | Responsibility and checks                                                                                                                                                                                       | Source                                                                        |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Admit                 | Authenticate ownership; enforce file/page/resource limits; bind upload intent to immutable source/configuration; create one owned item and operation.                                                           | `apps/api/src/library/pdf-import/{admission,operations,artifacts}`            |
+| Execute               | Durable queue, registered worker/image, short leases and fences; bounded internal preterminal recovery; account/delete/revoke checks.                                                                           | `apps/api/src/library/pdf-import/jobs`, `apps/api/src/pdf-conversion/runtime` |
+| Inspect and recognize | Inspect every page/region; trust native text only against visible geometry/content; route missing or unreliable regions to explicitly configured recognition. Native-only books need no model call.             | `packages/pdf-epub/src/ava_pdf_epub/reconstruction_v2`                        |
+| Reconstruct           | Conserve accepted text and source evidence; resolve columns/joins, global chapter/heading ancestry, notes, images, metadata and styles. Targeted book-level decisions cannot rewrite prose.                     | `reconstruction_v2`, host `apps/api/src/pdf-conversion/reconstruction`        |
+| Assemble              | Canonical `ava-book-2`, separate chapter XHTML/spine, nested TOC, allocated link targets/backlinks, owned resources and finite shared CSS; preserve generated-edition identity separately from print metadata.  | `packages/pdf-epub/src/ava_pdf_epub/{contracts,epub_v2}`                      |
+| Validate/review       | Verify source coverage, graph/resource hashes, conservation and EPUBCheck separately; retain blocking versus reviewable findings. Authenticated ADMIN decisions cannot waive hard blocks.                       | `apps/api/src/library/pdf-import/{publication,reviews}`                       |
+| Publish               | Fresh transaction rechecks ownership, generation/fences, complete artifacts, provider settlement, review and qualified reader capabilities. Exactly one accepted manifest/final content identity becomes Ready. | `apps/api/src/library/pdf-import/publication`                                 |
+| Read                  | Canonical reader v3 projects exact text/structures/resources; marks, resume, translations and offline bytes stay paired to fixed content.                                                                       | `apps/api/src/reader`, `apps/web/features/reader`                             |
 
 Uploads send the browser filename in the optional UTF-8 `originalFilename` multipart text field.
 The API validates it before capturing source identity; this avoids Latin-1 multipart header decoding
@@ -45,6 +45,28 @@ Worker contracts and API types are generated from the locked Python package. Unk
 stale source/task hashes, invented nodes/styles, missing text/resources or unresolved required
 structure fail closed. Text ranges use canonical code-point offsets with explicit UTF-16 browser
 mapping; surrogate splits are refused. Image bytes have validated media type, dimensions and hashes.
+Generated EPUB projection `ava-epub-canonical-2.2` preserves declared printed page labels in
+the page list and pagebreak accessibility names. Targets retain physical page IDs, so Roman numerals
+and restarted numbering cannot collide. Missing or blank labels use the physical page number for
+navigation without changing canonical source data. Unlabelled books retain the exact `2.1` projection;
+both declared versions are accepted only after complete visible-projection/resource comparison.
+Changing a profile marker cannot hide altered text, styles, links or page labels.
+
+Generated-EPUB reimport fills empty Library metadata from all accepted portable title/author claims,
+including a choice made by the original reader. Candidate claims remain excluded, conflicting titles
+are not guessed, and edits or explicit clears on the newly imported entry remain protected. Original
+claim provenance and finished canonical content are unchanged. PDF extraction continues to use only
+source-origin claims for automatic metadata filling.
+
+Ordinary EPUB ingestion shares the finite generated semantic profile: exact source-path/fragment
+addresses and mapped normalized offsets, nested lists and simple tables, semantic notes with
+separate return actions, image/caption/credit links, supported typography and literal whitespace.
+Missing required images, unsupported list flow and structured table cells produce typed
+source-linked blocking findings. A failed entry exposes a minimal preparation error; its private
+finding retains the exact resource/tree location for investigation. Broader publisher CSS is
+excluded. These importer repairs preserve existing flat-list/translation identities and do not
+replace accepted content.
+
 Printed title/copyright evidence may confirm metadata; body headings, quoted labels and unsupported
 PDF Info claims remain candidates. A print ISBN is not the generated EPUB identifier.
 
@@ -218,7 +240,6 @@ observed style object. The lowered provider grammar preserves these constraints.
 identity, observed native typography, complete decision coverage and relationship/join checks remain
 separate semantic gates. A refused, settled response is retained and stops further dispatch.
 
-
 Structure requests include exact required source crop IDs for each node and join. The converter
 rejects a response that cites another node's reference, even when its visual decision is plausible.
 Accepted source-bound responses can be reused during investigation without new provider calls;
@@ -351,7 +372,6 @@ The frozen126-page replay completes in794.274 seconds versus1310.294 seconds (39
 The full canonical JSON, EPUB and cover bytes match the baseline exactly. This measured installed
 result is separate from normal import/reader and five-book qualification, which remain open.
 
-
 ### Whole-book time and paired native lines
 
 The candidate total job deadline is bounded at120minutes/7200seconds across durable job policy,
@@ -370,14 +390,12 @@ prevents mixing with ordinary prose. Isolated/unconfirmed pairs are not automati
 Authored canonical/EPUB/reimport controls and original pages97/98 checks pass; full new-candidate
 normal import and reader/source qualification remain required before completion.
 
-
 Recognition generation grammar requires an explicit chapter flag on every segment. This prevents
 non-chapter headings from omitting the kind-required observation when the provider grammar drops
 conditional allOf branches. The authoritative JSON Schema/Python validator still rejects missing
 or inconsistent observations; the host neither inserts a guessed flag nor repairs stored output.
 A failed same-source import remains terminal and duplicate-protected. Test a corrected build in a
 fresh isolated database, with existing settled costs and unresolved exposure carried forward.
-
 
 The opt-in English/Ukrainian pipeline now keeps reliable native content when language uncertainty
 is its only finding. Supported primary language is still established by the whole-book validator;

@@ -12,6 +12,7 @@ from .canonical_text import canonical_text
 from .page_checkpoints import PreparedPageMap
 from .prepared import PreparedPage
 from .segments import Segment
+from .source_refusal import refuse_segment
 
 
 def assemble_blocks(
@@ -20,7 +21,7 @@ def assemble_blocks(
     pages = PreparedPageMap(prepared)
     for segment in segments:
         if segment.kind in {"unsupported", "furniture"}:
-            raise ValueError("Unresolved essential content cannot become a candidate")
+            refuse_segment(pages[segment.page], segment)
         block: dict[str, Any] = dict(
             id=segment.id,
             kind=segment.kind,

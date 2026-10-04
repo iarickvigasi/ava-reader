@@ -1,7 +1,7 @@
 import type { Prisma } from '@prisma/client';
 import type { CanonicalBookV2 } from '../../pdf-conversion/contracts/generated/ava-book-2';
 import { validatedPackageLanguage } from '../../pdf-conversion/metadata/package-language';
-import { sourceDisplayMetadata } from '../../pdf-conversion/runtime/fill-reconstructed-metadata';
+import { acceptedDisplayMetadata } from '../../pdf-conversion/metadata/display-metadata';
 import { titleFromFilename } from '../../shared/blob-utils';
 export async function fillImportedMetadata(
   tx: Prisma.TransactionClient,
@@ -10,7 +10,7 @@ export async function fillImportedMetadata(
   canonical: Pick<CanonicalBookV2, 'metadata' | 'profile_id' | 'source'>,
 ) {
   const book = await tx.book.findUniqueOrThrow({ where: { id: bookId } });
-  const candidate = sourceDisplayMetadata(canonical.metadata);
+  const candidate = acceptedDisplayMetadata(canonical.metadata);
   const language = validatedPackageLanguage(canonical);
   const fill: {
     title?: string;

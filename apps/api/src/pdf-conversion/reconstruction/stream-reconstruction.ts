@@ -7,6 +7,8 @@ import { PdfRuntimeError } from '../runtime/runtime-error';
 import { parsePacket, validatePacket } from './validate-packet';
 import type { ReconstructionReport } from './generated/ReconstructionReport';
 import type { CoordinatorDependencies } from './coordinator-types';
+import { sourceRefusalStream } from './source-refusal-stream';
+import { checksumBuffer } from '../../shared/blob-utils';
 
 export async function streamReconstruction(
   deps: CoordinatorDependencies,
@@ -25,11 +27,16 @@ export async function streamReconstruction(
       reportBytes = parsePacket('ReconstructionReport', bytes, 8 * 1024 ** 2);
     stagedByPath[descriptor.path] = await deps.stageArtifact(descriptor, bytes);
   });
+  const input = sandboxInput();
+  const transfer = sourceRefusalStream(checksumBuffer(input.source), (chunk) =>
+    sink.write(chunk),
+  );
   const result = await deps.sandbox({
-    ...sandboxInput(),
+    ...input,
     auxiliaryBytes,
-    onStdout: (chunk) => sink.write(chunk),
+    onStdout: (chunk) => transfer.write(chunk),
   });
+  transfer.finish(result.exitCode);
   if (result.exitCode !== 0) throw new PdfRuntimeError('INVALID_RESULT');
   const header = sink.finish(),
     report = validatePacket('ReconstructionReport', header.report);

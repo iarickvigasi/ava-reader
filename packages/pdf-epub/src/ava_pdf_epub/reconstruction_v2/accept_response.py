@@ -10,6 +10,7 @@ from .recognition_contract import RecognitionResponse, RecognitionTask
 from .recognition_coordinates import source_segment
 from .recognition_tables import qualify_recognized_tables
 from .segments import Segment
+from .source_refusal import refuse_task
 
 
 def accept_response(task: RecognitionTask, response: RecognitionResponse) -> list[Segment]:
@@ -34,9 +35,12 @@ def accept_response(task: RecognitionTask, response: RecognitionResponse) -> lis
         ]
         if any((span.anchor is not None) != anchored for span in spans):
             raise ValueError("Inline offset authority does not match task version")
-    response_language(response.language, task.profile_id)
+    try:
+        response_language(response.language, task.profile_id)
+    except ValueError:
+        refuse_task(task, "SOURCE_LANGUAGE_UNSUPPORTED")
     if response.unresolved:
-        raise ValueError("Essential recognition uncertainty or language requires source review")
+        refuse_task(task, "RECOGNITION_UNRESOLVED")
     if len({s.id for s in response.segments}) != len(response.segments):
         raise ValueError("Repeated recognition segment identity")
     evidence = json.loads(task.native_evidence)
@@ -63,7 +67,7 @@ def accept_response(task: RecognitionTask, response: RecognitionResponse) -> lis
         if segment.related_to and segment.related_to not in {s.id for s in response.segments}:
             raise ValueError("Recognition relationship has no source target")
         if segment.kind == "unsupported":
-            raise ValueError("Essential unsupported source content")
+            refuse_task(task, "ESSENTIAL_STRUCTURE_UNSUPPORTED", segment)
     annotation_coverage(evidence, segments)
     qualify_recognized_tables(evidence.get("ruled_tables", []), segments)
     if evidence["reliable"]:

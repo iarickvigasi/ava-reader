@@ -6,7 +6,9 @@ from .context import Context
 from .xml import EPUB, XHTML, element
 
 
-def add_page_anchors(body: ET.Element, ctx: Context, seen: set[int]) -> None:
+def add_page_anchors(
+    body: ET.Element, ctx: Context, seen: set[int], *, printed_page_labels: bool = False
+) -> None:
     parents = {child: parent for parent in body.iter() for child in parent}
     for node in list(body.iter()):
         block_id = node.get("data-ava-block")
@@ -22,7 +24,9 @@ def add_page_anchors(body: ET.Element, ctx: Context, seen: set[int]) -> None:
                             "id": f"page-{evidence.page}",
                             f"{{{EPUB}}}type": "pagebreak",
                             "role": "doc-pagebreak",
-                            "aria-label": str(evidence.page),
+                            "aria-label": ctx.page_labels[evidence.page]
+                            if printed_page_labels
+                            else str(evidence.page),
                         },
                     )
                 )

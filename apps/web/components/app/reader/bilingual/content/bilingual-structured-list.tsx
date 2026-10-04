@@ -2,10 +2,14 @@ import type { BilingualFlowBlockProps } from "@/features/reader/bilingual/conten
 import type { ReaderListBlock } from "@/lib/api-types/reader-content";
 import { canonicalStyle } from "@/features/reader/canonical/style";
 import { canonicalLeaf } from "@/features/reader/bilingual/content/canonical-leaf";
+import { resolveBlockStyle } from "../../content/reader-block-style";
+import { structuredLeafStyle } from "../../content/structured-leaf-style";
 import { LIST_CLASS } from "../../content/reader-block-classes";
 import { BilingualFlowSentences } from "./bilingual-flow-sentences";
-export function BilingualCanonicalList(props: BilingualFlowBlockProps) {
-  const selected = new Set(props.group.units.map(({ unit }) => unit.blockId));
+export function BilingualStructuredList(props: BilingualFlowBlockProps) {
+  const selected = new Set(
+    props.group.units.map(({ unit }) => unit.itemId ?? unit.blockId),
+  );
   const contains = (list: ReaderListBlock): boolean =>
     list.items.some(
       (item) => selected.has(item.id) || item.children?.some(contains),
@@ -18,9 +22,11 @@ export function BilingualCanonicalList(props: BilingualFlowBlockProps) {
         data-bilingual-flow-content
         dir="auto"
         start={list.ordered ? list.start : undefined}
-        className={`${LIST_CLASS} ${list.ordered ? "list-decimal" : "list-disc"}`}
+        className={`[--reader-list-base:1.12rem] sm:[--reader-list-base:1.28rem] ${LIST_CLASS} ${list.ordered ? "list-decimal" : "list-disc"}`}
         style={{
-          ...canonicalStyle(list.presentation),
+          ...(list.canonical
+            ? canonicalStyle(list.presentation)
+            : resolveBlockStyle(list)),
           listStyleType:
             list.markerStyle === "bullet"
               ? "disc"
@@ -29,7 +35,7 @@ export function BilingualCanonicalList(props: BilingualFlowBlockProps) {
       >
         {list.items.map((item, index) => {
           const units = props.group.units.filter(
-            ({ unit }) => unit.blockId === item.id,
+            ({ unit }) => (unit.itemId ?? unit.blockId) === item.id,
           );
           const children = item.children?.filter(contains) ?? [];
           if (!units.length && !children.length) return null;
@@ -41,7 +47,7 @@ export function BilingualCanonicalList(props: BilingualFlowBlockProps) {
               data-bilingual-flow-item={item.id}
               data-bilingual-flow-item-start={0}
               style={{
-                ...canonicalStyle(item.presentation),
+                ...structuredLeafStyle(item, "list"),
                 ...(!units.length || units[0].unit.startOffset > 0
                   ? { listStyleType: "none" }
                   : {}),

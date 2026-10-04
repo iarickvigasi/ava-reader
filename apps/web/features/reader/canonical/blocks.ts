@@ -67,7 +67,7 @@ export function canonicalBlock(
       if (!address) throw new Error("Missing note return");
       return { label: callout, target: canonicalTarget(book, address.target) };
     });
-    return { ...text, kind: "note", returns };
+    return { ...text, kind: "note", noteRole: block.note_role, returns };
   }
   return {
     ...text,

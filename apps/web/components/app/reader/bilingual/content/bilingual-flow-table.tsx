@@ -1,6 +1,7 @@
 import { useId } from "react";
 import type { BilingualFlowBlockProps } from "@/features/reader/bilingual/content/flow-types";
-import { canonicalStyle } from "@/features/reader/canonical/style";
+import { resolveBlockStyle } from "../../content/reader-block-style";
+import { structuredLeafStyle } from "../../content/structured-leaf-style";
 import { ReaderInlineContent } from "../../content/reader-inline-content";
 import { BilingualFlowSentences } from "./bilingual-flow-sentences";
 export function BilingualFlowTable(props: BilingualFlowBlockProps) {
@@ -15,8 +16,8 @@ export function BilingualFlowTable(props: BilingualFlowBlockProps) {
     <table
       data-bilingual-table={block.id}
       data-bilingual-flow-content
-      className="w-full table-fixed border-collapse text-[calc(1rem*var(--reader-font-scale))]"
-      style={canonicalStyle(block.presentation)}
+      className="w-full table-fixed border-collapse text-[calc(1rem*var(--reader-font-scale)*var(--reader-block-scale,1))]"
+      style={resolveBlockStyle(block)}
     >
       <tbody>
         {rows.map((row) => (
@@ -47,8 +48,8 @@ export function BilingualFlowTable(props: BilingualFlowBlockProps) {
                       cell.headerIds.map((id) => `${prefix}-${id}`).join(" ") ||
                       undefined
                     }
-                    style={canonicalStyle(cell.presentation)}
-                    className="border-b border-line p-2 text-start align-top [overflow-wrap:anywhere]"
+                    style={structuredLeafStyle(cell, "table")}
+                    className="border-b border-line p-2 align-top [overflow-wrap:anywhere]"
                   >
                     {cell.headerAxis && (
                       <span

@@ -64,8 +64,7 @@ export function useReaderPagination({
 
   const activeRestoreCycleKey = restoreIntent?.key ?? activeChapter.chapterId;
 
-  // Prefix/spillover feed the restore, locator and style hooks below, so this
-  // must run before them.
+  // Prefix/spillover must precede the restore, locator and style hooks.
   const { prefixBlocks, prefixPageCount, spilloverBlocks } = useSpreadBlocks({
     activeChapter,
     previousChapter,
@@ -73,11 +72,9 @@ export function useReaderPagination({
     previousChapterPageCount,
     pageCount,
     pageBoxSize,
-    // Canonical chapters and explicit jumps use the same standalone geometry
-    // as their measurement. Prefix-skipping assumes prior sequential reading.
-    separateChapter:
-      activeChapter.blocks.some((block) => block.canonical) ||
-      restoreIntent?.requestId !== undefined,
+    // Measurement is per chapter; prefix/spillover has no matching geometry.
+    // Keep block restores and sequential edges in the same measured columns.
+    separateChapter: true,
   });
 
   const restorePhase = useRestoreController({

@@ -12,6 +12,7 @@ export function canonicalLeaf(
     return cell ? { ...cell, kind: "paragraph" } : undefined;
   }
   const find = (list: ReaderListBlock): ReaderBlock | undefined => {
+    if (list.id === id) return list;
     for (const item of list.items) {
       if (item.id === id) return { ...item, kind: "paragraph" };
       for (const child of item.children ?? []) {
@@ -20,5 +21,5 @@ export function canonicalLeaf(
       }
     }
   };
-  return block.kind === "list" && block.canonical ? find(block) : undefined;
+  return block.kind === "list" ? find(block) : undefined;
 }

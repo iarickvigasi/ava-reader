@@ -8,6 +8,7 @@ import {
   PARAGRAPH_CLASS,
 } from "./reader-block-classes";
 import { resolveAlignmentClass } from "./reader-block-style";
+import { ReaderNoteSemantics } from "./reader-note-semantics";
 import { ReaderNoteReturns } from "./reader-note-returns";
 
 type TextBlock = Extract<ReaderBlock, { inlines: unknown }>;
@@ -22,6 +23,7 @@ export function ReaderTextBlockView({
 }) {
   const blockProps = useReaderBlockProps();
   const literal = block.kind === "code" || block.kind === "verse";
+  const preserveWhitespace = literal || block.preserveWhitespace;
   const Tag: ElementType =
     block.kind === "heading"
       ? (`h${Math.min(6, Math.max(1, block.level))}` as ElementType)
@@ -42,7 +44,7 @@ export function ReaderTextBlockView({
     <Tag
       {...blockProps(block, chapterId, style)}
       data-reader-block-kind={block.kind}
-      className={`${typography} ${resolveAlignmentClass(block)} ${literal ? "whitespace-pre-wrap [overflow-wrap:anywhere]" : ""} ${block.kind === "caption" || block.kind === "credit" ? "text-[0.9em]" : ""}`.trim()}
+      className={`${typography} ${resolveAlignmentClass(block)} ${preserveWhitespace ? "whitespace-pre-wrap [overflow-wrap:anywhere]" : ""} ${block.kind === "caption" || block.kind === "credit" ? "text-[0.9em]" : ""}`.trim()}
     >
       {block.kind === "code" ? (
         <code>
@@ -54,10 +56,10 @@ export function ReaderTextBlockView({
     </Tag>
   );
   return block.kind === "note" ? (
-    <aside role="doc-footnote" className="break-inside-avoid-column">
+    <ReaderNoteSemantics noteRole={block.noteRole}>
       {content}
       <ReaderNoteReturns blockId={block.id} returns={block.returns ?? []} />
-    </aside>
+    </ReaderNoteSemantics>
   ) : (
     content
   );

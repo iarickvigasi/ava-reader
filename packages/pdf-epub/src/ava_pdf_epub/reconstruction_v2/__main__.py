@@ -12,6 +12,7 @@ from .prepare_refinement_source import prepare_refinement_source
 from .protocol import PrepareResult, ReconstructionInput
 from .protocol_output import candidate_packet, encode_packet
 from .reconstruct_source import reconstruct_source
+from .source_refusal import SourceContentRefusal
 from .stream_output import stream_artifacts
 from .validate_refinement import validate_refinement
 from .validate_tasks import validate_tasks
@@ -77,6 +78,9 @@ def main() -> None:
             raise ValueError("Unknown reconstruction command")
         sys.stdout.buffer.write(output)
         sys.stdout.buffer.flush()
+    except SourceContentRefusal as error:
+        print(error.diagnostic.model_dump_json(), flush=True)
+        raise SystemExit(1) from None
     except Exception:
         print(
             json.dumps(

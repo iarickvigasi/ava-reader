@@ -10,9 +10,9 @@ from .chapters import chapter_documents
 from .context import Context
 from .navigation import navigation
 from .package import package_document
+from .profiles import LEGACY_PROFILE, PROFILES, export_profile
 from .styles import stylesheet
 
-PROFILE = "ava-epub-canonical-2.1"
 SIDECAR = "EPUB/ava-canonical.json"
 CONTAINER = b"""<?xml version="1.0" encoding="UTF-8"?>
 <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
@@ -20,18 +20,23 @@ CONTAINER = b"""<?xml version="1.0" encoding="UTF-8"?>
 media-type="application/oebps-package+xml"/></rootfiles></container>"""
 
 
-def export_entries(book: CanonicalBookV2, assets: dict[str, bytes]) -> dict[str, bytes]:
+def export_entries(
+    book: CanonicalBookV2, assets: dict[str, bytes], *, profile: str | None = None
+) -> dict[str, bytes]:
     book = CanonicalBookV2.model_validate(book.model_dump())
+    profile = export_profile(book) if profile is None else profile
+    if profile not in PROFILES:
+        raise ValueError("Unsupported generated EPUB profile")
     ctx = Context(book)
     entries = {
         "mimetype": b"application/epub+zip",
         "META-INF/container.xml": CONTAINER,
-        "META-INF/ava-profile": PROFILE.encode(),
+        "META-INF/ava-profile": profile.encode(),
         SIDECAR: book.model_dump_json().encode(),
     }
     entries.update(validate_assets(book, assets))
-    entries.update(chapter_documents(ctx))
-    entries["EPUB/nav/nav.xhtml"] = navigation(ctx)
+    entries.update(chapter_documents(ctx, printed_page_labels=profile != LEGACY_PROFILE))
+    entries["EPUB/nav/nav.xhtml"] = navigation(ctx, printed_page_labels=profile != LEGACY_PROFILE)
     entries["EPUB/styles/book.css"] = stylesheet(book.styles)
     entries["EPUB/package.opf"] = package_document(ctx, entries)
     if len(entries) > MAX_ENTRIES or any(len(data) > MAX_ENTRY_BYTES for data in entries.values()):

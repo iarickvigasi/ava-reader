@@ -3,7 +3,8 @@ import type { ReaderListBlock } from "@/lib/api-types/reader-content";
 import { ReaderInlineContent } from "./reader-inline-content";
 import { LIST_CLASS } from "./reader-block-classes";
 import { useReaderBlockProps } from "./block-props";
-import { canonicalStyle } from "@/features/reader/canonical/style";
+import { structuredLeafStyle } from "./structured-leaf-style";
+import { resolveBlockStyle } from "./reader-block-style";
 
 export function ReaderStructuredList({
   block,
@@ -22,6 +23,7 @@ export function ReaderStructuredList({
   return (
     <Tag
       {...props}
+      data-reader-block-kind={block.canonical ? undefined : "list"}
       style={{
         ...style,
         ...(block.markerStyle
@@ -32,11 +34,14 @@ export function ReaderStructuredList({
           : {}),
       }}
       start={block.ordered ? block.start : undefined}
-      className={`${LIST_CLASS} ${block.ordered ? "list-decimal" : "list-disc"}`}
+      className={`[--reader-list-base:1.12rem] sm:[--reader-list-base:1.28rem] ${LIST_CLASS} ${block.ordered ? "list-decimal" : "list-disc"}`}
     >
       {block.items.map((item) => (
-        <li key={item.id} style={canonicalStyle(item.presentation)}>
-          <span {...(block.canonical ? blockProps(item, chapterId) : {})}>
+        <li key={item.id} style={structuredLeafStyle(item, "list")}>
+          <span
+            {...blockProps(item, chapterId)}
+            data-reader-block-kind="paragraph"
+          >
             <ReaderInlineContent inlines={item.inlines} />
           </span>
           {item.children?.map((child) => (
@@ -44,6 +49,7 @@ export function ReaderStructuredList({
               key={child.id}
               block={child}
               chapterId={chapterId}
+              style={resolveBlockStyle(child)}
             />
           ))}
         </li>

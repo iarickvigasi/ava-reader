@@ -4,6 +4,7 @@ from ..contracts.book import CanonicalBookV2
 from ..contracts.common import document_digest
 from ..contracts.graph_links import TEXT_NODES
 from .context import Context, ident
+from .profiles import export_profile
 
 
 def conservation_report(book: CanonicalBookV2) -> dict[str, object]:
@@ -26,7 +27,7 @@ def conservation_report(book: CanonicalBookV2) -> dict[str, object]:
         )
     return {
         "adapter": "ava-canonical-reader-1",
-        "epub_profile": "ava-epub-canonical-2.1",
+        "epub_profile": export_profile(book),
         "canonical_sha256": document_digest(book),
         "source_addresses": mapping,
         "text_segments": [n.id for n in ctx.nodes.values() if isinstance(n, TEXT_NODES)],

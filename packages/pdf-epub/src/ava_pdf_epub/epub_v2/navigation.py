@@ -7,7 +7,7 @@ from .context import Context
 from .xml import EPUB, document, element
 
 
-def navigation(ctx: Context) -> bytes:
+def navigation(ctx: Context, *, printed_page_labels: bool = False) -> bytes:
     body = element("body")
     nav = element("nav", {f"{{{EPUB}}}type": "toc", "id": "toc"})
     nav.append(element("h1", text="Contents"))
@@ -36,7 +36,10 @@ def navigation(ctx: Context) -> bytes:
             if evidence.page not in seen:
                 item = element("li")
                 href = "../" + ctx.paths[ctx.owners[block.id]] + f"#page-{evidence.page}"
-                item.append(element("a", {"href": href}, str(evidence.page)))
+                label = (
+                    ctx.page_labels[evidence.page] if printed_page_labels else str(evidence.page)
+                )
+                item.append(element("a", {"href": href}, label))
                 listing.append(item)
                 seen.add(evidence.page)
     pages.append(listing)

@@ -5,6 +5,8 @@ import type { RecognitionTask } from './generated/RecognitionTask';
 import type { CoordinatorDependencies } from './coordinator-types';
 import type { SandboxInput } from '../runtime/container-arguments';
 import { PdfRuntimeError } from '../runtime/runtime-error';
+import { parseSourceRefusal } from './source-refusal';
+import { bindTaskRefusal } from './bind-task-refusal';
 
 const checked = z
   .object({
@@ -36,6 +38,11 @@ export async function validateRecognitionTasks(
   )
     throw new PdfRuntimeError('RESOURCE_LIMIT');
   const result = await sandbox({ ...sandboxInput(), auxiliaryBytes });
+  if (result.exitCode === 1)
+    throw bindTaskRefusal(
+      parseSourceRefusal(result.stdout, tasks[0].source_sha256),
+      tasks,
+    );
   if (result.exitCode !== 0 || result.stdout.length > 1024)
     throw new PdfRuntimeError('INVALID_RESULT');
   let raw: unknown;

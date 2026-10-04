@@ -12,6 +12,8 @@ import { completeStagedPdfJob } from '../../library/pdf-import/jobs/complete-sta
 import { leaseGuard, underLease } from './lease-guard';
 import { validateRuntimeConfig, type PdfRuntimeConfig } from './runtime-config';
 import { PdfRuntimeError } from './runtime-error';
+import { SourceContentError } from '../reconstruction/source-refusal';
+import { retainSourceRefusal } from './retain-source-refusal';
 
 export async function executeOne(
   prisma: PrismaService,
@@ -66,7 +68,13 @@ export async function executeOne(
     let saved: { status: string; code: string };
     try {
       saved = await underLease(
-        () => settleExecutionFailure(prisma, authority, error),
+        async () =>
+          error instanceof SourceContentError
+            ? {
+                ...(await retainSourceRefusal(prisma, claim, error, semantic)),
+                code: error.code,
+              }
+            : settleExecutionFailure(prisma, authority, error),
         guard.signal,
       );
     } catch (failure) {

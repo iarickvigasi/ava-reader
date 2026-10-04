@@ -28,7 +28,7 @@ def render_list(group_id: str, ctx: Context) -> ET.Element:
     return root
 
 
-def chapter_documents(ctx: Context) -> dict[str, bytes]:
+def chapter_documents(ctx: Context, *, printed_page_labels: bool = False) -> dict[str, bytes]:
     output = {}
     seen_pages: set[int] = set()
     for chapter in ctx.book.chapters:
@@ -45,7 +45,7 @@ def chapter_documents(ctx: Context) -> dict[str, bytes]:
                     emitted_groups.add(group.id)
             else:
                 body.append(render_block(block_id, ctx))
-        add_page_anchors(body, ctx, seen_pages)
+        add_page_anchors(body, ctx, seen_pages, printed_page_labels=printed_page_labels)
         output["EPUB/" + ctx.paths[chapter.id]] = document(
             chapter.title,
             body,

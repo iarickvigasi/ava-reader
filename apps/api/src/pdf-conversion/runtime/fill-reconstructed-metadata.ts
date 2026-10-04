@@ -1,3 +1,4 @@
+import { acceptedDisplayMetadata } from '../metadata/display-metadata';
 import { validatedPackageLanguage } from '../metadata/package-language';
 import type { PrismaService } from '../../prisma/prisma.service';
 import type {
@@ -23,40 +24,9 @@ export function captureMetadataVersion(
   });
 }
 export function sourceDisplayMetadata(claims: MetadataClaim[]) {
-  const source = claims.filter(
-    (c) => c.status === 'accepted' && c.origin === 'source' && c.value?.trim(),
+  return acceptedDisplayMetadata(
+    claims.filter((claim) => claim.origin === 'source'),
   );
-  const values = (field: MetadataClaim['field']) => [
-    ...new Set(
-      source.filter((c) => c.field === field).map((c) => c.value!.trim()),
-    ),
-  ];
-  const title = values('title');
-  const language = values('language');
-  const authors = [
-    ...new Set(
-      source
-        .filter(
-          (c) => c.field === 'contributor' && c.contributor_role === 'author',
-        )
-        .map((c) => c.value!.trim()),
-    ),
-  ];
-  return {
-    ...(title.length === 1 && title[0].length <= 1000
-      ? { title: title[0] }
-      : {}),
-    ...(authors.length &&
-    authors.length <= 100 &&
-    authors.every((a) => a.length <= 1000)
-      ? { authors }
-      : {}),
-    ...(language.length === 1 &&
-    language[0].length >= 2 &&
-    language[0].length <= 35
-      ? { language: language[0] }
-      : {}),
-  };
 }
 export async function fillReconstructedMetadata(
   prisma: PrismaService,

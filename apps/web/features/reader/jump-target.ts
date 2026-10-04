@@ -1,24 +1,8 @@
-import type {
-  ReaderBlock,
-  ReaderChapterPayload,
-  ReaderLocator,
-} from "@/lib/api-types";
+import type { ReaderChapterPayload, ReaderLocator } from "@/lib/api-types";
 import type { ReaderNavigationTarget } from "./navigation";
 
-export function readerLeaves(blocks: ReaderBlock[]): ReaderBlock[] {
-  return blocks.flatMap((block): ReaderBlock[] => {
-    if (block.kind === "table")
-      return [
-        block,
-        ...block.cells.map((cell) => ({ ...cell, kind: "paragraph" as const })),
-      ];
-    if (block.kind !== "list" || !block.canonical) return [block];
-    return block.items.flatMap((item) => [
-      { ...item, kind: "paragraph" as const },
-      ...readerLeaves(item.children ?? []),
-    ]);
-  });
-}
+import { readerContainer, readerLeaves } from "./reader-leaves";
+export { readerLeaves } from "./reader-leaves";
 
 export function resolveJumpTarget(
   chapter: ReaderChapterPayload,
@@ -26,7 +10,8 @@ export function resolveJumpTarget(
 ): ReaderLocator | null {
   const blocks = readerLeaves(chapter.blocks);
   const block = target?.blockId
-    ? blocks.find((item) => item.id === target.blockId)
+    ? (blocks.find((item) => item.id === target.blockId) ??
+      readerContainer(chapter.blocks, target.blockId))
     : target?.edge === "end"
       ? blocks.at(-1)
       : blocks[0];

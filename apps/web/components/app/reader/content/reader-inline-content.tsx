@@ -3,6 +3,7 @@ import { ReaderInternalLink } from "./reader-internal-link";
 import type { ReaderInline } from "@/lib/api-types";
 import { cn } from "@/lib/cn";
 import { ReaderInlineImage } from "./reader-inline-image";
+import { ReaderContentLink } from "./reader-content-link";
 import { ReaderInlineScript } from "./reader-inline-script";
 import { ReaderInlineText } from "./reader-inline-text";
 
@@ -20,18 +21,10 @@ export function ReaderInlineContent({ inlines }: { inlines: ReaderInline[] }) {
         const key = `${inline.kind}-${index}`;
 
         if (inline.kind === READER_INLINE_KIND_IMAGE) {
-          return inline.href ? (
-            <a
-              key={key}
-              href={measurement ? undefined : inline.href}
-              className={LINK_CLASS}
-            >
+          return (
+            <ReaderContentLink key={key} link={inline}>
               <ReaderInlineImage inline={inline} />
-            </a>
-          ) : (
-            <span key={key}>
-              <ReaderInlineImage inline={inline} />
-            </span>
+            </ReaderContentLink>
           );
         }
 

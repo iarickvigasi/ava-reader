@@ -17,8 +17,8 @@ function resolveInlineStyle(inline: TextInline): CSSProperties | undefined {
     delete presentation.verticalAlign;
   if (typeof inline.fontWeight === "number") {
     return {
-      fontWeight: inline.fontWeight,
       ...presentation,
+      fontWeight: inline.fontWeight,
     };
   }
   return inline.presentation ? presentation : undefined;

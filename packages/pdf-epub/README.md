@@ -111,6 +111,12 @@ is preserved, and inline ranges use Unicode code points with an optional canonic
 `Evidence.coordinate_space` distinguishes point coordinates from normalized image crops.
 `Style.observed` distinguishes a measured zero/false from an unspecified editorial default.
 
+The generated EPUB projection is `ava-epub-canonical-2.1` for unlabelled books and `2.2` for
+books with declared printed page labels. `epub_v2.portable.portable_epub` validates both complete
+projections against the declared version; it does not upgrade imported bytes. Page anchors always
+use unique physical page IDs. Printed labels supply navigation text, with physical-number fallback
+for missing/blank labels. Canonical data and old accepted EPUBs remain fixed.
+
 `review.Review` is an explicit editorial patch bound to both PDF SHA-256 and canonical serialized
 Book SHA-256. It can set chapter boundaries, accepted metadata, source styles, inline spans and
 assets. Each span/style edit also names its expected text hash. It cannot silently rewrite prose
@@ -431,7 +437,6 @@ unchanged. A frozen126-page offline replay completes in794.274s versus1310.294s,
 canonical JSON, EPUB and cover bytes identical. This local result does not qualify normal Library
 publication, all books, independent review or source/reader fidelity.
 
-
 ### Whole-book time and paired native lines
 
 The candidate total job deadline is bounded at120minutes/7200seconds across durable job policy,
@@ -450,7 +455,6 @@ prevents mixing with ordinary prose. Isolated/unconfirmed pairs are not automati
 Authored canonical/EPUB/reimport controls and original pages97/98 checks pass; full new-candidate
 normal import and reader/source qualification remain required before completion.
 
-
 ### Language-only uncertainty
 
 In the opt-in English/Ukrainian profile, uncertain language alone does not request a new
@@ -467,14 +471,12 @@ fragments preserve the latter; other single lines stay ambiguous. Unknown block 
 omitted from wire output so legacy immutable digests remain unchanged. EPUB uses
 `margin-inline-start`; AVA maps the same value separately from `text-indent`.
 
-
 Structure comparison uses versioned prompt5: every heading has an explicit boolean chapter
 flag, sections use false and a null chapter role, and non-headings use null fields. Historical
 prompt3 remains immutable for its tasks; bibliographic prompt4 is separate. Invalid decisions
 are rejected before assembly, with their provider cost retained. A prompt revision changes task
 identity; an old response cannot be edited or rebound to a new task. This preserves finished
 content and does not introduce later reconversion.
-
 
 ### Bounded merged table cells
 
@@ -498,7 +500,6 @@ This implementation is a candidate. Installed whole-book, live OCR, semantic hea
 normal PDF publication/reimport/reader and independent review remain separate acceptance gates.
 Update installed host validators, generated API/web contracts and worker images together before
 using new span-bearing candidates. Finished books are never reconverted or replaced.
-
 
 ### Exact inline text anchors
 

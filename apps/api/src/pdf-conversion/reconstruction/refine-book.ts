@@ -7,6 +7,7 @@ import { PdfRuntimeError } from '../runtime/runtime-error';
 import { parsePacket } from './validate-packet';
 import { refinementProviderTask } from './refinement-provider-task';
 import { validateRefinement } from './validate-refinement';
+import { parseSourceRefusal } from './source-refusal';
 
 export async function refineBook(input: {
   responses: RecognitionResponse[];
@@ -35,6 +36,8 @@ export async function refineBook(input: {
     ...input.sandboxInput(),
     auxiliaryBytes,
   });
+  if (prepared.exitCode === 1)
+    throw parseSourceRefusal(prepared.stdout, input.sourceSha256);
   if (prepared.exitCode !== 0) throw new PdfRuntimeError('INVALID_RESULT');
   const batch = parsePacket('RefinementBatch', prepared.stdout, 24 * 1024 ** 2);
   if (

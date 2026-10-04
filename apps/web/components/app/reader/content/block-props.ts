@@ -7,13 +7,16 @@ export function blockProps(
   chapterId: string,
   style?: CSSProperties,
 ) {
+  const association =
+    "kind" in block && ["caption", "credit"].includes(String(block.kind));
   return {
     "data-block-id": block.id,
     "data-chapter-id": chapterId,
     "data-reader-block": "true" as const,
-    id: block.canonical
-      ? `reader-${chapterId}-${block.id}`
-      : (block.anchorId ?? undefined),
+    id:
+      block.canonical || association
+        ? `reader-${chapterId}-${block.id}`
+        : (block.anchorId ?? undefined),
     tabIndex: -1,
     style,
   };

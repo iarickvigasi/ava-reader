@@ -1,6 +1,7 @@
 import type { RecognitionTask } from './generated/RecognitionTask';
 import { validatePacket } from './validate-packet';
 import { PdfRuntimeError } from '../runtime/runtime-error';
+import { recognitionRefusal } from './recognition-refusal';
 
 export function recognitionResponse(task: RecognitionTask, output: string) {
   if (Buffer.byteLength(output) > 8 * 1024 ** 2)
@@ -29,7 +30,7 @@ export function recognitionResponse(task: RecognitionTask, output: string) {
     ).includes(response.language.toLowerCase().split('-')[0]) ||
     response.segments.some((s) => s.kind === 'unsupported')
   )
-    throw new PdfRuntimeError('UNSUPPORTED_PDF');
+    throw recognitionRefusal(task, response);
   return response;
 }
 

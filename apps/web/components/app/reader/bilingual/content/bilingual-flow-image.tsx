@@ -1,4 +1,6 @@
 import { useId } from "react";
+import { resolveBlockStyle } from "../../content/reader-block-style";
+import { ReaderContentLink } from "../../content/reader-content-link";
 import { figureDescription } from "@/features/reader/bilingual/content/figure-description";
 import type { BilingualFlowBlockProps } from "@/features/reader/bilingual/content/flow-types";
 import { flowSourceAttributes } from "@/features/reader/bilingual/content/flow-source-attributes";
@@ -28,14 +30,23 @@ export function BilingualFlowImage({
       data-bilingual-unit-id={units[0].unit.id}
       data-bilingual-unit-index={units[0].index}
       className="break-inside-avoid-column space-y-3"
+      style={resolveBlockStyle(block)}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        alt={block.alt ?? ""}
-        src={block.src}
-        className="w-full rounded-card object-contain"
-        style={{ maxHeight: pageHeight > 0 ? pageHeight : undefined }}
-      />
+      <ReaderContentLink link={side === "source" ? block : {}}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          alt={block.alt ?? ""}
+          src={block.src}
+          width={block.width}
+          height={block.height}
+          className={
+            block.canonical
+              ? "mx-auto max-w-full object-contain"
+              : "w-full rounded-card object-contain"
+          }
+          style={{ maxHeight: pageHeight > 0 ? pageHeight : undefined }}
+        />
+      </ReaderContentLink>
       {description && (
         <figcaption
           data-bilingual-figure-description

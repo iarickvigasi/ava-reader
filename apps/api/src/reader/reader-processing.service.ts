@@ -1,3 +1,4 @@
+import { readerProcessingFailure } from './epub/source-finding-storage';
 import { ReaderProcessingLoop } from './reader-processing-loop';
 import { processCanonicalEpubOnce } from '../library/epub-import/process-once';
 import {
@@ -204,10 +205,7 @@ export class ReaderProcessingService implements OnModuleInit, OnModuleDestroy {
             // Sweeper will collect it.
           });
       }
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Unknown EPUB processing error.';
+      const message = readerProcessingFailure(error);
       this.logger.warn(`Reader processing failed for ${runId}: ${message}`);
       await this.markRunFailed(runId, message);
     }

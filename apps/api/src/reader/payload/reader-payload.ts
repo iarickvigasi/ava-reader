@@ -1,3 +1,4 @@
+import { readerFailureMessage } from '../epub/source-finding-storage';
 import { BadRequestException, type Logger } from '@nestjs/common';
 import { BookFileFormat, BookFileKind, ProcessingStatus } from '@prisma/client';
 import type { PrismaService } from '../../prisma/prisma.service';
@@ -48,9 +49,7 @@ export async function buildReaderPayload(params: {
     if (latestRun?.status === ProcessingStatus.FAILED) {
       return {
         book,
-        message:
-          latestRun.errorMessage ??
-          'The EPUB could not be prepared for the reader.',
+        message: readerFailureMessage(latestRun.errorMessage),
         progress,
         status: 'FAILED',
       };

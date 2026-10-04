@@ -1,5 +1,6 @@
 import { identifyTranslationUnit as identify } from './unit-identity';
-import type { ReaderChapter, ReaderInline } from '../../reader/reader-types';
+import type { ReaderChapter, ReaderBlock } from '../../reader/reader-types';
+import { inlineText, isLiteralBlock } from './catalog-block-content';
 import { createSentenceSegmenter } from '../../shared/create-sentence-segmenter';
 import type { BilingualUnit } from '../types';
 
@@ -9,7 +10,12 @@ export function buildSentenceCatalog(
   sourceLanguage: string | null,
 ): BilingualUnit[] {
   const segmenter = createSentenceSegmenter(sourceLanguage);
-  return chapter.blocks.flatMap((block) => {
+  return chapter.blocks.flatMap((block) => blockUnits(block));
+
+  function blockUnits(
+    block: ReaderBlock,
+    leafAddresses = false,
+  ): BilingualUnit[] {
     if (block.kind === 'image') {
       return [
         identify(
@@ -25,17 +31,45 @@ export function buildSentenceCatalog(
         ),
       ];
     }
+    if (isLiteralBlock(block))
+      return [
+        identify(
+          {
+            blockId: block.id,
+            startOffset: 0,
+            endOffset: block.text.length,
+            text: block.text,
+            kind: 'literal',
+          },
+          chapter.chapterId,
+          contentRevision,
+        ),
+      ];
+    if (block.kind === 'table')
+      return block.cells.flatMap((cell) =>
+        segmentText(inlineText(cell.inlines), cell.id, 0),
+      );
     if (block.kind !== 'list') {
       return segmentText(inlineText(block.inlines), block.id, 0);
     }
+    const byItem =
+      leafAddresses || block.items.some((item) => item.children?.length);
     let offset = 0;
     return block.items.flatMap((item) => {
       const text = inlineText(item.inlines);
-      const units = segmentText(text, block.id, offset, item.id);
+      const units = segmentText(
+        text,
+        byItem ? item.id : block.id,
+        byItem ? 0 : offset,
+        item.id,
+      );
       offset += text.length;
-      return units;
+      return [
+        ...units,
+        ...(item.children ?? []).flatMap((child) => blockUnits(child, byItem)),
+      ];
     });
-  });
+  }
 
   function segmentText(
     text: string,
@@ -60,11 +94,4 @@ export function buildSentenceCatalog(
         ),
       );
   }
-}
-
-function inlineText(inlines: ReaderInline[]) {
-  // block.text is normalized for search; DOM locators count verbatim text nodes.
-  return inlines
-    .map((inline) => (inline.kind === 'text' ? inline.text : ''))
-    .join('');
 }

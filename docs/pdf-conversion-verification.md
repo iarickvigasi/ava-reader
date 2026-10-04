@@ -31,6 +31,46 @@ Regenerate schema/types deliberately with `pdf:contracts:generate` and
 runs isolated validation, with bounded input/time/output and no forwarded provider credentials.
 Use the worker README for installed-wheel/container smoke; exit 2 is a candidate, not Ready.
 
+## Generated EPUB boundary regressions
+
+The worker tests cover exact independently authored text/order, chapter/section and cross-file
+note/return targets, figure bytes/captions/geometry, tables/lists, literal whitespace, Unicode
+normalization maps and explicit false/zero styles. Real native single/two-column fixtures now cross
+the reconstruction → visible EPUB → portable reimport → reader-package boundary. Printed-label tests
+cover Roman numerals, restarted numbers, XML characters and missing/blank labels, a frozen pre-change
+2.1 projection, marker substitution and unknown-version refusal. Blank labels previously caused
+EPUBCheck RSC-005; exact corrected bytes must also pass the installed validator.
+
+API metadata regressions preserve accepted portable title/author claims without changing provenance
+or overriding new-entry edits/clears. PDF source-only metadata filling retains its own regression.
+These checks do not establish source accuracy, actual reader/device behavior or production readiness.
+Use the normal walkthrough below and keep each verdict separately bound to exact artifacts/builds.
+
+## Adapter and reimport checkpoint — 4 October 2026
+
+The current installed worker's native and two-column outputs pass independently authored
+source/structure/resource oracles, EPUBCheck and whole-canonical portable reimport. Normal signed-in
+Library EPUB uploads preserve those exact outputs and reach Read. The ordinary EPUB control keeps
+27 authored passages, original illustration bytes, nested Contents, notes/backlinks, finite styles
+and literal whitespace. A missing required illustration fails normal preparation with its exact
+source location, no readable output and unchanged prior accepted books.
+
+Two observed blank Notes paths are repaired: cold resume and paging from the preceding heading.
+The active view uses the chapter geometry actually measured for that chapter. Stored content and
+accepted identities remain fixed. Retain both original failures and the insufficient cold-only repair.
+Offset regressions cover trimmed whitespace, empty/wrapper/list/image anchors and styled Unicode;
+legacy flat-list identity remains unchanged. Ordinary mixed-list flow and structured table cells
+outside the selected profile produce source-linked refusals rather than flattened success.
+
+The original six adapter acceptance criteria and four scope checks have independent phase-2 review.
+Fresh root tests pass 1,283 API and 1,499 web tests without cache; installed worker tests pass 531.
+Types, lint, API/web builds and generated contracts pass, with two inherited web lint warnings.
+Package conformance, accepted-source conservation and observed desktop reader behavior have separate
+verdicts. TEST prerequisites, installed-image overlays and generated EPUB uploads do not establish
+production qualification, a clean image rebuild, live OCR or a full PDF upload-to-reading journey.
+Full supplied-book, scan/mixed, offline/account, lifecycle and device/assistive checks remain open.
+Private source files, runtime receipts and screenshots stay outside repository assets.
+
 ## Normal-app walkthrough
 
 Use authored/authorized fixtures with independent source text/order/style/link/image expectations,

@@ -18,6 +18,10 @@ class Context:
 
     def __post_init__(self) -> None:
         self.nodes, self.owners = index_book(self.book)
+        self.page_labels = {
+            p.number: p.label if p.label and p.label.strip() else str(p.number)
+            for p in self.book.pages
+        }
         self.paths = {c.id: f"text/{ident('ch', c.id)}.xhtml" for c in self.book.chapters}
         self.styles = {s.id: s for s in self.book.styles}
         self.resources = {r.id: r for r in self.book.resources}

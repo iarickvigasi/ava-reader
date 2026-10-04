@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 import type { ReaderBlock } from "@/lib/api-types";
 import { useReaderBlockProps } from "./block-props";
 import { ReaderInlineContent } from "./reader-inline-content";
-import { canonicalStyle } from "@/features/reader/canonical/style";
+import { structuredLeafStyle } from "./structured-leaf-style";
 
 export function ReaderStructuredTable({
   block,
@@ -48,8 +48,11 @@ export function ReaderStructuredTable({
                     {...blockProps(
                       cell,
                       chapterId,
-                      canonicalStyle(cell.presentation),
+                      structuredLeafStyle(cell, "table"),
                     )}
+                    id={
+                      measurement ? undefined : `reader-${chapterId}-${cell.id}`
+                    }
                     scope={
                       cell.headerAxis === "row" || cell.headerAxis === "column"
                         ? cell.headerAxis === "column"
@@ -64,7 +67,7 @@ export function ReaderStructuredTable({
                             .join(" ")
                         : undefined
                     }
-                    className="border-b border-line p-2 text-start align-top [overflow-wrap:anywhere]"
+                    className="border-b border-line p-2 align-top [overflow-wrap:anywhere]"
                   >
                     <ReaderInlineContent inlines={cell.inlines} />
                   </Tag>

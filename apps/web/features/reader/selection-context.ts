@@ -39,7 +39,7 @@ function findStartBlock(
 ): StartBlock | null {
   const chapter = chapters.find((c) => c.chapterId === locator.chapterId);
   if (!chapter) return null;
-  const blocks = readerLeaves(chapter.blocks);
+  const blocks = readerLeaves(chapter.blocks, locator.startBlockId);
   const index = blocks.findIndex((block) => block.id === locator.startBlockId);
   if (index === -1) return null;
   const block = blocks[index];

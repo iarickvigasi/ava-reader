@@ -1,33 +1,4 @@
-import type { Prisma } from '@prisma/client';
-import { fixture } from '../../reader/canonical/test-fixture';
-import { fillImportedMetadata } from './metadata';
-
-async function run(input: {
-  language: string | null;
-  metadataUserFields: string[];
-  estimatedPageCount?: number | null;
-}) {
-  const { book } = fixture();
-  book.metadata = [];
-  const findUniqueOrThrow = jest.fn().mockResolvedValue({
-    id: 'book',
-    title: 'My title',
-    authors: ['My author'],
-    estimatedPageCount: 20,
-    metadataEditVersion: 4,
-    ...input,
-  });
-  const updateMany = jest.fn().mockResolvedValue({ count: 1 });
-  await fillImportedMetadata(
-    {
-      book: { findUniqueOrThrow, updateMany },
-    } as unknown as Prisma.TransactionClient,
-    'book',
-    'downloaded.epub',
-    book,
-  );
-  return { updateMany, book };
-}
+import { run } from './metadata-test-fixture';
 
 it('fills the validated English package language without an accepted source claim', async () => {
   const { updateMany, book } = await run({
