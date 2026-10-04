@@ -23,13 +23,18 @@ Supply `DATABASE_URL` explicitly via the normal secret configuration; no `.env` 
 is default and performs no writes. It reports exact groups, counts, original hrefs, and blockers.
 The scan includes READY primary packages for EPUB books in users' libraries, including archived
 items and shared catalog books (once per primary file); historical packages are excluded.
+Finished PDF conversions and canonical/generated EPUB imports are excluded by book authority flags.
+Direct processor calls also refuse them before reading source or package bytes; the atomic file swap
+rechecks those exclusions. These books keep their accepted content and qualification unchanged.
 
 **Apply only during maintenance with reader writes and workers stopped and drained.** The file swap
 uses an optimistic concurrency guard; user-reference checks are not a replacement for maintenance.
 Take a database backup. The tool refuses source checksum mismatches and malformed locators/indexes.
 It reports/skips books with pending processing, offline download intent, saved positions,
 annotations, AI comments, or translations referencing removed chapter IDs. It also skips groups
-whose progress-counting flags disagree. Blocked applies exit nonzero; other books continue.
+whose progress-counting flags disagree. Supported source links (including image, note-return,
+nested-list and table-cell targets) to removed chapters block the entire candidate regrouping;
+their targets are not guessed or rewritten. Blocked applies exit nonzero; other books continue.
 Do not delete user data or disable offline intent just to bypass these checks. Those books need a
 separate locator/content-cache migration. No force option is provided.
 
