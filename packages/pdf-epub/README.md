@@ -488,8 +488,9 @@ ordinary and bilingual views preserve spans and rows covered entirely by earlier
 
 Ruled PDF rectangles qualify merged origins; the existing borderless pattern retains separate
 geometry and does not acquire guessed merges. Unqualified visual tables route as complete tables.
-Span-bearing source pages select `ava-prose-region-4`; historical region2/3 instructions remain
-unchanged. The source-bound task pins measured physical origins/rectangles and cell IDs, including
+Pinned geometry was introduced by `ava-prose-region-4`; new span-bearing tasks select
+`ava-prose-region-12`, retaining historical region2–10 prompt bytes. The source-bound task pins
+measured physical origins/rectangles and cell IDs, including
 blank cells. OCR returns text/styles against those IDs with `box:null`; acceptance binds the exact
 measured geometry and rejects unknown/duplicate IDs, changed spans or missing physical cells.
 This avoids asking the model to redraw ruled cells, especially intentionally empty ones.
@@ -503,13 +504,19 @@ using new span-bearing candidates. Finished books are never reconverted or repla
 
 ### Exact inline text anchors
 
-New recognition tasks use `ava-prose-region-9` for prose and `ava-prose-region-10` for pinned
+New recognition tasks use `ava-prose-region-11` for prose and `ava-prose-region-12` for pinned
 ruled-table geometry. Inline spans quote `anchor.exact_text` from their own segment/cell;
 `anchor.before` / `anchor.after` provide exact adjacent context when a quotation repeats.
 The host computes Unicode code-point positions without changing transcription. Ambiguous or absent
 quotations and mixed numeric/quoted authority fail acceptance. Historical region2–6 tasks continue
 using numeric offsets and their original prompt bytes. Region7/8 remains the historical initial anchor prompt; region9/10 adds complete style-run
-boundary instructions, including plain connectors and punctuation. New anchored responses cannot
+boundary instructions, including plain connectors and punctuation. Region11/12 adds source-grounded
+character/typography distinctions and a final unique contextual-quotation check. Raised/lowered
+ordinary digits remain ordinary text with explicit sub/super spans; intrinsic Unicode characters,
+emoji, combining marks and ligatures are preserved. No NFC/NFKC conversion, host text repair or
+automatic provider retry is added. Absent/ambiguous quotations remain refused by the unchanged
+strict semantic checks. A prompt clarification is not proof of source fidelity or live model behavior.
+New anchored responses cannot
 reinterpret old tasks. Styles are explicit objects, never implicit string IDs.
 
 Exact offsets establish positioning, not visual accuracy: compare complete emphasized phrases,

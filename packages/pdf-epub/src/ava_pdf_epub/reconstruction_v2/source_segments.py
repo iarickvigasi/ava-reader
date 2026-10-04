@@ -9,6 +9,7 @@ from .assemble_pages import assemble_pages
 from .assembly_state import AssemblyState
 from .continuation_margins import continuation_margins
 from .linked_furniture import preserve_linked_furniture
+from .ocr_indents import recover_ocr_indents
 from .ocr_running_furniture import corroborate_running_furniture
 from .pdf_links import apply_pdf_links
 from .prepared import PreparedPage
@@ -30,6 +31,7 @@ def source_segments(
     qualified = corroborate_running_furniture(prepared, qualified, state)
     pages, segments = assemble_pages(prepared, qualified, state)
     segments = source_structure(source, prepared, qualified, segments, state)
+    segments = recover_ocr_indents(segments, prepared, scratch, state)
     continuation_margins(segments, prepared, scratch, state)
     for checkpoint in prepared:
         local = [s for s in segments if s.page == checkpoint.observation.number]

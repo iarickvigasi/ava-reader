@@ -28,10 +28,10 @@ def route_native(
         grids = [measured_table_grid(table) for table in tables]
     except ValueError:
         raise ValueError("Essential table exceeds the supported grid profile") from None
-    prompt_version: Literal["ava-prose-region-9", "ava-prose-region-10"] = (
-        "ava-prose-region-10"
+    prompt_version: Literal["ava-prose-region-11", "ava-prose-region-12"] = (
+        "ava-prose-region-12"
         if any(c.row_span > 1 or c.column_span > 1 for grid in grids for c in grid)
-        else "ava-prose-region-9"
+        else "ava-prose-region-11"
     )
     table_evidence = (
         [
@@ -51,7 +51,7 @@ def route_native(
             }
             for index, (table, grid) in enumerate(zip(tables, grids, strict=True))
         ]
-        if prompt_version == "ava-prose-region-10"
+        if prompt_version == "ava-prose-region-12"
         else None
     )
     try:

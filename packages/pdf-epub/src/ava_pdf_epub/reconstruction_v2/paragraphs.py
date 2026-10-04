@@ -1,15 +1,17 @@
 """Join adjacent same-column native lines with explicit line-wrap evidence and shifted spans."""
 
 from .geometry import union
+from .hanging_wrap import first_line_wrap, hanging_wrap
 from .reading_order import Placement
 from .segments import Segment
 
 
 def join_paragraphs(ordered: list[Placement]) -> list[Placement]:
     output: list[Placement] = []
-    for current in ordered:
+    for index, current in enumerate(ordered):
+        following = ordered[index + 1] if index + 1 < len(ordered) else None
         previous = output[-1] if output else None
-        if previous and _compatible(previous, current):
+        if previous and _compatible(previous, current, following, ordered[index - 1]):
             output[-1] = Placement(
                 _join(previous.segment, current.segment), previous.band, previous.column
             )
@@ -18,9 +20,11 @@ def join_paragraphs(ordered: list[Placement]) -> list[Placement]:
     return output
 
 
-def _compatible(a: Placement, b: Placement) -> bool:
+def _compatible(a: Placement, b: Placement, following: Placement | None, tail: Placement) -> bool:
     left, right = a.segment, b.segment
     if left.page != right.page or left.kind != right.kind or a.column != b.column:
+        return False
+    if a.column and a.band != b.band:
         return False
     if left.kind not in {"paragraph", "code", "verse", "quote"}:
         return False
@@ -35,9 +39,16 @@ def _compatible(a: Placement, b: Placement) -> bool:
         and not left.text.endswith((".", "!", "?"))
     ):
         leading = 1.2
-    if not 0 <= gap <= height * leading or abs(left.box.x0 - right.box.x0) > height * 1.8:
+    shift = tail.segment.box.x0 - right.box.x0
+    first_line = left.kind == "paragraph" and first_line_wrap(a, b, following, height)
+    limit = 3 if first_line else 1.8
+    if not 0 <= gap <= height * leading or abs(shift) > height * limit:
         return False
-    if left.kind == "paragraph" and right.box.x0 > left.box.x0 + height * 0.5:
+    if (
+        left.kind == "paragraph"
+        and right.box.x0 > tail.segment.box.x0 + height * 0.5
+        and not hanging_wrap(a, b, following, height)
+    ):
         return False
     if left.style and right.style and left.style.family != right.style.family:
         return False

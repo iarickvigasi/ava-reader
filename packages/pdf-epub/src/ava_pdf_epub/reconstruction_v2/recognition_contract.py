@@ -42,6 +42,8 @@ class RecognitionTask(Record):
         "ava-prose-region-8",
         "ava-prose-region-9",
         "ava-prose-region-10",
+        "ava-prose-region-11",
+        "ava-prose-region-12",
     ]
     response_schema_version: Literal["ava-recognition-response-2"]
 

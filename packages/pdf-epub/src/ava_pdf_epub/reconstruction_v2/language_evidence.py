@@ -26,11 +26,12 @@ class LanguageEvidence:
 
 def ukrainian_evidence(text: str) -> LanguageEvidence:
     # Case folding is a private comparison, never a replacement of source characters/offsets.
-    letters = [char.casefold() for char in text if char.isalpha()]
+    letters = [char for char in text if char.isalpha()]
     cyrillic = sum("CYRILLIC" in unicodedata.name(char, "") for char in letters)
-    distinctive = sum(char in UKRAINIAN_LETTERS for char in letters)
-    kinds = len(set(letters) & UKRAINIAN_LETTERS)
-    conflicts = sum(char in RUSSIAN_LETTERS for char in letters)
+    folded = [char.casefold() for char in letters]
+    distinctive = sum(char in UKRAINIAN_LETTERS for char in folded)
+    kinds = len(set(folded) & UKRAINIAN_LETTERS)
+    conflicts = sum(char in RUSSIAN_LETTERS for char in folded)
     words = set(re.findall(r"[^\W\d_]+", text.casefold()))
     hints = len(words & UKRAINIAN_HINTS)
     supported = (

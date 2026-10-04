@@ -34,7 +34,9 @@ def make_task(
         "ava-prose-region-8",
         "ava-prose-region-9",
         "ava-prose-region-10",
-    ] = "ava-prose-region-9",
+        "ava-prose-region-11",
+        "ava-prose-region-12",
+    ] = "ava-prose-region-11",
     table_evidence: list[dict[str, Any]] | None = None,
 ) -> RecognitionTask:
     with Image.open(scratch / page.render_path) as rendered:

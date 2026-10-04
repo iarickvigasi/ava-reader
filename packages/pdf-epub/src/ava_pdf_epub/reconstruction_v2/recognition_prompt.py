@@ -164,3 +164,35 @@ BOUNDARY_STYLE_PROMPT_VERSION = "ava-prose-region-9"
 BOUNDARY_STYLE_PROMPT = ANCHORED_STYLE_PROMPT + STYLE_BOUNDARY_INSTRUCTIONS
 PINNED_BOUNDARY_PROMPT_VERSION = "ava-prose-region-10"
 PINNED_BOUNDARY_PROMPT = PINNED_ANCHORED_PROMPT + STYLE_BOUNDARY_INSTRUCTIONS
+
+
+# Historical prompt bytes remain exact; character identity and placement are separate.
+UNICODE_STYLE_INSTRUCTIONS = """
+TEXT AND TYPOGRAPHY: distinguish an ordinary character whose position is raised/lowered
+from an intrinsically Unicode character. For an ordinary digit visibly placed below/above
+its baseline, retain the ordinary digit in text and represent placement with span.style
+vertical_align:"sub"/"super". Do not substitute a Unicode presentation digit merely to
+imitate that placement. If the source contains an intrinsic character such as "₂" or "²",
+preserve that exact character; do not turn it into "2" just to fit an anchor. Conserve
+reliable native character evidence, while never treating hidden/broken layers as authority.
+Do not normalize NFC/NFKC, expand ligatures, substitute emoji, drop combining marks or
+change spaces. When character identity is essentially uncertain, report it in unresolved.
+
+CONTEXTUAL EXAMPLE: if text is "x2 + y2.", and its first ordinary2 is lowered and its
+second ordinary2 is raised, use anchor:{"exact_text":"2","before":"x","after":" +"}
+with vertical_align:"sub", and anchor:{"exact_text":"2","before":"y","after":"."}
+with vertical_align:"super". A bare exact_text:"2" is ambiguous in that text. If text
+contains the intrinsic character "₂", its anchor must quote "₂", never the similar "2".
+These examples describe representation; never insert their text into a different source.
+
+FINAL INLINE CHECK: after finalizing every segment/cell text, check every span against that
+same exact text. Its exact_text plus any before/after context must resolve to exactly one
+occurrence, with both contexts immediately adjacent. Context and quotation must preserve
+all Unicode characters and spaces. Fix your own transcription/quotation from the source
+before returning; never invent text, change character identity or erase styling to force
+a match. If a source-grounded unique quotation remains uncertain, report unresolved.
+"""
+UNICODE_STYLE_PROMPT_VERSION = "ava-prose-region-11"
+UNICODE_STYLE_PROMPT = BOUNDARY_STYLE_PROMPT + UNICODE_STYLE_INSTRUCTIONS
+PINNED_UNICODE_PROMPT_VERSION = "ava-prose-region-12"
+PINNED_UNICODE_PROMPT = PINNED_BOUNDARY_PROMPT + UNICODE_STYLE_INSTRUCTIONS

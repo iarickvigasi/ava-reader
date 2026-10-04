@@ -185,6 +185,8 @@ it.each([
   'ava-prose-region-8',
   'ava-prose-region-9',
   'ava-prose-region-10',
+  'ava-prose-region-11',
+  'ava-prose-region-12',
 ] as const)(
   'requests exact inline quotations without numeric counting for %s',
   (version) => {
@@ -202,7 +204,19 @@ it.each([
     expect(
       typeof request.messages[0].content === 'string' &&
         request.messages[0].content.includes('box:null'),
-    ).toBe(['ava-prose-region-8', 'ava-prose-region-10'].includes(version));
+    ).toBe(
+      [
+        'ava-prose-region-8',
+        'ava-prose-region-10',
+        'ava-prose-region-12',
+      ].includes(version),
+    );
     expect(request.promptVersion).toBe(version);
+    if (['ava-prose-region-11', 'ava-prose-region-12'].includes(version)) {
+      expect(request.messages[0].content).toContain('TEXT AND TYPOGRAPHY:');
+      expect(request.messages[0].content).toContain('FINAL INLINE CHECK:');
+    } else {
+      expect(request.messages[0].content).not.toContain('TEXT AND TYPOGRAPHY:');
+    }
   },
 );

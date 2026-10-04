@@ -27,6 +27,8 @@ def accept_response(task: RecognitionTask, response: RecognitionResponse) -> lis
         "ava-prose-region-8",
         "ava-prose-region-9",
         "ava-prose-region-10",
+        "ava-prose-region-11",
+        "ava-prose-region-12",
     }
     for observation in response.segments:
         spans = [
@@ -52,7 +54,13 @@ def accept_response(task: RecognitionTask, response: RecognitionResponse) -> lis
             if "source_cell_id" in c
         }
         if task.prompt_version
-        in {"ava-prose-region-4", "ava-prose-region-6", "ava-prose-region-8", "ava-prose-region-10"}
+        in {
+            "ava-prose-region-4",
+            "ava-prose-region-6",
+            "ava-prose-region-8",
+            "ava-prose-region-10",
+            "ava-prose-region-12",
+        }
         else {}
     )
     segments = [source_segment(segment, task.region_box, pinned) for segment in response.segments]
