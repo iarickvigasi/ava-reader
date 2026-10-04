@@ -11,9 +11,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@clerk/nextjs": "^7.2.1",
+    "@clerk/nextjs": "^7.2.9",
     "dexie": "^4.4.2",
-    "next": "16.2.3",
+    "next": "16.3.8",
     "next-intl": "^4.11.0",
     "parse5": "^8.0.1",
     "react": "19.2.4",
@@ -25,10 +25,11 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.3",
+    "eslint-config-next": "16.3.8",
     "fake-indexeddb": "^6.2.5",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "vitest": "^3.2.4"
+    "vite": "^7.3.6",
+    "vitest": "^4.1.11"
   }
 }
