@@ -223,6 +223,8 @@
     }
   },
   "reader": {
+    "imageFailure": "Illustration indisponible",
+    "imageRetry": "Recharger l’illustration",
     "download": {
       "title": "Télécharger le livre",
       "close": "Fermer les téléchargements",
@@ -245,7 +247,11 @@
       "title": "Sommaire",
       "closePanel": "Fermer le panneau du sommaire",
       "completed": "{percent}% terminé",
-      "chapterCount": "{count} chapitres"
+      "chapterCount": "{count} chapitres",
+      "sourcePages": "Pages source",
+      "sourcePageDescription": "Aller au premier passage associé à une page source. Ce ne sont pas les pages à l’écran.",
+      "sourcePageLabel": "Page {label}, page source {number}",
+      "sourcePageEmpty": "Aucun contenu lisible"
     },
     "highlights": {
       "title": "Surlignages",

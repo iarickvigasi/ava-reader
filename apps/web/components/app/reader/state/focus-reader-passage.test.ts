@@ -74,3 +74,13 @@ it("resolves the replacement source inside the same session after final layout s
   expect(before.focus).not.toHaveBeenCalled();
   expect(after.focus).toHaveBeenCalledWith({ preventScroll: true });
 });
+
+it("does not focus a still-connected old passage after its jump is superseded", () => {
+  const target = element(5, 10);
+  const f = fixture([target]);
+  let current = true;
+  focusReaderPassage(locator, () => current);
+  current = false;
+  f.settle();
+  expect(target.focus).not.toHaveBeenCalled();
+});

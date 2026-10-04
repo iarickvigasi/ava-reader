@@ -142,6 +142,19 @@ shared notes. Return uses the initiating reference; session-local Back records s
 and restores the exact passage. Failed, superseded and no-op jumps add no history. Reflow/font
 changes preserve the landed passage; ordinary page turns, resume and browser Back remain separate.
 Hidden measurement copies are inert and carry no duplicate canonical IDs or navigable links.
+Contents exposes retained source pages separately from reflowed screen pages. A source-page action
+lands on the first canonical block associated with that physical page; it does not invent an
+intra-paragraph page boundary. Repeated printed labels retain distinct physical page numbers;
+pages without a readable target are unavailable.
+
+Canonical paragraph indents preserve qualified source values, including explicit zero and negative
+values. Unknown indentation remains unknown in the fixed content; its neutral reader presentation
+does not claim that the original print was flush. Ordinary legacy EPUB presentation keeps its
+existing fallback. Illustration transport failures retain readable text and caption association,
+show an unavailable-image state and allow authenticated retry of the same immutable resource.
+Invalid ownership, length or hash still fails verification. Missing resources prevent a newly
+complete offline save; retry does not reconvert or replace the finished book. These candidate
+repairs require the recorded normal-app, layout and device checks before release qualification.
 
 Reader Download opens a format panel using the same owned-download path as Library. Converted
 books offer the accepted EPUB and Original PDF; ordinary EPUBs offer their stored source EPUB.

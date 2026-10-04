@@ -1,4 +1,5 @@
 import { canonicalChapters } from "@/features/reader/canonical/chapters";
+import { requireCompleteCanonicalResources } from "@/features/reader/canonical/resource-completeness";
 // Save-a-book-offline orchestrator. Walks the book's TOC and fetches every
 // chapter the reader exposes, writing each into Dexie as it lands. Designed
 // to be:
@@ -171,6 +172,7 @@ async function persistChaptersFromPayload(
   if (payload.status !== "READY") {
     return [];
   }
+  requireCompleteCanonicalResources(payload);
   const orderById = new Map(
     chapterOrder.map((id, index) => [id, index] as const),
   );

@@ -238,5 +238,9 @@ Download panel offers existing available files; it does not start a new conversi
 - [Verification, normal-app walkthrough and current limitations](docs/pdf-conversion-verification.md)
 - [Standalone worker package](packages/pdf-epub/README.md)
 
+Web builds regenerate the reader source identity before compiling; qualification still requires
+recorded reader verification. Local navigation fault controls are disabled by default and use a
+separate, explicit QA build identity. See the operations guide for this test-only setup.
+
 The PRODUCT reader qualification catalog is empty; installing or merging code does not enable a
 production provider route, reader qualification or private-file cleanup.

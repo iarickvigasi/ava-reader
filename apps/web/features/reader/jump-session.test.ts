@@ -16,7 +16,7 @@ it("runs text → same-chapter figure → cold chapter → Back twice; same-plac
   f.session.jump(b);
   await flushRequests();
   expect(f.navigate).toHaveBeenCalledTimes(calls);
-  expect(f.focus).toHaveBeenLastCalledWith(b);
+  expect(f.focus).toHaveBeenLastCalledWith(b, expect.any(Function));
   expect(f.session.pending()).toBe(false);
   expect(f.view.state.entries).toEqual([a]);
   f.session.jump(c);

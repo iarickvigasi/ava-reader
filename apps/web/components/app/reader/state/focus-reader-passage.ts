@@ -1,9 +1,12 @@
 import type { ReaderLocator } from "@/lib/api-types";
 
-export function focusReaderPassage(locator: ReaderLocator) {
+export function focusReaderPassage(
+  locator: ReaderLocator,
+  current: () => boolean = () => true,
+) {
   const frame = document.querySelector<HTMLElement>("[data-reader-navigation]");
   requestAnimationFrame(() => {
-    if (!frame?.isConnected) return;
+    if (!current() || !frame?.isConnected) return;
     const candidates = [
       ...frame.querySelectorAll<HTMLElement>("[data-reader-block='true']"),
     ].filter((element) => {

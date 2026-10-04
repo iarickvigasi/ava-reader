@@ -85,6 +85,9 @@ export type ReaderStatusPayload =
       activeChapterId: string;
       readerPackage?: ReaderPackageV3;
       resourceUrls?: Record<string, string>;
+      // Client-only availability; accepted canonical content is never changed.
+      resourceRequests?: Record<string, string>;
+      resourceFailures?: string[];
       book: ReaderBookPayload;
       chapters: ReaderChapterPayload[];
       progress: ReaderProgressPayload;

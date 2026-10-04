@@ -1,12 +1,21 @@
 // Reviewed source identity compiled into reader requests; never a qualification.
 import { createHash } from "node:crypto";
-import { readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const web = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const root = resolve(web, "../..");
 const target = resolve(web, "features/reader/canonical/build.ts");
+const qaConfig = resolve(web, "features/reader/qa/build-config.ts");
+const qaOutput = `// Generated reader QA gate; included in the source fingerprint.\nexport const READER_QA_ENABLED = ${process.env.NEXT_PUBLIC_AVA_READER_QA === "1"};\n`;
+if (process.argv.includes("--check")) {
+  if (readFileSync(qaConfig, "utf8") !== qaOutput)
+    throw new Error("Stale reader QA configuration");
+} else {
+  mkdirSync(dirname(qaConfig), { recursive: true });
+  writeFileSync(qaConfig, qaOutput);
+}
 // Build output contains chunk hashes, including the compiled source identity.
 // Binding it would make every production build invalidate its own fingerprint.
 const precacheOutput = resolve(web, "public/precache-assets.json");

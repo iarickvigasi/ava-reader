@@ -1,16 +1,14 @@
-import { useMemo } from "react";
 import type { ReaderLocator } from "@/lib/api-types";
 import type { ReaderNavigationTarget } from "@/features/reader/navigation";
-import {
-  countUniqueTocChapters,
-  findActiveTocPathIds,
-} from "@/features/reader/toc";
 import type { ReadyReaderPayload } from "../../shared/types";
 import { useCloseOnEscape } from "../use-close-on-escape";
 import { ContentsBookHeading } from "./contents-book-heading";
 import { ContentsHeader } from "./contents-header";
 import { ContentsProgress } from "./contents-progress";
 import { ContentsTreeList } from "./contents-tree-list";
+import { ContentsSourcePages } from "./contents-source-pages";
+import { useContentsState } from "./use-contents-state";
+import { useContentsFocus } from "./use-contents-focus";
 
 type ReaderContentsOverlayProps = {
   activeChapterId: string;
@@ -29,23 +27,12 @@ export function ReaderContentsOverlay({
   payload,
   pendingChapterId,
 }: ReaderContentsOverlayProps) {
-  const { activePathIds, currentEntryId } = useMemo(
-    () => {
-      const activePath = findActiveTocPathIds(payload.toc, {
-        activeBlockId: activeLocator?.blockId ?? null,
-        activeChapterId,
-      });
-      return {
-        activePathIds: new Set(activePath),
-        currentEntryId: activePath.at(-1) ?? null,
-      };
-    },
-    [activeChapterId, activeLocator?.blockId, payload.toc],
+  const { activePathIds, currentEntryId, chapterCount } = useContentsState(
+    payload.toc,
+    activeChapterId,
+    activeLocator,
   );
-  const chapterCount = useMemo(
-    () => countUniqueTocChapters(payload.toc),
-    [payload.toc],
-  );
+  const panel = useContentsFocus();
 
   useCloseOnEscape(onClose);
 
@@ -58,7 +45,10 @@ export function ReaderContentsOverlay({
           <div className="relative z-10 flex h-full flex-col md:pt-24">
             <div className="pointer-events-auto flex min-h-0 flex-1 flex-col px-6 py-8 sm:px-8 md:animate-[reader-contents-enter_320ms_cubic-bezier(0.22,1,0.36,1)_140ms_both] md:px-8 md:py-0">
               <ContentsHeader onClose={onClose} />
-              <div className="mt-4 min-h-0 flex-1 overflow-auto pb-8 pr-3">
+              <div
+                ref={panel}
+                className="mt-4 min-h-0 flex-1 overflow-auto pb-8 pr-3"
+              >
                 <ContentsBookHeading
                   authors={payload.book.authors}
                   title={payload.book.title}
@@ -73,6 +63,10 @@ export function ReaderContentsOverlay({
                   entries={payload.toc}
                   onSelectChapter={onSelectChapter}
                   pendingChapterId={pendingChapterId}
+                />
+                <ContentsSourcePages
+                  readerPackage={payload.readerPackage}
+                  onSelectChapter={onSelectChapter}
                 />
               </div>
             </div>

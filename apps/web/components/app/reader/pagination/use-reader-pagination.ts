@@ -1,139 +1,64 @@
 import { useState } from "react";
-import { useViewportSize } from "./use-viewport-size";
-import { useMeasurementCache } from "./measurement/use-measurement-cache";
+import { usePaginationMeasurements } from "./use-pagination-measurements";
+import { READER_RESTORE_PHASE_SETTLED } from "./restore/restore-phase";
 import { useRestoreController } from "./restore/use-restore-controller";
 import { useLocatorSync } from "./locator/use-locator-sync";
 import { usePageNavigation } from "./navigation/use-page-navigation";
 import { useArticleStyle } from "./layout/use-article-style";
-import { usePaginationLayoutKeys } from "./layout/use-pagination-layout-keys";
-import { useSpreadBlocks } from "./layout/use-spread-blocks";
 import type {
   UseReaderPaginationInput,
   UseReaderPaginationResult,
 } from "./use-reader-pagination.types";
 
-/**
- * useReaderPagination = thin orchestrator that wires together:
- * - viewport sizing
- * - measurement caching + layout keys
- * - two-column spread composition (prefix / spillover)
- * - restore-intent state machine
- * - locator publishing
- * - page navigation (keyboard + touch)
- * - article CSS styling
- */
-export function useReaderPagination({
-  activeChapter,
-  fontScale,
-  isBootstrapping,
-  isLoadingChapter,
-  isPanelOpen,
-  libraryItemId,
-  nextChapter,
-  onSelectChapter,
-  onVisibleLocatorChange,
-  previousChapter,
-  restoreIntent,
-  visibleLocator,
-}: UseReaderPaginationInput): UseReaderPaginationResult {
+export function useReaderPagination(
+  input: UseReaderPaginationInput,
+): UseReaderPaginationResult {
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
-
-  const { availableHeight, pageBoxRef, pageBoxSize, rootRef } =
-    useViewportSize();
-
-  const { activePaginationLayoutKey, previousPaginationLayoutKey } =
-    usePaginationLayoutKeys({
-      activeChapter,
-      previousChapter,
-      fontScale,
-      libraryItemId,
-      pageBoxSize,
-    });
-
-  const {
-    activeMeasurementEntry,
-    activeReadyMeasurementEntry,
-    pageCount,
-    previousChapterPageCount,
-    storeMeasurementEntry,
-    warnFailedMeasurement,
-  } = useMeasurementCache({
-    activePaginationLayoutKey,
-    previousPaginationLayoutKey,
-  });
-
-  const activeRestoreCycleKey = restoreIntent?.key ?? activeChapter.chapterId;
-
-  // Prefix/spillover must precede the restore, locator and style hooks.
-  const { prefixBlocks, prefixPageCount, spilloverBlocks } = useSpreadBlocks({
-    activeChapter,
-    previousChapter,
-    nextChapter,
-    previousChapterPageCount,
-    pageCount,
-    pageBoxSize,
-    // Measurement is per chapter; prefix/spillover has no matching geometry.
-    // Keep block restores and sequential edges in the same measured columns.
-    separateChapter: true,
-  });
-
+  const environment = usePaginationMeasurements(input);
+  const activeRestoreCycleKey = `${input.restoreIntent?.key ?? input.activeChapter.chapterId}:${environment.activePaginationLayoutKey}`;
   const restorePhase = useRestoreController({
-    activePaginationLayoutKey,
-    activeMeasurementEntry,
-    activeChapter,
-    prefixPageCount,
-    restoreIntent,
-    pageCount,
+    ...input,
+    ...environment,
     currentPageIndex,
     setCurrentPageIndex,
-    warnFailedMeasurement,
     activeRestoreCycleKey,
-    visibleLocator,
   });
-
   useLocatorSync({
+    ...input,
+    ...environment,
     currentPageIndex,
-    activeReadyMeasurementEntry,
-    isBootstrapping,
-    prefixPageCount,
     restorePhase,
-    visibleLocator,
-    onVisibleLocatorChange,
   });
-
   const { handleTouchEnd, handleTouchStart } = usePageNavigation({
+    ...input,
+    ...environment,
     currentPageIndex,
     setCurrentPageIndex,
-    pageCount,
-    isLoadingChapter,
-    isPanelOpen,
-    activeChapter,
-    onSelectChapter,
-    containerRef: pageBoxRef,
+    isLoadingChapter:
+      input.isLoadingChapter ||
+      input.isBootstrapping ||
+      restorePhase !== READER_RESTORE_PHASE_SETTLED,
+    containerRef: environment.pageBoxRef,
   });
-
   const { articleStyle, shouldMaskArticle } = useArticleStyle({
-    pageBoxSize,
+    ...input,
+    ...environment,
     currentPageIndex,
-    isBootstrapping,
-    isLoadingChapter,
     restorePhase,
-    prefixPageCount,
   });
-
   return {
     articleStyle,
-    availableHeight,
+    availableHeight: environment.availableHeight,
     currentPageIndex,
     handleTouchEnd,
     handleTouchStart,
-    pageBoxRef,
-    pageBoxSize,
-    pageCount,
-    prefixBlocks,
-    rootRef,
+    pageBoxRef: environment.pageBoxRef,
+    pageBoxSize: environment.pageBoxSize,
+    pageCount: environment.pageCount,
+    prefixBlocks: environment.prefixBlocks,
+    rootRef: environment.rootRef,
     shouldMaskArticle,
-    spilloverBlocks,
-    storeMeasurementEntry,
+    spilloverBlocks: environment.spilloverBlocks,
+    storeMeasurementEntry: environment.storeMeasurementEntry,
   };
 }

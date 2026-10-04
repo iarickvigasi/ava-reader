@@ -223,6 +223,8 @@
     }
   },
   "reader": {
+    "imageFailure": "Illustration unavailable",
+    "imageRetry": "Retry illustration",
     "download": {
       "title": "Download book",
       "close": "Close downloads",
@@ -245,7 +247,11 @@
       "title": "Contents",
       "closePanel": "Close contents panel",
       "completed": "{percent}% completed",
-      "chapterCount": "{count} chapters"
+      "chapterCount": "{count} chapters",
+      "sourcePages": "Source pages",
+      "sourcePageDescription": "Go to the first passage associated with a source page. These are not screen pages.",
+      "sourcePageLabel": "Page {label}, source page {number}",
+      "sourcePageEmpty": "No readable content"
     },
     "highlights": {
       "title": "Highlights",

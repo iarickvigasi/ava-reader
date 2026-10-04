@@ -223,6 +223,8 @@
     }
   },
   "reader": {
+    "imageFailure": "Abbildung nicht verfügbar",
+    "imageRetry": "Abbildung erneut laden",
     "download": {
       "title": "Buch herunterladen",
       "close": "Downloads schließen",
@@ -245,7 +247,11 @@
       "title": "Inhalt",
       "closePanel": "Inhaltsverzeichnis-Panel schließen",
       "completed": "{percent}% abgeschlossen",
-      "chapterCount": "{count} Kapitel"
+      "chapterCount": "{count} Kapitel",
+      "sourcePages": "Quellseiten",
+      "sourcePageDescription": "Zum ersten Abschnitt einer Quellseite springen. Dies sind keine Bildschirmseiten.",
+      "sourcePageLabel": "Seite {label}, Quellseite {number}",
+      "sourcePageEmpty": "Kein lesbarer Inhalt"
     },
     "highlights": {
       "title": "Markierungen",

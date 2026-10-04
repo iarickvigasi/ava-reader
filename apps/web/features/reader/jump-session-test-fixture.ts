@@ -20,6 +20,7 @@ export function jumpFixture() {
   const session = createJumpSession({
     origin: () => view.origin,
     navigate,
+    resolve: (target) => target,
     focus,
     arrive: (target) => {
       view.origin = target;

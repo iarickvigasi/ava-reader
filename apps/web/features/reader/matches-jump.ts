@@ -9,6 +9,8 @@ export function matchesJump(
     !!pending &&
     intent.requestId === pending.sequence &&
     intent.chapterId === pending.destination.chapterId &&
-    (intent.kind !== "block" || sameReaderPlace(pending.destination, intent))
+    (pending.destination.blockId
+      ? intent.kind === "block" && sameReaderPlace(pending.destination, intent)
+      : intent.kind !== "block")
   );
 }

@@ -13,6 +13,14 @@ export function canonicalPayload(
   if (pkg.schema_version !== "ava-reader-3" || pkg.version !== 3)
     throw new Error("Unsupported reader schema");
   const book = pkg.book;
+  if (
+    book.resources.some(
+      (resource) =>
+        payload.resourceUrls?.[resource.id] === "" &&
+        !payload.resourceFailures?.includes(resource.id),
+    )
+  )
+    throw new Error("Missing canonical resource availability");
   const nodes = new Map(
     book.toc.map((entry) => {
       const target = canonicalTarget(book, entry.target);

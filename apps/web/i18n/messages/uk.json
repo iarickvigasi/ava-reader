@@ -223,6 +223,8 @@
     }
   },
   "reader": {
+    "imageFailure": "Ілюстрація недоступна",
+    "imageRetry": "Завантажити ілюстрацію знову",
     "download": {
       "title": "Завантажити книгу",
       "close": "Закрити завантаження",
@@ -245,7 +247,11 @@
       "title": "Зміст",
       "closePanel": "Закрити панель змісту",
       "completed": "{percent}% завершено",
-      "chapterCount": "{count} розділів"
+      "chapterCount": "{count} розділів",
+      "sourcePages": "Сторінки джерела",
+      "sourcePageDescription": "Перейти до першого уривка, пов’язаного зі сторінкою джерела. Це не сторінки екрана.",
+      "sourcePageLabel": "Сторінка {label}, сторінка джерела {number}",
+      "sourcePageEmpty": "Немає читабельного вмісту"
     },
     "highlights": {
       "title": "Підсвічення",

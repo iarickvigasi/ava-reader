@@ -1,7 +1,4 @@
-import {
-  resolveRestorePhase,
-  type ReaderRestorePhase,
-} from "./restore-phase";
+import { resolveRestorePhase, type ReaderRestorePhase } from "./restore-phase";
 import { useRestoreDecision } from "./use-restore-decision";
 import { useSettleRestoreCycle } from "./use-settle-restore-cycle";
 import type { UseRestoreControllerInput } from "./use-restore-controller.types";
@@ -15,7 +12,7 @@ export function useRestoreController(
   input: UseRestoreControllerInput,
 ): ReaderRestorePhase {
   const { cancelSettle, scheduleSettle, settledRestoreCycleKey } =
-    useSettleRestoreCycle();
+    useSettleRestoreCycle(input.activeRestoreCycleKey);
 
   useRestoreDecision({ ...input, cancelSettle, scheduleSettle });
 

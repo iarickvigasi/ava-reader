@@ -2,10 +2,9 @@ import { canonicalStyle } from "@/features/reader/canonical/style";
 import type { CSSProperties } from "react";
 import type { ReaderBlock, ReaderBlockAlign } from "@/lib/api-types";
 
-// Default first-line indent for paragraphs that don't have one set on
-// the block. Books that ship no styling at all still look book-like;
-// books that DO style their paragraphs (Dune-style stylesheets with
-// .indent / .nonindent) override this via block.textIndent.
+// Legacy EPUBs keep their established reader indent. Canonical source styles
+// use a neutral default when an observation is unknown; this is presentation,
+// never evidence that the source was flush left.
 const DEFAULT_PARAGRAPH_INDENT_EM = 1.5;
 
 // `text-left` is the default; we omit it so the class string stays
@@ -33,7 +32,7 @@ export function resolveBlockStyle(
   }
 
   const indentEm = resolveParagraphIndentEm(block);
-  if (indentEm > 0) {
+  if (indentEm !== 0) {
     style.textIndent = `${indentEm}em`;
   }
 
@@ -82,5 +81,5 @@ function resolveParagraphIndentEm(block: ReaderBlock): number {
     return block.textIndent;
   }
 
-  return DEFAULT_PARAGRAPH_INDENT_EM;
+  return block.canonical ? 0 : DEFAULT_PARAGRAPH_INDENT_EM;
 }

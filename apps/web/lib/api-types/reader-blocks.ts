@@ -69,6 +69,7 @@ export type ReaderBlock =
       kind: "image";
       alt: string | null;
       src: string;
+      resourceId?: string;
       href?: string;
       target?: ReaderLinkTarget;
       sourceOffset?: number;

@@ -223,6 +223,8 @@
     }
   },
   "reader": {
+    "imageFailure": "Ilustración no disponible",
+    "imageRetry": "Volver a cargar la ilustración",
     "download": {
       "title": "Descargar libro",
       "close": "Cerrar descargas",
@@ -245,7 +247,11 @@
       "title": "Contenido",
       "closePanel": "Cerrar el panel de contenido",
       "completed": "{percent}% completado",
-      "chapterCount": "{count} capítulos"
+      "chapterCount": "{count} capítulos",
+      "sourcePages": "Páginas de origen",
+      "sourcePageDescription": "Ir al primer pasaje asociado con una página de origen. No son páginas de pantalla.",
+      "sourcePageLabel": "Página {label}, página de origen {number}",
+      "sourcePageEmpty": "Sin contenido legible"
     },
     "highlights": {
       "title": "Resaltados",

@@ -185,9 +185,22 @@ never log book text, model payloads or credentials. Do not reset Failed to repai
 
 ### Reader source identity and build output
 
-Run `node apps/web/scripts/generate-reader-fingerprint.mjs` before freezing reader source and
-registering its consumer qualification. Run the same command with `--check` after a production
+The web `build` command runs `scripts/generate-reader-fingerprint.mjs` before compilation.
+For a source freeze without a build, run `node apps/web/scripts/generate-reader-fingerprint.mjs`
+before registering its consumer qualification. Run the same command with `--check` after a production
 build. The fingerprint binds application source, fonts, dependency lockfile and generator; it excludes
 the generated precache asset list, whose chunk hashes would otherwise invalidate the build's own
 source identity. A regression verifies that precache changes are ignored while source changes bind
 a new identity. A stable fingerprint is not qualification or independent review.
+
+The generated QA configuration is also bound to the fingerprint. Normal builds reset it to disabled.
+An explicitly instrumented local test build uses `NEXT_PUBLIC_AVA_READER_QA=1` at build and start;
+its distinct identity must have a TEST-only consumer record. The operator page `/dev/reader-qa`
+exchanges scoped commands with the real signed-in reader over `BroadcastChannel`, and the reader
+accepts them only on a loopback hostname with both the compiled gate and environment flag enabled.
+It can hold or fail one exact jump/restore, observe session history, cancel pending work, or inject
+a foreign-scope history entry to exercise normal Back refusal. It cannot create books, bypass
+authentication, change accepted content, or grant PRODUCT qualification. The operator page is
+excluded with other development routes from the reader manifest; bind its separate source hashes
+in the private runtime receipt. After QA, build again without the flag before preparing release
+evidence. Never treat the instrumented test identity as the default product build.

@@ -36,6 +36,7 @@ describe("session jump history", () => {
     expect(prior.entries).toEqual([a]);
     expect(emptyJumpHistory()).toEqual({
       entries: [],
+      entryScopes: [],
       pending: null,
       sequence: 0,
     });

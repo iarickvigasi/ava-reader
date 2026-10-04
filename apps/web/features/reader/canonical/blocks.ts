@@ -18,11 +18,13 @@ export function canonicalBlock(
   if (block.kind === "figure") {
     const resource = index.resources.get(block.resource_id);
     const src = urls[block.resource_id];
-    if (!resource || !src) throw new Error("Missing canonical resource");
+    if (!resource || src === undefined)
+      throw new Error("Missing canonical resource");
     return {
       ...base,
       kind: "image",
       src,
+      resourceId: resource.id,
       alt: block.alt,
       captionId: block.caption_id,
       creditId: block.credit_id,

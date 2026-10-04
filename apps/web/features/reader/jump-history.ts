@@ -1,7 +1,9 @@
 import type { ReaderLocator } from "@/lib/api-types";
+import type { NavigationScope } from "./navigation-scope";
 import { sameReaderPlace } from "./jump-target";
 
 export type JumpRequest = {
+  originScope?: NavigationScope;
   note?: boolean;
   rollback?: boolean;
   sequence: number;
@@ -11,12 +13,15 @@ export type JumpRequest = {
 };
 export type JumpHistory = {
   referenceBlockId?: string;
+  referenceChapterId?: string;
   entries: ReaderLocator[];
+  entryScopes: (NavigationScope | undefined)[];
   pending: JumpRequest | null;
   sequence: number;
 };
 export const emptyJumpHistory = (): JumpHistory => ({
   entries: [],
+  entryScopes: [],
   pending: null,
   sequence: 0,
 });
@@ -27,6 +32,7 @@ export function beginJump(
   destination: ReaderLocator,
   back = false,
   note = false,
+  originScope?: NavigationScope,
 ): JumpHistory {
   if (sameReaderPlace(origin, destination))
     return { ...state, pending: null, sequence: state.sequence + 1 };
@@ -34,7 +40,7 @@ export function beginJump(
   return {
     ...state,
     sequence,
-    pending: { origin, destination, back, sequence, note },
+    pending: { origin, originScope, destination, back, sequence, note },
   };
 }
 
@@ -54,7 +60,19 @@ export function finishJump(
   return {
     ...state,
     entries,
+    entryScopes:
+      !success || pending.rollback
+        ? state.entryScopes
+        : pending.back
+          ? state.entryScopes.slice(0, -1)
+          : [...state.entryScopes, pending.originScope].slice(-100),
     pending: null,
+    referenceChapterId:
+      success && !pending.rollback
+        ? pending.note
+          ? pending.destination.chapterId
+          : undefined
+        : state.referenceChapterId,
     referenceBlockId:
       success && !pending.rollback
         ? pending.note
