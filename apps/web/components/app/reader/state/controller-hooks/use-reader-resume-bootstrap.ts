@@ -1,43 +1,22 @@
-import { useEffect, useRef, type Dispatch, type SetStateAction } from "react";
-import type {
-  ReaderChapterPayload,
-  ReaderLocator,
-  ReaderStatusPayload,
-} from "@/lib/api-types";
-import type { ReaderNavigationTarget } from "@/features/reader/navigation";
+import { useEffect, useRef } from "react";
 import {
   createServerResumeSnapshot,
   readLocalReaderResumeSnapshot,
   selectPreferredReaderResumeSnapshot,
 } from "@/features/reader/resume";
 import {
-  READER_RESUME_PHASE_APPLIED,
   READER_RESUME_PHASE_APPLYING,
   READER_STATUS_READY,
 } from "../../shared/constants";
-import type { InitialResumeBootstrapState } from "../../shared/types";
-import { resolveInitialResumeDestination } from "./use-reader-resume-bootstrap.helpers";
-
-type UseReaderResumeBootstrapInput = {
-  commitVisibleChapter: (
-    nextChapterId: string,
-    target: ReaderNavigationTarget,
-  ) => void;
-  currentReadyChapterId: string | null;
-  initialPayload: ReaderStatusPayload;
-  initialResume: InitialResumeBootstrapState;
-  libraryItemId: string;
-  loadChapterWindow: (
-    nextChapterId: string,
-    target: ReaderNavigationTarget,
-  ) => Promise<void>;
-  loadedChaptersById: Map<string, ReaderChapterPayload>;
-  payload: ReaderStatusPayload;
-  setInitialResume: Dispatch<SetStateAction<InitialResumeBootstrapState>>;
-  setVisibleLocator: Dispatch<SetStateAction<ReaderLocator | null>>;
-};
+import { applyReaderResumeAttempt } from "./apply-reader-resume-attempt";
+import type {
+  ResumeAttempt,
+  UseReaderResumeBootstrapInput,
+} from "./use-reader-resume-bootstrap.types";
 
 export function useReaderResumeBootstrap({
+  accountId,
+  cancelChapterLoad,
   commitVisibleChapter,
   currentReadyChapterId,
   initialPayload,
@@ -49,71 +28,66 @@ export function useReaderResumeBootstrap({
   setInitialResume,
   setVisibleLocator,
 }: UseReaderResumeBootstrapInput) {
-  const initialResumeApplyStartedRef = useRef(false);
+  const attemptRef = useRef<ResumeAttempt | null>(null);
 
   useEffect(() => {
-    initialResumeApplyStartedRef.current = false;
-    setVisibleLocator(null);
-
     const selection = selectPreferredReaderResumeSnapshot({
       localSnapshot: readLocalReaderResumeSnapshot(libraryItemId),
       serverSnapshot: createServerResumeSnapshot(initialPayload.progress),
     });
-
+    const attempt = {
+      active: true,
+      started: false,
+      snapshot: selection.snapshot,
+    };
+    attemptRef.current = attempt;
+    setVisibleLocator(null);
     setInitialResume({
       phase: READER_RESUME_PHASE_APPLYING,
-      snapshot: selection.snapshot,
+      snapshot: attempt.snapshot,
     });
-  }, [initialPayload.progress, libraryItemId, setInitialResume, setVisibleLocator]);
-
-  useEffect(() => {
-    if (
-      initialResume.phase !== READER_RESUME_PHASE_APPLYING ||
-      payload.status !== READER_STATUS_READY ||
-      initialResumeApplyStartedRef.current
-    ) {
-      return;
-    }
-
-    initialResumeApplyStartedRef.current = true;
-
-    let isCancelled = false;
-
-    const applyInitialResume = async () => {
-      const destination = resolveInitialResumeDestination({
-        payload,
-        snapshot: initialResume.snapshot,
-      });
-      const needsFetch =
-        !loadedChaptersById.has(destination.targetChapterId) ||
-        currentReadyChapterId !== destination.targetChapterId;
-
-      try {
-        if (needsFetch) {
-          await loadChapterWindow(destination.targetChapterId, destination.target);
-        } else {
-          commitVisibleChapter(destination.targetChapterId, destination.target);
-        }
-      } finally {
-        if (!isCancelled) {
-          setInitialResume((current) =>
-            current.phase === READER_RESUME_PHASE_APPLYING
-              ? {
-                  ...current,
-                  phase: READER_RESUME_PHASE_APPLIED,
-                }
-              : current,
-          );
-        }
-      }
-    };
-
-    void applyInitialResume();
-
     return () => {
-      isCancelled = true;
+      attempt.active = false;
+      cancelChapterLoad();
     };
   }, [
+    accountId,
+    cancelChapterLoad,
+    initialPayload.progress,
+    libraryItemId,
+    setInitialResume,
+    setVisibleLocator,
+  ]);
+
+  useEffect(() => {
+    const attempt = attemptRef.current;
+    if (
+      !attempt?.active ||
+      attempt.started ||
+      initialResume.phase !== READER_RESUME_PHASE_APPLYING ||
+      initialResume.snapshot !== attempt.snapshot ||
+      payload.status !== READER_STATUS_READY
+    )
+      return;
+    attempt.started = true;
+    void applyReaderResumeAttempt(
+      {
+        commitVisibleChapter,
+        currentReadyChapterId,
+        loadChapterWindow,
+        loadedChaptersById,
+        payload,
+        setInitialResume,
+      },
+      attempt,
+    );
+    // Payload/auth callback changes do not cancel this selected book/account attempt.
+  }, [
+    accountId,
+    cancelChapterLoad,
+    initialPayload.progress,
+    libraryItemId,
+    setVisibleLocator,
     commitVisibleChapter,
     currentReadyChapterId,
     initialResume.phase,

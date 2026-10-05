@@ -65,6 +65,7 @@ export function useReaderChapterNavigation(input: ChapterNavigationInput) {
   );
   return {
     backgroundChapterId,
+    cancelBlockingLoad,
     commitVisibleChapter,
     loadChapterWindow,
     navigateToChapter,

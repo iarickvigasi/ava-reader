@@ -28,7 +28,7 @@ export function useReaderScreenController({
   libraryItemId,
   persistenceMode,
 }: ReaderScreenControllerInput): ReaderScreenControllerResult {
-  const { getToken, isLoaded, isSignedIn } = useAuth();
+  const { getToken, isLoaded, isSignedIn, userId } = useAuth();
   const [payload, setPayload] = useState(() =>
     normalizeReaderStatusPayload(initialPayload),
   );
@@ -64,6 +64,7 @@ export function useReaderScreenController({
 
   const {
     backgroundChapterId,
+    cancelBlockingLoad,
     commitVisibleChapter,
     loadChapterWindow,
     navigateToChapter,
@@ -88,6 +89,8 @@ export function useReaderScreenController({
   });
 
   useReaderResumeBootstrap({
+    accountId: userId,
+    cancelChapterLoad: cancelBlockingLoad,
     commitVisibleChapter,
     currentReadyChapterId,
     initialPayload,
