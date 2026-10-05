@@ -1,3 +1,4 @@
+import { DevelopersWithCache } from "./sections/developers/developers-with-cache";
 import type { HomePayload } from "@/lib/api-types";
 import { HomeCollectionsWithCache } from "./sections/home-collections-with-cache";
 import { CurrentEngagementSection } from "./sections/current-engagement/current-engagement-section";
@@ -18,8 +19,7 @@ type HomeScreenProps = {
 };
 
 export function HomeScreen({ home }: HomeScreenProps) {
-  const engagement =
-    home.state === "POPULATED" ? home.currentEngagement : null;
+  const engagement = home.state === "POPULATED" ? home.currentEngagement : null;
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-8 py-8 sm:gap-20 sm:px-6 sm:py-10 lg:gap-28 lg:px-10 lg:py-12">
@@ -39,7 +39,10 @@ export function HomeScreen({ home }: HomeScreenProps) {
         </section>
       ) : null}
 
-      <FeedbackSection />
+      <div className="grid items-start gap-16 sm:gap-20 lg:grid-cols-2 lg:gap-12 lg:[&>section:only-child]:col-span-2">
+        <DevelopersWithCache home={home} />
+        <FeedbackSection />
+      </div>
       <DashboardFooter />
     </div>
   );

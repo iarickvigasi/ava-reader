@@ -76,6 +76,10 @@ discovery. The daily entry point into the habit.
     recovery or reconnect automatically retries the requested week without a page reload.
     Token and request deadlines prevent an indefinitely pending skeleton.
 
+Developer contacts appear above feedback on mobile and in the left column beside it on desktop;
+see [[10-user-profile]] for eligibility,
+localization, link behaviour, and offline handling.
+
 ## Data & sync
 
 home bucket (single payload row keyed to the user); composed with stats deltas. Service worker

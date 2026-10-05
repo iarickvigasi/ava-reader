@@ -9,6 +9,7 @@ describe('Home response contract', () => {
 
     expect(usersService.getCurrentUserRecord).toHaveBeenCalledWith('clerk_1');
     expect(home).toEqual({
+      developers: [],
       collections: { items: [] },
       completionItems: [],
       readingSnapshot: { clientSessionIds: [], totalSeconds: 0, days: [] },

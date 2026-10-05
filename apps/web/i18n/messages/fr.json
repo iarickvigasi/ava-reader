@@ -220,6 +220,11 @@
       "loadingHistory": "Chargement des jours précédents",
       "historyError": "Impossible de charger les jours précédents. Vérifiez votre connexion.",
       "retryHistory": "Réessayer"
+    },
+    "developers": {
+      "title": "Contacter les développeurs",
+      "subtitle": "Une idée ou une question ?",
+      "message": "Écrire à {name} sur Telegram"
     }
   },
   "reader": {
@@ -714,5 +719,17 @@
       "body": "Le lien est peut-être incorrect ou la page a été déplacée. Retournez à l’accueil pour continuer à lire.",
       "hint": "Vérifiez l’adresse ou retournez à l’accueil."
     }
+  },
+  "profile": {
+    "title": "Modifier le profil",
+    "name": "Nom affiché",
+    "telegram": "Lien Telegram",
+    "telegramHelp": "Ce lien apparaîtra sur la page d’accueil pour que les lecteurs puissent vous contacter en tant que développeur d’AVA. Laissez-le vide pour masquer votre contact.",
+    "accountHelp": "Pour modifier votre photo ou les informations de votre compte, utilisez Gérer le compte dans le menu de l’avatar.",
+    "close": "Fermer",
+    "save": "Enregistrer",
+    "pending": "Enregistré sur cet appareil. En attente de synchronisation.",
+    "saved": "Profil enregistré.",
+    "error": "Impossible d’enregistrer votre profil. Vérifiez vos informations et réessayez."
   }
 }

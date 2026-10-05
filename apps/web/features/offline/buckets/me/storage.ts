@@ -6,6 +6,7 @@
 import type { CurrentUserPayload } from "@/lib/api-types/user";
 
 import { getDb } from "../../db";
+import { readProfileMutation } from "./profile-storage";
 
 // Preserves the cached avatarBlob across re-applies — every online reload
 // re-fetches and re-applies the user, and a `put` replaces the whole row, so
@@ -15,6 +16,7 @@ export async function applyCurrentUser(
 ): Promise<void> {
   const db = getDb();
   const existing = await db.me.get("me");
+  if (db !== getDb()) return;
   await db.me.put({
     id: "me",
     user,
@@ -26,7 +28,11 @@ export async function applyCurrentUser(
 export async function readCurrentUser(): Promise<CurrentUserPayload | null> {
   const db = getDb();
   const row = await db.me.get("me");
-  return row?.user ?? null;
+  const pending = await readProfileMutation(db);
+  if (!row) return null;
+  return pending && !pending.error
+    ? { ...row.user, ...pending.patch }
+    : row.user;
 }
 
 // Clears the cached user. Called on sign-out so the next account doesn't

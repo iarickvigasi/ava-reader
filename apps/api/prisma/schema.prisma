@@ -9,6 +9,7 @@ datasource db {
 enum UserRole {
   USER
   ADMIN
+  DEVELOPER
 }
 
 enum BlobPurpose {
@@ -69,6 +70,8 @@ model User {
   primaryEmail               String
   displayName                String?
   avatarUrl                  String?
+  displayNameOverride        String?
+  telegramUrl                String?
   role                       UserRole                    @default(USER)
   deletedLibraryItems        DeletedLibraryItem[]
   libraryItems               LibraryItem[]

@@ -7,6 +7,8 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { updateProfile } from './update-profile';
 import { ZodError } from 'zod';
 import type { AuthenticatedRequest } from '../auth/authenticated-request';
 import { ClerkAuthGuard } from '../auth/clerk-auth.guard';
@@ -18,12 +20,24 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
+    private readonly prisma: PrismaService,
     private readonly preferencesService: PreferencesService,
   ) {}
 
   @Get('me')
   @UseGuards(ClerkAuthGuard)
   getMe(@Req() request: AuthenticatedRequest) {
+    return this.usersService.getCurrentUser(request.auth.clerkUserId);
+  }
+
+  @Patch('me/profile')
+  @UseGuards(ClerkAuthGuard)
+  async updateProfile(
+    @Req() request: AuthenticatedRequest,
+    @Body() body: unknown,
+  ) {
+    await this.usersService.getCurrentUserRecord(request.auth.clerkUserId);
+    await updateProfile(this.prisma, request.auth.clerkUserId, body);
     return this.usersService.getCurrentUser(request.auth.clerkUserId);
   }
 

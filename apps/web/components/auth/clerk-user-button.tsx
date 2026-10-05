@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { ProfileDialog } from "./profile/profile-dialog";
 import { useClerk } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
 import { Button, ButtonLink } from "@/components/ui/button";
@@ -16,48 +18,71 @@ export function UserMenuButton({
   currentUser?: CurrentUserPayload | null;
 }) {
   const clerk = useClerk();
+  const [editing, setEditing] = useState(false);
+  const profileT = useTranslations("profile");
   const t = useTranslations("auth.device");
   const { signOut, busy, error } = useLocalSignOut();
   const { menuRef, close } = useUserMenuDismissal();
   return (
-    <details ref={menuRef} className="relative">
-      <summary
-        aria-label={t("menu")}
-        className="cursor-pointer list-none rounded-full [&::-webkit-details-marker]:hidden"
-      >
-        <UserAvatarFallback currentUser={currentUser} />
-      </summary>
-      <div className="absolute right-0 z-50 mt-3 grid min-w-52 gap-2 rounded-card bg-paper p-3 shadow-(--shadow-card)">
-        {clerk.loaded && clerk.user ? (
+    <>
+      <details ref={menuRef} className="relative">
+        <summary
+          aria-label={t("menu")}
+          className="cursor-pointer list-none rounded-full [&::-webkit-details-marker]:hidden"
+        >
+          <UserAvatarFallback currentUser={currentUser} />
+        </summary>
+        <div className="absolute right-0 z-50 mt-3 grid min-w-52 gap-2 rounded-card bg-paper p-3 shadow-(--shadow-card)">
+          {currentUser && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                close();
+                setEditing(true);
+              }}
+            >
+              {profileT("title")}
+            </Button>
+          )}
+          {clerk.loaded && clerk.user ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                close();
+                clerk.openUserProfile();
+              }}
+            >
+              {t("manage")}
+            </Button>
+          ) : (
+            <ButtonLink href="/sign-in" variant="ghost" size="sm">
+              {t("signIn")}
+            </ButtonLink>
+          )}
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => {
-              close();
-              clerk.openUserProfile();
-            }}
+            disabled={busy}
+            onClick={() => void signOut()}
           >
-            {t("manage")}
+            {t("signOut")}
           </Button>
-        ) : (
-          <ButtonLink href="/sign-in" variant="ghost" size="sm">
-            {t("signIn")}
-          </ButtonLink>
-        )}
-        <Button
-          variant="ghost"
-          size="sm"
-          disabled={busy}
-          onClick={() => void signOut()}
-        >
-          {t("signOut")}
-        </Button>
-        {error && (
-          <p role="alert" className="text-sm text-danger">
-            {t("signOutError")}
-          </p>
-        )}
-      </div>
-    </details>
+          {error && (
+            <p role="alert" className="text-sm text-danger">
+              {t("signOutError")}
+            </p>
+          )}
+        </div>
+      </details>
+      {editing && currentUser && (
+        <ProfileDialog
+          key={currentUser.id}
+          user={currentUser}
+          onClose={() => setEditing(false)}
+        />
+      )}
+    </>
   );
 }

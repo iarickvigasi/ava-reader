@@ -6,6 +6,7 @@
 
 import type { CurrentUserPayload } from "@/lib/api-types/user";
 
+import { useProfileSync } from "./use-profile-sync";
 import { useHydrateCurrentUser } from "./hooks";
 
 export function CurrentUserHydrator({
@@ -14,5 +15,6 @@ export function CurrentUserHydrator({
   initial: CurrentUserPayload | null;
 }) {
   useHydrateCurrentUser(initial);
+  useProfileSync();
   return null;
 }

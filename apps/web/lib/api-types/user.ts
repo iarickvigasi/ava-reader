@@ -1,4 +1,4 @@
-export type UserRole = "USER" | "ADMIN";
+export type UserRole = "USER" | "ADMIN" | "DEVELOPER";
 
 export type CurrentUserPayload = {
   avatarUrl: string | null;
@@ -7,4 +7,5 @@ export type CurrentUserPayload = {
   email: string;
   id: string;
   role: UserRole;
+  telegramUrl?: string | null;
 };
