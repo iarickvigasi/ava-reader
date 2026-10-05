@@ -465,6 +465,21 @@ Other extraction/visibility/annotation risks, missing native text and text-beari
 still require recognition. Legacy English routing is unchanged. This avoids introducing
 guessed OCR styles solely to identify language; it does not qualify other primary languages.
 
+Embedded raster text uses bounded, aspect-preserving pixel analysis and separated character-run
+evidence, including short prose/verse and dark-background text. Ordinary solid shapes, bars and
+ruled grids do not become text merely because they have horizontal bands. Eligible regions receive
+source-bound recognition tasks covering each complete connected native graphic group, including
+adjacent vectors and source padding. Shared groups are reviewed once; groups reaching native text
+use the complete-page safety route. Native roles, joins and styles are measured with source layout
+barriers intact before reviewed regions are excluded. Text-like outlined symbols can also request
+bounded visual review. An accepted figure retains source pixels; an empty response is refused.
+Uniform near-white blank pages need no recognition; nonblank running furniture remains an explicit
+source observation even when whole-book assembly omits it from reading text.
+The detector selects visual review candidates;
+it cannot prove transcription fidelity or complete source-text recall. Tiny/ambiguous single-stroke
+images retain source pixels rather than guessed text. Installed worker and normal mixed-book
+qualification remain required before claiming broader support.
+
 Source typography uses `indent_em` for first-line displacement and optional `block_indent_em`
 for the entire paragraph inset. Native multiline insets and source-qualified comparison boundary
 fragments preserve the latter; other single lines stay ambiguous. Unknown block indentation is

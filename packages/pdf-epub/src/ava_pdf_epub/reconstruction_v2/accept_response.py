@@ -35,7 +35,7 @@ def accept_response(task: RecognitionTask, response: RecognitionResponse) -> lis
         response_language(response.language, task.profile_id)
     except ValueError:
         refuse_task(task, "SOURCE_LANGUAGE_UNSUPPORTED")
-    if response.unresolved:
+    if response.unresolved or not response.segments:
         refuse_task(task, "RECOGNITION_UNRESOLVED")
     if len({s.id for s in response.segments}) != len(response.segments):
         raise ValueError("Repeated recognition segment identity")

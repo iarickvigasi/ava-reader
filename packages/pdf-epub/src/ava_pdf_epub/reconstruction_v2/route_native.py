@@ -6,6 +6,7 @@ from typing import Literal
 from ..contracts.profiles import LEGACY_PROFILE, ProfileId
 from ..contracts.source import Box
 from .geometry import rectangle
+from .graphic_recognition_regions import graphic_recognition_regions
 from .make_task import make_task
 from .native_page import native_page
 from .native_review import NativeReviewRequired
@@ -57,6 +58,7 @@ def route_native(
     try:
         from .geometry import overlap
 
+        regions = graphic_recognition_regions(page, tables, regions)
         if table_evidence and any(overlap(t.box, r) > 0 for t in tables for r in regions):
             raise NativeReviewRequired("Visual recognition must contain the complete merged table")
         segments = native_page(page, tables, set(), regions, profile_id)

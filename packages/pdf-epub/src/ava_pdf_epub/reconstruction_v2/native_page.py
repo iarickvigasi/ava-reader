@@ -35,11 +35,9 @@ def native_page(
     graphics = native_graphics(page, table_segments)
     excluded = {ident for s in [*table_segments, *graphics] for ident in s.native_line_ids}
     lines = classify_lines(page, excluded, furniture, profile_id)
-    segments = [
-        s
-        for s in [*lines, *table_segments, *graphics]
-        if not any(overlap(s.box, box) > 0 for box in excluded_regions)
-    ]
+    # Keep source layout barriers while deriving native roles, joins and typography.
+    # Removing a recognized raster early can join columns or invent spacing across it.
+    segments = [*lines, *table_segments, *graphics]
     furniture_segments = [s for s in segments if s.kind == "furniture"]
     content = native_roles(
         native_structure_candidates(
@@ -52,9 +50,10 @@ def native_page(
         )
     )
     ordered = native_literal_candidates(reading_order(content, page.width_pt))
-    return (
+    complete = (
         native_spacing(
             page, [p.segment for p in preserve_paired_lines(join_paragraphs(ordered), ordered)]
         )
         + furniture_segments
     )
+    return [s for s in complete if not any(overlap(s.box, box) > 0 for box in excluded_regions)]
