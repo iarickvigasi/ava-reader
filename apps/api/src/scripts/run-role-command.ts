@@ -7,6 +7,14 @@ export async function runRoleCommand(
   role: UserRole,
   action: 'grant' | 'revoke',
 ) {
+  const identifier = process.argv[2]?.trim();
+  if (!identifier) {
+    console.error(
+      `Usage: pnpm --filter api ${role.toLowerCase()}:${action} <email-or-clerk-user-id>`,
+    );
+    process.exitCode = 1;
+    return;
+  }
   const prisma = new PrismaClient({
     adapter: new PrismaPg({
       connectionString:
@@ -15,11 +23,6 @@ export async function runRoleCommand(
     }),
   });
   try {
-    const identifier = process.argv[2]?.trim();
-    if (!identifier)
-      throw new Error(
-        `Usage: pnpm --filter api ${role.toLowerCase()}:${action} <email-or-clerk-user-id>`,
-      );
     const user = await changeRole(prisma, { identifier, role, action });
     console.log(
       `${action === 'grant' ? 'Granted' : 'Revoked'} ${role}: ${user.primaryEmail}.`,

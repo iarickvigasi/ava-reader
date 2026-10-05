@@ -19,7 +19,7 @@ function fixture() {
   return {
     tx,
     prisma: {
-      $transaction: jest.fn(async (run: (client: typeof tx) => unknown) =>
+      $transaction: jest.fn((run: (client: typeof tx) => Promise<unknown>) =>
         run(tx),
       ),
     },
