@@ -10,7 +10,7 @@ it('uses the AVA override instead of the refreshed Clerk name', async () => {
     primaryEmail: 'a@b.test',
     avatarUrl: null,
     telegramUrl: 'https://t.me/ava_dev',
-    role: 'DEVELOPER',
+    roleMemberships: [{ role: 'DEVELOPER' }],
     updatedAt: new Date(),
   };
   const service = new UsersService(

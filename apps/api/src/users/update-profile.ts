@@ -14,7 +14,9 @@ export async function updateProfile(
   const result = await prisma.user.updateMany({
     where: {
       clerkUserId,
-      ...(telegramUrl !== undefined ? { role: UserRole.DEVELOPER } : {}),
+      ...(telegramUrl !== undefined
+        ? { roleMemberships: { some: { role: UserRole.DEVELOPER } } }
+        : {}),
     },
     data: {
       displayNameOverride: displayName,

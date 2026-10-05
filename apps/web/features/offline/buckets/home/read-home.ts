@@ -3,6 +3,7 @@
 
 import type { HomePayload } from "@/lib/api-types/home";
 
+import { normalizeUserRoles } from "@/features/auth/normalize-user-roles";
 import { getDb } from "../../db";
 import {
   completionTables,
@@ -30,7 +31,7 @@ export async function readHome(): Promise<HomePayload | null> {
       const revision = row.completionRevision ?? 0;
       const context = await readCompletionContext(db);
       let payload = composeHomeReading(
-        row.payload,
+        { ...row.payload, user: normalizeUserRoles(row.payload.user) },
         await db.sessions.toArray(),
       );
       if (payload.completionItems !== undefined) {

@@ -18,7 +18,7 @@ const user: CurrentUserPayload = {
   email: "reader@example.com",
   displayName: "Ada Reader",
   avatarUrl: null,
-  role: "USER",
+  roles: [],
 };
 
 beforeEach(() => {
@@ -47,10 +47,14 @@ describe("me bucket storage", () => {
 
   it("overwrites the single row on re-apply", async () => {
     await applyCurrentUser(user);
-    await applyCurrentUser({ ...user, displayName: "Renamed", role: "ADMIN" });
+    await applyCurrentUser({
+      ...user,
+      displayName: "Renamed",
+      roles: ["ADMIN"],
+    });
     const round = await readCurrentUser();
     expect(round?.displayName).toBe("Renamed");
-    expect(round?.role).toBe("ADMIN");
+    expect(round?.roles).toEqual(["ADMIN"]);
   });
 
   it("clears the cached user", async () => {

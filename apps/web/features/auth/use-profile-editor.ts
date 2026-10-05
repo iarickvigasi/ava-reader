@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type SubmitEvent } from "react";
-import type { CurrentUserPayload } from "@/lib/api-types/user";
+import { UserRole, type CurrentUserPayload } from "@/lib/api-types/user";
 import {
   persistProfilePatch,
   useProfileMutation,
@@ -16,7 +16,7 @@ export function useProfileEditor(user: CurrentUserPayload) {
   const [error, setError] = useState(false);
   const [saved, setSaved] = useState(false);
   const [busy, setBusy] = useState(false);
-  const isDeveloper = user.role === "DEVELOPER";
+  const isDeveloper = user.roles.includes(UserRole.DEVELOPER);
   async function save(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(false);

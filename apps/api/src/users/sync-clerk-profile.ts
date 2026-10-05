@@ -22,6 +22,7 @@ export async function syncClerkProfile(
   };
   return prisma.user.upsert({
     where: { clerkUserId: id },
+    include: { roleMemberships: { select: { role: true } } },
     update: profile,
     create: { clerkUserId: id, ...profile },
   });

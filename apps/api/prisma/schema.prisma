@@ -7,7 +7,6 @@ datasource db {
 }
 
 enum UserRole {
-  USER
   ADMIN
   DEVELOPER
 }
@@ -64,6 +63,16 @@ enum BookAnalysisKind {
   CHAPTER_PURPOSE
 }
 
+model UserRoleMembership {
+  userId    String
+  role      UserRole
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, role])
+  @@index([role, userId])
+}
+
 model User {
   id                         String                      @id @default(cuid())
   clerkUserId                String                      @unique
@@ -72,7 +81,7 @@ model User {
   avatarUrl                  String?
   displayNameOverride        String?
   telegramUrl                String?
-  role                       UserRole                    @default(USER)
+  roleMemberships            UserRoleMembership[]
   deletedLibraryItems        DeletedLibraryItem[]
   libraryItems               LibraryItem[]
   readingProgress            ReadingProgress[]

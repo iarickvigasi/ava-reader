@@ -172,14 +172,14 @@ Notes:
 
   ```bash
   pnpm --filter api developer:grant developer@example.com
-  # With the split Docker development setup:
-  docker compose exec -w /app/apps/api api pnpm developer:grant developer@example.com
   ```
 
+  In split development, run on the host with `DATABASE_URL` pointing to localhost port 15432.
   The user can then open the avatar menu → Edit profile and add their Telegram link.
   Their chip appears in the home developer section once a name and link are configured.
-  DEVELOPER does not grant admin access. The current single-role model cannot combine it with
-  ADMIN; this command refuses to replace an existing admin role.
+  ADMIN and DEVELOPER are independent memberships. Either grant command preserves other roles
+  and is safe to repeat. Remove only one membership with `admin:revoke` or `developer:revoke`.
+  Ordinary reader access does not require a role membership.
 
 - These scripts accept either a local `primaryEmail` or a `clerkUserId`.
 

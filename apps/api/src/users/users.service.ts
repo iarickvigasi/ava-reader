@@ -1,5 +1,6 @@
+import { toUserRecord, type UserRecord } from './user-record';
 import { syncClerkProfile } from './sync-clerk-profile';
-import { UserRole, type User as AppUser } from '@prisma/client';
+import { UserRole } from '@prisma/client';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ClerkAuthService } from '../auth/clerk-auth.service';
@@ -10,7 +11,7 @@ export type CurrentUserPayload = {
   email: string;
   displayName: string | null;
   avatarUrl: string | null;
-  role: UserRole;
+  roles: UserRole[];
   telegramUrl: string | null;
 };
 
@@ -29,9 +30,10 @@ export class UsersService {
     return this.serializeCurrentUser(user);
   }
 
-  async getCurrentUserRecord(clerkUserId: string): Promise<AppUser> {
+  async getCurrentUserRecord(clerkUserId: string): Promise<UserRecord> {
     const existing = await this.prisma.user.findUnique({
       where: { clerkUserId },
+      include: { roleMemberships: { select: { role: true } } },
     });
 
     if (!existing) {
@@ -40,10 +42,7 @@ export class UsersService {
         this.clerkAuthService,
         clerkUserId,
       );
-      return {
-        ...created,
-        displayName: created.displayNameOverride ?? created.displayName,
-      };
+      return toUserRecord(created);
     }
 
     if (
@@ -57,30 +56,27 @@ export class UsersService {
       ).catch(() => undefined);
     }
 
-    return {
-      ...existing,
-      displayName: existing.displayNameOverride ?? existing.displayName,
-    };
+    return toUserRecord(existing);
   }
 
   async assertAdmin(clerkUserId: string) {
     const user = await this.getCurrentUserRecord(clerkUserId);
 
-    if (user.role !== UserRole.ADMIN) {
+    if (!user.roles.includes(UserRole.ADMIN)) {
       throw new ForbiddenException('Admin access is required.');
     }
 
     return user;
   }
 
-  private serializeCurrentUser(user: AppUser): CurrentUserPayload {
+  private serializeCurrentUser(user: UserRecord): CurrentUserPayload {
     return {
       id: user.id,
       clerkUserId: user.clerkUserId,
       email: user.primaryEmail,
       displayName: user.displayName,
       avatarUrl: user.avatarUrl,
-      role: user.role,
+      roles: user.roles,
       telegramUrl: user.telegramUrl ?? null,
     };
   }

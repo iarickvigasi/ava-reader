@@ -1,4 +1,4 @@
-import type { Prisma, User } from '@prisma/client';
+import type { Prisma, User, UserRole } from '@prisma/client';
 
 export type LibraryItemRecord = Prisma.LibraryItemGetPayload<{
   include: {
@@ -26,5 +26,5 @@ export type CatalogEntryRecord = Prisma.CatalogEntryGetPayload<{
 
 export type HomeUser = Pick<
   User,
-  'id' | 'avatarUrl' | 'displayName' | 'primaryEmail' | 'role'
->;
+  'id' | 'avatarUrl' | 'displayName' | 'primaryEmail'
+> & { roles: UserRole[] };

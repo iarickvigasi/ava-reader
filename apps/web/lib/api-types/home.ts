@@ -91,6 +91,6 @@ export type HomePayload = {
     displayName: string | null;
     email: string;
     id: string;
-    role: UserRole;
+    roles: UserRole[];
   };
 };

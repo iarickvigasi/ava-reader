@@ -34,7 +34,10 @@ it('queries only developers with Telegram and exposes only contact fields', asyn
   ]);
   expect(findMany).toHaveBeenCalledWith(
     expect.objectContaining({
-      where: { role: 'DEVELOPER', telegramUrl: { not: null } },
+      where: {
+        roleMemberships: { some: { role: 'DEVELOPER' } },
+        telegramUrl: { not: null },
+      },
       orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
     }),
   );

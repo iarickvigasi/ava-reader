@@ -27,6 +27,8 @@
     "db:backfill-collection-slugs": "ts-node src/scripts/backfill-collection-slugs.ts",
     "db:backfill-offline-books": "ts-node src/scripts/backfill-offline-books-collection.ts",
     "developer:grant": "ts-node src/scripts/grant-developer.ts",
+    "admin:revoke": "ts-node src/scripts/revoke-admin.ts",
+    "developer:revoke": "ts-node src/scripts/revoke-developer.ts",
     "admin:grant": "ts-node src/scripts/grant-admin.ts",
     "test": "jest",
     "test:watch": "jest --watch",

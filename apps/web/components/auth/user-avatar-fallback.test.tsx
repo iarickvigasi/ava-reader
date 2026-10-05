@@ -11,19 +11,23 @@ const user: CurrentUserPayload = {
   email: "ada@example.com",
   displayName: "Ada Reader",
   avatarUrl: "https://img.clerk.com/ada.jpg",
-  role: "USER",
+  roles: [],
 };
 
 describe("UserAvatarFallback", () => {
   it("holds a fixed-size slot with no user at all", () => {
-    const markup = renderToStaticMarkup(<UserAvatarFallback currentUser={null} />);
+    const markup = renderToStaticMarkup(
+      <UserAvatarFallback currentUser={null} />,
+    );
 
     expect(markup).toContain("size-8");
     expect(markup).not.toContain("<img");
   });
 
   it("shows the display name's initial before the cache check resolves", () => {
-    const markup = renderToStaticMarkup(<UserAvatarFallback currentUser={user} />);
+    const markup = renderToStaticMarkup(
+      <UserAvatarFallback currentUser={user} />,
+    );
 
     expect(markup).toContain(">A<");
     expect(markup).not.toContain("<img");

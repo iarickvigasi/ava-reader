@@ -64,7 +64,7 @@ export async function getHome(options: {
       displayName: user.displayName,
       email: user.primaryEmail,
       id: user.id,
-      role: user.role,
+      roles: user.roles,
     },
   };
 }

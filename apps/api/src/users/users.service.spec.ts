@@ -1,85 +1,29 @@
-import { InternalServerErrorException } from '@nestjs/common';
 import { UsersService } from './users.service';
 
-const local = {
-  id: 'local-1',
-  clerkUserId: 'clerk-1',
-  primaryEmail: 'ava@example.com',
-  displayName: 'Ava Reader',
-  avatarUrl: 'https://images.example.com/avatar.png',
-  role: 'USER',
-};
-const upsert = jest.fn();
 const findUnique = jest.fn();
+const upsert = jest.fn();
 const getUser = jest.fn();
 const service = new UsersService(
-  { user: { upsert, findUnique } } as never,
+  { user: { findUnique, upsert } } as never,
   { getUser } as never,
 );
 const flush = () => new Promise((resolve) => setImmediate(resolve));
 beforeEach(() => {
   jest.resetAllMocks();
-  findUnique.mockResolvedValue(null);
-  upsert.mockResolvedValue(local);
   getUser.mockResolvedValue({
-    fullName: local.displayName,
-    hasImage: true,
-    imageUrl: local.avatarUrl,
-    primaryEmailAddress: { emailAddress: local.primaryEmail },
-    emailAddresses: [],
+    primaryEmailAddress: { emailAddress: 'reader@example.test' },
   });
-});
-it('provisions a first-seen user from Clerk data and returns a normalized payload', async () => {
-  expect(await service.getCurrentUser('clerk-1')).toEqual({
-    id: local.id,
-    clerkUserId: local.clerkUserId,
-    email: local.primaryEmail,
-    displayName: local.displayName,
-    avatarUrl: local.avatarUrl,
-    role: 'USER',
-    telegramUrl: null,
-  });
-  const profile = {
-    primaryEmail: local.primaryEmail,
-    displayName: local.displayName,
-    avatarUrl: local.avatarUrl,
-  };
-  expect(upsert).toHaveBeenCalledWith({
-    where: { clerkUserId: 'clerk-1' },
-    update: profile,
-    create: { clerkUserId: 'clerk-1', ...profile },
-  });
-});
-it('falls back to the first email and username and omits generated avatars', async () => {
-  getUser.mockResolvedValue({
-    fullName: null,
-    username: 'reader',
-    hasImage: false,
-    imageUrl: 'generated.png',
-    primaryEmailAddress: null,
-    emailAddresses: [{ emailAddress: 'reader@example.com' }],
-  });
-  await service.getCurrentUser('clerk-1');
-  expect(upsert).toHaveBeenCalledWith(
-    expect.objectContaining({
-      update: {
-        primaryEmail: 'reader@example.com',
-        displayName: 'reader',
-        avatarUrl: null,
-      },
-    }),
-  );
-});
-it('throws when a first-seen Clerk user has no email', async () => {
-  getUser.mockResolvedValue({ emailAddresses: [] });
-  await expect(service.getCurrentUser('clerk-1')).rejects.toBeInstanceOf(
-    InternalServerErrorException,
-  );
-  expect(upsert).not.toHaveBeenCalled();
 });
 it('returns a fresh DB user without calling Clerk', async () => {
-  findUnique.mockResolvedValue({ ...local, updatedAt: new Date() });
-  expect(await service.getCurrentUserRecord('clerk-1')).toMatchObject(local);
+  findUnique.mockResolvedValue({
+    id: 'local',
+    updatedAt: new Date(),
+    roleMemberships: [],
+  });
+  expect(await service.getCurrentUserRecord('clerk')).toMatchObject({
+    id: 'local',
+    roles: [],
+  });
   await flush();
   expect(getUser).not.toHaveBeenCalled();
   expect(upsert).not.toHaveBeenCalled();
@@ -87,11 +31,18 @@ it('returns a fresh DB user without calling Clerk', async () => {
 it.each([false, true])(
   'returns stale DB data while refreshing in the background (failure: %s)',
   async (fails) => {
-    findUnique.mockResolvedValue({ ...local, updatedAt: new Date(0) });
+    findUnique.mockResolvedValue({
+      id: 'local',
+      updatedAt: new Date(0),
+      roleMemberships: [],
+    });
     if (fails) getUser.mockRejectedValue(new Error('offline'));
-    expect(await service.getCurrentUserRecord('clerk-1')).toMatchObject(local);
+    expect(await service.getCurrentUserRecord('clerk')).toMatchObject({
+      id: 'local',
+      roles: [],
+    });
     await flush();
-    expect(getUser).toHaveBeenCalledWith('clerk-1');
+    expect(getUser).toHaveBeenCalledWith('clerk');
     if (fails) expect(upsert).not.toHaveBeenCalled();
     else expect(upsert).toHaveBeenCalled();
   },

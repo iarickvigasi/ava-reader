@@ -21,7 +21,10 @@ it('atomically restricts Telegram changes to developers, including removal', asy
       telegramUrl,
     });
     expect(updateMany).toHaveBeenLastCalledWith({
-      where: { clerkUserId: 'clerk-1', role: 'DEVELOPER' },
+      where: {
+        clerkUserId: 'clerk-1',
+        roleMemberships: { some: { role: 'DEVELOPER' } },
+      },
       data: {
         displayNameOverride: 'Ada',
         telegramUrl: telegramUrl?.replace(/\/$/, '') ?? null,
@@ -59,6 +62,8 @@ it.each([
   { displayName: ' ' },
   { displayName: 'A'.repeat(101) },
   { displayName: 'Ada', role: 'ADMIN' },
+  { displayName: 'Ada', roles: ['ADMIN'] },
+  { displayName: 'Ada', roleMemberships: [{ role: 'ADMIN' }] },
   { displayName: 'Ada', clerkUserId: 'other' },
 ])('rejects invalid names and protected fields', async (body) => {
   await expect(

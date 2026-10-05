@@ -4,7 +4,10 @@ import { telegramUrlSchema } from '../users/profile.dto';
 
 export async function loadDevelopers(prisma: PrismaService) {
   const users = await prisma.user.findMany({
-    where: { role: UserRole.DEVELOPER, telegramUrl: { not: null } },
+    where: {
+      roleMemberships: { some: { role: UserRole.DEVELOPER } },
+      telegramUrl: { not: null },
+    },
     select: {
       id: true,
       displayName: true,

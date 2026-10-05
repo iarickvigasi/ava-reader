@@ -11,7 +11,7 @@ export function createHomeContractFixture() {
     displayName: 'Reader',
     id: 'user-1',
     primaryEmail: 'reader@example.com',
-    role: 'USER',
+    roles: [],
   };
   const findCompletionItems = jest
     .fn<Promise<unknown[]>, [Prisma.LibraryItemFindManyArgs]>()

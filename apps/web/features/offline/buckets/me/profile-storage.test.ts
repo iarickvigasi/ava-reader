@@ -13,7 +13,7 @@ const user = {
   clerkUserId: "c",
   email: "private@example.com",
   displayName: "Old",
-  role: "DEVELOPER" as const,
+  roles: ["DEVELOPER" as const],
   avatarUrl: null,
   telegramUrl: null,
 };

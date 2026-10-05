@@ -16,7 +16,7 @@ const anyUser = () => ({
   email: "x@y.z",
   displayName: "X",
   avatarUrl: null,
-  role: "USER" as const,
+  roles: [],
 });
 
 async function deleteAllOfflineDbs() {
@@ -39,7 +39,12 @@ async function deleteAllOfflineDbs() {
 
 async function seedUser(userId: string) {
   setActiveUser(userId);
-  await getDb().me.put({ id: "me", user: anyUser(), avatarBlob: null, fetchedAt: "t" });
+  await getDb().me.put({
+    id: "me",
+    user: anyUser(),
+    avatarBlob: null,
+    fetchedAt: "t",
+  });
 }
 
 beforeEach(async () => {

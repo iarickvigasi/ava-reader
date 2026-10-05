@@ -92,7 +92,7 @@ their implementations, with shared fixtures in `testing/`.
 ## Domain model (apps/api/prisma/schema.prisma)
 
 - **User** → UserPreferences, LibraryItem[], ReadingProgress[], ReadingSession[], Annotation[],
-  AiComment[], Collection[]. UserRole gates admin/curator.
+  AiComment[], Collection[]. UserRoleMembership independently grants ADMIN and DEVELOPER access.
 - **Book** → BookFile[] (EPUB | PDF | READER_PACKAGE | UNKNOWN), StoredBlob (cover/content via
   BlobPurpose), BookProcessingRun (ProcessingStatus). CatalogEntry (DRAFT | PUBLISHED | ARCHIVED)
   publishes a Book.
