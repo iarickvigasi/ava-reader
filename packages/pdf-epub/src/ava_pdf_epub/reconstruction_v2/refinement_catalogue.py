@@ -85,7 +85,9 @@ def refinement_catalogue(
             page=segment.page,
             kind="heading" if segment.kind == "heading" else "paragraph",
             candidate_original_kind=(
-                "list_item"
+                "heading"
+                if segment.kind == "heading"
+                else "list_item"
                 if segment.kind == "list_item"
                 else ("verse" if segment.kind == "verse" else "paragraph")
             )

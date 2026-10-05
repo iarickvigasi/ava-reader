@@ -4,13 +4,20 @@ from .findings import Finding
 from .segments import Segment
 
 
-def structure_findings(segments: list[Segment], ranked: set[str]) -> list[Finding]:
+def structure_findings(
+    segments: list[Segment], ranked: set[str], deferred_native: set[str] | None = None
+) -> list[Finding]:
+    deferred_native = deferred_native or set()
     return [
         Finding(
-            code="NATIVE_ROLE_UNCORROBORATED"
+            code="MIXED_NATIVE_HIERARCHY_UNCORROBORATED"
+            if segment.id in deferred_native
+            else "NATIVE_ROLE_UNCORROBORATED"
             if segment.structure_candidate
             else "OCR_HIERARCHY_UNCORROBORATED",
-            message="Native same-font opening needs source-backed role corroboration."
+            message="Native heading ancestry through OCR needs whole-book source corroboration."
+            if segment.id in deferred_native
+            else "Native same-font opening needs source-backed role corroboration."
             if segment.structure_candidate
             else (
                 "OCR heading rank needs whole-book source corroboration; "

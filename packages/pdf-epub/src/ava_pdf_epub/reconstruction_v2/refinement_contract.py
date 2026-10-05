@@ -15,7 +15,7 @@ class RefinementNode(Record):
     id: Id
     page: int = Field(ge=1, le=500)
     kind: Literal["heading", "paragraph"]
-    candidate_original_kind: Literal["paragraph", "list_item", "verse"] | None = None
+    candidate_original_kind: Literal["paragraph", "list_item", "verse", "heading"] | None = None
     structure_candidate: bool = False
     context_before: str = Field(default="", max_length=200)
     context_after: str = Field(default="", max_length=200)
@@ -52,7 +52,10 @@ class BookRefinementTask(Record):
     observation_sha256: Digest
     profile_id: ProfileId
     prompt_version: Literal[
-        "ava-book-refinement-3", "ava-book-refinement-4", "ava-book-refinement-5"
+        "ava-book-refinement-3",
+        "ava-book-refinement-4",
+        "ava-book-refinement-5",
+        "ava-book-refinement-6",
     ]
     response_schema_version: Literal["ava-book-refinement-response-3"]
     nodes: list[RefinementNode] = Field(min_length=1, max_length=256)

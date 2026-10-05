@@ -617,7 +617,10 @@ export const recognitionSchemas = {
           },
           candidate_original_kind: {
             anyOf: [
-              { enum: ['paragraph', 'list_item', 'verse'], type: 'string' },
+              {
+                enum: ['paragraph', 'list_item', 'verse', 'heading'],
+                type: 'string',
+              },
               { type: 'null' },
             ],
             default: null,
@@ -907,6 +910,7 @@ export const recognitionSchemas = {
           'ava-book-refinement-3',
           'ava-book-refinement-4',
           'ava-book-refinement-5',
+          'ava-book-refinement-6',
         ],
         title: 'Prompt Version',
         type: 'string',
@@ -3544,6 +3548,7 @@ export const recognitionSchemas = {
               'ava-book-refinement-3',
               'ava-book-refinement-4',
               'ava-book-refinement-5',
+              'ava-book-refinement-6',
             ],
             title: 'Prompt Version',
             type: 'string',
@@ -3750,7 +3755,10 @@ export const recognitionSchemas = {
           },
           candidate_original_kind: {
             anyOf: [
-              { enum: ['paragraph', 'list_item', 'verse'], type: 'string' },
+              {
+                enum: ['paragraph', 'list_item', 'verse', 'heading'],
+                type: 'string',
+              },
               { type: 'null' },
             ],
             default: null,

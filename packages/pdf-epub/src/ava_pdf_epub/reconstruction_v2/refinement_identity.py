@@ -46,6 +46,16 @@ def validate_refinement_task(task: "BookRefinementTask") -> None:
         for n in task.nodes
     ):
         raise ValueError("Native structure candidate lacks immutable role/style observations")
+    if any(
+        n.candidate_original_kind == "heading"
+        and (
+            n.kind != "heading"
+            or n.observed_level is None
+            or (n.id in task.decision_ids and task.prompt_version != "ava-book-refinement-6")
+        )
+        for n in task.nodes
+    ):
+        raise ValueError("Native heading rank review requires its versioned heading contract")
     if not task.decision_ids and not task.metadata_ids:
         raise ValueError("Refinement task has no decisions")
     if task.metadata_ids and task.prompt_version != "ava-book-refinement-4":

@@ -8,8 +8,15 @@ from .prepared import PreparedPage
 from .segments import Segment
 
 
+class MixedHeadingReviewRequired(ValueError):
+    """Native size cannot establish ancestry through an unmeasured OCR heading."""
+
+
 def heading_hierarchy(
-    segments: list[Segment], prepared: Sequence[PreparedPage], corroborated_sections: set[str]
+    segments: list[Segment],
+    prepared: Sequence[PreparedPage],
+    corroborated_sections: set[str],
+    deferred_native: set[str] | None = None,
 ) -> list[Segment]:
     wanted = {
         key for segment in segments if segment.kind == "heading" for key in segment.native_line_ids
@@ -56,8 +63,17 @@ def heading_hierarchy(
             ):
                 raise ValueError("Chapter-sized opening needs whole-book source corroboration")
             declared = segment.heading_level if segment.id in corroborated_sections else None
-            level = section_level(sizes[segment.id], ranks, declared)
-            segment = segment.model_copy(update={"heading_level": level})
+            try:
+                level = section_level(sizes[segment.id], ranks, declared)
+            except MixedHeadingReviewRequired:
+                if deferred_native is None:
+                    raise
+                # Keep the unknown ancestor until a corroborated rank/chapter resets it.
+                # The page-local rank remains an observation, never an accepted hierarchy.
+                deferred_native.add(segment.id)
+                segment = segment.model_copy(update={"structure_candidate": True})
+            else:
+                segment = segment.model_copy(update={"heading_level": level})
         result.append(segment)
     return result
 
@@ -76,7 +92,9 @@ def section_level(
         while ancestors:
             previous = ancestors[-1]
             if previous is None:
-                raise ValueError("Mixed heading hierarchy requires source corroboration")
+                raise MixedHeadingReviewRequired(
+                    "Mixed heading hierarchy requires source corroboration"
+                )
             if size < previous - 0.5:
                 break
             ancestors.pop()

@@ -93,8 +93,12 @@ def source_structure(
             result[0] = result[0].model_copy(
                 update={"chapter_start": True, "chapter_role": "frontmatter"}
             )
+    deferred_native: set[str] = set()
     result = heading_hierarchy(
-        result, prepared, {key for key, depth in promoted.items() if depth > 0}
+        result,
+        prepared,
+        {key for key, depth in promoted.items() if depth > 0},
+        deferred_native,
     )
     # A source-observed notes heading already establishes the numbered entry role;
     # do not ask a second model to reinterpret those entries as chapters.
@@ -115,6 +119,6 @@ def source_structure(
             segment = segment.model_copy(update={"structure_candidate": False})
         resolved.append(segment)
     result = resolved
-    state.structure_findings.extend(structure_findings(result, ranked))
+    state.structure_findings.extend(structure_findings(result, ranked, deferred_native))
     source_references(result, folios, state)
     return result

@@ -58,6 +58,8 @@ def accept_refinement(task: BookRefinementTask, response: BookRefinementResponse
             ):
                 raise ValueError("Refined parent must be an existing preceding heading")
         if node.structure_candidate:
+            if node.candidate_original_kind == "heading" and decision.role_kind != "heading":
+                raise ValueError("Native heading rank review cannot change the observed role")
             if decision.role_kind is None or (
                 decision.role_kind == "list_item" and node.candidate_original_kind != "list_item"
             ):

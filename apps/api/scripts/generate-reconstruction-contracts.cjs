@@ -15,7 +15,7 @@ from ava_pdf_epub.reconstruction_v2.recognition_contract import RecognitionTask,
 from ava_pdf_epub.reconstruction_v2 import recognition_prompt, ordered_list_prompt, text_style_prompt
 from ava_pdf_epub.reconstruction_v2.report import ReconstructionReport
 from ava_pdf_epub.reconstruction_v2.refinement_contract import BookRefinementTask, BookRefinementResponse, RefinementBatch
-from ava_pdf_epub.reconstruction_v2.refinement_prompt import REFINEMENT_PROMPT, REFINEMENT_PROMPT_VERSION, BIBLIOGRAPHIC_PROMPT, LEGACY_REFINEMENT_PROMPT
+from ava_pdf_epub.reconstruction_v2.refinement_prompt import REFINEMENT_PROMPT, REFINEMENT_PROMPT_VERSION, BIBLIOGRAPHIC_PROMPT, LEGACY_REFINEMENT_PROMPT, MIXED_HIERARCHY_PROMPT, MIXED_HIERARCHY_PROMPT_VERSION
 classes = [PrepareResult, ReconstructionInput, RecognitionTask, RecognitionResponse, ReconstructionReport, BookRefinementTask, BookRefinementResponse, RefinementBatch]
 prompts = [("RECOGNITION_PROMPT", recognition_prompt.SYSTEM_PROMPT), ("RECOGNITION_PROMPT_VERSION", recognition_prompt.PROMPT_VERSION)]
 for prefix in ("MERGED_TABLE", "PINNED_TABLE", "EXPLICIT_STYLE", "PINNED_STYLE", "ANCHORED_STYLE", "PINNED_ANCHORED", "BOUNDARY_STYLE", "PINNED_BOUNDARY", "UNICODE_STYLE", "PINNED_UNICODE"):
@@ -26,7 +26,7 @@ for name in ("ORDERED_LIST_PROMPT", "ORDERED_LIST_PROMPT_VERSION", "PINNED_ORDER
     prompts.append((name, getattr(ordered_list_prompt, name)))
 for name in ("TEXT_STYLE_PROMPT", "TEXT_STYLE_PROMPT_VERSION", "PINNED_TEXT_STYLE_PROMPT", "PINNED_TEXT_STYLE_PROMPT_VERSION"):
     prompts.append((name, getattr(text_style_prompt, name)))
-print(json.dumps(dict(schemas={c.__name__: c.model_json_schema() for c in classes}, prompts=prompts, legacyRefinementPrompt=LEGACY_REFINEMENT_PROMPT, refinementPrompt=REFINEMENT_PROMPT, refinementPromptVersion=REFINEMENT_PROMPT_VERSION, bibliographicPrompt=BIBLIOGRAPHIC_PROMPT),sort_keys=True,separators=(',',':')))
+print(json.dumps(dict(schemas={c.__name__: c.model_json_schema() for c in classes}, prompts=prompts, legacyRefinementPrompt=LEGACY_REFINEMENT_PROMPT, refinementPrompt=REFINEMENT_PROMPT, refinementPromptVersion=REFINEMENT_PROMPT_VERSION, bibliographicPrompt=BIBLIOGRAPHIC_PROMPT, mixedHierarchyPrompt=MIXED_HIERARCHY_PROMPT, mixedHierarchyPromptVersion=MIXED_HIERARCHY_PROMPT_VERSION),sort_keys=True,separators=(',',':')))
 `;
 async function emit(name, content) {
   const formatted = await prettier.format(content, {
@@ -76,6 +76,10 @@ async function main() {
       JSON.stringify(data.refinementPromptVersion) +
       ';\nexport const BIBLIOGRAPHIC_PROMPT = ' +
       JSON.stringify(data.bibliographicPrompt) +
+      ';\nexport const MIXED_HIERARCHY_PROMPT = ' +
+      JSON.stringify(data.mixedHierarchyPrompt) +
+      ';\nexport const MIXED_HIERARCHY_PROMPT_VERSION = ' +
+      JSON.stringify(data.mixedHierarchyPromptVersion) +
       ';\n',
   );
   await emit(

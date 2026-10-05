@@ -478,6 +478,15 @@ are rejected before assembly, with their provider cost retained. A prompt revisi
 identity; an old response cannot be edited or rebound to a new task. This preserves finished
 content and does not introduce later reconversion.
 
+The mixed-heading candidate uses prompt6 only when native heading ancestry cannot be inferred
+through an OCR heading with no measured native size. Those native headings retain blocking
+findings and become explicit source-crop decisions with `candidate_original_kind:heading`.
+They must remain headings with null decision style; native text/spans/typography cannot change.
+Missing, unresolved or invalid parent decisions still refuse reconstruction. Outline/Contents
+ranks and native-only hierarchy controls remain fixed. Historical prompts3/5 stay byte-exact.
+Preparation is not acceptance; a refreshed installed worker and normal-import/reader verification
+are required before claiming this candidate resolves a real mixed book.
+
 ### Bounded merged table cells
 
 Canonical cells may carry positive `row_span` / `column_span` within the existing20×8 grid.

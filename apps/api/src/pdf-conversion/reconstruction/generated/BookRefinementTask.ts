@@ -48,7 +48,7 @@ export type MetadataIds = string[];
 export type Nodes = [RefinementNode, ...RefinementNode[]];
 export type BodyReferenceId = string | null;
 export type CandidateOriginalKind =
-  | ('paragraph' | 'list_item' | 'verse')
+  | ('paragraph' | 'list_item' | 'verse' | 'heading')
   | null;
 export type ContextAfter = string;
 export type ContextBefore = string;
@@ -86,7 +86,8 @@ export type ProfileId = 'ava-pdf-prose-en-v2' | 'ava-pdf-prose-en-uk-v3';
 export type PromptVersion =
   | 'ava-book-refinement-3'
   | 'ava-book-refinement-4'
-  | 'ava-book-refinement-5';
+  | 'ava-book-refinement-5'
+  | 'ava-book-refinement-6';
 export type ResponseSchemaVersion = 'ava-book-refinement-response-3';
 export type SchemaVersion = 'ava-book-refinement-task-3';
 export type SourceSha256 = string;

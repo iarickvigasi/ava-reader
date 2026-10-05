@@ -14,7 +14,7 @@ from .refinement_contract import BookRefinementTask, RefinementEdge
 from .refinement_digest import observation_digest
 from .refinement_groups import refinement_groups
 from .refinement_identity import refinement_identifier
-from .refinement_prompt import REFINEMENT_PROMPT_VERSION
+from .refinement_prompt import MIXED_HIERARCHY_PROMPT_VERSION, REFINEMENT_PROMPT_VERSION
 from .refinement_sheet import refinement_sheet
 from .refinement_sheet_bounds import sheet_fits
 from .segments import Segment
@@ -32,6 +32,11 @@ def prepare_refinement(
     )
     if not catalogue.decisions and not catalogue.metadata_ids:
         return []
+    structure_prompt = (
+        MIXED_HIERARCHY_PROMPT_VERSION
+        if any(n.candidate_original_kind == "heading" for n in catalogue.nodes)
+        else REFINEMENT_PROMPT_VERSION
+    )
     digest = observation_digest(segments)
     source_sha = hashlib.sha256(source.read_bytes()).hexdigest()
     segment_map, page_map = {s.id: s for s in segments}, PreparedPageMap(prepared)
@@ -68,7 +73,7 @@ def prepare_refinement(
             source_sha256=source_sha,
             observation_sha256=digest,
             profile_id=prepared[0].profile_id,
-            prompt_version="ava-book-refinement-4" if metadata_ids else REFINEMENT_PROMPT_VERSION,
+            prompt_version="ava-book-refinement-4" if metadata_ids else structure_prompt,
             response_schema_version="ava-book-refinement-response-3",
             nodes=[n.model_dump(mode="json") for n in nodes],
             pixels_per_point=2,

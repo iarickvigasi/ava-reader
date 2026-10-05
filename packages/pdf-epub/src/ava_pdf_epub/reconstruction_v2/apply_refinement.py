@@ -61,6 +61,8 @@ def apply_refinement(
             if segment.structure_candidate:
                 if patch.role_kind is None:
                     raise ValueError("Native role decision absent")
+                if segment.kind == "heading" and patch.role_kind != "heading":
+                    raise ValueError("Native heading rank review cannot change the observed role")
                 values = segment.model_dump()
                 values.update(kind=patch.role_kind, structure_candidate=False)
                 if segment.kind == "verse" and patch.role_kind == "paragraph":

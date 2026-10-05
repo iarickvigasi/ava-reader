@@ -319,6 +319,16 @@ reach source-backed whole-book review preparation. Preparation does not establis
 or publication eligibility. Existing source findings remain recorded. A link span with an identical
 source URL/range keeps its independent observed style; destination or range conflicts still fail.
 
+The mixed-heading candidate also defers native section ancestry when a preceding OCR heading has
+no measured native size. It retains a blocking finding and requires bounded source-crop review,
+rather than inferring a rank from the OCR page's declaration. Prompt6 uses the existing native
+decision form with `candidate_original_kind:heading`: the observed heading must remain a heading,
+and its text, spans and measured styles stay fixed. Complete source-bound decisions and the final
+parent graph are still required; missing or unresolved evidence refuses reconstruction. Explicit
+outline/Contents ranks remain authoritative. Historical prompts3/5 and already-qualified native
+hierarchies retain their prior behavior. Installed-image and normal-import qualification of this
+candidate remain separate from authored regression checks.
+
 ### Repeated OCR running headers
 
 Before whole-book refinement, the worker may reconcile inconsistent OCR heading/furniture roles

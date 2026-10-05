@@ -3,6 +3,7 @@ import type { ProviderTask } from '../../library/pdf-import/providers/types';
 import {
   BIBLIOGRAPHIC_PROMPT,
   LEGACY_REFINEMENT_PROMPT,
+  MIXED_HIERARCHY_PROMPT,
   REFINEMENT_PROMPT,
 } from './generated/refinement-prompt';
 import { recognitionSchemas } from './generated/schemas';
@@ -42,7 +43,9 @@ export function refinementProviderTask(
             ? BIBLIOGRAPHIC_PROMPT
             : task.prompt_version === 'ava-book-refinement-3'
               ? LEGACY_REFINEMENT_PROMPT
-              : REFINEMENT_PROMPT,
+              : task.prompt_version === 'ava-book-refinement-6'
+                ? MIXED_HIERARCHY_PROMPT
+                : REFINEMENT_PROMPT,
       },
       {
         role: 'user',
