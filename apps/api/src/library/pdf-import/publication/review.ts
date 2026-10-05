@@ -12,8 +12,15 @@ export function recordPdfReview(
 ) {
   const approved = [...findings].sort();
   return jobTransaction(prisma, async (tx) => {
-    const reviewer = await tx.user.findUnique({ where: { id: reviewerId } });
-    if (reviewer?.role !== 'ADMIN')
+    const reviewer = await tx.user.findUnique({
+      where: { id: reviewerId },
+      select: { roleMemberships: { select: { role: true } } },
+    });
+    if (
+      !reviewer?.roleMemberships.some(
+        (membership) => membership.role === 'ADMIN',
+      )
+    )
       throw new PdfPublicationError('PDF_REVIEW_UNAUTHORIZED');
     const validation = await tx.pdfCandidateValidation.findUniqueOrThrow({
       where: { id: validationId },

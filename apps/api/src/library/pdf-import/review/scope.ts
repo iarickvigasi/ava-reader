@@ -6,9 +6,9 @@ export async function requirePdfReviewer(
 ) {
   const user = await prisma.user.findUnique({
     where: { id: reviewerId },
-    select: { role: true },
+    select: { roleMemberships: { select: { role: true } } },
   });
-  if (user?.role !== 'ADMIN')
+  if (!user?.roleMemberships.some((membership) => membership.role === 'ADMIN'))
     throw new ForbiddenException('AVA reviewer access required.');
 }
 export async function pdfReviewScope(

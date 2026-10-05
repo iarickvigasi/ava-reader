@@ -1,4 +1,9 @@
-export type UserRole = "USER" | "ADMIN";
+export const UserRole = {
+  ADMIN: "ADMIN",
+  DEVELOPER: "DEVELOPER",
+} as const;
+
+export type UserRole = (typeof UserRole)[keyof typeof UserRole];
 
 export type CurrentUserPayload = {
   avatarUrl: string | null;
@@ -6,5 +11,6 @@ export type CurrentUserPayload = {
   displayName: string | null;
   email: string;
   id: string;
-  role: UserRole;
+  roles: UserRole[];
+  telegramUrl?: string | null;
 };

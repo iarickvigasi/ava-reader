@@ -1,6 +1,7 @@
 import "fake-indexeddb/auto";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
+import { homeFixture } from "./test-fixture";
 import type { HomePayload } from "@/lib/api-types/home";
 
 import { DB_NAME, __resetDbForTests } from "../../db";
@@ -8,11 +9,10 @@ import { applyHome, clearHome, readHome } from "./storage";
 import { hydrateFromPayload } from "../library/bucket";
 import { payload as libraryPayload } from "../library/test-fixture";
 
-// The storage layer treats the payload as opaque (it stores/reads it as-is),
-// so a minimal stand-in is enough to exercise the round-trip. Cast keeps the
-// test decoupled from the full, evolving HomePayload shape.
+// Minimal home data with the current user contract for read-time role normalization.
 const home = {
   state: "EMPTY",
+  user: homeFixture().user,
   featuredCatalog: { entries: [] },
 } as unknown as HomePayload;
 
@@ -33,7 +33,10 @@ afterEach(async () => {
 describe("home bucket storage", () => {
   it("preserves newer server collections when no membership edits are pending", async () => {
     await hydrateFromPayload(libraryPayload());
-    const fresh = { ...home, collections: { items: [{ id: "new-server-collection", name: "New" }] } } as unknown as HomePayload;
+    const fresh = {
+      ...home,
+      collections: { items: [{ id: "new-server-collection", name: "New" }] },
+    } as unknown as HomePayload;
     await applyHome(fresh);
     expect(await readHome()).toEqual(fresh);
   });

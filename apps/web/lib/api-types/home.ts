@@ -12,7 +12,15 @@ export type CurrentEngagement = LibraryCardBook & {
   nextMilestone: string;
 };
 
+export type DeveloperContact = {
+  id: string;
+  displayName: string;
+  avatarUrl: string | null;
+  telegramUrl: string;
+};
+
 export type HomePayload = {
+  developers?: DeveloperContact[];
   readingSnapshot?: ReadingDaySource & {
     clientSessionIds: string[];
     totalSeconds: number;
@@ -83,6 +91,6 @@ export type HomePayload = {
     displayName: string | null;
     email: string;
     id: string;
-    role: UserRole;
+    roles: UserRole[];
   };
 };

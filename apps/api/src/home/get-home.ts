@@ -1,3 +1,4 @@
+import { loadDevelopers } from './load-developers';
 import type { PrismaService } from '../prisma/prisma.service';
 import { selectHomeCollections } from './collections-panel';
 import { createCurrentEngagement } from './current-engagement';
@@ -16,12 +17,14 @@ export async function getHome(options: {
 }) {
   const { prisma, user, timeZone } = options;
   const [
+    developers,
     libraryItems,
     featuredCatalogEntries,
     activity,
     collections,
     preferences,
   ] = await Promise.all([
+    loadDevelopers(prisma),
     loadHomeLibraryItems(prisma, user.id),
     loadHomeCatalog(prisma),
     loadHomeActivity(prisma, user.id, timeZone),
@@ -40,6 +43,7 @@ export async function getHome(options: {
   });
 
   return {
+    developers,
     collections: { items: selectHomeCollections(collections) },
     completionItems: activity.completionItems,
     readingSnapshot: activity.readingSnapshot,
@@ -60,7 +64,7 @@ export async function getHome(options: {
       displayName: user.displayName,
       email: user.primaryEmail,
       id: user.id,
-      role: user.role,
+      roles: user.roles,
     },
   };
 }

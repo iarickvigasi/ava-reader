@@ -5,7 +5,9 @@
 
 import type { CurrentUserPayload } from "@/lib/api-types/user";
 
+import { normalizeUserRoles } from "@/features/auth/normalize-user-roles";
 import { getDb } from "../../db";
+import { readProfileMutation } from "./profile-storage";
 
 // Preserves the cached avatarBlob across re-applies — every online reload
 // re-fetches and re-applies the user, and a `put` replaces the whole row, so
@@ -15,9 +17,10 @@ export async function applyCurrentUser(
 ): Promise<void> {
   const db = getDb();
   const existing = await db.me.get("me");
+  if (db !== getDb()) return;
   await db.me.put({
     id: "me",
-    user,
+    user: normalizeUserRoles(user),
     avatarBlob: existing?.avatarBlob ?? null,
     fetchedAt: new Date().toISOString(),
   });
@@ -26,7 +29,10 @@ export async function applyCurrentUser(
 export async function readCurrentUser(): Promise<CurrentUserPayload | null> {
   const db = getDb();
   const row = await db.me.get("me");
-  return row?.user ?? null;
+  const pending = await readProfileMutation(db);
+  if (!row) return null;
+  const user = normalizeUserRoles(row.user);
+  return pending && !pending.error ? { ...user, ...pending.patch } : user;
 }
 
 // Clears the cached user. Called on sign-out so the next account doesn't

@@ -14,7 +14,7 @@ import {
 } from "@/components/app/shared/app-icons";
 import { UserMenuButton } from "@/components/auth/clerk-user-button";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import type { CurrentUserPayload } from "@/lib/api-types";
+import { UserRole, type CurrentUserPayload } from "@/lib/api-types/user";
 import { isAppNavigationItemActive } from "@/lib/app-navigation";
 import { cn } from "@/lib/cn";
 
@@ -42,7 +42,7 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
   const t = useTranslations("nav");
   const pathname = usePathname();
   const isReaderRoute = pathname.startsWith("/app/read/");
-  const isAdmin = currentUser?.role === "ADMIN";
+  const isAdmin = currentUser?.roles.includes(UserRole.ADMIN);
 
   if (isReaderRoute) {
     return <ReaderNavigation />;

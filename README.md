@@ -154,7 +154,7 @@ Notes:
 - Docker verification runs from a dedicated `verify` container on the same Compose network, so the smoke test checks real in-network connectivity rather than only host access.
 - If `3000`, `4000`, or `15432` are already taken on your machine, override them in `.env` or inline when starting Compose, for example `WEB_HOST_PORT=3001 API_HOST_PORT=4001 POSTGRES_HOST_PORT=15433 NEXT_PUBLIC_API_BASE_URL=http://localhost:4001 pnpm docker:up`.
 
-## Admin and Demo Data
+## Roles and Demo Data
 
 - Promote the first local app user to admin after they sign in once:
 
@@ -168,7 +168,20 @@ Notes:
   pnpm --filter api db:seed:home-demo you@example.com
   ```
 
-- Both scripts accept either a local `primaryEmail` or a `clerkUserId`.
+- Grant the developer contact role after the user has signed in once:
+
+  ```bash
+  pnpm --filter api developer:grant developer@example.com
+  ```
+
+  In split development, run on the host with `DATABASE_URL` pointing to localhost port 15432.
+  The user can then open the avatar menu → Edit profile and add their Telegram link.
+  Their chip appears in the home developer section once a name and link are configured.
+  ADMIN and DEVELOPER are independent memberships. Either grant command preserves other roles
+  and is safe to repeat. Remove only one membership with `admin:revoke` or `developer:revoke`.
+  Ordinary reader access does not require a role membership.
+
+- These scripts accept either a local `primaryEmail` or a `clerkUserId`.
 
 ## Manual Test Flow
 

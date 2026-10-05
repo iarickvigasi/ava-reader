@@ -7,7 +7,7 @@ import { decidePdfReview } from './decide';
 import { pdfReviewResponse } from './response';
 import { PdfPublicationError } from '../publication/errors';
 const denied = () => ({
-  user: { findUnique: jest.fn().mockResolvedValue({ role: 'USER' }) },
+  user: { findUnique: jest.fn().mockResolvedValue({ roleMemberships: [] }) },
   pdfImportOperation: { findFirst: jest.fn() },
   pdfCandidateValidation: { findMany: jest.fn() },
   pdfArtifact: { findFirst: jest.fn() },

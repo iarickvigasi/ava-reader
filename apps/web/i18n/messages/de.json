@@ -220,6 +220,11 @@
       "loadingHistory": "Frühere Tage werden geladen",
       "historyError": "Frühere Tage konnten nicht geladen werden. Prüfe deine Verbindung.",
       "retryHistory": "Erneut versuchen"
+    },
+    "developers": {
+      "title": "Kontakt zum Entwicklerteam",
+      "subtitle": "Hast du eine Idee oder eine Frage?",
+      "message": "{name} auf Telegram schreiben"
     }
   },
   "reader": {
@@ -792,5 +797,17 @@
       "conflict": "Diese Details wurden andernorts geändert. Dein Entwurf bleibt erhalten. Lade die gespeicherten Details, um die aktuelle Version zu prüfen.",
       "invalid": "Prüfe Titel, Autoren und Sprache."
     }
+  },
+  "profile": {
+    "title": "Profil bearbeiten",
+    "name": "Anzeigename",
+    "telegram": "Telegram-Link",
+    "telegramHelp": "Dieser Link wird auf der Startseite angezeigt, damit Leser dich als AVA-Entwickler kontaktieren können. Lass das Feld leer, um deinen Kontakt auszublenden.",
+    "accountHelp": "Dein Foto und deine Kontodaten kannst du über Konto verwalten im Avatar-Menü ändern.",
+    "close": "Schließen",
+    "save": "Speichern",
+    "pending": "Auf diesem Gerät gespeichert. Synchronisierung steht aus.",
+    "saved": "Profil gespeichert.",
+    "error": "Dein Profil konnte nicht gespeichert werden. Prüfe deine Angaben und versuche es erneut."
   }
 }

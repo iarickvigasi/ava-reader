@@ -220,6 +220,11 @@
       "loadingHistory": "Loading earlier days",
       "historyError": "Could not load earlier days. Check your connection and retry.",
       "retryHistory": "Retry"
+    },
+    "developers": {
+      "title": "Contact the developers",
+      "subtitle": "Have an idea or a question?",
+      "message": "Message {name} on Telegram"
     }
   },
   "reader": {
@@ -792,5 +797,17 @@
       "conflict": "These details changed elsewhere. Your draft is kept. Reload saved details to review the latest version.",
       "invalid": "Check the title, authors and language."
     }
+  },
+  "profile": {
+    "title": "Edit profile",
+    "name": "Display name",
+    "telegram": "Telegram link",
+    "telegramHelp": "This link will appear on the home page so readers can contact you as an AVA developer. Leave it empty to hide your contact chip.",
+    "accountHelp": "To change your photo or account details, use Manage account in the avatar menu.",
+    "close": "Close",
+    "save": "Save",
+    "pending": "Saved on this device. Waiting to sync.",
+    "saved": "Profile saved.",
+    "error": "Your profile could not be saved. Check your details and try again."
   }
 }

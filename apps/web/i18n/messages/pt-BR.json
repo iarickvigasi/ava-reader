@@ -220,6 +220,11 @@
       "loadingHistory": "Carregando dias anteriores",
       "historyError": "Não foi possível carregar os dias anteriores. Verifique sua conexão.",
       "retryHistory": "Tentar novamente"
+    },
+    "developers": {
+      "title": "Contato com os desenvolvedores",
+      "subtitle": "Tem uma ideia ou uma dúvida?",
+      "message": "Enviar mensagem para {name} pelo Telegram"
     }
   },
   "reader": {
@@ -792,5 +797,17 @@
       "conflict": "Estes detalhes foram alterados em outro lugar. Seu rascunho foi mantido. Recarregue os detalhes salvos para conferir a versão mais recente.",
       "invalid": "Confira o título, os autores e o idioma."
     }
+  },
+  "profile": {
+    "title": "Editar perfil",
+    "name": "Nome de exibição",
+    "telegram": "Link do Telegram",
+    "telegramHelp": "Este link aparecerá na página inicial para que os leitores possam entrar em contato com você como desenvolvedor do AVA. Deixe em branco para ocultar seu contato.",
+    "accountHelp": "Para alterar sua foto ou os dados da conta, use Gerenciar conta no menu do avatar.",
+    "close": "Fechar",
+    "save": "Salvar",
+    "pending": "Salvo neste dispositivo. Aguardando sincronização.",
+    "saved": "Perfil salvo.",
+    "error": "Não foi possível salvar seu perfil. Confira os dados e tente novamente."
   }
 }
