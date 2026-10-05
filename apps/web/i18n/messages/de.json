@@ -732,6 +732,12 @@
       "body": "Die Daten für diese Seite konnten nicht geladen werden. Versuche es gleich noch einmal.",
       "hint": "Auf diesem Gerät gespeicherte Bücher findest du weiterhin in deiner Bibliothek."
     },
+    "readerUpgrade": {
+      "label": "Leser nicht verfügbar",
+      "title": "Diese Version von AVA kann dieses Buch noch nicht öffnen",
+      "body": "Dein Buch ist weiterhin in deiner Bibliothek gespeichert. Versuche es später erneut, um zu prüfen, ob es geöffnet werden kann.",
+      "hint": "Dein Buch und dein gespeicherter Lesefortschritt bleiben unverändert."
+    },
     "notFound": {
       "label": "Seite nicht gefunden · 404",
       "title": "Diese Seite ist nicht hier",

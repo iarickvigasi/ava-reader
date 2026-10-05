@@ -33,7 +33,19 @@ export async function fetchReaderPayloadFromNetwork(
     signal: input.signal,
   });
   if (!response.ok) {
-    throw new ReaderPayloadError(response.status);
+    // Only the known compatibility response is actionable in the reader UI.
+    // Malformed bodies and other HTTP errors remain generic; raw server text
+    // must never become reader-facing copy.
+    const body: unknown = await response.json().catch(() => null);
+    const code =
+      response.status === 409 &&
+      body !== null &&
+      typeof body === "object" &&
+      "code" in body &&
+      body.code === "PDF_READER_UPGRADE_REQUIRED"
+        ? body.code
+        : undefined;
+    throw new ReaderPayloadError(response.status, code);
   }
   return loadCanonicalResources(
     (await response.json()) as ReaderStatusPayload,

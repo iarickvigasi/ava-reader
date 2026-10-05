@@ -732,6 +732,12 @@
       "body": "No pudimos cargar los datos de esta página. Inténtalo de nuevo en un momento.",
       "hint": "Los libros guardados en este dispositivo siguen disponibles en tu biblioteca."
     },
+    "readerUpgrade": {
+      "label": "Lector no disponible",
+      "title": "Esta versión de AVA aún no puede abrir este libro",
+      "body": "Tu libro sigue guardado en tu biblioteca. Inténtalo más tarde para comprobar si ya se puede abrir.",
+      "hint": "Tu libro y tu progreso de lectura guardado no han cambiado."
+    },
     "notFound": {
       "label": "Página no encontrada · 404",
       "title": "Esta página no está aquí",

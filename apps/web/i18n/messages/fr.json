@@ -732,6 +732,12 @@
       "body": "Impossible de charger les données de cette page. Réessayez dans un instant.",
       "hint": "Les livres enregistrés sur cet appareil restent disponibles dans votre bibliothèque."
     },
+    "readerUpgrade": {
+      "label": "Lecteur indisponible",
+      "title": "Cette version d’AVA ne peut pas encore ouvrir ce livre",
+      "body": "Votre livre est toujours enregistré dans votre bibliothèque. Réessayez plus tard pour vérifier s’il peut être ouvert.",
+      "hint": "Votre livre et votre progression de lecture enregistrée restent inchangés."
+    },
     "notFound": {
       "label": "Page introuvable · 404",
       "title": "Cette page n’est pas ici",

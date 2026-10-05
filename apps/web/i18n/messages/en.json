@@ -732,6 +732,12 @@
       "body": "We couldn’t load the data for this page. Please try again in a moment.",
       "hint": "Books saved on this device are still available in your library."
     },
+    "readerUpgrade": {
+      "label": "Reader unavailable",
+      "title": "This version of AVA can’t open this book yet",
+      "body": "Your book is still saved in your library. Try again later to check whether it can be opened.",
+      "hint": "Your book and saved reading progress remain unchanged."
+    },
     "notFound": {
       "label": "Page not found · 404",
       "title": "This page isn’t here",
