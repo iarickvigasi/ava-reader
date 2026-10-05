@@ -489,7 +489,7 @@ ordinary and bilingual views preserve spans and rows covered entirely by earlier
 Ruled PDF rectangles qualify merged origins; the existing borderless pattern retains separate
 geometry and does not acquire guessed merges. Unqualified visual tables route as complete tables.
 Pinned geometry was introduced by `ava-prose-region-4`; new span-bearing tasks select
-`ava-prose-region-14`, retaining historical region2–12 prompt bytes. The source-bound task pins
+`ava-prose-region-16`, retaining historical region2–14 prompt bytes. The source-bound task pins
 measured physical origins/rectangles and cell IDs, including
 blank cells. OCR returns text/styles against those IDs with `box:null`; acceptance binds the exact
 measured geometry and rejects unknown/duplicate IDs, changed spans or missing physical cells.
@@ -504,7 +504,7 @@ using new span-bearing candidates. Finished books are never reconverted or repla
 
 ### Exact inline text anchors
 
-New recognition tasks use `ava-prose-region-13` for prose and `ava-prose-region-14` for pinned
+New recognition tasks use `ava-prose-region-15` for prose and `ava-prose-region-16` for pinned
 ruled-table geometry. Inline spans quote `anchor.exact_text` from their own segment/cell;
 `anchor.before` / `anchor.after` provide exact adjacent context when a quotation repeats.
 The host computes Unicode code-point positions without changing transcription. Ambiguous or absent
@@ -520,7 +520,16 @@ item's own observed integer ordinal, including nested items and page continuatio
 marker and depth remain source observations. An unreadable essential marker uses an unsupported
 region plus unresolved; unordered bullets retain a null ordinal. Gemini's supported generation grammar
 describes this condition, while canonical and worker checks enforce it independently.
-A prompt clarification is not proof of source fidelity or live model behavior. Historical region2–12
+Region15/16 requires source character selection first, then finalized segment/cell text, followed by
+verbatim inline quotations and exact adjacent-context self-checks against that same text. Reliable
+native evidence conserves character identity; raster-only ordinary raised/lowered characters use
+ordinary reading text plus placement styles. An intrinsic Unicode glyph does not gain another
+sub/super style merely from its shape. Essential unknowns remain unresolved. The response schema
+describes this ordering at text and anchor fields, including cells, notes and links; Gemini grammar3
+preserves these descriptions. Cross-field exact quotations cannot be enforced by the provider's
+supported JSON grammar, so the existing strict worker checks remain authoritative. A received
+contradiction is refused without folding, repair or replay.
+A prompt clarification is not proof of source fidelity or live model behavior. Historical region2–14
 prompt bytes remain exact. New anchored responses cannot
 reinterpret old tasks. Styles are explicit objects, never implicit string IDs.
 

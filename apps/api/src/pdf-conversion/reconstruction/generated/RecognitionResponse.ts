@@ -147,8 +147,17 @@ export type ColumnSpan = number;
 export type HeaderAxis = ('row' | 'column' | 'both') | null;
 export type RowSpan = number;
 export type SourceCellId = string | null;
+/**
+ * Exact immediately adjacent following context in the same finalized text, including Unicode and spaces. Empty means no following-context constraint.
+ */
 export type After = string;
+/**
+ * Exact immediately adjacent preceding context in the same finalized text, including Unicode and spaces. Empty means no preceding-context constraint.
+ */
 export type Before = string;
+/**
+ * Copy verbatim from the finalized owning segment/cell text. Unicode scalars, case and spaces must be identical; an ordinary digit cannot anchor a Unicode script digit. Together with before/after, this quotation must identify exactly one occurrence.
+ */
 export type ExactText = string;
 export type End = number | null;
 export type NoteLabel = string | null;
@@ -177,6 +186,9 @@ export type Url = string | null;
  * @maxItems 20000
  */
 export type Spans = RecognitionSpan[];
+/**
+ * Finalize this cell's exact source transcription before quoting any span. Characters and placement are separate: ordinary raised/lowered digits use ordinary text plus vertical_align; intrinsic Unicode stays exact. Every anchor/context quotes this text.
+ */
 export type Text = string;
 /**
  * @maxItems 20
@@ -219,6 +231,9 @@ export type RelatedTo = string | null;
  * @maxItems 20000
  */
 export type Spans1 = RecognitionSpan[];
+/**
+ * Finalize this segment's exact source transcription before quoting any span. Characters and placement are separate: ordinary raised/lowered digits use ordinary text plus vertical_align; intrinsic Unicode stays exact. Every anchor/context quotes this text.
+ */
 export type Text1 = string;
 /**
  * @maxItems 2000

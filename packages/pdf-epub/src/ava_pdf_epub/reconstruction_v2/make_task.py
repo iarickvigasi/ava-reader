@@ -25,7 +25,7 @@ def make_task(
     scratch: Path,
     purpose: Literal["pdf_region_recognition", "pdf_structure_repair"] = "pdf_region_recognition",
     profile_id: ProfileId = LEGACY_PROFILE,
-    prompt_version: RecognitionPromptVersion = "ava-prose-region-13",
+    prompt_version: RecognitionPromptVersion = "ava-prose-region-15",
     table_evidence: list[dict[str, Any]] | None = None,
 ) -> RecognitionTask:
     with Image.open(scratch / page.render_path) as rendered:

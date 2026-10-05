@@ -54,7 +54,7 @@ class OrderedListPrompt(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "task version"):
                 accept_response(b, response_for(b, [exact]))
         with self.assertRaises(ValueError):
-            versioned_task("ava-prose-region-15")
+            versioned_task("ava-prose-region-17")
 
     def test_only_pinned_version_can_resolve_measured_cells(self):
         task, raw, source = pinned_fixture("ava-prose-region-14")

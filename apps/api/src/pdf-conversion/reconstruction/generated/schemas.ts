@@ -1082,6 +1082,8 @@ export const recognitionSchemas = {
               'ava-prose-region-12',
               'ava-prose-region-13',
               'ava-prose-region-14',
+              'ava-prose-region-15',
+              'ava-prose-region-16',
             ],
             title: 'Prompt Version',
             type: 'string',
@@ -1281,7 +1283,13 @@ export const recognitionSchemas = {
             type: 'array',
           },
           style: { anyOf: [{ $ref: '#/$defs/Style' }, { type: 'null' }] },
-          text: { maxLength: 200000, title: 'Text', type: 'string' },
+          text: {
+            description:
+              "Finalize this cell's exact source transcription before quoting any span. Characters and placement are separate: ordinary raised/lowered digits use ordinary text plus vertical_align; intrinsic Unicode stays exact. Every anchor/context quotes this text.",
+            maxLength: 200000,
+            title: 'Text',
+            type: 'string',
+          },
         },
         required: ['text', 'box', 'style', 'header_axis', 'spans'],
         title: 'RecognitionCell',
@@ -1421,7 +1429,13 @@ export const recognitionSchemas = {
                 type: 'array',
               },
               style: { anyOf: [{ $ref: '#/$defs/Style' }, { type: 'null' }] },
-              text: { maxLength: 200000, title: 'Text', type: 'string' },
+              text: {
+                description:
+                  "Finalize this segment's exact source transcription before quoting any span. Characters and placement are separate: ordinary raised/lowered digits use ordinary text plus vertical_align; intrinsic Unicode stays exact. Every anchor/context quotes this text.",
+                maxLength: 200000,
+                title: 'Text',
+                type: 'string',
+              },
             },
             required: [
               'id',
@@ -1659,17 +1673,23 @@ export const recognitionSchemas = {
         properties: {
           after: {
             default: '',
+            description:
+              'Exact immediately adjacent following context in the same finalized text, including Unicode and spaces. Empty means no following-context constraint.',
             maxLength: 128,
             title: 'After',
             type: 'string',
           },
           before: {
             default: '',
+            description:
+              'Exact immediately adjacent preceding context in the same finalized text, including Unicode and spaces. Empty means no preceding-context constraint.',
             maxLength: 128,
             title: 'Before',
             type: 'string',
           },
           exact_text: {
+            description:
+              'Copy verbatim from the finalized owning segment/cell text. Unicode scalars, case and spaces must be identical; an ordinary digit cannot anchor a Unicode script digit. Together with before/after, this quotation must identify exactly one occurrence.',
             maxLength: 1000,
             minLength: 1,
             title: 'Exact Text',
@@ -2006,6 +2026,8 @@ export const recognitionSchemas = {
           'ava-prose-region-12',
           'ava-prose-region-13',
           'ava-prose-region-14',
+          'ava-prose-region-15',
+          'ava-prose-region-16',
         ],
         title: 'Prompt Version',
         type: 'string',
@@ -2438,7 +2460,13 @@ export const recognitionSchemas = {
             type: 'array',
           },
           style: { anyOf: [{ $ref: '#/$defs/Style' }, { type: 'null' }] },
-          text: { maxLength: 200000, title: 'Text', type: 'string' },
+          text: {
+            description:
+              "Finalize this cell's exact source transcription before quoting any span. Characters and placement are separate: ordinary raised/lowered digits use ordinary text plus vertical_align; intrinsic Unicode stays exact. Every anchor/context quotes this text.",
+            maxLength: 200000,
+            title: 'Text',
+            type: 'string',
+          },
         },
         required: ['text', 'box', 'style', 'header_axis', 'spans'],
         title: 'RecognitionCell',
@@ -2637,7 +2665,13 @@ export const recognitionSchemas = {
                 type: 'array',
               },
               style: { anyOf: [{ $ref: '#/$defs/Style' }, { type: 'null' }] },
-              text: { maxLength: 200000, title: 'Text', type: 'string' },
+              text: {
+                description:
+                  "Finalize this segment's exact source transcription before quoting any span. Characters and placement are separate: ordinary raised/lowered digits use ordinary text plus vertical_align; intrinsic Unicode stays exact. Every anchor/context quotes this text.",
+                maxLength: 200000,
+                title: 'Text',
+                type: 'string',
+              },
             },
             required: [
               'id',
@@ -2875,17 +2909,23 @@ export const recognitionSchemas = {
         properties: {
           after: {
             default: '',
+            description:
+              'Exact immediately adjacent following context in the same finalized text, including Unicode and spaces. Empty means no following-context constraint.',
             maxLength: 128,
             title: 'After',
             type: 'string',
           },
           before: {
             default: '',
+            description:
+              'Exact immediately adjacent preceding context in the same finalized text, including Unicode and spaces. Empty means no preceding-context constraint.',
             maxLength: 128,
             title: 'Before',
             type: 'string',
           },
           exact_text: {
+            description:
+              'Copy verbatim from the finalized owning segment/cell text. Unicode scalars, case and spaces must be identical; an ordinary digit cannot anchor a Unicode script digit. Together with before/after, this quotation must identify exactly one occurrence.',
             maxLength: 1000,
             minLength: 1,
             title: 'Exact Text',

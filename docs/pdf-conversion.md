@@ -43,11 +43,18 @@ not accepted reader content or durable operator investigation records.
 
 Worker contracts and API types are generated from the locked Python package. Unknown fields,
 stale source/task hashes, invented nodes/styles, missing text/resources or unresolved required
-structure fail closed. Recognition prompts 13/14 require each decimal, alphabetic or Roman ordered
+structure fail closed. Historical recognition prompts 13/14 require each decimal, alphabetic or Roman ordered
 item's observed ordinal, exact printed marker and depth; unreadable essential markers are unresolved.
 Historical prompt bytes remain fixed. Gemini's supported generation grammar describes these rules;
 the canonical schema and worker enforce them because the provider grammar cannot express all
-kind-dependent conditions. Malformed responses fail with retained investigation evidence.
+kind-dependent conditions. Current prompts 15/16 additionally finalize source-aware characters before
+quoting style, note and link spans from each owning segment/cell's final text. Reliable Unicode stays
+exact; ordinary raised/lowered digits use ordinary text and explicit placement styles. Intrinsic
+Unicode shape alone does not authorize another vertical shift. Supplied adjacent contexts must match
+exactly and identify one occurrence. Grammar3 carries this guidance; cross-field text/anchor
+relationships remain strict worker checks, without normalization, response repair or automatic replay.
+Malformed responses fail with retained investigation evidence. This source candidate is not live
+scanned/mixed qualification evidence.
 Text ranges use canonical code-point offsets with explicit UTF-16 browser mapping; surrogate splits
 are refused. Image bytes have validated media type, dimensions and hashes.
 Generated EPUB projection `ava-epub-canonical-2.2` preserves declared printed page labels in

@@ -12,7 +12,7 @@ const program = `
 import json
 from ava_pdf_epub.reconstruction_v2.protocol import PrepareResult, ReconstructionInput
 from ava_pdf_epub.reconstruction_v2.recognition_contract import RecognitionTask, RecognitionResponse
-from ava_pdf_epub.reconstruction_v2 import recognition_prompt, ordered_list_prompt
+from ava_pdf_epub.reconstruction_v2 import recognition_prompt, ordered_list_prompt, text_style_prompt
 from ava_pdf_epub.reconstruction_v2.report import ReconstructionReport
 from ava_pdf_epub.reconstruction_v2.refinement_contract import BookRefinementTask, BookRefinementResponse, RefinementBatch
 from ava_pdf_epub.reconstruction_v2.refinement_prompt import REFINEMENT_PROMPT, REFINEMENT_PROMPT_VERSION, BIBLIOGRAPHIC_PROMPT, LEGACY_REFINEMENT_PROMPT
@@ -24,6 +24,8 @@ for prefix in ("MERGED_TABLE", "PINNED_TABLE", "EXPLICIT_STYLE", "PINNED_STYLE",
         prompts.append((name, getattr(recognition_prompt, name)))
 for name in ("ORDERED_LIST_PROMPT", "ORDERED_LIST_PROMPT_VERSION", "PINNED_ORDERED_LIST_PROMPT", "PINNED_ORDERED_LIST_PROMPT_VERSION"):
     prompts.append((name, getattr(ordered_list_prompt, name)))
+for name in ("TEXT_STYLE_PROMPT", "TEXT_STYLE_PROMPT_VERSION", "PINNED_TEXT_STYLE_PROMPT", "PINNED_TEXT_STYLE_PROMPT_VERSION"):
+    prompts.append((name, getattr(text_style_prompt, name)))
 print(json.dumps(dict(schemas={c.__name__: c.model_json_schema() for c in classes}, prompts=prompts, legacyRefinementPrompt=LEGACY_REFINEMENT_PROMPT, refinementPrompt=REFINEMENT_PROMPT, refinementPromptVersion=REFINEMENT_PROMPT_VERSION, bibliographicPrompt=BIBLIOGRAPHIC_PROMPT),sort_keys=True,separators=(',',':')))
 `;
 async function emit(name, content) {

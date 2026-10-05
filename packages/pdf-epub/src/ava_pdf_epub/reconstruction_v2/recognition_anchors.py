@@ -6,9 +6,28 @@ from ..contracts.common import Record
 
 
 class RecognitionTextAnchor(Record):
-    exact_text: str = Field(min_length=1, max_length=1000)
-    before: str = Field(default="", max_length=128, exclude_if=lambda value: value == "")
-    after: str = Field(default="", max_length=128, exclude_if=lambda value: value == "")
+    exact_text: str = Field(
+        min_length=1,
+        max_length=1000,
+        description="Copy verbatim from the finalized owning segment/cell text. Unicode scalars, "
+        "case and spaces must be identical; an ordinary digit cannot anchor a Unicode script "
+        "digit. "
+        "Together with before/after, this quotation must identify exactly one occurrence.",
+    )
+    before: str = Field(
+        default="",
+        max_length=128,
+        exclude_if=lambda value: value == "",
+        description="Exact immediately adjacent preceding context in the same finalized text, "
+        "including Unicode and spaces. Empty means no preceding-context constraint.",
+    )
+    after: str = Field(
+        default="",
+        max_length=128,
+        exclude_if=lambda value: value == "",
+        description="Exact immediately adjacent following context in the same finalized text, "
+        "including Unicode and spaces. Empty means no following-context constraint.",
+    )
 
 
 def anchored_offsets(text: str, anchor: RecognitionTextAnchor) -> tuple[int, int]:

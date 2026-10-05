@@ -177,13 +177,13 @@ class UnicodeStylePrompt(unittest.TestCase):
             scratch = Path(directory)
             (scratch / page.render_path).write_bytes(pixels)
             prose = make_task(page, seed.source_sha256, seed.region_box, scratch)
-            self.assertEqual("ava-prose-region-13", prose.prompt_version)
+            self.assertEqual("ava-prose-region-15", prose.prompt_version)
             with patch(
                 "ava_pdf_epub.reconstruction_v2.route_native.native_page",
                 side_effect=NativeReviewRequired("Authored ambiguous structure"),
             ):
                 _, tasks = route_native(page, [table], [], seed.source_sha256, scratch)
-            self.assertEqual(["ava-prose-region-14"], [task.prompt_version for task in tasks])
+            self.assertEqual(["ava-prose-region-16"], [task.prompt_version for task in tasks])
             evidence = json.loads(tasks[0].native_evidence)
             self.assertEqual(3, len(evidence["ruled_tables"][0]["cells"]))
             self.assertEqual(2, evidence["ruled_tables"][0]["cells"][0]["column_span"])

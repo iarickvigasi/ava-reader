@@ -63,7 +63,13 @@ class RecognitionSpan(Record):
 class RecognitionCell(Record):
     row_span: int = Field(default=1, ge=1, le=20, exclude_if=lambda value: value == 1)
     column_span: int = Field(default=1, ge=1, le=8, exclude_if=lambda value: value == 1)
-    text: str = Field(max_length=200000)
+    text: str = Field(
+        max_length=200000,
+        description="Finalize this cell's exact source transcription before quoting any span. "
+        "Characters and placement are separate: ordinary raised/lowered digits use ordinary text "
+        "plus vertical_align; intrinsic Unicode stays exact. "
+        "Every anchor/context quotes this text.",
+    )
     box: RecognitionBox | None
     source_cell_id: str | None = Field(
         default=None, min_length=1, max_length=120, exclude_if=lambda value: value is None
