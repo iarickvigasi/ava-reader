@@ -1,0 +1,65 @@
+import { ServiceUnavailableException } from '@nestjs/common';
+import { pythonSemanticValidator } from '../../pdf-conversion/contracts/python-semantic-validator';
+import { readerSemanticValidator } from './semantic';
+
+jest.mock('../../pdf-conversion/contracts/python-semantic-validator', () => ({
+  pythonSemanticValidator: jest.fn(),
+}));
+
+describe('reader semantic concurrency and refusal contract', () => {
+  beforeEach(() => jest.mocked(pythonSemanticValidator).mockReset());
+  it('keeps two active slots, busy503 and releases both true/false results', async () => {
+    let finishFirst!: (valid: boolean) => void;
+    let finishSecond!: (valid: boolean) => void;
+    const first = new Promise<boolean>((resolve) => {
+      finishFirst = resolve;
+    });
+    const second = new Promise<boolean>((resolve) => {
+      finishSecond = resolve;
+    });
+    jest
+      .mocked(pythonSemanticValidator)
+      .mockReturnValueOnce(() => first)
+      .mockReturnValueOnce(() => second);
+    const pendingFirst = readerSemanticValidator('ava-reader-3', null, '{}');
+    const pendingSecond = readerSemanticValidator('ava-reader-3', null, '{}');
+    const busy = readerSemanticValidator('ava-reader-3', null, '{}');
+    await expect(busy).rejects.toBeInstanceOf(ServiceUnavailableException);
+    await expect(busy).rejects.toMatchObject({
+      message: 'Reader validation is busy.',
+      status: 503,
+    });
+    expect(pythonSemanticValidator).toHaveBeenCalledTimes(2);
+    finishFirst(true);
+    finishSecond(false);
+    await expect(pendingFirst).resolves.toBe(true);
+    await expect(pendingSecond).resolves.toBe(false);
+    jest
+      .mocked(pythonSemanticValidator)
+      .mockReturnValue(() => Promise.resolve(false));
+    await expect(
+      readerSemanticValidator('ava-reader-3', null, '{}'),
+    ).resolves.toBe(false);
+  });
+  it('retains unavailable503 and releases active slots after async and sync failures', async () => {
+    jest
+      .mocked(pythonSemanticValidator)
+      .mockReturnValueOnce(() => Promise.reject(new Error('PRIVATE_ERROR')))
+      .mockImplementationOnce(() => {
+        throw new Error('PRIVATE_FACTORY');
+      });
+    for (let i = 0; i < 2; i++)
+      await expect(
+        readerSemanticValidator('ava-reader-3', null, '{}'),
+      ).rejects.toMatchObject({
+        message: 'Reader validation is unavailable.',
+        status: 503,
+      });
+    jest
+      .mocked(pythonSemanticValidator)
+      .mockReturnValue(() => Promise.resolve(true));
+    await expect(
+      readerSemanticValidator('ava-reader-3', null, '{}'),
+    ).resolves.toBe(true);
+  });
+});
