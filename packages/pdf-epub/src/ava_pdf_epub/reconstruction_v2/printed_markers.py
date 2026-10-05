@@ -36,6 +36,11 @@ def printed_markers(segments: list[Segment], state: AssemblyState) -> list[Segme
                     "note_role": "endnote" if notes_heading else "footnote",
                 }
             )
+        if segment.kind == "note" and note:
+            if segment.note_label not in {note[1], note[0].rstrip()}:
+                raise ValueError("Observed printed note label conflicts with its marker")
+            # Brackets/full stops decorate the observed key; unrelated labels stay invalid.
+            segment = segment.model_copy(update={"note_label": note[1]})
         marker = (
             note
             if segment.kind == "note"
