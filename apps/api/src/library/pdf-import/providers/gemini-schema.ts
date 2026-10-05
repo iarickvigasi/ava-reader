@@ -62,6 +62,11 @@ export function geminiRecognitionSchema(
       output.required = [
         ...new Set([...(node.required as string[]), 'chapter_start']),
       ];
+      const properties = record(output.properties);
+      record(properties.list_ordered).description =
+        'For list_item: true for decimal, alphabetic or Roman ordered markers; false for bullets. Null for other kinds.';
+      record(properties.list_start).description =
+        'Every ordered item needs its own observed integer ordinal, including nested and continued items: a/b=1/2, i/ii=1/2, IV/V=4/5. Preserve the printed marker in text. Null for unordered items and other kinds. An unreadable essential marker belongs in unresolved.';
     }
     if (typeof node.const === 'string') output.enum = [node.const];
     return output;
@@ -70,6 +75,6 @@ export function geminiRecognitionSchema(
   output.description =
     version === 'ava-book-refinement-response-3'
       ? 'AVA structure-only source comparison. Decide exact supplied IDs, source-evidenced heading ancestry and sparse typography. Never return replacement text or new nodes. Host validates complete scope and relationships.'
-      : 'AVA recognition v2. Kind-specific observations are mandatory when applicable: headings need heading_level and chapter_start; chapter starts need level 1 and chapter_role; notes need note_label and note_role; list items need list_ordered and list_depth, numbered items also list_start; tables need cells; figures need alt; captions and credits need related_to. Preserve core fields and sparse styles. The host independently validates all bounds and relationships.';
+      : 'AVA recognition v2. Kind-specific observations are mandatory when applicable: headings need heading_level and chapter_start; chapter starts need level 1 and chapter_role; notes need note_label and note_role; list items need list_ordered and list_depth, every ordered decimal/alphabetic/Roman item also needs its own observed integer list_start; tables need cells; figures need alt; captions and credits need related_to. Preserve core fields and sparse styles. The host independently validates all bounds and relationships.';
   return output;
 }

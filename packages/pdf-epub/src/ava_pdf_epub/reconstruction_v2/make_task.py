@@ -14,6 +14,7 @@ from ..contracts.source import Box
 from .geometry import overlap
 from .observations import PageObservation
 from .recognition_contract import RecognitionTask
+from .recognition_versions import RecognitionPromptVersion
 from .task_identity import task_identifier
 
 
@@ -24,19 +25,7 @@ def make_task(
     scratch: Path,
     purpose: Literal["pdf_region_recognition", "pdf_structure_repair"] = "pdf_region_recognition",
     profile_id: ProfileId = LEGACY_PROFILE,
-    prompt_version: Literal[
-        "ava-prose-region-2",
-        "ava-prose-region-3",
-        "ava-prose-region-4",
-        "ava-prose-region-5",
-        "ava-prose-region-6",
-        "ava-prose-region-7",
-        "ava-prose-region-8",
-        "ava-prose-region-9",
-        "ava-prose-region-10",
-        "ava-prose-region-11",
-        "ava-prose-region-12",
-    ] = "ava-prose-region-11",
+    prompt_version: RecognitionPromptVersion = "ava-prose-region-13",
     table_evidence: list[dict[str, Any]] | None = None,
 ) -> RecognitionTask:
     with Image.open(scratch / page.render_path) as rendered:

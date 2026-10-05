@@ -9,6 +9,7 @@ from .annotation_coverage import annotation_coverage
 from .recognition_contract import RecognitionResponse, RecognitionTask
 from .recognition_coordinates import source_segment
 from .recognition_tables import qualify_recognized_tables
+from .recognition_versions import ANCHORED_PROMPT_VERSIONS, PINNED_PROMPT_VERSIONS
 from .segments import Segment
 from .source_refusal import refuse_task
 
@@ -22,14 +23,7 @@ def accept_response(task: RecognitionTask, response: RecognitionResponse) -> lis
         or response.render_sha256 != task.image.sha256
     ):
         raise ValueError("Recognition response belongs to another source/task/render")
-    anchored = task.prompt_version in {
-        "ava-prose-region-7",
-        "ava-prose-region-8",
-        "ava-prose-region-9",
-        "ava-prose-region-10",
-        "ava-prose-region-11",
-        "ava-prose-region-12",
-    }
+    anchored = task.prompt_version in ANCHORED_PROMPT_VERSIONS
     for observation in response.segments:
         spans = [
             *observation.spans,
@@ -53,14 +47,7 @@ def accept_response(task: RecognitionTask, response: RecognitionResponse) -> lis
             for c in table["cells"]
             if "source_cell_id" in c
         }
-        if task.prompt_version
-        in {
-            "ava-prose-region-4",
-            "ava-prose-region-6",
-            "ava-prose-region-8",
-            "ava-prose-region-10",
-            "ava-prose-region-12",
-        }
+        if task.prompt_version in PINNED_PROMPT_VERSIONS
         else {}
     )
     segments = [source_segment(segment, task.region_box, pinned) for segment in response.segments]

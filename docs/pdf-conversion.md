@@ -43,8 +43,13 @@ not accepted reader content or durable operator investigation records.
 
 Worker contracts and API types are generated from the locked Python package. Unknown fields,
 stale source/task hashes, invented nodes/styles, missing text/resources or unresolved required
-structure fail closed. Text ranges use canonical code-point offsets with explicit UTF-16 browser
-mapping; surrogate splits are refused. Image bytes have validated media type, dimensions and hashes.
+structure fail closed. Recognition prompts 13/14 require each decimal, alphabetic or Roman ordered
+item's observed ordinal, exact printed marker and depth; unreadable essential markers are unresolved.
+Historical prompt bytes remain fixed. Gemini's supported generation grammar describes these rules;
+the canonical schema and worker enforce them because the provider grammar cannot express all
+kind-dependent conditions. Malformed responses fail with retained investigation evidence.
+Text ranges use canonical code-point offsets with explicit UTF-16 browser mapping; surrogate splits
+are refused. Image bytes have validated media type, dimensions and hashes.
 Generated EPUB projection `ava-epub-canonical-2.2` preserves declared printed page labels in
 the page list and pagebreak accessibility names. Targets retain physical page IDs, so Roman numerals
 and restarted numbering cannot collide. Missing or blank labels use the physical page number for

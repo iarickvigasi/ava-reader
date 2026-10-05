@@ -4,7 +4,7 @@ import { geminiRecognitionSchema } from './gemini-schema';
 import { PdfProviderError } from './errors';
 import type { ProviderTask } from './types';
 // This version changes request hashes, never task identity or accepted response semantics.
-export const GEMINI_GRAMMAR_VERSION = 'ava-gemini-recognition-grammar-1';
+export const GEMINI_GRAMMAR_VERSION = 'ava-gemini-recognition-grammar-2';
 export function providerResponseSchema(modelId: string, task: ProviderTask) {
   const schema =
     task.schemaVersion === 'ava-recognition-response-2'

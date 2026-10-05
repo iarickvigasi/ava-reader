@@ -489,7 +489,7 @@ ordinary and bilingual views preserve spans and rows covered entirely by earlier
 Ruled PDF rectangles qualify merged origins; the existing borderless pattern retains separate
 geometry and does not acquire guessed merges. Unqualified visual tables route as complete tables.
 Pinned geometry was introduced by `ava-prose-region-4`; new span-bearing tasks select
-`ava-prose-region-12`, retaining historical region2–10 prompt bytes. The source-bound task pins
+`ava-prose-region-14`, retaining historical region2–12 prompt bytes. The source-bound task pins
 measured physical origins/rectangles and cell IDs, including
 blank cells. OCR returns text/styles against those IDs with `box:null`; acceptance binds the exact
 measured geometry and rejects unknown/duplicate IDs, changed spans or missing physical cells.
@@ -504,7 +504,7 @@ using new span-bearing candidates. Finished books are never reconverted or repla
 
 ### Exact inline text anchors
 
-New recognition tasks use `ava-prose-region-11` for prose and `ava-prose-region-12` for pinned
+New recognition tasks use `ava-prose-region-13` for prose and `ava-prose-region-14` for pinned
 ruled-table geometry. Inline spans quote `anchor.exact_text` from their own segment/cell;
 `anchor.before` / `anchor.after` provide exact adjacent context when a quotation repeats.
 The host computes Unicode code-point positions without changing transcription. Ambiguous or absent
@@ -515,8 +515,13 @@ character/typography distinctions and a final unique contextual-quotation check.
 ordinary digits remain ordinary text with explicit sub/super spans; intrinsic Unicode characters,
 emoji, combining marks and ligatures are preserved. No NFC/NFKC conversion, host text repair or
 automatic provider retry is added. Absent/ambiguous quotations remain refused by the unchanged
-strict semantic checks. A prompt clarification is not proof of source fidelity or live model behavior.
-New anchored responses cannot
+strict semantic checks. Region13/14 additionally requires every decimal, alphabetic or Roman ordered
+item's own observed integer ordinal, including nested items and page continuations. The exact printed
+marker and depth remain source observations. An unreadable essential marker uses an unsupported
+region plus unresolved; unordered bullets retain a null ordinal. Gemini's supported generation grammar
+describes this condition, while canonical and worker checks enforce it independently.
+A prompt clarification is not proof of source fidelity or live model behavior. Historical region2–12
+prompt bytes remain exact. New anchored responses cannot
 reinterpret old tasks. Styles are explicit objects, never implicit string IDs.
 
 Exact offsets establish positioning, not visual accuracy: compare complete emphasized phrases,

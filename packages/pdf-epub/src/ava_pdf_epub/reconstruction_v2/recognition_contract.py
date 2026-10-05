@@ -8,6 +8,7 @@ from ..contracts.common import Digest, Id, Record
 from ..contracts.profiles import ProfileId
 from ..contracts.source import Box
 from .recognition_segment import RecognitionSegment
+from .recognition_versions import RecognitionPromptVersion
 
 
 class RecognitionImage(Record):
@@ -32,19 +33,7 @@ class RecognitionTask(Record):
     image: RecognitionImage
     native_evidence: str = Field(max_length=200000)
     native_evidence_sha256: Digest
-    prompt_version: Literal[
-        "ava-prose-region-2",
-        "ava-prose-region-3",
-        "ava-prose-region-4",
-        "ava-prose-region-5",
-        "ava-prose-region-6",
-        "ava-prose-region-7",
-        "ava-prose-region-8",
-        "ava-prose-region-9",
-        "ava-prose-region-10",
-        "ava-prose-region-11",
-        "ava-prose-region-12",
-    ]
+    prompt_version: RecognitionPromptVersion
     response_schema_version: Literal["ava-recognition-response-2"]
 
     @model_validator(mode="after")

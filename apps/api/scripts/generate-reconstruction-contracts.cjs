@@ -12,12 +12,19 @@ const program = `
 import json
 from ava_pdf_epub.reconstruction_v2.protocol import PrepareResult, ReconstructionInput
 from ava_pdf_epub.reconstruction_v2.recognition_contract import RecognitionTask, RecognitionResponse
-from ava_pdf_epub.reconstruction_v2.recognition_prompt import SYSTEM_PROMPT, PROMPT_VERSION, MERGED_TABLE_PROMPT, MERGED_TABLE_PROMPT_VERSION, PINNED_TABLE_PROMPT, PINNED_TABLE_PROMPT_VERSION, EXPLICIT_STYLE_PROMPT, EXPLICIT_STYLE_PROMPT_VERSION, PINNED_STYLE_PROMPT, PINNED_STYLE_PROMPT_VERSION, ANCHORED_STYLE_PROMPT, ANCHORED_STYLE_PROMPT_VERSION, PINNED_ANCHORED_PROMPT, PINNED_ANCHORED_PROMPT_VERSION, BOUNDARY_STYLE_PROMPT, BOUNDARY_STYLE_PROMPT_VERSION, PINNED_BOUNDARY_PROMPT, PINNED_BOUNDARY_PROMPT_VERSION, UNICODE_STYLE_PROMPT, UNICODE_STYLE_PROMPT_VERSION, PINNED_UNICODE_PROMPT, PINNED_UNICODE_PROMPT_VERSION
+from ava_pdf_epub.reconstruction_v2 import recognition_prompt, ordered_list_prompt
 from ava_pdf_epub.reconstruction_v2.report import ReconstructionReport
 from ava_pdf_epub.reconstruction_v2.refinement_contract import BookRefinementTask, BookRefinementResponse, RefinementBatch
 from ava_pdf_epub.reconstruction_v2.refinement_prompt import REFINEMENT_PROMPT, REFINEMENT_PROMPT_VERSION, BIBLIOGRAPHIC_PROMPT, LEGACY_REFINEMENT_PROMPT
 classes = [PrepareResult, ReconstructionInput, RecognitionTask, RecognitionResponse, ReconstructionReport, BookRefinementTask, BookRefinementResponse, RefinementBatch]
-print(json.dumps(dict(schemas={c.__name__: c.model_json_schema() for c in classes}, prompt=SYSTEM_PROMPT, promptVersion=PROMPT_VERSION, mergedTablePrompt=MERGED_TABLE_PROMPT, mergedTablePromptVersion=MERGED_TABLE_PROMPT_VERSION, pinnedTablePrompt=PINNED_TABLE_PROMPT, pinnedTablePromptVersion=PINNED_TABLE_PROMPT_VERSION, explicitStylePrompt=EXPLICIT_STYLE_PROMPT, explicitStylePromptVersion=EXPLICIT_STYLE_PROMPT_VERSION, pinnedStylePrompt=PINNED_STYLE_PROMPT, pinnedStylePromptVersion=PINNED_STYLE_PROMPT_VERSION, anchoredStylePrompt=ANCHORED_STYLE_PROMPT, anchoredStylePromptVersion=ANCHORED_STYLE_PROMPT_VERSION, pinnedAnchoredPrompt=PINNED_ANCHORED_PROMPT, pinnedAnchoredPromptVersion=PINNED_ANCHORED_PROMPT_VERSION, boundaryStylePrompt=BOUNDARY_STYLE_PROMPT, boundaryStylePromptVersion=BOUNDARY_STYLE_PROMPT_VERSION, pinnedBoundaryPrompt=PINNED_BOUNDARY_PROMPT, pinnedBoundaryPromptVersion=PINNED_BOUNDARY_PROMPT_VERSION, unicodeStylePrompt=UNICODE_STYLE_PROMPT, unicodeStylePromptVersion=UNICODE_STYLE_PROMPT_VERSION, pinnedUnicodePrompt=PINNED_UNICODE_PROMPT, pinnedUnicodePromptVersion=PINNED_UNICODE_PROMPT_VERSION, legacyRefinementPrompt=LEGACY_REFINEMENT_PROMPT, refinementPrompt=REFINEMENT_PROMPT, refinementPromptVersion=REFINEMENT_PROMPT_VERSION, bibliographicPrompt=BIBLIOGRAPHIC_PROMPT),sort_keys=True,separators=(',',':')))
+prompts = [("RECOGNITION_PROMPT", recognition_prompt.SYSTEM_PROMPT), ("RECOGNITION_PROMPT_VERSION", recognition_prompt.PROMPT_VERSION)]
+for prefix in ("MERGED_TABLE", "PINNED_TABLE", "EXPLICIT_STYLE", "PINNED_STYLE", "ANCHORED_STYLE", "PINNED_ANCHORED", "BOUNDARY_STYLE", "PINNED_BOUNDARY", "UNICODE_STYLE", "PINNED_UNICODE"):
+    for suffix in ("_PROMPT", "_PROMPT_VERSION"):
+        name = prefix + suffix
+        prompts.append((name, getattr(recognition_prompt, name)))
+for name in ("ORDERED_LIST_PROMPT", "ORDERED_LIST_PROMPT_VERSION", "PINNED_ORDERED_LIST_PROMPT", "PINNED_ORDERED_LIST_PROMPT_VERSION"):
+    prompts.append((name, getattr(ordered_list_prompt, name)))
+print(json.dumps(dict(schemas={c.__name__: c.model_json_schema() for c in classes}, prompts=prompts, legacyRefinementPrompt=LEGACY_REFINEMENT_PROMPT, refinementPrompt=REFINEMENT_PROMPT, refinementPromptVersion=REFINEMENT_PROMPT_VERSION, bibliographicPrompt=BIBLIOGRAPHIC_PROMPT),sort_keys=True,separators=(',',':')))
 `;
 async function emit(name, content) {
   const formatted = await prettier.format(content, {
@@ -71,39 +78,13 @@ async function main() {
   );
   await emit(
     'prompt.ts',
-    '/* Generated; do not edit. */\nexport const RECOGNITION_PROMPT = ' +
-      JSON.stringify(data.prompt) +
-      ';\nexport const RECOGNITION_PROMPT_VERSION = ' +
-      JSON.stringify(data.promptVersion) +
-      ';\nexport const MERGED_TABLE_PROMPT = ' +
-      JSON.stringify(data.mergedTablePrompt) +
-      ';\nexport const MERGED_TABLE_PROMPT_VERSION = ' +
-      JSON.stringify(data.mergedTablePromptVersion) +
-      ';\nexport const PINNED_TABLE_PROMPT = ' +
-      JSON.stringify(data.pinnedTablePrompt) +
-      ';\nexport const PINNED_TABLE_PROMPT_VERSION = ' +
-      JSON.stringify(data.pinnedTablePromptVersion) +
-      ';\nexport const EXPLICIT_STYLE_PROMPT = ' +
-      JSON.stringify(data.explicitStylePrompt) +
-      ';\nexport const EXPLICIT_STYLE_PROMPT_VERSION = ' +
-      JSON.stringify(data.explicitStylePromptVersion) +
-      ';\nexport const PINNED_STYLE_PROMPT = ' +
-      JSON.stringify(data.pinnedStylePrompt) +
-      ';\nexport const PINNED_STYLE_PROMPT_VERSION = ' +
-      JSON.stringify(data.pinnedStylePromptVersion) +
-      ';\nexport const ANCHORED_STYLE_PROMPT = ' + JSON.stringify(data.anchoredStylePrompt) +
-      ';\nexport const ANCHORED_STYLE_PROMPT_VERSION = ' + JSON.stringify(data.anchoredStylePromptVersion) +
-      ';\nexport const PINNED_ANCHORED_PROMPT = ' + JSON.stringify(data.pinnedAnchoredPrompt) +
-      ';\nexport const PINNED_ANCHORED_PROMPT_VERSION = ' + JSON.stringify(data.pinnedAnchoredPromptVersion) +
-      ';\nexport const BOUNDARY_STYLE_PROMPT = ' + JSON.stringify(data.boundaryStylePrompt) +
-      ';\nexport const BOUNDARY_STYLE_PROMPT_VERSION = ' + JSON.stringify(data.boundaryStylePromptVersion) +
-      ';\nexport const PINNED_BOUNDARY_PROMPT = ' + JSON.stringify(data.pinnedBoundaryPrompt) +
-      ';\nexport const PINNED_BOUNDARY_PROMPT_VERSION = ' + JSON.stringify(data.pinnedBoundaryPromptVersion) +
-      ';\nexport const UNICODE_STYLE_PROMPT = ' + JSON.stringify(data.unicodeStylePrompt) +
-      ';\nexport const UNICODE_STYLE_PROMPT_VERSION = ' + JSON.stringify(data.unicodeStylePromptVersion) +
-      ';\nexport const PINNED_UNICODE_PROMPT = ' + JSON.stringify(data.pinnedUnicodePrompt) +
-      ';\nexport const PINNED_UNICODE_PROMPT_VERSION = ' + JSON.stringify(data.pinnedUnicodePromptVersion) +
-      ';\n',
+    '/* Generated; do not edit. */\n' +
+      data.prompts
+        .map(
+          ([name, value]) =>
+            'export const ' + name + ' = ' + JSON.stringify(value) + ';\n',
+        )
+        .join(''),
   );
 }
 main().catch((error) => {
