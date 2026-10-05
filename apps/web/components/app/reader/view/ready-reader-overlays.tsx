@@ -1,4 +1,5 @@
 import { useReaderUi } from "@/components/app/core/reader-ui-context";
+import { usePanelDismissFocus } from "../overlays/use-panel-dismiss-focus";
 import type { ReadyReaderProps } from "../shared/types";
 import { ReaderAiChatsOverlay } from "../overlays/ai-chats/reader-ai-chats-overlay";
 import { ReaderAiCommentsOverlay } from "../overlays/ai-comments/reader-ai-comments-overlay";
@@ -16,6 +17,7 @@ export function ReadyReaderOverlays(props: ReadyReaderProps) {
   const { activePanel, closePanel } = useReaderUi();
   const { highlights } = useHighlightsContext();
   const { comments } = useAiCommentsContext();
+  const dismissPanel = usePanelDismissFocus(activePanel, closePanel);
   const jump = (locator: ReaderRangeLocator | null | undefined) => {
     if (!locator) return;
     closePanel();
@@ -57,7 +59,7 @@ export function ReadyReaderOverlays(props: ReadyReaderProps) {
       return (
         <ReaderPreferencesOverlay
           fontScale={props.fontScale}
-          onClose={closePanel}
+          onClose={dismissPanel}
           onDecreaseFont={props.onDecreaseFont}
           onIncreaseFont={props.onIncreaseFont}
         />
@@ -67,12 +69,12 @@ export function ReadyReaderOverlays(props: ReadyReaderProps) {
         <ReaderDownloadOverlay book={props.payload.book} onClose={closePanel} />
       );
     case "ai-chats":
-      return <ReaderAiChatsOverlay onClose={closePanel} />;
+      return <ReaderAiChatsOverlay onClose={dismissPanel} />;
     case "highlights":
       return (
         <ReaderHighlightsOverlay
           toc={props.payload.toc}
-          onClose={closePanel}
+          onClose={dismissPanel}
           onSelectHighlight={(id) =>
             jump(highlights.find((row) => row.id === id)?.locator)
           }
@@ -82,7 +84,7 @@ export function ReadyReaderOverlays(props: ReadyReaderProps) {
       return (
         <ReaderAiCommentsOverlay
           toc={props.payload.toc}
-          onClose={closePanel}
+          onClose={dismissPanel}
           onSelectAiComment={(id) =>
             jump(comments.find((row) => row.id === id)?.locator)
           }
