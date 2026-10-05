@@ -28,6 +28,10 @@ class AssemblyState:
     refinement_evidence: list[dict[str, Any]] = field(default_factory=list)
     bibliographic_roles: dict[str, tuple[str | None, str]] = field(default_factory=dict)
     refined_joins: dict[tuple[str, str], bool] = field(default_factory=dict)
+    source_feature_policy: str | None = None
+    source_feature_evidence: list[dict[str, Any]] = field(default_factory=list)
+    requested_source_features: int = 0
+    unrequested_optional_features: int = 0
 
     def style_id(self, style: Style | None) -> str | None:
         if style is None:

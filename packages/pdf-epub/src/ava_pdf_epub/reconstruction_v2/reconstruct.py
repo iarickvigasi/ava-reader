@@ -27,7 +27,7 @@ from .prepare_refinement import prepare_refinement
 from .prepared import PreparedPage
 from .printed_markers import printed_markers
 from .recognition_contract import RecognitionResponse
-from .refinement_contract import BookRefinementResponse
+from .refinement_contract import AnyRefinementResponse
 from .source_cover import preserve_source_cover
 from .source_segments import source_segments
 from .stream_joins import stream_joins
@@ -40,6 +40,7 @@ class ReconstructedBook:
     assets: dict[str, bytes]
     structure_findings: list[Finding]
     refinement_evidence: list[dict[str, Any]]
+    source_feature_coverage: dict[str, Any] | None = None
 
 
 def reconstruct(
@@ -47,14 +48,22 @@ def reconstruct(
     scratch: Path,
     prepared: Sequence[PreparedPage],
     responses: list[RecognitionResponse],
-    refinements: list[BookRefinementResponse] | None = None,
+    refinements: list[AnyRefinementResponse] | None = None,
+    *,
+    source_feature_policy: str | None = None,
 ) -> ReconstructedBook:
     pages, segments, state = source_segments(source, scratch, prepared, responses)
     if refinements is not None:
-        tasks = prepare_refinement(source, scratch, prepared, segments, state)
+        tasks = prepare_refinement(
+            source, scratch, prepared, segments, state, source_feature_policy=source_feature_policy
+        )
         if tasks or refinements:
             segments = apply_refinement(segments, tasks, refinements, state)
         del tasks
+    if source_feature_policy is not None and refinements is None:
+        raise ValueError("Current source feature policy requires complete refinement receipts")
+    from .source_feature_report import source_feature_coverage
+
     segments = corroborate_ocr_font_faces(source, prepared, segments, state)
     for page in pages:
         page["label"] = state.page_labels.get(page["number"])
@@ -77,6 +86,9 @@ def reconstruct(
     # All relationships are now compiled into the graph; drop source-only objects
     # before validating the owned canonical representation.
     del segments
+    from .source_feature_binding import bind_source_features
+
+    bind_source_features(state)
     state.release_observations()
     gc.collect()
     book = CanonicalBookV2.model_validate(
@@ -101,6 +113,7 @@ def reconstruct(
     # The validated model now owns text, mappings, styles and relationships. Do not
     # retain the source observations and raw graph alongside export's validation copy.
     del pages, chapters, toc, metadata, addresses
+    feature_coverage = source_feature_coverage(state, book)
     state.release_source_workspace()
     gc.collect()
     return ReconstructedBook(
@@ -109,4 +122,5 @@ def reconstruct(
         assets=state.assets,
         structure_findings=[*state.structure_findings, *annotation_findings(source)],
         refinement_evidence=state.refinement_evidence,
+        source_feature_coverage=feature_coverage,
     )

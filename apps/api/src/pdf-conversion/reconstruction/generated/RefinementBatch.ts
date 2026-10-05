@@ -95,9 +95,111 @@ export type SchemaVersion1 = 'ava-book-refinement-task-3';
 export type SourceSha2561 = string;
 export type TaskId = string;
 /**
+ * @minItems 1
+ * @maxItems 48
+ */
+export type Crops1 = [SourceFeatureCrop, ...SourceFeatureCrop[]];
+export type Id4 = string;
+/**
+ * @minItems 4
+ * @maxItems 4
+ */
+export type ImageBox1 = [number, number, number, number];
+export type NodeId1 = string;
+export type Page2 = number;
+export type Part1 = 'context';
+export type RenderSha2561 = string;
+export type RequestNodeId = string;
+/**
+ * @maxItems 0
+ */
+export type DecisionIds1 = [];
+/**
+ * @maxItems 0
+ */
+export type Edges1 = [];
+/**
+ * @maxItems 0
+ */
+export type MetadataIds1 = [];
+/**
+ * @minItems 1
+ * @maxItems 256
+ */
+export type Nodes1 = [SourceFeatureNode, ...SourceFeatureNode[]];
+export type BodyReferenceId1 = string | null;
+export type CandidateOriginalKind1 = null;
+export type Id5 = string;
+export type Kind1 = 'heading' | 'paragraph' | 'quote';
+export type ObservationMethod = 'native' | 'ocr' | 'render';
+export type ObservedChapter1 = boolean;
+export type ObservedLevel1 = number | null;
+export type ObservedRole1 =
+  | ('frontmatter' | 'bodymatter' | 'backmatter')
+  | null;
+export type Page3 = number;
+export type RankedSource1 = true;
+export type StructureCandidate1 = false;
+export type TextExcerpt1 = string;
+export type TextLength = number;
+export type TextSha2561 = string;
+export type ObservationSha2561 = string;
+export type PixelsPerPoint1 = 2;
+export type ProfileId1 = 'ava-pdf-prose-en-v2' | 'ava-pdf-prose-en-uk-v3';
+export type PromptVersion1 = 'ava-book-refinement-7';
+export type ResponseSchemaVersion1 = 'ava-book-refinement-response-4';
+export type SchemaVersion2 = 'ava-book-refinement-task-4';
+/**
+ * @minItems 1
+ * @maxItems 24
+ */
+export type SourceFeatures = [SourceFeatureRequest, ...SourceFeatureRequest[]];
+/**
+ * @maxItems 2
+ */
+export type AllowedRoles = ('paragraph' | 'quote')[];
+export type NodeId2 = string;
+export type Page4 = number;
+/**
+ * @minItems 1
+ * @maxItems 3
+ */
+export type ReferenceIds = [string, ...string[]];
+/**
+ * @minItems 1
+ * @maxItems 7
+ */
+export type RequestedFeatures = [
+  (
+    | 'paragraph_role'
+    | 'family'
+    | 'weight'
+    | 'italic'
+    | 'first_line_indent'
+    | 'block_inset'
+    | 'relative_size'
+  ),
+  ...(
+    | 'paragraph_role'
+    | 'family'
+    | 'weight'
+    | 'italic'
+    | 'first_line_indent'
+    | 'block_inset'
+    | 'relative_size'
+  )[],
+];
+export type SelectionReason =
+  | 'isolated_prose'
+  | 'declared_quote'
+  | 'heading_comparison'
+  | 'appearance_comparison';
+export type SourceSha2562 = string;
+export type TaskId1 = string;
+/**
  * @maxItems 32
  */
-export type Tasks = BookRefinementTask[];
+export type Tasks = (BookRefinementTask | SourceFeatureTask)[];
 
 export interface RefinementBatch {
   schema_version: SchemaVersion;
@@ -185,4 +287,59 @@ export interface Style {
   strike_through?: StrikeThrough;
   underline?: Underline;
   vertical_align?: VerticalAlign;
+}
+export interface SourceFeatureTask {
+  crops: Crops1;
+  decision_ids: DecisionIds1;
+  edges: Edges1;
+  image: RecognitionImage;
+  metadata_ids?: MetadataIds1;
+  nodes: Nodes1;
+  observation_sha256: ObservationSha2561;
+  pixels_per_point: PixelsPerPoint1;
+  profile_id: ProfileId1;
+  prompt_version: PromptVersion1;
+  response_schema_version: ResponseSchemaVersion1;
+  schema_version: SchemaVersion2;
+  source_features: SourceFeatures;
+  source_sha256: SourceSha2562;
+  task_id: TaskId1;
+}
+export interface SourceFeatureCrop {
+  id: Id4;
+  image_box: ImageBox1;
+  node_id: NodeId1;
+  page: Page2;
+  part: Part1;
+  render_sha256: RenderSha2561;
+  request_node_id: RequestNodeId;
+  source_box: Box;
+}
+export interface SourceFeatureNode {
+  body_reference_id: BodyReferenceId1;
+  candidate_original_kind?: CandidateOriginalKind1;
+  id: Id5;
+  kind: Kind1;
+  observation_method: ObservationMethod;
+  observed_chapter: ObservedChapter1;
+  observed_level: ObservedLevel1;
+  observed_role: ObservedRole1;
+  observed_style: Style | null;
+  page: Page3;
+  ranked_source?: RankedSource1;
+  source_box: Box;
+  structure_candidate?: StructureCandidate1;
+  text_excerpt: TextExcerpt1;
+  text_length: TextLength;
+  text_sha256: TextSha2561;
+}
+export interface SourceFeatureRequest {
+  allowed_roles: AllowedRoles;
+  column_box: Box;
+  node_id: NodeId2;
+  page: Page4;
+  reference_ids: ReferenceIds;
+  requested_features: RequestedFeatures;
+  selection_reason: SelectionReason;
+  source_box: Box;
 }

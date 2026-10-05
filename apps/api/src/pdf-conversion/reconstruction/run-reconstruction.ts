@@ -61,6 +61,7 @@ export async function runReconstruction(
       mode: 'reconstruct_stream',
       input: {
         schema_version: 'ava-reconstruct-input-1',
+        source_feature_policy: 'ava-ocr-source-features-1',
         profile_id: job.profile_id,
         source_sha256: job.source.sha256,
         responses: prepared.responses,

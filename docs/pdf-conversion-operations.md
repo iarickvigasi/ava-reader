@@ -34,6 +34,14 @@ For merged-table tasks, also check that the installed `RecognitionTask` prompt l
 `ava-prose-region-4` and `RecognitionCell` includes `source_cell_id`. The package version alone
 is insufficient: cached wheels can retain old code when the local version is unchanged.
 
+The current finite OCR source-feature policy also requires the installed worker and host validator
+to expose task/response versions 4, prompt 7 and reconstruction report 2, matching the generated API
+contracts. Historical task/response versions 3 remain separate. Confirm the selected route and grant
+can authorize prompt 7 when source comparisons require it, alongside that job's recognition and
+structure prompts, before a paid qualification run. Do not activate the current API with an older
+installed package that can emit only report 1. These version checks establish compatibility;
+source-fidelity and normal reader qualification remain separate.
+
 The field check diagnoses this contract revision; it is not full deployment qualification.
 Verify a representative generated EPUB through the actual importer and reader before activation.
 Keep any failed import and its diagnostics; use a fresh test import after correcting deployment,

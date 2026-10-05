@@ -8,15 +8,20 @@ import {
 } from './generated/refinement-prompt';
 import { recognitionSchemas } from './generated/schemas';
 import type { BookRefinementTask } from './generated/BookRefinementTask';
+import type { SourceFeatureTask } from './generated/SourceFeatureTask';
 import { validatePacket } from './validate-packet';
 import { refinementEvidence } from './refinement-evidence';
 import { PdfRuntimeError } from '../runtime/runtime-error';
+import { SOURCE_FEATURE_PROMPT } from './generated/refinement-prompt';
 
 export function refinementProviderTask(
-  input: BookRefinementTask,
+  input: BookRefinementTask | SourceFeatureTask,
   sourceSha256: string,
 ): ProviderTask {
-  const task = validatePacket('BookRefinementTask', structuredClone(input));
+  const task =
+    input.schema_version === 'ava-book-refinement-task-4'
+      ? validatePacket('SourceFeatureTask', structuredClone(input))
+      : validatePacket('BookRefinementTask', structuredClone(input));
   const image = Buffer.from(task.image.base64, 'base64');
   if (
     task.source_sha256 !== sourceSha256 ||
@@ -39,13 +44,15 @@ export function refinementProviderTask(
       {
         role: 'system',
         content:
-          task.prompt_version === 'ava-book-refinement-4'
-            ? BIBLIOGRAPHIC_PROMPT
-            : task.prompt_version === 'ava-book-refinement-3'
-              ? LEGACY_REFINEMENT_PROMPT
-              : task.prompt_version === 'ava-book-refinement-6'
-                ? MIXED_HIERARCHY_PROMPT
-                : REFINEMENT_PROMPT,
+          task.prompt_version === 'ava-book-refinement-7'
+            ? SOURCE_FEATURE_PROMPT
+            : task.prompt_version === 'ava-book-refinement-4'
+              ? BIBLIOGRAPHIC_PROMPT
+              : task.prompt_version === 'ava-book-refinement-3'
+                ? LEGACY_REFINEMENT_PROMPT
+                : task.prompt_version === 'ava-book-refinement-6'
+                  ? MIXED_HIERARCHY_PROMPT
+                  : REFINEMENT_PROMPT,
       },
       {
         role: 'user',
@@ -74,6 +81,9 @@ export function refinementProviderTask(
         ],
       },
     ],
-    responseSchema: recognitionSchemas.BookRefinementResponse,
+    responseSchema:
+      task.response_schema_version === 'ava-book-refinement-response-4'
+        ? recognitionSchemas.SourceFeatureResponse
+        : recognitionSchemas.BookRefinementResponse,
   };
 }

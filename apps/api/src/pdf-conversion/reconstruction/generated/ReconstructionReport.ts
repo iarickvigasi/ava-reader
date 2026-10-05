@@ -33,8 +33,59 @@ export type TaskSha256 = string;
  * @maxItems 32
  */
 export type RefinementEvidence = RefinementEvidence1[];
-export type SchemaVersion = 'ava-reconstruction-report-1';
+export type SchemaVersion =
+  | 'ava-reconstruction-report-1'
+  | 'ava-reconstruction-report-2';
+export type CanonicalBlockId = string | null;
+export type CanonicalStart = number | null;
+/**
+ * @maxItems 4
+ */
+export type CropIds = string[];
+export type CropSha256 = string | null;
+export type Disposition = 'observed' | 'unknown' | 'not_applicable';
+export type Feature =
+  | 'paragraph_role'
+  | 'family'
+  | 'weight'
+  | 'italic'
+  | 'first_line_indent'
+  | 'block_inset'
+  | 'relative_size';
+export type NodeId = string;
+export type ObservationSha2561 = string;
+export type Page1 = number;
+export type Reason =
+  | (
+      | 'source_blurred'
+      | 'source_clipped'
+      | 'source_context_insufficient'
+      | 'heading_has_no_prose_first_line'
+      | 'comparison_budget_bound'
+      | 'source_context_unavailable'
+    )
+  | null;
+export type ResponseSha2561 = string | null;
 export type SourceSha256 = string;
+export type TaskId1 = string | null;
+export type TaskSha2561 = string | null;
+export type TextLength = number;
+export type TextSha256 = string;
+export type Value =
+  | ('paragraph' | 'quote' | 'serif' | 'sans-serif' | 'monospace')
+  | boolean
+  | number
+  | null;
+/**
+ * @maxItems 1792
+ */
+export type Evidence = SourceFeatureEvidence[];
+export type InspectedFeatures = number;
+export type PolicyId = 'ava-ocr-source-features-1';
+export type RequestedFeatures = number;
+export type UninspectedFeatures = number;
+export type UnrequestedOptionalCandidates = number;
+export type SourceSha2561 = string;
 
 export interface ReconstructionReport {
   canonical_sha256: CanonicalSha256;
@@ -48,7 +99,8 @@ export interface ReconstructionReport {
   refinement_evidence?: RefinementEvidence;
   resource_hashes: ResourceHashes;
   schema_version: SchemaVersion;
-  source_sha256: SourceSha256;
+  source_feature_coverage?: SourceFeatureCoverage | null;
+  source_sha256: SourceSha2561;
 }
 export interface Checks {
   [k: string]: 'pass' | 'not_run';
@@ -77,4 +129,32 @@ export interface RefinementEvidence1 {
 }
 export interface ResourceHashes {
   [k: string]: string;
+}
+export interface SourceFeatureCoverage {
+  evidence: Evidence;
+  inspected_features: InspectedFeatures;
+  policy_id: PolicyId;
+  requested_features: RequestedFeatures;
+  uninspected_features: UninspectedFeatures;
+  unrequested_optional_candidates: UnrequestedOptionalCandidates;
+}
+export interface SourceFeatureEvidence {
+  box: Box;
+  canonical_block_id?: CanonicalBlockId;
+  canonical_start?: CanonicalStart;
+  crop_ids: CropIds;
+  crop_sha256: CropSha256;
+  disposition: Disposition;
+  feature: Feature;
+  node_id: NodeId;
+  observation_sha256: ObservationSha2561;
+  page: Page1;
+  reason: Reason;
+  response_sha256: ResponseSha2561;
+  source_sha256: SourceSha256;
+  task_id: TaskId1;
+  task_sha256: TaskSha2561;
+  text_length: TextLength;
+  text_sha256: TextSha256;
+  value: Value;
 }

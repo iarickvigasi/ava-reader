@@ -9,11 +9,15 @@ import { PdfRuntimeError } from '../runtime/runtime-error';
 
 import type { BookRefinementTask } from './generated/BookRefinementTask';
 import type { BookRefinementResponse } from './generated/BookRefinementResponse';
+import type { SourceFeatureTask } from './generated/SourceFeatureTask';
+import type { SourceFeatureResponse } from './generated/SourceFeatureResponse';
 import type { RefinementBatch } from './generated/RefinementBatch';
 
 type Packets = {
   BookRefinementTask: BookRefinementTask;
   BookRefinementResponse: BookRefinementResponse;
+  SourceFeatureTask: SourceFeatureTask;
+  SourceFeatureResponse: SourceFeatureResponse;
   RefinementBatch: RefinementBatch;
   PrepareResult: PrepareResult;
   RecognitionTask: RecognitionTask;

@@ -1,13 +1,16 @@
 import { createHash } from 'node:crypto';
 import type { BookRefinementTask } from './generated/BookRefinementTask';
+import type { SourceFeatureTask } from './generated/SourceFeatureTask';
+import type { SourceFeatureResponse } from './generated/SourceFeatureResponse';
 import type { BookRefinementResponse } from './generated/BookRefinementResponse';
 import type { CoordinatorDependencies } from './coordinator-types';
 import type { SandboxInput } from '../runtime/container-arguments';
 import { PdfRuntimeError } from '../runtime/runtime-error';
+import { parseSourceRefusal } from './source-refusal';
 
 export async function validateRefinement(
-  task: BookRefinementTask,
-  response: BookRefinementResponse | null,
+  task: BookRefinementTask | SourceFeatureTask,
+  response: BookRefinementResponse | SourceFeatureResponse | null,
   sandbox: CoordinatorDependencies['sandbox'],
   input: () => SandboxInput,
 ) {
@@ -17,6 +20,8 @@ export async function validateRefinement(
   if (auxiliaryBytes.length > 8 * 1024 ** 2)
     throw new PdfRuntimeError('RESOURCE_LIMIT');
   const result = await sandbox({ ...input(), auxiliaryBytes });
+  if (result.exitCode === 1)
+    throw parseSourceRefusal(result.stdout, task.source_sha256);
   if (result.exitCode !== 0 || result.stdout.length > 1024)
     throw new PdfRuntimeError('INVALID_RESULT');
   let receipt: unknown;

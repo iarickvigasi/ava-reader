@@ -19,5 +19,12 @@ def prepare_refinement_source(
     return RefinementBatch(
         schema_version="ava-book-refinement-batch-1",
         source_sha256=request.source_sha256,
-        tasks=prepare_refinement(source, scratch, prepared, segments, state),
+        tasks=prepare_refinement(
+            source,
+            scratch,
+            prepared,
+            segments,
+            state,
+            source_feature_policy=request.source_feature_policy,
+        ),
     )

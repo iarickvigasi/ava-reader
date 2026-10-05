@@ -11,7 +11,7 @@ from PIL import Image
 from ..contracts.common import unique
 
 if TYPE_CHECKING:
-    from .refinement_contract import BookRefinementTask
+    from .refinement_contract import AnyRefinementTask
 
 
 def refinement_identifier(value: dict[str, object]) -> str:
@@ -29,7 +29,7 @@ def refinement_identifier(value: dict[str, object]) -> str:
     )
 
 
-def validate_refinement_task(task: "BookRefinementTask") -> None:
+def validate_refinement_task(task: "AnyRefinementTask") -> None:
     if task.task_id != refinement_identifier(task.model_dump(mode="json")):
         raise ValueError("Refinement task identity mismatch")
     for values, label in [
@@ -56,12 +56,21 @@ def validate_refinement_task(task: "BookRefinementTask") -> None:
         for n in task.nodes
     ):
         raise ValueError("Native heading rank review requires its versioned heading contract")
-    if not task.decision_ids and not task.metadata_ids:
+    from .source_feature_task_contract import SourceFeatureTask
+
+    if isinstance(task, SourceFeatureTask):
+        from .source_feature_identity import validate_source_feature_task
+
+        validate_source_feature_task(task)
+    if not task.decision_ids and not task.metadata_ids and not isinstance(task, SourceFeatureTask):
         raise ValueError("Refinement task has no decisions")
     if task.metadata_ids and task.prompt_version != "ava-book-refinement-4":
         raise ValueError("Bibliographic decisions require the contextual metadata prompt")
     nodes = {n.id for n in task.nodes}
-    unique([c.node_id + ":" + c.part for c in task.crops], "crop parts")
+    unique(
+        [getattr(c, "request_node_id", "") + ":" + c.node_id + ":" + c.part for c in task.crops],
+        "crop parts",
+    )
     page_by_node = {n.id: n.page for n in task.nodes}
     if any(
         c.page != page_by_node.get(c.node_id)

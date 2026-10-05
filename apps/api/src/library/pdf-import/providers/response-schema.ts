@@ -11,7 +11,9 @@ export function providerResponseSchema(modelId: string, task: ProviderTask) {
       ? recognitionSchemas.RecognitionResponse
       : task.schemaVersion === 'ava-book-refinement-response-3'
         ? recognitionSchemas.BookRefinementResponse
-        : null;
+        : task.schemaVersion === 'ava-book-refinement-response-4'
+          ? recognitionSchemas.SourceFeatureResponse
+          : null;
   if (!modelId.startsWith('google/gemini-') || !schema)
     return task.responseSchema;
   if (jsonHash(task.responseSchema) !== jsonHash(schema))

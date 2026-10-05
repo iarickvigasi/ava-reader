@@ -10,7 +10,7 @@ from .assembly_state import AssemblyState
 from .page_checkpoints import PreparedPageMap
 from .prepared import PreparedPage
 from .refinement_catalogue import refinement_catalogue
-from .refinement_contract import BookRefinementTask, RefinementEdge
+from .refinement_contract import AnyRefinementTask, BookRefinementTask, RefinementEdge
 from .refinement_digest import observation_digest
 from .refinement_groups import refinement_groups
 from .refinement_identity import refinement_identifier
@@ -26,11 +26,17 @@ def prepare_refinement(
     prepared: Sequence[PreparedPage],
     segments: list[Segment],
     state: AssemblyState,
-) -> list[BookRefinementTask]:
+    *,
+    source_feature_policy: str | None = None,
+) -> list[AnyRefinementTask]:
+    from .source_feature_contract import FEATURE_POLICY
+
+    if source_feature_policy not in {None, FEATURE_POLICY}:
+        raise ValueError("Unsupported source feature policy")
     catalogue = refinement_catalogue(
         segments, state, include_bibliography=prepared[0].profile_id == BILINGUAL_PROFILE
     )
-    if not catalogue.decisions and not catalogue.metadata_ids:
+    if not catalogue.decisions and not catalogue.metadata_ids and source_feature_policy is None:
         return []
     structure_prompt = (
         MIXED_HIERARCHY_PROMPT_VERSION
@@ -41,7 +47,7 @@ def prepare_refinement(
     source_sha = hashlib.sha256(source.read_bytes()).hexdigest()
     segment_map, page_map = {s.id: s for s in segments}, PreparedPageMap(prepared)
     tail_ids = {e.previous_id for e in catalogue.edges}
-    tasks = []
+    tasks: list[AnyRefinementTask] = []
     groups: list[tuple[list[str], list[str], list[RefinementEdge], list[str]]] = [
         (decisions, crop_ids, edges, [])
         for decisions, crop_ids, edges in refinement_groups(
@@ -86,6 +92,10 @@ def prepare_refinement(
             raw["metadata_ids"] = metadata_ids
         raw["task_id"] = refinement_identifier(raw)
         tasks.append(BookRefinementTask.model_validate(raw))
+    if source_feature_policy is not None:
+        from .source_feature_tasks import source_feature_tasks
+
+        tasks.extend(source_feature_tasks(source, scratch, prepared, segments, state, len(tasks)))
     if len(tasks) > 32:
         raise ValueError("Too many refinement tasks")
     return tasks

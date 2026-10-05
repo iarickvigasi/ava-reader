@@ -7,7 +7,7 @@ from pydantic import Field
 from ..contracts.common import Digest, Record
 from ..contracts.profiles import LEGACY_PROFILE, ProfileId
 from .recognition_contract import RecognitionResponse, RecognitionTask
-from .refinement_contract import BookRefinementResponse
+from .refinement_contract import AnyRefinementResponse
 
 
 class PrepareResult(Record):
@@ -25,5 +25,8 @@ class ReconstructionInput(Record):
     schema_version: Literal["ava-reconstruct-input-1"]
     profile_id: ProfileId = LEGACY_PROFILE
     source_sha256: Digest
+    source_feature_policy: Literal["ava-ocr-source-features-1"] | None = Field(
+        default=None, exclude_if=lambda v: v is None
+    )
     responses: list[RecognitionResponse] = Field(max_length=25000)
-    refinements: list[BookRefinementResponse] = Field(default_factory=list, max_length=32)
+    refinements: list[AnyRefinementResponse] = Field(default_factory=list, max_length=32)

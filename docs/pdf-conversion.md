@@ -270,6 +270,33 @@ rejects a response that cites another node's reference, even when its visual dec
 Accepted source-bound responses can be reused during investigation without new provider calls;
 failed Library imports are not reopened or changed to Ready by diagnostic replays.
 
+### Finite OCR quotation and style comparisons
+
+The current API reconstruction input selects `ava-ocr-source-features-1`. After the historical
+structure, metadata and join review, the converter may request additional comparisons for isolated
+OCR prose, declared quotations and headings. Each request binds the original source, observed node,
+complete target crop and nearby body reference; optional heading peers are included only when the
+complete peer fits. The comparison may distinguish paragraph from quotation and observe generic font
+family, weight, italic, first-line indentation, block inset and size relative to body prose. It cannot
+change the recognized text, inline spans, links, metadata or chapter hierarchy. Native observations
+keep their existing authority. These comparisons do not repair literal spaces or ambiguous Unicode.
+
+The policy catalogues at most 256 appearances and dispatches at most 24, sharing the existing 32-task
+book refinement budget. Essential paragraph/quotation decisions are selected first. Optional
+uninspected features and unavailable source context remain explicitly unknown, with separate counts
+for optional appearances outside the catalogue; an unresolved essential role refuses conversion.
+A comparison result applies only to its named appearance, never to every paragraph with a similar
+style. Generic font observations do not imply recovery or embedding of the original typeface.
+
+These comparisons use task/response versions 4 and prompt 7, separately from the unchanged historical
+task/response versions 3 and prompts 3–6. The API requires reconstruction report 2 for new publication:
+its finite feature ledger must agree with the final canonical block, OCR page/box and exact text
+range, plus the source/task/response/crop bindings. A successful zero-selection run still records
+complete zero coverage. Historical omitted-policy reconstruction and report 1 remain available for
+compatibility and diagnostics; they do not satisfy the new API publication gate. Source and contract
+tests establish these bounded rules. Installed-worker, actual provider, source-fidelity and reader
+qualification remain separate checks.
+
 ### Native compound-word layout joins
 
 After source-bound refinement, ordinary native prose may remove the proven layout separator between

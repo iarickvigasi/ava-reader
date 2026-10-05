@@ -2,18 +2,19 @@
 
 from ..contracts.common import document_digest
 from .assembly_state import AssemblyState
-from .refinement_contract import BookRefinementResponse, BookRefinementTask
+from .refinement_contract import AnyRefinementResponse, AnyRefinementTask, BookRefinementResponse
 from .refinement_digest import observation_digest
 from .refinement_graph import validate_refined_graph
 from .refinement_joins import refined_boundaries
 from .refinement_response import accept_refinement
 from .segments import Segment
+from .source_feature_task_contract import SourceFeatureTask
 
 
 def apply_refinement(
     segments: list[Segment],
-    tasks: list[BookRefinementTask],
-    responses: list[BookRefinementResponse],
+    tasks: list[AnyRefinementTask],
+    responses: list[AnyRefinementResponse],
     state: AssemblyState,
 ) -> list[Segment]:
     if any(t.observation_sha256 != observation_digest(segments) for t in tasks):
@@ -23,9 +24,15 @@ def apply_refinement(
         raise ValueError("Refinement task coverage differs")
     updates, parents, edges = {}, {}, {}
     evidence = []
+    feature_tasks: list[SourceFeatureTask] = []
     for task in tasks:
         response = receipts[task.task_id]
         accept_refinement(task, response)
+        if isinstance(task, SourceFeatureTask):
+            feature_tasks.append(task)
+            continue
+        if not isinstance(response, BookRefinementResponse):
+            raise ValueError("Historical response authority differs")
         for metadata in response.metadata_decisions:
             if metadata.node_id in state.bibliographic_roles:
                 raise ValueError("Repeated bibliographic decision")
@@ -100,4 +107,8 @@ def apply_refinement(
     state.refined_joins.update(edges)
     state.refinement_evidence.extend(evidence)
     state.structure_findings = [f for f in state.structure_findings if f.block_id not in updates]
-    return result
+    from .source_feature_apply import apply_source_features
+
+    result = apply_source_features(result, feature_tasks, receipts, state)
+    # A refused join already separated the endpoints; only true joins need a role/style recheck.
+    return refined_boundaries(result, {key: value for key, value in edges.items() if value})

@@ -58,6 +58,7 @@ export async function validatePdfCandidate(
     Buffer.from(file(c.outcome.validation_report.id).blob.bytes),
     book,
     epub.checksum,
+    true,
   );
   if (
     book.source.sha256 !== c.op.sourceSha256 ||

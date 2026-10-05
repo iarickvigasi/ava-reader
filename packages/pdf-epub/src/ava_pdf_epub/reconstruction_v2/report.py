@@ -3,12 +3,13 @@
 import hashlib
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from ..contracts.common import Digest, Id, Record, document_digest
 from ..contracts.profiles import ProfileId
 from .findings import Finding
 from .reconstruct import ReconstructedBook
+from .source_feature_coverage_contract import SourceFeatureCoverage
 
 
 class RefinementEvidence(Record):
@@ -20,7 +21,7 @@ class RefinementEvidence(Record):
 
 
 class ReconstructionReport(Record):
-    schema_version: Literal["ava-reconstruction-report-1"]
+    schema_version: Literal["ava-reconstruction-report-1", "ava-reconstruction-report-2"]
     source_sha256: Digest
     canonical_sha256: Digest
     epub_sha256: Digest
@@ -32,11 +33,30 @@ class ReconstructionReport(Record):
     checks: dict[str, Literal["pass", "not_run"]]
     findings: list[Finding] = Field(max_length=10000)
     refinement_evidence: list[RefinementEvidence] = Field(default_factory=list, max_length=32)
+    source_feature_coverage: SourceFeatureCoverage | None = Field(
+        default=None, exclude_if=lambda v: v is None
+    )
+
+    @model_validator(mode="after")
+    def feature_authority(self) -> "ReconstructionReport":
+        current = self.schema_version == "ava-reconstruction-report-2"
+        if current != (self.source_feature_coverage is not None):
+            raise ValueError("Report source-feature policy authority differs")
+        if not current and "finite_source_feature_dispositions_complete" in self.checks:
+            raise ValueError("Historical report cannot claim current feature coverage")
+        if current and self.checks.get("finite_source_feature_dispositions_complete") != "pass":
+            raise ValueError("Current report lacks exact finite feature coverage")
+        return self
 
 
 def reconstruction_report(result: ReconstructedBook, tasks: int) -> ReconstructionReport:
     return ReconstructionReport(
-        schema_version="ava-reconstruction-report-1",
+        schema_version="ava-reconstruction-report-2"
+        if result.source_feature_coverage is not None
+        else "ava-reconstruction-report-1",
+        source_feature_coverage=SourceFeatureCoverage.model_validate(result.source_feature_coverage)
+        if result.source_feature_coverage is not None
+        else None,
         source_sha256=result.book.source.sha256,
         canonical_sha256=document_digest(result.book),
         epub_sha256=hashlib.sha256(result.epub).hexdigest(),
@@ -46,6 +66,11 @@ def reconstruction_report(result: ReconstructedBook, tasks: int) -> Reconstructi
         page_count=len(result.book.pages),
         recognition_task_count=tasks,
         checks={
+            **(
+                {"finite_source_feature_dispositions_complete": "pass"}
+                if result.source_feature_coverage is not None
+                else {}
+            ),
             "complete_source_pages": "pass",
             "complete_recognition_task_receipts": "pass",
             "native_character_conservation": "pass",

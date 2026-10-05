@@ -97,12 +97,78 @@ export type TaskId = string;
  */
 export type Unresolved = string[];
 /**
+ * @maxItems 0
+ */
+export type Decisions1 = [];
+/**
+ * @minItems 1
+ * @maxItems 24
+ */
+export type FeatureDecisions = [
+  SourceFeatureDecision,
+  ...SourceFeatureDecision[],
+];
+/**
+ * @minItems 1
+ * @maxItems 7
+ */
+export type Features = [
+  SourceFeatureObservation,
+  ...SourceFeatureObservation[],
+];
+export type Disposition = 'observed' | 'unknown' | 'not_applicable';
+/**
+ * @minItems 1
+ * @maxItems 4
+ */
+export type EvidenceIds4 = [string, ...string[]];
+export type Feature =
+  | 'paragraph_role'
+  | 'family'
+  | 'weight'
+  | 'italic'
+  | 'first_line_indent'
+  | 'block_inset'
+  | 'relative_size';
+export type Reason =
+  | (
+      | 'source_blurred'
+      | 'source_clipped'
+      | 'source_context_insufficient'
+      | 'heading_has_no_prose_first_line'
+    )
+  | null;
+export type Value =
+  | ('paragraph' | 'quote' | 'serif' | 'sans-serif' | 'monospace')
+  | boolean
+  | number
+  | null;
+export type NodeId3 = string;
+export type TextSha2563 = string;
+export type ImageSha2561 = string;
+/**
+ * @maxItems 0
+ */
+export type Joins1 = [];
+/**
+ * @maxItems 0
+ */
+export type MetadataDecisions1 = [];
+export type ObservationSha2561 = string;
+export type SchemaVersion1 = 'ava-book-refinement-response-4';
+export type SourceSha2561 = string;
+export type TaskId1 = string;
+/**
+ * @maxItems 100
+ */
+export type Unresolved1 = string[];
+/**
  * @maxItems 32
  */
-export type Refinements = BookRefinementResponse[];
+export type Refinements = (BookRefinementResponse | SourceFeatureResponse)[];
 export type Language = string;
 export type RenderSha256 = string;
-export type SchemaVersion1 = 'ava-recognition-response-2';
+export type SchemaVersion2 = 'ava-recognition-response-2';
 export type RecognitionSegment = RecognitionSegment1 &
   (
     | {
@@ -339,25 +405,27 @@ export type Text1 = string;
  * @maxItems 2000
  */
 export type Segments = RecognitionSegment[];
-export type SourceSha2561 = string;
-export type TaskId1 = string;
+export type SourceSha2562 = string;
+export type TaskId2 = string;
 /**
  * @maxItems 100
  */
-export type Unresolved1 = string[];
+export type Unresolved2 = string[];
 /**
  * @maxItems 25000
  */
 export type Responses = RecognitionResponse[];
-export type SchemaVersion2 = 'ava-reconstruct-input-1';
-export type SourceSha2562 = string;
+export type SchemaVersion3 = 'ava-reconstruct-input-1';
+export type SourceFeaturePolicy = 'ava-ocr-source-features-1' | null;
+export type SourceSha2563 = string;
 
 export interface ReconstructionInput {
   profile_id?: ProfileId;
   refinements?: Refinements;
   responses: Responses;
-  schema_version: SchemaVersion2;
-  source_sha256: SourceSha2562;
+  schema_version: SchemaVersion3;
+  source_feature_policy?: SourceFeaturePolicy;
+  source_sha256: SourceSha2563;
 }
 export interface BookRefinementResponse {
   decisions: Decisions;
@@ -428,14 +496,38 @@ export interface BibliographicDecision {
   start?: Start;
   text_sha256: TextSha2562;
 }
-export interface RecognitionResponse {
-  language: Language;
-  render_sha256: RenderSha256;
+export interface SourceFeatureResponse {
+  decisions: Decisions1;
+  feature_decisions: FeatureDecisions;
+  image_sha256: ImageSha2561;
+  joins: Joins1;
+  metadata_decisions?: MetadataDecisions1;
+  observation_sha256: ObservationSha2561;
   schema_version: SchemaVersion1;
-  segments: Segments;
   source_sha256: SourceSha2561;
   task_id: TaskId1;
   unresolved: Unresolved1;
+}
+export interface SourceFeatureDecision {
+  features: Features;
+  node_id: NodeId3;
+  text_sha256: TextSha2563;
+}
+export interface SourceFeatureObservation {
+  disposition: Disposition;
+  evidence_ids: EvidenceIds4;
+  feature: Feature;
+  reason: Reason;
+  value: Value;
+}
+export interface RecognitionResponse {
+  language: Language;
+  render_sha256: RenderSha256;
+  schema_version: SchemaVersion2;
+  segments: Segments;
+  source_sha256: SourceSha2562;
+  task_id: TaskId2;
+  unresolved: Unresolved2;
 }
 export interface RecognitionSegment1 {
   alt?: Alt;

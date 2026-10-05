@@ -3,10 +3,11 @@
 from ..contracts.common import unique
 from ..contracts.styles import Style
 from .continuation_boundary import JOIN_STYLE
-from .refinement_contract import BookRefinementResponse, BookRefinementTask
+from .refinement_contract import AnyRefinementResponse, AnyRefinementTask, BookRefinementResponse
+from .source_feature_task_contract import SourceFeatureResponse, SourceFeatureTask
 
 
-def accept_refinement(task: BookRefinementTask, response: BookRefinementResponse) -> None:
+def accept_refinement(task: AnyRefinementTask, response: AnyRefinementResponse) -> None:
     if (
         response.task_id,
         response.source_sha256,
@@ -19,6 +20,17 @@ def accept_refinement(task: BookRefinementTask, response: BookRefinementResponse
         task.image.sha256,
     ) or response.unresolved:
         raise ValueError("Refinement is stale, incomplete or unresolved")
+    if response.schema_version != task.response_schema_version:
+        raise ValueError("Refinement response authority differs")
+    from .source_feature_response import accept_source_features
+
+    if isinstance(task, SourceFeatureTask):
+        if not isinstance(response, SourceFeatureResponse):
+            raise ValueError("Source feature response authority differs")
+        accept_source_features(task, response)
+        return
+    if not isinstance(response, BookRefinementResponse):
+        raise ValueError("Historical refinement cannot authorize source features")
     from .bibliographic_refinement import accept_bibliographic_decisions
 
     accept_bibliographic_decisions(task, response)

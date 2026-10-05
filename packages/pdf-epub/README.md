@@ -22,6 +22,11 @@ annotation and production qualification remains open. Source first-line and whol
 indentation are represented separately; complete supplied-book/reader qualification is ongoing.
 The [book-level refinement phase](../../docs/pdf-conversion.md) preserves original page
 observations and accepts only source-bound structure/style/join decisions, never replacement prose.
+The current host policy also requests finite source comparisons for OCR quotations and generic
+block typography, with complete local reference crops. Unknown optional features remain recorded;
+unresolved essential quotation roles refuse conversion. These comparisons preserve text, inline
+ranges and chapter structure. Versioned task 4/response 4 and report 2 keep this authority separate
+from historical refinement contracts; see the [finite comparison boundary](../../docs/pdf-conversion.md#finite-ocr-quotation-and-style-comparisons).
 [Runtime checks](../../docs/pdf-conversion-operations.md) and
 [publication checks](../../docs/pdf-conversion-verification.md) describe the executable boundary.
 
