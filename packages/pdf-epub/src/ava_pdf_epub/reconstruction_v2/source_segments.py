@@ -15,6 +15,7 @@ from .pdf_links import apply_pdf_links
 from .prepared import PreparedPage
 from .qualify_pages import qualify_pages
 from .recognition_contract import RecognitionResponse
+from .recover_native_indents import recover_native_indents
 from .segments import Segment
 from .source_structure import source_structure
 
@@ -31,6 +32,7 @@ def source_segments(
     qualified = corroborate_running_furniture(prepared, qualified, state)
     pages, segments = assemble_pages(prepared, qualified, state)
     segments = source_structure(source, prepared, qualified, segments, state)
+    segments = recover_native_indents(segments, prepared, state)
     segments = recover_ocr_indents(segments, prepared, scratch, state)
     continuation_margins(segments, prepared, scratch, state)
     for checkpoint in prepared:

@@ -1,6 +1,6 @@
 {
   "schema": "ava.synthetic-book-oracle.v1",
-  "fixture_version": "1.0.0",
+  "fixture_version": "1.1.0",
   "rights": "Original synthetic text and illustrations authored for AVA testing; no private book content.",
   "metadata": {
     "title": "The Lantern Atlas",
@@ -375,8 +375,11 @@
   "source_page_target": {
     "label": "3",
     "pdf_page": 3,
-    "paragraph": "ch2-look",
-    "excerpt": "The workshop clock keeps the second quiet hour."
+    "target_kind": "chapter_heading",
+    "chapter": "ch2",
+    "block": "heading-ch2",
+    "excerpt": "2. The Workshop",
+    "decision": "2026-10-06: Source pages opens the beginning of the corresponding PDF page; exact passage links retain their own targets."
   },
   "normalization": {
     "base": "NFC for reading text only; preserve authored source code points in the oracle.",

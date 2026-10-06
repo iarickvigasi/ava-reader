@@ -277,6 +277,8 @@ printed component immediately follows a qualified title (or its first chapter he
 centered credit group before prose. Only finite edition/date suffixes are admitted; partial names,
 conflicts, missing print evidence, OCR and explicit reviewed roles retain their existing behavior.
 The accepted author keeps the printed credit's evidence, rather than granting PDF Info authority.
+Affirmative edition and valid ISO-date components keep their exact printed values and source-edition
+scope. Contradictory numbers, absent/unknown labels and invalid dates are not promoted.
 
 Native vector-framed asides now carry observed generic family/bold/italic/small-caps roles only
 after exact ordered glyph coverage, including spaces, visibility, unique ownership and containment
@@ -284,6 +286,16 @@ checks. Mixed faces become exact Unicode spans with plain resets; unknown or ove
 runs retain text without a typography claim. Aside font proof does not authorize indentation,
 alignment, relative size, frame spacing or background CSS. These source candidates require a
 refreshed installed worker and a fresh initial import; accepted books stay fixed.
+
+Native relative sizes use a unique repeated body-prose reference only when complete source glyph
+proof establishes it across at least two pages. Presentation changes occur after metadata/roles
+and addresses; raw observations and inline ratios remain intact. Conflicting references or
+out-of-profile sizes retain the prior value with a finding. Optional style-limit overflow declines
+rebasing atomically. Unknown native indentation may be recovered from complete source IDs and
+visible glyph ownership plus repeated matching local column/typeface context. First-line indents
+and literal block insets remain separate, and an incompatible known coordinate prevents guessing.
+These rules add no recognition or model call; installed-package and fresh-reader evidence are
+required before claiming fidelity for a new import.
 
 ### Finite OCR quotation and style comparisons
 

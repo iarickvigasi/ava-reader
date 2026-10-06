@@ -35,7 +35,21 @@ class NativeOpeningAuthorTests(unittest.TestCase):
             and block.content.text == "AVA Fixture Studio / Synthetic test edition 1 / 2026-09-28"
         )
         self.assertEqual(credit.evidence, authors[0].evidence)
+        suffixes = {
+            m.field: m
+            for m in book.metadata
+            if m.field in {"edition", "date"} and m.status == "accepted"
+        }
+        self.assertEqual("Synthetic test edition 1", suffixes["edition"].value)
+        self.assertEqual("2026-09-28", suffixes["date"].value)
+        for claim in suffixes.values():
+            self.assertEqual("source_edition", claim.scope)
+            self.assertEqual(credit.evidence, claim.evidence)
         self.assertEqual(
             [oracle["metadata"]["author"]],
             [node.text for node in metadata_element(book) if node.tag == "dc:creator"],
+        )
+        self.assertEqual(
+            ["2026-09-28"],
+            [node.text for node in metadata_element(book) if node.tag == "dc:date"],
         )

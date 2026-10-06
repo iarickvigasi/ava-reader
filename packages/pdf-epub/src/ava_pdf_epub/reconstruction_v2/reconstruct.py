@@ -22,6 +22,7 @@ from .book_language import language_metadata
 from .compound_wraps import compact_native_compounds
 from .continuation_margins import continuation_margins
 from .findings import Finding
+from .native_size_presentation import apply_native_sizes
 from .ocr_font_faces import corroborate_ocr_font_faces
 from .prepare_refinement import prepare_refinement
 from .prepared import PreparedPage
@@ -71,6 +72,8 @@ def reconstruct(
     for segment in segments:
         state.segments[segment.id] = segment
     continuation_margins(segments, prepared, scratch, state)
+    # Keep page-owned observations; stream joins can replace them with cross-page nodes.
+    size_sources = segments
     segments = stream_joins(segments, state)
     assemble_blocks(segments, prepared, scratch, state)
     chapters, toc = assemble_chapters(state)
@@ -83,9 +86,10 @@ def reconstruct(
         metadata.extend(language_metadata(source, state, prepared, responses))
     cover = preserve_source_cover(prepared, pages, chapters, metadata, scratch, state)
     addresses = assemble_addresses(state, chapters)
+    apply_native_sizes(size_sources, prepared, state)
     # All relationships are now compiled into the graph; drop source-only objects
     # before validating the owned canonical representation.
-    del segments
+    del segments, size_sources
     from .source_feature_binding import bind_source_features
 
     bind_source_features(state)

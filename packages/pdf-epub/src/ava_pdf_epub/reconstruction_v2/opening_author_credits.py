@@ -3,7 +3,7 @@
 from typing import Any
 
 from .assembly_state import AssemblyState
-from .opening_credit_value import opening_credit_value
+from .opening_credit_value import opening_credit_parts
 from .printed_claim import printed_claim
 
 MAX_OPENING_BLOCKS = 16
@@ -21,7 +21,7 @@ def opening_author_credits(
         return []
     start = state.blocks.index(title) + 1
     chapter_seen = False
-    found: tuple[dict[str, Any], str] | None = None
+    found: tuple[dict[str, Any], dict[str, str]] | None = None
     for block in state.blocks[start : start + MAX_OPENING_BLOCKS]:
         segment = state.segments[block["id"]]
         if segment.page != 1:
@@ -51,12 +51,18 @@ def opening_author_credits(
         ):
             break
         gap = segment.box.y0 - previous.box.y1
-        value = opening_credit_value(block.get("content", {}).get("text", ""), source_author)
+        value = opening_credit_parts(block.get("content", {}).get("text", ""), source_author)
         if not 0 < gap < MAX_CREDIT_GAP_PT or value is None or found is not None:
             return []
         found = (block, value)
         previous = segment
     if found is None:
         return []
-    block, value = found
-    return [{**printed_claim("contributor", value, block), "contributor_role": "author"}]
+    block, values = found
+    return [
+        {
+            **printed_claim(field, value, block),
+            **({"contributor_role": "author"} if field == "contributor" else {}),
+        }
+        for field, value in values.items()
+    ]

@@ -8,7 +8,8 @@
     },
     "native-oracle.json": {
       "original": "oracle.json",
-      "sha256": "0a7af726bec3d912364a1bf26e569993e61a8fcec6cb8fa7ee41dcabab6fdb04"
+      "sha256": "5be0428f6f8b17527bc15d294e50a4f01f0e14c4c8bc54a92a1f1482740822cc",
+      "decision": "2026-10-06 founder: Source pages opens page beginning; v1.1.0 heading target. Original native.pdf unchanged; v1.0 failed assertion remains historical."
     },
     "two-column.pdf": {
       "original": "two-column/FX-TWO-COLUMN-NATIVE.pdf",

@@ -59,3 +59,19 @@ def native_indent(
     inset = (body - local) / size if local is not None else None
     block = inset if inset is not None and 0.5 <= inset <= 6 else None
     return indent, block
+
+
+def qualified_native_indent(
+    lines: list[NativeLine], size: float, literal: bool, reference: tuple[float, float | None]
+) -> tuple[float | None, float | None]:
+    """A qualified reference supplies semantics; source displacement supplies the exact value."""
+    margin, displacement = reference
+    if literal:
+        inset = (min(line.box.x0 for line in lines) - margin) / size
+        return None, inset if 0 <= inset <= 6 else None
+    if displacement is None:
+        return None, None
+    indent = displacement / size
+    if not -3 <= indent <= 6:
+        return None, None
+    return indent, -indent if indent < 0 else None

@@ -155,7 +155,9 @@ PDF Info author, including a credit followed by bounded edition/date components.
 immediately after the source-qualified title, optionally below the first chapter heading, before
 ordinary prose. Missing, conflicting or partial names remain candidates. OCR and explicitly
 reviewed roles keep their existing authority; this rule cannot override an unknown or translator
-decision. This local proof requires no provider call and retains the printed block's evidence.
+decision. Proven affirmative edition and valid ISO-date components retain their exact printed
+values, source-edition scope and their own evidence; ambiguous, absent or conflicting components
+remain unknown. This local proof requires no provider call.
 
 Native vector-framed asides preserve generic font family, bold, italic and small-caps only when
 every visible glyph maps exactly to the retained text, including spaces. Mixed faces retain exact
@@ -163,6 +165,15 @@ Unicode ranges and plain resets. Unknown/partial/ambiguous evidence or an excess
 leaves the optional typography unknown. This proof does not establish source font size, paragraph
 indentation, frame spacing or background appearance. Packaging and normal-reader verification
 remain separate from these source checks.
+
+Native block sizes may use a unique body-prose size repeated across at least two pages. Rebase
+presentation only after metadata, roles and addresses are established; preserve inline ratios and
+original source geometry. Conflicting references, out-of-profile ratios or an exhausted style limit
+retain existing values with a finding. Native indentation may fill unknown coordinates only from
+complete glyph/line ownership and repeated matching local column/typeface context. Literal block
+insets stay separate from first-line indentation; conflicts remain unknown. Neither proof invents
+text or creates an OCR/provider request. These source changes need a new packaged worker and fresh
+initial-import verification; previously accepted books stay fixed.
 
 ## Optional recognition
 
