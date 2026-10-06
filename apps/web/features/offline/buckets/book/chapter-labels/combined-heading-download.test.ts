@@ -13,7 +13,7 @@ afterEach(async () => {
   __resetDbForTests();
 });
 
-it.each(["9", "1. 9…", "The Spies"])(
+it.each(["9", "1. 9…", "The Spies", "006-chapter01.html"])(
   "refreshes partial or excerpt label %s",
   async (label) => {
     const db = await seedDownload();

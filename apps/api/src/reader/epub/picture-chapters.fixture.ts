@@ -1,4 +1,5 @@
 import JSZip from 'jszip';
+import { navigationFixture } from './navigation.fixture';
 import { buildReaderPackageFromEpub } from './epub-reader-package';
 
 const ART_FILE = 'art.png';
@@ -31,16 +32,7 @@ export async function picturePackage(bodies: string[], authoredToc = false) {
       'nav.xhtml',
       '<html lang="en" xmlns="http://www.w3.org/1999/xhtml"><body/></html>',
     );
-  if (authoredToc)
-    zip.file(
-      'nav.xhtml',
-      // EPUB extends XHTML with this namespaced navigation attribute.
-      //noinspection HtmlUnknownAttribute
-      // language=XML
-      `<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><body><nav epub:type="toc"><ol>${bodies
-        .map((_, i) => `<li><a href="${i}.xhtml">Section ${i}</a></li>`)
-        .join('')}</ol></nav></body></html>`,
-    );
+  if (authoredToc) zip.file('nav.xhtml', navigationFixture(bodies.length));
   zip.file(ART_FILE, Buffer.from('png-bits'));
   return buildReaderPackageFromEpub({
     buffer: await zip.generateAsync({ type: 'nodebuffer' }),

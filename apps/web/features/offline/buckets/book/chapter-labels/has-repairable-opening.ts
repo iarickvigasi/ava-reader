@@ -11,6 +11,7 @@ export function hasRepairableOpening(
   entry: TocChapterEntry,
   bookTitle: string,
 ) {
+  if (/\.(?:xhtml|html|htm)(?:#.*)?$/i.test(entry.label.trim())) return true;
   if (entry.spineIndex === null) return false;
   const opening = blocks.filter(
     (block) => block.kind !== "image" && block.text.trim(),

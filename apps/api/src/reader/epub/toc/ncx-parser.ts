@@ -9,7 +9,10 @@ export function readNcxEntries(
   return nodes.flatMap((node, index) => {
     const href = node.content?.['@_src'] ?? null;
     const label =
-      typeof node.navLabel?.text === 'string' ? node.navLabel.text.trim() : '';
+      typeof node.navLabel?.text === 'string' ||
+      typeof node.navLabel?.text === 'number'
+        ? String(node.navLabel.text).trim()
+        : '';
     const children = readNcxEntries(firstAsArray(node.navPoint), [
       ...path,
       index,

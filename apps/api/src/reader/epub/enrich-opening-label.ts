@@ -2,6 +2,7 @@ export function enrichOpeningLabel(
   label: string,
   opening: string | null,
 ): string {
+  if (opening && /^\d+\.?$/.test(label.trim())) return opening;
   if (!opening || !opening.includes(' / ')) return label;
   const normalize = (text: string) =>
     text.replace(/\s+/gu, ' ').trim().toLowerCase();

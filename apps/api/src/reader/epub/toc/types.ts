@@ -7,6 +7,6 @@ export type ParsedTocNode = {
 
 export type NcxNode = {
   content?: { ['@_src']?: string };
-  navLabel?: { text?: string };
+  navLabel?: { text?: string | number };
   navPoint?: NcxNode | NcxNode[];
 };

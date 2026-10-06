@@ -20,7 +20,8 @@ are eligible, as are names matching a component of a combined opening heading. C
 and short enlarged centered paragraph headings with `/`; retain the authored number. Image-only
 part dividers may use the next textual opening without changing chapter boundaries. No body text gives a number-only fallback. These old formats have no provenance
 marker, so an authored title with exactly the same wording is indistinguishable and also eligible.
-Complete authored names remain. Titles and matching nested TOC labels are patched alongside the stored
+TOC filenames matching their own target href are replaced by the canonical chapter name, even
+when that chapter name already needs no repair. Complete authored names remain. Titles and matching nested TOC labels are patched alongside the stored
 progress index, preserving analysis counts. Content, IDs, source checksums, progress positions,
 translations, annotations, and reading statistics are unchanged. Historical saved progress labels
 refresh on the next progress write.
