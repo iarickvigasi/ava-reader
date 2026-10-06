@@ -2,7 +2,9 @@ import type { Tx } from './types';
 import { lockLibraryItem } from './transaction';
 import { recoverAttempt } from './recover-attempt';
 import { stopOperation } from './stop-internal';
+import { recoverExpiredWaits } from './recover-expired-waits';
 export async function recoverExpired(tx: Tx, now: Date) {
+  await recoverExpiredWaits(tx, now);
   const expired = await tx.pdfJobAttempt.findMany({
     where: {
       status: 'RUNNING',
