@@ -19,11 +19,15 @@ class RefinementCatalogue:
 
 
 def refinement_catalogue(
-    segments: list[Segment], state: AssemblyState, *, include_bibliography: bool = False
+    segments: list[Segment],
+    state: AssemblyState,
+    *,
+    include_bibliography: bool = False,
+    source_author: str | None = None,
 ) -> RefinementCatalogue:
     from .bibliographic_refinement import bibliographic_candidates
 
-    metadata_ids = bibliographic_candidates(segments) if include_bibliography else []
+    metadata_ids = bibliographic_candidates(segments, source_author) if include_bibliography else []
     unranked = {f.block_id for f in state.structure_findings}
     headings = [s for s in segments if s.kind == "heading" or s.structure_candidate]
     prose = [

@@ -175,13 +175,17 @@ This does not implement a complete metadata inventory, all language-specific lab
 without recognized title-page context. Validate accepted fields in both EPUB output and AVA import.
 
 For native opening pages, a short centered printed author component may corroborate the complete
-PDF Info author, including a credit followed by bounded edition/date components. It must occur
+PDF Info author, including a credit followed by bounded edition/date components or finite
+English/Ukrainian language names. It must occur
 immediately after the source-qualified title, optionally below the first chapter heading, before
 ordinary prose. Missing, conflicting or partial names remain candidates. OCR and explicitly
 reviewed roles keep their existing authority; this rule cannot override an unknown or translator
 decision. Proven affirmative edition and valid ISO-date components retain their exact printed
 values, source-edition scope and their own evidence; ambiguous, absent or conflicting components
-remain unknown. This local proof requires no provider call.
+remain unknown. Qualified native opening credits are excluded from model metadata comparisons
+before dispatch. A printed language name is retained as a candidate; the independent complete-source
+language pass establishes primary language. A bare printed ISO date retains source-edition scope
+without inferring a publication event or year. This local proof requires no provider call.
 
 Native vector-framed asides preserve generic font family, bold, italic and small-caps only when
 every visible glyph maps exactly to the retained text, including spaces. Mixed faces retain exact

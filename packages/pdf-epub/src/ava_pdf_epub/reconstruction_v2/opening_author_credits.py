@@ -14,11 +14,31 @@ MAX_CREDIT_RELATIVE_SIZE = 1
 def opening_author_credits(
     state: AssemblyState, title: dict[str, Any] | None, source_author: str | None
 ) -> list[dict[str, Any]]:
-    if title is None or not source_author or not source_author.strip():
+    found = opening_credit_group(state, title, source_author)
+    if found is None:
         return []
+    block, values = found
+    return [
+        {
+            # Primary language still requires the independent complete-source language pass.
+            **printed_claim(
+                field, value, block, "candidate" if field == "language" else "accepted"
+            ),
+            **({"contributor_role": "author"} if field == "contributor" else {}),
+        }
+        for field, value in values.items()
+    ]
+
+
+def opening_credit_group(
+    state: AssemblyState, title: dict[str, Any] | None, source_author: str | None
+) -> tuple[dict[str, Any], dict[str, str]] | None:
+    """Share the exact native-author/geometry gate before spending on a metadata comparison."""
+    if title is None or not isinstance(source_author, str) or not source_author.strip():
+        return None
     previous = state.segments[title["id"]]
     if previous.page != 1 or previous.method != "native":
-        return []
+        return None
     start = state.blocks.index(title) + 1
     chapter_seen = False
     found: tuple[dict[str, Any], dict[str, str]] | None = None
@@ -27,7 +47,7 @@ def opening_author_credits(
         if segment.page != 1:
             break
         if segment.method != "native" or block["id"] in state.bibliographic_roles:
-            return []
+            return None
         if block["kind"] == "heading":
             if found:
                 break
@@ -37,7 +57,7 @@ def opening_author_credits(
                 or not segment.chapter_start
                 or segment.chapter_role != "bodymatter"
             ):
-                return []
+                return None
             chapter_seen = True
             previous = segment
             continue
@@ -53,16 +73,7 @@ def opening_author_credits(
         gap = segment.box.y0 - previous.box.y1
         value = opening_credit_parts(block.get("content", {}).get("text", ""), source_author)
         if not 0 < gap < MAX_CREDIT_GAP_PT or value is None or found is not None:
-            return []
+            return None
         found = (block, value)
         previous = segment
-    if found is None:
-        return []
-    block, values = found
-    return [
-        {
-            **printed_claim(field, value, block),
-            **({"contributor_role": "author"} if field == "contributor" else {}),
-        }
-        for field, value in values.items()
-    ]
+    return found

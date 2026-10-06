@@ -5,17 +5,23 @@ from collections.abc import Callable
 from ..contracts.common import unique
 from .assembly_state import AssemblyState
 from .metadata_scope import BIBLIOGRAPHIC_HEADINGS, NON_TITLE_HEADINGS, metadata_scope
+from .opening_author_credits import opening_credit_group
 from .printed_metadata import PATTERN
 from .refinement_contract import BookRefinementResponse, BookRefinementTask
 from .segments import Segment
 
 
-def bibliographic_candidates(segments: list[Segment]) -> list[str]:
+def bibliographic_candidates(
+    segments: list[Segment], source_author: str | None = None
+) -> list[str]:
     # Reuse bibliographic authority rather than treating every early-page name as a credit.
     state = AssemblyState()
     state.segments = {s.id: s for s in segments}
     state.blocks = [{"id": s.id, "kind": s.kind, "content": {"text": s.text}} for s in segments]
     title, eligible = metadata_scope(state)
+    resolved = opening_credit_group(state, title, source_author)
+    if resolved is not None:
+        eligible.discard(resolved[0]["id"])
     if title is None:
         # OCR cover typography is still awaiting structure refinement. This only
         # schedules a source comparison; final metadata_scope still gates acceptance.

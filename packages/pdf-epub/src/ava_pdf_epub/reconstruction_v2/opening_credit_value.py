@@ -51,6 +51,12 @@ EDITION_ROMAN_ORDINAL = re.compile(
     re.I,
 )
 ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
+PRINTED_LANGUAGES = {
+    "english": "en",
+    "англійська": "en",
+    "ukrainian": "uk",
+    "українська": "uk",
+}
 
 
 def opening_credit_value(text: str, source_author: str) -> str | None:
@@ -69,6 +75,8 @@ def opening_credit_parts(text: str, source_author: str) -> dict[str, str] | None
     for part in parts[1:]:
         if printed_edition(part):
             kind = "edition"
+        elif part.casefold() in PRINTED_LANGUAGES:
+            kind = "language"
         elif ISO_DATE.fullmatch(part):
             try:
                 date.fromisoformat(part)
@@ -79,7 +87,7 @@ def opening_credit_parts(text: str, source_author: str) -> dict[str, str] | None
             return None
         if kind in values:
             return None
-        values[kind] = part
+        values[kind] = PRINTED_LANGUAGES[part.casefold()] if kind == "language" else part
     return values
 
 

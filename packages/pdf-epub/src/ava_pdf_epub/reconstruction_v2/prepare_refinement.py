@@ -5,6 +5,8 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
+from pypdf import PdfReader
+
 from ..contracts.profiles import BILINGUAL_PROFILE
 from .assembly_state import AssemblyState
 from .page_checkpoints import PreparedPageMap
@@ -34,7 +36,12 @@ def prepare_refinement(
     if source_feature_policy not in {None, FEATURE_POLICY}:
         raise ValueError("Unsupported source feature policy")
     catalogue = refinement_catalogue(
-        segments, state, include_bibliography=prepared[0].profile_id == BILINGUAL_PROFILE
+        segments,
+        state,
+        include_bibliography=prepared[0].profile_id == BILINGUAL_PROFILE,
+        source_author=getattr(PdfReader(source).metadata, "author", None)
+        if prepared[0].profile_id == BILINGUAL_PROFILE
+        else None,
     )
     if not catalogue.decisions and not catalogue.metadata_ids and source_feature_policy is None:
         return []
