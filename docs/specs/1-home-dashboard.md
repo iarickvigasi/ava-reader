@@ -70,6 +70,8 @@ discovery. The daily entry point into the habit.
     the available plot height, anchored to the bottom; labels and controls keep their positions.
     Loading columns match the actual bars' top-only rounding: `rounded-t-xs` on mobile and
     `rounded-t-sm` on desktop, with square bottom corners.
+    Responsive hide/show and resize preserve the viewed dates using the last visible scroll offset;
+    hidden charts must not replace that offset with their reset DOM position.
     Prepending preserves the viewed dates; today’s summary remains fixed. Stop at the earliest
     recorded day, not an empty week. Earlier weeks stay in memory only and are never persisted.
     Offline users can browse already loaded weeks. Missing weeks remain retryable; authentication

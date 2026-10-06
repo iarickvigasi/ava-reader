@@ -1,61 +1,21 @@
-import { beforeEach, expect, it, vi } from "vitest";
+import { expect, it, vi } from "vitest";
+import { state } from "./mastery-scroll-test-setup";
 import { useMasteryScroll } from "./use-mastery-scroll";
 
-const state = vi.hoisted(() => ({
-  element: {
-    clientWidth: 700,
-    scrollWidth: 1400,
-    scrollLeft: 0,
-    scrollTo: vi.fn(),
-  },
-  previous: { count: 0, more: false, width: 0 },
-  calls: 0,
-  offset: 0,
-}));
-vi.mock("react", () => ({
-  useCallback: (callback: unknown) => callback,
-  useRef: () => ({
-    current: state.calls++ % 2 === 0 ? state.element : state.previous,
-  }),
-  useState: () => [
-    state.offset,
-    (value: number) => {
-      state.offset = value;
-    },
-  ],
-  useLayoutEffect: (effect: () => void) => {
-    effect();
-  },
-}));
-beforeEach(() => {
-  state.calls = 0;
-  state.offset = 0;
-  state.previous = { count: 0, more: false, width: 0 };
-  Object.assign(state.element, {
-    clientWidth: 700,
-    scrollWidth: 1400,
-    scrollLeft: 0,
-  });
-  vi.stubGlobal(
-    "ResizeObserver",
-    class {
-      observe() {}
-      disconnect() {}
-    },
-  );
-});
 it("starts at the most recent dates", () => {
   useMasteryScroll(7, true, vi.fn(), true);
-  expect(state.element.scrollLeft).toBe(1400);
+  expect(state.element.scrollLeft).toBe(700);
 });
 it("preserves the visible date when another week is prepended", () => {
-  state.previous = { count: 14, more: true, width: 700 };
+  state.previous = { offset: 5.5, width: 700 };
+  state.element.scrollWidth = 2800;
   state.element.scrollLeft = 850;
   useMasteryScroll(21, true, vi.fn(), true);
   expect(state.element.scrollLeft).toBe(1550);
 });
 it("replaces the final loading slot without shifting the visible week", () => {
-  state.previous = { count: 14, more: true, width: 700 };
+  state.previous = { offset: 14, width: 700 };
+  state.element.scrollWidth = 2100;
   state.element.scrollLeft = 0;
   useMasteryScroll(21, false, vi.fn(), true);
   expect(state.element.scrollLeft).toBe(0);
@@ -72,7 +32,8 @@ it("loads at the older edge but does not retry automatically after errors", () =
   expect(load).toHaveBeenCalledOnce();
 });
 it("keeps the same date position when the viewport resizes", () => {
-  state.previous = { count: 14, more: true, width: 700 };
+  state.previous = { offset: 7, width: 700 };
+  state.element.scrollWidth = 1050;
   state.element.scrollLeft = 700;
   state.element.clientWidth = 350;
   useMasteryScroll(14, true, vi.fn(), true);
@@ -98,3 +59,24 @@ it.each([-1, 1])("aligns a week move in direction %s", (direction) => {
     behavior: "instant",
   });
 });
+
+it.each([0, 3.5, 7])(
+  "restores %s days from today after responsive hiding",
+  (offset) => {
+    const scroll = useMasteryScroll(7, true, vi.fn(), true);
+    state.element.scrollLeft = 700 - offset * 100;
+    scroll.onScroll();
+    Object.assign(state.element, {
+      clientWidth: 0,
+      scrollWidth: 0,
+      scrollLeft: 0,
+    });
+    scroll.onScroll();
+    state.resize();
+    Object.assign(state.element, { clientWidth: 350, scrollWidth: 700 });
+    scroll.onScroll();
+    state.resize();
+    expect(state.element.scrollLeft).toBe(350 - offset * 50);
+    expect(state.offset).toBe(offset);
+  },
+);

@@ -7,26 +7,22 @@ export function useMasteryScroll(
   idle: boolean,
 ) {
   const ref = useRef<HTMLDivElement>(null);
-  const previous = useRef({ count: 0, more: false, width: 0 });
+  const previous = useRef({ offset: 0, width: 0 });
   const [offset, setOffset] = useState(0);
   useLayoutEffect(() => {
     const element = ref.current;
     if (!element) return;
     function align() {
-      if (!element || !element.clientWidth) return;
-      const old = previous.current;
-      const width = element.clientWidth;
-      if (!old.count) element.scrollLeft = element.scrollWidth;
-      else {
-        const position = old.width ? element.scrollLeft / old.width : 0;
-        element.scrollLeft =
-          (position +
-            (count - old.count) / 7 +
-            Number(hasMore) -
-            Number(old.more)) *
-          width;
+      if (!element) return;
+      if (!element.clientWidth) {
+        previous.current.width = 0;
+        return;
       }
-      previous.current = { count, more: hasMore, width };
+      const width = element.clientWidth;
+      // display:none can reset scrollLeft; keep the last visible date instead.
+      element.scrollLeft =
+        element.scrollWidth - width - previous.current.offset * (width / 7);
+      previous.current.width = width;
     }
     align();
     const observer = new ResizeObserver(align);
@@ -36,11 +32,13 @@ export function useMasteryScroll(
   function onScroll() {
     const element = ref.current;
     if (!element || !element.clientWidth) return;
+    if (element.clientWidth !== previous.current.width) return;
     const fromEnd = Math.max(
       0,
       element.scrollWidth - element.clientWidth - element.scrollLeft,
     );
-    setOffset(fromEnd / (element.clientWidth / 7));
+    previous.current.offset = fromEnd / (element.clientWidth / 7);
+    setOffset(previous.current.offset);
     if (element.scrollLeft < element.clientWidth * 0.5 && hasMore && idle)
       void load();
   }
