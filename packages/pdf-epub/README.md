@@ -116,11 +116,35 @@ is preserved, and inline ranges use Unicode code points with an optional canonic
 `Evidence.coordinate_space` distinguishes point coordinates from normalized image crops.
 `Style.observed` distinguishes a measured zero/false from an unspecified editorial default.
 
-The generated EPUB projection is `ava-epub-canonical-2.1` for unlabelled books and `2.2` for
-books with declared printed page labels. `epub_v2.portable.portable_epub` validates both complete
-projections against the declared version; it does not upgrade imported bytes. Page anchors always
-use unique physical page IDs. Printed labels supply navigation text, with physical-number fallback
-for missing/blank labels. Canonical data and old accepted EPUBs remain fixed.
+Books without an explicit source-page map retain generated EPUB projection
+`ava-epub-canonical-2.1` for unlabelled pages and `2.2` for declared printed page labels. New
+reconstructions capture each page's first retained content observation before paragraph joins, then
+resolve its exact canonical codepoint offset through checked assembly aliases. This makes a page
+that begins midway through a joined paragraph open at that page's own first words.
+
+The map uses optional `Address.source_page` (physical PDF page number, 1–500) with fragment
+`ava-source-page-N`. It must cover every retained content page exactly once, in its owned chapter
+and resource, with bounded offsets and first-region evidence. Blank or furniture-only pages have
+no borrowed destination. A nontext start addresses its own table, illustration or separator at
+zero. Missing, ambiguous or conflicting mappings refuse assembly. Unset `source_page` is omitted
+from serialization; ordinary old identities, including names that resemble the page prefix, keep
+their original meaning and hashes.
+
+Explicit maps require reader capability `source-page-starts` and generated EPUB projection
+`ava-epub-canonical-2.3`. That projection places zero-text page-break markers at the exact retained
+text offset or beside the owned nontext block, and creates its page-list links from the same map.
+Physical page IDs remain unique when printed labels restart. Printed labels supply link text,
+with physical-number fallback for missing or blank labels. Styles and semantic links keep their
+text and occurrence identity; a link spanning a page marker remains one focusable anchor. TOC and
+specific passage links retain their separate exact destinations.
+
+`epub_v2.portable.portable_epub` validates all three complete projections against their declared
+version. It refuses substitutions between explicit-map and legacy page semantics and does not
+upgrade imported bytes. The old `2.1`/`2.2` deterministic members are regression-checked against
+frozen pre-extension hashes. Canonical data and accepted EPUBs remain fixed. Install matching worker,
+Python validator and generated API/web contracts together; qualify the actual reader for the new
+capability before accepting a fresh initial import. Package checks establish source and export
+behavior, while normal-browser verification remains a separate acceptance requirement.
 
 `review.Review` is an explicit editorial patch bound to both PDF SHA-256 and canonical serialized
 Book SHA-256. It can set chapter boundaries, accepted metadata, source styles, inline spans and

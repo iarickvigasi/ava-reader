@@ -17,6 +17,20 @@
           "title": "Resource Path",
           "type": "string"
         },
+        "source_page": {
+          "anyOf": [
+            {
+              "maximum": 500,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Page"
+        },
         "target": {
           "$ref": "#/$defs/InternalTarget"
         }

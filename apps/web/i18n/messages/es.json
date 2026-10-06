@@ -254,9 +254,9 @@
       "completed": "{percent}% completado",
       "chapterCount": "{count} capítulos",
       "sourcePages": "Páginas de origen",
-      "sourcePageDescription": "Ir al primer pasaje asociado con una página de origen. No son páginas de pantalla.",
+      "sourcePageDescription": "Ir al principio de una página de origen. No son páginas de pantalla.",
       "sourcePageLabel": "Página {label}, página de origen {number}",
-      "sourcePageEmpty": "Sin contenido legible"
+      "sourcePageUnavailable": "Inicio de página no disponible"
     },
     "highlights": {
       "title": "Resaltados",

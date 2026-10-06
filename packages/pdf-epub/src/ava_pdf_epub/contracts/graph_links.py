@@ -29,6 +29,9 @@ def check_target(
 def validate_links(
     book: "CanonicalBookV2", nodes: dict[str, BlockBase], owners: dict[str, str]
 ) -> None:
+    from .graph_page_starts import validate_page_starts
+
+    validate_page_starts(book, nodes)
     chapters = {c.id: c for c in book.chapters}
     inline = {
         s.id: (n, s) for n in nodes.values() if isinstance(n, TEXT_NODES) for s in n.content.spans
@@ -57,6 +60,8 @@ def validate_links(
         chapter = chapters[address.target.chapter_id]
         if address.resource_path not in chapter.resource_paths:
             raise ValueError("Address resource belongs to another chapter")
+        if address.source_page is not None:
+            continue
         expected = None
         if address.fragment in nodes:
             expected = (owners[address.fragment], address.fragment, 0)

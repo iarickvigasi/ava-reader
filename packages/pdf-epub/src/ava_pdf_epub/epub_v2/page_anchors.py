@@ -3,12 +3,16 @@
 import xml.etree.ElementTree as ET
 
 from .context import Context
+from .nontext_page_starts import add_nontext_page_starts
 from .xml import EPUB, XHTML, element
 
 
 def add_page_anchors(
     body: ET.Element, ctx: Context, seen: set[int], *, printed_page_labels: bool = False
 ) -> None:
+    if ctx.exact_source_pages:
+        add_nontext_page_starts(body, ctx)
+        return
     parents = {child: parent for parent in body.iter() for child in parent}
     for node in list(body.iter()):
         block_id = node.get("data-ava-block")

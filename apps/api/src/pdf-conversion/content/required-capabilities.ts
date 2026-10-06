@@ -4,6 +4,8 @@ import type { ReaderPackageV3 } from '../contracts/generated/ava-reader-3';
 export function requiredCapabilities(book: CanonicalBookV2) {
   type Capability = ReaderPackageV3['required_capabilities'][number];
   const required = new Set<Capability>(['text']);
+  if (book.addresses.some((address) => address.source_page != null))
+    required.add('source-page-starts');
   const styles = new Map(book.styles.map((style) => [style.id, style]));
   function useStyle(id?: string | null) {
     if (!id) return;

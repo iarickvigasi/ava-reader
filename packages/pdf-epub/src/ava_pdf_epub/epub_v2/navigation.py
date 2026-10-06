@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 
 from ..contracts.profiles import BILINGUAL_PROFILE, package_language
 from .context import Context
+from .page_navigation import source_page_listing
 from .xml import EPUB, document, element
 
 
@@ -42,6 +43,8 @@ def navigation(ctx: Context, *, printed_page_labels: bool = False) -> bytes:
                 item.append(element("a", {"href": href}, label))
                 listing.append(item)
                 seen.add(evidence.page)
+    if ctx.exact_source_pages:
+        listing = source_page_listing(ctx)
     pages.append(listing)
     body.append(pages)
     return document(

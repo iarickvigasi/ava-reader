@@ -47,3 +47,6 @@ class Address(Record):
     resource_path: RelativePath
     fragment: Id
     target: InternalTarget
+    source_page: int | None = Field(
+        default=None, ge=1, le=500, exclude_if=lambda value: value is None
+    )

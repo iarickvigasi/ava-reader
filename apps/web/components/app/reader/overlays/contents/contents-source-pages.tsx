@@ -53,7 +53,7 @@ export function ContentsSourcePages({
                 )}
                 {!page.target && (
                   <span className="ml-2 text-xs text-muted">
-                    {t("sourcePageEmpty")}
+                    {t("sourcePageUnavailable")}
                   </span>
                 )}
               </button>

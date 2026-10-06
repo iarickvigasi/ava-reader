@@ -254,9 +254,9 @@
       "completed": "{percent}% завершено",
       "chapterCount": "{count} розділів",
       "sourcePages": "Сторінки джерела",
-      "sourcePageDescription": "Перейти до першого уривка, пов’язаного зі сторінкою джерела. Це не сторінки екрана.",
+      "sourcePageDescription": "Перейти до початку сторінки джерела. Це не сторінки екрана.",
       "sourcePageLabel": "Сторінка {label}, сторінка джерела {number}",
-      "sourcePageEmpty": "Немає читабельного вмісту"
+      "sourcePageUnavailable": "Початок сторінки недоступний"
     },
     "highlights": {
       "title": "Підсвічення",

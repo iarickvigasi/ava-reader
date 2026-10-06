@@ -254,9 +254,9 @@
       "completed": "{percent}% terminé",
       "chapterCount": "{count} chapitres",
       "sourcePages": "Pages source",
-      "sourcePageDescription": "Aller au premier passage associé à une page source. Ce ne sont pas les pages à l’écran.",
+      "sourcePageDescription": "Aller au début d’une page source. Ce ne sont pas les pages à l’écran.",
       "sourcePageLabel": "Page {label}, page source {number}",
-      "sourcePageEmpty": "Aucun contenu lisible"
+      "sourcePageUnavailable": "Début de page indisponible"
     },
     "highlights": {
       "title": "Surlignages",

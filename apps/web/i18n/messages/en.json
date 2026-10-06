@@ -254,9 +254,9 @@
       "completed": "{percent}% completed",
       "chapterCount": "{count} chapters",
       "sourcePages": "Source pages",
-      "sourcePageDescription": "Go to the first passage associated with a source page. These are not screen pages.",
+      "sourcePageDescription": "Go to the beginning of a source page. These are not screen pages.",
       "sourcePageLabel": "Page {label}, source page {number}",
-      "sourcePageEmpty": "No readable content"
+      "sourcePageUnavailable": "Page start unavailable"
     },
     "highlights": {
       "title": "Highlights",

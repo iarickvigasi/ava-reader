@@ -4,10 +4,13 @@ from .blocks import FigureBlock, ListItemBlock, NoteBlock, ProseBlock, TableBloc
 from .book import CanonicalBookV2
 from .graph_index import index_book
 from .graph_links import TEXT_NODES
+from .page_starts import SOURCE_PAGE_CAPABILITY, page_addresses
 
 
 def required_capabilities(book: CanonicalBookV2) -> set[str]:
     result = {"text"}
+    if page_addresses(book):
+        result.add(SOURCE_PAGE_CAPABILITY)
     nodes, _ = index_book(book)
     referenced = {n.style_id for n in nodes.values() if n.style_id}
     referenced.update(

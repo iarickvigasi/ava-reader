@@ -17,6 +17,20 @@
           "title": "Resource Path",
           "type": "string"
         },
+        "source_page": {
+          "anyOf": [
+            {
+              "maximum": 500,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Page"
+        },
         "target": {
           "$ref": "#/$defs/InternalTarget"
         }
@@ -2018,11 +2032,12 @@
           "lists",
           "literal-text",
           "annotation-styles",
-          "language"
+          "language",
+          "source-page-starts"
         ],
         "type": "string"
       },
-      "maxItems": 10,
+      "maxItems": 11,
       "minItems": 1,
       "title": "Required Capabilities",
       "type": "array"

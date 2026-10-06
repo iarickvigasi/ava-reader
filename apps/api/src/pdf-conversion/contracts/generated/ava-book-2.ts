@@ -7,6 +7,7 @@
 export type Addresses = [Address, ...Address[]];
 export type Fragment = string;
 export type ResourcePath = string;
+export type SourcePage = number | null;
 export type BlockId = string;
 export type ChapterId = string;
 export type Kind = 'internal';
@@ -255,7 +256,7 @@ export type Metadata = MetadataClaim[];
  * @minItems 1
  * @maxItems 500
  */
-export type Pages = [SourcePage, ...SourcePage[]];
+export type Pages = [SourcePage1, ...SourcePage1[]];
 export type HeightPt = number;
 export type Label1 = string | null;
 export type Number = number;
@@ -354,6 +355,7 @@ export interface CanonicalBookV2 {
 export interface Address {
   fragment: Fragment;
   resource_path: ResourcePath;
+  source_page?: SourcePage;
   target: InternalTarget;
 }
 export interface InternalTarget {
@@ -511,7 +513,7 @@ export interface MetadataClaim {
   status: Status;
   value?: Value;
 }
-export interface SourcePage {
+export interface SourcePage1 {
   height_pt: HeightPt;
   label?: Label1;
   number: Number;

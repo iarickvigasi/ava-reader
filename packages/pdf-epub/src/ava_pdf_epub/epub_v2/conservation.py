@@ -4,12 +4,12 @@ from ..contracts.book import CanonicalBookV2
 from ..contracts.common import document_digest
 from ..contracts.graph_links import TEXT_NODES
 from .context import Context, ident
-from .profiles import export_profile
+from .profiles import SOURCE_PAGE_PROFILE, export_profile
 
 
 def conservation_report(book: CanonicalBookV2) -> dict[str, object]:
     book = CanonicalBookV2.model_validate(book.model_dump())
-    ctx = Context(book)
+    ctx = Context(book, exact_source_pages=export_profile(book) == SOURCE_PAGE_PROFILE)
     mapping = []
     for address in book.addresses:
         fragment = address.fragment
@@ -21,7 +21,9 @@ def conservation_report(book: CanonicalBookV2) -> dict[str, object]:
                 "source_resource": address.resource_path,
                 "source_fragment": fragment,
                 "epub_resource": "EPUB/" + ctx.paths[address.target.chapter_id],
-                "epub_fragment": ident(kind, fragment),
+                "epub_fragment": f"page-{address.source_page}"
+                if address.source_page is not None
+                else ident(kind, fragment),
                 "target": address.target.model_dump(),
             }
         )

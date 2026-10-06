@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 from ..contracts.graph_links import TextNode
 from ..contracts.links import NoteTarget
 from .context import Context, ident
+from .page_marker import page_marker
 from .xml import EPUB, append_text, element
 
 
@@ -19,7 +20,8 @@ def render_text(node: TextNode, ctx: Context) -> ET.Element:
             }
         )
     root = element("span", attrs)
-    positions = {0, len(content.text), *ctx.offsets.get(node.id, set())}
+    page_offsets = ctx.page_offsets.get(node.id, {})
+    positions = {0, len(content.text), *ctx.offsets.get(node.id, set()), *page_offsets}
     for span in content.spans:
         positions.update([span.start, span.end])
     ordered = sorted(positions)
@@ -37,6 +39,8 @@ def render_text(node: TextNode, ctx: Context) -> ET.Element:
                     attrs[f"{{{EPUB}}}type"] = "noteref"
                 link_parent = element("a", attrs)
                 root.append(link_parent)
+        for number in page_offsets.get(start, []):
+            link_parent.append(page_marker(number, ctx))
         if start in ctx.offsets.get(node.id, set()):
             link_parent.append(element("span", {"id": ident("loc", node.id) + f"-{start}"}))
         for span in content.spans:

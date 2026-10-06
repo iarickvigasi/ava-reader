@@ -4,13 +4,14 @@ import io
 import zipfile
 
 from ..contracts.book import CanonicalBookV2
+from ..contracts.page_starts import page_addresses
 from .archive import MAX_ARCHIVE_BYTES, MAX_ENTRIES, MAX_ENTRY_BYTES
 from .assets import MAX_EXPANDED_BYTES, validate_assets
 from .chapters import chapter_documents
 from .context import Context
 from .navigation import navigation
 from .package import package_document
-from .profiles import LEGACY_PROFILE, PROFILES, export_profile
+from .profiles import LEGACY_PROFILE, PROFILES, SOURCE_PAGE_PROFILE, export_profile
 from .styles import stylesheet
 
 SIDECAR = "EPUB/ava-canonical.json"
@@ -27,7 +28,9 @@ def export_entries(
     profile = export_profile(book) if profile is None else profile
     if profile not in PROFILES:
         raise ValueError("Unsupported generated EPUB profile")
-    ctx = Context(book)
+    if (profile == SOURCE_PAGE_PROFILE) != bool(page_addresses(book)):
+        raise ValueError("Generated EPUB profile must match explicit source-page address semantics")
+    ctx = Context(book, exact_source_pages=profile == SOURCE_PAGE_PROFILE)
     entries = {
         "mimetype": b"application/epub+zip",
         "META-INF/container.xml": CONTAINER,

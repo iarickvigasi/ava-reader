@@ -18,6 +18,7 @@ from .assemble_chapters import assemble_chapters
 from .assemble_links import assemble_links
 from .assemble_lists import assemble_lists
 from .assemble_metadata import assemble_metadata
+from .assemble_page_addresses import assemble_page_addresses
 from .book_language import language_metadata
 from .compound_wraps import compact_native_compounds
 from .continuation_margins import continuation_margins
@@ -30,6 +31,7 @@ from .printed_markers import printed_markers
 from .recognition_contract import RecognitionResponse
 from .refinement_contract import AnyRefinementResponse
 from .source_cover import preserve_source_cover
+from .source_page_starts import capture_page_starts
 from .source_segments import source_segments
 from .stream_joins import stream_joins
 
@@ -74,6 +76,7 @@ def reconstruct(
     continuation_margins(segments, prepared, scratch, state)
     # Keep page-owned observations; stream joins can replace them with cross-page nodes.
     size_sources = segments
+    page_starts = capture_page_starts(segments, state)
     segments = stream_joins(segments, state)
     assemble_blocks(segments, prepared, scratch, state)
     chapters, toc = assemble_chapters(state)
@@ -86,6 +89,7 @@ def reconstruct(
         metadata.extend(language_metadata(source, state, prepared, responses))
     cover = preserve_source_cover(prepared, pages, chapters, metadata, scratch, state)
     addresses = assemble_addresses(state, chapters)
+    assemble_page_addresses(page_starts, state, chapters, addresses)
     apply_native_sizes(size_sources, prepared, state)
     # All relationships are now compiled into the graph; drop source-only objects
     # before validating the owned canonical representation.

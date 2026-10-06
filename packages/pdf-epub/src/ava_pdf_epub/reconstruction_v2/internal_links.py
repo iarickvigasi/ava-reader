@@ -62,5 +62,9 @@ def _resolve(ident: str, state: AssemblyState) -> tuple[str, int]:
             raise ValueError("Cyclic source reference alias")
         seen.add(ident)
         ident, delta = state.aliases[ident]
+        if type(delta) is not int or delta < 0:
+            raise ValueError(
+                "Source reference alias offset must be a nonnegative codepoint integer"
+            )
         offset += delta
     return ident, offset

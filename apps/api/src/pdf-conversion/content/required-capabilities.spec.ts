@@ -30,3 +30,13 @@ it('requires language qualification when any canonical text has an explicit lang
   node.content.language = 'uk';
   expect(requiredCapabilities(input)).toContain('language');
 });
+
+it('requires exact source-page support from marked addresses only', () => {
+  const reader = parseContractJson(
+    fixtureBytes('ava-reader-3', 'source-pages'),
+  ) as { book: CanonicalBookV2 };
+  expect(requiredCapabilities(reader.book)).toContain('source-page-starts');
+  const legacy = book();
+  legacy.addresses[0].fragment = 'ava-source-page-1';
+  expect(requiredCapabilities(legacy)).not.toContain('source-page-starts');
+});

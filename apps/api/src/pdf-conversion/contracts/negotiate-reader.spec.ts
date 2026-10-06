@@ -1,3 +1,6 @@
+import { fixtureBytes } from './contract-fixtures';
+import { parseContractJson } from './parse-json';
+import type { ReaderPackageV3 } from './generated/ava-reader-3';
 import { negotiateReader } from './negotiate-reader';
 
 const legacy = {
@@ -28,6 +31,28 @@ const bytes = (value: unknown) => Buffer.from(JSON.stringify(value));
 const semantic = jest.fn(() => Promise.resolve(true));
 
 describe('reader compatibility', () => {
+  it('requires the explicit capability for exact source-page books', async () => {
+    const input = fixtureBytes('ava-reader-3', 'source-pages');
+    const reader = parseContractJson(input) as ReaderPackageV3;
+    expect(reader.required_capabilities).toContain('source-page-starts');
+    const previous = reader.required_capabilities.filter(
+      (capability) => capability !== 'source-page-starts',
+    );
+    expect(
+      await negotiateReader(
+        input,
+        { versions: [3], capabilities: previous },
+        semantic,
+      ),
+    ).toEqual({ status: 'upgrade_required', version: 3 });
+    const supported = await negotiateReader(
+      input,
+      { versions: [3], capabilities: reader.required_capabilities },
+      semantic,
+    );
+    expect(supported.status).toBe('compatible');
+    expect(semantic).toHaveBeenCalled();
+  });
   beforeEach(() => semantic.mockClear());
   it('keeps the existing v2 parser and legacy author normalization', async () => {
     const result = await negotiateReader(

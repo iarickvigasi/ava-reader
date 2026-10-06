@@ -254,9 +254,9 @@
       "completed": "{percent}% abgeschlossen",
       "chapterCount": "{count} Kapitel",
       "sourcePages": "Quellseiten",
-      "sourcePageDescription": "Zum ersten Abschnitt einer Quellseite springen. Dies sind keine Bildschirmseiten.",
+      "sourcePageDescription": "Zum Anfang einer Quellseite springen. Dies sind keine Bildschirmseiten.",
       "sourcePageLabel": "Seite {label}, Quellseite {number}",
-      "sourcePageEmpty": "Kein lesbarer Inhalt"
+      "sourcePageUnavailable": "Seitenanfang nicht verfügbar"
     },
     "highlights": {
       "title": "Markierungen",

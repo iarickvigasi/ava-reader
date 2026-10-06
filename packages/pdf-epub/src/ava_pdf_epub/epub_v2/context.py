@@ -6,6 +6,7 @@ from ..contracts.book import CanonicalBookV2
 from ..contracts.graph_index import index_book
 from ..contracts.graph_links import TEXT_NODES
 from ..contracts.links import ExternalTarget, InternalTarget, NoteTarget
+from ..contracts.page_starts import page_addresses
 
 
 def ident(kind: str, value: str) -> str:
@@ -15,6 +16,7 @@ def ident(kind: str, value: str) -> str:
 @dataclass
 class Context:
     book: CanonicalBookV2
+    exact_source_pages: bool = False
 
     def __post_init__(self) -> None:
         self.nodes, self.owners = index_book(self.book)
@@ -40,6 +42,12 @@ class Context:
             for s in n.content.spans
             if isinstance(s.link, (InternalTarget, NoteTarget))
         ]
+        self.page_starts = page_addresses(self.book) if self.exact_source_pages else {}
+        self.page_offsets: dict[str, dict[int, list[int]]] = {}
+        for number, address in sorted(self.page_starts.items()):
+            self.page_offsets.setdefault(address.target.block_id, {}).setdefault(
+                address.target.offset, []
+            ).append(number)
         self.offsets: dict[str, set[int]] = {}
         for target in targets:
             if target.offset:
