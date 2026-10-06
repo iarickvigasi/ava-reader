@@ -270,6 +270,21 @@ rejects a response that cites another node's reference, even when its visual dec
 Accepted source-bound responses can be reused during investigation without new provider calls;
 failed Library imports are not reopened or changed to Ready by diagnostic replays.
 
+### Native opening credits and aside fonts
+
+Native opening credits can independently corroborate the complete PDF Info author when the
+printed component immediately follows a qualified title (or its first chapter heading) in a short
+centered credit group before prose. Only finite edition/date suffixes are admitted; partial names,
+conflicts, missing print evidence, OCR and explicit reviewed roles retain their existing behavior.
+The accepted author keeps the printed credit's evidence, rather than granting PDF Info authority.
+
+Native vector-framed asides now carry observed generic family/bold/italic/small-caps roles only
+after exact ordered glyph coverage, including spaces, visibility, unique ownership and containment
+checks. Mixed faces become exact Unicode spans with plain resets; unknown or over-limit optional
+runs retain text without a typography claim. Aside font proof does not authorize indentation,
+alignment, relative size, frame spacing or background CSS. These source candidates require a
+refreshed installed worker and a fresh initial import; accepted books stay fixed.
+
 ### Finite OCR quotation and style comparisons
 
 The current API reconstruction input selects `ava-ocr-source-features-1`. After the historical

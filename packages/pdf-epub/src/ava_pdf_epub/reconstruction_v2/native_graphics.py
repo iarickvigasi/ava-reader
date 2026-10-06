@@ -4,6 +4,7 @@ from typing import Literal
 
 from ..contracts.source import Box
 from .geometry import overlap, rectangle, union
+from .native_aside_fonts import native_aside_fonts
 from .observations import Graphic, PageObservation
 from .segments import Segment
 
@@ -36,15 +37,25 @@ def native_graphics(page: PageObservation, tables: list[Segment]) -> list[Segmen
         )
         kind: Literal["aside", "figure"] = "aside" if prose else "figure"
         text = "\n".join(line.text for line in enclosed)
+        ident = f"p{page.number}-graphic{index}"
+        style, spans = (
+            native_aside_fonts(
+                page, enclosed, box, {ident for t in tables for ident in t.native_line_ids}, ident
+            )
+            if prose
+            else (None, [])
+        )
         if not prose:
             box = _padded(box, page, {line.id for line in enclosed})
         segments.append(
             Segment(
-                id=f"p{page.number}-graphic{index}",
+                id=ident,
                 page=page.number,
                 box=box,
                 kind=kind,
                 text=text if prose else "",
+                style=style,
+                spans=spans,
                 alt=text if not prose else "",
                 native_line_ids=[line.id for line in enclosed],
                 method="native" if prose else "render",

@@ -5,6 +5,8 @@ from typing import Any
 
 from .assembly_state import AssemblyState
 from .metadata_scope import metadata_scope
+from .opening_author_credits import opening_author_credits
+from .printed_claim import printed_claim as _claim
 
 LABELS = {
     "author": ("contributor", "author"),
@@ -26,8 +28,8 @@ PATTERN = re.compile(
 
 
 def printed_metadata(state: AssemblyState, source_author: str | None) -> list[dict[str, Any]]:
-    output = []
     title, eligible = metadata_scope(state)
+    output = opening_author_credits(state, title, source_author)
     if title is not None:
         output.append(_claim("title", title["content"]["text"], title))
         index = state.blocks.index(title)
@@ -96,18 +98,3 @@ def printed_metadata(state: AssemblyState, source_author: str | None) -> list[di
                     {**_claim("identifier", value, block, status), "identifier_scheme": "isbn"}
                 )
     return output
-
-
-def _claim(
-    field: str, value: str, block: dict[str, Any], status: str = "accepted"
-) -> dict[str, Any]:
-    return dict(
-        field=field,
-        value=value[:4000],
-        status=status,
-        origin="source",
-        evidence=block["evidence"],
-        scope="source_edition"
-        if field in {"publisher", "date", "edition", "identifier"}
-        else "work",
-    )

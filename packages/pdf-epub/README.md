@@ -150,6 +150,20 @@ identity/evidence while preserving printed text.
 This does not implement a complete metadata inventory, all language-specific labels, or credits
 without recognized title-page context. Validate accepted fields in both EPUB output and AVA import.
 
+For native opening pages, a short centered printed author component may corroborate the complete
+PDF Info author, including a credit followed by bounded edition/date components. It must occur
+immediately after the source-qualified title, optionally below the first chapter heading, before
+ordinary prose. Missing, conflicting or partial names remain candidates. OCR and explicitly
+reviewed roles keep their existing authority; this rule cannot override an unknown or translator
+decision. This local proof requires no provider call and retains the printed block's evidence.
+
+Native vector-framed asides preserve generic font family, bold, italic and small-caps only when
+every visible glyph maps exactly to the retained text, including spaces. Mixed faces retain exact
+Unicode ranges and plain resets. Unknown/partial/ambiguous evidence or an excessive run count
+leaves the optional typography unknown. This proof does not establish source font size, paragraph
+indentation, frame spacing or background appearance. Packaging and normal-reader verification
+remain separate from these source checks.
+
 ## Optional recognition
 
 For the standalone interface, `recognition.OpenRouterProvider` and `recognition.recognize_page`

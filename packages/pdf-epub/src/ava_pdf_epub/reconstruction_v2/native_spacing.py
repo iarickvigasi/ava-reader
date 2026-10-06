@@ -16,7 +16,8 @@ def native_spacing(page: PageObservation, segments: list[Segment]) -> list[Segme
     output = []
     for index, segment in enumerate(segments):
         lines = [lookup[ident] for ident in segment.native_line_ids if ident in lookup]
-        if not lines or not segment.style:
+        # A constructed aside's native font proof establishes no paragraph/frame spacing.
+        if not lines or not segment.style or segment.kind == "aside":
             output.append(segment)
             continue
         size = median(glyph_size(line.glyphs) for line in lines)
