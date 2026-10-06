@@ -3,12 +3,13 @@ import { parseReaderPackage } from '../../reader/package/parse-reader-package';
 import { normalizeHrefForLookup } from '../../reader/epub/archive';
 import { checksumBuffer } from '../../shared/blob-utils';
 import { savePackage } from '../chapter-label-backfill/save-package';
-import { readSourceSections } from './read-source-sections';
-import { planGroups } from './plan-groups';
-import { regroupPackage } from './regroup-package';
+import { readSourceSections } from '../../reader/epub/edge-grouping/read-source-sections';
+import { planGroups } from '../../reader/epub/edge-grouping/plan-groups';
+import { regroupPackage } from '../../reader/epub/edge-grouping/regroup-package';
 import { regroupIndex } from './regroup-index';
 import { checkReferences } from './check-references';
-import type { EdgePackage } from './types';
+import { EDGE_GROUPING_VERSION } from '../../reader/epub/edge-grouping/types';
+import type { EdgePackage } from '../../reader/epub/edge-grouping/types';
 
 export async function processFile(
   prisma: PrismaClient,
@@ -23,7 +24,8 @@ export async function processFile(
   parseReaderPackage(bytes);
   // Keep raw blocks and unknown fields; normalization could change unrelated text.
   const original = JSON.parse(bytes.toString('utf8')) as EdgePackage;
-  if (original.edgeGroupingVersion === 1) return { status: 'unchanged' };
+  if (original.edgeGroupingVersion === EDGE_GROUPING_VERSION)
+    return { status: 'unchanged' };
   const sources = await prisma.bookFile.findMany({
     where: {
       bookId: file.bookId,

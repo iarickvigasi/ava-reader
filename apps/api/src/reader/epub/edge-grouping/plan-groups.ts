@@ -1,11 +1,12 @@
-import { normalizeHrefForLookup } from '../../reader/epub/archive';
+import { EDGE_GROUPING_VERSION } from './types';
+import { normalizeHrefForLookup } from '../archive';
 import type { EdgeGroup, EdgePackage, SourceSection } from './types';
 
 export function planGroups(
   pkg: EdgePackage,
   source: Map<string, SourceSection>,
 ): EdgeGroup[] {
-  if (pkg.edgeGroupingVersion === 1) return [];
+  if (pkg.edgeGroupingVersion === EDGE_GROUPING_VERSION) return [];
   const paths = pkg.chapters.map((c) => normalizeHrefForLookup(c.href));
   const roles = pkg.chapters.map((c, i) =>
     c.href.includes('#') ||
@@ -14,6 +15,18 @@ export function planGroups(
       : (source.get(paths[i])?.role ?? 'unknown'),
   );
   const groups: EdgeGroup[] = [];
+  for (let i = 0; i < roles.length; i++) {
+    if (
+      roles[i] === 'unknown' &&
+      !pkg.chapters[i].href.includes('#') &&
+      paths.indexOf(paths[i]) === paths.lastIndexOf(paths[i]) &&
+      pkg.chapters[i].blocks.length &&
+      pkg.chapters[i].blocks.every((block) => block.kind === 'image') &&
+      i > 0 &&
+      roles[i - 1] === 'front'
+    )
+      roles[i] = 'front';
+  }
   let end = 0;
   while (end < roles.length && ['front', 'contents'].includes(roles[end]))
     end++;

@@ -3,7 +3,7 @@ import {
   findFirstNodeByTag,
   orderedXmlParser,
   type OrderedNode,
-} from '../../reader/epub/xml-utils';
+} from '../xml-utils';
 import type { EdgeRole, SourceSection } from './types';
 
 // Positive evidence only. A short, untitled story is never front/back matter.

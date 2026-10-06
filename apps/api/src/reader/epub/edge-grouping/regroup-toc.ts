@@ -1,4 +1,4 @@
-import type { ReaderChapter, ReaderTocNode } from '../../reader/reader-types';
+import type { ReaderChapter, ReaderTocNode } from '../../reader-types';
 import type { EdgeGroup } from './types';
 
 export function regroupToc(

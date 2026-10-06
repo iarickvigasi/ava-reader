@@ -1,5 +1,8 @@
 import { fixture } from '../chapter-label-backfill/package.fixture';
-import type { EdgeRole, SourceSection } from './types';
+import type {
+  EdgeRole,
+  SourceSection,
+} from '../../reader/epub/edge-grouping/types';
 
 export function setup(roles: EdgeRole[]) {
   const pkg = fixture();

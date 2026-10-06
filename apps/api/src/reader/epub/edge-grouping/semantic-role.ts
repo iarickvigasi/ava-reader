@@ -3,7 +3,7 @@ import {
   getNodeChildren,
   getNodeTagName,
   type OrderedNode,
-} from '../../reader/epub/xml-utils';
+} from '../xml-utils';
 import type { EdgeRole } from './types';
 
 // A nested epigraph/footnote does not classify the surrounding chapter.

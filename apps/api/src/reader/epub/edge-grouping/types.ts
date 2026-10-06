@@ -1,4 +1,6 @@
-import type { ReaderPackage } from '../../reader/reader-types';
+import type { ReaderPackage } from '../../reader-types';
+
+export const EDGE_GROUPING_VERSION = 2;
 
 export type EdgeRole = 'front' | 'contents' | 'footnote' | 'back' | 'unknown';
 export type SourceSection = { role: EdgeRole; evidence: string };

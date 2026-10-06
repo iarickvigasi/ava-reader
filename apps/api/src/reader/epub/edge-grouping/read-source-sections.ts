@@ -3,13 +3,13 @@ import {
   readPackagePath,
   readZipText,
   normalizeHrefForLookup,
-} from '../../reader/epub/archive';
-import { firstAsArray, xmlParser } from '../../reader/epub/xml-utils';
-import { parseManifestItems } from '../../reader/epub/manifest';
-import { readTocEntries, type ParsedTocNode } from '../../reader/epub/toc';
-import { resolveZipPath } from '../../shared/zip-utils';
+} from '../archive';
+import { firstAsArray, xmlParser } from '../xml-utils';
+import { parseManifestItems } from '../manifest';
+import { readTocEntries, type ParsedTocNode } from '../toc';
+import { resolveZipPath } from '../../../shared/zip-utils';
 import { classifyDocument } from './classify-document';
-import type { ReaderPackage } from '../../reader/reader-types';
+import type { ReaderPackage } from '../../reader-types';
 import type { SourceSection } from './types';
 
 export async function readSourceSections(buffer: Buffer, pkg: ReaderPackage) {

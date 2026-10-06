@@ -1,11 +1,17 @@
 import type { ReaderChapter } from '../reader-types';
 
 // Run after splitting/assigning IDs so merging never renumbers existing blocks.
-export function mergePictureChapters(source: ReaderChapter[]) {
+export function mergePictureChapters(
+  source: ReaderChapter[],
+  separate = new Set<string>(),
+) {
   const chapters: ReaderChapter[] = [];
   let pending: ReaderChapter[] = [];
   for (const chapter of source) {
-    if (chapter.blocks.every((block) => block.kind === 'image')) {
+    if (
+      !separate.has(chapter.chapterId) &&
+      chapter.blocks.every((block) => block.kind === 'image')
+    ) {
       pending.push(chapter);
       continue;
     }

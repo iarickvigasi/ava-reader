@@ -1,6 +1,5 @@
 import { readEpubSpine } from './read-epub-spine';
-import { mergePictureChapters } from './merge-picture-chapters';
-import { remapMergedToc } from './remap-merged-toc';
+import { normalizeEpubChapters } from './normalize-epub-chapters';
 import JSZip from 'jszip';
 import type { ReaderPackage } from '../reader-types';
 import { readRawChapters } from './read-raw-chapters';
@@ -46,7 +45,7 @@ export async function buildReaderPackageFromEpub(input: {
     isParsedTocRichEnough ||
     titleExtractionCoverage >= CHAPTER_TITLE_COVERAGE_THRESHOLD;
 
-  const sourceChapters = buildReaderChapters({
+  const chapters = buildReaderChapters({
     rawChapters: nonEmptyRawChapters,
     parsedToc,
     trustTocLabels: isParsedTocRichEnough,
@@ -54,31 +53,30 @@ export async function buildReaderPackageFromEpub(input: {
     bookTitle: input.title,
     language: input.language,
   });
-  const chapters = mergePictureChapters(sourceChapters);
   const totalBlocks = chapters.reduce(
     (sum, chapter) => sum + chapter.blocks.length,
     0,
   );
 
   const resolvedToc = isParsedTocRichEnough
-    ? remapMergedToc(
-        resolveTocNodes(parsedToc, sourceChapters),
-        sourceChapters,
-        chapters,
-      )
+    ? resolveTocNodes(parsedToc, chapters)
     : resolveTocNodes(createFallbackToc(chapters), chapters);
 
-  return {
-    chapters,
-    manifest: {
-      authors: input.authors,
-      language: input.language,
-      sourceChecksum: input.checksum,
-      title: input.title,
-      totalBlocks,
-      totalChapters: chapters.length,
+  return normalizeEpubChapters(
+    input.buffer,
+    {
+      chapters,
+      manifest: {
+        authors: input.authors,
+        language: input.language,
+        sourceChecksum: input.checksum,
+        title: input.title,
+        totalBlocks,
+        totalChapters: chapters.length,
+      },
+      toc: resolvedToc,
+      version: 2,
     },
-    toc: resolvedToc,
-    version: 2,
-  };
+    isParsedTocRichEnough,
+  );
 }

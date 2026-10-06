@@ -23,7 +23,7 @@ export async function picturePackage(bodies: string[], authoredToc = false) {
   bodies.forEach((body, i) =>
     zip.file(
       `${i}.xhtml`,
-      `<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><body>${body}</body></html>`,
+      `<html lang="en" xmlns="http://www.w3.org/1999/xhtml"><body>${body}</body></html>`,
     ),
   );
   if (!authoredToc)
@@ -34,6 +34,9 @@ export async function picturePackage(bodies: string[], authoredToc = false) {
   if (authoredToc)
     zip.file(
       'nav.xhtml',
+      // EPUB extends XHTML with this namespaced navigation attribute.
+      //noinspection HtmlUnknownAttribute
+      // language=XML
       `<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><body><nav epub:type="toc"><ol>${bodies
         .map((_, i) => `<li><a href="${i}.xhtml">Section ${i}</a></li>`)
         .join('')}</ol></nav></body></html>`,
