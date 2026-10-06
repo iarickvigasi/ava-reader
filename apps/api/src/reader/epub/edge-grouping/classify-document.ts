@@ -20,6 +20,7 @@ export function classifyDocument(xml: string, labels: string[]): SourceSection {
     return result(semantic, 'semantic type covers document content');
   for (const label of labels) {
     const name = label.trim().toLowerCase().replace(/[’']/g, '');
+    if (/^appendix$/i.test(name)) return result('appendix', label);
     if (/^(table of )?contents$/.test(name)) return result('contents', label);
     if (
       /^(cover|title page|half title|copyright|dedication|epigraph)$/.test(

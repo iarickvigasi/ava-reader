@@ -13,8 +13,9 @@ footnote-only documents in the trailing back-matter region become **Footnotes**.
 sections remain separate. Every block and its ID stays unchanged and in source order; each group
 keeps its first chapter ID. Remaining chapters retain IDs/content but get updated indices and
 neighbour links. The authored middle TOC hierarchy is retained. Removed edge entries become one
-entry per group. Repeated application is a no-op. Version 2 revisits packages previously processed
-by version 1.
+entry per group. Repeated application is a no-op. Version 3 revisits packages previously processed
+by earlier versions. An Appendix absorbs its immediately following picture-only documents; the
+next text document stays separate.
 
 ```sh
 pnpm --filter api db:backfill-epub-edges --dry-run > edge-preview.jsonl

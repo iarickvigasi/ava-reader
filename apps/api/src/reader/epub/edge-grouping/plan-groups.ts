@@ -1,3 +1,4 @@
+import { planAppendixImages } from './plan-appendix-images';
 import { EDGE_GROUPING_VERSION } from './types';
 import { normalizeHrefForLookup } from '../archive';
 import type { EdgeGroup, EdgePackage, SourceSection } from './types';
@@ -14,7 +15,7 @@ export function planGroups(
       ? 'unknown'
       : (source.get(paths[i])?.role ?? 'unknown'),
   );
-  const groups: EdgeGroup[] = [];
+  const groups: EdgeGroup[] = planAppendixImages(pkg, roles);
   for (let i = 0; i < roles.length; i++) {
     if (
       roles[i] === 'unknown' &&
@@ -34,7 +35,10 @@ export function planGroups(
   if (end === roles.length) return [];
   collect(0, end, 'front', 'Front matter');
   let start = roles.length;
-  while (start > end && ['footnote', 'back'].includes(roles[start - 1]))
+  while (
+    start > end &&
+    ['footnote', 'back', 'appendix'].includes(roles[start - 1])
+  )
     start--;
   collect(start, roles.length, 'footnote', 'Footnotes');
   return groups;

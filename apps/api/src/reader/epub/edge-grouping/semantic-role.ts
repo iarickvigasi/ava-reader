@@ -32,6 +32,7 @@ export function semanticRole(body: OrderedNode): EdgeRole {
 }
 
 function tokenRole(type: string): EdgeRole {
+  if (type === 'appendix') return 'appendix';
   if (type === 'toc') return 'contents';
   if (type === 'footnote') return 'footnote';
   if (

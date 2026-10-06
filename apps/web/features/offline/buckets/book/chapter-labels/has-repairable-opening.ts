@@ -1,7 +1,7 @@
 import type { ReaderBlock } from "@/lib/api-types/reader";
 import type { TocChapterEntry } from "@/features/reader/toc";
 
-const MIN_HEADING_SCALE = 1.2;
+const MIN_HEADING_SCALE = 1.125;
 const MAX_HEADING_LENGTH = 80;
 const MAX_OPENING_HEADINGS = 3;
 const MAX_COMBINED_TITLE_LENGTH = 240;
@@ -16,15 +16,25 @@ export function hasRepairableOpening(
     (block) => block.kind !== "image" && block.text.trim(),
   );
   const headings = openingHeadings(opening);
-  if (headings.length > 1 && headings.includes(normalize(entry.label)))
+  if (
+    headings.length > 1 &&
+    (headings.includes(normalize(entry.label)) ||
+      headings.join(" / ").startsWith(`${normalize(entry.label)} / `))
+  )
     return true;
   const prefix = `${entry.spineIndex + 1}.`;
   const excerpt =
     entry.label === prefix ||
     (entry.label.startsWith(`${prefix} `) && entry.label.endsWith("…"));
-  if (!excerpt || normalize(opening[0]?.text ?? "") === normalize(bookTitle))
+  if (!excerpt) return false;
+  if (
+    headings.length === 1 &&
+    normalize(opening[0]?.text ?? "") === normalize(bookTitle) &&
+    opening.some((block) => block.kind !== "heading")
+  )
     return false;
   if (headings.length) return true;
+  if (normalize(opening[0]?.text ?? "") === normalize(bookTitle)) return false;
   return (
     !opening.length &&
     entry.label === prefix &&
@@ -35,12 +45,16 @@ export function hasRepairableOpening(
 }
 
 function openingHeadings(blocks: ReaderBlock[]) {
+  const structuralOpening =
+    /^(?:(?:chapter|part)\s+[\divxlcdm]+|preface)$/i.test(
+      blocks[0]?.text.trim() ?? "",
+    );
   const headings: string[] = [];
   for (const block of blocks) {
     const styled =
       block.kind === "paragraph" &&
       block.align === "center" &&
-      (block.fontSizeScale ?? 1) >= MIN_HEADING_SCALE &&
+      (structuralOpening || (block.fontSizeScale ?? 1) >= MIN_HEADING_SCALE) &&
       block.text.trim().length <= MAX_HEADING_LENGTH;
     if (block.kind !== "heading" && !styled) break;
     const text = normalize(block.text);

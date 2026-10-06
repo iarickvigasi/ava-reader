@@ -1,3 +1,4 @@
+import { getChapterTitleFromBlocks } from './get-chapter-title-from-blocks';
 import { enrichOpeningLabel } from './enrich-opening-label';
 import type { ReaderBlock } from '../reader-types';
 import { createChapterExcerptLabel } from './create-chapter-excerpt-label';
@@ -18,7 +19,16 @@ export function resolveChapterFallbackLabel(input: {
       continue;
     }
 
-    if (normalizeTitleForComparison(candidate) === normalizedBookTitle) {
+    if (
+      normalizeTitleForComparison(candidate) === normalizedBookTitle &&
+      (candidate !== getChapterTitleFromBlocks(input.blocks, false) ||
+        input.blocks.some(
+          (block) =>
+            block.kind !== 'heading' &&
+            block.kind !== 'image' &&
+            block.text.trim(),
+        ))
+    ) {
       continue;
     }
 

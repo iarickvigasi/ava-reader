@@ -37,7 +37,13 @@ export async function readSourceSections(buffer: Buffer, pkg: ReaderPackage) {
     if (result.has(key)) continue;
     // Headings in the stored package are authored text; generated labels aren't evidence.
     const headings = chapter.blocks
-      .filter((b) => b.kind === 'heading')
+      .filter(
+        (b) =>
+          b.kind === 'heading' ||
+          (b.kind === 'paragraph' &&
+            b.align === 'center' &&
+            (b.fontSizeScale ?? 1) >= 1.125),
+      )
       .slice(0, 1)
       .map((b) => b.text);
     const xml = await readZipText(
