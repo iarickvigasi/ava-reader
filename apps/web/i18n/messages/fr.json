@@ -666,6 +666,15 @@
     "shared": {
       "errors": {
         "sessionTaskRequired": "Une action supplémentaire sur le compte est requise avant de poursuivre la session."
+      },
+      "readiness": {
+        "loading": "Préparation de la connexion…",
+        "unavailable": "La connexion n’a pas pu se charger.",
+        "pending": "Ouverture de la connexion…",
+        "stalled": "La connexion prend plus de temps que prévu.",
+        "reload": "Recharger",
+        "failed": "La connexion a échoué. Réessayez.",
+        "callbackTitle": "Un instant"
       }
     },
     "providers": {

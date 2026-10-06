@@ -666,6 +666,15 @@
     "shared": {
       "errors": {
         "sessionTaskRequired": "Uma ação adicional na conta é necessária antes de continuar a sessão."
+      },
+      "readiness": {
+        "loading": "Preparando o login…",
+        "unavailable": "Não foi possível carregar o login.",
+        "pending": "Abrindo o login…",
+        "stalled": "O login está demorando mais que o esperado.",
+        "reload": "Recarregar",
+        "failed": "O login falhou. Tente novamente.",
+        "callbackTitle": "Só um momento"
       }
     },
     "providers": {

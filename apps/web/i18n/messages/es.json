@@ -666,6 +666,15 @@
     "shared": {
       "errors": {
         "sessionTaskRequired": "La cuenta requiere trabajo adicional antes de continuar la sesión."
+      },
+      "readiness": {
+        "loading": "Preparando el inicio de sesión…",
+        "unavailable": "No se pudo cargar el inicio de sesión.",
+        "pending": "Abriendo el inicio de sesión…",
+        "stalled": "El inicio de sesión está tardando más de lo esperado.",
+        "reload": "Recargar",
+        "failed": "No se pudo iniciar sesión. Inténtalo de nuevo.",
+        "callbackTitle": "Un momento"
       }
     },
     "providers": {

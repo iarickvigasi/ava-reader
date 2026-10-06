@@ -10,6 +10,9 @@ import { AuthShell } from "@/components/auth/auth-shell";
 import { EmailCodePanel } from "@/components/auth/email-code-panel";
 import { getClerkErrorMessage } from "@/components/auth/clerk-error";
 import { ProviderList } from "@/components/auth/provider-list";
+import { AuthReadinessNotice } from "./auth-readiness-notice";
+import { useAuthReadiness } from "@/features/auth/use-auth-readiness";
+import { useAuthOperation } from "@/features/auth/use-auth-operation";
 
 type SignUpFlowProps = {
   initialNotice?: string;
@@ -21,7 +24,7 @@ export function SignUpFlow({ initialNotice }: SignUpFlowProps) {
   const t = useTranslations("auth.signUp");
   const tShared = useTranslations("auth.shared");
   const { signUp, errors, fetchStatus } = useSignUp();
-  const { isSignedIn: signedIn, userId, sessionId } = useAuth();
+  const { isLoaded, isSignedIn: signedIn, userId, sessionId } = useAuth();
   const isSignedIn = signedIn && !isLocallySignedOut(userId ?? null, sessionId);
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>("idle");
@@ -29,6 +32,11 @@ export function SignUpFlow({ initialNotice }: SignUpFlowProps) {
   const [code, setCode] = useState("");
   const [localMessage, setLocalMessage] = useState<string | undefined>(
     initialNotice,
+  );
+
+  const readiness = useAuthReadiness(isLoaded);
+  const operation = useAuthOperation(isLoaded, () =>
+    setLocalMessage(tShared("readiness.failed")),
   );
 
   useEffect(() => {
@@ -42,8 +50,10 @@ export function SignUpFlow({ initialNotice }: SignUpFlowProps) {
   }
 
   const finalize = async () => {
+    if (!operation.canCall()) return;
     await signUp.finalize({
       navigate: async ({ decorateUrl, session }) => {
+        if (!operation.current()) return;
         if (session?.currentTask) {
           setLocalMessage(tShared("errors.sessionTaskRequired"));
           return;
@@ -63,6 +73,7 @@ export function SignUpFlow({ initialNotice }: SignUpFlowProps) {
       redirectCallbackUrl: "/auth/sso-callback",
     });
 
+    if (!operation.current()) return;
     if (error) {
       setLocalMessage(t("errors.googleStartFailed"));
     }
@@ -72,15 +83,11 @@ export function SignUpFlow({ initialNotice }: SignUpFlowProps) {
     setLocalMessage(undefined);
     const { error } = await signUp.create({ emailAddress: email });
 
-    if (error) {
-      return;
-    }
+    if (error || !operation.canCall()) return;
 
     const result = await signUp.verifications.sendEmailCode();
 
-    if (result.error) {
-      return;
-    }
+    if (result.error || !operation.current()) return;
 
     setPhase("code");
   };
@@ -89,9 +96,7 @@ export function SignUpFlow({ initialNotice }: SignUpFlowProps) {
     setLocalMessage(undefined);
     const { error } = await signUp.verifications.verifyEmailCode({ code });
 
-    if (error) {
-      return;
-    }
+    if (error || !operation.current()) return;
 
     if (signUp.status === "complete") {
       await finalize();
@@ -116,20 +121,36 @@ export function SignUpFlow({ initialNotice }: SignUpFlowProps) {
       title={t("title")}
       subtitle={t("subtitle")}
       footer={
-        <AuthRouteSwitcher
-          prompt={t("switchPrompt")}
-          actionLabel={t("switchAction")}
-          href="/sign-in"
-        />
+        operation.busy ? null : (
+          <AuthRouteSwitcher
+            prompt={t("switchPrompt")}
+            actionLabel={t("switchAction")}
+            href="/sign-in"
+          />
+        )
       }
     >
       <ProviderList
-        googleDisabled={fetchStatus === "fetching"}
+        emailDisabled={operation.busy}
+        googleDisabled={
+          !isLoaded || operation.busy || fetchStatus === "fetching"
+        }
         onEmail={() => {
+          if (operation.locked()) return;
           setLocalMessage(undefined);
           setPhase("email");
         }}
-        onGoogle={() => void startGoogle()}
+        onGoogle={() => void operation.run(startGoogle)}
+      />
+
+      <AuthReadinessNotice
+        readiness={readiness}
+        operation={operation.state}
+        error={
+          phase === "idle" && errorMessage !== initialNotice
+            ? errorMessage
+            : undefined
+        }
       />
 
       {phase !== "idle" ? (
@@ -138,7 +159,9 @@ export function SignUpFlow({ initialNotice }: SignUpFlowProps) {
           stage={phase === "code" ? "code" : "identifier"}
           email={email}
           code={code}
-          busy={fetchStatus === "fetching"}
+          busy={operation.state === "pending" || fetchStatus === "fetching"}
+          disabled={!isLoaded || operation.busy}
+          interactionLocked={operation.busy}
           error={errorMessage}
           notice={
             localMessage && errorMessage !== localMessage
@@ -146,15 +169,20 @@ export function SignUpFlow({ initialNotice }: SignUpFlowProps) {
               : undefined
           }
           captchaSlot={<div id="clerk-captcha" />}
-          onEmailChange={setEmail}
-          onCodeChange={setCode}
+          onEmailChange={(value) => {
+            if (!operation.locked()) setEmail(value);
+          }}
+          onCodeChange={(value) => {
+            if (!operation.locked()) setCode(value);
+          }}
           onBack={() => {
+            if (operation.locked()) return;
             setLocalMessage(undefined);
             setPhase(phase === "code" ? "email" : "idle");
           }}
-          onSubmitIdentifier={() => void requestEmailCode()}
-          onSubmitCode={() => void verifyEmailCode()}
-          onResendCode={() => void resendCode()}
+          onSubmitIdentifier={() => void operation.run(requestEmailCode)}
+          onSubmitCode={() => void operation.run(verifyEmailCode)}
+          onResendCode={() => void operation.run(resendCode)}
         />
       ) : initialNotice ? (
         <div className="rounded-card bg-white/68 px-5 py-4 text-left text-sm text-copy">

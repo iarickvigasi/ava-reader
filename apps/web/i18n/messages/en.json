@@ -666,6 +666,15 @@
     "shared": {
       "errors": {
         "sessionTaskRequired": "Additional account work is required before the session can continue."
+      },
+      "readiness": {
+        "loading": "Preparing sign-in…",
+        "unavailable": "Sign-in could not load.",
+        "pending": "Opening sign-in…",
+        "stalled": "Sign-in is taking longer than expected.",
+        "reload": "Reload",
+        "failed": "Sign-in failed. Please try again.",
+        "callbackTitle": "Just a moment"
       }
     },
     "providers": {

@@ -666,6 +666,15 @@
     "shared": {
       "errors": {
         "sessionTaskRequired": "Vor dem Fortsetzen der Sitzung ist eine zusätzliche Kontoaktion erforderlich."
+      },
+      "readiness": {
+        "loading": "Anmeldung wird vorbereitet…",
+        "unavailable": "Die Anmeldung konnte nicht geladen werden.",
+        "pending": "Anmeldung wird geöffnet…",
+        "stalled": "Die Anmeldung dauert länger als erwartet.",
+        "reload": "Neu laden",
+        "failed": "Die Anmeldung ist fehlgeschlagen. Bitte versuche es erneut.",
+        "callbackTitle": "Einen Moment"
       }
     },
     "providers": {
