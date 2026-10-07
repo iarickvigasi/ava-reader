@@ -1,5 +1,5 @@
-import { useReaderUi } from "@/components/app/core/reader-ui-context";
-import { usePanelDismissFocus } from "../overlays/use-panel-dismiss-focus";
+import { useReaderUi, type ReaderPanel } from "@/components/app/core/reader-ui-context";
+import { ReaderPanelDialog, useReaderPanelActions } from "../overlays/reader-panel-dialog";
 import type { ReadyReaderProps } from "../shared/types";
 import { ReaderAiChatsOverlay } from "../overlays/ai-chats/reader-ai-chats-overlay";
 import { ReaderAiCommentsOverlay } from "../overlays/ai-comments/reader-ai-comments-overlay";
@@ -15,43 +15,47 @@ import type { ReaderRangeLocator } from "@/lib/api-types";
 
 export function ReadyReaderOverlays(props: ReadyReaderProps) {
   const { activePanel, closePanel } = useReaderUi();
+  if (!activePanel) return null;
+  return (
+    <ReaderPanelDialog key={activePanel} panel={activePanel} onClose={closePanel}>
+      <ReadyReaderPanel {...props} panel={activePanel} />
+    </ReaderPanelDialog>
+  );
+}
+
+function ReadyReaderPanel(props: ReadyReaderProps & { panel: ReaderPanel }) {
+  const { dismiss, navigate } = useReaderPanelActions();
   const { highlights } = useHighlightsContext();
   const { comments } = useAiCommentsContext();
-  const dismissPanel = usePanelDismissFocus(activePanel, closePanel);
   const jump = (locator: ReaderRangeLocator | null | undefined) => {
     if (!locator) return;
-    closePanel();
-    props.onSelectChapter(locator.chapterId, {
+    navigate(() => props.onSelectChapter(locator.chapterId, {
       blockId: locator.startBlockId,
       textOffset: locator.startOffset,
-    });
+    }));
   };
-  switch (activePanel) {
+  switch (props.panel) {
     case "contents":
       return (
         <ReaderContentsOverlay
           activeChapterId={props.activeChapter.chapterId}
           activeLocator={props.displayLocator}
-          onClose={closePanel}
+          onClose={dismiss}
           payload={props.payload}
           pendingChapterId={props.pendingChapterId}
-          onSelectChapter={(id, target) => {
-            closePanel();
-            props.onSelectChapter(id, target);
-          }}
+          onSelectChapter={(id, target) => navigate(() => props.onSelectChapter(id, target))}
         />
       );
     case "search":
       return (
         <ReaderSearchOverlay
           payload={props.payload}
-          onClose={closePanel}
+          onClose={dismiss}
           onSelect={(locator) => {
-            closePanel();
-            props.onSelectChapter(locator.chapterId, {
+            navigate(() => props.onSelectChapter(locator.chapterId, {
               blockId: locator.blockId,
               textOffset: locator.textOffset,
-            });
+            }));
           }}
         />
       );
@@ -59,22 +63,22 @@ export function ReadyReaderOverlays(props: ReadyReaderProps) {
       return (
         <ReaderPreferencesOverlay
           fontScale={props.fontScale}
-          onClose={dismissPanel}
+          onClose={dismiss}
           onDecreaseFont={props.onDecreaseFont}
           onIncreaseFont={props.onIncreaseFont}
         />
       );
     case "download":
       return (
-        <ReaderDownloadOverlay book={props.payload.book} onClose={closePanel} />
+        <ReaderDownloadOverlay book={props.payload.book} onClose={dismiss} />
       );
     case "ai-chats":
-      return <ReaderAiChatsOverlay onClose={dismissPanel} />;
+      return <ReaderAiChatsOverlay onClose={dismiss} />;
     case "highlights":
       return (
         <ReaderHighlightsOverlay
           toc={props.payload.toc}
-          onClose={dismissPanel}
+          onClose={dismiss}
           onSelectHighlight={(id) =>
             jump(highlights.find((row) => row.id === id)?.locator)
           }
@@ -84,7 +88,7 @@ export function ReadyReaderOverlays(props: ReadyReaderProps) {
       return (
         <ReaderAiCommentsOverlay
           toc={props.payload.toc}
-          onClose={dismissPanel}
+          onClose={dismiss}
           onSelectAiComment={(id) =>
             jump(comments.find((row) => row.id === id)?.locator)
           }
@@ -96,10 +100,8 @@ export function ReadyReaderOverlays(props: ReadyReaderProps) {
           libraryItemId={props.libraryItemId}
           book={props.payload.book}
           chapters={props.payload.chapters}
-          onClose={closePanel}
+          onClose={dismiss}
         />
       );
-    default:
-      return null;
   }
 }

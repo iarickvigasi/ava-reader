@@ -6,7 +6,6 @@ import { useBookDownload } from "@/features/library/downloads/use-book-download"
 import type { ReaderBookPayload } from "@/lib/api-types/reader";
 import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
-import { restoreControlFocus } from "../restore-control-focus";
 
 export function ReaderDownloadOverlay({
   book,
@@ -25,12 +24,7 @@ export function ReaderDownloadOverlay({
   const close = useRef<HTMLButtonElement>(null);
   useCloseOnEscape(onClose);
   useEffect(() => {
-    const origin = document.activeElement;
-    const path = window.location.pathname;
     close.current?.focus();
-    return () => {
-      restoreControlFocus(origin, path, "[data-reader-download-control]");
-    };
   }, []);
   const available =
     book.primaryFormat === "EPUB" || book.primaryFormat === "PDF";
@@ -38,6 +32,7 @@ export function ReaderDownloadOverlay({
     <div className="pointer-events-none fixed inset-0 z-50">
       <button
         type="button"
+        tabIndex={-1}
         aria-label={t("close")}
         className="pointer-events-auto absolute inset-0 bg-transparent md:left-94"
         onClick={onClose}
@@ -51,6 +46,7 @@ export function ReaderDownloadOverlay({
           <button
             ref={close}
             type="button"
+            data-reader-initial-focus
             aria-label={t("close")}
             onClick={onClose}
             className="size-11 shrink-0 rounded-control text-xl text-ink hover:bg-soft-tone-fill focus-visible:ring-2 focus-visible:ring-line-strong"

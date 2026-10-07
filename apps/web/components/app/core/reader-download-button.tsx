@@ -1,3 +1,4 @@
+import { readerPanelId } from "@/features/reader/panel-id";
 import { useTranslations } from "next-intl";
 import { ReaderDownloadIcon } from "@/components/app/shared/app-icons";
 import { useReaderUi } from "./reader-ui-context";
@@ -9,6 +10,8 @@ export function ReaderDownloadButton() {
     <button
       type="button"
       aria-label={t("downloadBook")}
+      aria-haspopup="dialog"
+      aria-controls={readerPanelId("download")}
       aria-expanded={activePanel === "download"}
       data-reader-download-control
       onClick={() => togglePanel("download")}

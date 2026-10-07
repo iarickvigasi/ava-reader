@@ -236,3 +236,25 @@
     opacity: 1;
   }
 }
+
+/* Native modality without a second scrim: existing reader overlays own their appearance. */
+.reader-panel-dialog {
+  inset: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  overflow: visible;
+}
+.reader-panel-dialog::backdrop { background: transparent; }
+@media (prefers-reduced-motion: reduce) {
+  .reader-panel-dialog *, .reader-panel-dialog *::before, .reader-panel-dialog *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

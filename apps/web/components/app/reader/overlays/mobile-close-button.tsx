@@ -7,8 +7,9 @@ export function MobileCloseButton({ ariaLabel, onClose }: MobileCloseButtonProps
   return (
     <button
       type="button"
+      data-reader-initial-focus
       aria-label={ariaLabel}
-      className="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-soft-tone-fill text-ink transition hover:bg-paper-strong md:hidden"
+      className="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-soft-tone-fill text-ink transition hover:bg-paper-strong focus-visible:ring-2 focus-visible:ring-line-strong"
       onClick={onClose}
     >
       <span className="font-ui text-lg leading-none">×</span>

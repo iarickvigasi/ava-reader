@@ -9,7 +9,6 @@ import { MAX_SEARCH_QUERY } from "@/features/reader/search/types";
 import { searchExcerpt } from "@/features/reader/search/find";
 import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
-import { restoreControlFocus } from "../restore-control-focus";
 
 export function ReaderSearchOverlay({
   payload,
@@ -25,12 +24,7 @@ export function ReaderSearchOverlay({
   const input = useRef<HTMLInputElement>(null);
   useCloseOnEscape(onClose);
   useEffect(() => {
-    const origin = document.activeElement;
-    const pathname = window.location.pathname;
     input.current?.focus();
-    return () => {
-      restoreControlFocus(origin, pathname, '[data-reader-panel-control="search"]');
-    };
   }, []);
   const status = search.error
     ? t("unavailable")
@@ -45,6 +39,7 @@ export function ReaderSearchOverlay({
     <div className="pointer-events-none fixed inset-0 z-50">
       <button
         type="button"
+        tabIndex={-1}
         aria-label={t("close")}
         className="pointer-events-auto absolute inset-0 bg-transparent md:left-94"
         onClick={onClose}
@@ -57,6 +52,7 @@ export function ReaderSearchOverlay({
           <PanelTitle>{t("title")}</PanelTitle>
           <button
             type="button"
+            data-reader-initial-focus
             aria-label={t("close")}
             onClick={onClose}
             className="size-11 shrink-0 rounded-control text-xl text-ink hover:bg-soft-tone-fill focus-visible:ring-2 focus-visible:ring-line-strong"

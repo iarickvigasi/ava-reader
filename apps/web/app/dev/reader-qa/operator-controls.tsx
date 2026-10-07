@@ -3,6 +3,7 @@
 import type { FormEvent } from "react";
 import { READER_BUILD_FINGERPRINT } from "@/features/reader/canonical/build";
 import { actions, useOperatorChannel } from "./use-operator-channel";
+import { AcknowledgementFields } from "./acknowledgement-fields";
 
 const fields = [
   ["Library item ID", "libraryItemId"],
@@ -71,6 +72,7 @@ export function OperatorControls() {
           ))}
         </div>
       </form>
+      <AcknowledgementFields receipts={receipts} />
       <h2 className="mt-6 text-lg">Acknowledgements and commands</h2>
       <pre className="mt-4 whitespace-pre-wrap break-words text-xs">
         {JSON.stringify(receipts, null, 2)}

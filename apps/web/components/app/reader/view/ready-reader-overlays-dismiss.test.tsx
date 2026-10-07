@@ -9,13 +9,15 @@ const f = vi.hoisted(() => ({
   dismiss: vi.fn(),
   triggerFocus: vi.fn(),
   targetFocus: vi.fn(),
+  navigate: vi.fn(),
   range: { chapterId: "four", startBlockId: "body", startOffset: 11 },
 }));
 vi.mock("@/components/app/core/reader-ui-context", () => ({
   useReaderUi: () => ({ activePanel: f.panel, closePanel: f.close }),
 }));
-vi.mock("../overlays/use-panel-dismiss-focus", () => ({
-  usePanelDismissFocus: () => f.dismiss,
+vi.mock("../overlays/reader-panel-dialog", () => ({
+  ReaderPanelDialog: "dialog",
+  useReaderPanelActions: () => ({ dismiss: f.dismiss, navigate: f.navigate }),
 }));
 vi.mock("../overlays/highlights/highlights-context", () => ({
   useHighlightsContext: () => ({
@@ -38,15 +40,23 @@ type Overlay = {
   onSelectHighlight?: (id: string) => void;
   onSelectAiComment?: (id: string) => void;
 };
-const view = () => (ReadyReaderOverlays(props) as ReactElement<Overlay>).props;
+const view = () => {
+  const wrapper = ReadyReaderOverlays(props) as ReactElement<{
+    children: ReactElement<ReadyReaderProps & { panel: ReaderPanel }>;
+  }>;
+  const child = wrapper.props.children;
+  const render = child.type as (props: typeof child.props) => ReactElement<Overlay>;
+  return render(child.props).props;
+};
 beforeEach(() => {
   vi.clearAllMocks();
+  f.navigate.mockImplementation((action: () => void) => { f.close(); action(); });
   f.dismiss.mockImplementation(() => {
     f.close();
     f.triggerFocus();
   });
 });
-it.each(["preferences", "ai-comments", "highlights", "ai-chats"] as const)(
+it.each(["preferences", "ai-comments", "highlights", "ai-chats", "contents", "search", "download", "ai-toolbox"] as const)(
   "%s close uses explicit popup dismissal",
   (panel) => {
     f.panel = panel;
@@ -54,16 +64,6 @@ it.each(["preferences", "ai-comments", "highlights", "ai-chats"] as const)(
     expect(f.close).toHaveBeenCalledOnce();
     expect(f.triggerFocus).toHaveBeenCalledOnce();
     expect(select).not.toHaveBeenCalled();
-  },
-);
-it.each(["contents", "search", "download", "ai-toolbox"] as const)(
-  "%s retains its existing close/focus owner",
-  (panel) => {
-    f.panel = panel;
-    view().onClose();
-    expect(f.close).toHaveBeenCalledOnce();
-    expect(f.dismiss).not.toHaveBeenCalled();
-    expect(f.triggerFocus).not.toHaveBeenCalled();
   },
 );
 it.each(["highlights", "ai-comments"] as const)(
