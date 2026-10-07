@@ -4,10 +4,12 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
+from ..contracts.profiles import BILINGUAL_PROFILE
 from .assemble_figure import assemble_figure
 from .assemble_table import assemble_table
 from .assembly_state import AssemblyState
 from .associate_figures import associate_figures
+from .associate_table_captions import associate_table_captions
 from .canonical_text import canonical_text
 from .page_checkpoints import PreparedPageMap
 from .prepared import PreparedPage
@@ -19,6 +21,7 @@ def assemble_blocks(
     segments: list[Segment], prepared: Sequence[PreparedPage], scratch: Path, state: AssemblyState
 ) -> None:
     pages = PreparedPageMap(prepared)
+    source_tables = bool(prepared) and prepared[0].profile_id == BILINGUAL_PROFILE
     for segment in segments:
         if segment.kind in {"unsupported", "furniture"}:
             refuse_segment(pages[segment.page], segment)
@@ -48,9 +51,15 @@ def assemble_blocks(
                 block["list_id"] = "pending"
         state.blocks.append(block)
     for previous, current in zip(state.blocks, state.blocks[1:], strict=False):
-        if previous["kind"] == "caption" and current["kind"] == "table":
+        if not source_tables and previous["kind"] == "caption" and current["kind"] == "table":
             current["caption_id"] = previous["id"]
-        if previous["kind"] in {"figure", "table"} and current["kind"] == "caption":
+        preceding = {"figure"} if source_tables else {"figure", "table"}
+        relation = state.segments[current["id"]].related_to
+        if (
+            previous["kind"] in preceding
+            and current["kind"] == "caption"
+            and (not source_tables or relation in {None, previous["id"]})
+        ):
             previous["caption_id"] = current["id"]
             if previous["kind"] == "figure" and not previous["alt"]:
                 previous["alt"] = current["content"]["text"]
@@ -59,3 +68,5 @@ def assemble_blocks(
             if len(matches) == 1 and matches[0]["kind"] == "figure":
                 matches[0]["credit_id"] = current["id"]
     associate_figures(state)
+    if source_tables:
+        associate_table_captions(state)
