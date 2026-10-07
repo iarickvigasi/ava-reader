@@ -3,5 +3,12 @@
   "legacyCanonicalDigest": "3d6bdf4b081d31586eb24b93f5e7919f0c43edafbdfb0ba1ee2207f5c192e46d",
   "legacyEpubSha256": "a9360c4b20db84475965b2b5fc20b227f977d939752e16d824810a9d547cd407",
   "currentNonCaptionDigest": "a42ff0cfaf6ef7f620f713e1afbb6e123f46e1c3f2f9a6300fb01cb4405378ce",
+  "footerOnlyNonCaptionDigest": "e89f30ee05528e98529ec56f0c19c57cd802f46a642123b4afa06c905b48b40e",
+  "sourcePrintedPageLabels": [
+    "1",
+    "2"
+  ],
+  "footerOnlyBaselineSourceCommit": "e905555f64dcd85916089be641e8f03fba5084a0",
+  "footerOnlyBaselineScope": "Measured approved footer-only reconstruction from the identical source. Only pages[0].label and pages[1].label differ from the original non-caption graph; complete visible bottom-margin source ink prints Qualification print page 1 and 2. Normalize only those exact fields to retain the original digest below.",
   "origin": "Frozen unchanged installed38ad source before repair. Current graph digest excludes only table.caption_id. Legacy digest+EPUB bytes retain original behavior; no modelcalls."
 }

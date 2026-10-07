@@ -63,6 +63,16 @@ class NativeTableCaptionSource(unittest.TestCase):
             if block["kind"] == "table":
                 block["caption_id"] = None
         raw = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
+        self.assertEqual(2, len(value["pages"]))
+        self.assertEqual(
+            baseline["sourcePrintedPageLabels"], [page["label"] for page in value["pages"]]
+        )
+        self.assertEqual(baseline["footerOnlyNonCaptionDigest"], hashlib.sha256(raw).hexdigest())
+        # These two source-proven folios are the only approved composition difference.
+        # Retain the original caption-only conservation guard for every other field.
+        value["pages"][0]["label"] = None
+        value["pages"][1]["label"] = None
+        raw = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
         self.assertEqual(baseline["currentNonCaptionDigest"], hashlib.sha256(raw).hexdigest())
 
     def test_legacy_profile_keeps_exact_pre_repair_canonical_and_epub_bytes(self):
