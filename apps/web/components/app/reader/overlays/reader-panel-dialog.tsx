@@ -5,6 +5,7 @@ import {
 } from "react";
 import type { ReaderPanel } from "@/components/app/core/reader-ui-context";
 import { readerPanelControl, readerPanelId } from "@/features/reader/panel-id";
+import { retainPanelTabFocus } from "@/features/reader/panel-tab-boundary";
 import { openReaderPanelDialog } from "./panel-dialog-lifecycle";
 import { ReaderPanelTitleContext } from "./panel-title-context";
 
@@ -55,6 +56,7 @@ export function ReaderPanelDialog({
       aria-modal="true"
       aria-labelledby={titleId}
       className="reader-panel-dialog"
+      onKeyDown={(event) => retainPanelTabFocus(event.currentTarget, event)}
       onCancel={(event) => {
         event.preventDefault();
         dismiss();

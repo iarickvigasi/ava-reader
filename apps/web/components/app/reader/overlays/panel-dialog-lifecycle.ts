@@ -8,7 +8,7 @@ export function openReaderPanelDialog(
   const origin = document.activeElement;
   const pathname = window.location.pathname;
   let closed = false;
-  // Native modality supplies document inertness and Tab containment. Do not replace or
+  // Native modality supplies document inertness; the wrapper handles Tab boundaries. Do not replace or
   // clear the selected Range: the toolbox already owns its captured passage/context.
   if (!dialog.open) dialog.showModal();
   // React's autoFocus runs while the parent dialog can still be closed. Choose the
