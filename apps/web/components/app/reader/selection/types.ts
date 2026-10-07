@@ -1,6 +1,6 @@
 import type { ReaderRangeLocator } from "@/lib/api-types";
 
-export type SelectionPointer = "touch" | "mouse";
+export type SelectionPointer = "touch" | "mouse" | "keyboard";
 
 export type ReaderSelection = {
   text: string;
@@ -10,7 +10,7 @@ export type ReaderSelection = {
   range: Range;
   // Which input built the selection. A touch capture makes the AI toolbox
   // drop the live selection when it opens (native callout suppression, see
-  // use-drop-live-selection); a mouse capture keeps its selection.
+  // use-drop-live-selection); mouse and keyboard captures keep their selection.
   pointer: SelectionPointer;
   locator?: ReaderRangeLocator | null;
   context?: string;
