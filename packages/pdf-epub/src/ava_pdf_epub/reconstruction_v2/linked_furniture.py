@@ -32,15 +32,15 @@ def preserve_linked_furniture(
         ]
         output[number] = []
         for segment in qualified[number]:
+            source_linked = any(overlap(segment.box, box) for box in boxes)
             if (
                 segment.kind == "furniture"
                 and segment.text
-                and (
-                    any(span.url for span in segment.spans)
-                    or any(overlap(segment.box, box) for box in boxes)
-                )
+                and (any(span.url for span in segment.spans) or source_linked)
             ):
                 segment = segment.model_copy(update={"kind": "credit"})
+                if source_linked:
+                    state.source_linked_furniture_ids.add(segment.id)
                 state.structure_findings.append(
                     Finding(
                         code="PDF_LINKED_FURNITURE_PRESERVED",

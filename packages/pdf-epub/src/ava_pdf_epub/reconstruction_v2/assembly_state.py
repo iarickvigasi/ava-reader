@@ -25,6 +25,7 @@ class AssemblyState:
     flush_starts: dict[str, bool] = field(default_factory=dict)
     structure_findings: list[Finding] = field(default_factory=list)
     page_labels: dict[int, str] = field(default_factory=dict)
+    source_linked_furniture_ids: set[str] = field(default_factory=set)
     refinement_evidence: list[dict[str, Any]] = field(default_factory=list)
     bibliographic_roles: dict[str, tuple[str | None, str]] = field(default_factory=dict)
     refined_joins: dict[tuple[str, str], bool] = field(default_factory=dict)
@@ -52,6 +53,7 @@ class AssemblyState:
         self.placements.clear()
         self.flush_starts.clear()
         self.page_labels.clear()
+        self.source_linked_furniture_ids.clear()
         self.refined_joins.clear()
         self.bibliographic_roles.clear()
 

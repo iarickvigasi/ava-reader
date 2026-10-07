@@ -8,6 +8,7 @@ from statistics import median
 from ..contracts.profiles import BILINGUAL_PROFILE, LEGACY_PROFILE, ProfileId
 from .font_style import glyph_size
 from .observations import PageObservation
+from .printer_folios import printer_folio_labels
 
 
 def furniture_ids(
@@ -16,8 +17,11 @@ def furniture_ids(
     sightings: Counter[str] = Counter()
     eligible: list[tuple[str, str]] = []
     count = 0
+    printer_ids: set[str] = set()
     for page in pages:
         count += 1
+        if profile_id == BILINGUAL_PROFILE:
+            printer_ids.update(printer_folio_labels(page))
         body_sizes = [
             glyph_size(line.glyphs)
             for line in page.lines
@@ -38,4 +42,6 @@ def furniture_ids(
             eligible.append((line.id, key))
     repeated = {key for key, count in sightings.items() if count >= max(2, count // 2)}
     folio = re.compile(r"(?:(?:Print\s+)?page\s+)?(?:#|[ivxlcdm]+)", re.IGNORECASE)
-    return {ident for ident, key in eligible if key in repeated or folio.fullmatch(key)}
+    return printer_ids | {
+        ident for ident, key in eligible if key in repeated or folio.fullmatch(key)
+    }

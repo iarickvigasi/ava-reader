@@ -4,6 +4,7 @@ import re
 from statistics import median
 
 from ..contracts.profiles import BILINGUAL_PROFILE, LEGACY_PROFILE, ProfileId
+from .classification_reference import table_reference_size
 from .font_style import glyph_size
 from .line_spans import line_spans
 from .observations import NativeLine, PageObservation
@@ -15,10 +16,15 @@ def classify_lines(
     excluded: set[str],
     furniture: set[str],
     profile_id: ProfileId = LEGACY_PROFILE,
+    table_line_ids: set[str] | None = None,
 ) -> list[Segment]:
     lines = [line for line in page.lines if line.id not in excluded]
     sizes = [glyph_size(line.glyphs) for line in lines if line.id not in furniture]
     body = median(sizes) if sizes else 11
+    if profile_id == BILINGUAL_PROFILE and table_line_ids:
+        observed = table_reference_size(page, lines, furniture, table_line_ids)
+        if observed is not None:
+            body = observed
     result = []
     for line in lines:
         data = _classify(line, body, profile_id)

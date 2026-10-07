@@ -4,9 +4,11 @@ import re
 from collections.abc import Sequence
 from pathlib import Path
 
+from ..contracts.profiles import BILINGUAL_PROFILE
 from .assembly_state import AssemblyState
 from .heading_hierarchy import heading_hierarchy
 from .prepared import PreparedPage
+from .printer_folio_segments import printer_folio_segments
 from .segments import Segment
 from .source_folios import source_folios
 from .source_references import source_references
@@ -21,7 +23,8 @@ def source_structure(
     segments: list[Segment],
     state: AssemblyState,
 ) -> list[Segment]:
-    folios = source_folios(prepared, qualified)
+    printer_labels = printer_folio_segments(prepared, qualified, state.source_linked_furniture_ids)
+    folios = source_folios(prepared, qualified, printer_labels)
     state.page_labels = {page: label for label, page in folios.items()}
     folios = {label.casefold(): page for label, page in folios.items()}
     printed = printed_contents(segments)
@@ -120,5 +123,6 @@ def source_structure(
         resolved.append(segment)
     result = resolved
     state.structure_findings.extend(structure_findings(result, ranked, deferred_native))
-    source_references(result, folios, state)
+    printer_ids = set(printer_labels) if prepared[0].profile_id == BILINGUAL_PROFILE else None
+    source_references(result, folios, state, printer_ids)
     return result

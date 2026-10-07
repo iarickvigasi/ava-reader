@@ -1,6 +1,6 @@
 """Build provisional native segments using geometry without consulting test oracles."""
 
-from ..contracts.profiles import LEGACY_PROFILE, ProfileId
+from ..contracts.profiles import BILINGUAL_PROFILE, LEGACY_PROFILE, ProfileId
 from ..contracts.source import Box
 from .borderless_tables import borderless_tables
 from .classify_lines import classify_lines
@@ -34,7 +34,19 @@ def native_page(
     table_segments = native_tables(page, tables or borderless_tables(page))
     graphics = native_graphics(page, table_segments)
     excluded = {ident for s in [*table_segments, *graphics] for ident in s.native_line_ids}
-    lines = classify_lines(page, excluded, furniture, profile_id)
+    table_line_ids = {
+        ident
+        for table in table_segments
+        if not any(overlap(table.box, box) > 0 for box in excluded_regions)
+        for ident in table.native_line_ids
+    }
+    lines = classify_lines(
+        page,
+        excluded,
+        furniture,
+        profile_id,
+        table_line_ids if profile_id == BILINGUAL_PROFILE else None,
+    )
     # Keep source layout barriers while deriving native roles, joins and typography.
     # Removing a recognized raster early can join columns or invent spacing across it.
     segments = [*lines, *table_segments, *graphics]

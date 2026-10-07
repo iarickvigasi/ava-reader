@@ -10,12 +10,17 @@ from .segments import Segment
 
 
 def source_folios(
-    prepared: Sequence[PreparedPage], segments: dict[int, list[Segment]]
+    prepared: Sequence[PreparedPage],
+    segments: dict[int, list[Segment]],
+    printer_labels: dict[str, tuple[str, int]] | None = None,
 ) -> dict[str, int]:
     labels: dict[str, int] = {}
     for checkpoint in prepared:
         page = checkpoint.observation
         texts = [s.text.strip() for s in segments[page.number] if s.kind == "furniture"]
+        texts += [
+            label for label, number in (printer_labels or {}).values() if number == page.number
+        ]
         if not page.risks:
             body = median(glyph_size(line.glyphs) for line in page.lines) if page.lines else 11
             texts += [
