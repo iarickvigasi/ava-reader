@@ -3,11 +3,13 @@ import type {
   ReaderInline,
   ReaderTextBlock,
 } from '../../reader-types';
+import type { ReaderLinkTarget } from '../../reader-link-target';
 
 export function resolveBlockLinks(
   blocks: ReaderBlock[],
   resolveInline: (inline: ReaderInline, offset: number) => ReaderInline,
   resolveImage: (block: Extract<ReaderBlock, { kind: 'image' }>) => ReaderBlock,
+  resolveReturn?: (target: ReaderLinkTarget) => ReaderLinkTarget,
 ): ReaderBlock[] {
   const inlines = (items: ReaderInline[]) => {
     let offset = 0;
@@ -19,7 +21,18 @@ export function resolveBlockLinks(
   };
   return blocks.map((block) => {
     if ('inlines' in block) {
-      const mapped = { ...block, inlines: inlines(block.inlines) };
+      const mapped = {
+        ...block,
+        inlines: inlines(block.inlines),
+        ...(block.kind === 'note' && block.returns && resolveReturn
+          ? {
+              returns: block.returns.map((action) => ({
+                ...action,
+                target: resolveReturn(action.target),
+              })),
+            }
+          : {}),
+      };
       if (block.kind !== 'note' || !block.pendingReturns) return mapped;
       const stored = { ...mapped } as ReaderTextBlock;
       delete stored.pendingReturns;
@@ -59,6 +72,7 @@ export function resolveBlockLinks(
                   item.children,
                   resolveInline,
                   resolveImage,
+                  resolveReturn,
                 ) as typeof item.children,
               }
             : {}),

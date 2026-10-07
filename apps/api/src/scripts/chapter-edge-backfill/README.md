@@ -1,9 +1,11 @@
 # Temporary EPUB edge regrouping backfill
 
-This tool changes existing server reader packages only. It does not change new imports or repair
-heading-only chapters in the middle. It uses source EPUB semantic types and exact known section
+This tool changes existing server reader packages; new imports share its grouping rules in
+`reader/epub/edge-grouping`. It does not repair heading-only chapters in the middle. It uses source
+EPUB semantic types and exact known section
 names (English names as fallback); filenames and short length alone never identify a section.
-Unknown boundaries stop grouping. Multi-segment source documents are left alone.
+Image-only pages can extend a positively identified opening run. Unknown text boundaries stop
+grouping. Multi-segment source documents are left alone.
 
 Consecutive opening pages become **Front matter**. **Contents** is a separate chapter and interrupts
 an opening group. Prologues, introductions, and prefaces stop opening grouping. Consecutive semantic
@@ -11,7 +13,9 @@ footnote-only documents in the trailing back-matter region become **Footnotes**.
 sections remain separate. Every block and its ID stays unchanged and in source order; each group
 keeps its first chapter ID. Remaining chapters retain IDs/content but get updated indices and
 neighbour links. The authored middle TOC hierarchy is retained. Removed edge entries become one
-entry per group. Repeated application is a no-op.
+entry per group. Repeated application is a no-op. Version 3 revisits packages previously processed
+by earlier versions. An Appendix absorbs its immediately following picture-only documents; the
+next text document stays separate.
 
 ```sh
 pnpm --filter api db:backfill-epub-edges --dry-run > edge-preview.jsonl

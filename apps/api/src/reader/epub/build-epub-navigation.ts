@@ -1,6 +1,7 @@
 import type { ReaderBlock } from '../reader-types';
 import { buildReaderChapters } from './build-reader-chapters';
 import { createFallbackToc, resolveTocNodes, type ParsedTocNode } from './toc';
+import { countParsedTocNodes } from './count-parsed-toc-nodes';
 
 export function buildEpubNavigation(input: {
   rawChapters: {
@@ -13,7 +14,7 @@ export function buildEpubNavigation(input: {
   language: string | null;
 }) {
   const { rawChapters, parsedToc } = input;
-  const richToc = countTocNodes(parsedToc) >= rawChapters.length;
+  const richToc = countParsedTocNodes(parsedToc) >= rawChapters.length;
   const coverage =
     rawChapters.filter((chapter) => chapter.chapterTitle !== null).length /
     rawChapters.length;
@@ -29,11 +30,5 @@ export function buildEpubNavigation(input: {
     richToc ? parsedToc : createFallbackToc(chapters),
     chapters,
   );
-  return { chapters, toc };
-}
-function countTocNodes(nodes: ParsedTocNode[]): number {
-  return nodes.reduce(
-    (count, node) => count + 1 + countTocNodes(node.children),
-    0,
-  );
+  return { chapters, toc, authoredToc: richToc };
 }

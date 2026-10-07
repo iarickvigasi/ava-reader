@@ -2,11 +2,11 @@ import type { BookFile, PrismaClient } from '@prisma/client';
 import { checksumBuffer } from '../../shared/blob-utils';
 import { savePackage } from '../chapter-label-backfill/save-package';
 import { setup } from './edge.fixture';
-import { readSourceSections } from './read-source-sections';
+import { readSourceSections } from '../../reader/epub/edge-grouping/read-source-sections';
 import { checkReferences } from './check-references';
 import { processFile } from './process-file';
 
-jest.mock('./read-source-sections');
+jest.mock('../../reader/epub/edge-grouping/read-source-sections');
 jest.mock('./check-references');
 jest.mock('../chapter-label-backfill/save-package');
 

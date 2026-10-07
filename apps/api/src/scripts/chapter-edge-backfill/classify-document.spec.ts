@@ -1,4 +1,4 @@
-import { classifyDocument } from './classify-document';
+import { classifyDocument } from '../../reader/epub/edge-grouping/classify-document';
 import { locatorIsAffected } from './locator-is-affected';
 
 it('recognizes semantic footnotes without relying on filenames or length', () => {

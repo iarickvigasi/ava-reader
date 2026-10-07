@@ -1,3 +1,5 @@
+import { findFilenameLabels } from './find-filename-labels';
+import { isHrefLabel } from '../../reader/epub/toc/is-href-label';
 import { enrichOpeningLabel } from '../../reader/epub/enrich-opening-label';
 import { labelImageOnlyChapters } from '../../reader/epub/label-image-only-chapters';
 import { createChapterExcerptLabel } from '../../reader/epub/create-chapter-excerpt-label';
@@ -17,7 +19,8 @@ export function relabelPackage(readerPackage: ReaderPackage) {
     if (
       chapter.label.trim().toLowerCase() !== legacy.toLowerCase() &&
       chapter.label !== excerpt &&
-      enriched === chapter.label
+      enriched === chapter.label &&
+      !isHrefLabel(chapter.label, chapter.href)
     )
       return chapter;
     const label = resolveChapterFallbackLabel({
@@ -32,11 +35,21 @@ export function relabelPackage(readerPackage: ReaderPackage) {
       : { ...chapter, label, title: label };
   });
   const chapters = labelImageOnlyChapters(candidates, language);
+  const filenames = findFilenameLabels(readerPackage.toc);
   const changes: LabelChange[] = chapters.flatMap((chapter, index) => {
     const before = readerPackage.chapters[index].label;
-    return before === chapter.label
+    return before === chapter.label && !filenames.has(chapter.chapterId)
       ? []
-      : [{ chapterId: chapter.chapterId, before, after: chapter.label }];
+      : [
+          {
+            chapterId: chapter.chapterId,
+            before:
+              before === chapter.label
+                ? filenames.get(chapter.chapterId)!
+                : before,
+            after: chapter.label,
+          },
+        ];
   });
   const labels = new Map(changes.map((change) => [change.chapterId, change]));
   return {
@@ -57,7 +70,11 @@ export function relabelToc(
     const change = node.chapterId ? labels.get(node.chapterId) : undefined;
     return {
       ...node,
-      label: change && node.label === change.before ? change.after : node.label,
+      label:
+        change &&
+        (node.label === change.before || isHrefLabel(node.label, node.href))
+          ? change.after
+          : node.label,
       children: relabelToc(node.children, labels),
     };
   });

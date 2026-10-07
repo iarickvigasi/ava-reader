@@ -1,6 +1,6 @@
 import JSZip from 'jszip';
 import { setup } from './edge.fixture';
-import { readSourceSections } from './read-source-sections';
+import { readSourceSections } from '../../reader/epub/edge-grouping/read-source-sections';
 
 it('uses authored TOC labels and footnote semantics from the EPUB archive', async () => {
   const { pkg } = setup(['front', 'contents', 'footnote', 'unknown']);

@@ -1,9 +1,9 @@
 import type { BookFile, PrismaClient } from '@prisma/client';
 import { processFile } from './process-file';
-import { readSourceSections } from './read-source-sections';
+import { readSourceSections } from '../../reader/epub/edge-grouping/read-source-sections';
 import { savePackage } from '../chapter-label-backfill/save-package';
 
-jest.mock('./read-source-sections');
+jest.mock('../../reader/epub/edge-grouping/read-source-sections');
 jest.mock('../chapter-label-backfill/save-package');
 beforeEach(() => jest.clearAllMocks());
 it.each([

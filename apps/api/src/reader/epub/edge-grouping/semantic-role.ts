@@ -3,7 +3,7 @@ import {
   getNodeChildren,
   getNodeTagName,
   type OrderedNode,
-} from '../../reader/epub/xml-utils';
+} from '../xml-utils';
 import type { EdgeRole } from './types';
 
 // A nested epigraph/footnote does not classify the surrounding chapter.
@@ -32,6 +32,7 @@ export function semanticRole(body: OrderedNode): EdgeRole {
 }
 
 function tokenRole(type: string): EdgeRole {
+  if (type === 'appendix') return 'appendix';
   if (type === 'toc') return 'contents';
   if (type === 'footnote') return 'footnote';
   if (

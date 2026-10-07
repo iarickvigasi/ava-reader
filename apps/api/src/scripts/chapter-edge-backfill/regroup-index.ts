@@ -4,7 +4,7 @@ import {
   parseStoredReadingProgressIndex,
 } from '../../reader/progress/reading-progress-index';
 import type { ReaderPackage } from '../../reader/reader-types';
-import type { EdgeGroup } from './types';
+import type { EdgeGroup } from '../../reader/epub/edge-grouping/types';
 
 export function regroupIndex(
   value: Prisma.JsonValue,

@@ -1,6 +1,6 @@
 import { setup } from './edge.fixture';
-import { planGroups } from './plan-groups';
-import { regroupPackage } from './regroup-package';
+import { planGroups } from '../../reader/epub/edge-grouping/plan-groups';
+import { regroupPackage } from '../../reader/epub/edge-grouping/regroup-package';
 import { regroupIndex } from './regroup-index';
 import { buildReadingProgressIndex } from '../../reader/progress/reading-progress-index';
 import type { Prisma } from '@prisma/client';

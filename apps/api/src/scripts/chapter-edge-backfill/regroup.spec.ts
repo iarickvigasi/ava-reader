@@ -1,6 +1,6 @@
 import { setup } from './edge.fixture';
-import { planGroups } from './plan-groups';
-import { regroupPackage } from './regroup-package';
+import { planGroups } from '../../reader/epub/edge-grouping/plan-groups';
+import { regroupPackage } from '../../reader/epub/edge-grouping/regroup-package';
 
 it('groups edges, keeps Contents separate, and preserves every block and middle ID', () => {
   const { pkg, source } = setup([

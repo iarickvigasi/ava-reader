@@ -1,3 +1,4 @@
+import { EDGE_GROUPING_VERSION } from './types';
 import { regroupToc } from './regroup-toc';
 import type { EdgeGroup, EdgePackage } from './types';
 
@@ -32,7 +33,7 @@ export function regroupPackage(
     }));
   return {
     ...pkg,
-    edgeGroupingVersion: 1,
+    edgeGroupingVersion: EDGE_GROUPING_VERSION,
     chapters,
     manifest: { ...pkg.manifest, totalChapters: chapters.length },
     toc: regroupToc(pkg.toc, chapters, groups),

@@ -3,13 +3,13 @@ import {
   readPackagePath,
   readZipText,
   normalizeHrefForLookup,
-} from '../../reader/epub/archive';
-import { firstAsArray, xmlParser } from '../../reader/epub/xml-utils';
-import { parseManifestItems } from '../../reader/epub/manifest';
-import { readTocEntries, type ParsedTocNode } from '../../reader/epub/toc';
-import { resolveZipPath } from '../../shared/zip-utils';
+} from '../archive';
+import { firstAsArray, xmlParser } from '../xml-utils';
+import { parseManifestItems } from '../manifest';
+import { readTocEntries, type ParsedTocNode } from '../toc';
+import { resolveZipPath } from '../../../shared/zip-utils';
 import { classifyDocument } from './classify-document';
-import type { ReaderPackage } from '../../reader/reader-types';
+import type { ReaderPackage } from '../../reader-types';
 import type { SourceSection } from './types';
 
 export async function readSourceSections(buffer: Buffer, pkg: ReaderPackage) {
@@ -37,7 +37,13 @@ export async function readSourceSections(buffer: Buffer, pkg: ReaderPackage) {
     if (result.has(key)) continue;
     // Headings in the stored package are authored text; generated labels aren't evidence.
     const headings = chapter.blocks
-      .filter((b) => b.kind === 'heading')
+      .filter(
+        (b) =>
+          b.kind === 'heading' ||
+          (b.kind === 'paragraph' &&
+            b.align === 'center' &&
+            (b.fontSizeScale ?? 1) >= 1.125),
+      )
       .slice(0, 1)
       .map((b) => b.text);
     const xml = await readZipText(
