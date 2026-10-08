@@ -1,7 +1,10 @@
 import { ConflictException } from '@nestjs/common';
 import { checksumBuffer } from '../../../shared/blob-utils';
-import { validateContract } from '../../../pdf-conversion/contracts/validate-contract';
-import type { SemanticValidator } from '../../../pdf-conversion/contracts/types';
+import {
+  acceptedReaderValidationCache,
+  type ReaderSemanticValidator,
+  type ReaderValidationCache,
+} from './reader-validation-cache';
 import {
   assertSelectionAuthority,
   type OwnedReaderArtifact,
@@ -14,21 +17,33 @@ import {
 export async function selectAcceptedPdfReader(input: {
   acceptedBytes: Buffer;
   authority: SelectionAuthority;
-  semantic: SemanticValidator;
+  semantic: ReaderSemanticValidator;
+  validationCache?: ReaderValidationCache;
   loadOwnedArtifact: (id: string) => Promise<OwnedReaderArtifact | null>;
 }) {
   const { semantic, loadOwnedArtifact } = input;
+  const cache = input.validationCache ?? acceptedReaderValidationCache;
   const bytes = Buffer.from(input.acceptedBytes);
   const expected = structuredClone(input.authority);
+  const acceptedSha256 = checksumBuffer(bytes);
   if (
     !expected?.publication ||
-    checksumBuffer(bytes) !== expected.publication.acceptedSha256
+    acceptedSha256 !== expected.publication.acceptedSha256
   )
     throw new ConflictException('Accepted PDF reader is unavailable.');
-  const accepted = await validateContract(
+  const scope = {
+    adapterFingerprint: expected.capability?.adapterFingerprint,
+    readerBuildFingerprint: expected.capability?.readerBuildFingerprint,
+  };
+  const accepted = await cache.validate(
     'ava-accepted-content-1',
     bytes,
     semantic,
+    {
+      ...scope,
+      actualSha256: acceptedSha256,
+      byteLength: bytes.length,
+    },
   );
   assertSelectionAuthority(accepted, expected);
   const artifact = await loadOwnedArtifact(accepted.reader_package.id);
@@ -36,6 +51,7 @@ export async function selectAcceptedPdfReader(input: {
     throw new ConflictException('Accepted PDF reader is unavailable.');
   const readerBytes = Buffer.from(artifact.bytes);
   const descriptor = accepted.reader_package;
+  const readerSha256 = checksumBuffer(readerBytes);
   if (
     artifact.id !== descriptor.id ||
     artifact.ownerId !== accepted.owner_id ||
@@ -46,10 +62,14 @@ export async function selectAcceptedPdfReader(input: {
     artifact.sizeBytes !== descriptor.byte_length ||
     readerBytes.length !== descriptor.byte_length ||
     artifact.checksum !== descriptor.sha256 ||
-    checksumBuffer(readerBytes) !== descriptor.sha256
+    readerSha256 !== descriptor.sha256
   )
     throw new ConflictException('Accepted PDF reader is unavailable.');
-  const reader = await validateContract('ava-reader-3', readerBytes, semantic);
+  const reader = await cache.validate('ava-reader-3', readerBytes, semantic, {
+    ...scope,
+    actualSha256: readerSha256,
+    byteLength: readerBytes.length,
+  });
   if (
     reader.final_content_id !== accepted.final_content_id ||
     reader.book.source.sha256 !== accepted.source.sha256 ||

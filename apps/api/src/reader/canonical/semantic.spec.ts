@@ -1,6 +1,8 @@
 import { ServiceUnavailableException } from '@nestjs/common';
 import { pythonSemanticValidator } from '../../pdf-conversion/contracts/python-semantic-validator';
 import { readerSemanticValidator } from './semantic';
+import { installedReaderValidatorIdentity } from './validator-identity';
+jest.mock('./validator-identity');
 
 jest.mock('../../pdf-conversion/contracts/python-semantic-validator', () => ({
   pythonSemanticValidator: jest.fn(),
@@ -62,4 +64,41 @@ describe('reader semantic concurrency and refusal contract', () => {
       readerSemanticValidator('ava-reader-3', null, '{}'),
     ).resolves.toBe(true);
   });
+});
+
+it('changes reader validation identity when the trusted interpreter configuration changes', async () => {
+  jest
+    .mocked(installedReaderValidatorIdentity)
+    .mockImplementation((path) => Promise.resolve(path));
+  const before = process.env.AVA_PDF_CONTRACT_PYTHON;
+  try {
+    process.env.AVA_PDF_CONTRACT_PYTHON = '/trusted/version-one/python';
+    const first = await readerSemanticValidator.validationIdentity!();
+    process.env.AVA_PDF_CONTRACT_PYTHON = '/trusted/version-two/python';
+    expect(await readerSemanticValidator.validationIdentity!()).not.toBe(first);
+  } finally {
+    if (before === undefined) delete process.env.AVA_PDF_CONTRACT_PYTHON;
+    else process.env.AVA_PDF_CONTRACT_PYTHON = before;
+  }
+});
+
+it('discards a fingerprint if interpreter configuration changes while discovery is pending', async () => {
+  const before = process.env.AVA_PDF_CONTRACT_PYTHON;
+  let finish!: (identity: string) => void;
+  jest.mocked(installedReaderValidatorIdentity).mockImplementationOnce(
+    () =>
+      new Promise<string>((resolve) => {
+        finish = resolve;
+      }),
+  );
+  try {
+    process.env.AVA_PDF_CONTRACT_PYTHON = '/trusted/one/bin/python';
+    const pending = readerSemanticValidator.validationIdentity!();
+    process.env.AVA_PDF_CONTRACT_PYTHON = '/trusted/two/bin/python';
+    finish('version-one');
+    expect(await pending).toBeNull();
+  } finally {
+    if (before === undefined) delete process.env.AVA_PDF_CONTRACT_PYTHON;
+    else process.env.AVA_PDF_CONTRACT_PYTHON = before;
+  }
 });
