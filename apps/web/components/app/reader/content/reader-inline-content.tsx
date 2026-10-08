@@ -6,42 +6,42 @@ import { ReaderInlineImage } from "./reader-inline-image";
 import { ReaderContentLink } from "./reader-content-link";
 import { ReaderInlineScript } from "./reader-inline-script";
 import { ReaderInlineText } from "./reader-inline-text";
-
-const READER_INLINE_KIND_IMAGE = "image";
+import { groupInlineLinkOccurrences } from "@/features/reader/group-inline-link-occurrences";
 
 const LINK_CLASS = "underline decoration-line/60 underline-offset-4";
 
-// Dispatches each run to the component for its text type. A run's styling
-// nests outwards: text, then its vertical script, then the link wrapper.
+// Preserve each run's styling/script inside its semantic occurrence's link.
 export function ReaderInlineContent({ inlines }: { inlines: ReaderInline[] }) {
   const measurement = useReaderMeasurement();
   return (
     <>
-      {inlines.map((inline, index) => {
-        const key = `${inline.kind}-${index}`;
+      {groupInlineLinkOccurrences(inlines).map((group) => {
+        const key = `${group.kind}-${group.sourceIndex}`;
 
-        if (inline.kind === READER_INLINE_KIND_IMAGE) {
+        if (group.kind === "image") {
           return (
-            <ReaderContentLink key={key} link={inline}>
-              <ReaderInlineImage inline={inline} />
+            <ReaderContentLink key={key} link={group.inline}>
+              <ReaderInlineImage inline={group.inline} />
             </ReaderContentLink>
           );
         }
 
-        const content = (
+        const inline = group.inlines[0];
+        const content = group.inlines.map((run, index) => (
           <ReaderInlineScript
-            inheritSize={inline.presentation?.relative_size != null}
+            key={index}
+            inheritSize={run.presentation?.relative_size != null}
             script={
-              inline.script ??
-              (inline.presentation?.vertical_align === "super" ||
-              inline.presentation?.vertical_align === "sub"
-                ? inline.presentation.vertical_align
+              run.script ??
+              (run.presentation?.vertical_align === "super" ||
+              run.presentation?.vertical_align === "sub"
+                ? run.presentation.vertical_align
                 : undefined)
             }
           >
-            <ReaderInlineText inline={inline} />
+            <ReaderInlineText inline={run} />
           </ReaderInlineScript>
-        );
+        ));
 
         if (inline.target)
           return (
