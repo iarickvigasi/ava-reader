@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { createAuthOperation, type AuthOperationState } from "./auth-operation";
 
 export function useAuthOperation(loaded: boolean, failed: () => void) {
@@ -8,7 +8,8 @@ export function useAuthOperation(loaded: boolean, failed: () => void) {
   const [operation] = useState(() =>
     createAuthOperation(loaded, setState, failed),
   );
-  useEffect(() => {
+  // Keep the controller fence aligned with the visible enabled/disabled controls.
+  useLayoutEffect(() => {
     operation.setReady(loaded);
   }, [loaded, operation]);
   useEffect(() => {

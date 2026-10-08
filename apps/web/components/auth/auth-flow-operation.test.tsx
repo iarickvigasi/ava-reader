@@ -18,21 +18,11 @@ const sdk = vi.hoisted(() => ({
   sso: vi.fn(),
   replace: vi.fn(),
 }));
-vi.mock("react", async (original) => ({
-  ...(await original<typeof import("react")>()),
-  useState: (initial: unknown) => {
-    const index = hooks.stateCursor++;
-    if (!(index in hooks.states))
-      hooks.states[index] = typeof initial === "function" ? initial() : initial;
-    return [
-      hooks.states[index],
-      (next: unknown) => {
-        hooks.states[index] =
-          typeof next === "function" ? next(hooks.states[index]) : next;
-      },
-    ];
-  },
-  useEffect: (effect: () => (() => void) | void, deps: readonly unknown[]) => {
+vi.mock("react", async (original) => {
+  const useEffect = (
+    effect: () => (() => void) | void,
+    deps: readonly unknown[],
+  ) => {
     const index = hooks.effectCursor++,
       old = hooks.effects[index];
     if (
@@ -45,9 +35,30 @@ vi.mock("react", async (original) => ({
       old?.cleanup?.();
       hooks.effects[index] = { deps, cleanup: effect() || undefined };
     });
-  },
-}));
+  };
+  return {
+    ...(await original<typeof import("react")>()),
+    useState: (initial: unknown) => {
+      const index = hooks.stateCursor++;
+      if (!(index in hooks.states))
+        hooks.states[index] =
+          typeof initial === "function" ? initial() : initial;
+      return [
+        hooks.states[index],
+        (next: unknown) => {
+          hooks.states[index] =
+            typeof next === "function" ? next(hooks.states[index]) : next;
+        },
+      ];
+    },
+    useEffect,
+    useLayoutEffect: useEffect,
+  };
+});
 vi.mock("@clerk/nextjs", () => ({
+  useClerk: () => ({
+    client: { signIn: { authenticateWithRedirect: sdk.sso } },
+  }),
   useAuth: () => ({
     isLoaded: true,
     isSignedIn: false,

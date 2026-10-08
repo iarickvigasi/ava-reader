@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth, useSignIn } from "@clerk/nextjs";
+import { useAuth, useClerk, useSignIn } from "@clerk/nextjs";
 import { isLocallySignedOut } from "@/features/auth/local-sign-out";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -13,6 +13,7 @@ import { ProviderList } from "@/components/auth/provider-list";
 import { AuthReadinessNotice } from "./auth-readiness-notice";
 import { useAuthReadiness } from "@/features/auth/use-auth-readiness";
 import { useAuthOperation } from "@/features/auth/use-auth-operation";
+import { startFreshGoogleSignIn } from "@/features/auth/start-fresh-google-sign-in";
 
 type SignInFlowProps = {
   initialNotice?: string;
@@ -24,6 +25,7 @@ export function SignInFlow({ initialNotice }: SignInFlowProps) {
   const t = useTranslations("auth.signIn");
   const tShared = useTranslations("auth.shared");
   const { signIn, errors, fetchStatus } = useSignIn();
+  const clerk = useClerk();
   const { isLoaded, isSignedIn: signedIn, userId, sessionId } = useAuth();
   const isSignedIn = signedIn && !isLocallySignedOut(userId ?? null, sessionId);
   const router = useRouter();
@@ -67,16 +69,9 @@ export function SignInFlow({ initialNotice }: SignInFlowProps) {
 
   const startGoogle = async () => {
     setLocalMessage(undefined);
-    const { error } = await signIn.sso({
-      strategy: "oauth_google",
-      redirectUrl: "/app",
-      redirectCallbackUrl: "/auth/sso-callback",
-    });
-
-    if (!operation.current()) return;
-    if (error) {
-      setLocalMessage(t("errors.googleStartFailed"));
-    }
+    const started = await startFreshGoogleSignIn(() => clerk.client?.signIn);
+    if (!operation.canCall()) return;
+    if (!started) setLocalMessage(t("errors.googleStartFailed"));
   };
 
   const requestEmailCode = async () => {

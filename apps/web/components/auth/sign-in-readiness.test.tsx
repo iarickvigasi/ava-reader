@@ -7,6 +7,9 @@ const sdk = vi.hoisted(() => ({
   sso: vi.fn(),
 }));
 vi.mock("@clerk/nextjs", () => ({
+  useClerk: () => ({
+    client: { signIn: { authenticateWithRedirect: sdk.sso } },
+  }),
   useAuth: () => ({
     isLoaded: sdk.loaded,
     isSignedIn: false,
