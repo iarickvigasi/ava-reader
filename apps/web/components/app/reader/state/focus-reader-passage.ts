@@ -1,4 +1,5 @@
 import type { ReaderLocator } from "@/lib/api-types";
+import { readerPageRect, revealTablePassage } from "@/features/reader/table-viewport";
 
 export function focusReaderPassage(
   locator: ReaderLocator,
@@ -11,7 +12,7 @@ export function focusReaderPassage(
       ...frame.querySelectorAll<HTMLElement>("[data-reader-block='true']"),
     ].filter((element) => {
       if (element.closest("[inert], [aria-hidden='true']")) return false;
-      const rect = element.getBoundingClientRect();
+      const rect = readerPageRect(element);
       return (
         element.dataset.chapterId === locator.chapterId &&
         (!locator.blockId || element.dataset.blockId === locator.blockId) &&
@@ -37,6 +38,10 @@ export function focusReaderPassage(
           Number(candidate.dataset.readerEndOffset) === locator.textOffset,
       );
     if (element) {
+      revealTablePassage(
+        element,
+        locator.textOffset - (Number(element.dataset.readerStartOffset) || 0),
+      );
       element.tabIndex = -1;
       element.focus({ preventScroll: true });
     }

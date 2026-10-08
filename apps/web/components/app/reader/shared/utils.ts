@@ -160,7 +160,7 @@ export function isInteractiveTarget(target: EventTarget | null) {
 
   return Boolean(
     target.closest(
-      "a, button, input, select, textarea, [contenteditable='true']",
+      "a, button, input, select, textarea, [contenteditable='true'], [data-reader-table-scroll]",
     ),
   );
 }

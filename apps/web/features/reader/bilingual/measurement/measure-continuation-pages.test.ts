@@ -12,6 +12,7 @@ const metrics = {
 
 function measuredText(
   rects: { right: number; width: number; height: number }[],
+  table = false,
 ) {
   return {
     scrollWidth: 338,
@@ -20,6 +21,14 @@ function measuredText(
       { getBoundingClientRect: () => ({ right: metrics.pageBoxLeft + 338 }) },
     ],
     ownerDocument: {
+      createTreeWalker: () => {
+        let read = false;
+        return { nextNode: () => {
+          if (read) return null;
+          read = true;
+          return { parentElement: { closest: () => table ? {} : null } };
+        } };
+      },
       createRange: () => ({
         selectNodeContents: () => undefined,
         getClientRects: () =>
@@ -84,4 +93,10 @@ describe("continuation text measurement", () => {
       ),
     ).toBe(1);
   });
+});
+
+it("keeps wide cells inside their table page instead of inventing continuations", () => {
+  expect(measureContinuationPages(
+    measuredText([{ right: 1800, width: 80, height: 40 }], true), metrics,
+  )).toBe(1);
 });

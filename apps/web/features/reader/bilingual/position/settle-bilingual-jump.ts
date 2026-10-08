@@ -1,3 +1,8 @@
+import {
+  readerPageRect,
+  readerTableViewport,
+  revealTablePassage,
+} from "../../table-viewport";
 import type { BilingualChapter } from "@/lib/api-types/bilingual";
 import type { RestoreIntent } from "@/features/reader/navigation";
 import {
@@ -40,7 +45,11 @@ export function settleBilingualJump(
             Math.max(0, unit.text.length - 1),
           ),
         );
-  const rect = range ? getRangeRect(range) : element.getBoundingClientRect();
+  const rect = readerTableViewport(element)
+    ? readerPageRect(element)
+    : range
+      ? getRangeRect(range)
+      : element.getBoundingClientRect();
   const viewport = article.getBoundingClientRect();
   if (
     !rect ||
@@ -50,6 +59,7 @@ export function settleBilingualJump(
     rect.top >= viewport.bottom
   )
     return false;
+  revealTablePassage(element, intent.textOffset - unit.startOffset);
   element.tabIndex = -1;
   element.focus({ preventScroll: true });
   return true;

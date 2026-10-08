@@ -1,6 +1,7 @@
 import { it, expect } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import { canonicalBilingualFixture } from "@/features/reader/bilingual/content/canonical-test-fixture";
+import { BilingualMeasurements } from "../measurement/bilingual-measurements";
 import { BilingualFlowContent } from "./bilingual-flow-content";
 import { markupNodes, markupText, attribute } from "./flow-test-fixture";
 it("keeps canonical structures, source styling, cell IDs, literal code and note links", () => {
@@ -86,4 +87,24 @@ it("retains merged cells and empty rows covered by vertical spans", () => {
   expect(markupNodes(html, "th")).toHaveLength(1);
   expect(attribute(markupNodes(html, "th")[0], "colspan")).toBe("2");
   expect(attribute(markupNodes(html, "th")[0], "rowspan")).toBe("2");
+});
+
+it("keeps hidden bilingual table templates noninteractive without changing source cell text", () => {
+  const { chapter, source } = canonicalBilingualFixture();
+  const html = renderToStaticMarkup(
+    <BilingualMeasurements chapter={chapter} blocks={source.blocks}
+      size={{ width: 330, height: 600 }} measurementRef={{ current: null }} />,
+  );
+  const tables = markupNodes(html, "table");
+  expect(tables).toHaveLength(2);
+  for (const element of [...markupNodes(html, "th"), ...markupNodes(html, "td")]) {
+    expect(attribute(element, "id")).toBeUndefined();
+    expect(attribute(element, "headers")).toBeUndefined();
+  }
+  for (const viewport of markupNodes(html, "div").filter((n) =>
+    attribute(n, "data-reader-table-scroll") !== undefined,
+  )) expect(attribute(viewport, "tabindex")).toBeUndefined();
+  const expected = source.blocks.find((block) => block.kind === "table")!;
+  if (expected.kind !== "table") throw Error("fixture");
+  for (const cell of expected.cells) expect(markupText(tables[0])).toContain(cell.text);
 });

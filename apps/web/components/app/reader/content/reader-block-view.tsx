@@ -27,6 +27,7 @@ export function ReaderBlockView(props: {
       <ReaderStructuredTable
         block={block}
         chapterId={chapterId}
+        pageHeight={props.pageHeight}
         style={style}
       />
     );

@@ -4,14 +4,17 @@ import type { ReaderBlock } from "@/lib/api-types";
 import { useReaderBlockProps } from "./block-props";
 import { ReaderInlineContent } from "./reader-inline-content";
 import { structuredLeafStyle } from "./structured-leaf-style";
+import { ReaderTableViewport } from "./reader-table-viewport";
 
 export function ReaderStructuredTable({
   block,
   chapterId,
+  pageHeight = 0,
   style,
 }: {
   block: Extract<ReaderBlock, { kind: "table" }>;
   chapterId: string;
+  pageHeight?: number;
   style?: CSSProperties;
 }) {
   const measurement = useReaderMeasurement();
@@ -21,61 +24,63 @@ export function ReaderStructuredTable({
   );
   const rows = Array.from({ length: rowCount }, (_, row) => row);
   return (
-    <table
-      {...blockProps(block, chapterId)}
-      data-reader-block-kind="image"
-      aria-describedby={
-        !measurement && block.captionId
-          ? `reader-${chapterId}-${block.captionId}`
-          : undefined
-      }
-      className="w-full table-fixed border-collapse text-[calc(1rem*var(--reader-font-scale)*var(--reader-block-scale,1))]"
-      style={style}
-    >
-      <tbody>
-        {rows.map((row) => (
-          <tr key={row}>
-            {block.cells
-              .filter((cell) => cell.row === row)
-              .sort((a, b) => a.column - b.column)
-              .map((cell) => {
-                const Tag = cell.headerAxis ? "th" : "td";
-                return (
-                  <Tag
-                    key={cell.id}
-                    rowSpan={cell.rowSpan}
-                    colSpan={cell.columnSpan}
-                    {...blockProps(
-                      cell,
-                      chapterId,
-                      structuredLeafStyle(cell, "table"),
-                    )}
-                    id={
-                      measurement ? undefined : `reader-${chapterId}-${cell.id}`
-                    }
-                    scope={
-                      cell.headerAxis === "row" || cell.headerAxis === "column"
-                        ? cell.headerAxis === "column"
-                          ? "col"
-                          : "row"
-                        : undefined
-                    }
-                    headers={
-                      !measurement && cell.headerIds.length
-                        ? cell.headerIds
-                            .map((id) => `reader-${chapterId}-${id}`)
-                            .join(" ")
-                        : undefined
-                    }
-                    className="border-b border-line p-2 align-top [overflow-wrap:anywhere]"
-                  >
-                    <ReaderInlineContent inlines={cell.inlines} />
-                  </Tag>
-                );
-              })}
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <ReaderTableViewport pageHeight={pageHeight} breakBefore={style?.breakBefore}>
+      <table
+        {...blockProps(block, chapterId)}
+        data-reader-block-kind="image"
+        aria-describedby={
+          !measurement && block.captionId
+            ? `reader-${chapterId}-${block.captionId}`
+            : undefined
+        }
+        className="w-full table-auto border-collapse [overflow-wrap:normal] text-[calc(1rem*var(--reader-font-scale)*var(--reader-block-scale,1))]"
+        style={style}
+      >
+        <tbody>
+          {rows.map((row) => (
+            <tr key={row}>
+              {block.cells
+                .filter((cell) => cell.row === row)
+                .sort((a, b) => a.column - b.column)
+                .map((cell) => {
+                  const Tag = cell.headerAxis ? "th" : "td";
+                  return (
+                    <Tag
+                      key={cell.id}
+                      rowSpan={cell.rowSpan}
+                      colSpan={cell.columnSpan}
+                      {...blockProps(
+                        cell,
+                        chapterId,
+                        structuredLeafStyle(cell, "table"),
+                      )}
+                      id={
+                        measurement ? undefined : `reader-${chapterId}-${cell.id}`
+                      }
+                      scope={
+                        cell.headerAxis === "row" || cell.headerAxis === "column"
+                          ? cell.headerAxis === "column"
+                            ? "col"
+                            : "row"
+                          : undefined
+                      }
+                      headers={
+                        !measurement && cell.headerIds.length
+                          ? cell.headerIds
+                              .map((id) => `reader-${chapterId}-${id}`)
+                              .join(" ")
+                          : undefined
+                      }
+                      className="border-b border-line p-2 align-top"
+                    >
+                      <ReaderInlineContent inlines={cell.inlines} />
+                    </Tag>
+                  );
+                })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </ReaderTableViewport>
   );
 }

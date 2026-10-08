@@ -3,6 +3,7 @@
 
 import type { ReaderLocator } from "@/lib/api-types";
 import { pageLocatorBlocks } from "./page-blocks";
+import { readerPageRect, readerTableViewport } from "../table-viewport";
 import {
   findFirstVisibleBlockIndex,
   resolveTextOffsetTarget,
@@ -70,7 +71,7 @@ export function resolveLocatorFromPageIndex(input: {
 
   const blockIndex = findFirstVisibleBlockIndex(
     blockElements.map((element) =>
-      measureElementHorizontalBounds(element, metrics),
+      measureElementHorizontalBounds(readerTableViewport(element) ?? element, metrics),
     ),
     pageWindow.pageStart,
     pageWindow.pageEnd,
@@ -134,7 +135,7 @@ export function resolvePageIndexFromLocator(input: {
     };
   }
 
-  const blockRect = blockElement.getBoundingClientRect();
+  const blockRect = readerPageRect(blockElement);
   const blockStartPageIndex = resolvePageIndexFromRect(blockRect, metrics);
   const blockStartColumn = resolveColumnFromRect(blockRect, metrics);
   const segments = collectTextNodeSegments(blockElement);
@@ -149,6 +150,14 @@ export function resolvePageIndexFromLocator(input: {
 
   const boundaryRange = createCharacterRange(segments, locator.textOffset);
   const boundaryRect = boundaryRange ? getRangeRect(boundaryRange) : null;
+
+  if (readerTableViewport(blockElement)) {
+    return {
+      column: blockStartColumn,
+      pageIndex: blockStartPageIndex,
+      status: boundaryRect ? "exact" : "block-start",
+    };
+  }
 
   if (!boundaryRect) {
     return {
