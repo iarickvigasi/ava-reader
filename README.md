@@ -245,6 +245,8 @@ scanned/mixed, typography, offline/device and release gates.
 
 Reader and Library format downloads use the same owned source/publication checks. The reader's
 Download panel offers existing available files; it does not start a new conversion.
+Accepted PDF reader loads reuse bounded semantic-validation receipts while checking actual bytes,
+structural schemas and current access on every request; see the operations guide for cache limits.
 
 - [Product behavior and pipeline](docs/pdf-conversion.md)
 - [Build, worker configuration and operations](docs/pdf-conversion-operations.md)

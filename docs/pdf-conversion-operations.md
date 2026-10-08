@@ -81,6 +81,23 @@ is checked before consuming an attempt. Disabled runtime does not block unrelate
 
 ## Isolation, limits and artifacts
 
+Accepted PDF reader loads cache successful semantic-validation receipts. Each request still loads
+and hashes the actual accepted/reader bytes, checks structural schemas and rechecks current owned
+publication/capability authority before and after awaited work. Parsed reader graphs are never
+shared by this cache. Worker publication and generated-EPUB reimport validation remain uncached.
+
+Receipt identity includes source/schema/adapter build and the installed validator fingerprint.
+The fingerprint covers AVA Python/JSON files, interpreter, isolated environment configuration and
+dependency installation records; unknown/editable layouts bypass caching. Replacing the validator
+at the same path cannot reuse an old receipt. False/rejected results are not retained.
+
+Receipts expire after five minutes and are bounded to 64 entries / 256 MiB of represented source.
+At most two distinct semantic fills run; every caller, including coalesced waiters, reserves wire
+weight before parsing against a 128 MiB limit. These are admission/coverage limits, not heap or RSS
+guarantees. Byte retrieval, hashing, structural parsing and authority checks still occur on warm
+loads. Cold validation must independently meet supported-book limits; a warm benchmark does not
+establish large-book support or an endpoint SLA. No new environment setting enables this cache.
+
 Defaults: network disabled, read-only root, nonroot UID 10001, dropped capabilities, one CPU,
 2 GiB/no swap and 32 processes. Allowed CPU is 0.25–2 and memory 128 MiB–2 GiB; noexec scratch
 is bounded to 2 GiB and counts toward memory. Containers receive source/frozen input/read-only

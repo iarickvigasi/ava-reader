@@ -57,6 +57,9 @@ Malformed responses fail with retained investigation evidence. This source candi
 scanned/mixed qualification evidence.
 Text ranges use canonical code-point offsets with explicit UTF-16 browser mapping; surrogate splits
 are refused. Image bytes have validated media type, dimensions and hashes.
+The reader groups consecutive styled text runs from one semantic link occurrence into one anchor.
+It retains all characters/styles and the exact caller/target offsets; separate callers remain
+separate links even when they share a destination. Accepted EPUB and canonical content stay fixed.
 Generated EPUB projection `ava-epub-canonical-2.2` preserves declared printed page labels in
 the page list and pagebreak accessibility names. Targets retain physical page IDs, so Roman numerals
 and restarted numbering cannot collide. Missing or blank labels use the physical page number for
