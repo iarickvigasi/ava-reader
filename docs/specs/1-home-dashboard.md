@@ -46,7 +46,8 @@ discovery. The daily entry point into the habit.
    Books without annotations are skipped before selecting three. Home fetches annotation text
    only for those selected books, using annotation counts on library metadata to find candidates.
    Fewer eligible books show fewer cards; no annotations shows the existing empty state.
-9. Daily mastery uses the user's saved reading goal (60 minutes when unset). Local goal edits
+9. Daily mastery headings link to `/app/insights` on desktop and mobile.
+   Daily mastery uses the user's saved reading goal (60 minutes when unset). Local goal edits
    immediately update remaining minutes, the chart scale, and completion for all displayed days,
    including days without new reading activity. Reading minutes are preserved.
 10. After hydration, mastery shows seven device-local dates ending today, retaining matching cached days

@@ -3,8 +3,9 @@
 See architecture.md for how; specs/ for per-feature behaviour. Keep ≤150 lines.
 
 ## Thesis
+
 AVA Reader (avareader.space) is a cross-platform reading app built around an integrated AI assistant
-that turns reading into an interactive process. 
+that turns reading into an interactive process.
 Instead of passively moving through text, readers investigate meaning as they go — clarifying hard
 passages, exploring etymology,
 translating, answering questions, and unpacking references without breaking focus. The AI is a
@@ -12,6 +13,7 @@ contextual guide available at any moment.
 At its core the app is a tool for **learning, and connecting to similar-minded people**.
 
 ## Audience
+
 - **Curious readers** who want to read more deeply, study, and build a lasting reading habit, listen
   to books.
 - **Language learners** who want to read exciting foreign books before they're fluent, at any level
@@ -20,6 +22,7 @@ At its core the app is a tool for **learning, and connecting to similar-minded p
   earn fairly.
 
 ## Values & principles
+
 - We love great books and the people who read them.
 - We want reading to be deeper, more studied, and more popular — and to help people build the habit.
 - We want to make our readers better: help them grow, learn, and develop as they choose.
@@ -27,6 +30,7 @@ At its core the app is a tool for **learning, and connecting to similar-minded p
   value.
 
 ## Jobs to be done
+
 - Read books of various formats across devices, online or fully offline.
 - Understand hard passages in flow — explain, etymology, translate, ask questions — without leaving
   the page.
@@ -37,7 +41,7 @@ At its core the app is a tool for **learning, and connecting to similar-minded p
 - Learn & retain vocabulary or concepts with **flashcards** and meaningful, customisable
   **reminders/notifications**.
 - Track **progress** with precise estimates of time spent and time remaining. And more meaningfully
-  — track your **knowledge graph** as you read new themes, and connect concepts.  
+  — track your **knowledge graph** as you read new themes, and connect concepts.
 - Reflect in a **reading diary**: answer questions about a book and discuss it with AI and other
   users to think more deeply.
 - Organize a personal **library**, **collections**, and share them with friends.
@@ -47,10 +51,12 @@ At its core the app is a tool for **learning, and connecting to similar-minded p
   majority of revenue.
 
 ## North star
+
 Depth of engagement per reader — investigations made, words learned, books finished, new people with
 similar interests found.
 
 ## Monetization
+
 - **Freemium.** Core reading is free; advanced capabilities are paid tiers.
 - **Bring your own key.** Users supply an OpenRouter or own model key and AI features are free to
   them; otherwise they top up app credits used for any AI work in the app.
@@ -59,23 +65,28 @@ similar interests found.
 - **Discovery.** Landing + SEO optimised for AI search (answer engines and bots).
 
 ## No-list (deliberately not doing)
+
 - No ads, no engagement-bait, no manipulative retention mechanics.
 - No locking a reader's own data behind the network (offline-first is a promise).
 - No selling attention or reader data.
 - Not a general social network — social exists to deepen reading, not to maximise scrolling.
 
 ## Status — shipped
+
 Reader (offline-capable), highlights, AI toolbox (translate/explain/etymology), AI comments, reading
 sessions + progress + stats, save-for-offline, library + collections, reading preferences, home
 dashboard, Clerk auth, feedback capture, catalog/admin (curation). See specs/.
 
 ## Roadmap — next
+
 - **AI chat about a book** (the diary's discussion layer; UI scaffold exists).
 - **Listening / TTS narration** with voice interaction (preferences UI scaffold exists).
-- **Insights** page (reading analytics) and **Explore** (discovery/recommendations).
+- **Connect**: community introduction first, then opt-in reader profiles and reader discovery.
+- **Insights** (reading analytics), reached from Home’s Daily mastery; **Explore** (discovery).
 - BYO-key + credit accounting and billing.
 
 ## Roadmap — later
+
 - **Flashcards** + spaced repetition and customisable learning reminders.
 - **Parallel translation** reading mode (original ↔ translation).
 - **Reading diary** as a first-class surface.
@@ -85,6 +96,7 @@ dashboard, Clerk auth, feedback capture, catalog/admin (curation). See specs/.
   creator-favourable revenue share.
 
 ## Open questions
+
 - Credit pricing and the free/paid line per AI feature.
 - Moderation and trust model for social + published works.
 - Author payout mechanics and rights/licensing.

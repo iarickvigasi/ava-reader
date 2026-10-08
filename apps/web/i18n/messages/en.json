@@ -370,7 +370,8 @@
       "home": "Home",
       "library": "Library",
       "explore": "Explore",
-      "insights": "Insights"
+      "insights": "Insights",
+      "connect": "Connect"
     },
     "admin": {
       "short": "Admin",
@@ -731,5 +732,27 @@
     "pending": "Saved on this device. Waiting to sync.",
     "saved": "Profile saved.",
     "error": "Your profile could not be saved. Check your details and try again."
+  },
+  "connect": {
+    "eyebrow": "Connect",
+    "title": "Good books bring people together.",
+    "body": "Meet readers who share your curiosity. Discover what they’re reading, exchange ideas, and find a new connection.",
+    "comingSoon": "Coming soon",
+    "features": {
+      "people": {
+        "title": "Find your people",
+        "body": "Meet readers exploring the same books, authors, and ideas — and discover people with similar interests."
+      },
+      "share": {
+        "title": "Share your reading world",
+        "body": "Publish reading lists, notes, insights, reviews, and favourite quotes. Give your discoveries a place on your own page."
+      },
+      "conversation": {
+        "title": "Keep the conversation going",
+        "body": "Discuss what you’ve read, chat with other readers, and turn shared interests into new friendships."
+      }
+    },
+    "privacyTitle": "Your reading life, your choice.",
+    "privacyBody": "You’ll be able to keep your profile public or private and choose which parts of your reading activity are visible, and to whom."
   }
 }

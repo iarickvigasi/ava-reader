@@ -370,7 +370,8 @@
       "home": "Accueil",
       "library": "Bibliothèque",
       "explore": "Explorer",
-      "insights": "Statistiques"
+      "insights": "Statistiques",
+      "connect": "Communauté"
     },
     "admin": {
       "short": "Admin",
@@ -731,5 +732,27 @@
     "pending": "Enregistré sur cet appareil. En attente de synchronisation.",
     "saved": "Profil enregistré.",
     "error": "Impossible d’enregistrer votre profil. Vérifiez vos informations et réessayez."
+  },
+  "connect": {
+    "eyebrow": "Communauté",
+    "title": "Les bons livres nous rapprochent.",
+    "body": "Rencontrez des lecteurs qui partagent votre curiosité. Découvrez leurs lectures, échangez des idées et créez de nouveaux liens.",
+    "comingSoon": "Bientôt disponible",
+    "features": {
+      "people": {
+        "title": "Trouvez vos affinités",
+        "body": "Rencontrez des lecteurs qui explorent les mêmes livres, auteurs et idées, et découvrez des personnes aux intérêts similaires."
+      },
+      "share": {
+        "title": "Partagez vos lectures",
+        "body": "Publiez vos listes de lecture, notes, réflexions, avis et citations préférées. Donnez une place à vos découvertes sur votre propre page."
+      },
+      "conversation": {
+        "title": "Prolongez la conversation",
+        "body": "Discutez de vos lectures, échangez avec d’autres lecteurs et faites naître de nouvelles amitiés autour de vos intérêts communs."
+      }
+    },
+    "privacyTitle": "Vos lectures, vos choix.",
+    "privacyBody": "Vous pourrez rendre votre profil public ou privé et choisir quelles parties de votre activité sont visibles, et pour qui."
   }
 }

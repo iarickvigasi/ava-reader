@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Panel } from "../../shared/home-shared";
 import { useMasteryChart } from "@/features/home/use-mastery-chart";
@@ -23,7 +24,12 @@ export function MasteryDesktopSection({
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-2">
             <h2 className="text-[1.9rem] uppercase tracking-[0.04em] text-copy">
-              {t("title")}
+              <Link
+                href="/app/insights"
+                className="rounded-control transition hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-line-strong"
+              >
+                {t("title")}
+              </Link>
             </h2>
             <MasteryGoalStatus
               todayVisible={model.todayVisible}

@@ -7,7 +7,7 @@ import { AppHeaderBrand } from "@/components/brand/app-header-brand";
 import { HeaderStatusChip } from "@/components/app/core/header-status-chip";
 import { useReaderUi } from "@/components/app/core/reader-ui-context";
 import {
-  ChartIcon,
+  ReaderShareIcon,
   ExploreIcon,
   HomeIcon,
   ReaderLibraryIcon,
@@ -26,7 +26,7 @@ const items = [
   { href: "/app", id: "home", icon: HomeIcon },
   { href: "/app/library", id: "library", icon: ReaderLibraryIcon },
   { href: "/app/explore", id: "explore", icon: ExploreIcon },
-  { href: "/app/insights", id: "insights", icon: ChartIcon },
+  { href: "/app/connect", id: "connect", icon: ReaderShareIcon },
 ] as const;
 
 type AppNavigationProps = {

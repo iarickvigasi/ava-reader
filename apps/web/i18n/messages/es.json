@@ -370,7 +370,8 @@
       "home": "Inicio",
       "library": "Biblioteca",
       "explore": "Explorar",
-      "insights": "Estadísticas"
+      "insights": "Estadísticas",
+      "connect": "Comunidad"
     },
     "admin": {
       "short": "Admin",
@@ -731,5 +732,27 @@
     "pending": "Guardado en este dispositivo. Pendiente de sincronización.",
     "saved": "Perfil guardado.",
     "error": "No se pudo guardar tu perfil. Revisa los datos e inténtalo de nuevo."
+  },
+  "connect": {
+    "eyebrow": "Comunidad",
+    "title": "Los buenos libros nos unen.",
+    "body": "Conoce a lectores que comparten tu curiosidad. Descubre qué están leyendo, intercambia ideas y encuentra nuevas conexiones.",
+    "comingSoon": "Próximamente",
+    "features": {
+      "people": {
+        "title": "Encuentra a tu gente",
+        "body": "Conoce a lectores que exploran los mismos libros, autores e ideas y descubre personas con intereses similares."
+      },
+      "share": {
+        "title": "Comparte tu mundo lector",
+        "body": "Publica listas de lectura, notas, reflexiones, reseñas y tus citas favoritas. Dale a tus descubrimientos un espacio en tu propia página."
+      },
+      "conversation": {
+        "title": "Continúa la conversación",
+        "body": "Habla sobre lo que has leído, charla con otros lectores y transforma los intereses compartidos en nuevas amistades."
+      }
+    },
+    "privacyTitle": "Tu vida lectora, tú decides.",
+    "privacyBody": "Podrás tener un perfil público o privado y elegir qué partes de tu actividad lectora son visibles y para quién."
   }
 }
