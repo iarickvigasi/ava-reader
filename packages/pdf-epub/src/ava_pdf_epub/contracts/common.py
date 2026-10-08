@@ -2,7 +2,8 @@
 
 import hashlib
 import json
-from typing import Annotated, Literal, get_args, get_origin
+import re
+from typing import Annotated, ClassVar, Literal, get_args, get_origin
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -17,21 +18,33 @@ RelativePath = Annotated[
     ),
 ]
 MAX_WIRE_BYTES = 128 * 1024 * 1024
+_INVALID_XML_SCALAR = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\ud800-\udfff\ufffe\uffff]")
 
 
 class Record(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True, allow_inf_nan=False, frozen=True)
+    _literal_fields: ClassVar[tuple[tuple[str, tuple[object, ...]], ...]] = ()
+
+    @classmethod
+    def __pydantic_on_complete__(cls) -> None:
+        # Locked contract classes are static; prepare after forward fields are resolved.
+        super().__pydantic_on_complete__()
+        cls._literal_fields = tuple(
+            (name, get_args(field.annotation))
+            for name, field in cls.model_fields.items()
+            if get_origin(field.annotation) is Literal
+        )
 
     @model_validator(mode="before")
     @classmethod
     def exact_literals(cls, value: object) -> object:
         if isinstance(value, dict):
-            for name, field in cls.model_fields.items():
-                if name in value and get_origin(field.annotation) is Literal:
+            for name, expected_values in cls._literal_fields:
+                if name in value:
                     actual = value[name]
                     if not any(
                         type(actual) is type(expected) and actual == expected
-                        for expected in get_args(field.annotation)
+                        for expected in expected_values
                     ):
                         raise ValueError("Literal value has an incompatible type")
         return value
@@ -39,15 +52,7 @@ class Record(BaseModel):
     @field_validator("*")
     @classmethod
     def valid_xml_scalars(cls, value: object) -> object:
-        if isinstance(value, str) and any(
-            not (
-                c in "\t\n\r"
-                or 0x20 <= ord(c) <= 0xD7FF
-                or 0xE000 <= ord(c) <= 0xFFFD
-                or 0x10000 <= ord(c) <= 0x10FFFF
-            )
-            for c in value
-        ):
+        if isinstance(value, str) and _INVALID_XML_SCALAR.search(value):
             raise ValueError("Invalid text scalar")
         return value
 
