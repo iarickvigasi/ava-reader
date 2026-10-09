@@ -132,7 +132,7 @@ export function workerObserver(
         return result;
       } catch (error) {
         const work = finishWork();
-        let failure: SafeConversionEvent['details'] = {};
+        const failure: SafeConversionEvent['details'] = {};
         try {
           if (
             error instanceof PdfRuntimeError ||

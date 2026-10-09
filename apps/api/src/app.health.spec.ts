@@ -36,7 +36,7 @@ describe('API health and reachability over HTTP', () => {
       status: 'ok',
       service: 'api',
       database: 'up',
-      timestamp: expect.any(String),
+      timestamp: expect.any(String) as unknown,
     });
     expect(query).toHaveBeenCalledTimes(1);
   });
@@ -51,7 +51,7 @@ describe('API health and reachability over HTTP', () => {
       status: 'degraded',
       service: 'api',
       database: 'down',
-      timestamp: expect.any(String),
+      timestamp: expect.any(String) as unknown,
     });
     expect(response.text).not.toContain('private connection diagnostics');
     expect(query).toHaveBeenCalledTimes(1);

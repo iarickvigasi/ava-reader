@@ -24,7 +24,7 @@ describe('attempt-private read-only input mount', () => {
     jest
       .mocked(writeFile)
       .mockImplementation((path, ...args) =>
-        String(path).endsWith('worker-observation.json')
+        typeof path === 'string' && path.endsWith('worker-observation.json')
           ? Promise.reject(new Error('synthetic observation write failure'))
           : actual.writeFile(path, ...args),
       );
