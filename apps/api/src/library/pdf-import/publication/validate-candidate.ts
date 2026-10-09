@@ -12,6 +12,7 @@ import { parseSourceReport } from './source-report';
 import { validateCandidateEpub } from './epub-validator';
 import { retainValidation } from './retain-validation';
 import { PdfPublicationError } from './errors';
+import { startConversionWork } from '../reports/work-timing';
 export async function validatePdfCandidate(
   prisma: PrismaService,
   operationId: string,
@@ -23,6 +24,7 @@ export async function validatePdfCandidate(
     leaseRemainingMs?: () => number;
   },
 ) {
+  const finishWork = startConversionWork();
   if (settings.validationAuthority)
     await jobTransaction(prisma, (tx) =>
       requireValidationRun(tx, settings.validationAuthority!),
@@ -91,5 +93,6 @@ export async function validatePdfCandidate(
     finalContentId,
     settings.runtime.image.slice(7),
     settings.validationAuthority,
+    finishWork,
   );
 }

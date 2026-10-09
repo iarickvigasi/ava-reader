@@ -2,6 +2,7 @@
 
 from ..contracts.profiles import BILINGUAL_PROFILE, LEGACY_PROFILE, ProfileId
 from ..contracts.source import Box
+from ..worker_observation import observe
 from .borderless_tables import borderless_tables
 from .classify_lines import classify_lines
 from .geometry import overlap
@@ -62,6 +63,8 @@ def native_page(
         )
     )
     ordered = native_literal_candidates(reading_order(content, page.width_pt))
+    observe("layout", page.number, "two_column" if any(p.column == 2 for p in ordered)
+            else "single_column" if ordered else "unknown")
     complete = (
         native_spacing(
             page, [p.segment for p in preserve_paired_lines(join_paragraphs(ordered), ordered)]

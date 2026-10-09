@@ -54,6 +54,17 @@ export async function privateInputs(
         input.auxiliaryBytes,
         { mode: 0o444, flag: 'wx' },
       );
+    if (input.observationBinding)
+      await writeFile(
+        join(directory, 'worker-observation.json'),
+        JSON.stringify({
+          schema_version: 'ava-worker-observation-binding-1',
+          job_id: input.observationBinding.job_id,
+          attempt_id: input.observationBinding.attempt_id,
+          unit_id: input.observationBinding.unit_id,
+        }),
+        { mode: 0o444, flag: 'wx' },
+      ).catch(() => undefined);
     await refresh();
     timer = setInterval(() => {
       if (!pending)

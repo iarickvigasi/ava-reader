@@ -6,6 +6,12 @@ export async function queueLock(tx: Tx) {
     Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended('ava-pdf-jobs-v1', 0))`,
   );
 }
+export async function tryQueueLock(tx: Tx) {
+  const [row] = await tx.$queryRaw<{ locked: boolean }[]>(
+    Prisma.sql`SELECT pg_try_advisory_xact_lock(hashtextextended('ava-pdf-jobs-v1', 0)) AS locked`,
+  );
+  return row.locked;
+}
 export function jobTransaction<T>(
   prisma: PrismaService,
   work: (tx: Tx) => Promise<T>,

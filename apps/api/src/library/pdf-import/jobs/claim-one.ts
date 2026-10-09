@@ -85,6 +85,7 @@ export async function claimOne(
     policy.leaseMs,
   );
   return {
+    jobId: job.id,
     ...(await leaseClock(tx, leaseExpiresAt, deadline)),
     authority: { ...credential, attemptId: attempt.id, attemptToken },
     job: input,

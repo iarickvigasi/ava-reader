@@ -6,6 +6,15 @@ import { inspectPdfIsolated } from '../../../pdf-conversion/runtime/inspect-isol
 import { runtimeConfigFromEnvironment } from '../../../pdf-conversion/runtime/runtime-config';
 import { z } from 'zod';
 import { PDF_IMPORT_PROFILE } from './profile';
+import {
+  startConversionWork,
+  type ConversionWorkTiming,
+} from '../reports/work-timing';
+const inspectionFailures = new WeakMap<object, ConversionWorkTiming>();
+export const inspectionFailureTiming = (error: unknown) =>
+  error !== null && typeof error === 'object'
+    ? inspectionFailures.get(error)
+    : undefined;
 
 const inspectionSchema = z.object({
   source_sha256: z.string().regex(/^[a-f0-9]{64}$/),
@@ -26,6 +35,7 @@ export async function inspectPdf(
   bytes: Buffer,
   sourceSha256: string,
 ): Promise<PdfInspection> {
+  const finishWork = startConversionWork();
   try {
     const stdout = await inspectPdfIsolated(
       bytes,
@@ -74,7 +84,12 @@ export async function inspectPdf(
       throw new Error('Inspection identity');
     return result;
   } catch (error) {
-    if (error instanceof UnprocessableEntityException) throw error;
-    throw new ServiceUnavailableException('PDF inspection could not complete.');
+    const failure =
+      error instanceof UnprocessableEntityException
+        ? error
+        : new ServiceUnavailableException('PDF inspection could not complete.');
+    const work = finishWork();
+    if (work) inspectionFailures.set(failure, work);
+    throw failure;
   }
 }

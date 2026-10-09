@@ -27,6 +27,7 @@ export type ExecutionFailure =
   | 'UNSUPPORTED_PDF'
   | 'CONVERSION_FAILED';
 export type ClaimedPdfJob = {
+  jobId?: string;
   authority: AttemptAuthority;
   job: JobInputV1;
   leaseExpiresAt: Date;

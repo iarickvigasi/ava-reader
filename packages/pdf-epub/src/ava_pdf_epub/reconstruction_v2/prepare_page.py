@@ -10,6 +10,7 @@ from ..admission_actions import inspect_annotations, inspect_catalog
 from ..annotation_kind import annotation_kind
 from ..annotation_view import annotation_view
 from ..contracts.profiles import LEGACY_PROFILE, ProfileId, checked_profile
+from ..worker_observation import observe
 from .annotation_regions import annotation_regions
 from .annotation_spans import apply_annotation_spans
 from .blank_page import blank_page
@@ -35,14 +36,15 @@ def prepare_page(
         raise ValueError("Source is encrypted or page bound exceeded")
     if not 1 <= page_number <= len(reader.pages):
         raise ValueError("Page is outside source")
+    observe("source", source_hash, len(reader.pages), page_number, profile_id)
     inspect_catalog(reader.trailer["/Root"])
     inspect_annotations(
         reader.pages[page_number - 1], page_number=page_number, page_count=len(reader.pages)
     )
-    has_visible = any(
-        annotation_kind(ref.get_object()) == "visible"
-        for ref in reader.pages[page_number - 1].get("/Annots", [])
-    )
+    kinds = [annotation_kind(ref.get_object())
+             for ref in reader.pages[page_number - 1].get("/Annots", [])]
+    observe("annotation", page_number, kinds)
+    has_visible = "visible" in kinds
     view = annotation_view(source, scratch)
     view_reader = PdfReader(view)
     with pdfplumber.open(view) as document:
@@ -87,7 +89,7 @@ def prepare_page(
         if blank
         else route_native(observation, tables, regions, source_hash, scratch, profile_id)
     )
-    return PreparedPage(
+    prepared = PreparedPage(
         schema_version="ava-prepared-page-1",
         profile_id=profile_id,
         source_sha256=source_hash,
@@ -98,3 +100,5 @@ def prepare_page(
         native_segments=segments,
         tasks=tasks,
     )
+    observe("page", prepared)
+    return prepared

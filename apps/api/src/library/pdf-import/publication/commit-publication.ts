@@ -16,6 +16,11 @@ import { assertReviewClearance } from './review-clearance';
 import { PdfPublicationError } from './errors';
 import { costLock } from '../providers/cost-lock';
 import { recordOperationEvent } from '../reports/operation-event';
+import {
+  workEventDetails,
+  workEventTiming,
+  type ConversionWorkTiming,
+} from '../reports/work-timing';
 export async function commitPublication(
   prisma: PrismaService,
   validationId: string,
@@ -24,6 +29,7 @@ export async function commitPublication(
   bytes: Buffer,
   required: string[],
   credential?: WorkerCredential,
+  finishWork?: () => ConversionWorkTiming | undefined,
 ) {
   return jobTransaction(prisma, async (tx) => {
     await costLock(tx);
@@ -94,6 +100,7 @@ export async function commitPublication(
     });
     await bindPublishedCover(tx, scope.op.bookId, accepted, v.resourceMap);
     await installPublishedFiles(tx, scope, v);
+    const work = finishWork?.();
     await recordOperationEvent(
       tx,
       scope.op.id,
@@ -106,7 +113,11 @@ export async function commitPublication(
         attemptFence: v.attemptFence,
         generation: v.generation,
         cancellationEpoch: v.cancellationEpoch,
+        ...workEventTiming(work),
         details: {
+          ...workEventDetails(work),
+          outcome: 'COMPLETED',
+          workerObservation: { status: 'UNOBSERVED', reason: 'UNAVAILABLE' },
           publicationId: publication.id,
           validationId,
           finalContentId: v.finalContentId,

@@ -5,6 +5,7 @@ import zipfile
 
 from ..contracts.book import CanonicalBookV2
 from ..contracts.page_starts import page_addresses
+from ..worker_observation import phase
 from .archive import MAX_ARCHIVE_BYTES, MAX_ENTRIES, MAX_ENTRY_BYTES
 from .assets import MAX_EXPANDED_BYTES, validate_assets
 from .chapters import chapter_documents
@@ -50,6 +51,11 @@ def export_entries(
 
 
 def export_epub(book: CanonicalBookV2, assets: dict[str, bytes]) -> bytes:
+    with phase("export"):
+        return _export_epub(book, assets)
+
+
+def _export_epub(book: CanonicalBookV2, assets: dict[str, bytes]) -> bytes:
     entries = export_entries(book, assets)
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w") as archive:

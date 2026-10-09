@@ -1,6 +1,7 @@
 import { spawn } from 'node:child_process';
 import type { PdfRuntimeConfig } from './runtime-config';
 import { PdfRuntimeError, type RuntimeFailure } from './runtime-error';
+import { workerStderr } from './worker-stderr';
 import {
   faultAcknowledgement,
   type FaultExpectation,
@@ -13,11 +14,14 @@ export function dockerCommand(
   maxBytes: number,
   signal?: AbortSignal,
   expectedFault?: FaultExpectation,
+  observeWorker = false,
 ) {
   return new Promise<{
     exitCode: number | null;
     stdout: Buffer;
     stderr: string;
+    observationStderr?: string;
+    observationMalformed?: boolean;
   }>((resolve, reject) => {
     const child = spawn(config.docker, ['--host', config.dockerHost, ...args], {
       shell: false,
@@ -29,9 +33,8 @@ export function dockerCommand(
       },
     });
     const chunks: Buffer[] = [];
+    const errors = workerStderr(observeWorker);
     let bytes = 0,
-      errors = '',
-      errorBytes = 0,
       settled = false;
     const finish = (
       failure?: RuntimeFailure,
@@ -41,16 +44,17 @@ export function dockerCommand(
       settled = true;
       clearTimeout(timer);
       signal?.removeEventListener('abort', abort);
+      const collected = errors.finish();
+      failure ??= collected.exhausted ? 'RESOURCE_LIMIT' : undefined;
       if (failure) {
         child.kill('SIGKILL');
         reject(
           new PdfRuntimeError(
             failure,
-            faultAcknowledgement(errors, expectedFault),
+            faultAcknowledgement(collected.stderr, expectedFault),
           ),
         );
-      } else
-        resolve({ exitCode, stdout: Buffer.concat(chunks), stderr: errors });
+      } else resolve({ exitCode, stdout: Buffer.concat(chunks), ...collected });
     };
     const abort = () => finish('DISPATCH_NOT_AUTHORIZED');
     const timer = setTimeout(() => finish('EXECUTION_TIMEOUT'), timeoutMs);
@@ -62,9 +66,7 @@ export function dockerCommand(
       else chunks.push(data);
     });
     child.stderr.on('data', (data: Buffer) => {
-      errorBytes += data.length;
-      if (errorBytes > 8192) finish('RESOURCE_LIMIT');
-      else errors += data.toString('utf8');
+      if (!errors.append(data)) finish('RESOURCE_LIMIT');
     });
     child.on('close', (code) => finish(undefined, code));
     if (signal?.aborted) abort();

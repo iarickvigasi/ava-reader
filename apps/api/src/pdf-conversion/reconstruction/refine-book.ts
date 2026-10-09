@@ -36,6 +36,7 @@ export async function refineBook(input: {
     throw new PdfRuntimeError('RESOURCE_LIMIT');
   const prepared = await input.deps.sandbox({
     ...input.sandboxInput(),
+    observationCommand: { command: 'prepare_refinement', page_number: null },
     auxiliaryBytes,
   });
   if (prepared.exitCode === 1)

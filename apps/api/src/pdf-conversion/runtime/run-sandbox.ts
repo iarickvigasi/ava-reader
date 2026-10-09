@@ -6,6 +6,7 @@ import { dockerCommand } from './docker-command';
 import { startContainer } from './start-container';
 import { validateRuntimeConfig, type PdfRuntimeConfig } from './runtime-config';
 import { PdfRuntimeError } from './runtime-error';
+import { workerBinding } from './worker-observation';
 
 export async function runSandbox(
   input: SandboxInput,
@@ -43,23 +44,33 @@ export async function runSandbox(
   const source = Buffer.from(input.source),
     jobBytes = input.jobBytes && Buffer.from(input.jobBytes),
     auxiliaryBytes = input.auxiliaryBytes && Buffer.from(input.auxiliaryBytes);
+  const observation = workerBinding.safeParse(input.observationBinding);
+  const snapshot = {
+    ...input,
+    source,
+    jobBytes,
+    auxiliaryBytes,
+    observationBinding:
+      input.module === 'ava_pdf_epub.reconstruction_v2' && observation.success
+        ? observation.data
+        : undefined,
+    observationCommand: input.observationCommand
+      ? { ...input.observationCommand }
+      : undefined,
+  };
   const name = `ava-pdf-${randomUUID()}`;
   const failedLease = new AbortController();
   const signal = input.signal
     ? AbortSignal.any([input.signal, failedLease.signal])
     : failedLease.signal;
-  const inputs = await privateInputs(
-    { ...input, source, jobBytes, auxiliaryBytes },
-    () => failedLease.abort(),
-    name,
-  );
+  const inputs = await privateInputs(snapshot, () => failedLease.abort(), name);
   let response: Awaited<ReturnType<typeof startContainer>> | undefined;
   let failure: PdfRuntimeError | undefined;
   let cleanupFailed = false;
   try {
     response = await startContainer(
       config,
-      input,
+      snapshot,
       name,
       inputs.directory,
       signal,

@@ -14,6 +14,8 @@ import { validateRuntimeConfig, type PdfRuntimeConfig } from './runtime-config';
 import { PdfRuntimeError } from './runtime-error';
 import { SourceContentError } from '../reconstruction/source-refusal';
 import { retainSourceRefusal } from './retain-source-refusal';
+import { workerObserver } from './worker-observer';
+import { workerObservationSink } from './worker-observation-sink';
 
 export async function executeOne(
   prisma: PrismaService,
@@ -39,6 +41,9 @@ export async function executeOne(
     () => heartbeatPdfJob(prisma, authority),
     signal,
   );
+  const observer = claim.jobId
+    ? workerObserver(claim, workerObservationSink(prisma, claim), guard.signal)
+    : undefined;
   try {
     const result = await runClaimedContent(
       prisma,
@@ -46,24 +51,39 @@ export async function executeOne(
       config,
       semantic,
       guard,
+      observer,
     );
-    const saved = await underLease(
-      () =>
-        completeStagedPdfJob(prisma, {
-          authority,
-          completion: result.completion,
-          stagedByPath: result.stagedByPath,
-          semantic,
-        }),
-      guard.signal,
-    );
+    const complete = () =>
+      underLease(
+        () =>
+          completeStagedPdfJob(prisma, {
+            authority,
+            completion: result.completion,
+            stagedByPath: result.stagedByPath,
+            semantic,
+          }),
+        guard.signal,
+      );
+    const saved = observer
+      ? await observer.track(
+          'CANDIDATE_ACCEPTANCE',
+          observer.nextUnit('accept'),
+          complete,
+        )
+      : await complete();
     return {
       ...scope,
       status: saved.status,
+      observationCapture: observer?.summary(),
     };
   } catch (error) {
     if (guard.signal.aborted || error instanceof JobAuthorityError)
-      return { ...scope, status: 'authority_lost', lease: guard.diagnostic() };
+      return {
+        ...scope,
+        status: 'authority_lost',
+        lease: guard.diagnostic(),
+        observationCapture: observer?.summary(),
+      };
 
     let saved: { status: string; code: string };
     try {
@@ -83,6 +103,7 @@ export async function executeOne(
           ...scope,
           status: 'authority_lost',
           lease: guard.diagnostic(),
+          observationCapture: observer?.summary(),
         };
       throw new PdfRuntimeError('WORKER_CRASH');
     }
@@ -96,8 +117,21 @@ export async function executeOne(
         error instanceof PdfRuntimeError
           ? error.faultAcknowledgement
           : undefined,
+      observationCapture: observer?.summary(),
     };
   } finally {
+    observer?.emit(
+      'STAGE_ENDED',
+      'OBSERVATION_CAPTURE',
+      observer.nextUnit('capture'),
+      {
+        outcome: 'UNOBSERVED',
+        observationCapture: {
+          ...observer.summary(),
+          scope: 'PRECEDING_QUEUE_AT_PRODUCER_OBSERVATION',
+        },
+      },
+    );
     guard.dispose();
   }
 }

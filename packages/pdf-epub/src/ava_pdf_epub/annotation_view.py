@@ -9,13 +9,16 @@ from pypdf.generic import ArrayObject, NameObject
 from .admission_actions import inspect_annotations, inspect_catalog
 from .annotation_kind import annotation_kind
 from .annotation_view_cache import POLICY, cached_view, remember_view
+from .worker_observation import observe
 
 
 def annotation_view(source: Path, scratch: Path, *, exclude_inline: bool = False) -> Path:
     policy = POLICY + ":word-geometry-inline-v1" if exclude_inline else POLICY
     cached, output, receipt = cached_view(source, scratch, policy=policy)
     if cached is not None:
+        observe("reuse", "annotation_view", True)
         return cached
+    observe("reuse", "annotation_view", False)
     reader = PdfReader(source, strict=True)
     inspect_catalog(reader.trailer["/Root"])
     changed = False

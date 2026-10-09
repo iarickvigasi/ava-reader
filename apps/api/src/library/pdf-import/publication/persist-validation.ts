@@ -10,12 +10,18 @@ import { candidateAuthority } from './candidate-authority';
 import { PdfPublicationError } from './errors';
 import { costLock } from '../providers/cost-lock';
 import { recordOperationEvent } from '../reports/operation-event';
+import {
+  workEventDetails,
+  workEventTiming,
+  type ConversionWorkTiming,
+} from '../reports/work-timing';
 export async function persistValidation(
   prisma: PrismaService,
   candidate: Awaited<ReturnType<typeof loadPublicationCandidate>>,
   data: Prisma.PdfCandidateValidationUncheckedCreateInput,
   artifacts: PdfArtifact[],
   validationAuthority?: ValidationAuthority,
+  work?: ConversionWorkTiming,
 ) {
   return jobTransaction(prisma, async (tx) => {
     await costLock(tx);
@@ -70,7 +76,25 @@ export async function persistValidation(
       stage: 'VALIDATION',
       severity: result.verdict === 'BLOCKED' ? 'ERROR' : 'INFO',
       attemptId: candidate.attempt.id,
+      attemptFence: fresh.job.attemptFence,
+      generation: fresh.op.generation,
+      cancellationEpoch: fresh.op.cancellationEpoch,
+      ...workEventTiming(work),
       details: {
+        ...workEventDetails(work),
+        outcome: 'COMPLETED',
+        workerObservation: { status: 'UNOBSERVED', reason: 'UNAVAILABLE' },
+        ...(validationAuthority
+          ? { validationFence: validationAuthority.fence }
+          : {}),
+        ...(['PASS', 'REVIEW', 'BLOCKED'].includes(result.verdict)
+          ? {
+              validationVerdict: result.verdict as
+                | 'PASS'
+                | 'REVIEW'
+                | 'BLOCKED',
+            }
+          : {}),
         validationId: result.id,
         findingCount: result.hardBlocks.length + result.reviewFindings.length,
       },

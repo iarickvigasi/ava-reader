@@ -10,6 +10,7 @@ from typing import Any
 from ..contracts.book import CanonicalBookV2
 from ..contracts.profiles import BILINGUAL_PROFILE
 from ..epub_v2.export import export_epub
+from ..worker_observation import phase
 from .annotation_findings import annotation_findings
 from .apply_refinement import apply_refinement
 from .assemble_addresses import assemble_addresses
@@ -57,9 +58,10 @@ def reconstruct(
 ) -> ReconstructedBook:
     pages, segments, state = source_segments(source, scratch, prepared, responses)
     if refinements is not None:
-        tasks = prepare_refinement(
-            source, scratch, prepared, segments, state, source_feature_policy=source_feature_policy
-        )
+        with phase("prepare_refinement"):
+            tasks = prepare_refinement(
+                source, scratch, prepared, segments, state, source_feature_policy=source_feature_policy
+            )
         if tasks or refinements:
             segments = apply_refinement(segments, tasks, refinements, state)
         del tasks

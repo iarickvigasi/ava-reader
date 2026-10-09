@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import overload
 
 from ..contracts.private_files import snapshot
+from ..worker_observation import observe
 from .page_geometry import PageGeometry, geometry_from
 from .prepared import PreparedPage
 
@@ -53,7 +54,9 @@ class PageCheckpoints(Sequence[PreparedPage]):
         cached = self._cached.get(index)
         if cached is not None:
             self._cached.move_to_end(index)
+            observe("reuse", "checkpoint_decode", True)
             return cached[1]
+        observe("reuse", "checkpoint_decode", False)
         page = PreparedPage.model_validate_json(data)
         # Keep the same aggregate serialized bound as the former single-page cache.
         # Hash verification above still runs on every read, including cache hits.

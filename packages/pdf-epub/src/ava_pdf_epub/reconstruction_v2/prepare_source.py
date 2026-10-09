@@ -8,12 +8,20 @@ from pathlib import Path
 from pypdf import PdfReader
 
 from ..contracts.profiles import LEGACY_PROFILE, ProfileId
+from ..worker_observation import phase
 from .page_checkpoints import PageCheckpoints
 from .prepare_page import prepare_page
 
 
 def prepare_source(
     source: Path, scratch: Path, source_sha256: str, profile_id: ProfileId = LEGACY_PROFILE
+) -> PageCheckpoints:
+    with phase("prepare_source"):
+        return _prepare_source(source, scratch, source_sha256, profile_id)
+
+
+def _prepare_source(
+    source: Path, scratch: Path, source_sha256: str, profile_id: ProfileId
 ) -> PageCheckpoints:
     if (
         source.stat().st_size > 52428800

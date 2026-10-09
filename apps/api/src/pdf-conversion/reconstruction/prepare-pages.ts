@@ -24,6 +24,7 @@ export async function preparePages(input: {
   for (let page = 1; page <= pages; page++) {
     const result = await input.deps.sandbox({
       ...input.sandboxInput(),
+      observationCommand: { command: 'prepare', page_number: page },
       auxiliaryBytes: Buffer.from(
         JSON.stringify({
           mode: 'prepare',
@@ -44,6 +45,29 @@ export async function preparePages(input: {
     )
       throw new PdfRuntimeError('SOURCE_MISMATCH');
     pages = prepared.source_page_count;
+    if (input.deps.observer) {
+      const native = prepared.native_segment_count;
+      input.deps.observer.emit(
+        'SOURCE_INSPECTED',
+        'PAGE_ROUTE',
+        input.deps.observer.nextUnit('page-route'),
+        {
+          sourcePages: pages,
+          preparedRoute: {
+            pageNumber: page,
+            route: prepared.tasks.length
+              ? native
+                ? 'HYBRID'
+                : 'RECOGNITION'
+              : native
+                ? 'NATIVE'
+                : 'BLANK',
+            nativeSegments: native,
+            recognitionTasks: prepared.tasks.length,
+          },
+        },
+      );
+    }
     if (prepared.tasks.length) {
       if (input.providerMode === 'native')
         throw new PdfRuntimeError('DISPATCH_NOT_AUTHORIZED');

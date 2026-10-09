@@ -11,6 +11,7 @@ import { preparePages } from './prepare-pages';
 import { refineBook } from './refine-book';
 import { streamReconstruction } from './stream-reconstruction';
 import { candidateEnvelope } from './candidate-envelope';
+import { outputInventory } from './output-inventory';
 
 export async function runReconstruction(
   input: CoordinatorInput,
@@ -18,10 +19,16 @@ export async function runReconstruction(
   semantic: SemanticValidator,
   workerFingerprint: string,
 ) {
-  const { job, jobBytes, source } = await validateReconstructionInput(
-    input,
-    semantic,
-    workerFingerprint,
+  const observe = <T>(stage: string, action: () => Promise<T>) =>
+    deps.observer
+      ? deps.observer.track(
+          stage,
+          deps.observer.nextUnit(stage.toLowerCase()),
+          action,
+        )
+      : action();
+  const { job, jobBytes, source } = await observe('VALIDATE_INPUT', () =>
+    validateReconstructionInput(input, semantic, workerFingerprint),
   );
   const deadline = performance.now() + job.active_deadline_seconds * 1000;
   const sandboxInput = (): SandboxInput => {
@@ -39,23 +46,27 @@ export async function runReconstruction(
       leaseRemainingMs: input.leaseRemainingMs,
     };
   };
-  const prepared = await preparePages({
-    deps,
-    sandboxInput,
-    sourceSha256: job.source.sha256,
-    pageLimit: job.source_page_limit,
-    providerMode: job.provider_mode,
-    profileId: job.profile_id,
-  });
+  const prepared = await observe('EXTRACTION', () =>
+    preparePages({
+      deps,
+      sandboxInput,
+      sourceSha256: job.source.sha256,
+      pageLimit: job.source_page_limit,
+      providerMode: job.provider_mode,
+      profileId: job.profile_id,
+    }),
+  );
   await deps.progress({ stage: 'RECONSTRUCTION' });
-  const refinements = await refineBook({
-    responses: prepared.responses,
-    deps,
-    sandboxInput,
-    sourceSha256: job.source.sha256,
-    providerMode: job.provider_mode,
-    profileId: job.profile_id,
-  });
+  const refinements = await observe('STRUCTURE_REFINEMENT', () =>
+    refineBook({
+      responses: prepared.responses,
+      deps,
+      sandboxInput,
+      sourceSha256: job.source.sha256,
+      providerMode: job.provider_mode,
+      profileId: job.profile_id,
+    }),
+  );
   const auxiliaryBytes = Buffer.from(
     JSON.stringify({
       mode: 'reconstruct_stream',
@@ -71,8 +82,10 @@ export async function runReconstruction(
   );
   if (auxiliaryBytes.length > 64 * 1024 ** 2)
     throw new PdfRuntimeError('RESOURCE_LIMIT');
-  const { stagedByPath, book, reportBytes, header, report } =
-    await streamReconstruction(deps, sandboxInput, auxiliaryBytes, semantic);
+  const { stagedByPath, book, reportBytes, header, report } = await observe(
+    'ASSEMBLY',
+    () => streamReconstruction(deps, sandboxInput, auxiliaryBytes, semantic),
+  );
   if (
     !book ||
     !reportBytes ||
@@ -86,8 +99,20 @@ export async function runReconstruction(
   const bytes = Buffer.from(
     JSON.stringify(candidateEnvelope(job, book, report, header.artifacts)),
   );
+  try {
+    deps.observer?.emit(
+      'VALIDATION',
+      'CANONICAL_INVENTORY',
+      deps.observer.nextUnit('output-inventory'),
+      { outputInventory: outputInventory(book) },
+    );
+  } catch {
+    /* Optional inventory cannot replace a reconstructed candidate. */
+  }
   const completion = { exitCode: 2, bytes };
-  await validateCompletion(job, completion, semantic);
+  await observe('CONTRACT_VALIDATION', () =>
+    validateCompletion(job, completion, semantic),
+  );
   await deps.progress({ stage: 'VALIDATION' });
   return {
     completion,

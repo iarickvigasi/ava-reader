@@ -14,6 +14,7 @@ import {
   captureMetadataVersion,
   fillReconstructedMetadata,
 } from './fill-reconstructed-metadata';
+import type { WorkerObserver } from './worker-observer';
 
 export async function runClaimedContent(
   prisma: PrismaService,
@@ -21,7 +22,12 @@ export async function runClaimedContent(
   config: PdfRuntimeConfig,
   semantic: SemanticValidator,
   guard: ReturnType<typeof leaseGuard>,
+  observer?: WorkerObserver,
 ) {
+  const observe = <T>(stage: string, action: () => Promise<T>) =>
+    observer
+      ? observer.track(stage, observer.nextUnit(stage.toLowerCase()), action)
+      : action();
   const progress = async (value: JobProgress) => {
     const started = performance.now();
     const receipt = await underLease(
@@ -30,43 +36,47 @@ export async function runClaimedContent(
     );
     guard.confirm(receipt, performance.now() - started);
   };
-  const source = await underLease(
-    () => loadPdfJobSource(prisma, claim.authority),
-    guard.signal,
+  const source = await observe('LOAD_SOURCE', () =>
+    underLease(() => loadPdfJobSource(prisma, claim.authority), guard.signal),
   );
-  const metadataVersion = await underLease(
-    () => captureMetadataVersion(prisma, claim),
-    guard.signal,
+  const metadataVersion = await observe('CAPTURE_METADATA', () =>
+    underLease(() => captureMetadataVersion(prisma, claim), guard.signal),
   );
   await progress({ stage: 'EXTRACTION' });
-  const result = await underLease(
-    () =>
-      runReconstruction(
-        {
-          job: claim.job,
-          source,
-          signal: guard.signal,
-          leaseRemainingMs: guard.remainingMs,
-        },
-        workerDependencies(
-          prisma,
-          claim.authority,
-          config,
-          guard.signal,
-          progress,
+  const result = await observe('RECONSTRUCTION', () =>
+    underLease(
+      () =>
+        runReconstruction(
+          {
+            job: claim.job,
+            source,
+            signal: guard.signal,
+            leaseRemainingMs: guard.remainingMs,
+          },
+          workerDependencies(
+            prisma,
+            claim.authority,
+            config,
+            guard.signal,
+            progress,
+            undefined,
+            observer,
+          ),
+          semantic,
+          config.image.slice(7),
         ),
-        semantic,
-        config.image.slice(7),
-      ),
-    guard.signal,
+      guard.signal,
+    ),
   );
-  await underLease(
-    () =>
-      fillReconstructedMetadata(prisma, claim, metadataVersion, {
-        metadata: result.metadata,
-        profile_id: result.profileId,
-      }),
-    guard.signal,
+  await observe('FILL_METADATA', () =>
+    underLease(
+      () =>
+        fillReconstructedMetadata(prisma, claim, metadataVersion, {
+          metadata: result.metadata,
+          profile_id: result.profileId,
+        }),
+      guard.signal,
+    ),
   );
   return result;
 }

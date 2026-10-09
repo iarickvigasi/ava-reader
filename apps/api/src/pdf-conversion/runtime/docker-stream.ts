@@ -1,6 +1,7 @@
 import { spawn } from 'node:child_process';
 import type { PdfRuntimeConfig } from './runtime-config';
 import { PdfRuntimeError, type RuntimeFailure } from './runtime-error';
+import { workerStderr } from './worker-stderr';
 // Pause the pipe while a bounded artifact chunk is verified/persisted by the host.
 export function dockerStream(
   config: PdfRuntimeConfig,
@@ -8,11 +9,14 @@ export function dockerStream(
   timeoutMs: number,
   consume: (chunk: Buffer) => Promise<void>,
   signal: AbortSignal,
+  observeWorker = false,
 ) {
   return new Promise<{
     exitCode: number | null;
     stdout: Buffer;
     stderr: string;
+    observationStderr?: string;
+    observationMalformed?: boolean;
   }>((resolve, reject) => {
     const child = spawn(config.docker, ['--host', config.dockerHost, ...args], {
       shell: false,
@@ -23,10 +27,9 @@ export function dockerStream(
         DOCKER_CONFIG: '/dev/null',
       },
     });
+    const errors = workerStderr(observeWorker);
     let settled = false,
-      bytes = 0,
-      errorBytes = 0,
-      errors = '';
+      bytes = 0;
     let pending = Promise.resolve();
     const finish = (
       failure?: RuntimeFailure,
@@ -36,10 +39,12 @@ export function dockerStream(
       settled = true;
       clearTimeout(timer);
       signal.removeEventListener('abort', abort);
+      const collected = errors.finish();
+      failure ??= collected.exhausted ? 'RESOURCE_LIMIT' : undefined;
       if (failure) {
         child.kill('SIGKILL');
         reject(new PdfRuntimeError(failure));
-      } else resolve({ exitCode, stdout: Buffer.alloc(0), stderr: errors });
+      } else resolve({ exitCode, stdout: Buffer.alloc(0), ...collected });
     };
     const abort = () => finish('DISPATCH_NOT_AUTHORIZED'),
       timer = setTimeout(() => finish('EXECUTION_TIMEOUT'), timeoutMs);
@@ -62,9 +67,7 @@ export function dockerStream(
         .catch(() => finish('INVALID_RESULT'));
     });
     child.stderr.on('data', (data: Buffer) => {
-      errorBytes += data.length;
-      if (errorBytes > 8192) finish('RESOURCE_LIMIT');
-      else errors += data.toString('utf8');
+      if (!errors.append(data)) finish('RESOURCE_LIMIT');
     });
     child.on('close', (code) => {
       void pending.then(() => finish(undefined, code));

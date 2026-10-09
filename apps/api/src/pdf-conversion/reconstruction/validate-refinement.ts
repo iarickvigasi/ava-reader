@@ -19,7 +19,11 @@ export async function validateRefinement(
   );
   if (auxiliaryBytes.length > 8 * 1024 ** 2)
     throw new PdfRuntimeError('RESOURCE_LIMIT');
-  const result = await sandbox({ ...input(), auxiliaryBytes });
+  const result = await sandbox({
+    ...input(),
+    auxiliaryBytes,
+    observationCommand: { command: 'validate_refinement', page_number: null },
+  });
   if (result.exitCode === 1)
     throw parseSourceRefusal(result.stdout, task.source_sha256);
   if (result.exitCode !== 0 || result.stdout.length > 1024)

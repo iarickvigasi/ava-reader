@@ -10,6 +10,8 @@ import { beginInvestigationRecord } from './record';
 import { appendConversionEvent } from './append-event';
 import { refreshConversionCost } from './refresh-cost';
 import { safeEventSchema, eventIdentity } from './event-contract';
+import { inspectionFailureTiming } from '../admission/inspect-pdf';
+import { workEventDetails, workEventTiming } from './work-timing';
 
 export type AdmissionIdentity = {
   conversionId: string;
@@ -110,12 +112,21 @@ export async function refuseConversionAdmission(
     data.finding && typeof data.finding === 'object'
       ? (data.finding as Record<string, unknown>)
       : {};
+  const work = inspectionFailureTiming(error);
   const event = safeEventSchema.parse({
     kind: 'ADMISSION_REFUSED',
     stage: 'ADMISSION',
     severity: 'WARN',
     code,
+    ...workEventTiming(work),
     details: {
+      ...workEventDetails(work),
+      ...(work
+        ? {
+            unitId: `source-inspection-${identity.requestAttemptId}`,
+            outcome: 'FAILED',
+          }
+        : {}),
       requestAttemptId: identity.requestAttemptId,
       ...(finding.page_number
         ? {

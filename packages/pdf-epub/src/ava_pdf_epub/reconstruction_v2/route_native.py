@@ -5,6 +5,7 @@ from typing import Literal
 
 from ..contracts.profiles import LEGACY_PROFILE, ProfileId
 from ..contracts.source import Box
+from ..worker_observation import observe
 from .geometry import rectangle
 from .graphic_recognition_regions import graphic_recognition_regions
 from .make_task import make_task
@@ -65,6 +66,7 @@ def route_native(
         if any(segment.kind == "unsupported" for segment in segments):
             raise NativeReviewRequired("Native structural interpretation requires review")
     except NativeReviewRequired:
+        observe("layout", page.number, "review_required")
         box = rectangle((0, 0, page.width_pt, page.height_pt), page.width_pt, page.height_pt)
         return [], [
             make_task(

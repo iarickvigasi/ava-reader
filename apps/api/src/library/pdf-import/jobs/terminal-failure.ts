@@ -3,6 +3,11 @@ import type { ExecutionFailure, Tx } from './types';
 import { failureReason } from './failure-reason';
 import { costLock } from '../providers/cost-lock';
 import { recordOperationEvent } from '../reports/operation-event';
+import {
+  workEventDetails,
+  workEventTiming,
+  type ConversionWorkTiming,
+} from '../reports/work-timing';
 export async function terminalFailure(
   tx: Tx,
   input: {
@@ -12,6 +17,8 @@ export async function terminalFailure(
     candidateAttemptId?: string;
     code: ExecutionFailure;
     now: Date;
+    work?: ConversionWorkTiming;
+    validationFence?: number;
   },
 ) {
   await costLock(tx);
@@ -67,7 +74,14 @@ export async function terminalFailure(
       generation: op.generation,
       cancellationEpoch: op.cancellationEpoch,
       observedAt: now.toISOString(),
-      details: { failureId: receipt.id, jobId: job.id },
+      ...workEventTiming(input.work),
+      details: {
+        ...workEventDetails(input.work),
+        failureId: receipt.id,
+        jobId: job.id,
+        validationFence: input.validationFence,
+        outcome: 'FAILED',
+      },
     },
     { status: 'FAILED', stage: op.stage, failureId: receipt.id },
     true,

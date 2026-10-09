@@ -6,6 +6,7 @@ import type { validateCandidateEpub } from './epub-validator';
 import type { CanonicalBookV2 } from '../../../pdf-conversion/contracts/generated/ava-book-2';
 import { stagePublicationArtifact } from './stage-publication-artifact';
 import { persistValidation } from './persist-validation';
+import type { ConversionWorkTiming } from '../reports/work-timing';
 export async function retainValidation(
   prisma: PrismaService,
   c: Awaited<ReturnType<typeof loadPublicationCandidate>>,
@@ -15,6 +16,7 @@ export async function retainValidation(
   finalContentId: string,
   validatorFingerprint: string,
   validationAuthority?: ValidationAuthority,
+  finishWork?: () => ConversionWorkTiming | undefined,
 ) {
   const file = (id: string) => c.artifacts.find((a) => a.descriptorId === id)!;
   const canonical = file(c.outcome.canonical_book.id),
@@ -88,5 +90,6 @@ export async function retainValidation(
     },
     [reader, report],
     validationAuthority,
+    finishWork?.(),
   );
 }

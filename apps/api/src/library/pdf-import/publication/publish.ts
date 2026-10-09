@@ -9,6 +9,7 @@ import { requireReaderQualification } from './qualification';
 import { acceptedManifest } from './accepted-manifest';
 import { commitPublication } from './commit-publication';
 import { PdfPublicationError } from './errors';
+import { startConversionWork } from '../reports/work-timing';
 export async function publishPdfCandidate(
   prisma: PrismaService,
   validationId: string,
@@ -16,6 +17,7 @@ export async function publishPdfCandidate(
   semantic: SemanticValidator,
   credential?: WorkerCredential,
 ) {
+  const finishWork = startConversionWork();
   const v = await prisma.pdfCandidateValidation.findUniqueOrThrow({
     where: { id: validationId },
   });
@@ -70,5 +72,6 @@ export async function publishPdfCandidate(
     bytes,
     reader.required_capabilities,
     credential,
+    finishWork,
   );
 }

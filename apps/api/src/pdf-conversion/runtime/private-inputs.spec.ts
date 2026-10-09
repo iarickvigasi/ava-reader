@@ -1,8 +1,69 @@
-import { lstat, readFile } from 'node:fs/promises';
+import { lstat, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { privateInputs } from './private-inputs';
+import type { WorkerBinding } from './worker-observation';
+jest.mock('node:fs/promises', () => {
+  const actual =
+    jest.requireActual<typeof import('node:fs/promises')>('node:fs/promises');
+  return { ...actual, writeFile: jest.fn(actual.writeFile) };
+});
 
 describe('attempt-private read-only input mount', () => {
+  afterEach(() => {
+    jest
+      .mocked(writeFile)
+      .mockImplementation(
+        jest.requireActual<typeof import('node:fs/promises')>(
+          'node:fs/promises',
+        ).writeFile,
+      );
+  });
+  it('optional observation-file failure retains required source, request and live lease', async () => {
+    const actual =
+      jest.requireActual<typeof import('node:fs/promises')>('node:fs/promises');
+    jest
+      .mocked(writeFile)
+      .mockImplementation((path, ...args) =>
+        String(path).endsWith('worker-observation.json')
+          ? Promise.reject(new Error('synthetic observation write failure'))
+          : actual.writeFile(path, ...args),
+      );
+    const source = Buffer.from('synthetic'),
+      request = Buffer.from('{"mode":"prepare","page_number":1}');
+    const input = await privateInputs(
+      {
+        source,
+        jobBytes: Buffer.from('{}'),
+        auxiliaryBytes: request,
+        module: 'ava_pdf_epub.reconstruction_v2',
+        deadlineMs: 30000,
+        scratchBytes: 1024,
+        observationBinding: {
+          job_id: 'job-fixture',
+          attempt_id: 'attempt-fixture',
+          unit_id: 'unit-fixture',
+        } as WorkerBinding,
+      },
+      jest.fn(),
+      'ava-pdf-observation-test',
+    );
+    try {
+      expect(await readFile(join(input.directory, 'source.pdf'))).toEqual(
+        source,
+      );
+      expect(
+        await readFile(join(input.directory, 'reconstruction-request.json')),
+      ).toEqual(request);
+      await expect(
+        readFile(join(input.directory, 'lease.json')),
+      ).resolves.toBeDefined();
+      await expect(
+        lstat(join(input.directory, 'worker-observation.json')),
+      ).rejects.toThrow();
+    } finally {
+      await input.cleanup();
+    }
+  });
   it('updates lease control atomically without copying credentials or granting a new lease', async () => {
     const deadline = performance.now() + 30000;
     const abort = jest.fn();

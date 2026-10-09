@@ -1,5 +1,9 @@
 import type { PdfRuntimeConfig } from './runtime-config';
 import type { FaultExpectation } from './fault-acknowledgement';
+import type {
+  WorkerBinding,
+  WorkerCommandExpectation,
+} from './worker-observation';
 
 export type SandboxInput = {
   source: Buffer;
@@ -17,6 +21,8 @@ export type SandboxInput = {
   signal?: AbortSignal;
   faultContext?: FaultExpectation;
   leaseRemainingMs?: () => number;
+  observationBinding?: WorkerBinding;
+  observationCommand?: WorkerCommandExpectation;
 };
 
 export function containerArguments(

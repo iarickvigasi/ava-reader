@@ -4,6 +4,10 @@ import { dockerCommand } from './docker-command';
 import { faultAcknowledgement } from './fault-acknowledgement';
 import type { PdfRuntimeConfig } from './runtime-config';
 import { PdfRuntimeError } from './runtime-error';
+import {
+  parseWorkerObservation,
+  type WorkerObservationResult,
+} from './worker-observation';
 
 export async function startContainer(
   config: PdfRuntimeConfig,
@@ -34,6 +38,7 @@ export async function startContainer(
         remaining,
         input.onStdout,
         signal,
+        Boolean(input.observationBinding),
       )
     : await dockerCommand(
         config,
@@ -46,6 +51,7 @@ export async function startContainer(
             : 33 * 1024 ** 2,
         signal,
         input.faultContext,
+        Boolean(input.observationBinding),
       );
   const acknowledgement = faultAcknowledgement(
     result.stderr,
@@ -53,10 +59,27 @@ export async function startContainer(
   );
   if (result.exitCode === 137 || result.exitCode === 152)
     throw new PdfRuntimeError('RESOURCE_LIMIT', acknowledgement);
+  let workerObservation: WorkerObservationResult =
+    !input.observationBinding || !input.observationCommand
+      ? { status: 'UNOBSERVED', reason: 'UNAVAILABLE' }
+      : result.observationMalformed
+        ? { status: 'UNOBSERVED', reason: 'MALFORMED' }
+        : parseWorkerObservation(
+            result.observationStderr,
+            input.observationBinding,
+            input.observationCommand,
+          );
+  if (
+    workerObservation.status === 'OBSERVED' &&
+    (result.exitCode === 0) !==
+      (workerObservation.packet.outcome === 'completed')
+  )
+    workerObservation = { status: 'UNOBSERVED', reason: 'MALFORMED' };
   return {
     exitCode: result.exitCode,
     stdout: result.stdout,
     faultAcknowledged: acknowledgement !== undefined,
     faultAcknowledgement: acknowledgement,
+    ...(input.observationBinding ? { workerObservation } : {}),
   };
 }

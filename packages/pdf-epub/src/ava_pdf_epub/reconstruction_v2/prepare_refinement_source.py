@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+from ..worker_observation import phase
 from .prepare_refinement import prepare_refinement
 from .prepare_source import prepare_source
 from .protocol import ReconstructionInput
@@ -15,16 +16,17 @@ def prepare_refinement_source(
     if request.refinements:
         raise ValueError("Comparison preparation cannot consume previous refinement decisions")
     prepared = prepare_source(source, scratch, request.source_sha256, request.profile_id)
-    _, segments, state = source_segments(source, scratch, prepared, request.responses)
-    return RefinementBatch(
-        schema_version="ava-book-refinement-batch-1",
-        source_sha256=request.source_sha256,
-        tasks=prepare_refinement(
-            source,
-            scratch,
-            prepared,
-            segments,
-            state,
-            source_feature_policy=request.source_feature_policy,
-        ),
-    )
+    with phase("prepare_refinement"):
+        _, segments, state = source_segments(source, scratch, prepared, request.responses)
+        return RefinementBatch(
+            schema_version="ava-book-refinement-batch-1",
+            source_sha256=request.source_sha256,
+            tasks=prepare_refinement(
+                source,
+                scratch,
+                prepared,
+                segments,
+                state,
+                source_feature_policy=request.source_feature_policy,
+            ),
+        )

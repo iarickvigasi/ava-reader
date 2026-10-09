@@ -14,6 +14,7 @@ import {
   type AdmissionIdentity,
 } from './reports/admission';
 import { observeAdmissionSource } from './reports/source-observation';
+import { startConversionWork } from './reports/work-timing';
 
 export async function importPdf(input: {
   prisma: PrismaService;
@@ -87,6 +88,7 @@ async function performImport(
     identity,
   );
   if (prior) return prior;
+  const finishInspection = startConversionWork();
   const inspection = await inspectPdf(
     captured.file.buffer,
     identity.sourceSha256,
@@ -97,6 +99,7 @@ async function performImport(
     identity,
     captured.file.buffer.length,
     inspection,
+    finishInspection(),
   );
   const artifact = await stagePdfSource({
     ...captured,

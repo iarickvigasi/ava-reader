@@ -37,7 +37,11 @@ export async function validateRecognitionTasks(
     auxiliaryBytes.length > (responses ? 16 : 8) * 1024 ** 2
   )
     throw new PdfRuntimeError('RESOURCE_LIMIT');
-  const result = await sandbox({ ...sandboxInput(), auxiliaryBytes });
+  const result = await sandbox({
+    ...sandboxInput(),
+    auxiliaryBytes,
+    observationCommand: { command: 'validate_tasks', page_number: null },
+  });
   if (result.exitCode === 1)
     throw bindTaskRefusal(
       parseSourceRefusal(result.stdout, tasks[0].source_sha256),

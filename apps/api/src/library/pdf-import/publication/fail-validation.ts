@@ -5,10 +5,12 @@ import {
   requireValidationRun,
   type ValidationAuthority,
 } from './validation-authority';
+import type { ConversionWorkTiming } from '../reports/work-timing';
 export function failPdfValidation(
   prisma: PrismaService,
   authority: ValidationAuthority,
   contentInvalid: boolean,
+  work?: ConversionWorkTiming,
 ) {
   return jobTransaction(prisma, async (tx) => {
     const { op, job, attempt, run, now } = await requireValidationRun(
@@ -35,6 +37,8 @@ export function failPdfValidation(
         candidateAttemptId: attempt.id,
         code: contentInvalid ? 'INVALID_RESULT' : 'WORKER_CRASH',
         now,
+        work,
+        validationFence: run.fence,
       });
     return { status: 'retry_wait' as const };
   });

@@ -24,7 +24,7 @@ export async function recordPdfProviderEvent(
   await isolateReportMirror(tx, async () => {
     const call = await tx.pdfProviderCall.findUniqueOrThrow({
       where: { id: event.callId },
-      include: { grant: true },
+      include: { grant: { include: { route: true } } },
     });
     const record = await ensureOperationInvestigation(
       tx,
@@ -53,6 +53,18 @@ export async function recordPdfProviderEvent(
       details: {
         callId: call.id,
         providerEventId: event.id,
+        ...(call.grant.route
+          ? {
+              routeSelection: {
+                routeId: call.grant.route.id,
+                providerSlug: call.grant.route.providerSlug,
+                modelId: call.grant.route.modelId,
+                configurationSha256: call.grant.route.configurationSha256,
+                evidence: 'IMMUTABLE_ROUTE_SELECTION' as const,
+                observedProvider: 'UNKNOWN' as const,
+              },
+            }
+          : {}),
         ...(purpose ? { purpose } : {}),
         ...(Array.isArray(details.pageIndices)
           ? { pageIndices: details.pageIndices as number[] }

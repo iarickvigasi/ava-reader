@@ -6,6 +6,7 @@ from pydantic import Field
 
 from ..contracts.common import Digest, Record
 from ..contracts.profiles import LEGACY_PROFILE, ProfileId
+from .prepared import PreparedPage
 from .recognition_contract import RecognitionResponse, RecognitionTask
 from .refinement_contract import AnyRefinementResponse
 
@@ -30,3 +31,18 @@ class ReconstructionInput(Record):
     )
     responses: list[RecognitionResponse] = Field(max_length=25000)
     refinements: list[AnyRefinementResponse] = Field(default_factory=list, max_length=32)
+
+
+def prepared_result(prepared: PreparedPage) -> PrepareResult:
+    from ..contracts.common import document_digest
+
+    return PrepareResult(
+        schema_version="ava-prepare-result-1",
+        profile_id=prepared.profile_id,
+        source_sha256=prepared.source_sha256,
+        source_page_count=prepared.source_page_count,
+        page_number=prepared.observation.number,
+        observation_sha256=document_digest(prepared.observation),
+        native_segment_count=len(prepared.native_segments),
+        tasks=prepared.tasks,
+    )

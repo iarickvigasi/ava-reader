@@ -34,6 +34,7 @@ export async function streamReconstruction(
   const result = await deps.sandbox({
     ...input,
     auxiliaryBytes,
+    observationCommand: { command: 'reconstruct_stream', page_number: null },
     onStdout: (chunk) => transfer.write(chunk),
   });
   transfer.finish(result.exitCode);

@@ -12,6 +12,7 @@ import { validatePdfCandidate } from './validate-candidate';
 import { recordValidationFailure } from './record-validation-failure';
 import { publicationFailureKind } from './classify-error';
 import { tryPublication } from './try-publication';
+import { startConversionWork } from '../reports/work-timing';
 export async function processCandidate(
   prisma: PrismaService,
   credential: WorkerCredential,
@@ -34,6 +35,7 @@ export async function processCandidate(
   let validationId =
     reserved.kind === 'publish' ? reserved.validationId : undefined;
   if (reserved.kind === 'validate') {
+    const finishWork = startConversionWork();
     const guard = leaseGuard(
       reserved,
       performance.now() - started,
@@ -55,7 +57,12 @@ export async function processCandidate(
     } catch (error) {
       if (guard.signal.aborted || publicationFailureKind(error) === 'authority')
         return { kind: 'authority_lost' as const };
-      return recordValidationFailure(prisma, reserved.authority, error);
+      return recordValidationFailure(
+        prisma,
+        reserved.authority,
+        error,
+        finishWork(),
+      );
     } finally {
       guard.dispose();
     }
