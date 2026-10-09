@@ -39,9 +39,10 @@ def main() -> None:
             sys.stdout.buffer.write(encode_packet(receipt, 1024))
             sys.stdout.buffer.flush()
             return
-        source = root / "source.pdf"
+        # The host owns this fixed private file for the attempt. Parse the read-only
+        # input mount instead of creating another writable source copy in scratch.
+        source = Path("/input/source.pdf")
         source_bytes = snapshot(Path("/input"), "source.pdf", 52428800)
-        source.write_bytes(source_bytes)
         observe("source_bytes", source_bytes)
         del source_bytes
         if request.get("mode") == "prepare" and set(request) in (
