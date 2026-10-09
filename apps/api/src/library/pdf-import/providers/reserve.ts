@@ -9,6 +9,7 @@ import { allocateProviderBudgets } from './allocate';
 import { fenceAbandonedProviderDispatch } from './recover-dispatch';
 import { PdfProviderError } from './errors';
 import { requirePilotCall } from './pilot-authority';
+import { recordPdfProviderEvent } from '../reports/provider-event';
 export async function reservePdfProvider(
   prisma: PrismaService,
   authority: AttemptAuthority,
@@ -80,7 +81,7 @@ export async function reservePdfProvider(
       call.id,
       prepared.maximumNano,
     );
-    await tx.pdfProviderEvent.create({
+    await recordPdfProviderEvent(tx, {
       data: {
         callId: call.id,
         kind: 'RESERVED',
@@ -88,6 +89,9 @@ export async function reservePdfProvider(
         details: {
           attemptId: attempt.id,
           maximumNano: prepared.maximumNano.toString(),
+          purpose: snapshot.purpose,
+          pageIndices: snapshot.pageIndices,
+          stage: scope.attempt.job.operation.stage,
         },
       },
     });

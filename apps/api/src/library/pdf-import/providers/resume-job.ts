@@ -6,6 +6,7 @@ import {
 } from '../jobs/transaction';
 import { costLock } from './cost-lock';
 import { PdfProviderError } from './errors';
+import { recordOperationEvent } from '../reports/operation-event';
 // Operator recovery before terminal failure, never reader retry or content replacement.
 export function resumeReconciledPdfJob(
   prisma: PrismaService,
@@ -72,6 +73,19 @@ export function resumeReconciledPdfJob(
       where: { id: op.id },
       data: { status: 'QUEUED' },
     });
+    await recordOperationEvent(
+      tx,
+      op.id,
+      `provider-resume:${attempt.id}:${op.generation}`,
+      {
+        kind: 'RECOVERED',
+        stage: op.stage,
+        severity: 'INFO',
+        attemptId: attempt.id,
+        details: {},
+      },
+      { status: 'QUEUED' },
+    );
     return { operationId, status: 'QUEUED' };
   });
 }

@@ -18,6 +18,10 @@ import { UsersService } from '../../users/users.service';
 import { withUploadedFilename } from '../../shared/uploaded-filename';
 import { importPdf } from './import-pdf';
 import { PdfIntakeCapacityInterceptor } from './admission/intake-capacity.interceptor';
+import {
+  PdfInvestigationInterceptor,
+  type PdfAdmissionRequest,
+} from './admission/investigation.interceptor';
 import { PDF_IMPORT_PROFILE } from './admission/profile';
 import { ownedPdfImport } from './operations/owned-import';
 import { serializePdfImport } from './operations/import-status';
@@ -32,6 +36,7 @@ export class PdfImportController {
 
   @Post()
   @UseInterceptors(
+    PdfInvestigationInterceptor,
     PdfIntakeCapacityInterceptor,
     FileInterceptor('file', {
       limits: {
@@ -42,7 +47,7 @@ export class PdfImportController {
     }),
   )
   async create(
-    @Req() request: AuthenticatedRequest,
+    @Req() request: PdfAdmissionRequest,
     @UploadedFile() file: Express.Multer.File,
     @Headers('idempotency-key') idempotencyKey: string,
     @Body() body: { convertToEpub?: unknown; originalFilename?: unknown },
@@ -56,6 +61,7 @@ export class PdfImportController {
       file: withUploadedFilename(file, body.originalFilename),
       idempotencyKey,
       convertToEpub: body.convertToEpub,
+      admission: request.pdfAdmission,
     });
   }
 

@@ -25,6 +25,8 @@ import { HomeController } from './home/home.controller';
 import { HomeService } from './home/home.service';
 import { PdfArtifactsController } from './library/pdf-import/pdf-artifacts.controller';
 import { PdfImportController } from './library/pdf-import/pdf-import.controller';
+import { PdfInvestigationInterceptor } from './library/pdf-import/admission/investigation.interceptor';
+import { PdfConversionReportsController } from './library/pdf-import/pdf-conversion-reports.controller';
 import { PdfMetadataController } from './library/pdf-import/pdf-metadata.controller';
 import { LibraryController } from './library/library.controller';
 import { LibraryService } from './library/library.service';
@@ -46,6 +48,7 @@ import { UsersService } from './users/users.service';
     HomeController,
     LibraryController,
     PdfReviewController,
+    PdfConversionReportsController,
     PdfMetadataController,
     PdfObservationsController,
     PdfNotificationsController,
@@ -65,6 +68,7 @@ import { UsersService } from './users/users.service';
   providers: [
     AppService,
     PrismaService,
+    PdfInvestigationInterceptor,
     ClerkAuthGuard,
     ClerkAuthService,
     UsersService,

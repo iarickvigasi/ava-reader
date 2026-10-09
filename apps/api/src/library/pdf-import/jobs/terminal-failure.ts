@@ -1,6 +1,8 @@
 import type { PdfConversionJob, PdfImportOperation } from '@prisma/client';
 import type { ExecutionFailure, Tx } from './types';
 import { failureReason } from './failure-reason';
+import { costLock } from '../providers/cost-lock';
+import { recordOperationEvent } from '../reports/operation-event';
 export async function terminalFailure(
   tx: Tx,
   input: {
@@ -12,6 +14,7 @@ export async function terminalFailure(
     now: Date;
   },
 ) {
+  await costLock(tx);
   const { job, operation: op, attemptId, code, now } = input;
   const receipt = await tx.pdfJobFailure.create({
     data: {
@@ -50,5 +53,24 @@ export async function terminalFailure(
       notificationPendingAt: now,
     },
   });
+  await recordOperationEvent(
+    tx,
+    op.id,
+    `failure:${receipt.id}`,
+    {
+      kind: 'FAILED',
+      stage: op.stage,
+      severity: 'ERROR',
+      code,
+      attemptId: attemptId ?? input.candidateAttemptId,
+      attemptFence: job.attemptFence,
+      generation: op.generation,
+      cancellationEpoch: op.cancellationEpoch,
+      observedAt: now.toISOString(),
+      details: { failureId: receipt.id, jobId: job.id },
+    },
+    { status: 'FAILED', stage: op.stage, failureId: receipt.id },
+    true,
+  );
   return { status: 'FAILED' as const, failureId: receipt.id };
 }

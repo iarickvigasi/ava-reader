@@ -2,6 +2,12 @@ import type { UserRole } from '@prisma/client';
 import { recordPdfReview } from './review';
 import { reviewMembershipFixture } from './review-membership.fixture';
 
+// This suite owns reviewer membership; report persistence is covered at its
+// real boundary in reports tests and the PostgreSQL proof.
+jest.mock('../reports/operation-event', () => ({
+  recordOperationEvent: jest.fn(),
+}));
+
 const allowed: UserRole[][] = [['ADMIN'], ['ADMIN', 'DEVELOPER']];
 const denied: (UserRole[] | null)[] = [[], ['DEVELOPER'], null];
 

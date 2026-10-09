@@ -14,6 +14,8 @@ import { assertPublicationProviderClearance } from './provider-clearance';
 import { requireReaderQualification } from './qualification';
 import { assertReviewClearance } from './review-clearance';
 import { PdfPublicationError } from './errors';
+import { costLock } from '../providers/cost-lock';
+import { recordOperationEvent } from '../reports/operation-event';
 export async function commitPublication(
   prisma: PrismaService,
   validationId: string,
@@ -24,6 +26,7 @@ export async function commitPublication(
   credential?: WorkerCredential,
 ) {
   return jobTransaction(prisma, async (tx) => {
+    await costLock(tx);
     if (credential) await authenticateWorker(tx, credential);
     else if (
       process.env.NODE_ENV !== 'test' ||
@@ -91,6 +94,27 @@ export async function commitPublication(
     });
     await bindPublishedCover(tx, scope.op.bookId, accepted, v.resourceMap);
     await installPublishedFiles(tx, scope, v);
+    await recordOperationEvent(
+      tx,
+      scope.op.id,
+      `publication:${publication.id}`,
+      {
+        kind: 'PUBLISHED',
+        stage: 'COMPLETE',
+        severity: 'INFO',
+        attemptId: v.attemptId,
+        attemptFence: v.attemptFence,
+        generation: v.generation,
+        cancellationEpoch: v.cancellationEpoch,
+        details: {
+          publicationId: publication.id,
+          validationId,
+          finalContentId: v.finalContentId,
+        },
+      },
+      { status: 'READY', stage: 'COMPLETE', finalContentId: v.finalContentId },
+      true,
+    );
     return publication;
   });
 }

@@ -4,6 +4,8 @@ import { jobTransaction } from './transaction';
 import { requireAttempt } from './authority';
 import { PdfJobError } from './errors';
 import type { AttemptAuthority, JobProgress, JobStage } from './types';
+import { costLock } from '../providers/cost-lock';
+import { recordOperationEvent } from '../reports/operation-event';
 const STAGES: JobStage[] = [
   'PREFLIGHT',
   'EXTRACTION',
@@ -24,6 +26,7 @@ export function heartbeatPdfJob(
         ? { ...progress }
         : undefined;
   return jobTransaction(prisma, async (tx) => {
+    if (value) await costLock(tx);
     const { attempt, job, now, policy } = await requireAttempt(tx, credential);
     const op = attempt.job.operation;
     if (
@@ -45,6 +48,29 @@ export function heartbeatPdfJob(
     const leaseExpiresAt = new Date(
       Math.min(now.getTime() + policy.leaseMs, attempt.deadlineAt.getTime()),
     );
+    if (
+      value &&
+      (value.stage !== op.stage ||
+        (value.completed !== undefined &&
+          value.completed !== op.progressCompleted) ||
+        (value.total !== undefined && value.total !== op.progressTotal))
+    )
+      await recordOperationEvent(
+        tx,
+        op.id,
+        `progress:${attempt.id}:${value.stage}:${value.completed ?? ''}:${value.total ?? ''}`,
+        {
+          kind: value.stage !== op.stage ? 'STAGE_STARTED' : 'PROGRESS',
+          stage: value.stage,
+          severity: 'INFO',
+          attemptId: attempt.id,
+          attemptFence: attempt.fence,
+          generation: op.generation,
+          cancellationEpoch: op.cancellationEpoch,
+          details: { completed: value.completed, total: value.total },
+        },
+        { stage: value.stage },
+      );
     await tx.pdfJobAttempt.update({
       where: { id: attempt.id },
       data: {

@@ -8,6 +8,8 @@ import type { loadPublicationCandidate } from './load-candidate';
 import { jobTransaction } from '../jobs/transaction';
 import { candidateAuthority } from './candidate-authority';
 import { PdfPublicationError } from './errors';
+import { costLock } from '../providers/cost-lock';
+import { recordOperationEvent } from '../reports/operation-event';
 export async function persistValidation(
   prisma: PrismaService,
   candidate: Awaited<ReturnType<typeof loadPublicationCandidate>>,
@@ -16,6 +18,7 @@ export async function persistValidation(
   validationAuthority?: ValidationAuthority,
 ) {
   return jobTransaction(prisma, async (tx) => {
+    await costLock(tx);
     if (validationAuthority)
       await requireValidationRun(tx, validationAuthority);
     const fresh = await candidateAuthority(tx, candidate.op.id);
@@ -62,6 +65,16 @@ export async function persistValidation(
         throw new PdfPublicationError('PDF_PUBLICATION_ARTIFACT_INVALID');
     }
     const result = await tx.pdfCandidateValidation.create({ data });
+    await recordOperationEvent(tx, candidate.op.id, `validation:${result.id}`, {
+      kind: 'VALIDATION',
+      stage: 'VALIDATION',
+      severity: result.verdict === 'BLOCKED' ? 'ERROR' : 'INFO',
+      attemptId: candidate.attempt.id,
+      details: {
+        validationId: result.id,
+        findingCount: result.hardBlocks.length + result.reviewFindings.length,
+      },
+    });
     if (validationAuthority) {
       await requireValidationRun(tx, validationAuthority);
       await tx.pdfValidationRun.update({

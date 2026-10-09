@@ -602,10 +602,97 @@ model PdfImportOperation {
   validations           PdfCandidateValidation[]
   publication           PdfPublication?
   validationRun         PdfValidationRun?
+  investigation         PdfConversionInvestigation?
 
   @@unique([ownerId, idempotencyKey])
   @@index([ownerId, sourceSha256])
   @@index([status, createdAt])
+}
+
+// Content-free investigation survives operation/private-artifact cleanup.
+// Retention activation is deliberately separate from creating these records.
+model PdfConversionInvestigation {
+  id                   String                @id
+  ownerId              String?
+  requestKeyHash       String?
+  operationId          String?               @unique
+  operationKey         String?               @unique
+  bookId               String?
+  libraryItemId        String?
+  jobId                String?
+  failureId            String?
+  finalContentId       String?
+  sourceSha256         String?
+  sourceBytes          Int?
+  sourcePages          Int?
+  configSha256         String?
+  profileId            String?
+  workerFingerprint    String?
+  status               String                @default("ADMISSION")
+  stage                String                @default("ADMISSION")
+  nextSequence         Int                   @default(0)
+  activeAdmissionCount Int                   @default(0)
+  coverage             String                @default("API_LIFECYCLE")
+  evidenceGaps         String[]
+  retentionClass       String                @default("OPERATIONAL_AUDIT")
+  retentionPolicyId    String?
+  eligibleForPurgeAt   DateTime?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  operation            PdfImportOperation?   @relation(fields: [operationId], references: [id], onDelete: SetNull)
+  events               PdfConversionEvent[]
+  cost                 PdfConversionCost?
+
+  @@unique([ownerId, requestKeyHash])
+  @@index([bookId, createdAt])
+  @@index([libraryItemId, createdAt])
+  @@index([failureId])
+  @@index([status, updatedAt])
+}
+
+model PdfConversionEvent {
+  id                  String                       @id @default(cuid())
+  conversionId        String
+  sequence            Int
+  producerKey         String
+  payloadSha256       String
+  kind                String
+  stage               String
+  severity            String
+  code                String?
+  attemptId           String?
+  attemptFence        Int?
+  generation          Int?
+  cancellationEpoch   Int?
+  observedAt          DateTime?
+  durationMs          Int?
+  durationKind        String?
+  details             Json
+  createdAt           DateTime                     @default(now())
+  investigation       PdfConversionInvestigation   @relation(fields: [conversionId], references: [id], onDelete: Cascade)
+
+  @@unique([conversionId, sequence])
+  @@unique([conversionId, producerKey])
+}
+
+// Derived projection only; PdfProviderCall/Event remain the billing authority.
+model PdfConversionCost {
+  conversionId         String                      @id
+  version              Int                         @default(1)
+  currency             String                      @default("USD")
+  knownActualNano      BigInt                      @default(0)
+  reservedNano         BigInt                      @default(0)
+  uncertainNano        BigInt                      @default(0)
+  actualComplete       Boolean                     @default(false)
+  state                String                      @default("INCOMPLETE")
+  ledgerWatermark      String
+  callCount            Int
+  projection           Json
+  reconciledAt         DateTime                    @default(now())
+  retentionClass       String                      @default("BILLING_AUDIT")
+  retentionPolicyId    String?
+  eligibleForPurgeAt   DateTime?
+  investigation        PdfConversionInvestigation  @relation(fields: [conversionId], references: [id], onDelete: Restrict)
 }
 
 // A durable pin is created with the blob, before the Library acceptance transaction.

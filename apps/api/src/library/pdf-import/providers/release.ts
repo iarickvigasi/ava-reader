@@ -2,6 +2,7 @@ import type { PrismaService } from '../../../prisma/prisma.service';
 import { costTransaction } from './cost-lock';
 import { databaseNow } from '../jobs/transaction';
 import { PdfProviderError } from './errors';
+import { recordPdfProviderEvent } from '../reports/provider-event';
 export function releaseUndispatchedPdfCall(
   prisma: PrismaService,
   callId: string,
@@ -28,7 +29,7 @@ export function releaseUndispatchedPdfCall(
       where: { id: call.id },
       data: { state: 'RELEASED', settledAt: await databaseNow(tx) },
     });
-    await tx.pdfProviderEvent.create({
+    await recordPdfProviderEvent(tx, {
       data: {
         callId: call.id,
         kind: 'RELEASED_BEFORE_DISPATCH',

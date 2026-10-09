@@ -2,6 +2,10 @@ import { recoverExpiredWaits } from './recover-expired-waits';
 import type { Tx } from './types';
 
 jest.mock('./transaction', () => ({ lockLibraryItem: jest.fn() }));
+jest.mock('../providers/cost-lock', () => ({ costLock: jest.fn() }));
+jest.mock('../reports/operation-event', () => ({
+  recordOperationEvent: jest.fn(),
+}));
 const partial = (value: Record<string, unknown>): unknown =>
   expect.objectContaining(value);
 const now = new Date('2026-10-06T16:33:00Z');

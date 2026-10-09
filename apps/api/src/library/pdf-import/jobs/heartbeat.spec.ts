@@ -7,6 +7,11 @@ import { leaseClock } from './lease-clock';
 jest.mock('./authority');
 jest.mock('./transaction');
 jest.mock('./lease-clock');
+// This suite isolates lease/progress rules; reporting is tested at its own seams.
+jest.mock('../providers/cost-lock', () => ({ costLock: jest.fn() }));
+jest.mock('../reports/operation-event', () => ({
+  recordOperationEvent: jest.fn(),
+}));
 const authority = {
   principalId: 'principal',
   token: 'secret',

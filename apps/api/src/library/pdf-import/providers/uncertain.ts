@@ -1,6 +1,7 @@
 import type { PrismaService } from '../../../prisma/prisma.service';
 import { costTransaction } from './cost-lock';
 import type { ProviderFailureDiagnostic } from './http-failure-diagnostic';
+import { recordPdfProviderEvent } from '../reports/provider-event';
 export function markPdfProviderUncertain(
   prisma: PrismaService,
   callId: string,
@@ -23,7 +24,7 @@ export function markPdfProviderUncertain(
             : 'OUTCOME_UNKNOWN',
         },
       });
-      await tx.pdfProviderEvent.create({
+      await recordPdfProviderEvent(tx, {
         data: {
           callId: call.id,
           kind: 'OUTCOME_UNKNOWN',

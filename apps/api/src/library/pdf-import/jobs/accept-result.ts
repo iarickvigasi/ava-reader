@@ -2,6 +2,8 @@ import type { Prisma } from '@prisma/client';
 import type { WorkerResultV1 } from '../../../pdf-conversion/contracts/generated/ava-pdf-worker-result-1';
 import type { AttemptRecord, Tx } from './types';
 import { terminalFailure } from './terminal-failure';
+import { costLock } from '../providers/cost-lock';
+import { recordOperationEvent } from '../reports/operation-event';
 export async function acceptResult(
   tx: Tx,
   attempt: AttemptRecord,
@@ -10,6 +12,7 @@ export async function acceptResult(
   artifactMap: Record<string, string>,
   now: Date,
 ) {
+  await costLock(tx);
   await tx.pdfJobAttempt.update({
     where: { id: attempt.id },
     data: {
@@ -41,6 +44,22 @@ export async function acceptResult(
     where: { id: attempt.job.operationId },
     data: { status: 'WAITING', stage: 'VALIDATION' },
   });
+  await recordOperationEvent(
+    tx,
+    attempt.job.operationId,
+    `candidate:${attempt.id}:${resultSha256}`,
+    {
+      kind: 'VALIDATION',
+      stage: 'VALIDATION',
+      severity: 'INFO',
+      attemptId: attempt.id,
+      attemptFence: attempt.fence,
+      generation: attempt.job.operation.generation,
+      cancellationEpoch: attempt.job.operation.cancellationEpoch,
+      details: {},
+    },
+    { status: 'WAITING', stage: 'VALIDATION' },
+  );
   return {
     status: 'WAITING' as const,
     candidateId: result.outcome.candidate_id,

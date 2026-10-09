@@ -1,4 +1,5 @@
 import type { Tx } from '../jobs/types';
+import { recordPdfProviderEvent } from '../reports/provider-event';
 // A new execution cannot assume an older process failed before sending.
 export async function fenceAbandonedProviderDispatch(
   tx: Tx,
@@ -18,7 +19,7 @@ export async function fenceAbandonedProviderDispatch(
       where: { id: call.id },
       data: { state: 'UNCERTAIN', failureCode: 'OUTCOME_UNKNOWN' },
     });
-    await tx.pdfProviderEvent.create({
+    await recordPdfProviderEvent(tx, {
       data: {
         callId: call.id,
         kind: 'ABANDONED_DISPATCH',

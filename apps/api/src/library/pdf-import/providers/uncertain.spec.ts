@@ -1,5 +1,12 @@
 import type { PrismaService } from '../../../prisma/prisma.service';
 import { markPdfProviderUncertain } from './uncertain';
+// Ledger isolation stays here; real report-mirror failure has a separate seam.
+jest.mock('../reports/provider-event', () => ({
+  recordPdfProviderEvent: (
+    tx: { pdfProviderEvent: { create: (input: unknown) => unknown } },
+    input: unknown,
+  ) => tx.pdfProviderEvent.create(input),
+}));
 const mockTx = {
   pdfProviderCall: { findUniqueOrThrow: jest.fn(), update: jest.fn() },
   pdfProviderEvent: { create: jest.fn() },

@@ -10,11 +10,19 @@ import {
 } from './reconcile';
 import { releaseUndispatchedPdfCall } from './release';
 import { PdfProviderError } from './errors';
+import { reconcileConversionReport } from '../reports/reconcile';
+import { reportId } from '../reports/event-contract';
 export async function runPdfProviderAdmin(
   prisma: PrismaService,
   args: string[],
 ) {
   const [command, id, file] = args;
+  if (
+    command === 'refresh-report' &&
+    args.length === 2 &&
+    reportId.safeParse(id).success
+  )
+    return reconcileConversionReport(prisma, id);
   if (command === 'resume-reconciled' && args.length === 2)
     return resumeReconciledPdfJob(prisma, id);
   if (command === 'metrics' && args.length === 1)

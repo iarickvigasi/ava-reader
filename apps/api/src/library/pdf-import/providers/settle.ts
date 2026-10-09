@@ -4,6 +4,7 @@ import { costTransaction } from './cost-lock';
 import { parseProviderReceipt } from './receipt';
 import { PdfProviderError } from './errors';
 import { routePolicy } from './route-policy';
+import { recordPdfProviderEvent } from '../reports/provider-event';
 export async function settlePdfProvider(
   prisma: PrismaService,
   callId: string,
@@ -67,7 +68,7 @@ export async function settlePdfProvider(
         failureCode: overage ? 'PROVIDER_BOUND_EXCEEDED' : null,
       },
     });
-    await tx.pdfProviderEvent.create({
+    await recordPdfProviderEvent(tx, {
       data: {
         callId: call.id,
         kind: overage ? 'BOUND_EXCEEDED' : 'SETTLED',

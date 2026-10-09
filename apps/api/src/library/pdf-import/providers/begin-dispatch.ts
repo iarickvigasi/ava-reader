@@ -6,6 +6,7 @@ import { loadProviderGrant } from './load-grant';
 import { PdfProviderError } from './errors';
 import { requirePilotCall } from './pilot-authority';
 import { routePolicy } from './route-policy';
+import { recordPdfProviderEvent } from '../reports/provider-event';
 export function beginPdfDispatch(
   prisma: PrismaService,
   authority: AttemptAuthority,
@@ -48,7 +49,7 @@ export function beginPdfDispatch(
         dispatchAttemptId: attempt.id,
       },
     });
-    await tx.pdfProviderEvent.create({
+    await recordPdfProviderEvent(tx, {
       data: {
         callId: call.id,
         kind: 'DISPATCH_INTENT',

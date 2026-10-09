@@ -3,6 +3,8 @@ import { jobTransaction } from '../jobs/transaction';
 import { candidateAuthority } from './candidate-authority';
 import { PdfPublicationError } from './errors';
 import { assertValidationScope } from './validation-scope';
+import { costLock } from '../providers/cost-lock';
+import { recordOperationEvent } from '../reports/operation-event';
 export function recordPdfReview(
   prisma: PrismaService,
   reviewerId: string,
@@ -12,6 +14,7 @@ export function recordPdfReview(
 ) {
   const approved = [...findings].sort();
   return jobTransaction(prisma, async (tx) => {
+    await costLock(tx);
     const reviewer = await tx.user.findUnique({
       where: { id: reviewerId },
       select: { roleMemberships: { select: { role: true } } },
@@ -50,7 +53,7 @@ export function recordPdfReview(
           JSON.stringify([...validation.reviewFindings].sort()))
     )
       throw new PdfPublicationError('PDF_REVIEW_HARD_BLOCKED');
-    return tx.pdfReviewDecision.create({
+    const result = await tx.pdfReviewDecision.create({
       data: {
         validationId,
         reviewerKey: reviewerId,
@@ -60,5 +63,17 @@ export function recordPdfReview(
         policyVersion: 'ava-pdf-review-1',
       },
     });
+    await recordOperationEvent(
+      tx,
+      validation.operationId,
+      `review:${result.id}`,
+      {
+        kind: 'REVIEW_DECISION',
+        stage: 'VALIDATION',
+        severity: decision === 'REJECT' ? 'WARN' : 'INFO',
+        details: { validationId, decision, findingCount: approved.length },
+      },
+    );
+    return result;
   });
 }

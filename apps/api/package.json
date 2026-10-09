@@ -40,6 +40,7 @@
     "pdf:contracts:smoke": "node scripts/smoke-pdf-contracts.cjs",
     "pdf:worker": "node scripts/pdf-worker.cjs",
     "pdf:jobs:admin": "ts-node src/scripts/pdf-job-admin.ts",
+    "pdf:reports:proof": "ts-node --transpile-only src/scripts/pdf-reports-proof.ts",
     "pdf:reconstruction:generate": "node scripts/generate-reconstruction-contracts.cjs",
     "pdf:reconstruction:check": "node scripts/generate-reconstruction-contracts.cjs --check"
   },
