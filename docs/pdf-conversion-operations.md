@@ -79,6 +79,20 @@ changes, not reader cancellation or permission to reopen Failed. Recovery keeps 
 image/source/configuration identity. Canonical EPUB processing uses the same sandbox; configuration
 is checked before consuming an attempt. Disabled runtime does not block unrelated legacy EPUB work.
 
+## Offline reading and Search
+
+Complete offline preparation verifies the ordinary EPUB's authoritative spine/revision and every
+required chapter/resource before claiming Saved. Network-interrupted verified work is resumable;
+explicit offline-download Stop discards its partial work and is separate from conversion. Older
+unverified cached windows remain readable without claiming complete offline availability.
+Account, database, deletion and storage-loss fences apply to pending work.
+
+Local Search uses the reconciled mounted device owner when the authentication SDK is unavailable;
+this does not grant network access or change token verification. It requires one complete ordered
+content revision. An unverified legacy cache is explicitly unavailable for whole-book Search;
+legacy qualification/refresh and general requested-target revision fencing remain unfinished.
+New source checks do not establish a fresh browser/offline/account pass or phone support.
+
 ## Isolation, limits and artifacts
 
 Accepted PDF reader loads cache successful semantic-validation receipts. Each request still loads
@@ -124,6 +138,49 @@ clock agreement is assumed. GNU timeout bounds total execution. Normal exit remo
 startup reaps only marked same-UID private runtime directories after deadline plus two minutes.
 An inactive operator host still needs a deployment janitor. Production private-file cleanup remains
 disabled with no scheduler; do not equate download revocation with physical erasure.
+
+## Conversion investigation and cost reports
+
+Authenticated conversion intake requires a durable investigation reference before capacity and
+multipart admission. If journal storage is unavailable, intake is rejected without accepting the
+upload; no durable reference is promised for that unavailable journal. Refused requests need not
+create a Library entry or job. Accepted operations
+reuse that reference; the report retains its operation key when permitted cleanup removes the live
+operation. Finished content and provider accounting remain separate authorities.
+
+The API exposes these ADMIN-only, private/no-store reads under `/api`:
+
+| Route | Result |
+|---|---|
+| `GET /admin/pdf-conversion-reports/lookup` | Exact lookup by one of operationId, bookId, libraryItemId or failureId; at most 20 results with a completeness flag |
+| `GET /admin/pdf-conversion-reports/:conversionId` | Safe source/profile/status/reference snapshot and explicit evidence gaps |
+| `GET /admin/pdf-conversion-reports/:conversionId/events` | Ordered timeline, bounded limit/cursor and fixed watermark |
+| `GET /admin/pdf-conversion-reports/:conversionId/cost` | Separate persisted cost projection, bounded call details and freshness verdict |
+| `GET /admin/pdf-conversion-reports/:conversionId/export` | Bounded JSON investigation/timeline/cost page; not raw document/provider payload export |
+
+Use normal authenticated operator access. Possession of an investigation reference does not grant
+access. Fresh ADMIN membership is checked before and after the database snapshot. General events
+and these exports omit book text/images, filenames/paths, prompts, credentials and arbitrary stored
+JSON. Restricted raw diagnostic artifacts retain their own access boundary.
+
+Amounts are exact USD nanodollars, represented as decimal strings. Count each provider call once;
+its four enforcement-budget allocations are not four charges. Distinguish settled charges, held
+reservations/dispatch, uncertain exposure and missing historical evidence. A stale or incompatible
+projection cannot claim trustworthy final amounts. Infrastructure cost remains explicitly unmeasured.
+The canonical provider ledger is authoritative; a report mirror is a derived view.
+
+A trusted server operator can refresh a derived report without dispatch, settlement, route activation,
+job restart or content changes. Supply `DATABASE_URL` privately; scripts do not load dotenv:
+
+```sh
+pnpm --filter api exec ts-node --transpile-only src/scripts/pdf-provider-admin.ts refresh-report REFERENCE_ID
+```
+
+The reference may identify an existing investigation, including a pre-job refusal, or the retained
+operation key. This command does not reconstruct missing historical events. Worker work-duration,
+route/reuse/resource/detected-inventory observations, journal-loss visibility, and configured
+retention/backup behavior still need their separate acceptance gates. No cleanup policy or scheduler
+is activated by this reporting implementation.
 
 ## Provider accounting
 

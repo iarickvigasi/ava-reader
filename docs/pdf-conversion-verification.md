@@ -31,6 +31,43 @@ Regenerate schema/types deliberately with `pdf:contracts:generate` and
 runs isolated validation, with bounded input/time/output and no forwarded provider credentials.
 Use the worker README for installed-wheel/container smoke; exit 2 is a candidate, not Ready.
 
+## Reporting persistence and operator verification
+
+Run types/lint before the disposable reporting proof. Its runtime command uses transpilation without
+repeating typechecking. Configure `DATABASE_URL` privately and select only the dedicated loopback
+PostgreSQL database `ava_pdf_reports_test` on port 55417, with applied reviewed migrations. Set
+`AVA_PDF_REPORTS_PROOF=synthetic-only`; the command verifies the actual database/schema and refuses
+existing non-synthetic users before writing fixtures.
+
+```sh
+pnpm --filter api typecheck
+pnpm --filter api pdf:reports:proof run
+pnpm --filter api pdf:reports:proof verify-restart CONVERSION_ID
+```
+
+The proof creates guarded synthetic owned imports and provider authority, never runs PDF parsing,
+Clerk sign-in, the worker or a provider request. It tests concurrent same-key admission/refusal/retry,
+ordered deduplicated journals/conflict refusal/fixed cursors, report-sink failure inside PostgreSQL
+savepoints with authoritative receipts preserved, all four allocations, exact 1,001-call aggregation
+and all 11 bounded detail pages, fresh ADMIN revocation, retained cost after operation/timeline purge
+and blocked deleted-import replay. Run the emitted retained reference in a separate process for the
+restart check. Run only one proof at a time in this database. Synthetic fixtures deliberately
+remain for review/restart checks. Fault triggers are confined to the disposable database and removed
+in normal finally cleanup; an abrupt process kill does not guarantee that cleanup. Inspect or
+recreate only this disposable database before another run after such an interruption.
+
+Repeat the relevant real-app flows separately: normal operator authentication, refused admission,
+conversion failure/uncertain billing, validation/publication refusal, restart/late worker, lookup,
+pagination/export and denied ordinary-account access. Synthetic role fixtures do not qualify those
+journeys. Source/package checks, installed-worker execution, full required books and release/restore
+remain separate. Keep the original fixture CHECK, identifier-contract, lint and timing failures with
+all repaired/retest evidence. Never weaken database guards or raise test deadlines to obtain a pass.
+
+On constrained development hosts, schedule heavy package checks sequentially. Record hardware and
+competing-process conditions; a host swap snapshot cannot establish an AVA leak or production limit.
+A targeted timeout retest does not erase a failed full run; qualify the full candidate at unchanged
+deadlines under the stated conditions.
+
 ## Generated EPUB boundary regressions
 
 The worker tests cover exact independently authored text/order, chapter/section and cross-file
@@ -154,11 +191,17 @@ Measured canonical heading size must be compared with the reader's prose baselin
 
 ### Whole-book search and production identity
 
-The candidate searches complete fixed canonical text without provider calls. Legacy EPUB search
-follows checked chapter adjacency and refuses incomplete content. Literal Unicode matching retains
+The integrated candidate searches complete fixed canonical text without provider calls. Ordinary
+EPUB Search requires the authoritative ordered chapter manifest and one content revision across
+all windows; incomplete, mixed or unverified legacy caches report unavailable, while their cached
+reading remains available. Legacy online qualification/refresh and general target-navigation
+revision fencing remain open gates. Literal Unicode matching retains
 source offsets; results identify chapter/excerpt, and exact result navigation uses the existing Back
 session. Verify distant occurrences beyond the active chapter, larger text, result limits, no-match
 and unavailable states, keyboard dismissal, cached content, account isolation and physical phones.
+Verify complete downloaded Search after a cold offline load where the auth SDK is unavailable.
+The mounted reconciled device owner authorizes local access; network token/ownership checks remain
+unchanged. Repeat sign-out, account/DB transition and revision changes during pending corpus work.
 Open Search at desktop width, resize to phone width while it remains open, then dismiss with Escape
 and reopen with Enter. Repeat in the other direction; focus must return to the visible Search
 control. Leaving the book must not move focus back into an unrelated reader control.

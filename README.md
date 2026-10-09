@@ -248,6 +248,11 @@ Download panel offers existing available files; it does not start a new conversi
 Accepted PDF reader loads reuse bounded semantic-validation receipts while checking actual bytes,
 structural schemas and current access on every request; see the operations guide for cache limits.
 
+Conversion investigations now retain an admission-wide reference, safe ordered events and a separate
+exact provider-cost projection. ADMIN lookup/export and trusted report repair are described in the
+operations guide; the verification guide includes the guarded disposable-database proof. Worker
+measurements, real authenticated operator flows, retention and release qualification remain open.
+
 - [Product behavior and pipeline](docs/pdf-conversion.md)
 - [Build, worker configuration and operations](docs/pdf-conversion-operations.md)
 - [Verification, normal-app walkthrough and current limitations](docs/pdf-conversion-verification.md)
