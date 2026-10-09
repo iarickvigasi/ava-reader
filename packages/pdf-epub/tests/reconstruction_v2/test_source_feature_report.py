@@ -2,11 +2,10 @@
 
 import unittest
 
-from epub_v2.helpers import fixture
-
 from ava_pdf_epub.contracts.book import CanonicalBookV2
 from ava_pdf_epub.reconstruction_v2.assembly_state import AssemblyState
 from ava_pdf_epub.reconstruction_v2.source_feature_report import source_feature_coverage
+from tests.epub_v2.helpers import fixture
 
 
 class FeatureReport(unittest.TestCase):

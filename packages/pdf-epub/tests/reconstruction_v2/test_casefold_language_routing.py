@@ -9,7 +9,7 @@ from ava_pdf_epub.contracts.profiles import BILINGUAL_PROFILE
 from ava_pdf_epub.reconstruction_v2.language_evidence import ukrainian_evidence
 from ava_pdf_epub.reconstruction_v2.prepare_page import prepare_page
 from ava_pdf_epub.reconstruction_v2.reconstruct import reconstruct
-from reconstruction_v2.test_language_evidence import UK
+from tests.reconstruction_v2.test_language_evidence import UK
 
 FIXTURES = Path(__file__).parent / "fixtures"
 EXPANSIONS = "Straße ﬀ ﬁ ﬂ ﬃ ﬄ İ"

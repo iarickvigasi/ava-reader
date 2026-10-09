@@ -21,7 +21,7 @@ pnpm --filter web exec vitest run --maxWorkers=2
 pnpm --filter api build
 cd packages/pdf-epub
 uv sync --locked --extra dev --python 3.12.14
-uv run python -m unittest discover -s tests -v
+uv run python -m unittest discover -s tests -t . -v
 uv run ruff check src tests scripts
 uv run mypy src/ava_pdf_epub
 ```
@@ -30,6 +30,12 @@ Regenerate schema/types deliberately with `pdf:contracts:generate` and
 `pdf:reconstruction:generate`, then rerun their checks. The absolute semantic bridge interpreter
 runs isolated validation, with bounded input/time/output and no forwarded provider credentials.
 Use the worker README for installed-wheel/container smoke; exit 2 is a candidate, not Ready.
+
+For the full installed-worker suite, mount only the tests read-only at `/tests`, keep the image's
+installed package, and run `/worker/.venv/bin/python -I -B -m unittest discover -s /tests -t / -v`
+inside the bounded non-root, read-only, network-disabled container. The explicit parent top-level
+directory discovers the `tests` package and its cross-package fixtures. Do not mount `src` or add
+the checkout to `PYTHONPATH`; that would replace installed-package evidence with source execution.
 
 ## API readiness regression
 

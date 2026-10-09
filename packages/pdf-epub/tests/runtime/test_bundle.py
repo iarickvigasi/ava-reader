@@ -6,11 +6,10 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from contracts.legacy_helpers import legacy_fixture
-
 from ava_pdf_epub.contracts.legacy_result import adapt_legacy_result
 from ava_pdf_epub.runtime.bundle import encode_bundle
 from ava_pdf_epub.runtime.faults import trigger_fault
+from tests.contracts.legacy_helpers import legacy_fixture
 
 
 class BundleTests(unittest.TestCase):

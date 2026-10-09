@@ -11,7 +11,7 @@ sync:
 check: test lint typecheck
 
 test:
-	$(PYTHON) -m unittest discover -s tests -v
+	$(PYTHON) -m unittest discover -s tests -t . -v
 
 lint:
 	$(PYTHON) -m ruff check src tests scripts

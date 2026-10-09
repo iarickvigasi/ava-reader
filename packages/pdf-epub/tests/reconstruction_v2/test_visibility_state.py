@@ -5,13 +5,13 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from admission.appearance_fixture import BODY, annotated_document
-from admission.helpers import save
 from pypdf import PdfReader
 from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject, NumberObject
 
 from ava_pdf_epub.reconstruction_v2.prepare_page import prepare_page
 from ava_pdf_epub.reconstruction_v2.visibility import display_risks
+from tests.admission.appearance_fixture import BODY, annotated_document
+from tests.admission.helpers import save
 
 
 def source_with_clip(prefix, *, state=None, suffix=b"Q"):

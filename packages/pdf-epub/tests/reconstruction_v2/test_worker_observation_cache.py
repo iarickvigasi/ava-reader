@@ -5,11 +5,10 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from admission.appearance_fixture import annotated_document
-from admission.helpers import save
-
 from ava_pdf_epub.annotation_view import annotation_view
 from ava_pdf_epub.reconstruction_v2.page_checkpoints import PageCheckpoints
+from tests.admission.appearance_fixture import annotated_document
+from tests.admission.helpers import save
 
 from .test_ocr_font_faces import checkpoint
 from .test_pdf_links import observation

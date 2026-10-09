@@ -6,11 +6,10 @@ import unittest
 import zipfile
 from pathlib import Path
 
-from epub_v2.helpers import fixture
-
 from ava_pdf_epub.contracts.book import CanonicalBookV2
 from ava_pdf_epub.epub_v2.export import export_epub
 from ava_pdf_epub.reconstruction_v2.apply_refinement import apply_refinement
+from tests.epub_v2.helpers import fixture
 
 from .source_feature_answers import decisions
 from .source_feature_fixtures import case

@@ -136,12 +136,11 @@ class MixedFontRuns(unittest.TestCase):
         self.assertEqual(1, sum(s.link is not None for s in canonical.spans))
 
     def test_generated_epub_round_trip_keeps_plain_resets_and_link_range(self):
-        from epub_v2.helpers import fixture
-
         from ava_pdf_epub.contracts.book import CanonicalBookV2
         from ava_pdf_epub.epub_v2.export import export_epub
         from ava_pdf_epub.epub_v2.portable import portable_epub
         from ava_pdf_epub.reconstruction_v2.assemble_addresses import assemble_addresses
+        from tests.epub_v2.helpers import fixture
 
         got, _ = self.qualify()
         book, assets, _ = fixture()

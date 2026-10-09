@@ -4,8 +4,6 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from admission.appearance_fixture import BODY, multiline_highlight, passive_document
-from admission.helpers import save
 from pypdf.generic import ArrayObject, NameObject, NumberObject
 
 from ava_pdf_epub.contracts.styles import Style
@@ -16,6 +14,8 @@ from ava_pdf_epub.reconstruction_v2.annotation_spans import (
 from ava_pdf_epub.reconstruction_v2.native_page import native_page
 from ava_pdf_epub.reconstruction_v2.prepare_page import prepare_page
 from ava_pdf_epub.reconstruction_v2.segments import ObservedSpan
+from tests.admission.appearance_fixture import BODY, multiline_highlight, passive_document
+from tests.admission.helpers import save
 
 
 class NativeAnnotationSpans(unittest.TestCase):

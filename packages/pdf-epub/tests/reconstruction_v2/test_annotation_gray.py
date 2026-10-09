@@ -4,15 +4,15 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from admission.appearance_fixture import BODY, passive_document
-from admission.helpers import save
-from admission.scan_fixture import scan_first_page
 from pypdf.generic import ArrayObject, FloatObject, NameObject
 
 from ava_pdf_epub.epub_v2.portable import portable_epub
 from ava_pdf_epub.reconstruction_v2.prepare_page import prepare_page
 from ava_pdf_epub.reconstruction_v2.recognition_contract import RecognitionResponse
 from ava_pdf_epub.reconstruction_v2.reconstruct import reconstruct
+from tests.admission.appearance_fixture import BODY, passive_document
+from tests.admission.helpers import save
+from tests.admission.scan_fixture import scan_first_page
 
 from .response_fixtures import wire_segment
 

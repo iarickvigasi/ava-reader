@@ -157,7 +157,7 @@ class CompoundWrapTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             source = root / "source.pdf"
-            with patch("reconstruction_v2.test_native_literal.BODY", printed):
+            with patch("tests.reconstruction_v2.test_native_literal.BODY", printed):
                 source_pdf(source, "quote")
             pages = prepare_source(source, root, hashlib.sha256(source.read_bytes()).hexdigest())
             _, segments, state = source_segments(source, root, pages, [])

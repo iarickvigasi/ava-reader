@@ -91,7 +91,7 @@ class PreflightTests(unittest.TestCase):
             )
 
     def test_annotation_appearance_cannot_hide_oversized_image(self):
-        from admission.appearance_fixture import annotated_document
+        from tests.admission.appearance_fixture import annotated_document
 
         document = annotated_document()
         appearance = document.pages[0]["/Annots"][0].get_object()["/AP"]["/N"]

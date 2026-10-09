@@ -323,7 +323,7 @@ This is not a hostile multi-tenant service boundary. SQLite on NFS/distributed r
 ## Verification
 
 ```sh
-.venv/bin/python -m unittest discover -s tests -v
+.venv/bin/python -m unittest discover -s tests -t . -v
 .venv/bin/ruff check src tests scripts
 .venv/bin/mypy src/ava_pdf_epub
 ```

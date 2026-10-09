@@ -6,15 +6,15 @@ import unittest
 import zipfile
 from pathlib import Path
 
-from admission.appearance_fixture import BODY, EDITORIAL, annotated_document, passive_document
-from admission.helpers import save
-from admission.scan_fixture import scan_first_page
 from PIL import Image
 
 from ava_pdf_epub.reconstruction_v2.accept_response import accept_response
 from ava_pdf_epub.reconstruction_v2.prepare_page import prepare_page
 from ava_pdf_epub.reconstruction_v2.recognition_contract import RecognitionResponse
 from ava_pdf_epub.reconstruction_v2.reconstruct import reconstruct
+from tests.admission.appearance_fixture import BODY, EDITORIAL, annotated_document, passive_document
+from tests.admission.helpers import save
+from tests.admission.scan_fixture import scan_first_page
 
 from .response_fixtures import wire_segment
 
