@@ -3,13 +3,18 @@ import type {
   TextValue,
   InternalTarget,
   NoteTarget,
-  Style,
 } from "@/lib/api-types/canonical-reader.generated";
 import type {
   ReaderInline,
   ReaderLinkTarget,
 } from "@/lib/api-types/reader-content";
 import { indexCanonicalBook } from "./index-book";
+import { inlineIntervals } from "./inline-sweep";
+import { inlineViewRuns, type InlineViewGroup } from "./inline-view-runs";
+import {
+  inlineViewPresentation,
+  type InlineParent,
+} from "./inline-view-presentation";
 
 export function canonicalTarget(
   book: CanonicalBookV2,
@@ -34,52 +39,49 @@ export function canonicalTarget(
 export function canonicalInlines(
   book: CanonicalBookV2,
   content: TextValue,
+  parent?: InlineParent,
 ): ReaderInline[] {
-  const spans = content.spans ?? [];
-  const edges = [
-    ...new Set([
-      0,
-      content.codepoint_utf16.length - 1,
-      ...spans.flatMap((s) => [s.start, s.end]),
-    ]),
-  ].sort((a, b) => a - b);
-  return edges.slice(0, -1).map((start, index) => {
-    const end = edges[index + 1];
-    const active = spans
-      .filter((s) => s.start <= start && s.end >= end)
-      .sort((a, b) => a.start - b.start || b.end - a.end);
-    const presentation = active.reduce<Style>(
-      (style, span) => {
-        const selected = span.style_id
-          ? indexCanonicalBook(book).styles.get(span.style_id)
-          : undefined;
-        return {
-          ...style,
-          ...Object.fromEntries(
-            Object.entries(selected ?? {}).filter(
-              ([, value]) => value !== null && value !== undefined,
-            ),
-          ),
-        };
-      },
-      { id: "inline" },
-    );
-    const linked = active.findLast((span) => span.link);
-    return {
-      kind: "text",
-      text: content.text.slice(
-        content.codepoint_utf16[start],
-        content.codepoint_utf16[end],
-      ),
+  const viewPresentation = inlineViewPresentation(parent);
+  const groups: InlineViewGroup[] = [];
+  for (const { start, end, presentation, linked } of inlineIntervals(
+    content,
+    indexCanonicalBook(book).styles,
+  )) {
+    const { presentation: view, key } = viewPresentation(
       presentation,
-      ...(content.language ? { language: content.language } : {}),
-      sourceOffset: content.codepoint_utf16[linked?.start ?? start],
-      spanId: linked?.id,
-      ...(linked?.link?.kind === "external"
-        ? { href: linked.link.url }
-        : linked?.link
-          ? { target: canonicalTarget(book, linked.link) }
-          : {}),
-    };
-  });
+      !!linked,
+    );
+    const text = content.text.slice(
+      content.codepoint_utf16[start],
+      content.codepoint_utf16[end],
+    );
+    const prior = groups.at(-1);
+    // Repeated horizontal inline margins are separate layout effects.
+    const coalescible = !linked && !view.block_indent_em;
+    // Only view runs without semantic callers can merge. Language is constant
+    // within TextValue; all source UTF16 positions remain in canonicalText.
+    if (parent && coalescible && prior?.coalescible && prior.key === key) {
+      prior.parts.push(text);
+      continue;
+    }
+    groups.push({
+      key,
+      coalescible,
+      parts: [text],
+      inline: {
+        kind: "text",
+        text: "",
+        presentation: { ...view },
+        ...(content.language ? { language: content.language } : {}),
+        sourceOffset: content.codepoint_utf16[linked?.start ?? start],
+        spanId: linked?.id,
+        ...(linked?.link?.kind === "external"
+          ? { href: linked.link.url }
+          : linked?.link
+            ? { target: canonicalTarget(book, linked.link) }
+            : {}),
+      },
+    });
+  }
+  return inlineViewRuns(groups);
 }

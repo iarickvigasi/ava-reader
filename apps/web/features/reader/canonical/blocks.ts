@@ -52,14 +52,22 @@ export function canonicalBlock(
         column: cell.column,
         headerAxis: cell.header_axis,
         headerIds: cell.header_ids ?? [],
-        inlines: canonicalInlines(book, cell.content),
+        inlines: canonicalInlines(book, cell.content, {
+          kind: "table-cell",
+          presentation: cell.style_id
+            ? index.styles.get(cell.style_id)
+            : undefined,
+        }),
       })),
     };
   const text = {
     ...base,
     text: block.content.text,
     canonicalText: block.content,
-    inlines: canonicalInlines(book, block.content),
+    inlines: canonicalInlines(book, block.content, {
+      kind: block.kind,
+      presentation,
+    }),
   };
   if (block.kind === "heading")
     return { ...text, kind: "heading", level: block.level };
