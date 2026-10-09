@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import type { PublishedReader } from "@/lib/api-types/published-reader";
+import { readerInitials } from "@/features/connect/reader-initials";
 
 export function ConnectReaderCard({ reader }: { reader: PublishedReader }) {
   const t = useTranslations("connect.discovery");
@@ -22,9 +23,9 @@ export function ConnectReaderCard({ reader }: { reader: PublishedReader }) {
         ) : (
           <span
             aria-hidden="true"
-            className="flex size-14 shrink-0 items-center justify-center rounded-full bg-soft-fill font-display text-2xl text-ink"
+            className="flex size-14 shrink-0 items-center justify-center rounded-full bg-soft-fill font-display text-2xl text-ink [[data-theme=dark]_&]:bg-sand"
           >
-            {name.charAt(0).toLocaleUpperCase()}
+            {readerInitials(name)}
           </span>
         )}
         <h3 className="min-w-0 wrap-break-word font-display text-2xl text-title">
