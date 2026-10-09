@@ -22,7 +22,7 @@ export function TextInput({
       </span>
       <input
         className={cn(
-          "w-full rounded-control bg-paper px-4 py-3 text-lg text-copy-strong outline-none transition focus-visible:ring-2 focus-visible:ring-line-strong focus:bg-white",
+          "w-full rounded-control bg-paper px-4 py-3 text-lg text-copy-strong outline-none transition focus-visible:ring-2 focus-visible:ring-line-strong focus:bg-paper-strong",
           inputClassName,
         )}
         value={value}

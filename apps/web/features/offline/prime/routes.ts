@@ -9,6 +9,7 @@
 export const STATIC_APP_ROUTES = [
   "/app",
   "/app/library",
+  "/app/connect",
   "/app/insights",
   "/app/explore",
 ] as const;

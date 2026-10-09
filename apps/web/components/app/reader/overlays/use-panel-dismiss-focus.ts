@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import type { ReaderPanel } from "@/components/app/core/reader-ui-context";
 import { restoreControlFocus } from "./restore-control-focus";
+import { readerPanelControl } from "@/features/reader/panel-id";
 
 export function usePanelDismissFocus(
   panel: ReaderPanel | null,
@@ -16,7 +17,7 @@ export function usePanelDismissFocus(
     opening.current = panel
       ? {
           panel,
-          element: active?.matches(`[data-reader-panel-control="${panel}"]`)
+          element: active?.matches(readerPanelControl(panel))
             ? active
             : null,
           pathname: window.location.pathname,
@@ -30,7 +31,7 @@ export function usePanelDismissFocus(
     restoreControlFocus(
       captured.element,
       captured.pathname,
-      `[data-reader-panel-control="${panel}"]`,
+      readerPanelControl(panel),
     );
   }, [onClose, panel]);
 }

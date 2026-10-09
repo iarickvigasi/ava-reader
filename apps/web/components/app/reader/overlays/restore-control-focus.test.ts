@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { restoreControlFocus } from "./restore-control-focus";
+import { readerPanelControl } from "@/features/reader/panel-id";
 
 class Control {
   isConnected = true;
@@ -56,4 +57,20 @@ it("does not steal focus after leaving the book", () => {
 
 it("safely leaves focus alone when no relevant control remains", () => {
   expect(() => restoreControlFocus(null, location.pathname, selector)).not.toThrow();
+});
+
+it.each(["hidden", "removed"])("returns to More when a responsive panel opener is %s", (reason) => {
+  const origin = new Control();
+  origin.shown = reason !== "hidden";
+  origin.isConnected = reason !== "removed";
+  const more = new Control();
+  vi.stubGlobal("document", {
+    querySelectorAll: (query: string) =>
+      query.includes('[data-reader-panel-fallback~="search"]')
+        ? [origin, more]
+        : [origin],
+  });
+  restoreControlFocus(element(origin), location.pathname, readerPanelControl("search"));
+  expect(more.focus).toHaveBeenCalledOnce();
+  expect(origin.focus).not.toHaveBeenCalled();
 });

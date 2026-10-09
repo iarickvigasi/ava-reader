@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import { BookCover } from "@/components/app/shared/book-cover";
-import { ExploreIcon } from "@/components/app/shared/app-icons";
+import { ExploreIcon } from "@/components/app/core/explore-icon";
 import { ButtonLink } from "@/components/ui/button";
 
 const catalogPreview = [

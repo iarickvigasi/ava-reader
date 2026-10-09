@@ -7,5 +7,5 @@ export function readerPanelId(panel: ReaderPanel) {
 export function readerPanelControl(panel: ReaderPanel) {
   return panel === "download"
     ? "[data-reader-download-control]"
-    : `[data-reader-panel-control="${panel}"]`;
+    : `[data-reader-panel-control="${panel}"], [data-reader-panel-fallback~="${panel}"]`;
 }

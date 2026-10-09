@@ -2,8 +2,15 @@ import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { updateProfile } from './update-profile';
 
 const updateMany = jest.fn();
-const prisma = { user: { updateMany } };
+const findUnique = jest.fn();
+const prisma = { user: { updateMany, findUnique }, $transaction: jest.fn() };
 beforeEach(() => {
+  findUnique
+    .mockReset()
+    .mockResolvedValue({ introduction: '', profilePublished: false });
+  prisma.$transaction.mockImplementation(
+    (run: (tx: typeof prisma) => Promise<unknown>) => run(prisma),
+  );
   updateMany.mockReset().mockResolvedValue({ count: 1 });
 });
 

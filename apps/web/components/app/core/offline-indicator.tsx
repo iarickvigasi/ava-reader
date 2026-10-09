@@ -15,12 +15,14 @@ import { StatusPill } from "./status-pill";
 
 type OfflineIndicatorProps = {
   // Compact = short pill with a label when the status slot has room.
+  fullLabel?: boolean;
   compact?: boolean;
   iconOnly?: boolean;
   className?: string;
 };
 
 export function OfflineIndicator({
+  fullLabel = false,
   compact = false,
   iconOnly = false,
   className,
@@ -37,7 +39,8 @@ export function OfflineIndicator({
     <StatusPill
       label={t("chip")}
       ariaLabel={t("chipAria")}
-      dotClassName="bg-muted"
+      dotClassName={fullLabel ? undefined : "bg-muted"}
+      fullLabel={fullLabel}
       compact={compact}
       iconOnly={iconOnly}
       className={className}

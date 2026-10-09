@@ -29,7 +29,7 @@ Monorepo: pnpm workspaces + Turbo (lint/typecheck/test/build), Node ≥22.
 
 - **Routes (app/):** `/` landing · `/sign-in` `/sign-up` `/auth/sso-callback` · `/app` home ·
   `/app/read/[slug]` reader · `/app/library` + `/books/[slug]` + `/collections/[slug]` ·
-  `/app/explore` · `/app/insights` · `/app/admin/catalog`.
+  `/app/explore` · `/app/connect` · `/app/insights` · `/app/admin/catalog`.
 - **components/** — ui (primitives), auth, theme, brand, and app/ (reader, home, library, admin,
   core contexts, preferences, shared).
 - **Reader modes:** `components/app/reader/view/reader-mode-router.tsx` selects ordinary

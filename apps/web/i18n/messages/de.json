@@ -394,7 +394,8 @@
       "home": "Start",
       "library": "Bibliothek",
       "explore": "Entdecken",
-      "insights": "Statistiken"
+      "insights": "Statistiken",
+      "connect": "Community"
     },
     "admin": {
       "short": "Admin",
@@ -402,6 +403,7 @@
     },
     "userFallbackName": "Leser",
     "reader": {
+      "moreActions": "Weitere Aktionen",
       "contents": "Inhalt",
       "preferences": "Einstellungen",
       "aiChats": "KI-Chats",
@@ -818,5 +820,54 @@
     "pending": "Auf diesem Gerät gespeichert. Synchronisierung steht aus.",
     "saved": "Profil gespeichert.",
     "error": "Dein Profil konnte nicht gespeichert werden. Prüfe deine Angaben und versuche es erneut."
+  },
+  "connect": {
+    "eyebrow": "Community",
+    "title": "Gute Bücher bringen Menschen zusammen.",
+    "body": "Lerne Menschen kennen, die deine Neugier teilen. Entdecke, was sie lesen, tausche Ideen aus und knüpfe neue Kontakte.",
+    "comingSoon": "Demnächst",
+    "features": {
+      "people": {
+        "title": "Finde Gleichgesinnte",
+        "body": "Entdecke Menschen, die dieselben Bücher, Autoren und Ideen erkunden und ähnliche Interessen haben."
+      },
+      "share": {
+        "title": "Teile deine Lesewelt",
+        "body": "Veröffentliche Leselisten, Notizen, Erkenntnisse, Rezensionen und Lieblingszitate. Gib deinen Entdeckungen einen Platz auf deiner eigenen Seite."
+      },
+      "conversation": {
+        "title": "Bleib im Gespräch",
+        "body": "Diskutiere über das Gelesene, chatte mit anderen Leserinnen und Lesern und lass aus gemeinsamen Interessen neue Freundschaften entstehen."
+      }
+    },
+    "privacyTitle": "Deine Lesewelt, deine Entscheidung.",
+    "privacyBody": "Du wirst dein Profil öffentlich oder privat halten und wählen können, welche Teile deiner Leseaktivität für wen sichtbar sind.",
+    "discovery": {
+      "title": "Andere Leserinnen und Leser kennenlernen",
+      "emptyTitle": "Jeder Lesekreis beginnt mit einem Menschen.",
+      "emptyBody": "Leserinnen erscheinen hier, sobald sie ihre Profile veröffentlichen. Stell dich vor und hilf dieser Gemeinschaft beim Start.",
+      "currentlyReading": "Liest gerade",
+      "reader": "Leser/Leserin"
+    },
+    "profile": {
+      "title": "Stell dich vor",
+      "body": "Ein paar Worte können ein gutes Gespräch beginnen. Erzähle anderen Leserinnen und Lesern, was du gerne liest.",
+      "introduction": "Über dich · erforderlich",
+      "placeholder": "Ich liebe nachdenkliche Romane, überraschende Geschichten und Bücher, die meinen Blick auf die Welt verändern.",
+      "counter": "{count} / {limit} Zeichen",
+      "minimum": "Mindestens {minimum} Zeichen",
+      "showBook": "Mein aktuelles Buch anzeigen",
+      "visibility": "Angemeldete AVA-Leserinnen sehen deinen Namen, dein Bild, deine Vorstellung und dein aktuelles Buch, wenn du es teilen möchtest.",
+      "publish": "Mein Profil veröffentlichen",
+      "hide": "Mein Profil ausblenden",
+      "save": "Änderungen speichern",
+      "hideHint": "Du kannst dein Profil jederzeit ausblenden.",
+      "published": "Dein Profil ist veröffentlicht.",
+      "error": "Deine Änderungen konnten nicht gespeichert werden. Versuche es erneut.",
+      "preview": "Profilvorschau",
+      "currentlyReading": "Aktuelle Lektüre",
+      "reader": "Leser/Leserin",
+      "unavailable": "Verbinde dich mit deinem Konto, um dein Profil zu laden."
+    }
   }
 }

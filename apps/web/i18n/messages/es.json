@@ -394,7 +394,8 @@
       "home": "Inicio",
       "library": "Biblioteca",
       "explore": "Explorar",
-      "insights": "Estadísticas"
+      "insights": "Estadísticas",
+      "connect": "Comunidad"
     },
     "admin": {
       "short": "Admin",
@@ -402,6 +403,7 @@
     },
     "userFallbackName": "Lector",
     "reader": {
+      "moreActions": "Más acciones",
       "contents": "Contenido",
       "preferences": "Preferencias",
       "aiChats": "Chats (IA)",
@@ -818,5 +820,54 @@
     "pending": "Guardado en este dispositivo. Pendiente de sincronización.",
     "saved": "Perfil guardado.",
     "error": "No se pudo guardar tu perfil. Revisa los datos e inténtalo de nuevo."
+  },
+  "connect": {
+    "eyebrow": "Comunidad",
+    "title": "Los buenos libros nos unen.",
+    "body": "Conoce a lectoras y lectores que comparten tu curiosidad. Descubre qué están leyendo, intercambia ideas y encuentra nuevas conexiones.",
+    "comingSoon": "Próximamente",
+    "features": {
+      "people": {
+        "title": "Encuentra a tu gente",
+        "body": "Conoce a lectores que exploran los mismos libros, autores e ideas y descubre personas con intereses similares."
+      },
+      "share": {
+        "title": "Comparte tu mundo lector",
+        "body": "Publica listas de lectura, notas, reflexiones, reseñas y tus citas favoritas. Dale a tus descubrimientos un espacio en tu propia página."
+      },
+      "conversation": {
+        "title": "Continúa la conversación",
+        "body": "Habla sobre lo que has leído, charla con otros lectores y transforma los intereses compartidos en nuevas amistades."
+      }
+    },
+    "privacyTitle": "Tu vida lectora, tú decides.",
+    "privacyBody": "Podrás tener un perfil público o privado y elegir qué partes de tu actividad lectora son visibles y para quién.",
+    "discovery": {
+      "title": "Conoce a otras lectoras y otros lectores",
+      "emptyTitle": "Todo círculo de lectura empieza con alguien.",
+      "emptyBody": "Las lectoras aparecerán aquí cuando publiquen sus perfiles. Preséntate y ayuda a dar comienzo a esta comunidad.",
+      "currentlyReading": "Leyendo ahora",
+      "reader": "Lector/lectora"
+    },
+    "profile": {
+      "title": "Preséntate",
+      "body": "Unas palabras pueden iniciar una gran conversación. Cuéntales a otras lectoras y otros lectores qué te gusta leer.",
+      "introduction": "Sobre ti · obligatorio",
+      "placeholder": "Me encanta la ficción que invita a pensar, las historias inesperadas y los libros que cambian mi forma de ver el mundo.",
+      "counter": "{count} / {limit} caracteres",
+      "minimum": "Al menos {minimum} caracteres",
+      "showBook": "Mostrar el libro que estoy leyendo",
+      "visibility": "Otros lectores de AVA con sesión iniciada verán tu nombre, foto, presentación y el libro que estés leyendo si decides compartirlo.",
+      "publish": "Publicar mi perfil",
+      "hide": "Ocultar mi perfil",
+      "save": "Guardar cambios",
+      "hideHint": "Siempre puedes ocultar tu perfil.",
+      "published": "Tu perfil está publicado.",
+      "error": "No se pudieron guardar tus cambios. Inténtalo de nuevo.",
+      "preview": "Vista previa del perfil",
+      "currentlyReading": "Leyendo ahora",
+      "reader": "Lector/lectora",
+      "unavailable": "Conéctate a tu cuenta para cargar tu perfil."
+    }
   }
 }

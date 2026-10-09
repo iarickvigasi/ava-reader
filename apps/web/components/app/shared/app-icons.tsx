@@ -16,24 +16,19 @@ export function HomeIcon(props: IconProps) {
   );
 }
 
-export function ExploreIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
-      <path
-        d="m15.5 8.5-3 7-4.5 2 2-4.5 7-3Z"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
-      <circle cx="12" cy="12" r="8" strokeWidth="1.8" />
-    </svg>
-  );
-}
-
 export function SparkIcon(props: IconProps) {
   return (
     <svg viewBox="3.5 2.5 20 20" fill="none" stroke="currentColor" {...props}>
-      <path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z" strokeWidth="1.5" strokeLinejoin="round" />
-      <path d="M19 16.5 20 19l2.5 1-2.5 1L19 23l-1-2.5L15.5 19l2.5-1L19 16.5Z" strokeWidth="1.5" strokeLinejoin="round" />
+      <path
+        d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M19 16.5 20 19l2.5 1-2.5 1L19 23l-1-2.5L15.5 19l2.5-1L19 16.5Z"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -59,7 +54,11 @@ export function SunIcon(props: IconProps) {
       <path d="M5.25 12h-2.5" strokeWidth="1.8" strokeLinecap="round" />
       <path d="m18.54 5.46-1.77 1.77" strokeWidth="1.8" strokeLinecap="round" />
       <path d="m7.23 16.77-1.77 1.77" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="m18.54 18.54-1.77-1.77" strokeWidth="1.8" strokeLinecap="round" />
+      <path
+        d="m18.54 18.54-1.77-1.77"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
       <path d="m7.23 7.23-1.77-1.77" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
@@ -82,7 +81,12 @@ export function UploadIcon(props: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
       <path d="M12 15V5" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="m8 9 4-4 4 4" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="m8 9 4-4 4 4"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
       <path d="M4 19h16" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
@@ -92,7 +96,12 @@ export function ArrowRightIcon(props: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
       <path d="M5 12h13" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="m13 7 5 5-5 5" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="m13 7 5 5-5 5"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -196,7 +205,12 @@ export function ReadingTimeIcon(props: IconProps) {
 export function CheckIcon(props: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
-      <path d="m5 12.5 4.2 4.2L19 7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="m5 12.5 4.2 4.2L19 7"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -210,7 +224,7 @@ export function EditIcon(props: IconProps) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path d="m13.5 6.5 4 4" strokeWidth="1.8" strokeLinecap="round"/>
+      <path d="m13.5 6.5 4 4" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
 }
@@ -218,11 +232,16 @@ export function EditIcon(props: IconProps) {
 export function TrashIcon(props: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
-      <path d="M4 7h16" strokeWidth="1.8" strokeLinecap="round"/>
-      <path d="M9 4h6" strokeWidth="1.8" strokeLinecap="round"/>
-      <path d="M7 7v12h10V7" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M10 11v5" strokeWidth="1.8" strokeLinecap="round"/>
-      <path d="M14 11v5" strokeWidth="1.8" strokeLinecap="round"/>
+      <path d="M4 7h16" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M9 4h6" strokeWidth="1.8" strokeLinecap="round" />
+      <path
+        d="M7 7v12h10V7"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M10 11v5" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M14 11v5" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
 }
@@ -241,7 +260,12 @@ export function ReaderLayoutIcon(props: IconProps) {
 
 export function FontControlsIcon(props: IconProps) {
   return (
-    <svg viewBox="0 -3.6 19.5002 19.5002" fill="none" stroke="currentColor" {...props}>
+    <svg
+      viewBox="0 -3.6 19.5002 19.5002"
+      fill="none"
+      stroke="currentColor"
+      {...props}
+    >
       <path
         d="M18.7502 7.95015C18.7502 9.93846 17.1384 11.5503 15.1501 11.5503C13.1618 11.5503 11.5499 9.93846 11.5499 7.95015C11.5499 5.96185 13.1618 4.35001 15.1501 4.35001C17.1384 4.35001 18.7502 5.96185 18.7502 7.95015Z"
         strokeWidth="1.5"
@@ -254,7 +278,11 @@ export function FontControlsIcon(props: IconProps) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path d="M18.7502 4.3501V11.5504" strokeWidth="1.5" strokeLinecap="round" />
+      <path
+        d="M18.7502 4.3501V11.5504"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -273,7 +301,12 @@ export function ReaderNotesIcon(props: IconProps) {
 
 export function ReaderFavoritesIcon(props: IconProps) {
   return (
-    <svg viewBox="0 0 16.4954 16.5074" fill="none" stroke="currentColor" {...props}>
+    <svg
+      viewBox="0 0 16.4954 16.5074"
+      fill="none"
+      stroke="currentColor"
+      {...props}
+    >
       <path
         d="M6.77232 1.70356C7.37583 0.432149 9.11959 0.432146 9.7231 1.70356L10.7661 3.90088C11.0058 4.40576 11.469 4.7557 12.0049 4.83666L14.3372 5.18902C15.6867 5.3929 16.2256 7.11716 15.2491 8.10681L13.5614 9.81719C13.1736 10.2102 12.9967 10.7764 13.0882 11.3313L13.4866 13.7464C13.7171 15.1438 12.3064 16.2095 11.0994 15.5497L9.01333 14.4095C8.53402 14.1475 7.9614 14.1475 7.48209 14.4095L5.39603 15.5497C4.18901 16.2095 2.77828 15.1438 3.0088 13.7464L3.4072 11.3313C3.49874 10.7764 3.3218 10.2102 2.93402 9.81719L1.24637 8.10681C0.269862 7.11716 0.808709 5.3929 2.15821 5.18902L4.49049 4.83666C5.02638 4.7557 5.48964 4.40576 5.72929 3.90088L6.77232 1.70356Z"
         strokeWidth="1.5"
@@ -321,7 +354,11 @@ export function ReaderSearchIcon(props: IconProps) {
 export function ReaderListeningIcon(props: IconProps) {
   return (
     <svg viewBox="0 0 22 22" fill="none" stroke="currentColor" {...props}>
-      <path d="M3 16v-5a8 8 0 0 1 16 0v5" strokeWidth="1.7" strokeLinecap="round" />
+      <path
+        d="M3 16v-5a8 8 0 0 1 16 0v5"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
       <path
         d="M3 14h3a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z"
         strokeWidth="1.7"
@@ -442,11 +479,7 @@ export function SpeakerIcon(props: IconProps) {
         strokeWidth="1.7"
         strokeLinecap="round"
       />
-      <path
-        d="M19 6a8 8 0 0 1 0 12"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-      />
+      <path d="M19 6a8 8 0 0 1 0 12" strokeWidth="1.7" strokeLinecap="round" />
     </svg>
   );
 }

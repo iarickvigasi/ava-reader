@@ -1,5 +1,5 @@
 import { ForbiddenException } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { UsersService } from '../users.service';
 
 it('uses the AVA override instead of the refreshed Clerk name', async () => {
   const user = {

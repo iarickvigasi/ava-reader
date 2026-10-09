@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { UsersService } from '../users.service';
 
 const local = {
   id: 'local-1',
@@ -37,6 +37,10 @@ it('provisions a first-seen user from Clerk data and returns a normalized payloa
     avatarUrl: local.avatarUrl,
     roles: [],
     telegramUrl: null,
+    introduction: '',
+    profilePublished: false,
+    shareCurrentBook: false,
+    currentReadingBook: null,
   });
   const profile = {
     primaryEmail: local.primaryEmail,

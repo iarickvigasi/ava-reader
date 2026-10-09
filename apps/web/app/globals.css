@@ -115,6 +115,39 @@
   --highlight-mauve-inverse: #f4d9f7;
 }
 
+:root[data-theme="dark"] .connect-book-switch-track {
+  background: var(--paper);
+}
+
+:root[data-theme="dark"] .peer:checked ~ .connect-book-switch-track {
+  background: var(--brand-fill);
+}
+
+:root[data-theme="dark"] .connect-book-switch-thumb {
+  background: var(--soft-tone-fill);
+}
+
+:root[data-theme="dark"] .peer:checked ~ .connect-book-switch-thumb {
+  background: var(--brand-foreground);
+}
+
+:root:not([data-theme="dark"]) .connect-feature-icon {
+  background: var(--paper);
+}
+
+:root:not([data-theme="dark"]) .connect-hide-profile-button {
+  background: var(--soft-tone-fill);
+  box-shadow: var(--shadow-card);
+}
+
+:root:not([data-theme="dark"]) .connect-reader-card {
+  background: var(--soft-tone-fill);
+}
+
+:root:not([data-theme="dark"]) .connect-hide-profile-button:hover {
+  background: var(--paper);
+}
+
 @theme inline {
   --color-paper: var(--paper);
   --color-paper-strong: var(--paper-strong);
@@ -229,7 +262,9 @@
    the wave effect. Kept here next to the other reader keyframes so animation
    names are easy to grep. */
 @keyframes ava-dot-pulse {
-  0%, 80%, 100% {
+  0%,
+  80%,
+  100% {
     opacity: 0.3;
   }
   40% {

@@ -394,7 +394,8 @@
       "home": "Home",
       "library": "Library",
       "explore": "Explore",
-      "insights": "Insights"
+      "insights": "Insights",
+      "connect": "Connect"
     },
     "admin": {
       "short": "Admin",
@@ -402,6 +403,7 @@
     },
     "userFallbackName": "Reader",
     "reader": {
+      "moreActions": "More actions",
       "contents": "Contents",
       "preferences": "Preferences",
       "aiChats": "AI Chats",
@@ -818,5 +820,54 @@
     "pending": "Saved on this device. Waiting to sync.",
     "saved": "Profile saved.",
     "error": "Your profile could not be saved. Check your details and try again."
+  },
+  "connect": {
+    "eyebrow": "Connect",
+    "title": "Good books bring people together.",
+    "body": "Meet readers who share your curiosity. Discover what they’re reading, exchange ideas, and find a new connection.",
+    "comingSoon": "Coming soon",
+    "features": {
+      "people": {
+        "title": "Find your people",
+        "body": "Meet readers exploring the same books, authors, and ideas — and discover people with similar interests."
+      },
+      "share": {
+        "title": "Share your reading world",
+        "body": "Publish reading lists, notes, insights, reviews, and favourite quotes. Give your discoveries a place on your own page."
+      },
+      "conversation": {
+        "title": "Keep the conversation going",
+        "body": "Discuss what you’ve read, chat with other readers, and turn shared interests into new friendships."
+      }
+    },
+    "privacyTitle": "Your reading life, your choice.",
+    "privacyBody": "You’ll be able to keep your profile public or private and choose which parts of your reading activity are visible, and to whom.",
+    "discovery": {
+      "title": "Meet other readers",
+      "emptyTitle": "Every reading circle starts with someone.",
+      "emptyBody": "Readers will appear here as they publish their profiles. Introduce yourself and help this community begin.",
+      "currentlyReading": "Currently reading",
+      "reader": "Reader"
+    },
+    "profile": {
+      "title": "Introduce yourself",
+      "body": "A few words can be the start of a great conversation. Tell other readers what you enjoy reading.",
+      "introduction": "About you · required",
+      "placeholder": "I love thoughtful fiction, unexpected histories, and books that change how I see the world.",
+      "counter": "{count} / {limit} characters",
+      "minimum": "At least {minimum} characters",
+      "showBook": "Show the book I’m currently reading",
+      "visibility": "Other signed-in AVA readers will see your name, avatar, introduction, and your current book if you choose to share it.",
+      "publish": "Publish my profile",
+      "hide": "Hide my profile",
+      "save": "Save changes",
+      "hideHint": "You can always hide your profile.",
+      "published": "Your profile is published.",
+      "error": "Your changes could not be saved. Please try again.",
+      "preview": "Profile preview",
+      "currentlyReading": "Currently reading",
+      "reader": "Reader",
+      "unavailable": "Connect to your account to load your profile."
+    }
   }
 }

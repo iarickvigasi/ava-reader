@@ -11,7 +11,8 @@ type StatusPillProps = {
   label: string;
   ariaLabel: string;
   // Tailwind color utility for the dot, e.g. "bg-muted" or "bg-warning".
-  dotClassName: string;
+  dotClassName?: string;
+  fullLabel?: boolean;
   // Compact labels collapse to the dot when their status slot is too narrow.
   compact?: boolean;
   iconOnly?: boolean;
@@ -23,6 +24,7 @@ export function StatusPill({
   label,
   ariaLabel,
   dotClassName,
+  fullLabel = false,
   compact = false,
   iconOnly = false,
   className,
@@ -39,13 +41,19 @@ export function StatusPill({
         compact && styles.compactPill,
         iconOnly && styles.iconOnlyPill,
         "rounded-full bg-soft-fill font-semibold uppercase text-copy-strong transition hover:bg-paper-strong",
+        fullLabel && styles.fullLabel,
         className,
       )}
     >
-      <span
-        aria-hidden
-        className={cn("inline-block size-2 shrink-0 rounded-full", dotClassName)}
-      />
+      {dotClassName && (
+        <span
+          aria-hidden
+          className={cn(
+            "inline-block size-2 shrink-0 rounded-full",
+            dotClassName,
+          )}
+        />
+      )}
       <span className={styles.label}>{label}</span>
     </button>
   );

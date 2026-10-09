@@ -17,7 +17,7 @@ export function ProfileDialog({
 }) {
   const t = useTranslations("profile");
   const id = useId();
-  const editor = useProfileEditor(user);
+  const editor = useProfileEditor(user, onClose);
   return (
     <ModalShell onClose={onClose} labelledBy={id} maxWidth="md">
       <form
@@ -29,6 +29,7 @@ export function ProfileDialog({
         </h2>
         <TextInput
           label={t("name")}
+          inputClassName="bg-paper-strong focus:bg-paper-strong"
           value={editor.displayName}
           onChange={editor.setDisplayName}
           required
@@ -40,6 +41,7 @@ export function ProfileDialog({
           <div className="space-y-3">
             <TextInput
               label={t("telegram")}
+              inputClassName="bg-paper-strong focus:bg-paper-strong"
               value={editor.telegramUrl}
               onChange={editor.setTelegramUrl}
               type="url"

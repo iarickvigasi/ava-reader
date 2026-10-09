@@ -8,13 +8,15 @@ import {
   useProfileSync,
 } from "@/features/offline/buckets/me";
 
-export function useProfileEditor(user: CurrentUserPayload) {
+export function useProfileEditor(
+  user: CurrentUserPayload,
+  onClose: () => void,
+) {
   const pending = useProfileMutation();
   const flush = useProfileSync();
   const [displayName, setDisplayName] = useState(user.displayName ?? "");
   const [telegramUrl, setTelegramUrl] = useState(user.telegramUrl ?? "");
   const [error, setError] = useState(false);
-  const [saved, setSaved] = useState(false);
   const [busy, setBusy] = useState(false);
   const isDeveloper = user.roles.includes(UserRole.DEVELOPER);
   async function save(event: SubmitEvent<HTMLFormElement>) {
@@ -26,8 +28,8 @@ export function useProfileEditor(user: CurrentUserPayload) {
         displayName: displayName.trim(),
         ...(isDeveloper ? { telegramUrl: telegramUrl.trim() || null } : {}),
       });
-      setSaved(true);
       flush();
+      onClose();
     } catch {
       setError(true);
     } finally {
@@ -42,13 +44,6 @@ export function useProfileEditor(user: CurrentUserPayload) {
     isDeveloper,
     save,
     busy,
-    status:
-      error || pending?.error
-        ? "error"
-        : pending
-          ? "pending"
-          : saved
-            ? "saved"
-            : null,
+    status: error || pending?.error ? "error" : pending ? "pending" : null,
   };
 }

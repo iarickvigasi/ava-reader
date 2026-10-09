@@ -1,5 +1,6 @@
 import { vi } from "vitest";
 import type { ReaderPanel } from "@/components/app/core/reader-ui-context";
+import { readerPanelControl } from "@/features/reader/panel-id";
 
 export class Control {
   isConnected = true;
@@ -12,7 +13,7 @@ export class Control {
   matches(selector: string) {
     return (
       this.panel !== null &&
-      selector === `[data-reader-panel-control="${this.panel}"]`
+      selector === readerPanelControl(this.panel)
     );
   }
 }

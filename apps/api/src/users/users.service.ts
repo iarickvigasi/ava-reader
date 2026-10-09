@@ -1,5 +1,6 @@
-import { toUserRecord, type UserRecord } from './user-record';
-import { syncClerkProfile } from './sync-clerk-profile';
+import { readCurrentReadingBook } from './discovery/read-current-reading-book';
+import { toUserRecord, type UserRecord } from './account/user-record';
+import { syncClerkProfile } from './account/sync-clerk-profile';
 import { UserRole } from '@prisma/client';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
@@ -13,6 +14,10 @@ export type CurrentUserPayload = {
   avatarUrl: string | null;
   roles: UserRole[];
   telegramUrl: string | null;
+  introduction: string;
+  profilePublished: boolean;
+  shareCurrentBook: boolean;
+  currentReadingBook: Awaited<ReturnType<typeof readCurrentReadingBook>>;
 };
 
 const USER_PROFILE_REFRESH_INTERVAL_MS = 60 * 60 * 1000;
@@ -27,7 +32,12 @@ export class UsersService {
   async getCurrentUser(clerkUserId: string): Promise<CurrentUserPayload> {
     const user = await this.getCurrentUserRecord(clerkUserId);
 
-    return this.serializeCurrentUser(user);
+    return {
+      ...this.serializeCurrentUser(user),
+      currentReadingBook: user.shareCurrentBook
+        ? await readCurrentReadingBook(this.prisma, user.id)
+        : null,
+    };
   }
 
   async getCurrentUserRecord(clerkUserId: string): Promise<UserRecord> {
@@ -69,7 +79,9 @@ export class UsersService {
     return user;
   }
 
-  private serializeCurrentUser(user: UserRecord): CurrentUserPayload {
+  private serializeCurrentUser(
+    user: UserRecord,
+  ): Omit<CurrentUserPayload, 'currentReadingBook'> {
     return {
       id: user.id,
       clerkUserId: user.clerkUserId,
@@ -78,6 +90,9 @@ export class UsersService {
       avatarUrl: user.avatarUrl,
       roles: user.roles,
       telegramUrl: user.telegramUrl ?? null,
+      introduction: user.introduction ?? '',
+      profilePublished: user.profilePublished ?? false,
+      shareCurrentBook: user.shareCurrentBook ?? false,
     };
   }
 }

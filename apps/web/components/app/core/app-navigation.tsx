@@ -6,12 +6,7 @@ import { useTranslations } from "next-intl";
 import { AppHeaderBrand } from "@/components/brand/app-header-brand";
 import { HeaderStatusChip } from "@/components/app/core/header-status-chip";
 import { useReaderUi } from "@/components/app/core/reader-ui-context";
-import {
-  ChartIcon,
-  ExploreIcon,
-  HomeIcon,
-  ReaderLibraryIcon,
-} from "@/components/app/shared/app-icons";
+import { HomeIcon } from "@/components/app/shared/app-icons";
 import { UserMenuButton } from "@/components/auth/clerk-user-button";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { UserRole, type CurrentUserPayload } from "@/lib/api-types/user";
@@ -22,12 +17,15 @@ import { readerNavItems, readerUtilityItems } from "./reader-navigation-items";
 import { ReaderNavItem } from "./reader-nav-item";
 import { ReaderMobileNavigation } from "./reader-mobile-navigation";
 import { ReaderDownloadButton } from "./reader-download-button";
+import { ConnectNavigationIcon } from "./connect-navigation-icon";
+import { LibraryNavigationIcon } from "./library-navigation-icon";
+import { ExploreIcon } from "./explore-icon";
 
 const items = [
   { href: "/app", id: "home", icon: HomeIcon },
-  { href: "/app/library", id: "library", icon: ReaderLibraryIcon },
+  { href: "/app/library", id: "library", icon: LibraryNavigationIcon },
   { href: "/app/explore", id: "explore", icon: ExploreIcon },
-  { href: "/app/insights", id: "insights", icon: ChartIcon },
+  { href: "/app/connect", id: "connect", icon: ConnectNavigationIcon },
 ] as const;
 
 type AppNavigationProps = {
