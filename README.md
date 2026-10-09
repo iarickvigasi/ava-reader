@@ -139,6 +139,15 @@ Notes:
 - API: `http://localhost:4000/api/health`
 - PostgreSQL: `postgresql://postgres:postgres@localhost:15432/ava_reader?schema=public`
 
+## Pull request validation
+
+The `Validate` workflow runs application types, lint, unit tests, builds and generated PDF contracts
+without application secrets or a database. A separate job builds the pinned PDF worker, compares
+installed package/test bytes with the checkout, requires the complete unskipped converter suite in a
+network-disabled container, and runs the authored native CLI smoke with EPUBCheck. Only those authored
+check outputs and logs are uploaded for seven days; no deployed service or provider is exercised.
+See [PDF verification](docs/pdf-conversion-verification.md#pull-request-ci) for commands and limits.
+
 ## Notes
 
 - Database schema lives in `apps/api/prisma/schema.prisma`.

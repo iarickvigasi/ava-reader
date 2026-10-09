@@ -37,6 +37,46 @@ inside the bounded non-root, read-only, network-disabled container. The explicit
 directory discovers the `tests` package and its cross-package fixtures. Do not mount `src` or add
 the checkout to `PYTHONPATH`; that would replace installed-package evidence with source execution.
 
+## Pull request CI
+
+`.github/workflows/validate.yml` runs on pull requests and manual dispatch, with a read-only GitHub
+token, pinned action commits and no application secrets. The application job installs locked pnpm/uv
+dependencies, checks both generated contract families, runs complete API/web unit suites, types and
+lint, builds both applications and exercises the compiled semantic bridge with non-editable Python.
+Its database URL is a deliberately unreachable placeholder for Prisma generation; no database,
+authentication service, provider dispatch or poller is started. The web build uses its normal
+unconfigured-auth behavior. Shared dependency/build caches are disabled.
+
+The installed job builds the stock digest-pinned worker Dockerfile, with its pinned native dependency
+snapshot and checksum-verified EPUBCheck. Dependency installation and the web build's font fetching
+require network access and fail if upstream artifacts are unavailable; this is not an offline or
+hermetic build. Subsequent
+tests and smoke run non-root with a read-only root, no network, bounded memory/CPU/PIDs and temporary
+scratch space. `scripts/ci_installed.py` compares every package/schema and test input with a checkout
+manifest before and after testing, requires installed imports and refuses undiscovered test modules,
+empty discovery, skips, expected failures and ordinary failures. The existing native smoke authors its own PDF,
+checks candidate/reuse semantics and runs EPUBCheck; it does not publish Ready content.
+
+Lightweight checks for the CI helper, from `packages/pdf-epub`:
+
+```sh
+uv run python -m unittest discover -s scripts -p test_ci_installed.py -v
+uv run ruff check src tests scripts
+uv run ruff format --check src tests scripts
+```
+
+For the exact installed commands, use the workflow rather than mounting local private inputs. Its
+seven-day artifact contains only source/test hash manifests, commit/image identities, build/test
+logs and outputs generated from authored fixtures. Neither repository `output/` nor environment
+files/user books are uploaded. A failed first run remains failed; a rerun has a separate artifact.
+
+These jobs are repository/package checks, not authenticated upload-to-Read, live OCR quality,
+durable SQL/provider accounting, full-book performance, phone/offline usability or release approval.
+Installed API-to-worker transport still needs a reusable repository harness; the native CLI smoke
+does not replace that boundary. Normal test-environment journeys, exact deployed-artifact identity,
+migration/restore/rollback and human release review remain separate gates below. Branch protection
+is an operator setting and is not changed by this workflow.
+
 ## API readiness regression
 
 The focused suite uses a controlled Prisma provider with the actual Nest/Express HTTP adapter. It
