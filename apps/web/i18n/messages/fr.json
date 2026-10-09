@@ -754,6 +754,13 @@
     },
     "privacyTitle": "Vos lectures, vos choix.",
     "privacyBody": "Vous pourrez rendre votre profil public ou privé et choisir quelles parties de votre activité sont visibles, et pour qui.",
+    "discovery": {
+      "title": "Rencontrez d’autres lecteurs",
+      "emptyTitle": "Chaque cercle de lecture commence avec quelqu’un.",
+      "emptyBody": "Les lecteurs apparaîtront ici à mesure qu’ils publieront leur profil. Présentez-vous et aidez cette communauté à prendre vie.",
+      "currentlyReading": "Lecture en cours",
+      "reader": "Lecteur"
+    },
     "profile": {
       "title": "Présentez-vous",
       "body": "Quelques mots peuvent lancer une belle conversation. Dites aux autres lectrices et lecteurs ce que vous aimez lire.",

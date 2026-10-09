@@ -1,66 +1,51 @@
 # Connect
 
-> Status: active · Updated: 2026-10-08 · Code: apps/web/components/app/connect,
-> apps/web/app/app/connect
+> Status: active · Updated: 2026-10-09 · Code: apps/web/app/app/connect,
+> apps/web/components/app/connect, apps/web/features/offline/buckets/readers,
+> apps/api/src/users/read-published-readers.ts
 
-## Summary
+## Purpose
 
-Connect introduces a reading community: meet readers, share discoveries, and discuss books.
+Connect helps signed-in AVA readers meet people with similar reading interests. Today it offers a profile editor and reader discovery. Lists, posts, notes, reviews, quotes, chat, and richer privacy controls are introduced as Coming soon, not as working features.
 
-## Current scope
+## Page and navigation
 
-- Replace Insights in desktop/mobile navigation with localized Connect at `/app/connect`.
-- Preserve `/app/insights` unchanged; Home's Daily mastery heading links there on all screens.
-- Render the introduction and a reader profile editor with a live card preview.
-- Cards describe finding readers with similar interests, sharing lists/notes/insights/reviews/quotes,
-  and discussing books/chatting/making friends. Mark these planned social features Coming soon.
-- Give the three feature-icon circles a lighter day-theme fill than their cards; keep their night fill.
-- Localize English, Spanish, French, German, Brazilian Portuguese, and Ukrainian.
-- Precache both Connect and Insights; keep the existing Insights route.
+- Desktop and mobile navigation open `/app/connect` in all six supported languages.
+- Home's Daily mastery heading opens the preserved `/app/insights` page.
+- Both routes are precached for offline navigation.
+- The introduction explains the community and shows three Coming soon cards. Their icon circles are lighter than the cards in the day theme; the night theme keeps its existing colors.
 
-## Reader profile
+## Your profile
 
-- Required introduction: 50–180 trimmed characters, three-line textarea, counter, live card preview.
-- About-you and preview labels align, with matching line heights and label-to-field spacing.
-- Use 48px vertical spacing between the About-you field, book-sharing row, and profile actions.
-- Empty previews show only avatar/name; the card grows with description or shared book content.
-- Display the optional current-book title and authors in the preview, with a middle dot
-  separator on the same flowing line;
-- Optional current-book sharing switch, off by default. Shared title follows the latest read
-  unfinished, unarchived book dynamically when reading activity changes; omit if none exists.
-  Omit the separator and author when the book has no known authors.
-- Publish my profile becomes Hide my profile; nearby small copy says You can always hide your profile.
-- Published edits offer Save changes; hiding preserves the introduction for republishing.
+- An introduction is required to publish: 50–180 trimmed Unicode characters. Show the limit and a live card preview. On mobile the input grows to show all entered text; on wider screens it stays three lines tall.
+- The preview starts with avatar and name. It grows as an introduction or shared book is added. About-you and preview labels align; the introduction field, book switch, and actions have consistent spacing.
+- Sharing the current book is optional and off by default. When enabled, show the title and known authors on one flowing line separated by a middle dot. Use the latest read, unfinished, unarchived book; update it as reading changes. Show no book when none qualifies.
+- Publish my profile changes to Hide my profile after publishing. Hiding keeps the introduction for later. A small hint says the profile can always be hidden; published edits offer Save changes.
+- On mobile, center the buttons and status copy and reserve room for the two-button state so the preview does not jump. On wider screens keep the actions left aligned and place the published confirmation beside the button.
 
-## Planned reader directory (not implemented in this phase)
+## Reader discovery
 
-- Meet other readers shows published avatar/name/introduction/current-book cards.
-- Publishing immediately adds the own card; hiding removes it. Empty state invites the first reader.
-- Own offline changes use buckets and pending sync feedback; visibility elsewhere changes after sync.
+- The visible section is called “Meet other readers.” Show each published reader's avatar,
+  name, introduction, and shared current-book title and authors. Do not mark the current
+  user's card with “You.”
+- Reader cards use the Hide my profile button's fill in each theme. On wide screens they are about 20% wider than the original three-column cards; mobile width is unchanged.
+- When no profiles are available, center the icon and invitation copy at every screen size. The English heading is “Every reading circle starts with someone.”
 
-## Data & sync
+## Privacy and offline behavior
 
-PATCH /me/profile accepts independent introduction, profilePublished, and shareCurrentBook edits.
-The existing me mutation queue merges partial edits, preserves them on refresh, and retries online.
-Missing cache fields default to an empty introduction and false flags. Persist no book title as a
-profile setting: /me derives currentReadingBook from actual reading progress when sharing is enabled;
-local progress overlays it offline. Draft text persists locally; publishing saves the introduction
-and sharing choice together. Published edits offer Save changes. Server validation requires a
-50–180-character introduction when publishing or editing a published description; hiding does not require one and preserves the draft.
-Three lines describe the textarea height; actual wrapping varies by screen and language.
-The 180-character limit counts Unicode code points consistently on client and server.
-Directory responses will expose only opted-in fields. Route shells reuse the existing SW precache.
+- `GET /readers` requires sign-in and returns only published profiles. Its response explicitly contains an internal card ID, display name, avatar URL, introduction, and optional book title and authors. Include book details only when the reader chose to share them. Never return email, Clerk ID, roles, annotations, library-item IDs, or reading timestamps.
+- Cache the server list in the signed-in user's offline readers bucket. Refresh it when Connect opens, connectivity returns, or the tab becomes visible. Keep the existing `connect:readers` cache key.
+- Overlay the current user's local profile and reading changes on that cache. Publishing adds their card and hiding removes it immediately on this device, even offline. Other readers see the change after it syncs and their list refreshes; this is not live push delivery.
+- `PATCH /me/profile` uses the existing mutation queue for introduction, published status, and book-sharing preference. Drafts survive offline reloads and retry on reconnect. The server requires a valid introduction when publishing or editing a published one; hiding preserves the draft. The book title is derived from reading progress, never stored as a profile setting.
 
 ## Acceptance criteria
 
-- [ ] Desktop and mobile Connect navigation opens `/app/connect` in all six locales.
-- [ ] Introduction describes the community and future features with theme-token styling.
-- [ ] Daily mastery headings open the preserved Insights page on desktop and mobile.
-- [x] Both routes are included in offline precaching.
-- [x] Publishing requires at least 50 trimmed characters; hiding preserves it and switches the action label.
-- [x] Profile fields and drafts survive offline reload, reconnect, and server refresh.
-- [x] Current-book title follows reading activity only when opted in; no directory is shipped.
+- [x] Connect and Insights routes remain available in the right places, including offline navigation.
+- [x] The profile editor validates, previews, publishes, hides, and saves changes as described.
+- [x] Book sharing is optional and follows reading progress locally and on the server.
+- [x] Reader discovery shows only published profiles and explicitly shared fields.
+- [x] Own changes appear immediately on this device; an empty list shows the invitation.
 
-## Open questions
+## Future decisions
 
-Future discovery ordering and granular visibility; detailed social API and moderation scope.
+Discovery ordering, search, granular visibility, moderation, and social interaction APIs remain open.

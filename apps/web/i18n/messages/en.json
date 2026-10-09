@@ -754,6 +754,13 @@
     },
     "privacyTitle": "Your reading life, your choice.",
     "privacyBody": "You’ll be able to keep your profile public or private and choose which parts of your reading activity are visible, and to whom.",
+    "discovery": {
+      "title": "Meet other readers",
+      "emptyTitle": "Every reading circle starts with someone.",
+      "emptyBody": "Readers will appear here as they publish their profiles. Introduce yourself and help this community begin.",
+      "currentlyReading": "Currently reading",
+      "reader": "Reader"
+    },
     "profile": {
       "title": "Introduce yourself",
       "body": "A few words can be the start of a great conversation. Tell other readers what you enjoy reading.",

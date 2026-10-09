@@ -1,0 +1,42 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+import { ExploreIcon } from "@/components/app/shared/app-icons";
+import { useReaderDiscovery } from "@/features/offline/buckets/readers/use-reader-discovery";
+import { ConnectReaderCard } from "./connect-reader-card";
+
+export function ConnectReaderDiscovery() {
+  const t = useTranslations("connect.discovery");
+  const readers = useReaderDiscovery();
+  return (
+    <section aria-labelledby="reader-discovery-title" className="space-y-6">
+      <h2
+        id="reader-discovery-title"
+        className="font-display text-3xl text-ink sm:text-4xl"
+      >
+        {t("title")}
+      </h2>
+      {readers === null ? (
+        <div className="h-48 animate-pulse rounded-card bg-paper" />
+      ) : readers.length ? (
+        <div className="grid gap-4 md:grid-cols-2 xl:max-w-[80%]">
+          {readers.map((reader) => (
+            <ConnectReaderCard key={reader.id} reader={reader} />
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center rounded-card bg-paper px-6 py-10 text-center sm:px-10 sm:py-14">
+          <span className="flex size-14 items-center justify-center rounded-full bg-soft-fill text-ink">
+            <ExploreIcon aria-hidden="true" className="size-7" />
+          </span>
+          <h3 className="mt-6 font-display text-2xl text-title sm:text-3xl">
+            {t("emptyTitle")}
+          </h3>
+          <p className="mt-3 max-w-xl text-lg leading-7 text-copy">
+            {t("emptyBody")}
+          </p>
+        </div>
+      )}
+    </section>
+  );
+}

@@ -754,6 +754,13 @@
     },
     "privacyTitle": "Sua vida de leitura, sua escolha.",
     "privacyBody": "Você poderá manter seu perfil público ou privado e escolher quais partes da sua atividade de leitura ficam visíveis e para quem.",
+    "discovery": {
+      "title": "Conheça outros leitores",
+      "emptyTitle": "Todo clube de leitura começa com alguém.",
+      "emptyBody": "Os leitores aparecerão aqui quando publicarem seus perfis. Apresente-se e ajude esta comunidade a começar.",
+      "currentlyReading": "Lendo agora",
+      "reader": "Leitor"
+    },
     "profile": {
       "title": "Apresente-se",
       "body": "Algumas palavras podem começar uma ótima conversa. Conte às outras leitoras e aos outros leitores o que você gosta de ler.",

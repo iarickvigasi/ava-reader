@@ -754,6 +754,13 @@
     },
     "privacyTitle": "Deine Lesewelt, deine Entscheidung.",
     "privacyBody": "Du wirst dein Profil öffentlich oder privat halten und wählen können, welche Teile deiner Leseaktivität für wen sichtbar sind.",
+    "discovery": {
+      "title": "Andere Lesende kennenlernen",
+      "emptyTitle": "Jeder Lesekreis beginnt mit einem Menschen.",
+      "emptyBody": "Lesende erscheinen hier, sobald sie ihre Profile veröffentlichen. Stell dich vor und hilf dieser Gemeinschaft beim Start.",
+      "currentlyReading": "Liest gerade",
+      "reader": "Leser:in"
+    },
     "profile": {
       "title": "Stell dich vor",
       "body": "Ein paar Worte können ein gutes Gespräch beginnen. Erzähle anderen Leserinnen und Lesern, was du gerne liest.",

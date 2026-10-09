@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import type { CurrentUserPayload } from "@/lib/api-types/user";
 import { useConnectProfile } from "@/features/connect/use-connect-profile";
+import { useMobileTextareaHeight } from "@/features/connect/use-mobile-textarea-height";
 import {
   INTRODUCTION_LIMIT,
   INTRODUCTION_MINIMUM,
@@ -13,6 +14,7 @@ import { ConnectProfilePreview } from "./connect-profile-preview";
 export function ConnectProfileForm({ user }: { user: CurrentUserPayload }) {
   const t = useTranslations("connect.profile");
   const model = useConnectProfile(user);
+  const introductionRef = useMobileTextareaHeight(model.values.introduction);
   return (
     <form
       onSubmit={model.submit}
@@ -27,6 +29,7 @@ export function ConnectProfileForm({ user }: { user: CurrentUserPayload }) {
             {t("introduction")}
           </label>
           <textarea
+            ref={introductionRef}
             id="connect-introduction"
             name="introduction"
             required
@@ -36,7 +39,7 @@ export function ConnectProfileForm({ user }: { user: CurrentUserPayload }) {
             placeholder={t("placeholder")}
             value={model.values.introduction}
             onChange={(event) => model.setIntroduction(event.target.value)}
-            className="block w-full resize-none rounded-control bg-paper px-4 py-3 text-lg leading-7 text-copy-strong outline-none transition focus-visible:ring-2 focus-visible:ring-line-strong"
+            className="block w-full resize-none overflow-hidden rounded-control bg-paper px-4 py-3 text-lg leading-7 text-copy-strong outline-none transition focus-visible:ring-2 focus-visible:ring-line-strong sm:overflow-auto"
           />
           <p
             id="connect-introduction-limit"

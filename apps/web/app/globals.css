@@ -140,6 +140,10 @@
   box-shadow: var(--shadow-card);
 }
 
+:root:not([data-theme="dark"]) .connect-reader-card {
+  background: var(--soft-tone-fill);
+}
+
 :root:not([data-theme="dark"]) .connect-hide-profile-button:hover {
   background: var(--paper);
 }

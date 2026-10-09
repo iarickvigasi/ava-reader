@@ -11,7 +11,7 @@ export function ConnectProfileActions({
   const t = useTranslations("connect.profile");
   const showSave = model.published && (model.dirty || model.status === "error");
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="flex min-h-44 flex-wrap content-start items-start justify-center gap-3 text-center sm:min-h-0 sm:items-center sm:justify-start sm:text-left">
       {(!model.published || model.dirty || model.status === "error") && (
         <Button
           type="submit"
@@ -41,7 +41,7 @@ export function ConnectProfileActions({
           className={cn(
             "text-sm",
             model.status === "error" ? "text-danger" : "text-muted",
-            showSave ? "w-full" : "min-w-0 flex-1",
+            showSave ? "w-full" : "w-full sm:min-w-0 sm:flex-1",
           )}
         >
           {t(model.status)}
