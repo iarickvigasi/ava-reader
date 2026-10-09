@@ -115,19 +115,7 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
                 <HeaderStatusChip compact />
               </div>
               <ThemeToggle />
-              <div className="flex items-center gap-2 rounded-2xl bg-soft-fill py-2 xl:px-3">
-                <div className="hidden w-24 min-w-0 text-right xl:block">
-                  <p
-                    className="truncate text-sm font-semibold text-copy-strong"
-                    title={currentUser?.displayName ?? t("userFallbackName")}
-                  >
-                    {currentUser?.displayName ?? t("userFallbackName")}
-                  </p>
-                </div>
-                <div className="flex size-8 shrink-0 items-center justify-center">
-                  <UserMenuButton currentUser={currentUser} />
-                </div>
-              </div>
+              <UserMenuButton currentUser={currentUser} showName />
             </div>
           </div>
         </div>
