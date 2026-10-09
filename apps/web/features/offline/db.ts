@@ -133,6 +133,8 @@ export type BookRow = {
   toc: unknown;
   // Ordered chapter ids; pair with bookChapters rows by [libraryItemId, chapterId].
   chapterIds: string[];
+  // Authoritative ordinary EPUB reader identity. Optional for older local copies.
+  contentRevision?: string;
   // Anything the reader needs that isn't per-chapter (book-level metadata,
   // language, primary format, etc.). Kept as `unknown` here to avoid coupling
   // the offline layer to the still-evolving ReaderPayload shape.

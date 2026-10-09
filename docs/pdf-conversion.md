@@ -168,7 +168,15 @@ does not claim that the original print was flush. Ordinary legacy EPUB presentat
 existing fallback. Illustration transport failures retain readable text and caption association,
 show an unavailable-image state and allow authenticated retry of the same immutable resource.
 Invalid ownership, length or hash still fails verification. Missing resources prevent a newly
-complete offline save; retry does not reconvert or replace the finished book. These candidate
+complete offline save; retry does not reconvert or replace the finished book. Offline completion
+requires the canonical spine, all chapter keys and required local illustration bytes for the fixed
+content identity. Ordinary EPUB downloads use additive API `chapterIds` and `contentRevision` from
+the complete stored reader package, with an atomic bounded coverage journal in the existing Dexie
+metadata table. Authored TOC entries are navigation, not proof of complete reading order. Failed
+downloads retain confirmed chapters for same-revision resume; explicit offline Stop removes the
+partial copy. Older EPUB caches retain their prepared passages, but cannot claim whole-book Saved
+without an authoritative manifest; online qualification cannot replace existing passage bytes or
+a committed revision. These candidate
 repairs require the recorded normal-app, layout and device checks before release qualification.
 
 Reader Download opens a format panel using the same owned-download path as Library. Converted

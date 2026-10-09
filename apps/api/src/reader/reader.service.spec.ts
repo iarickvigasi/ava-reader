@@ -237,6 +237,47 @@ describe('ReaderService', () => {
     ]);
   });
 
+  it('provides the complete immutable offline order even when authored TOC omits spine chapters', async () => {
+    const stored = createReaderPackage({ tocMode: 'nested' });
+    stored.toc = [stored.toc[0]];
+    findUniqueOrThrowStoredBlob.mockResolvedValue({
+      bytes: Buffer.from(JSON.stringify(stored), 'utf8'),
+    });
+    const item = createLibraryItemRecord();
+    findFirstLibraryItem.mockResolvedValue(item);
+    const first = await readerService.getReaderPayload(
+      'clerk_1',
+      'library-1',
+      'chapter-1',
+    );
+    const last = await readerService.getReaderPayload(
+      'clerk_1',
+      'library-1',
+      'chapter-4',
+    );
+    if (first.status !== 'READY' || last.status !== 'READY')
+      throw new Error('Expected READY');
+    expect(first.chapterIds).toEqual(
+      stored.chapters.map((chapter) => chapter.chapterId),
+    );
+    expect(first.chapters.map((chapter) => chapter.chapterId)).toEqual([
+      'chapter-1',
+      'chapter-2',
+    ]);
+    expect(last.chapterIds).toEqual(first.chapterIds);
+    expect(first.contentRevision).toMatch(/^[a-f0-9]{64}$/);
+    expect(last.contentRevision).toBe(first.contentRevision);
+    const replacement = createLibraryItemRecord();
+    replacement.book.files[0].blobId = 'replacement-reader-blob';
+    findFirstLibraryItem.mockResolvedValue(replacement);
+    const changed = await readerService.getReaderPayload(
+      'clerk_1',
+      'library-1',
+    );
+    if (changed.status !== 'READY') throw new Error('Expected READY');
+    expect(changed.contentRevision).not.toBe(first.contentRevision);
+  });
+
   it('keeps persisted named entities, block text and ids unchanged when decoding legacy numeric labels', async () => {
     const storedPackage = createReaderPackage({
       tocMode: 'nested',

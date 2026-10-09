@@ -11,6 +11,7 @@ import { collectTocChapterEntries } from "@/features/reader/toc";
 import { getDb } from "../../db";
 import { readProgress } from "../progress/storage";
 import { readReaderMetadata } from "./reader-metadata";
+import { readBookAvailability } from "./storage";
 
 export async function loadReaderPayloadFromCache(
   libraryItemId: string,
@@ -18,7 +19,10 @@ export async function loadReaderPayloadFromCache(
 ): Promise<ReaderStatusPayload | null> {
   const db = getDb();
 
-  const book = await db.books.get(libraryItemId);
+  const availability = await readBookAvailability(libraryItemId);
+  // Existing prepared EPUB passages remain readable without claiming a whole
+  // book download from their older TOC-only manifest.
+  const book = availability.readable ? availability.book : undefined;
   if (!book) {
     return null;
   }
@@ -85,6 +89,8 @@ export async function loadReaderPayloadFromCache(
   if (getDb() !== db) return null;
 
   return readCanonicalCache(book, {
+    chapterIds: book.chapterIds,
+    contentRevision: book.contentRevision,
     status: "READY",
     activeChapterId: activeId,
     book: metadata,

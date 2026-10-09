@@ -12,6 +12,7 @@ import { loadReaderPackage } from '../package/load-reader-package';
 import { selectChapter, selectChapterWindow } from '../package/select-chapter';
 import { createProgressSummary } from '../progress/progress-summary';
 import type { ReaderStatusPayload } from './reader-payload-types';
+import { readerOfflineManifest } from './offline-manifest';
 
 // The four reader statuses and what produces each are specified in
 // docs/specs/2-reader/2.7-reader-payload.md.
@@ -83,6 +84,7 @@ export async function buildReaderPayload(params: {
   }
 
   return {
+    ...readerOfflineManifest(readerPackage, derivedReader),
     activeChapterId: selectedChapter.chapterId,
     book,
     chapters: selectChapterWindow(readerPackage, selectedChapter.chapterId),

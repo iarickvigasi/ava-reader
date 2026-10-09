@@ -8,6 +8,7 @@ import {
   COMPLETION_CHANGE_PREFIX,
 } from "../../completion/state";
 import { DELETED_ITEM_PREFIX } from "./deleted-items";
+import { downloadCoverageKey } from "../book/download-coverage";
 
 import { removeCachedHomeItems } from "./remove-cached-home-items";
 
@@ -52,6 +53,7 @@ export async function removeCachedItemsTx(db: AvaReaderDB, ids: string[]) {
     ids.flatMap((id) => [
       `${COMPLETION_CHANGE_PREFIX}${id}`,
       `finish-date-failure:${id}`,
+      downloadCoverageKey(id),
     ]),
   );
   for (const table of [

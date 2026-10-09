@@ -1,25 +1,30 @@
 import { useEffect, useState } from "react";
 import type { BookSaveStatus } from "./bucket";
-import { hasBookContent } from "./storage";
+import { readBookAvailability } from "./storage";
 
 export function useBookCacheStatus(
   libraryItemId: string,
   ownerId: string | null | undefined,
   saveStatus: BookSaveStatus,
-): boolean | null {
+): { complete: boolean; readable: boolean } | null {
   const scope = `${ownerId}:${libraryItemId}`;
   const [cache, setCache] = useState<{
     scope: string;
-    present: boolean;
+    complete: boolean;
+    readable: boolean;
   } | null>(null);
   useEffect(() => {
     let cancelled = false;
-    void hasBookContent(libraryItemId).then((present) => {
-      if (!cancelled) setCache({ scope, present });
-    });
+    void readBookAvailability(libraryItemId)
+      .then(({ complete, readable }) => {
+        if (!cancelled) setCache({ scope, complete, readable });
+      })
+      .catch(() => {
+        if (!cancelled) setCache({ scope, complete: false, readable: false });
+      });
     return () => {
       cancelled = true;
     };
   }, [libraryItemId, scope, saveStatus]);
-  return cache?.scope === scope ? cache.present : null;
+  return cache?.scope === scope ? cache : null;
 }

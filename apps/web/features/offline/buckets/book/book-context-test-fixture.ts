@@ -32,8 +32,8 @@ vi.mock("./storage", async (original) => {
   const real = await original<typeof import("./storage")>();
   return {
     ...real,
-    hasBookContent(id: string) {
-      const pending = real.hasBookContent(id);
+    readBookAvailability(id: string) {
+      const pending = real.readBookAvailability(id);
       bookFixture.pending.push(pending);
       return pending;
     },

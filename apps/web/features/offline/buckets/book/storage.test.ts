@@ -21,6 +21,20 @@ import {
   readChapter,
   readOfflineState,
 } from "./storage";
+import { recordDownloadCoverage } from "./download-coverage";
+
+async function qualifyStoredBook(id: string) {
+  const db = getDb();
+  const book = (await db.books.get(id))!;
+  const contentRevision = "1".repeat(64);
+  await db.books.update(id, { contentRevision });
+  await recordDownloadCoverage(
+    db,
+    id,
+    `epub:${contentRevision}`,
+    book.chapterIds,
+  );
+}
 
 function seedLibraryItem(
   overrides: Partial<LibraryItemRow> & { libraryItemId: string },
@@ -228,7 +242,7 @@ describe("book bucket storage", () => {
     expect(result).toEqual(["auto-prev"]);
   });
 
-  it("hasBookContent is true only when both BookRow and the first chapter exist", async () => {
+  it("hasBookContent is true only when BookRow and every expected chapter exist", async () => {
     await applyBookContent({
       libraryItemId: "lib-1",
       toc: [],
@@ -242,6 +256,7 @@ describe("book bucket storage", () => {
         primaryFormat: "EPUB",
       },
     });
+    await qualifyStoredBook("lib-1");
     // BookRow exists but no chapters yet — partial state shouldn't count
     // as "ready offline".
     expect(await hasBookContent("lib-1")).toBe(false);
@@ -284,6 +299,7 @@ describe("book bucket storage", () => {
       index: 0,
       blocks: [],
     });
+    await qualifyStoredBook("lib-1");
     await db.libraryItems.put(
       seedLibraryItem({
         libraryItemId: "lib-1",

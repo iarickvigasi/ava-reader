@@ -12,6 +12,11 @@ import { writeUnlessDeleted } from "../library/deleted-items";
 import type { ReaderBlock, ReaderBookPayload } from "@/lib/api-types/reader";
 
 import { getDb, type LibraryItemRow } from "../../db";
+import { hasCompleteStoredContent } from "./content-completeness";
+import {
+  clearDownloadCoverage,
+  readDownloadCoverage,
+} from "./download-coverage";
 
 // Marker for the `savedAt` field when a row is in the middle of an auto-save
 // and we want to track that without committing to "saved" yet. The bucket
@@ -78,8 +83,8 @@ export async function readCachedChapterIds(
   const rows = await db.bookChapters
     .where("[libraryItemId+chapterId]")
     .between([libraryItemId, ""], [libraryItemId, "￿"])
-    .toArray();
-  return new Set(rows.map((row) => row.chapterId));
+    .primaryKeys();
+  return new Set(rows.map((key) => key[1]));
 }
 
 // Deletes the book row + every chapter row + cover blob. Clears the saved-*
@@ -90,9 +95,10 @@ export async function deleteBookContent(libraryItemId: string): Promise<void> {
   const db = getDb();
   await db.transaction(
     "rw",
-    [db.books, db.bookChapters, db.libraryItems],
+    [db.books, db.bookChapters, db.libraryItems, db.meta],
     async () => {
       await db.books.delete(libraryItemId);
+      await clearDownloadCoverage(db, libraryItemId);
       await db.bookChapters
         .where("[libraryItemId+chapterId]")
         .between([libraryItemId, ""], [libraryItemId, "￿"])
@@ -108,6 +114,30 @@ export async function deleteBookContent(libraryItemId: string): Promise<void> {
         };
         await db.libraryItems.put(next);
       }
+    },
+  );
+}
+
+// Failed downloads retain confirmed chapters for a later resume, but never
+// leave a completed-book marker or saved flags for an incomplete copy.
+export async function clearBookCompletion(
+  libraryItemId: string,
+): Promise<void> {
+  const db = getDb();
+  await writeUnlessDeleted(
+    db,
+    libraryItemId,
+    [db.books, db.libraryItems],
+    async () => {
+      await db.books.delete(libraryItemId);
+      const row = await db.libraryItems.get(libraryItemId);
+      if (row)
+        await db.libraryItems.put({
+          ...row,
+          savedOffline: false,
+          savedAutomatically: false,
+          savedAt: null,
+        });
     },
   );
 }
@@ -163,24 +193,55 @@ export async function readCoverBlob(
 
 export { findEvictableAutoSavedIds } from "./find-evictable-auto-saved-ids";
 
-// True when the book has its full content (book row + at least one chapter)
-// — what the BookContext uses to decide "missing-offline" vs "ready".
-// Stricter checks (do we have *all* chapters?) are deferred to the bucket,
-// which knows the expected count.
-export async function hasBookContent(libraryItemId: string): Promise<boolean> {
+// Availability means every expected chapter and required canonical resource
+// is actually present for this account's stored book, including older caches.
+export async function readBookAvailability(libraryItemId: string) {
   const db = getDb();
-  const book = await db.books.get(libraryItemId);
-  if (!book) {
-    return false;
-  }
-  // Verify at least the first chapter is present. A successful save writes
-  // BookRow last (after all chapters), so the presence of BookRow alone is
-  // a reliable signal — but checking one chapter row is a cheap belt.
-  if (book.chapterIds.length === 0) {
-    return true;
-  }
-  const first = await db.bookChapters.get([libraryItemId, book.chapterIds[0]]);
-  return !!first;
+  const state = await db.transaction(
+    "r",
+    [db.books, db.bookChapters, db.libraryItems, db.meta],
+    async () => {
+      const book = await db.books.get(libraryItemId);
+      const empty = { book: undefined, complete: false, readable: false };
+      if (!book) return empty;
+      const item = await db.libraryItems.get(libraryItemId);
+      if (
+        item?.pdfImport?.finalContentId &&
+        book.canonical?.readerPackage?.final_content_id !==
+          item.pdfImport.finalContentId
+      )
+        return { ...empty, book };
+      // Inspect indexed keys, not every chapter's potentially large block graph.
+      const keys = await db.bookChapters
+        .where("[libraryItemId+chapterId]")
+        .between([libraryItemId, ""], [libraryItemId, "￿"])
+        .primaryKeys();
+      const coverage = await readDownloadCoverage(db, libraryItemId);
+      const chapterIds = new Set(keys.map((key) => key[1]));
+      const complete = hasCompleteStoredContent(book, chapterIds, coverage);
+      const readable =
+        complete ||
+        Boolean(
+          !book.canonical?.readerPackage &&
+          (book.metadata as ReaderBookPayload | undefined)?.libraryItemId ===
+            libraryItemId &&
+          book.chapterIds.some((id) => chapterIds.has(id)),
+        );
+      return { book, complete, readable };
+    },
+  );
+  return db === getDb()
+    ? state
+    : { book: undefined, complete: false, readable: false };
+}
+
+export async function readCompleteBookContent(libraryItemId: string) {
+  const state = await readBookAvailability(libraryItemId);
+  return state.complete ? state.book : undefined;
+}
+
+export async function hasBookContent(libraryItemId: string): Promise<boolean> {
+  return (await readBookAvailability(libraryItemId)).complete;
 }
 
 // How the book is held offline, for the book-info "Download for offline" card:

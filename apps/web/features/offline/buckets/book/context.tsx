@@ -44,22 +44,18 @@ export function BookContextProvider({
   const online = useNetworkState();
   const saveSnapshot = useBookSaveStatus(libraryItemId);
   const { save } = useSaveBook(libraryItemId);
-  const hasCached = useBookCacheStatus(
-    libraryItemId,
-    ownerId,
-    saveSnapshot.status,
-  );
+  const cache = useBookCacheStatus(libraryItemId, ownerId, saveSnapshot.status);
   useAutoBookSave({
     libraryItemId,
     ownerId,
-    hasCached,
+    hasCached: cache?.complete ?? null,
     online,
     saveStatus: saveSnapshot.status,
     save,
   });
-  useEvictStaleAutoSaves(libraryItemId, online && hasCached === true);
+  useEvictStaleAutoSaves(libraryItemId, online && cache?.complete === true);
   const status = deriveStatus({
-    hasCached,
+    hasCached: cache?.readable ?? null,
     online,
     saveStatus: saveSnapshot.status,
   });

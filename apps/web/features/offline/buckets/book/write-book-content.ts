@@ -6,6 +6,7 @@ export type SavedBookContent = {
   libraryItemId: string;
   toc: ReaderTocNode[];
   chapterIds: string[];
+  contentRevision?: string;
   metadata: ReaderBookPayload;
 };
 
@@ -35,6 +36,7 @@ export async function applyBookContent(
         libraryItemId: content.libraryItemId,
         toc: content.toc,
         chapterIds: content.chapterIds,
+        contentRevision: content.contentRevision,
         metadata,
         canonical: content.canonical,
         fetchedAt: nowIso,

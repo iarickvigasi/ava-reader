@@ -15,7 +15,7 @@ import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { emitAppToast } from "@/components/app/core/app-toast";
-import { fetchReaderPayload } from "@/components/app/reader/data/reader-client";
+import { fetchReaderPayloadFromNetwork } from "@/components/app/reader/data/reader-payload-network";
 
 import { revalidateHome } from "../buckets/home/revalidate";
 import { revalidateLibrary } from "../buckets/library/revalidate";
@@ -65,7 +65,7 @@ export function BackgroundPrimer(): React.ReactElement | null {
         libraryItemId,
         saveKind,
         fetchChapter: (id, chapterId, signal) =>
-          fetchReaderPayload({
+          fetchReaderPayloadFromNetwork({
             getToken,
             isLoaded,
             isSignedIn,

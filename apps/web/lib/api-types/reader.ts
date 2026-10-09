@@ -83,6 +83,9 @@ export type ReaderSessionPayload = {
 export type ReaderStatusPayload =
   | {
       activeChapterId: string;
+      // Ordinary EPUB offline manifest; canonical books use readerPackage.book.spine.
+      chapterIds?: string[];
+      contentRevision?: string;
       readerPackage?: ReaderPackageV3;
       resourceUrls?: Record<string, string>;
       // Client-only availability; accepted canonical content is never changed.
