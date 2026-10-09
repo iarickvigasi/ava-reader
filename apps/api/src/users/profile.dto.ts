@@ -1,5 +1,8 @@
 import { z } from 'zod';
 
+export const INTRODUCTION_MINIMUM = 50;
+export const INTRODUCTION_LIMIT = 180;
+
 export const telegramUrlSchema = z
   .string()
   .trim()
@@ -9,7 +12,15 @@ export const telegramUrlSchema = z
 
 export const updateProfileSchema = z
   .object({
-    displayName: z.string().trim().min(1).max(100),
+    displayName: z.string().trim().min(1).max(100).optional(),
+    introduction: z
+      .string()
+      .trim()
+      .refine((value) => Array.from(value).length <= INTRODUCTION_LIMIT)
+      .optional(),
+    profilePublished: z.boolean().optional(),
+    shareCurrentBook: z.boolean().optional(),
     telegramUrl: z.union([telegramUrlSchema, z.null()]).optional(),
   })
-  .strict();
+  .strict()
+  .refine((patch) => Object.values(patch).some((value) => value !== undefined));

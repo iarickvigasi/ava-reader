@@ -11,10 +11,16 @@ export async function readProfileMutation(
 
 export async function persistProfilePatch(patch: ProfilePatch): Promise<void> {
   const db = getDb();
-  await db.meta.put({
-    key: PROFILE_KEY,
-    value: { patch, revision: crypto.randomUUID() },
-    updatedAt: new Date().toISOString(),
+  await db.transaction("rw", db.meta, async () => {
+    const pending = await readProfileMutation(db);
+    await db.meta.put({
+      key: PROFILE_KEY,
+      value: {
+        patch: { ...(pending?.error ? {} : pending?.patch), ...patch },
+        revision: crypto.randomUUID(),
+      },
+      updatedAt: new Date().toISOString(),
+    });
   });
 }
 

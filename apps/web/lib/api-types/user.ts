@@ -13,4 +13,13 @@ export type CurrentUserPayload = {
   id: string;
   roles: UserRole[];
   telegramUrl?: string | null;
+  introduction?: string;
+  profilePublished?: boolean;
+  shareCurrentBook?: boolean;
+  currentReadingBook?: {
+    libraryItemId: string;
+    title: string;
+    authors?: string[];
+    lastReadAt: string;
+  } | null;
 };

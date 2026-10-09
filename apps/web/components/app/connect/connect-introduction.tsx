@@ -45,7 +45,7 @@ export function ConnectIntroduction() {
               key={id}
               className="flex flex-col items-start rounded-card bg-paper-strong p-6 sm:p-8"
             >
-              <span className="inline-flex size-12 items-center justify-center rounded-full bg-soft-fill text-ink">
+              <span className="connect-feature-icon inline-flex size-12 items-center justify-center rounded-full bg-soft-fill text-ink">
                 <Icon aria-hidden="true" className="size-6" />
               </span>
               <h2 className="mt-6 font-display text-3xl leading-tight text-title">

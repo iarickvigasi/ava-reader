@@ -5,7 +5,8 @@
 
 ## Summary
 
-Every user can edit their AVA display name. Developers may publish a Telegram contact link.
+Every user can edit their AVA display name and reader introduction/publication settings.
+Developers may publish a Telegram contact link. Connect behaviour lives in [[11-connect]].
 
 ## Behaviour
 
@@ -27,6 +28,8 @@ Every user can edit their AVA display name. Developers may publish a Telegram co
 
 ## Data & sync
 
+PATCH /me/profile accepts partial edits, merging queued changes across name and Connect forms.
+Existing caches without social fields default to hidden with book sharing disabled.
 PATCH /me/profile edits the authenticated user's profile. The me bucket persists pending edits,
 merges them over server refreshes, retries on reconnect, and displays permanent rejection inline.
 The home bucket caches contacts; old payloads safely omit the section. Telegram itself needs network.

@@ -753,6 +753,26 @@
       }
     },
     "privacyTitle": "Your reading life, your choice.",
-    "privacyBody": "You’ll be able to keep your profile public or private and choose which parts of your reading activity are visible, and to whom."
+    "privacyBody": "You’ll be able to keep your profile public or private and choose which parts of your reading activity are visible, and to whom.",
+    "profile": {
+      "title": "Introduce yourself",
+      "body": "A few words can be the start of a great conversation. Tell other readers what you enjoy reading.",
+      "introduction": "About you · required",
+      "placeholder": "I love thoughtful fiction, unexpected histories, and books that change how I see the world.",
+      "counter": "{count} / {limit} characters",
+      "minimum": "At least {minimum} characters",
+      "showBook": "Show the book I’m currently reading",
+      "visibility": "Other signed-in AVA readers will see your name, avatar, introduction, and your current book if you choose to share it.",
+      "publish": "Publish my profile",
+      "hide": "Hide my profile",
+      "save": "Save changes",
+      "hideHint": "You can always hide your profile.",
+      "published": "Your profile is published.",
+      "error": "Your changes could not be saved. Please try again.",
+      "preview": "Profile preview",
+      "currentlyReading": "Currently reading",
+      "reader": "Reader",
+      "unavailable": "Connect to your account to load your profile."
+    }
   }
 }

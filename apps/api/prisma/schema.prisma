@@ -80,6 +80,9 @@ model User {
   displayName                String?
   avatarUrl                  String?
   displayNameOverride        String?
+  introduction               String?
+  profilePublished           Boolean                     @default(false)
+  shareCurrentBook           Boolean                     @default(false)
   telegramUrl                String?
   roleMemberships            UserRoleMembership[]
   deletedLibraryItems        DeletedLibraryItem[]

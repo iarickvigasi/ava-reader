@@ -40,10 +40,17 @@ it.each(cases.map((roles) => [roles]))(
     const updateMany = jest
       .fn()
       .mockResolvedValue({ count: roles.includes('DEVELOPER') ? 1 : 0 });
-    const save = updateProfile({ user: { updateMany } } as never, 'clerk', {
-      displayName: 'Ada',
-      telegramUrl: null,
-    });
+    const tx = { user: { updateMany, findUnique } };
+    const save = updateProfile(
+      {
+        $transaction: (run: (value: typeof tx) => unknown) => run(tx),
+      } as never,
+      'clerk',
+      {
+        displayName: 'Ada',
+        telegramUrl: null,
+      },
+    );
     if (roles.includes('DEVELOPER'))
       await expect(save).resolves.toBeUndefined();
     else await expect(save).rejects.toBeInstanceOf(ForbiddenException);

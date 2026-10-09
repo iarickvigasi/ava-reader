@@ -753,6 +753,26 @@
       }
     },
     "privacyTitle": "Tu vida lectora, tú decides.",
-    "privacyBody": "Podrás tener un perfil público o privado y elegir qué partes de tu actividad lectora son visibles y para quién."
+    "privacyBody": "Podrás tener un perfil público o privado y elegir qué partes de tu actividad lectora son visibles y para quién.",
+    "profile": {
+      "title": "Preséntate",
+      "body": "Unas palabras pueden iniciar una gran conversación. Cuéntales a otras lectoras y otros lectores qué te gusta leer.",
+      "introduction": "Sobre ti · obligatorio",
+      "placeholder": "Me encanta la ficción que invita a pensar, las historias inesperadas y los libros que cambian mi forma de ver el mundo.",
+      "counter": "{count} / {limit} caracteres",
+      "minimum": "Al menos {minimum} caracteres",
+      "showBook": "Mostrar el libro que estoy leyendo",
+      "visibility": "Otros lectores de AVA con sesión iniciada verán tu nombre, foto, presentación y el libro que estés leyendo si decides compartirlo.",
+      "publish": "Publicar mi perfil",
+      "hide": "Ocultar mi perfil",
+      "save": "Guardar cambios",
+      "hideHint": "Siempre puedes ocultar tu perfil.",
+      "published": "Tu perfil está publicado.",
+      "error": "No se pudieron guardar tus cambios. Inténtalo de nuevo.",
+      "preview": "Vista previa del perfil",
+      "currentlyReading": "Leyendo ahora",
+      "reader": "Lector",
+      "unavailable": "Conéctate a tu cuenta para cargar tu perfil."
+    }
   }
 }

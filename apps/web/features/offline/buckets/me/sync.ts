@@ -1,3 +1,4 @@
+import { settleConnectDraft } from "./connect-draft-storage";
 import { getPublicApiBaseUrl } from "@/lib/api";
 import { getDb, type AvaReaderDB } from "../../db";
 import { isOnline } from "../../net/net-state";
@@ -81,6 +82,7 @@ async function drain(db: AvaReaderDB, getToken: GetToken) {
     const user = await withDeadline(response.json());
     if (db !== getDb()) return;
     await applyCurrentUser(user);
+    await settleConnectDraft(db, pending.patch);
     await settleProfileMutation(db, pending.revision);
     void revalidateHome(getToken).catch(() => undefined);
   }
