@@ -50,6 +50,17 @@ HTTP 200 contract.
 
 ## Reporting persistence and operator verification
 
+For worker observations, preserve the original command stdout/exit when clocks, inventory,
+observation-file writes or report storage fail. Exercise the real packet separator with a full
+ordinary-stderr allowance, split chunks and duplicates; check job/source/auxiliary-request,
+command/page and fence mismatches. Verify unchanged resource/fault precedence and bounded queue
+loss during terminal/lease transitions. Source-level tests do not establish installed transport,
+durable loss completeness, actual process overhead or complete conversion/reader quality.
+
+Run the packaged OCR cases in the installed worker: a host suite that skips cases requiring
+`/usr/bin/tesseract` leaves those cases unqualified. Record process/native-hint/end-scratch scopes
+and unknown values accurately; do not convert them into container-peak or whole-book quality claims.
+
 Run types/lint before the disposable reporting proof. Its runtime command uses transpilation without
 repeating typechecking. Configure `DATABASE_URL` privately and select only the dedicated loopback
 PostgreSQL database `ava_pdf_reports_test` on port 55417, with applied reviewed migrations. Set

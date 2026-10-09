@@ -18,6 +18,27 @@ database is unavailable. Neither endpoint qualifies PDF execution, installed val
 compatibility, provider authority, reader qualification, restore or release readiness. Those remain
 separate gates below; the PRODUCT reader qualification catalog is still empty.
 
+## Worker observations
+
+The current worker can emit one optional content-free `AVA_WORKER_OBSERVATION_V1` packet per
+command. The host binds it to the exact job, attempt, source/profile/build, command/page, fences and
+auxiliary request bytes. That request digest is distinct from the initial import request identity.
+One packet, including its separator, is capped at 6,144 bytes; ordinary stderr remains capped at
+8,192 bytes and total transport at 14,336. Missing, malformed or mismatched observations stay
+unobserved and cannot replace the command's output, failure or authority result.
+
+Reported times are inclusive and may overlap; do not sum nested phases. CPU covers the process
+and reaped children, RSS is a process-lifetime maximum, and scratch is a bounded logical-file scan
+at command end. These are not container peaks. Language is a bounded native-text heuristic;
+applied profile, observed inventory, validated output and process-local reuse remain separate.
+
+Optional journal writes are bounded and freshly fenced. Pending/lost capture is explicit, but a
+final capture event can itself be lost: absence of errors does not prove a complete timeline.
+Final validator process readings and historical missing observations remain unobserved. Qualify
+installed transport, SQL contention/loss/restart and normal operator lookup before relying on these
+fields. Deploy compatible API/worker/report readers together; older strict report readers cannot
+parse the new event details. Accepted content and provider receipts remain authoritative separately.
+
 ## Build and configure
 
 Use Node 22+, the repository's pinned pnpm, Docker, PostgreSQL and the worker's locked Python
