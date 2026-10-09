@@ -1,5 +1,7 @@
 "use client";
 
+import { useToolbarOverflow } from "@/features/reader/use-toolbar-overflow";
+import { ReaderOverflowMenu } from "./reader-overflow-menu";
 import { cn } from "@/lib/cn";
 import { HeaderStatusChip } from "./header-status-chip";
 import { ReaderNavItem } from "./reader-nav-item";
@@ -11,6 +13,10 @@ export function ReaderMobileNavigation() {
   const items = readerNavItems.filter(
     (item, index) => index < 5 || item.id === "bilingualMode",
   );
+  const { navRef, measureRef, visibleIds } = useToolbarOverflow(
+    items.map((item) => item.id),
+  );
+  const hiddenItems = items.filter((item) => !visibleIds.includes(item.id));
   return (
     <header
       data-reader-mobile-navigation="header"
@@ -24,23 +30,43 @@ export function ReaderMobileNavigation() {
         paddingTop: "max(0.5rem, env(safe-area-inset-top, 0px))",
       }}
     >
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex min-h-9 items-center justify-between gap-2">
         <div className="flex shrink-0 items-center gap-2">
           <a href="/app" className="font-display text-xl leading-none text-ink">
             AVA
           </a>
-          <HeaderStatusChip compact iconOnly />
+          <HeaderStatusChip reader compact />
         </div>
-        <nav className="flex min-w-0 items-center gap-1 overflow-x-auto sm:gap-2">
-          {items.map((item) => (
-            <ReaderNavItem
-              key={item.id}
-              activePanel={activePanel}
-              compact
-              item={item}
-              onTogglePanel={togglePanel}
-            />
-          ))}
+        <nav
+          ref={navRef}
+          className="relative flex min-w-0 flex-1 items-center justify-end gap-1 sm:gap-2"
+        >
+          {items
+            .filter((item) => visibleIds.includes(item.id))
+            .map((item) => (
+              <ReaderNavItem
+                key={item.id}
+                activePanel={activePanel}
+                compact
+                item={item}
+                onTogglePanel={togglePanel}
+              />
+            ))}
+          {hiddenItems.length > 0 && <ReaderOverflowMenu items={hiddenItems} />}
+          <div
+            ref={measureRef}
+            aria-hidden="true"
+            inert
+            className="invisible absolute flex w-max gap-1 sm:gap-2"
+          >
+            {items.map((item) => (
+              <span
+                key={item.id}
+                className={isPhone ? "size-8 shrink-0" : "size-9 shrink-0"}
+              />
+            ))}
+            <span className={isPhone ? "size-8 shrink-0" : "size-9 shrink-0"} />
+          </div>
         </nav>
       </div>
     </header>

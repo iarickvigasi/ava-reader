@@ -76,7 +76,7 @@ export function ReadyReaderHeader({
         </h1>
       </Link>
       <div className={cn("hidden shrink-0", !compact && "md:flex")}>
-        <HeaderStatusChip />
+        <HeaderStatusChip reader />
       </div>
     </header>
   );

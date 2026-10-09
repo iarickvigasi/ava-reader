@@ -12,6 +12,7 @@ import { SlowConnectionIndicator } from "./slow-connection-indicator";
 import styles from "./status-chip.module.css";
 
 type HeaderStatusChipProps = {
+  reader?: boolean;
   compact?: boolean;
   iconOnly?: boolean;
   // Applies to the reserved slot, including while no chip is visible.
@@ -19,6 +20,7 @@ type HeaderStatusChipProps = {
 };
 
 export function HeaderStatusChip({
+  reader = false,
   compact = false,
   iconOnly = false,
   className,
@@ -28,7 +30,7 @@ export function HeaderStatusChip({
   let indicator = null;
 
   if (chip.kind === "offline") {
-    indicator = <OfflineIndicator {...indicatorProps} />;
+    indicator = <OfflineIndicator {...indicatorProps} fullLabel={reader} />;
   } else if (chip.kind === "slow") {
     indicator = <SlowConnectionIndicator {...indicatorProps} />;
   } else if (chip.kind === "caching" || chip.kind === "ready") {
@@ -42,6 +44,7 @@ export function HeaderStatusChip({
         styles.slot,
         compact && styles.compactSlot,
         iconOnly && styles.iconOnlySlot,
+        reader && chip.kind === "offline" && styles.readerOfflineSlot,
         className,
       )}
     >

@@ -379,6 +379,7 @@
     },
     "userFallbackName": "Lecteur",
     "reader": {
+      "moreActions": "Plus d’actions",
       "contents": "Sommaire",
       "preferences": "Préférences",
       "aiChats": "Discussions IA",

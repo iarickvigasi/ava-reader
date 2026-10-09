@@ -379,6 +379,7 @@
     },
     "userFallbackName": "Читач",
     "reader": {
+      "moreActions": "Більше дій",
       "contents": "Зміст",
       "preferences": "Налаштування",
       "aiChats": "Чати з ШІ",

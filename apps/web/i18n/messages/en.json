@@ -379,6 +379,7 @@
     },
     "userFallbackName": "Reader",
     "reader": {
+      "moreActions": "More actions",
       "contents": "Contents",
       "preferences": "Preferences",
       "aiChats": "AI Chats",

@@ -73,3 +73,15 @@
     display: none;
   }
 }
+
+.readerOfflineSlot {
+  container-type: normal;
+  inline-size: max-content;
+  flex-shrink: 0;
+}
+
+.fullLabel .label {
+  display: inline;
+  overflow: visible;
+  text-overflow: clip;
+}
