@@ -75,20 +75,22 @@ export async function fillPdfMetadata(
       fill.language = candidate.language;
     for (const field of book.metadataUserFields)
       delete fill[field as keyof typeof fill];
-    if (!Object.keys(fill).length) {
+    // requireAttempt holds the LibraryItem lock shared with metadata edits. Fill
+    // eligible fields from that current snapshot; retain the worker's old version
+    // on its source claims rather than blocking unrelated untouched fields.
+    const currentVersion = book.metadataEditVersion;
+    if (!Object.keys(fill).length || expectedVersion > currentVersion) {
       await requireAttempt(tx, authority);
-      return { applied: false, metadataEditVersion: book.metadataEditVersion };
+      return { applied: false, metadataEditVersion: currentVersion };
     }
     const updated = await tx.book.updateMany({
-      where: { id: book.id, metadataEditVersion: expectedVersion },
+      where: { id: book.id, metadataEditVersion: currentVersion },
       data: { ...fill, metadataEditVersion: { increment: 1 } },
     });
     await requireAttempt(tx, authority);
     return {
       applied: Boolean(updated.count),
-      metadataEditVersion: updated.count
-        ? expectedVersion + 1
-        : book.metadataEditVersion,
+      metadataEditVersion: updated.count ? currentVersion + 1 : currentVersion,
     };
   });
 }
