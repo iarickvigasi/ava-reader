@@ -11,6 +11,8 @@ Developers may publish a Telegram contact link. Connect behaviour lives in [[11-
 ## Behaviour
 
 - Avatar menu opens Edit profile; Manage account continues to edit Clerk account details/photos.
+- Save closes the editor immediately after local persistence. sync
+  continues in the background. Failed local saves keep the editor open with an error.
 - Name is required (1–100 trimmed characters), overrides Clerk name, and is editable by every user.
 - Only DEVELOPER users see or may update Telegram. Empty input removes the link.
 - Accept only HTTPS t.me username links; reject other hosts, invite links, paths, queries and fragments.
