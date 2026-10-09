@@ -1,16 +1,14 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import {
-  ExploreIcon,
-  ReaderShareIcon,
-  ReaderNotesIcon,
-} from "@/components/app/shared/app-icons";
+import { ExploreIcon } from "@/components/app/core/explore-icon";
+import { ConnectNavigationIcon } from "@/components/app/core/connect-navigation-icon";
+import { ConversationIcon } from "./conversation-icon";
 
 const features = [
-  { id: "people", icon: ExploreIcon },
-  { id: "share", icon: ReaderShareIcon },
-  { id: "conversation", icon: ReaderNotesIcon },
+  { id: "people", icon: ExploreIcon, iconSize: "size-5" },
+  { id: "share", icon: ConnectNavigationIcon, iconSize: "size-6" },
+  { id: "conversation", icon: ConversationIcon, iconSize: "size-6" },
 ] as const;
 
 export function ConnectIntroduction() {
@@ -22,7 +20,10 @@ export function ConnectIntroduction() {
     >
       <div className="max-w-3xl space-y-5">
         <p className="inline-flex items-center gap-3 font-ui text-xs uppercase tracking-[0.16em] text-muted">
-          <ReaderShareIcon aria-hidden="true" className="size-5 text-ink" />
+          <ConnectNavigationIcon
+            aria-hidden="true"
+            className="size-5 text-ink"
+          />
           {t("eyebrow")}
         </p>
         <h1
@@ -40,13 +41,15 @@ export function ConnectIntroduction() {
           {t("comingSoon")}
         </p>
         <div className="grid gap-4 md:grid-cols-3">
-          {features.map(({ id, icon: Icon }) => (
+          {features.map(({ id, icon: Icon, iconSize }) => (
             <article
               key={id}
               className="flex flex-col items-start rounded-card bg-paper-strong p-6 sm:p-8"
             >
               <span className="connect-feature-icon inline-flex size-12 items-center justify-center rounded-full bg-soft-fill text-ink">
-                <Icon aria-hidden="true" className="size-6" />
+                <span className="inline-flex size-6 items-center justify-center">
+                  <Icon aria-hidden="true" className={iconSize} />
+                </span>
               </span>
               <h2 className="mt-6 font-display text-3xl leading-tight text-title">
                 {t(`features.${id}.title`)}
