@@ -2,6 +2,10 @@ import type {
   ReaderChapterPayload,
   ReaderStatusPayload,
 } from "@/lib/api-types/reader";
+import {
+  requireDownloadPayload,
+  downloadContentIdentity,
+} from "@/features/offline/buckets/book/download-payload";
 import { searchPassages } from "./passages";
 import { readerLeaves } from "@/features/reader/jump-target";
 import { MAX_SEARCH_CHARACTERS, MAX_SEARCH_CHAPTERS } from "./types";
@@ -9,7 +13,7 @@ import { MAX_SEARCH_CHARACTERS, MAX_SEARCH_CHAPTERS } from "./types";
 type Ready = Extract<ReaderStatusPayload, { status: "READY" }>;
 
 // Canonical packages already contain the complete immutable book. Legacy books
-// follow chapter adjacency, since Contents can omit front matter or chapters.
+// use the authoritative ordered manifest, since Contents can omit chapters.
 // Missing content is an error, never an apparently complete zero-result search.
 export async function loadSearchPassages(
   initial: Ready,
@@ -21,10 +25,28 @@ export async function loadSearchPassages(
   };
   check();
   if (initial.readerPackage) return searchPassages(initial);
+  requireDownloadPayload(initial, initial.book.libraryItemId);
+  const ids = initial.chapterIds!;
+  if (ids.length > MAX_SEARCH_CHAPTERS)
+    throw new Error("Search corpus limit exceeded");
+  const identity = downloadContentIdentity(initial)!;
+  const positions = new Map(ids.map((id, index) => [id, index]));
   const chapters = new Map<string, ReaderChapterPayload>();
   let characters = 0;
   const add = (chapter: ReaderChapterPayload) => {
-    if (chapters.has(chapter.chapterId)) return;
+    const index = positions.get(chapter.chapterId);
+    if (
+      index === undefined ||
+      chapter.previousChapterId !== (ids[index - 1] ?? null) ||
+      chapter.nextChapterId !== (ids[index + 1] ?? null)
+    )
+      throw new Error("Inconsistent search chapter order");
+    const previous = chapters.get(chapter.chapterId);
+    if (previous) {
+      if (JSON.stringify(previous.blocks) !== JSON.stringify(chapter.blocks))
+        throw new Error("Search chapter content changed");
+      return;
+    }
     characters += readerLeaves(chapter.blocks).reduce(
       (sum, block) => sum + block.text.length,
       0,
@@ -42,10 +64,10 @@ export async function loadSearchPassages(
     if (!chapters.has(id)) {
       const next = await fetchChapter(id);
       check();
+      requireDownloadPayload(next, initial.book.libraryItemId, identity);
       if (
-        next.status !== "READY" ||
-        next.book.libraryItemId !== initial.book.libraryItemId ||
-        next.readerPackage
+        next.readerPackage ||
+        JSON.stringify(next.chapterIds) !== JSON.stringify(ids)
       )
         throw new Error("Search content changed or unavailable");
       for (const chapter of next.chapters) add(chapter);
@@ -54,26 +76,10 @@ export async function loadSearchPassages(
     if (!chapter) throw new Error("Search chapter unavailable");
     return chapter;
   };
-  let first = await get(initial.activeChapterId);
-  const seen = new Set<string>([first.chapterId]);
-  while (first.previousChapterId) {
-    if (seen.has(first.previousChapterId))
-      throw new Error("Cyclic search chapters");
-    first = await get(first.previousChapterId);
-    seen.add(first.chapterId);
-  }
+  if (!ids.includes(initial.activeChapterId))
+    throw new Error("Search active chapter unavailable");
   const ordered: ReaderChapterPayload[] = [];
-  const visited = new Set<string>();
-  let current: ReaderChapterPayload | null = first;
-  while (current) {
-    check();
-    if (ordered.length >= MAX_SEARCH_CHAPTERS || visited.has(current.chapterId))
-      throw new Error("Invalid search chapter chain");
-    if (current.previousChapterId !== (ordered.at(-1)?.chapterId ?? null))
-      throw new Error("Inconsistent search chapter chain");
-    ordered.push(current);
-    visited.add(current.chapterId);
-    current = current.nextChapterId ? await get(current.nextChapterId) : null;
-  }
+  for (const id of ids) ordered.push(await get(id));
+  check();
   return searchPassages(initial, ordered);
 }

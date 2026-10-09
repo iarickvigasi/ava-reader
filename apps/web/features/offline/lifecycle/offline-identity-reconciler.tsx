@@ -3,6 +3,7 @@
 import { Fragment, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { useDeviceIdentity } from "@/features/auth/use-device-identity";
+import { DeviceOwnerContext } from "./device-owner-context";
 import { DatabaseAccessGate } from "../compatibility/database-access-gate";
 import { LocalSignOutRecovery } from "@/features/auth/local-sign-out-recovery";
 
@@ -22,11 +23,13 @@ export function OfflineIdentityReconciler({
       <LocalSignOutRecovery blocked={blocked} />
       {(!pathname.startsWith("/app") || (ready && !blocked)) && (
         <Fragment key={owner ?? "visitor"}>
-          {pathname.startsWith("/app") ? (
-            <DatabaseAccessGate>{children}</DatabaseAccessGate>
-          ) : (
-            children
-          )}
+          <DeviceOwnerContext value={owner ?? null}>
+            {pathname.startsWith("/app") ? (
+              <DatabaseAccessGate>{children}</DatabaseAccessGate>
+            ) : (
+              children
+            )}
+          </DeviceOwnerContext>
         </Fragment>
       )}
     </>
