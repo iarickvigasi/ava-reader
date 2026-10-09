@@ -30,6 +30,58 @@ function setup() {
     sink,
   };
 }
+it('counts delivery intent before optional sink loss and seals only after actual work', async () => {
+  const { observer, events, sink } = setup();
+  let resolve!: (value: number) => void;
+  const work = observer.track(
+    'ASSEMBLY',
+    'unit-one',
+    () =>
+      new Promise<number>((done) => {
+        resolve = done;
+      }),
+  );
+  expect(observer.finishCapture()).toBeUndefined();
+  resolve(42);
+  await work;
+  sink.emit = () => {
+    throw new Error('optional sink unavailable');
+  };
+  observer.emit('STAGE_ENDED', 'WORKER_COMMAND', 'unit-lost', {});
+  expect(observer.snapshot()?.throughOrdinal).toBe(3);
+  sink.emit = (event) => {
+    events.push(event);
+  };
+  expect(observer.finishCapture()).toMatchObject({
+    sealed: true,
+    throughOrdinal: 3,
+  });
+  const closed = observer.snapshot();
+  if (closed) closed.throughOrdinal = 99;
+  observer.emit('STAGE_ENDED', 'AFTER_SETTLEMENT', 'unit-excluded', {});
+  expect(observer.snapshot()?.throughOrdinal).toBe(3);
+  expect(events).toHaveLength(2);
+});
+it('an aborted producer stays unsealed even after its outstanding work returns', async () => {
+  const { observer, events, controller } = setup();
+  let resolve!: (value: number) => void;
+  const work = observer.track(
+    'ASSEMBLY',
+    'unit-one',
+    () =>
+      new Promise<number>((done) => {
+        resolve = done;
+      }),
+  );
+  controller.abort();
+  expect(observer.finishCapture()).toBeUndefined();
+  resolve(42);
+  await work;
+  expect(observer.finishCapture()).toBeUndefined();
+  expect(
+    events.some((event) => event.details.observationWatermark?.sealed),
+  ).toBe(false);
+});
 it('records actual bounded wall work with immutable provenance and no credential fields', async () => {
   const { observer, events } = setup();
   await expect(

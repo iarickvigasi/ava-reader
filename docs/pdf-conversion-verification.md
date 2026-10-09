@@ -63,6 +63,20 @@ command/page and fence mismatches. Verify unchanged resource/fault precedence an
 loss during terminal/lease transitions. Source-level tests do not establish installed transport,
 durable loss completeness, actual process overhead or complete conversion/reader quality.
 
+Capture regressions cover restart reconstruction from a declared claim, missing observations/seals,
+open known-prefix snapshots, immutable ordinal replay, queue loss and source/fence mismatches.
+Abort/background work must remain unsealed. Fixed-watermark report scans must not declare completion
+from a page, truncated scan, early seal or inconsistent later rows. Invalid optional snapshots must
+preserve normal heartbeat/settlement behavior. HTTP tests use the actual adapter with controlled
+membership/data providers; they do not establish normal operator authentication or real SQL restart.
+Lifecycle witness tests execute the real coordinator, authority checks, settlement, optional sink,
+journal and projection with a controlled transaction/data adapter. They hold diagnostic writes across
+normal failure/recovery/provider-wait and candidate acceptance, then verify exact declared final
+counts and late-authority refusal/delivery. Reconstruction and database results are test fixtures;
+candidate semantics use a controlled validator. These witnesses do not run a real conversion,
+database contention/rollback or normal operator account. An abort witness lets tracked background
+work finish after the coordinator returns and requires capture to remain unsealed.
+
 Run the packaged OCR cases in the installed worker: a host suite that skips cases requiring
 `/usr/bin/tesseract` leaves those cases unqualified. Record process/native-hint/end-scratch scopes
 and unknown values accurately; do not convert them into container-peak or whole-book quality claims.

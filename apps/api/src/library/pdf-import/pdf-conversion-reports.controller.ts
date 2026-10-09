@@ -22,6 +22,7 @@ import {
   readReportCost,
 } from './reports/read';
 import { reportId } from './reports/event-contract';
+import { readObservationCoverage } from './reports/read-observation-coverage';
 const lookupSchema = z
   .object({
     operationId: reportId.optional(),
@@ -78,10 +79,18 @@ export class PdfConversionReportsController {
     @Req() request: AuthenticatedRequest,
     @Param('conversionId') id: string,
   ) {
-    return this.read(request, async (tx) => ({
-      schemaVersion: 1,
-      ...recordView(await reportRecord(tx, id)),
-    }));
+    return this.read(request, async (tx) => {
+      const record = await reportRecord(tx, id);
+      return {
+        schemaVersion: 1,
+        ...recordView(record),
+        observationCoverage: await readObservationCoverage(
+          tx,
+          id,
+          record.nextSequence,
+        ),
+      };
+    });
   }
   @Get(':conversionId/events')
   @Header('Cache-Control', 'private, no-store')
@@ -112,10 +121,19 @@ export class PdfConversionReportsController {
     @Query('limit') limit?: string,
   ) {
     return this.read(request, async (tx) => {
+      const record = await reportRecord(tx, id);
+      const timeline = await readReportEvents(tx, id, cursor, limit);
       const result = {
         schemaVersion: 1,
-        investigation: recordView(await reportRecord(tx, id)),
-        timeline: await readReportEvents(tx, id, cursor, limit),
+        investigation: {
+          ...recordView(record),
+          observationCoverage: await readObservationCoverage(
+            tx,
+            id,
+            timeline.watermark,
+          ),
+        },
+        timeline,
         cost: await readReportCost(tx, id),
       };
       if (Buffer.byteLength(JSON.stringify(result)) > 512 * 1024)

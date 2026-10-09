@@ -17,6 +17,7 @@ import { acceptResult } from './accept-result';
 import { MAX_CONTRACT_BYTES } from '../../../pdf-conversion/contracts/parse-json';
 import { stageArtifacts } from './stage-artifacts';
 import { JobAuthorityError, PdfJobError } from './errors';
+import { readObservationWatermark } from '../reports/observation-contract';
 export async function completePdfJob(
   prisma: PrismaService,
   input: {
@@ -24,6 +25,7 @@ export async function completePdfJob(
     completion: { exitCode: number | null; bytes: Buffer };
     artifacts: ArtifactBytes[];
     semantic: SemanticValidator;
+    observationWatermark?: unknown;
   },
 ) {
   if (
@@ -39,6 +41,7 @@ export async function completePdfJob(
   const artifacts = snapshotArtifactBytes(input.artifacts),
     semantic = input.semantic,
     resultSha256 = checksumBuffer(completion.bytes);
+  const capture = readObservationWatermark(input, authority.attemptId);
   const scope = await jobTransaction(prisma, (tx) =>
     requireAttempt(tx, authority, true),
   );
@@ -64,6 +67,14 @@ export async function completePdfJob(
     const artifactMap = await persistArtifacts(tx, attempt, result, staged!);
     const now = await databaseNow(tx);
     assertAttemptScope(attempt, now, false);
-    return acceptResult(tx, attempt, result, resultSha256, artifactMap, now);
+    return acceptResult(
+      tx,
+      attempt,
+      result,
+      resultSha256,
+      artifactMap,
+      now,
+      capture,
+    );
   });
 }

@@ -2,7 +2,11 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import type { PrismaService } from '../../../prisma/prisma.service';
 import type { Tx } from '../jobs/types';
 import { requirePdfReviewer } from '../review/scope';
-import { reportId, safeEventSchema } from './event-contract';
+import {
+  reportId,
+  safeEventSchema,
+  retainedEventInput,
+} from './event-contract';
 import { parseEventPage, eventPageCursor } from './cursor';
 import { loadConversionProjection } from './load-ledger';
 import { costPage, costCursor } from './cost-cursor';
@@ -81,20 +85,7 @@ export async function readReportEvents(
   const events = rows.slice(0, page.limit).map((row) => ({
     sequence: row.sequence,
     recordedAt: row.createdAt.toISOString(),
-    ...safeEventSchema.parse({
-      kind: row.kind,
-      stage: row.stage,
-      severity: row.severity,
-      code: row.code ?? undefined,
-      attemptId: row.attemptId ?? undefined,
-      attemptFence: row.attemptFence ?? undefined,
-      generation: row.generation ?? undefined,
-      cancellationEpoch: row.cancellationEpoch ?? undefined,
-      observedAt: row.observedAt?.toISOString(),
-      durationMs: row.durationMs ?? undefined,
-      durationKind: row.durationKind ?? undefined,
-      details: row.details,
-    }),
+    ...safeEventSchema.parse(retainedEventInput(row)),
   }));
   return {
     schemaVersion: 1,

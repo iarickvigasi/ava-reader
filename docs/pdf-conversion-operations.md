@@ -32,8 +32,30 @@ and reaped children, RSS is a process-lifetime maximum, and scratch is a bounded
 at command end. These are not container peaks. Language is a bounded native-text heuristic;
 applied profile, observed inventory, validated output and process-local reuse remain separate.
 
-Optional journal writes are bounded and freshly fenced. Pending/lost capture is explicit, but a
-final capture event can itself be lost: absence of errors does not prove a complete timeline.
+Optional journal writes are bounded and freshly fenced. New claims declare expected coordinator
+capture; observations have immutable per-attempt delivery ordinals. The declared producer scope is
+`COORDINATOR_PRE_SETTLEMENT_WORKER_EVENT_DELIVERY`: source loading, reconstruction, staging and
+metadata work before handoff to candidate/failure/wait settlement. Only after tracked work ends
+without abort does the coordinator close that boundary. The existing authenticated lifecycle event
+retains its exact final count in the same transaction as settlement. It does not await optional
+diagnostic writes or drain their queue, and never relaxes their authority. Progress events retain
+open known-prefix watermarks. Aborted/outstanding work and killed producers stay unsealed.
+
+Authenticated report snapshots and exports project retained capture at a fixed journal watermark.
+`RECORDED` means all declared producer ordinals through a valid retained seal are present; it proves
+only declared pre-settlement event delivery. Candidate acceptance, final validation, commit and
+publication timing remain outside that scope; a recorded capture does not qualify those measurements.
+Gaps are `PARTIAL`; a missing seal is `UNSEALED`, with the exact
+final count unavailable. Older claims are `HISTORY_UNAVAILABLE`; binding/conflicting journal
+evidence is `INCONSISTENT`. Historical unqualified claims remain unavailable even alongside newer
+complete producers. A bounded scan cannot claim complete coverage. At most 20,000 journal rows,
+16 producers and 20 missing ranges per producer are projected; larger histories remain explicitly
+incomplete. A later read may include writes absent at an earlier watermark. Reported write failures
+and records proven missing from the journal are separate, since a failed delivery acknowledgement
+does not prove the transaction failed to commit.
+
+Closure remains unavailable after abort/interruption, unsuccessful authorized settlement, invalid
+optional metadata or missing retained history. A healthy process alone does not prove complete capture.
 Final validator process readings and historical missing observations remain unobserved. Qualify
 installed transport, SQL contention/loss/restart and normal operator lookup before relying on these
 fields. Deploy compatible API/worker/report readers together; older strict report readers cannot

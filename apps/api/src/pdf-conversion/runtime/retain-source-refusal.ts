@@ -12,6 +12,7 @@ export function retainSourceRefusal(
   claim: ClaimedPdfJob,
   error: SourceContentError,
   semantic: SemanticValidator,
+  observationWatermark?: unknown,
 ) {
   const diagnostic = error.diagnostic();
   if (
@@ -57,6 +58,7 @@ export function retainSourceRefusal(
   return completePdfJob(prisma, {
     authority: claim.authority,
     semantic,
+    observationWatermark,
     completion: { exitCode: 1, bytes: Buffer.from(JSON.stringify(result)) },
     artifacts: [{ id: 'source-refusal', bytes }],
   });

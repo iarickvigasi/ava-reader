@@ -15,6 +15,7 @@ describe('registered conversion report HTTP boundary', () => {
     pdfConversionInvestigation: { findUnique: jest.fn() },
     pdfConversionCost: { findUnique: jest.fn() },
     pdfProviderGrant: { findUnique: jest.fn() },
+    pdfConversionEvent: { findMany: jest.fn() },
   };
   const transaction = jest.fn((work: (value: typeof tx) => unknown) =>
     Promise.resolve(work(tx)),
@@ -61,6 +62,11 @@ describe('registered conversion report HTTP boundary', () => {
       coverage: 'API_LIFECYCLE',
       status: 'REFUSED',
       activeAdmissionCount: 0,
+      nextSequence: 0,
+      evidenceGaps: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      retentionPolicyId: null,
     });
     const projection = projectConversionCost([], true);
     tx.pdfConversionCost.findUnique.mockResolvedValue({
@@ -71,6 +77,7 @@ describe('registered conversion report HTTP boundary', () => {
       reconciledAt: new Date(),
     });
     tx.pdfProviderGrant.findUnique.mockResolvedValue(null);
+    tx.pdfConversionEvent.findMany.mockResolvedValue([]);
   });
   afterAll(async () => {
     await app.close();
@@ -87,6 +94,33 @@ describe('registered conversion report HTTP boundary', () => {
       callCount: 0,
     });
     expect(user.findUnique).toHaveBeenCalledTimes(2);
+  });
+  it('delivers capture coverage through protected snapshot/export without inventing historical completeness', async () => {
+    const snapshot = await request(app.getHttpServer() as Server)
+      .get('/admin/pdf-conversion-reports/conversion')
+      .expect(200);
+    expect(snapshot.headers['cache-control']).toBe('private, no-store');
+    expect(snapshot.body).toMatchObject({
+      observationCoverage: {
+        state: 'HISTORY_UNAVAILABLE',
+        complete: false,
+        watermark: 0,
+      },
+    });
+    const exported = await request(app.getHttpServer() as Server)
+      .get('/admin/pdf-conversion-reports/conversion/export')
+      .expect(200);
+    expect(exported.body).toMatchObject({
+      investigation: {
+        observationCoverage: {
+          state: 'HISTORY_UNAVAILABLE',
+          complete: false,
+          watermark: 0,
+        },
+      },
+      timeline: { watermark: 0 },
+    });
+    expect(user.findUnique).toHaveBeenCalledTimes(4);
   });
   it('denies an ordinary reader before reading another owner’s report', async () => {
     user.findUnique.mockResolvedValue({ roleMemberships: [] });

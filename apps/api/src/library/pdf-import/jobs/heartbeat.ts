@@ -6,6 +6,10 @@ import { PdfJobError } from './errors';
 import type { AttemptAuthority, JobProgress, JobStage } from './types';
 import { costLock } from '../providers/cost-lock';
 import { recordOperationEvent } from '../reports/operation-event';
+import {
+  safeObservationWatermark,
+  observationWatermarkDetails,
+} from '../reports/observation-contract';
 const STAGES: JobStage[] = [
   'PREFLIGHT',
   'EXTRACTION',
@@ -19,11 +23,27 @@ export function heartbeatPdfJob(
   progress?: JobStage | JobProgress,
 ) {
   const credential = { ...authority };
+  const capture = (() => {
+    try {
+      return typeof progress === 'object'
+        ? safeObservationWatermark(
+            progress.observationWatermark,
+            credential.attemptId,
+          )
+        : undefined;
+    } catch {
+      return undefined;
+    }
+  })();
   const value =
     typeof progress === 'string'
       ? { stage: progress }
       : progress
-        ? { ...progress }
+        ? {
+            stage: progress.stage,
+            completed: progress.completed,
+            total: progress.total,
+          }
         : undefined;
   return jobTransaction(prisma, async (tx) => {
     if (value) await costLock(tx);
@@ -67,7 +87,17 @@ export function heartbeatPdfJob(
           attemptFence: attempt.fence,
           generation: op.generation,
           cancellationEpoch: op.cancellationEpoch,
-          details: { completed: value.completed, total: value.total },
+          details: {
+            completed: value.completed,
+            total: value.total,
+            ...observationWatermarkDetails(capture, attempt.id, () => ({
+              jobId: attempt.jobId,
+              sourceSha256: job.source.sha256,
+              configSha256: job.config_sha256,
+              profileId: job.profile_id,
+              workerFingerprint: job.worker_fingerprint,
+            })),
+          },
         },
         { stage: value.stage },
       );

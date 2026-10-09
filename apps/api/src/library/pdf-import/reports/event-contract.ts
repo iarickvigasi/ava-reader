@@ -1,9 +1,15 @@
 import { createHash } from 'node:crypto';
+import type { PdfConversionEvent } from '@prisma/client';
 import { z } from 'zod';
 import {
   workerObservationResult,
   workerSourceFinding,
 } from '../../../pdf-conversion/runtime/worker-observation';
+import {
+  observationProtocol,
+  observationDelivery,
+  observationWatermark,
+} from './observation-contract';
 
 const digest = z.string().regex(/^[a-f0-9]{64}$/);
 export const reportId = z
@@ -66,6 +72,9 @@ export const safeEventSchema = z
     durationKind: z.enum(['MEASURED_WORK', 'OBSERVED_WALL_CLOCK']).optional(),
     details: z
       .object({
+        observationProtocol: observationProtocol.optional(),
+        observationDelivery: observationDelivery.optional(),
+        observationWatermark: observationWatermark.optional(),
         sourceSha256: digest.optional(),
         configSha256: digest.optional(),
         profileId: reportId.optional(),
@@ -202,6 +211,19 @@ export const safeEventSchema = z
   })
   .strict()
   .superRefine((value, context) => {
+    const { observationDelivery: delivery, observationWatermark: capture } =
+      value.details;
+    if (
+      (delivery && delivery.producerId !== value.attemptId) ||
+      (capture && capture.producerId !== value.attemptId) ||
+      (capture?.sealed &&
+        (!['VALIDATION', 'FAILED', 'RECOVERED'].includes(value.kind) ||
+          delivery !== undefined))
+    )
+      context.addIssue({
+        code: 'custom',
+        message: 'Invalid observation producer envelope',
+      });
     for (const finding of value.details.sourceFindings?.findings ?? [])
       if (
         finding.box.x0 < finding.region_box.x0 ||
@@ -220,6 +242,22 @@ export const safeEventSchema = z
       });
   });
 export type SafeConversionEvent = z.infer<typeof safeEventSchema>;
+export function retainedEventInput(row: PdfConversionEvent) {
+  return {
+    kind: row.kind,
+    stage: row.stage,
+    severity: row.severity,
+    code: row.code ?? undefined,
+    attemptId: row.attemptId ?? undefined,
+    attemptFence: row.attemptFence ?? undefined,
+    generation: row.generation ?? undefined,
+    cancellationEpoch: row.cancellationEpoch ?? undefined,
+    observedAt: row.observedAt?.toISOString(),
+    durationMs: row.durationMs ?? undefined,
+    durationKind: row.durationKind ?? undefined,
+    details: row.details,
+  };
+}
 export function eventIdentity(producerKey: string, event: SafeConversionEvent) {
   if (!producerKey || producerKey.length > 512)
     throw new Error('PDF_EVENT_KEY_INVALID');

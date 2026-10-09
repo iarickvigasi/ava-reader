@@ -15,6 +15,7 @@ export type JobProgress = {
   stage: JobStage;
   completed?: number;
   total?: number;
+  observationWatermark?: unknown;
 };
 export type ExecutionFailure =
   | 'WORKER_CRASH'

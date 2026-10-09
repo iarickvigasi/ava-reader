@@ -12,6 +12,7 @@ import {
   workEventDetails,
   workEventTiming,
 } from '../../library/pdf-import/reports/work-timing';
+import { safeObservationWatermark } from '../../library/pdf-import/reports/observation-contract';
 
 export type WorkerObserver = ReturnType<typeof workerObserver>;
 export function workerObserver(
@@ -22,7 +23,27 @@ export function workerObserver(
   const job = structuredClone(claim.job);
   const attemptId = claim.authority.attemptId,
     jobId = claim.jobId;
-  let sequence = 0;
+  let sequence = 0,
+    ordinal = 0,
+    active = 0,
+    closed: ReturnType<typeof safeObservationWatermark>;
+  const snapshot = (closed = false, throughOrdinal = ordinal) => {
+    try {
+      return safeObservationWatermark(
+        {
+          version: 1,
+          producerId: attemptId,
+          throughOrdinal,
+          reportedFailures: sink.summary().lost,
+          sealed: closed,
+          scope: 'COORDINATOR_PRE_SETTLEMENT_WORKER_EVENT_DELIVERY',
+        },
+        attemptId,
+      );
+    } catch {
+      return undefined;
+    }
+  };
   const emit = (
     kind: SafeConversionEvent['kind'],
     stage: string,
@@ -30,6 +51,8 @@ export function workerObserver(
     details: SafeConversionEvent['details'],
     timing?: Pick<SafeConversionEvent, 'observedAt' | 'durationMs'>,
   ) => {
+    if (closed) return;
+    const deliveryOrdinal = ++ordinal;
     try {
       sink.emit({
         kind,
@@ -51,6 +74,10 @@ export function workerObserver(
           jobId,
           unitId,
           ...details,
+          observationDelivery: {
+            producerId: attemptId,
+            ordinal: deliveryOrdinal,
+          },
         },
       });
     } catch {
@@ -60,6 +87,16 @@ export function workerObserver(
   return {
     emit,
     summary: sink.summary,
+    snapshot: () =>
+      closed ? safeObservationWatermark(closed, attemptId) : snapshot(),
+    finishCapture() {
+      // Abort may return before nested work/cleanup settles. No final count is
+      // asserted in that case, nor while any tracked action remains active.
+      if (closed) return safeObservationWatermark(closed, attemptId);
+      if (signal.aborted || active !== 0) return undefined;
+      closed = snapshot(true);
+      return closed ? safeObservationWatermark(closed, attemptId) : undefined;
+    },
     nextUnit: (name: string) => `unit-${name}-${++sequence}`,
     binding(unitId: string, input: SandboxInput) {
       try {
@@ -91,6 +128,8 @@ export function workerObserver(
       details: SafeConversionEvent['details'] = {},
       describe?: (result: T) => SafeConversionEvent['details'],
     ) {
+      if (closed) return action();
+      active++;
       const finishWork = startConversionWork(),
         begun = finishWork();
       emit(
@@ -168,6 +207,8 @@ export function workerObserver(
           workEventTiming(work),
         );
         throw error;
+      } finally {
+        active--;
       }
     },
   };

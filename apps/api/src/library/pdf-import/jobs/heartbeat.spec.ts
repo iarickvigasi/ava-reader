@@ -4,6 +4,7 @@ import { heartbeatPdfJob } from './heartbeat';
 import { requireAttempt } from './authority';
 import { jobTransaction } from './transaction';
 import { leaseClock } from './lease-clock';
+import { recordOperationEvent } from '../reports/operation-event';
 jest.mock('./authority');
 jest.mock('./transaction');
 jest.mock('./lease-clock');
@@ -30,6 +31,8 @@ function setup() {
   jest.mocked(requireAttempt).mockResolvedValue({
     attempt: {
       id: 'attempt',
+      jobId: 'job',
+      fence: 1,
       deadlineAt: new Date(9000),
       job: {
         operation: {
@@ -37,10 +40,18 @@ function setup() {
           stage: 'EXTRACTION',
           progressCompleted: 2,
           progressTotal: 3,
+          generation: 1,
+          cancellationEpoch: 0,
         },
       },
     },
-    job: { source_page_limit: 3 },
+    job: {
+      source_page_limit: 3,
+      source: { sha256: 'a'.repeat(64) },
+      config_sha256: 'b'.repeat(64),
+      profile_id: 'ava-pdf-prose-en-v2',
+      worker_fingerprint: 'c'.repeat(64),
+    },
     now: new Date(1000),
     policy: { leaseMs: 3000 },
   } as never);
@@ -52,6 +63,53 @@ function setup() {
   return { update };
 }
 beforeEach(() => jest.clearAllMocks());
+it.each([
+  { observationWatermark: { prompt: 'PRIVATE_PROMPT' } },
+  {
+    get observationWatermark() {
+      throw new Error('PRIVATE_ERROR');
+    },
+  },
+])(
+  'invalid optional capture never rejects a valid lease/progress update',
+  async (optional) => {
+    setup();
+    const progress = { stage: 'ASSEMBLY' as const, completed: 3, total: 3 };
+    Object.defineProperties(
+      progress,
+      Object.getOwnPropertyDescriptors(optional),
+    );
+    await expect(
+      heartbeatPdfJob({} as PrismaService, authority, progress),
+    ).resolves.toMatchObject({ leaseRemainingMs: 2800 });
+    expect(
+      jest.mocked(recordOperationEvent).mock.calls[0][3].details,
+    ).not.toHaveProperty('observationWatermark');
+  },
+);
+it('retains an open known-prefix watermark in the existing durable progress event', async () => {
+  setup();
+  await heartbeatPdfJob({} as PrismaService, authority, {
+    stage: 'ASSEMBLY',
+    completed: 3,
+    total: 3,
+    observationWatermark: {
+      version: 1,
+      producerId: 'attempt',
+      throughOrdinal: 7,
+      reportedFailures: 1,
+      sealed: false,
+      scope: 'COORDINATOR_PRE_SETTLEMENT_WORKER_EVENT_DELIVERY',
+    },
+  });
+  expect(
+    jest.mocked(recordOperationEvent).mock.calls[0][3].details,
+  ).toMatchObject({
+    observationWatermark: { throughOrdinal: 7, sealed: false },
+    jobId: 'job',
+    sourceSha256: 'a'.repeat(64),
+  });
+});
 it.each([
   { stage: 'PREFLIGHT' },
   { stage: 'UNKNOWN' },

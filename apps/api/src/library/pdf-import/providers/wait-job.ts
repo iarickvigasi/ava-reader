@@ -5,6 +5,10 @@ import { requireAttempt } from '../jobs/authority';
 import { PdfProviderError } from './errors';
 import { costLock } from './cost-lock';
 import { recordOperationEvent } from '../reports/operation-event';
+import {
+  safeObservationWatermark,
+  observationWatermarkDetails,
+} from '../reports/observation-contract';
 const reasons: Record<string, string> = {
   PDF_PROVIDER_BUDGET_EXHAUSTED: 'INTERNAL_BUDGET',
   PDF_PROVIDER_OUTCOME_UNCERTAIN: 'PROVIDER_RECONCILIATION',
@@ -14,8 +18,13 @@ export function waitPdfJobForProvider(
   prisma: PrismaService,
   authority: AttemptAuthority,
   code: string,
+  observationWatermark?: unknown,
 ) {
   const credential = { ...authority };
+  const capture = safeObservationWatermark(
+    observationWatermark,
+    credential.attemptId,
+  );
   if (!Object.hasOwn(reasons, code))
     throw new PdfProviderError('PDF_PROVIDER_WAIT_INVALID');
   return jobTransaction(prisma, async (tx) => {
@@ -43,7 +52,21 @@ export function waitPdfJobForProvider(
         severity: 'WARN',
         code,
         attemptId: attempt.id,
-        details: {},
+        attemptFence: attempt.fence,
+        generation: attempt.job.operation.generation,
+        cancellationEpoch: attempt.job.operation.cancellationEpoch,
+        details: observationWatermarkDetails(
+          capture,
+          attempt.id,
+          () => ({
+            jobId: attempt.jobId,
+            sourceSha256: attempt.job.operation.sourceSha256,
+            configSha256: attempt.job.operation.configSha256,
+            profileId: attempt.job.operation.profileId,
+            workerFingerprint: attempt.job.workerFingerprint,
+          }),
+          true,
+        ),
       },
       { status: 'WAITING' },
     );

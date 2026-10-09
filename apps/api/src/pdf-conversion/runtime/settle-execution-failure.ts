@@ -11,6 +11,7 @@ export async function settleExecutionFailure(
   prisma: PrismaService,
   authority: AttemptAuthority,
   error: unknown,
+  observationWatermark?: unknown,
 ) {
   if (error instanceof PdfProviderError) {
     if (
@@ -21,15 +22,26 @@ export async function settleExecutionFailure(
       ].includes(error.code)
     )
       return {
-        ...(await waitPdfJobForProvider(prisma, authority, error.code)),
+        ...(await waitPdfJobForProvider(
+          prisma,
+          authority,
+          error.code,
+          observationWatermark,
+        )),
         code: error.code,
       };
     const code =
       error.code === 'PDF_PROVIDER_OUTPUT_INVALID'
         ? 'INVALID_RESULT'
         : 'DISPATCH_NOT_AUTHORIZED';
-    return { ...(await failPdfJob(prisma, authority, code)), code };
+    return {
+      ...(await failPdfJob(prisma, authority, code, observationWatermark)),
+      code,
+    };
   }
   const code = failureCode(error);
-  return { ...(await failPdfJob(prisma, authority, code)), code };
+  return {
+    ...(await failPdfJob(prisma, authority, code, observationWatermark)),
+    code,
+  };
 }

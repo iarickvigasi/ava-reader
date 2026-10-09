@@ -63,6 +63,46 @@ beforeEach(() => {
   jest.mocked(tryQueueLock).mockResolvedValue(true);
   jest.mocked(tryCostLock).mockResolvedValue(true);
 });
+function delivered(claim: ClaimedPdfJob): SafeConversionEvent {
+  return {
+    ...event,
+    attemptId: claim.authority.attemptId,
+    attemptFence: claim.job.attempt_fence,
+    generation: claim.job.generation,
+    cancellationEpoch: claim.job.cancellation_epoch,
+    details: {
+      ...event.details,
+      jobId: claim.jobId,
+      sourceSha256: claim.job.source.sha256,
+      configSha256: claim.job.config_sha256,
+      profileId: claim.job.profile_id,
+      workerFingerprint: claim.job.worker_fingerprint,
+      observationDelivery: {
+        producerId: claim.authority.attemptId,
+        ordinal: 1,
+      },
+    },
+  };
+}
+it('an immutable ordinal retains identical journal keys and payloads when delivered again', async () => {
+  const { sink, claim } = setup();
+  const value = delivered(claim);
+  sink.emit(value);
+  sink.emit(structuredClone(value));
+  await sink.whenSettled();
+  expect(jest.mocked(recordOperationEvent).mock.calls[0]).toEqual(
+    jest.mocked(recordOperationEvent).mock.calls[1],
+  );
+});
+it('rejects a producer envelope that disagrees with its immutable attempt binding', async () => {
+  const { sink, claim } = setup();
+  const value = delivered(claim);
+  value.details.sourceSha256 = 'd'.repeat(64);
+  sink.emit(value);
+  await sink.whenSettled();
+  expect(recordOperationEvent).not.toHaveBeenCalled();
+  expect(sink.summary().lost).toBe(1);
+});
 it('identical producer units retain identical journal keys/payloads instead of dynamic queue-state conflicts', async () => {
   const { sink, transaction } = setup();
   sink.emit(event);

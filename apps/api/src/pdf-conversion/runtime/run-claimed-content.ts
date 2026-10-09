@@ -31,7 +31,11 @@ export async function runClaimedContent(
   const progress = async (value: JobProgress) => {
     const started = performance.now();
     const receipt = await underLease(
-      () => heartbeatPdfJob(prisma, claim.authority, value),
+      () =>
+        heartbeatPdfJob(prisma, claim.authority, {
+          ...value,
+          observationWatermark: observer?.snapshot(),
+        }),
       guard.signal,
     );
     guard.confirm(receipt, performance.now() - started);

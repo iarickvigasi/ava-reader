@@ -8,6 +8,7 @@ import {
   workEventTiming,
   type ConversionWorkTiming,
 } from '../reports/work-timing';
+import { observationWatermarkDetails } from '../reports/observation-contract';
 export async function terminalFailure(
   tx: Tx,
   input: {
@@ -19,6 +20,7 @@ export async function terminalFailure(
     now: Date;
     work?: ConversionWorkTiming;
     validationFence?: number;
+    observationWatermark?: unknown;
   },
 ) {
   await costLock(tx);
@@ -81,6 +83,18 @@ export async function terminalFailure(
         jobId: job.id,
         validationFence: input.validationFence,
         outcome: 'FAILED',
+        ...observationWatermarkDetails(
+          input.observationWatermark,
+          attemptId,
+          () => ({
+            jobId: job.id,
+            sourceSha256: op.sourceSha256,
+            configSha256: op.configSha256,
+            profileId: op.profileId,
+            workerFingerprint: job.workerFingerprint,
+          }),
+          true,
+        ),
       },
     },
     { status: 'FAILED', stage: op.stage, failureId: receipt.id },

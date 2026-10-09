@@ -53,6 +53,7 @@ export async function executeOne(
       guard,
       observer,
     );
+    observer?.finishCapture();
     const complete = () =>
       underLease(
         () =>
@@ -61,16 +62,11 @@ export async function executeOne(
             completion: result.completion,
             stagedByPath: result.stagedByPath,
             semantic,
+            observationWatermark: observer?.snapshot(),
           }),
         guard.signal,
       );
-    const saved = observer
-      ? await observer.track(
-          'CANDIDATE_ACCEPTANCE',
-          observer.nextUnit('accept'),
-          complete,
-        )
-      : await complete();
+    const saved = await complete();
     return {
       ...scope,
       status: saved.status,
@@ -86,15 +82,27 @@ export async function executeOne(
       };
 
     let saved: { status: string; code: string };
+    observer?.finishCapture();
     try {
       saved = await underLease(
         async () =>
           error instanceof SourceContentError
             ? {
-                ...(await retainSourceRefusal(prisma, claim, error, semantic)),
+                ...(await retainSourceRefusal(
+                  prisma,
+                  claim,
+                  error,
+                  semantic,
+                  observer?.snapshot(),
+                )),
                 code: error.code,
               }
-            : settleExecutionFailure(prisma, authority, error),
+            : settleExecutionFailure(
+                prisma,
+                authority,
+                error,
+                observer?.snapshot(),
+              ),
         guard.signal,
       );
     } catch (failure) {
@@ -120,18 +128,6 @@ export async function executeOne(
       observationCapture: observer?.summary(),
     };
   } finally {
-    observer?.emit(
-      'STAGE_ENDED',
-      'OBSERVATION_CAPTURE',
-      observer.nextUnit('capture'),
-      {
-        outcome: 'UNOBSERVED',
-        observationCapture: {
-          ...observer.summary(),
-          scope: 'PRECEDING_QUEUE_AT_PRODUCER_OBSERVATION',
-        },
-      },
-    );
     guard.dispose();
   }
 }

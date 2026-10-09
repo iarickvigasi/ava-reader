@@ -3,11 +3,13 @@ import { parseJobPolicy } from './policy';
 import { terminalFailure } from './terminal-failure';
 import { costLock } from '../providers/cost-lock';
 import { recordOperationEvent } from '../reports/operation-event';
+import { observationWatermarkDetails } from '../reports/observation-contract';
 export async function recoverAttempt(
   tx: Tx,
   attempt: AttemptRecord,
   now: Date,
   code: ExecutionFailure,
+  observationWatermark?: unknown,
 ) {
   await costLock(tx);
   const { job } = attempt,
@@ -26,6 +28,7 @@ export async function recoverAttempt(
       code:
         job.deadlineAt && job.deadlineAt <= now ? 'EXECUTION_TIMEOUT' : code,
       now,
+      observationWatermark,
     });
   await tx.pdfJobAttempt.update({
     where: { id: attempt.id },
@@ -60,7 +63,21 @@ export async function recoverAttempt(
       generation: op.generation,
       cancellationEpoch: op.cancellationEpoch,
       observedAt: now.toISOString(),
-      details: { jobId: job.id },
+      details: {
+        jobId: job.id,
+        ...observationWatermarkDetails(
+          observationWatermark,
+          attempt.id,
+          () => ({
+            jobId: job.id,
+            sourceSha256: op.sourceSha256,
+            configSha256: op.configSha256,
+            profileId: op.profileId,
+            workerFingerprint: job.workerFingerprint,
+          }),
+          true,
+        ),
+      },
     },
     { status: 'QUEUED' },
   );

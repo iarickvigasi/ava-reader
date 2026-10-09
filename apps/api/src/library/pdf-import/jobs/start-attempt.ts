@@ -69,7 +69,18 @@ export async function startAttempt(
       generation,
       cancellationEpoch: input.cancellation_epoch,
       observedAt: now.toISOString(),
-      details: { jobId, workerFingerprint: input.worker_fingerprint },
+      details: {
+        jobId,
+        workerFingerprint: input.worker_fingerprint,
+        sourceSha256: input.source.sha256,
+        configSha256: input.config_sha256,
+        profileId: input.profile_id,
+        observationProtocol: {
+          version: 1,
+          producerId: attempt.id,
+          scope: 'COORDINATOR_PRE_SETTLEMENT_WORKER_EVENT_DELIVERY',
+        },
+      },
     },
     {
       status: 'RUNNING',

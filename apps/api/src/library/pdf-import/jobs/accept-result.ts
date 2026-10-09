@@ -4,6 +4,7 @@ import type { AttemptRecord, Tx } from './types';
 import { terminalFailure } from './terminal-failure';
 import { costLock } from '../providers/cost-lock';
 import { recordOperationEvent } from '../reports/operation-event';
+import { observationWatermarkDetails } from '../reports/observation-contract';
 export async function acceptResult(
   tx: Tx,
   attempt: AttemptRecord,
@@ -11,6 +12,7 @@ export async function acceptResult(
   resultSha256: string,
   artifactMap: Record<string, string>,
   now: Date,
+  observationWatermark?: unknown,
 ) {
   await costLock(tx);
   await tx.pdfJobAttempt.update({
@@ -31,6 +33,7 @@ export async function acceptResult(
           ? 'UNSUPPORTED_PDF'
           : 'CONVERSION_FAILED',
       now,
+      observationWatermark,
     });
   await tx.pdfJobAttempt.update({
     where: { id: attempt.id },
@@ -56,7 +59,18 @@ export async function acceptResult(
       attemptFence: attempt.fence,
       generation: attempt.job.operation.generation,
       cancellationEpoch: attempt.job.operation.cancellationEpoch,
-      details: {},
+      details: observationWatermarkDetails(
+        observationWatermark,
+        attempt.id,
+        () => ({
+          jobId: attempt.jobId,
+          sourceSha256: attempt.job.operation.sourceSha256,
+          configSha256: attempt.job.operation.configSha256,
+          profileId: attempt.job.operation.profileId,
+          workerFingerprint: attempt.job.workerFingerprint,
+        }),
+        true,
+      ),
     },
     { status: 'WAITING', stage: 'VALIDATION' },
   );

@@ -38,13 +38,31 @@ export function workerObservationSink(
     whenSettled: () => tail,
     emit(event: SafeConversionEvent) {
       const parsed = safeEventSchema.safeParse(event);
-      if (!parsed.success || pending >= 16) {
+      if (
+        !parsed.success ||
+        pending >= 16 ||
+        (parsed.data.details.observationDelivery &&
+          (parsed.data.details.observationDelivery.producerId !==
+            authority.attemptId ||
+            parsed.data.attemptId !== authority.attemptId ||
+            parsed.data.attemptFence !== job.attempt_fence ||
+            parsed.data.generation !== job.generation ||
+            parsed.data.cancellationEpoch !== job.cancellation_epoch ||
+            parsed.data.details.jobId !== jobId ||
+            parsed.data.details.sourceSha256 !== job.source.sha256 ||
+            parsed.data.details.configSha256 !== job.config_sha256 ||
+            parsed.data.details.profileId !== job.profile_id ||
+            parsed.data.details.workerFingerprint !== job.worker_fingerprint))
+      ) {
         lost++;
         logger.warn('PDF_WORKER_OBSERVATION_NOT_RECORDED');
         return;
       }
       const unit = parsed.data.details.unitId ?? `capture-${++ordinal}`;
-      const key = `worker-observation:${authority.attemptId}:${unit}:${parsed.data.stage}:${parsed.data.kind}`;
+      const delivery = parsed.data.details.observationDelivery;
+      const key = delivery
+        ? `worker-observation:${authority.attemptId}:${delivery.ordinal}`
+        : `worker-observation:${authority.attemptId}:${unit}:${parsed.data.stage}:${parsed.data.kind}`;
       pending++;
       tail = tail.then(async () => {
         try {

@@ -12,6 +12,7 @@ import { resultArtifacts } from './result-artifacts';
 import { persistArtifacts } from './persist-artifacts';
 import { acceptResult } from './accept-result';
 import { JobAuthorityError, PdfJobError } from './errors';
+import { readObservationWatermark } from '../reports/observation-contract';
 export async function completeStagedPdfJob(
   prisma: PrismaService,
   input: {
@@ -19,6 +20,7 @@ export async function completeStagedPdfJob(
     completion: { exitCode: number | null; bytes: Buffer };
     stagedByPath: Record<string, string>;
     semantic: SemanticValidator;
+    observationWatermark?: unknown;
   },
 ) {
   if (
@@ -33,6 +35,7 @@ export async function completeStagedPdfJob(
     },
     staged = { ...input.stagedByPath },
     sha = checksumBuffer(completion.bytes);
+  const capture = readObservationWatermark(input, authority.attemptId);
   const scope = await jobTransaction(prisma, (tx) =>
     requireAttempt(tx, authority, true),
   );
@@ -72,6 +75,6 @@ export async function completeStagedPdfJob(
     await persistArtifacts(tx, attempt, result, mapping);
     const now = await databaseNow(tx);
     assertAttemptScope(attempt, now, false);
-    return acceptResult(tx, attempt, result, sha, mapping, now);
+    return acceptResult(tx, attempt, result, sha, mapping, now, capture);
   });
 }

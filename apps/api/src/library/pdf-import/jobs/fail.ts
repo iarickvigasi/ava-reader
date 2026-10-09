@@ -7,13 +7,22 @@ import { PdfJobError } from './errors';
 import { failureReason } from './failure-reason';
 import { costLock } from '../providers/cost-lock';
 import { recordOperationEvent } from '../reports/operation-event';
+import {
+  safeObservationWatermark,
+  observationWatermarkDetails,
+} from '../reports/observation-contract';
 export function failPdfJob(
   prisma: PrismaService,
   authority: AttemptAuthority,
   code: ExecutionFailure,
+  observationWatermark?: unknown,
 ) {
   if (!failureReason(code)) throw new PdfJobError('PDF_JOB_FAILURE_INVALID');
   const credential = { ...authority };
+  const capture = safeObservationWatermark(
+    observationWatermark,
+    credential.attemptId,
+  );
   return jobTransaction(prisma, async (tx) => {
     await costLock(tx);
     const { attempt, now } = await requireAttempt(tx, credential);
@@ -40,12 +49,26 @@ export function failPdfJob(
           severity: 'WARN',
           code,
           attemptId: attempt.id,
-          details: {},
+          attemptFence: attempt.fence,
+          generation: attempt.job.operation.generation,
+          cancellationEpoch: attempt.job.operation.cancellationEpoch,
+          details: observationWatermarkDetails(
+            capture,
+            attempt.id,
+            () => ({
+              jobId: attempt.jobId,
+              sourceSha256: attempt.job.operation.sourceSha256,
+              configSha256: attempt.job.operation.configSha256,
+              profileId: attempt.job.operation.profileId,
+              workerFingerprint: attempt.job.workerFingerprint,
+            }),
+            true,
+          ),
         },
         { status: 'WAITING' },
       );
       return { status: 'WAITING' as const };
     }
-    return recoverAttempt(tx, attempt, now, code);
+    return recoverAttempt(tx, attempt, now, code, capture);
   });
 }
