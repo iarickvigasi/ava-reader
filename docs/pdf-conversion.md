@@ -210,6 +210,10 @@ See [operator setup](pdf-conversion-operations.md), [verification and current li
 and the [worker package](../packages/pdf-epub/README.md). No production provider route, reader
 qualification or cleanup activation is implied by installing or merging the implementation.
 
+API/database health and API reachability are separate operating signals; neither establishes that
+a PDF can be converted or read. [The health contract](pdf-conversion-operations.md#api-health-and-dependency-readiness)
+describes the checked dependency and the remaining PDF/release gates.
+
 Annotation admission refusals carry a stable `PDF_*` code and bounded, content-free `finding`
 location: one-based `page_number`, optional `annotation_number` and a related-object path
 (`/Popup`, `/Parent`, `/IRT`, at most 20 steps). Source-order traversal makes the first refusal

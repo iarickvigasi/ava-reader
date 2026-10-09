@@ -31,8 +31,8 @@ describe('AppController (e2e)', () => {
       .expect(200)
       .expect(({ body }: { body: HealthResponse }) => {
         expect(body.service).toBe('api');
-        expect(['ok', 'degraded']).toContain(body.status);
-        expect(['up', 'down']).toContain(body.database);
+        expect(body.status).toBe('ok');
+        expect(body.database).toBe('up');
         expect(typeof body.timestamp).toBe('string');
       });
   });

@@ -4,6 +4,20 @@
 The API owns database/provider authority; the separately launched worker owns bounded execution.
 Ordinary uploads do not enable paid OCR. The PRODUCT reader qualification catalog is currently empty.
 
+## API health and dependency readiness
+
+`GET /api/health` is an uncached public API/database check. A successful `SELECT 1` returns
+HTTP 200 with `service: api`, `status: ok` and `database: up`. A failed query returns HTTP 503
+with `service: api`, `status: degraded` and `database: down`; neither response includes connection
+credentials or exception details. Compose requires the successful HTTP response and all three
+healthy fields before marking the API healthy or starting its dependent web/verification service.
+
+`GET /api/reachability` remains a cheap public uncached marker, `service: ava-reader-api`, without
+a database query. It describes API reachability and supports connectivity checks even when the
+database is unavailable. Neither endpoint qualifies PDF execution, installed validator/worker
+compatibility, provider authority, reader qualification, restore or release readiness. Those remain
+separate gates below; the PRODUCT reader qualification catalog is still empty.
+
 ## Build and configure
 
 Use Node 22+, the repository's pinned pnpm, Docker, PostgreSQL and the worker's locked Python

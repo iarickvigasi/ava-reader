@@ -152,6 +152,9 @@ Notes:
 - `/app/admin/catalog` is an internal admin route for managing the public-domain catalog from the web app.
 - `apps/mobile` is intentionally just a placeholder for now.
 - Docker verification runs from a dedicated `verify` container on the same Compose network, so the smoke test checks real in-network connectivity rather than only host access.
+- API health returns HTTP 503 when its database check fails; Compose requires `service: api`,
+  `status: ok` and `database: up`. The uncached `/api/reachability` marker has no database dependency.
+  See the [health contract and PDF readiness limits](docs/pdf-conversion-operations.md#api-health-and-dependency-readiness).
 - If `3000`, `4000`, or `15432` are already taken on your machine, override them in `.env` or inline when starting Compose, for example `WEB_HOST_PORT=3001 API_HOST_PORT=4001 POSTGRES_HOST_PORT=15433 NEXT_PUBLIC_API_BASE_URL=http://localhost:4001 pnpm docker:up`.
 
 ## Roles and Demo Data

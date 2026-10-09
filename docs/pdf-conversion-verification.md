@@ -31,6 +31,23 @@ Regenerate schema/types deliberately with `pdf:contracts:generate` and
 runs isolated validation, with bounded input/time/output and no forwarded provider credentials.
 Use the worker README for installed-wheel/container smoke; exit 2 is a candidate, not Ready.
 
+## API readiness regression
+
+The focused suite uses a controlled Prisma provider with the actual Nest/Express HTTP adapter. It
+checks healthy HTTP 200, dependency-failed HTTP 503, safe uncached payloads and public reachability
+without consulting the database. It also executes the actual Compose API health command against
+healthy, degraded, unknown, malformed and HTTP/request-failed responses, with no external requests.
+
+```sh
+pnpm --filter api exec jest --runInBand --runTestsByPath src/app.service.spec.ts src/app.controller.spec.ts src/app.health.spec.ts src/app.health-probe.spec.ts
+```
+
+These tests do not stop a database, boot the full API or qualify the built container, real PostgreSQL
+outage/recovery, PDF worker/validator/provider prerequisites or overall production readiness. Record
+those operating gates independently before activation; a healthy API/database response cannot close
+them. The full app e2e health check requires an available test database and asserts only the healthy
+HTTP 200 contract.
+
 ## Reporting persistence and operator verification
 
 Run types/lint before the disposable reporting proof. Its runtime command uses transpilation without
