@@ -92,12 +92,15 @@ class LanguageOnlyRouting(unittest.TestCase):
         self.assertTrue(all(not page.tasks for page in pages))
         result = reconstruct(source, self.scratch, pages, [])
         block = next(
-            b for b in result.book.blocks
+            b
+            for b in result.book.blocks
             if hasattr(b, "content") and b.content.text.strip() == quote
         )
         self.assertEqual("und", block.content.language)
         self.assertEqual(quote, block.content.text.strip())
-        self.assertTrue(any(
-            c.field == "language" and c.status == "accepted" and c.value == "uk"
-            for c in result.book.metadata
-        ))
+        self.assertTrue(
+            any(
+                c.field == "language" and c.status == "accepted" and c.value == "uk"
+                for c in result.book.metadata
+            )
+        )

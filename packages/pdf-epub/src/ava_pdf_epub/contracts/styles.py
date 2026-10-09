@@ -33,8 +33,14 @@ class Style(Record):
         # New unknown fields must not change existing immutable content digests or
         # the exact visible projection verified during generated EPUB reimport.
         values: dict[str, Any] = handler(self)
-        for key in ("color", "background_color", "decoration_color", "underline", "strike_through",
-                    "block_indent_em"):
+        for key in (
+            "color",
+            "background_color",
+            "decoration_color",
+            "underline",
+            "strike_through",
+            "block_indent_em",
+        ):
             if values.get(key) is None:
                 values.pop(key, None)
         return values

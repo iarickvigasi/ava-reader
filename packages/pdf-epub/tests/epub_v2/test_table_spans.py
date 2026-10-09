@@ -21,9 +21,9 @@ class ExportTableSpanTests(unittest.TestCase):
     def test_vertical_span_keeps_all_declared_rows(self):
         book, _, _ = fixture()
         table = merged_table()
-        table = table.model_copy(update={
-            "cells": [table.cells[0].model_copy(update={"row_span": 2})]
-        })
+        table = table.model_copy(
+            update={"cells": [table.cells[0].model_copy(update={"row_span": 2})]}
+        )
         tree = render_table(table, {}, Context(book))
         self.assertEqual(len([n for n in tree.iter() if n.tag.endswith("tr")]), 2)
         self.assertEqual(next(n for n in tree.iter() if n.tag.endswith("th")).get("rowspan"), "2")

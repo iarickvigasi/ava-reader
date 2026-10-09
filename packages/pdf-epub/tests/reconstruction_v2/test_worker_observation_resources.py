@@ -24,16 +24,26 @@ class WorkerResourceTests(unittest.TestCase):
             (root / "nested" / "two").write_bytes(b"b" * 11)
             before, after = (usage(1, 2), usage(4, 5)), (usage(1.1, 2.2), usage(4.4, 5.6))
             for platform, multiplier in (("linux", 1024), ("darwin", 1)):
-                with patch(f"{MODULE}.usage", return_value=after), patch(f"{MODULE}.sys.platform", platform):
+                with (
+                    patch(f"{MODULE}.usage", return_value=after),
+                    patch(f"{MODULE}.sys.platform", platform),
+                ):
                     result = resources(before, root)
-                self.assertEqual((300, 1000, 17 * multiplier, 18),
-                                 (result["cpu_self_ms"], result["cpu_finished_children_ms"],
-                                  result["peak_rss_bytes"], result["scratch_current_bytes"]))
+                self.assertEqual(
+                    (300, 1000, 17 * multiplier, 18),
+                    (
+                        result["cpu_self_ms"],
+                        result["cpu_finished_children_ms"],
+                        result["peak_rss_bytes"],
+                        result["scratch_current_bytes"],
+                    ),
+                )
                 self.assertEqual("worker_process", result["peak_rss_scope"])
                 self.assertEqual("rusage_delta_self_and_reaped_children", result["cpu_method"])
                 self.assertEqual("rusage_lifetime_max_not_delta", result["peak_rss_method"])
-                self.assertEqual("logical_regular_file_sizes_at_command_end",
-                                 result["scratch_bytes_method"])
+                self.assertEqual(
+                    "logical_regular_file_sizes_at_command_end", result["scratch_bytes_method"]
+                )
 
     def test_symlink_cannot_count_or_traverse_external_files(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -58,7 +68,10 @@ class WorkerResourceTests(unittest.TestCase):
 
     def test_missing_usage_and_unknown_platform_never_claim_resource_zero(self):
         with tempfile.TemporaryDirectory() as directory:
-            with patch(f"{MODULE}.usage", return_value=None), patch(f"{MODULE}.sys.platform", "other"):
+            with (
+                patch(f"{MODULE}.usage", return_value=None),
+                patch(f"{MODULE}.sys.platform", "other"),
+            ):
                 result = resources(None, Path(directory))
             self.assertIsNone(result["cpu_self_ms"])
             self.assertIsNone(result["cpu_finished_children_ms"])

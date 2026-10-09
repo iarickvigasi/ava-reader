@@ -34,7 +34,9 @@ class Observation:
         self.fields: dict[str, object] = {}
         self.inventory = Inventory()
         self.phases: list[dict[str, object]] = []
-        self.reuse = {name: dict(hits=0, misses=0) for name in ("checkpoint_decode", "annotation_view")}
+        self.reuse = {
+            name: dict(hits=0, misses=0) for name in ("checkpoint_decode", "annotation_view")
+        }
         self.outcome = "completed"
         self.failure_code: str | None = None
         self.findings: list[dict[str, object]] = []
@@ -43,13 +45,18 @@ class Observation:
     def start(self, raw_request: bytes, request: Any, input_root: Path = Path("/input")) -> None:
         try:
             job = JobInputV1.model_validate_json(snapshot(input_root, "job.json", 65536))
-            unit = TrustedUnit.model_validate_json(snapshot(input_root, "worker-observation.json", 1024))
+            unit = TrustedUnit.model_validate_json(
+                snapshot(input_root, "worker-observation.json", 1024)
+            )
             command = request.get("mode") if isinstance(request, dict) else None
             if type(command) is not str or command not in COMMANDS:
                 return
             number = request.get("page_number")
-            self.fields = dict(binding=binding(job, unit, raw_request), command=command,
-                               page_number=number if type(number) is int and 1 <= number <= 500 else None)
+            self.fields = dict(
+                binding=binding(job, unit, raw_request),
+                command=command,
+                page_number=number if type(number) is int and 1 <= number <= 500 else None,
+            )
             self.job, self.token = job, ACTIVE.set(self)
         except Exception:
             self.valid = False  # Missing/incompatible trusted context cannot emit a bound claim.
@@ -60,7 +67,10 @@ class Observation:
                 return
             if event == "source_bytes":
                 data = values[0]
-                if len(data) != self.job.source.byte_length or hashlib.sha256(data).hexdigest() != self.job.source.sha256:
+                if (
+                    len(data) != self.job.source.byte_length
+                    or hashlib.sha256(data).hexdigest() != self.job.source.sha256
+                ):
                     raise ValueError("Observed source bytes differ")
                 self.inventory.source_bytes_verified = True
             elif event == "source":
@@ -70,7 +80,10 @@ class Observation:
                 self.inventory.source(count, number, profile)
             elif event == "page":
                 page = values[0]
-                if page.source_sha256 != self.job.source.sha256 or page.profile_id != self.job.profile_id:
+                if (
+                    page.source_sha256 != self.job.source.sha256
+                    or page.profile_id != self.job.profile_id
+                ):
                     raise ValueError("Observed page identity differs")
                 self.inventory.page(page)
             elif event == "annotation":
@@ -87,7 +100,9 @@ class Observation:
         self.outcome = "failed"
         try:
             if self.job is not None:
-                self.failure_code, self.findings, self.findings_complete = failure(error, self.job.source.sha256)
+                self.failure_code, self.findings, self.findings_complete = failure(
+                    error, self.job.source.sha256
+                )
         except Exception:
             self.valid = False
 
@@ -101,19 +116,29 @@ class Observation:
                 self.outcome = "aborted"
             if self.job is None or not self.valid:
                 return
-            packet = dict(schema_version="ava-worker-observation-1", **self.fields,
-                          request_binding_scope="reconstruction_request_json_bytes",
-                          outcome=self.outcome, failure_code=self.failure_code,
-                          started_at=self.started_at, ended_at=ended_at, work_ms=ended_ms,
-                          method="PYTHON_MONOTONIC", phase_timing="inclusive_nested_not_summable",
-                          work_scope="main_command_excludes_interpreter_startup_and_observation_export",
-                          phases=sorted(self.phases, key=lambda item: cast(int, item["started_ms"])),
-                          resources=resources(self.before, self.scratch),
-                          inventory=self.inventory.packet(),
-                          reuse=dict(source_preparation="none",
-                                     scope="worker_process_local_decode_and_annotation_memo",
-                                     **self.reuse),
-                          findings=self.findings, findings_complete=self.findings_complete)
+            packet = dict(
+                schema_version="ava-worker-observation-1",
+                **self.fields,
+                request_binding_scope="reconstruction_request_json_bytes",
+                outcome=self.outcome,
+                failure_code=self.failure_code,
+                started_at=self.started_at,
+                ended_at=ended_at,
+                work_ms=ended_ms,
+                method="PYTHON_MONOTONIC",
+                phase_timing="inclusive_nested_not_summable",
+                work_scope="main_command_excludes_interpreter_startup_and_observation_export",
+                phases=sorted(self.phases, key=lambda item: cast(int, item["started_ms"])),
+                resources=resources(self.before, self.scratch),
+                inventory=self.inventory.packet(),
+                reuse=dict(
+                    source_preparation="none",
+                    scope="worker_process_local_decode_and_annotation_memo",
+                    **self.reuse,
+                ),
+                findings=self.findings,
+                findings_complete=self.findings_complete,
+            )
             data = encode(packet)
             if data is not None:
                 sys.stderr.write(data.decode("ascii"))
@@ -158,7 +183,14 @@ def phase(name: Phase) -> Iterator[None]:
                 if len(current.phases) >= 8:
                     current.valid = False
                 else:
-                    current.phases.append(dict(name=name, started_ms=start, ended_ms=end,
-                                               work_ms=end - start, outcome=outcome))
+                    current.phases.append(
+                        dict(
+                            name=name,
+                            started_ms=start,
+                            ended_ms=end,
+                            work_ms=end - start,
+                            outcome=outcome,
+                        )
+                    )
             except Exception:
                 current.valid = False

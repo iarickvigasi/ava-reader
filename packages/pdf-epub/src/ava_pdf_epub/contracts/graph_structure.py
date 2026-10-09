@@ -29,12 +29,7 @@ def validate_tables(nodes: dict[str, BlockBase]) -> None:
             raise ValueError("Selected table profile requires header associations")
         for cell in table.cells:
             unique(cell.header_ids, "table header")
-            wanted = {
-                h.id
-                for h in headers
-                if h.id != cell.id
-                and header_covers(h, cell)
-            }
+            wanted = {h.id for h in headers if h.id != cell.id and header_covers(h, cell)}
             if set(cell.header_ids) != wanted:
                 raise ValueError("Incorrect table header association")
 

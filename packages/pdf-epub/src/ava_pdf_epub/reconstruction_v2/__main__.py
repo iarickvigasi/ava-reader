@@ -51,8 +51,12 @@ def main() -> None:
             if type(request["page_number"]) is not int:
                 raise ValueError("Invalid page number")
             with phase("prepare_source"):
-                prepared = prepare_page(source, root, request["page_number"],
-                                        checked_profile(request.get("profile_id", LEGACY_PROFILE)))
+                prepared = prepare_page(
+                    source,
+                    root,
+                    request["page_number"],
+                    checked_profile(request.get("profile_id", LEGACY_PROFILE)),
+                )
             result = prepared_result(prepared)
             output = encode_packet(result.model_dump(mode="json"), 8 * 1024 * 1024)
         elif request.get("mode") == "prepare_refinement" and set(request) == {"mode", "input"}:

@@ -41,8 +41,10 @@ def prepare_page(
     inspect_annotations(
         reader.pages[page_number - 1], page_number=page_number, page_count=len(reader.pages)
     )
-    kinds = [annotation_kind(ref.get_object())
-             for ref in reader.pages[page_number - 1].get("/Annots", [])]
+    kinds = [
+        annotation_kind(ref.get_object())
+        for ref in reader.pages[page_number - 1].get("/Annots", [])
+    ]
     observe("annotation", page_number, kinds)
     has_visible = "visible" in kinds
     view = annotation_view(source, scratch)

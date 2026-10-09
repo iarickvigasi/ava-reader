@@ -15,7 +15,9 @@ MAX_COUNT = 9007199254740991
 
 def usage() -> tuple[Any, Any] | None:
     try:
-        return resource.getrusage(resource.RUSAGE_SELF), resource.getrusage(resource.RUSAGE_CHILDREN)
+        return resource.getrusage(resource.RUSAGE_SELF), resource.getrusage(
+            resource.RUSAGE_CHILDREN
+        )
     except Exception:
         return None
 
@@ -27,25 +29,35 @@ def _milliseconds(value: float) -> int | None:
 
 def resources(before: tuple[Any, Any] | None, scratch: Path) -> dict[str, object]:
     after = usage()
-    platform = "linux_kib" if sys.platform == "linux" else (
-        "darwin_bytes" if sys.platform == "darwin" else "unknown"
+    platform = (
+        "linux_kib"
+        if sys.platform == "linux"
+        else ("darwin_bytes" if sys.platform == "darwin" else "unknown")
     )
     own = children = peak = None
     if before is not None and after is not None:
-        own = _milliseconds(after[0].ru_utime + after[0].ru_stime -
-                            before[0].ru_utime - before[0].ru_stime)
-        children = _milliseconds(after[1].ru_utime + after[1].ru_stime -
-                                 before[1].ru_utime - before[1].ru_stime)
+        own = _milliseconds(
+            after[0].ru_utime + after[0].ru_stime - before[0].ru_utime - before[0].ru_stime
+        )
+        children = _milliseconds(
+            after[1].ru_utime + after[1].ru_stime - before[1].ru_utime - before[1].ru_stime
+        )
     if after is not None and platform != "unknown":
         measured = int(after[0].ru_maxrss) * (1024 if platform == "linux_kib" else 1)
         peak = measured if 0 <= measured <= MAX_COUNT else None
     current, scan = scratch_bytes(scratch)
-    return dict(cpu_self_ms=own, cpu_finished_children_ms=children, peak_rss_bytes=peak,
-                cpu_method="rusage_delta_self_and_reaped_children",
-                peak_rss_method="rusage_lifetime_max_not_delta",
-                peak_rss_scope="worker_process", peak_rss_platform=platform,
-                scratch_current_bytes=current, scratch_scan=scan,
-                scratch_bytes_method="logical_regular_file_sizes_at_command_end")
+    return dict(
+        cpu_self_ms=own,
+        cpu_finished_children_ms=children,
+        peak_rss_bytes=peak,
+        cpu_method="rusage_delta_self_and_reaped_children",
+        peak_rss_method="rusage_lifetime_max_not_delta",
+        peak_rss_scope="worker_process",
+        peak_rss_platform=platform,
+        scratch_current_bytes=current,
+        scratch_scan=scan,
+        scratch_bytes_method="logical_regular_file_sizes_at_command_end",
+    )
 
 
 def scratch_bytes(root: Path) -> tuple[int | None, str]:
@@ -70,8 +82,9 @@ def scratch_bytes(root: Path) -> tuple[int | None, str]:
                         if not 0 <= total <= MAX_COUNT:
                             return None, "unavailable"
                     elif stat.S_ISDIR(info.st_mode):
-                        child = os.open(entry.name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
-                                        dir_fd=parent)
+                        child = os.open(
+                            entry.name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent
+                        )
                         descriptors.append(child)
                         pending.append(child)
                     else:

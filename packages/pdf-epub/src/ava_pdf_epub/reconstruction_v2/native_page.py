@@ -63,8 +63,15 @@ def native_page(
         )
     )
     ordered = native_literal_candidates(reading_order(content, page.width_pt))
-    observe("layout", page.number, "two_column" if any(p.column == 2 for p in ordered)
-            else "single_column" if ordered else "unknown")
+    observe(
+        "layout",
+        page.number,
+        "two_column"
+        if any(p.column == 2 for p in ordered)
+        else "single_column"
+        if ordered
+        else "unknown",
+    )
     complete = (
         native_spacing(
             page, [p.segment for p in preserve_paired_lines(join_paragraphs(ordered), ordered)]

@@ -60,7 +60,12 @@ def reconstruct(
     if refinements is not None:
         with phase("prepare_refinement"):
             tasks = prepare_refinement(
-                source, scratch, prepared, segments, state, source_feature_policy=source_feature_policy
+                source,
+                scratch,
+                prepared,
+                segments,
+                state,
+                source_feature_policy=source_feature_policy,
             )
         if tasks or refinements:
             segments = apply_refinement(segments, tasks, refinements, state)

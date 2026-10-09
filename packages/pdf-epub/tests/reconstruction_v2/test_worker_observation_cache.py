@@ -30,8 +30,11 @@ class WorkerCacheObservationTests(unittest.TestCase):
                 stored.geometry(0)
                 self.assertEqual(dict(hits=1, misses=1), collector.reuse["checkpoint_decode"])
                 file = root / "page-0001.json"
-                file.write_bytes(file.read_bytes().replace(b'"source_byte_length":100',
-                                                          b'"source_byte_length":101'))
+                file.write_bytes(
+                    file.read_bytes().replace(
+                        b'"source_byte_length":100', b'"source_byte_length":101'
+                    )
+                )
                 with self.assertRaisesRegex(ValueError, "identity changed"):
                     stored[0]
                 self.assertEqual(dict(hits=1, misses=1), collector.reuse["checkpoint_decode"])
@@ -45,7 +48,9 @@ class WorkerCacheObservationTests(unittest.TestCase):
             collector = observation_context(root, source.read_bytes())
             try:
                 first = annotation_view(source, root)
-                with patch("ava_pdf_epub.annotation_view.PdfReader", side_effect=AssertionError("parse")):
+                with patch(
+                    "ava_pdf_epub.annotation_view.PdfReader", side_effect=AssertionError("parse")
+                ):
                     self.assertEqual(first, annotation_view(source, root))
                 self.assertEqual(dict(hits=1, misses=1), collector.reuse["annotation_view"])
                 first.write_bytes(b"tampered")

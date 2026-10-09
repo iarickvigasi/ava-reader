@@ -28,8 +28,12 @@ def invoke(observed, fail=False):
     with (
         patch(f"{MAIN}.snapshot", return_value=REQUEST),
         patch.object(Path, "mkdir"),
-        patch(f"{OBSERVER}.snapshot", side_effect=trusted_snapshot if observed else FileNotFoundError()),
-        redirect_stdout(output), redirect_stderr(stderr),
+        patch(
+            f"{OBSERVER}.snapshot",
+            side_effect=trusted_snapshot if observed else FileNotFoundError(),
+        ),
+        redirect_stdout(output),
+        redirect_stderr(stderr),
     ):
         if fail:
             with patch(f"{MAIN}.validate_tasks", side_effect=RuntimeError("private parser text")):
@@ -46,7 +50,9 @@ class WorkerObservationStdoutTests(unittest.TestCase):
     def test_initial_observer_clock_failure_preserves_normal_stdout_and_exit(self):
         for fail in (False, True):
             original, _, code = invoke(False, fail=fail)
-            with patch(f"{OBSERVER}.utc_now", side_effect=RuntimeError("private observer clock failure")):
+            with patch(
+                f"{OBSERVER}.utc_now", side_effect=RuntimeError("private observer clock failure")
+            ):
                 measured, stderr, measured_code = invoke(True, fail=fail)
             self.assertEqual((original, code), (measured, measured_code))
             self.assertEqual("", stderr)

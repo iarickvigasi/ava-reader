@@ -7,8 +7,12 @@ from pathlib import Path
 from ava_pdf_epub.worker_observation import Observation
 
 JOB = Path(__file__).parents[1] / "contracts" / "fixtures" / "ava-pdf-job-1.json"
-UNIT = dict(schema_version="ava-worker-observation-binding-1", job_id="job-fixture",
-            attempt_id="attempt-fixture", unit_id="unit-fixture")
+UNIT = dict(
+    schema_version="ava-worker-observation-binding-1",
+    job_id="job-fixture",
+    attempt_id="attempt-fixture",
+    unit_id="unit-fixture",
+)
 
 
 def observation_context(root: Path, source: bytes = b"source", request=None) -> Observation:
