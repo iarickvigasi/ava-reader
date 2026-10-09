@@ -1,6 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import type { PrismaService } from '../prisma/prisma.service';
-import type { ClerkAuthService } from '../auth/clerk-auth.service';
+import type { PrismaService } from '../../prisma/prisma.service';
+import type { ClerkAuthService } from '../../auth/clerk-auth.service';
 
 export async function syncClerkProfile(
   prisma: PrismaService,

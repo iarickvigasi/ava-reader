@@ -1,7 +1,7 @@
 import { ForbiddenException } from '@nestjs/common';
 import { UserRole } from '@prisma/client';
-import { UsersService } from './users.service';
-import { updateProfile } from './update-profile';
+import { UsersService } from '../users.service';
+import { updateProfile } from '../profile/update-profile';
 
 const cases: UserRole[][] = [
   [],

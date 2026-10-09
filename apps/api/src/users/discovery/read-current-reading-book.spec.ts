@@ -1,5 +1,5 @@
 import { readCurrentReadingBook } from './read-current-reading-book';
-import { UsersService } from './users.service';
+import { UsersService } from '../users.service';
 
 const findFirst = jest.fn();
 const findUnique = jest.fn();

@@ -1,4 +1,4 @@
-import type { PrismaService } from '../prisma/prisma.service';
+import type { PrismaService } from '../../prisma/prisma.service';
 import { readCurrentReadingBook } from './read-current-reading-book';
 
 // This projection is the directory privacy boundary. Never serialize a User row.

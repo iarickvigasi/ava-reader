@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { UserRole } from '@prisma/client';
-import type { PrismaService } from '../prisma/prisma.service';
+import type { PrismaService } from '../../prisma/prisma.service';
 import { INTRODUCTION_MINIMUM, updateProfileSchema } from './profile.dto';
 
 export async function updateProfile(

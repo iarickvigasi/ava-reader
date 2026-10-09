@@ -1,6 +1,6 @@
-import { readCurrentReadingBook } from './read-current-reading-book';
-import { toUserRecord, type UserRecord } from './user-record';
-import { syncClerkProfile } from './sync-clerk-profile';
+import { readCurrentReadingBook } from './discovery/read-current-reading-book';
+import { toUserRecord, type UserRecord } from './account/user-record';
+import { syncClerkProfile } from './account/sync-clerk-profile';
 import { UserRole } from '@prisma/client';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';

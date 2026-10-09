@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { UsersService } from '../users.service';
 
 const local = {
   id: 'local-1',

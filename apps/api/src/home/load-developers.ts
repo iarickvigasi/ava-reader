@@ -1,6 +1,6 @@
 import { UserRole } from '@prisma/client';
 import type { PrismaService } from '../prisma/prisma.service';
-import { telegramUrlSchema } from '../users/profile.dto';
+import { telegramUrlSchema } from '../users/profile/profile.dto';
 
 export async function loadDevelopers(prisma: PrismaService) {
   const users = await prisma.user.findMany({

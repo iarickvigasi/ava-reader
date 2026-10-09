@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient, type UserRole } from '@prisma/client';
-import { changeRole } from '../users/change-role';
+import { changeRole } from '../users/roles/change-role';
 
 export async function runRoleCommand(
   role: UserRole,

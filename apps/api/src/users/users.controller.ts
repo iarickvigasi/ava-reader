@@ -8,13 +8,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { updateProfile } from './update-profile';
-import { readPublishedReaders } from './read-published-readers';
+import { updateProfile } from './profile/update-profile';
+import { readPublishedReaders } from './discovery/read-published-readers';
 import { ZodError } from 'zod';
 import type { AuthenticatedRequest } from '../auth/authenticated-request';
 import { ClerkAuthGuard } from '../auth/clerk-auth.guard';
-import { updatePreferencesSchema } from './preferences.dto';
-import { PreferencesService } from './preferences.service';
+import { updatePreferencesSchema } from './preferences/preferences.dto';
+import { PreferencesService } from './preferences/preferences.service';
 import { UsersService } from './users.service';
 
 @Controller()

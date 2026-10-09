@@ -1,8 +1,8 @@
 import type { UserPreferences } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import type { UpdatePreferencesRequest } from './preferences.dto';
-import { UsersService } from './users.service';
+import { UsersService } from '../users.service';
 
 export type PreferencesPayload = {
   translateTargetLang: string | null;

@@ -2,7 +2,7 @@
 
 > Status: active · Updated: 2026-10-09 · Code: apps/web/app/app/connect,
 > apps/web/components/app/connect, apps/web/features/offline/buckets/readers,
-> apps/api/src/users/read-published-readers.ts
+> apps/api/src/users/discovery/read-published-readers.ts
 
 ## Purpose
 
