@@ -17,16 +17,41 @@ export function readerPageRect(element: HTMLElement) {
 export function revealTablePassage(element: HTMLElement, textOffset: number) {
   const viewport = readerTableViewport(element);
   if (!viewport) return;
-  const range = createCharacterRange(collectTextNodeSegments(element), textOffset);
-  const rect = (range && getRangeRect(range)) ?? element.getBoundingClientRect();
+  const range = createCharacterRange(
+    collectTextNodeSegments(element),
+    textOffset,
+  );
+  const rect =
+    (range && getRangeRect(range)) ?? element.getBoundingClientRect();
+  const cell = element.closest?.<HTMLElement>("td, th");
+  // Bilingual fragments focus a nested span; its offset still belongs to that
+  // span, but a fitting containing cell supplies readable context. Never use
+  // a cell outside the current nested scroll region.
+  const context =
+    cell && readerTableViewport(cell) === viewport ? cell : element;
+  const contextRect = context.getBoundingClientRect();
+  const horizontal =
+    contextRect.right - contextRect.left <= viewport.clientWidth
+      ? contextRect
+      : rect;
+  const vertical =
+    contextRect.bottom - contextRect.top <= viewport.clientHeight
+      ? contextRect
+      : rect;
   const bounds = viewport.getBoundingClientRect();
   const left = bounds.left + viewport.clientLeft;
   const top = bounds.top + viewport.clientTop;
   viewport.scrollLeft += nearestScroll(
-    rect.left, rect.right, left, left + viewport.clientWidth,
+    horizontal.left,
+    horizontal.right,
+    left,
+    left + viewport.clientWidth,
   );
   viewport.scrollTop += nearestScroll(
-    rect.top, rect.bottom, top, top + viewport.clientHeight,
+    vertical.top,
+    vertical.bottom,
+    top,
+    top + viewport.clientHeight,
   );
 }
 
