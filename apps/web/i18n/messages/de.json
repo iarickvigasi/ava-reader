@@ -749,17 +749,17 @@
       },
       "conversation": {
         "title": "Bleib im Gespräch",
-        "body": "Diskutiere über das Gelesene, chatte mit anderen Lesenden und lass aus gemeinsamen Interessen neue Freundschaften entstehen."
+        "body": "Diskutiere über das Gelesene, chatte mit anderen Leserinnen und Lesern und lass aus gemeinsamen Interessen neue Freundschaften entstehen."
       }
     },
     "privacyTitle": "Deine Lesewelt, deine Entscheidung.",
     "privacyBody": "Du wirst dein Profil öffentlich oder privat halten und wählen können, welche Teile deiner Leseaktivität für wen sichtbar sind.",
     "discovery": {
-      "title": "Andere Lesende kennenlernen",
+      "title": "Andere Leserinnen und Leser kennenlernen",
       "emptyTitle": "Jeder Lesekreis beginnt mit einem Menschen.",
-      "emptyBody": "Lesende erscheinen hier, sobald sie ihre Profile veröffentlichen. Stell dich vor und hilf dieser Gemeinschaft beim Start.",
+      "emptyBody": "Leserinnen erscheinen hier, sobald sie ihre Profile veröffentlichen. Stell dich vor und hilf dieser Gemeinschaft beim Start.",
       "currentlyReading": "Liest gerade",
-      "reader": "Leser:in"
+      "reader": "Leser/Leserin"
     },
     "profile": {
       "title": "Stell dich vor",
@@ -769,7 +769,7 @@
       "counter": "{count} / {limit} Zeichen",
       "minimum": "Mindestens {minimum} Zeichen",
       "showBook": "Mein aktuelles Buch anzeigen",
-      "visibility": "Angemeldete AVA-Lesende sehen deinen Namen, dein Bild, deine Vorstellung und dein aktuelles Buch, wenn du es teilen möchtest.",
+      "visibility": "Angemeldete AVA-Leserinnen sehen deinen Namen, dein Bild, deine Vorstellung und dein aktuelles Buch, wenn du es teilen möchtest.",
       "publish": "Mein Profil veröffentlichen",
       "hide": "Mein Profil ausblenden",
       "save": "Änderungen speichern",
@@ -778,7 +778,7 @@
       "error": "Deine Änderungen konnten nicht gespeichert werden. Versuche es erneut.",
       "preview": "Profilvorschau",
       "currentlyReading": "Aktuelle Lektüre",
-      "reader": "Leser",
+      "reader": "Leser/Leserin",
       "unavailable": "Verbinde dich mit deinem Konto, um dein Profil zu laden."
     }
   }

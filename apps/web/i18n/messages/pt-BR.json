@@ -736,12 +736,12 @@
   "connect": {
     "eyebrow": "Comunidade",
     "title": "Bons livros aproximam pessoas.",
-    "body": "Conheça leitores que compartilham sua curiosidade. Descubra o que estão lendo, troque ideias e crie novas conexões.",
+    "body": "Conheça leitoras e leitores que compartilham sua curiosidade. Descubra o que estão lendo, troque ideias e crie novas conexões.",
     "comingSoon": "Em breve",
     "features": {
       "people": {
         "title": "Encontre sua turma",
-        "body": "Conheça leitores que exploram os mesmos livros, autores e ideias e descubra pessoas com interesses parecidos."
+        "body": "Conheça leitoras que exploram os mesmos livros, autores e ideias e descubra pessoas com interesses parecidos."
       },
       "share": {
         "title": "Compartilhe suas leituras",
@@ -749,17 +749,17 @@
       },
       "conversation": {
         "title": "Continue a conversa",
-        "body": "Converse sobre o que leu, troque mensagens com outros leitores e transforme interesses em comum em novas amizades."
+        "body": "Converse sobre o que leu, troque mensagens com outras leitoras e transforme interesses em comum em novas amizades."
       }
     },
     "privacyTitle": "Sua vida de leitura, sua escolha.",
     "privacyBody": "Você poderá manter seu perfil público ou privado e escolher quais partes da sua atividade de leitura ficam visíveis e para quem.",
     "discovery": {
-      "title": "Conheça outros leitores",
+      "title": "Conheça outras leitoras e outros leitores",
       "emptyTitle": "Todo clube de leitura começa com alguém.",
-      "emptyBody": "Os leitores aparecerão aqui quando publicarem seus perfis. Apresente-se e ajude esta comunidade a começar.",
+      "emptyBody": "As leitoras aparecerão aqui quando publicarem seus perfis. Apresente-se e ajude esta comunidade a começar.",
       "currentlyReading": "Lendo agora",
-      "reader": "Leitor"
+      "reader": "Leitor/leitora"
     },
     "profile": {
       "title": "Apresente-se",
@@ -778,7 +778,7 @@
       "error": "Não foi possível salvar suas alterações. Tente novamente.",
       "preview": "Prévia do perfil",
       "currentlyReading": "Lendo agora",
-      "reader": "Leitor",
+      "reader": "Leitor/leitora",
       "unavailable": "Conecte-se à sua conta para carregar seu perfil."
     }
   }

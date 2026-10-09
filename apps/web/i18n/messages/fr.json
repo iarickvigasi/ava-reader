@@ -736,12 +736,12 @@
   "connect": {
     "eyebrow": "Communauté",
     "title": "Les bons livres nous rapprochent.",
-    "body": "Rencontrez des lecteurs qui partagent votre curiosité. Découvrez leurs lectures, échangez des idées et créez de nouveaux liens.",
+    "body": "Rencontrez des lectrices et des lecteurs qui partagent votre curiosité. Découvrez leurs lectures, échangez des idées et créez de nouveaux liens.",
     "comingSoon": "Bientôt disponible",
     "features": {
       "people": {
         "title": "Trouvez vos affinités",
-        "body": "Rencontrez des lecteurs qui explorent les mêmes livres, auteurs et idées, et découvrez des personnes aux intérêts similaires."
+        "body": "Rencontrez des lectrices qui explorent les mêmes livres, auteurs et idées, et découvrez des personnes aux intérêts similaires."
       },
       "share": {
         "title": "Partagez vos lectures",
@@ -749,17 +749,17 @@
       },
       "conversation": {
         "title": "Prolongez la conversation",
-        "body": "Discutez de vos lectures, échangez avec d’autres lecteurs et faites naître de nouvelles amitiés autour de vos intérêts communs."
+        "body": "Discutez de vos lectures, échangez avec d’autres lectrices et faites naître de nouvelles amitiés autour de vos intérêts communs."
       }
     },
     "privacyTitle": "Vos lectures, vos choix.",
     "privacyBody": "Vous pourrez rendre votre profil public ou privé et choisir quelles parties de votre activité sont visibles, et pour qui.",
     "discovery": {
-      "title": "Rencontrez d’autres lecteurs",
+      "title": "Rencontrez d’autres lectrices et lecteurs",
       "emptyTitle": "Chaque cercle de lecture commence avec quelqu’un.",
-      "emptyBody": "Les lecteurs apparaîtront ici à mesure qu’ils publieront leur profil. Présentez-vous et aidez cette communauté à prendre vie.",
+      "emptyBody": "Les profils des lectrices apparaîtront ici dès leur publication. Présentez-vous et aidez cette communauté à prendre vie.",
       "currentlyReading": "Lecture en cours",
-      "reader": "Lecteur"
+      "reader": "Lecteur/lectrice"
     },
     "profile": {
       "title": "Présentez-vous",
@@ -769,7 +769,7 @@
       "counter": "{count} / {limit} caractères",
       "minimum": "Au moins {minimum} caractères",
       "showBook": "Afficher le livre que je lis en ce moment",
-      "visibility": "Les lecteurs AVA connectés verront votre nom, votre photo, votre présentation et votre lecture du moment si vous choisissez de la partager.",
+      "visibility": "Les lectrices AVA connectés verront votre nom, votre photo, votre présentation et votre lecture du moment si vous choisissez de la partager.",
       "publish": "Publier mon profil",
       "hide": "Masquer mon profil",
       "save": "Enregistrer les modifications",
@@ -778,7 +778,7 @@
       "error": "Vos modifications n’ont pas pu être enregistrées. Réessayez.",
       "preview": "Aperçu du profil",
       "currentlyReading": "Lecture du moment",
-      "reader": "Lecteur",
+      "reader": "Lecteur/lectrice",
       "unavailable": "Connectez-vous à votre compte pour charger votre profil."
     }
   }
