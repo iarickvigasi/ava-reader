@@ -27,7 +27,7 @@ export function ConnectReaderCard({ reader }: { reader: PublishedReader }) {
             {name.charAt(0).toLocaleUpperCase()}
           </span>
         )}
-        <h3 className="wrap-break-word font-display text-2xl text-title">
+        <h3 className="min-w-0 wrap-break-word font-display text-2xl text-title">
           {name}
         </h3>
       </div>

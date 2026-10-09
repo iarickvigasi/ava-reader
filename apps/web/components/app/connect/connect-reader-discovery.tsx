@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { ExploreIcon } from "@/components/app/shared/app-icons";
 import { useReaderDiscovery } from "@/features/offline/buckets/readers/use-reader-discovery";
-import { ConnectReaderCard } from "./connect-reader-card";
+import { ConnectReaderMasonry } from "./connect-reader-masonry";
 
 export function ConnectReaderDiscovery() {
   const t = useTranslations("connect.discovery");
@@ -19,11 +19,7 @@ export function ConnectReaderDiscovery() {
       {readers === null ? (
         <div className="h-48 animate-pulse rounded-card bg-paper" />
       ) : readers.length ? (
-        <div className="grid gap-4 md:grid-cols-2 xl:max-w-[80%]">
-          {readers.map((reader) => (
-            <ConnectReaderCard key={reader.id} reader={reader} />
-          ))}
-        </div>
+        <ConnectReaderMasonry readers={readers} />
       ) : (
         <div className="flex flex-col items-center rounded-card bg-paper px-6 py-10 text-center sm:px-10 sm:py-14">
           <span className="flex size-14 items-center justify-center rounded-full bg-soft-fill text-ink">

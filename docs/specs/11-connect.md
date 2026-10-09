@@ -28,7 +28,13 @@ Connect helps signed-in AVA readers meet people with similar reading interests. 
 - The visible section is called “Meet other readers.” Show each published reader's avatar,
   name, introduction, and shared current-book title and authors. Do not mark the current
   user's card with “You.”
-- Reader cards use the Hide my profile button's fill in each theme. On wide screens they are about 20% wider than the original three-column cards; mobile width is unchanged.
+- Reader cards use the Hide my profile button's fill in each theme and fill the section width.
+  Choose equal-width columns from the section's available width, with a 320px minimum card
+  width and 16px gaps; narrower sections use one full-width column.
+- Cards hug their content without equal-height rows or space reserved for an absent book.
+  Place each reader in the shortest column, breaking ties left to right, while preserving
+  source order. Recalculate on section/card resize, including fonts and local profile changes.
+  Before measurement or without ResizeObserver, use a natural-height responsive grid.
 - When no profiles are available, center the icon and invitation copy at every screen size. The English heading is “Every reading circle starts with someone.”
 
 ## Privacy and offline behavior
@@ -44,6 +50,7 @@ Connect helps signed-in AVA readers meet people with similar reading interests. 
 - [x] The profile editor validates, previews, publishes, hides, and saves changes as described.
 - [x] Book sharing is optional and follows reading progress locally and on the server.
 - [x] Reader discovery shows only published profiles and explicitly shared fields.
+- [x] Discovery fills its section with responsive columns and content-height masonry cards.
 - [x] Own changes appear immediately on this device; an empty list shows the invitation.
 
 ## Future decisions
