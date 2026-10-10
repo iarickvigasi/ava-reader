@@ -70,7 +70,12 @@ export function runPythonSemanticValidator(
       reject(retained ? outcome.rejection : fallback); // eslint-disable-line @typescript-eslint/prefer-promise-reject-errors
     };
     const expire = () => finish({ reason: 'DEADLINE', timerFired: true });
-    const timer = setTimeout(expire, 15000);
+    // Admitted large graphs need more work than small contracts; keep a finite ceiling.
+    const deadlineMs = Math.min(
+      180000,
+      15000 + 2000 * Math.max(0, Math.ceil(inputBytes / (1024 * 1024)) - 1),
+    );
+    const timer = setTimeout(expire, deadlineMs);
     child.on('spawn', () => {
       spawnObserved = true;
     });
