@@ -1,3 +1,4 @@
+import timers from 'node:timers/promises';
 import { Logger } from '@nestjs/common';
 import { workerObservationSink } from './worker-observation-sink';
 import { requireAttempt } from '../../library/pdf-import/jobs/authority';
@@ -97,6 +98,36 @@ it('retains an immutable event when a busy conversion lock clears on the next fr
   expect(recordOperationEvent).toHaveBeenCalledTimes(1);
   expect(sink.summary()).toEqual({ pending: 0, lost: 0, state: 'RECORDED' });
 });
+it.each([
+  { name: 'queue', heldMs: 150, lock: tryQueueLock },
+  { name: 'cost', heldMs: 250, lock: tryCostLock },
+])(
+  'records after the $name lock clears within a finite contention window ($heldMs ms)',
+  async ({ heldMs, lock }) => {
+    const { sink, event, transaction } = setup();
+    let elapsed = 0;
+    const advance = <T = void>(milliseconds = 0, value?: T): Promise<T> => {
+      elapsed += milliseconds;
+      return Promise.resolve(value as T);
+    };
+    // A controlled clock holds the external lock independently of retry count.
+    // Production's actual delay arguments advance it; the old short window loses.
+    jest.spyOn(timers, 'setTimeout').mockImplementation(advance);
+    jest
+      .mocked(lock)
+      .mockImplementation(() => Promise.resolve(elapsed >= heldMs));
+    sink.emit(event);
+    await sink.whenSettled();
+    expect(recordOperationEvent).toHaveBeenCalledTimes(1);
+    expect(sink.summary()).toEqual({ pending: 0, lost: 0, state: 'RECORDED' });
+    expect(transaction).toHaveBeenCalledTimes(3);
+    expect(
+      new Set(jest.mocked(tryQueueLock).mock.calls.map(([tx]) => tx)).size,
+    ).toBe(3);
+    expect(requireAttempt).toHaveBeenCalledTimes(1);
+    expect(warning).not.toHaveBeenCalled();
+  },
+);
 it('bounds a permanently busy lock to three attempts and one classified loss', async () => {
   const { sink, event, transaction } = setup();
   jest.mocked(tryCostLock).mockResolvedValue(false);

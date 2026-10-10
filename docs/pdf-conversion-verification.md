@@ -139,7 +139,8 @@ work finish after the coordinator returns, discards queued/late observations onc
 and requires capture to remain unsealed with its final count unknown. Retry/drain regressions cover
 fresh authority after transient contention, three-attempt exhaustion, unknown transaction outcomes,
 duplicate keys, safe correlated loss warnings, a one-second drain cap and clipping to the remaining
-lease. They preserve the original action/error on diagnostic timeout or rejection, and retain the
+lease. Busy retries wait 100 and 250 milliseconds after their failed transactions release all locks.
+They preserve the original action/error on diagnostic timeout or rejection, and retain the
 existing `authority_lost` outcome on abort. Actual PostgreSQL contention and normal native conversion
 capture still require separate runtime evidence.
 

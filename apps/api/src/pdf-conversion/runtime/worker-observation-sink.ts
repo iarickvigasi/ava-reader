@@ -143,7 +143,7 @@ export function workerObservationSink(
               if (attempt === 2) return drop('LOCK_BUSY');
               // The failed transaction has released every lock before backoff.
               try {
-                await delay(attempt === 0 ? 10 : 25, undefined, { signal });
+                await delay(attempt === 0 ? 100 : 250, undefined, { signal });
               } catch {
                 return drop('ABORTED');
               }
