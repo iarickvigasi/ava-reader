@@ -3,6 +3,7 @@ import {
   type PdfMetadata,
   type PdfMetadataDraft,
   metadataChanges,
+  metadataPatch,
 } from "@/lib/api-types/pdf-metadata";
 import { getDb, type AvaReaderDB } from "../../../../db";
 import { isLibraryItemDeleted } from "../../deleted-items";
@@ -26,14 +27,21 @@ export async function requestPdfMetadata(input: {
   const { db, operationId, libraryItemId } = input;
   if (db !== getDb() || (await isLibraryItemDeleted(db, libraryItemId)))
     throw new MetadataRequestError("unavailable");
-  const changes = input.edit ? metadataChanges(input.edit.draft) : null;
+  const changes = input.edit
+    ? metadataPatch(input.edit.snapshot, input.edit.draft)
+    : null;
   if (
     input.edit &&
-    (!changes ||
+    (!readPdfMetadata(input.edit.snapshot) ||
+      !metadataChanges(input.edit.draft) ||
       input.edit.snapshot.operationId !== operationId ||
       input.edit.snapshot.libraryItemId !== libraryItemId)
   )
     throw new MetadataRequestError("invalid");
+  if (input.edit && !changes) {
+    if (db !== getDb()) throw new MetadataRequestError("unavailable");
+    return input.edit.snapshot;
+  }
   const response = await pdfImportRequest(
     db,
     input.getToken,

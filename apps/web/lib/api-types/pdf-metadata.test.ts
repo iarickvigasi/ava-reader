@@ -1,5 +1,9 @@
 import { expect, it } from "vitest";
-import { metadataChanges, readPdfMetadata } from "./pdf-metadata";
+import {
+  metadataChanges,
+  metadataPatch,
+  readPdfMetadata,
+} from "./pdf-metadata";
 const valid = {
   operationId: "operation",
   libraryItemId: "library",
@@ -29,6 +33,29 @@ it("keeps the existing API field bounds", () => {
         ...patch,
       }),
     ).toBeNull();
+});
+it("compares normalized values while preserving author order and explicit clears", () => {
+  const snapshot = { ...valid, authors: ["A", "B"], language: "en" };
+  expect(
+    metadataPatch(snapshot, {
+      title: " Title ",
+      authors: " A\r\n B ",
+      language: " en ",
+    }),
+  ).toBeNull();
+  expect(
+    metadataPatch(snapshot, {
+      title: "Title",
+      authors: "B\nA",
+      language: "en",
+    }),
+  ).toEqual({ authors: ["B", "A"] });
+  expect(
+    metadataPatch(snapshot, { title: "Title", authors: "", language: "" }),
+  ).toEqual({ authors: [], language: null });
+  expect(
+    metadataPatch(snapshot, { title: "", authors: "A\nB", language: "en" }),
+  ).toBeNull();
 });
 it("refuses malformed snapshot identity/version and data", () => {
   expect(readPdfMetadata(valid)).toEqual(valid);

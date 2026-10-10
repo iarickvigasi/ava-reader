@@ -30,7 +30,13 @@ it("uses an owned no-store snapshot and expected version for a save", async () =
   await requestPdfMetadata({
     ...input(),
     edit: {
-      snapshot: { ...edited, metadataEditVersion: 0 },
+      snapshot: {
+        ...edited,
+        metadataEditVersion: 0,
+        title: "Original",
+        authors: ["Original author"],
+        language: "en",
+      },
       draft: { title: "My title", authors: "", language: "" },
     },
   });
@@ -52,7 +58,15 @@ it("reports conflict without overwriting the cached values or queueing edits", a
     "fetch",
     vi.fn(async () => new Response(null, { status: 409 })),
   );
-  await expect(requestPdfMetadata(input())).rejects.toMatchObject({
+  await expect(
+    requestPdfMetadata({
+      ...input(),
+      edit: {
+        snapshot: { ...edited, metadataEditVersion: 0 },
+        draft: { title: "New title", authors: "", language: "" },
+      },
+    }),
+  ).rejects.toMatchObject({
     reason: "conflict",
   });
   expect((await getDb().libraryItems.get("lib-1"))?.title).toBe("Original");

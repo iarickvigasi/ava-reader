@@ -36,6 +36,24 @@ export function metadataChanges(draft: PdfMetadataDraft) {
     return null;
   return { title, authors, language };
 }
+export function metadataPatch(snapshot: PdfMetadata, draft: PdfMetadataDraft) {
+  const values = metadataChanges(draft);
+  const prior = metadataChanges(metadataDraft(snapshot));
+  if (!values || !prior) return null;
+  const patch: {
+    title?: string;
+    authors?: string[];
+    language?: string | null;
+  } = {};
+  if (values.title !== prior.title) patch.title = values.title;
+  if (
+    values.authors.length !== prior.authors.length ||
+    values.authors.some((author, index) => author !== prior.authors[index])
+  )
+    patch.authors = values.authors;
+  if (values.language !== prior.language) patch.language = values.language;
+  return Object.keys(patch).length ? patch : null;
+}
 export function readPdfMetadata(value: unknown): PdfMetadata | null {
   if (!value || typeof value !== "object") return null;
   const v = value as Record<string, unknown>;

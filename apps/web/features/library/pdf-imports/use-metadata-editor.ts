@@ -5,6 +5,7 @@ import type { LibraryBookInfo } from "@/lib/api-types";
 import {
   metadataDraft,
   metadataChanges,
+  metadataPatch,
   type PdfMetadataDraft,
 } from "@/lib/api-types/pdf-metadata";
 import { useOfflineAuth } from "@/features/auth/use-offline-auth";
@@ -22,14 +23,13 @@ export function useMetadataEditor(book: LibraryBookInfo) {
   const serial = useRef(0);
   const [value, setValue] = useState<Editor | null>(null);
   const editor = value?.scope === scope && value.db === getDb() ? value : null;
+  const changes = editor?.snapshot
+    ? metadataPatch(editor.snapshot, editor.draft)
+    : null;
   const enabled =
     online && Boolean(auth.isLoaded && auth.isSignedIn && book.pdfImport);
   async function run(save: boolean) {
-    if (
-      !enabled ||
-      (save && (!editor?.snapshot || !metadataChanges(editor.draft)))
-    )
-      return;
+    if (!enabled || (save && !changes)) return;
     const request = ++serial.current;
     const db = getDb();
     const base = editor ?? initialEditor(book, scope);
@@ -90,6 +90,6 @@ export function useMetadataEditor(book: LibraryBookInfo) {
       !!editor?.snapshot &&
       !editor.pending &&
       !editor.error &&
-      !!metadataChanges(editor.draft),
+      !!changes,
   };
 }
