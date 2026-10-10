@@ -37,6 +37,7 @@ class Observation:
         self.reuse = {
             name: dict(hits=0, misses=0) for name in ("checkpoint_decode", "annotation_view")
         }
+        self.attempt_preparation_reused = False
         self.outcome = "completed"
         self.failure_code: str | None = None
         self.findings: list[dict[str, object]] = []
@@ -93,6 +94,10 @@ class Observation:
             elif event == "reuse":
                 name, hit = values
                 self.reuse[name]["hits" if hit else "misses"] += 1
+            elif event == "attempt_preparation_reuse":
+                if self.fields.get("command") != "attempt_stream":
+                    raise ValueError("Attempt reuse belongs to another command")
+                self.attempt_preparation_reused = True
         except Exception:
             self.valid = False
 
@@ -132,8 +137,12 @@ class Observation:
                 resources=resources(self.before, self.scratch),
                 inventory=self.inventory.packet(),
                 reuse=dict(
-                    source_preparation="none",
-                    scope="worker_process_local_decode_and_annotation_memo",
+                    source_preparation="attempt_private_page_checkpoints"
+                    if self.attempt_preparation_reused
+                    else "none",
+                    scope="worker_attempt_private_checkpoints_and_process_local_decode_and_annotation_memo"
+                    if self.fields.get("command") == "attempt_stream"
+                    else "worker_process_local_decode_and_annotation_memo",
                     **self.reuse,
                 ),
                 findings=self.findings,

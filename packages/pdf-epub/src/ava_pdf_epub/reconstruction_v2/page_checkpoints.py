@@ -41,6 +41,16 @@ class PageCheckpoints(Sequence[PreparedPage]):
     def __len__(self) -> int:
         return len(self._entries)
 
+    def clear_cache(self) -> None:
+        """Drop mutable decoded observations before starting another assembly phase."""
+        self._cached.clear()
+        self._cache_bytes = 0
+
+    def verify(self) -> None:
+        """Recheck every private checkpoint, including pages not presently decoded."""
+        for index in range(len(self)):
+            self._read(index)
+
     @overload
     def __getitem__(self, index: int) -> PreparedPage: ...
 

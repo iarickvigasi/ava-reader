@@ -7,6 +7,7 @@ from pathlib import Path
 from ..contracts.private_files import snapshot
 from ..contracts.profiles import LEGACY_PROFILE, checked_profile
 from ..worker_observation import Observation, observe, phase
+from .attempt_stream import AttemptFailure, attempt_stream
 from .prepare_page import prepare_page
 from .prepare_refinement_source import prepare_refinement_source
 from .protocol import ReconstructionInput, prepared_result
@@ -45,6 +46,9 @@ def main() -> None:
         source_bytes = snapshot(Path("/input"), "source.pdf", 52428800)
         observe("source_bytes", source_bytes)
         del source_bytes
+        if request.get("mode") == "attempt_stream":
+            attempt_stream(source, root, raw_request, sys.stdin.buffer, sys.stdout.buffer)
+            return
         if request.get("mode") == "prepare" and set(request) in (
             {"mode", "page_number"},
             {"mode", "page_number", "profile_id"},
@@ -80,6 +84,10 @@ def main() -> None:
             raise ValueError("Unknown reconstruction command")
         sys.stdout.buffer.write(output)
         sys.stdout.buffer.flush()
+    except AttemptFailure as error:
+        if observation is not None:
+            observation.failed(error.cause)
+        raise SystemExit(1) from None
     except SourceContentRefusal as error:
         if observation is not None:
             observation.failed(error)

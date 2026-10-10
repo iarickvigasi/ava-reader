@@ -15,6 +15,8 @@ from pypdf import PdfReader
 from ..admission_actions import inspect_annotations, inspect_catalog
 from ..annotation_kind import annotation_kind
 from ..annotation_view import annotation_view
+from ..annotation_view_cache import cached_view
+from ..contracts.private_files import snapshot
 from ..contracts.profiles import ProfileId, checked_profile
 from ..worker_observation import observe
 
@@ -83,6 +85,25 @@ class SourcePreparation:
         if self._view is not None and identity(self._view) != self._view_identity:
             raise ValueError("PDF_ANNOTATION_VIEW_CACHE_INVALID")
 
+    def check_unchanged(self) -> None:
+        """Check the existing operational guard while an attempt awaits a reply."""
+        if self._closed:
+            raise ValueError("Source preparation is closed")
+        self._unchanged()
+
+    def verify_inputs(self) -> None:
+        """Hash-check original/view bytes at finite attempt phase boundaries."""
+        self.check_unchanged()
+        data = snapshot(self.source.parent, self.source.name, 52428800)
+        if hashlib.sha256(data).hexdigest() != self.sha256:
+            raise ValueError("Reconstruction source identity changed")
+        del data
+        if self._view is not None:
+            selected, _, _ = cached_view(self.source, self.scratch)
+            if selected != self._view:
+                raise ValueError("PDF_ANNOTATION_VIEW_CACHE_INVALID")
+        self.check_unchanged()
+
     def _retire(self) -> None:
         active = any(item is not None for item in (self._document, self._view_reader, self._reader))
         try:
@@ -108,6 +129,11 @@ class SourcePreparation:
 
     def close(self) -> None:
         self._closed = True
+        self._retire()
+
+    def retire_parsers(self) -> None:
+        """Keep attempt identity guards without retaining parsers during host waits."""
+        self.check_unchanged()
         self._retire()
 
     @contextmanager

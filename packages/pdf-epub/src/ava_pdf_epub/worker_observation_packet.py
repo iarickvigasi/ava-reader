@@ -12,6 +12,7 @@ from .reconstruction_v2.source_refusal import SourceContentRefusal
 PREFIX = "AVA_WORKER_OBSERVATION_V1 "
 PACKET_BYTES = 6144
 COMMANDS = {
+    "attempt_stream",
     "prepare",
     "prepare_refinement",
     "reconstruct",
