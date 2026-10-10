@@ -407,6 +407,50 @@ permit the host to publish one immutable Ready book. Standalone legacy canaries 
 Host-side provider dispatch exists behind explicit route/source/budget authority; no live route is
 enabled merely by starting the ordinary worker, and no model call occurs inside this container.
 
+### Finite reconstruction attempt
+
+`reconstruction_v2` also accepts `attempt_stream` in the fixed
+`/input/reconstruction-request.json`. The exact startup object contains `mode` and `input`;
+`input` is `ava-reconstruct-input-1` with explicit registered `profile_id`, the SHA-256 of
+`/input/source.pdf`, and empty `responses` and `refinements` arrays. Optional
+`source_feature_policy: "ava-ocr-source-features-1"` selects the current finite comparisons;
+omitting it retains the historical policy. Provider authority remains with the host.
+
+Controls use a four-byte unsigned big-endian length followed by UTF-8 JSON. Every
+`ava-reconstruction-exchange-1` envelope has exactly `schema_version`, increasing `sequence`,
+`source_sha256`, `profile_id`, `kind` and `payload`. Replies repeat the same envelope binding.
+Only one exchange is outstanding; unknown or duplicate keys, wrong binding/order, oversized
+messages, truncation and unexpected EOF are refused.
+
+| Worker control | Payload | Host reply |
+|---|---|---|
+| `page` | Unchanged `PrepareResult`, including its tasks | `[]` acknowledgement |
+| `recognition` | `{ "task_id": "…" }` from that page, in task order | One existing recognition response in a list |
+| `refinement_batch` | Unchanged `RefinementBatch` | `[]` acknowledgement |
+| `refinement` | `{ "task_id": "…" }` from that batch, in task order | One existing refinement response in a list |
+| `artifacts` | `null` | None; subsequent stdout uses the existing artifact stream |
+| `refusal` | Existing typed source diagnostic or generic reconstruction error | None; worker exits `1` |
+
+The worker admits tasks before announcing them and semantically accepts each response before
+requesting the next dispatch. Task controls do not repeat images. After the last refinement
+reply, or an empty batch acknowledgement, the host closes stdin; the worker requires EOF before
+emitting artifacts. Existing per-task and aggregate payload limits remain enforced; exact frame
+bounds are in [the codec](src/ava_pdf_epub/reconstruction_v2/attempt_exchange.py).
+
+Each page is prepared once into attempt-private, hash-checked checkpoints. Whole-source annotation
+admission precedes the first page/task control. Original/view identity checks and bounded checkpoint reads
+continue across phases; decoded caches are cleared and response/assembly state is recreated for
+final reconstruction. The two-page parser windows remain, and parsers retire before host waits.
+This reuse introduces no cross-attempt cache and does not imply one PDF open or eliminate later
+source metadata/link reads. `prepare`, `prepare_refinement`, `reconstruct`, `reconstruct_stream`
+and the standalone validators retain their existing interfaces.
+
+The single `prepare_source` timing phase covers active upfront preparation and excludes host
+response waits. Whole-command `work_ms` includes those waits and still excludes interpreter startup
+and observation export. Other phase intervals remain inclusive and must not be summed. The
+attempt reuse observation describes private checkpoints, separately from decoded-cache hits.
+This interface does not qualify an installed runner, provider, supplied corpus or production release.
+
 Annotation admission refusals carry a stable `PDF_*` code and bounded, content-free `finding`
 location: one-based `page_number`, optional `annotation_number` and a related-object path
 (`/Popup`, `/Parent`, `/IRT`, at most 20 steps). Source-order traversal makes the first refusal
