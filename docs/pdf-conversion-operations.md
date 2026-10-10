@@ -242,6 +242,19 @@ access. Fresh ADMIN membership is checked before and after the database snapshot
 and these exports omit book text/images, filenames/paths, prompts, credentials and arbitrary stored
 JSON. Restricted raw diagnostic artifacts retain their own access boundary.
 
+The read-only browser client is `/app/admin/pdf-reports`, linked from the existing admin catalog
+and PDF review pages. It uses normal Clerk sign-in and an existing ADMIN membership; its server
+forwards the Clerk bearer token to the backend API. The data-free page reads a no-store, same-origin
+GET proxy under `/api/admin/pdf-reports`, which both old and current service workers bypass. Direct
+backend API navigation with cookies alone does not authenticate these routes. Search by operation,
+failure, book or Library reference, or enter an
+admission response's `investigationId` as the investigation reference. Timeline and export reads use
+four events per page; the separate cost view reads 25 calls. Timeline and cost cursors are separate.
+Downloaded JSON contains the current safe viewer projection, not the full history;
+unsupported fields are disclosed. The route bypasses service-worker documents and route precache,
+and its visible report is hidden when the signed-in account changes. It provides no conversion,
+retry or accounting writes. Source checks do not establish a normal operator acceptance pass.
+
 Amounts are exact USD nanodollars, represented as decimal strings. Count each provider call once;
 its four enforcement-budget allocations are not four charges. Distinguish settled charges, held
 reservations/dispatch, uncertain exposure and missing historical evidence. A stale or incompatible

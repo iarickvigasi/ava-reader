@@ -104,6 +104,14 @@ function isPrefetchRequest(request) {
   );
 }
 
+// Operator evidence must never become an offline document or route-precache entry.
+function isPrivateReportRoute(url) {
+  return (
+    url.pathname === "/app/admin/pdf-reports" ||
+    url.pathname.startsWith("/app/admin/pdf-reports/")
+  );
+}
+
 // Redirects reach the browser untouched — substituting the cached shell
 // swallows the Clerk handshake (spec 4.5 §6). Navigations use redirect mode
 // "manual", so a 307 surfaces as an opaqueredirect (status 0, not ok).
@@ -303,6 +311,7 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== self.location.origin) {
     return;
   }
+  if (isPrivateReportRoute(url)) return;
   // The data/auth layer is owned by Dexie + Clerk — never intercepted.
   if (url.pathname.startsWith("/api/")) {
     return;
@@ -359,7 +368,14 @@ self.addEventListener("message", (event) => {
 // Cache every route's shell, then report which routes now have a cached doc.
 async function precacheRoutes(routes) {
   const cache = await caches.open(CACHE_NAME);
-  const valid = routes.filter((route) => typeof route === "string");
+  const valid = routes.filter((route) => {
+    if (typeof route !== "string") return false;
+    try {
+      return !isPrivateReportRoute(new URL(route, self.location.origin));
+    } catch {
+      return false;
+    }
+  });
   const queue = valid.slice();
   const worker = async () => {
     let route;

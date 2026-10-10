@@ -51,6 +51,13 @@ export default async function AdminCatalogPage() {
       <Link href="/app/admin/pdf-imports" className="underline">
         Review PDF imports
       </Link>
+      <Link
+        href="/app/admin/pdf-reports"
+        prefetch={false}
+        className="underline"
+      >
+        Investigate PDF conversions
+      </Link>
       <AdminCatalogManager initialEntries={entries} />
     </div>
   );

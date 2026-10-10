@@ -154,6 +154,13 @@ journeys. Source/package checks, installed-worker execution, full required books
 remain separate. Keep the original fixture CHECK, identifier-contract, lint and timing failures with
 all repaired/retest evidence. Never weaken database guards or raise test deadlines to obtain a pass.
 
+Use `/app/admin/pdf-reports` for the normal operator browser journey with an already authorized
+ADMIN account. Check READY, Failed and admission-refusal references, ordinary/developer denial,
+missing/unavailable states, independent timeline/cost cursors, stale-cost restart and the bounded
+JSON page download. Confirm that account changes hide the report and offline navigation does not
+serve a cached report. Unknown cost and incomplete evidence must remain explicit. Hidden token
+extraction and synthetic role fixtures do not qualify this browser acceptance.
+
 On constrained development hosts, schedule heavy package checks sequentially. Record hardware and
 competing-process conditions; a host swap snapshot cannot establish an AVA leak or production limit.
 A targeted timeout retest does not erase a failed full run; qualify the full candidate at unchanged
