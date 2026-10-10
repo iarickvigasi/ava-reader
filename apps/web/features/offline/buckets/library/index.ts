@@ -44,7 +44,10 @@ export {
 export { readWithRevalidate } from "./read-with-revalidate";
 export { setBookFinishedAt } from "./finish-date/mutation";
 export { flushFinishDates } from "./finish-date/sync";
-export { clearFinishDateRuntime, subscribeToFinishDateSyncFailures } from "./finish-date/runtime";
+export {
+  clearFinishDateRuntime,
+  subscribeToFinishDateSyncFailures,
+} from "./finish-date/runtime";
 export { readLibraryItemIdBySlug } from "./slug-lookup";
 export { collectionViewToLibraryCollection } from "./collections/view-to-collection";
 export type { CollectionView, LibraryBookView, LibraryView } from "./types";
@@ -56,3 +59,5 @@ export {
   clearCollectionMembershipRuntime,
   type MembershipDropEvent,
 } from "./membership";
+
+export { readReaderCover } from "./read-reader-cover";

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { readCoverBlob } from "./storage";
+import { releaseCoverUrl } from "./warm-cover";
 
 // The Dexie-cached cover for a personal-library book — checked first, ahead
 // of the network (see use-book-cover-src.ts). Three states, since "resolving"
@@ -45,7 +46,7 @@ export function useCoverBlobUrl(
     return () => {
       cancelled = true;
       if (objectUrl) {
-        URL.revokeObjectURL(objectUrl);
+        releaseCoverUrl(objectUrl);
       }
     };
   }, [libraryItemId]);

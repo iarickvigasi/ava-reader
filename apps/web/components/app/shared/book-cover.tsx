@@ -30,6 +30,7 @@ const RATIO_CLASS = {
 export function BookCover({
   alt,
   className,
+  fit = false,
   libraryItemId = null,
   ratio = "book",
   src,
@@ -37,6 +38,7 @@ export function BookCover({
 }: {
   alt: string;
   className?: string;
+  fit?: boolean;
   libraryItemId?: null | string;
   ratio?: keyof typeof RATIO_CLASS;
   src: string | null;
@@ -44,6 +46,12 @@ export function BookCover({
 }) {
   const { artwork, effectiveSrc, handleFailure, handleRef, measure } =
     useBookCoverSrc(src, libraryItemId);
+  const aspectRatio = artwork?.ratio ?? (ratio === "book" ? 2 / 3 : 1);
+  // Fitted covers live inside a size query container, so both bounds are known.
+  const style = {
+    aspectRatio,
+    ...(fit ? { width: `min(100cqw, ${aspectRatio * 100}cqh)` } : {}),
+  };
 
   const frame = cn(
     "overflow-hidden rounded-cover",
@@ -54,16 +62,16 @@ export function BookCover({
   // No src, or every source we know (the offline-saved blob, then network)
   // has failed — the browser would otherwise paint its broken-image icon.
   if (!effectiveSrc) {
-    return <BookCoverFallback className={frame} title={title} />;
+    return <BookCoverFallback className={frame} title={title} style={style} />;
   }
 
   return (
-    <div
-      className={cn("relative bg-paper-strong", frame)}
-      style={artwork ? { aspectRatio: artwork.ratio } : undefined}
-    >
+    <div className={cn("relative bg-paper-strong", frame)} style={style}>
       {!artwork && (
-        <BookCoverFallback className="absolute inset-0 size-full" title={title} />
+        <BookCoverFallback
+          className="absolute inset-0 size-full"
+          title={title}
+        />
       )}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
