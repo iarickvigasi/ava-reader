@@ -7,6 +7,8 @@ import { startContainer } from './start-container';
 import { validateRuntimeConfig, type PdfRuntimeConfig } from './runtime-config';
 import { PdfRuntimeError } from './runtime-error';
 import { workerBinding } from './worker-observation';
+import { exchangeEntry } from './exchange-entry';
+import { ExchangeFailure } from './exchange-failure';
 
 export async function runSandbox(
   input: SandboxInput,
@@ -58,6 +60,7 @@ export async function runSandbox(
       ? { ...input.observationCommand }
       : undefined,
   };
+  exchangeEntry(snapshot);
   const name = `ava-pdf-${randomUUID()}`;
   const failedLease = new AbortController();
   const signal = input.signal
@@ -65,7 +68,7 @@ export async function runSandbox(
     : failedLease.signal;
   const inputs = await privateInputs(snapshot, () => failedLease.abort(), name);
   let response: Awaited<ReturnType<typeof startContainer>> | undefined;
-  let failure: PdfRuntimeError | undefined;
+  let failure: PdfRuntimeError | ExchangeFailure | undefined;
   let cleanupFailed = false;
   try {
     response = await startContainer(
@@ -77,7 +80,7 @@ export async function runSandbox(
     );
   } catch (error) {
     failure =
-      error instanceof PdfRuntimeError
+      error instanceof PdfRuntimeError || error instanceof ExchangeFailure
         ? error
         : new PdfRuntimeError('WORKER_CRASH');
   } finally {
@@ -96,6 +99,14 @@ export async function runSandbox(
       !inputCleanup ||
       !removed ||
       (removed.exitCode !== 0 && !removed.stderr.includes('No such container'));
+  }
+  if (failure instanceof ExchangeFailure) {
+    if (cleanupFailed) {
+      const error = new PdfRuntimeError('WORKER_CRASH', undefined, true);
+      error.cause = failure.original;
+      throw error;
+    }
+    throw failure.original;
   }
   if (failure)
     throw new PdfRuntimeError(

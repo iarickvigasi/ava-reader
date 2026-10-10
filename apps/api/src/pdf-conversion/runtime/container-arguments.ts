@@ -1,5 +1,6 @@
 import type { PdfRuntimeConfig } from './runtime-config';
 import type { FaultExpectation } from './fault-acknowledgement';
+import { exchangeEntry } from './exchange-entry';
 import type {
   WorkerBinding,
   WorkerCommandExpectation,
@@ -66,6 +67,8 @@ export function containerArguments(
     '--label=ava.pdf.runtime=1',
     '--entrypoint=/usr/bin/timeout',
   ];
+  if (exchangeEntry(input))
+    args.push('--interactive', '--env=AVA_PDF_RUNTIME_EXCHANGE=attempt_stream');
   if (config.fault && input.module === 'ava_pdf_epub.runtime')
     args.push(
       '--env=AVA_PDF_RUNTIME_MODE=development',
