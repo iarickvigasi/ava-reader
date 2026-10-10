@@ -16,11 +16,31 @@ export function OfflineIdentityReconciler({
   children: ReactNode;
   serverUserId: string | null;
 }) {
-  const { owner, ready, blocked } = useDeviceIdentity(serverUserId);
+  const { owner, ready, blocked, preparation } =
+    useDeviceIdentity(serverUserId);
   const pathname = usePathname();
   return (
     <>
       <LocalSignOutRecovery blocked={blocked} />
+      {pathname.startsWith("/app") && !ready && !blocked && (
+        <main
+          className="mx-auto max-w-lg space-y-4 p-6 text-ink"
+          role={preparation === "failed" ? "alert" : "status"}
+        >
+          <h1 className="font-reader text-2xl text-title">
+            {preparation === "failed"
+              ? "AVA could not prepare your library"
+              : "Preparing your library…"}
+          </h1>
+          <p>
+            {preparation === "failed"
+              ? "Account preparation did not finish. Your library remains closed to prevent showing another account’s data."
+              : preparation === "waiting"
+                ? "Your library is still being prepared. Another AVA tab may be holding local storage open. You can close other AVA tabs and wait here."
+                : "Please wait while AVA prepares this account’s local library."}
+          </p>
+        </main>
+      )}
       {(!pathname.startsWith("/app") || (ready && !blocked)) && (
         <Fragment key={owner ?? "visitor"}>
           <DeviceOwnerContext value={owner ?? null}>

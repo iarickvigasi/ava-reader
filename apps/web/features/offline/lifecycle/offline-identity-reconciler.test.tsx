@@ -47,7 +47,8 @@ it("provides the reconciled mounted owner without requiring a Clerk user", () =>
 });
 it("keeps unready identity, explicit sign-out and database gates ahead of local children", () => {
   f.ready = false;
-  expect(render()).toBe("");
+  expect(render()).toContain("Preparing your library");
+  expect(render()).not.toContain("<p>reader-a</p>");
   f.ready = true;
   f.blocked = true;
   expect(render()).toBe("");

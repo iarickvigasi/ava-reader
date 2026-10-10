@@ -97,6 +97,23 @@ those operating gates independently before activation; a healthy API/database re
 them. The full app e2e health check requires an available test database and asserts only the healthy
 HTTP 200 contract.
 
+## Account preparation
+
+The shared local-account gate displays preparation, a still-waiting notice after 15 seconds, and
+safe failure text. The notice does not cancel cleanup or admit content. A failed adoption cannot
+become a successful same-owner no-op; obsolete effects cannot finish a transition or stamp a
+session. Already-ready same-owner reading survives ordinary session refresh and expiry.
+
+```sh
+pnpm --filter web exec vitest run features/auth/device-identity-preparation.test.tsx features/auth/select-device-owner.test.ts features/offline/lifecycle/offline-identity-reconciler.test.tsx --maxWorkers=2
+```
+
+These controlled hook/gate/selection tests substitute Clerk, persistence and the React scheduler.
+They do not establish actual blocked Dexie deletion, browser mount/history continuity or the cause
+of a previously blank screen. Failed-target protection is limited to the page lifetime; no Retry,
+reload recovery, storage reset or cleanup-order change is introduced. Verify real account changes,
+same-owner expiry and preparation failure separately in the app before release.
+
 ## Reporting persistence and operator verification
 
 For worker observations, preserve the original command stdout/exit when clocks, inventory,
