@@ -89,12 +89,14 @@ export function dockerExchange(
     });
     child.stdout.on('data', (data: Buffer) => {
       if (settled) return;
-      pending = stream
+      const work: Promise<void> = stream
         .write(data)
         .then(() => {
-          if (!settled) child.stdout.resume();
+          // An older fragmented read cannot release a newer artifact sink's pause.
+          if (!settled && pending === work) child.stdout.resume();
         })
         .catch((error: unknown) => finish(error));
+      pending = work;
     });
     child.stderr.on('data', (data: Buffer) => {
       if (!errors.append(data)) finish(new PdfRuntimeError('RESOURCE_LIMIT'));

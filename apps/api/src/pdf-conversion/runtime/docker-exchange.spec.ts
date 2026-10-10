@@ -1,4 +1,5 @@
 import { spawn } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { dockerExchange } from './docker-exchange';
 import { ExchangeFailure } from './exchange-failure';
 import { testConfig } from './config-fixture';
@@ -12,6 +13,97 @@ const spawnMock = jest.mocked(spawn);
 afterEach(() => {
   jest.useRealTimers();
   jest.clearAllMocks();
+});
+
+it('keeps artifact input paused during deferred canonical validation after a split marker', async () => {
+  const fake = fakeDocker();
+  spawnMock.mockReturnValue(fake.child as never);
+  const input = exchangeInput(),
+    data = Buffer.from('authored canonical bytes'),
+    descriptors = [
+      'canonical.json',
+      'book.epub',
+      'reconstruction-report.json',
+    ].map((path) => ({
+      path,
+      sha256: createHash('sha256').update(data).digest('hex'),
+      byte_length: data.length,
+    })),
+    staged: string[] = [];
+  let acceptCanonical!: () => void,
+    validationStarted = false,
+    artifactSignal: AbortSignal | undefined;
+  const acknowledged = input.onExchange!;
+  input.onExchange = (bytes, signal) => {
+    artifactSignal = signal;
+    return acknowledged(bytes, signal);
+  };
+  const sink = artifactStream(async (descriptor) => {
+    if (descriptor.path === 'canonical.json') {
+      validationStarted = true;
+      await new Promise<void>((resolve) => {
+        acceptCanonical = resolve;
+      });
+    }
+    expect(artifactSignal?.aborted).toBe(false);
+    staged.push(descriptor.path);
+  });
+  input.onStdout = (bytes) => sink.write(bytes);
+  const result = dockerExchange(
+    testConfig,
+    'owned',
+    input,
+    1000,
+    new AbortController().signal,
+  );
+  // Observe failure immediately, so a broken implementation leaves no unhandled rejection.
+  const outcome = result.then(
+    (value) => value,
+    (error: unknown) => error,
+  );
+  fake.child.stdout.write(frame(envelope()));
+  await turn();
+  fake.child.stdout.write(frame(envelope(2, 'refinement_batch')));
+  await turn();
+  const marker = frame(envelope(3, 'artifacts')),
+    line = (value: unknown) => Buffer.from(JSON.stringify(value) + '\n'),
+    chunk = (path: string) =>
+      line({ path, offset: 0, base64: data.toString('base64') });
+  // Both reads are legal pipe fragmentation. The first read's completion must
+  // not resume stdout after the newer read has paused it for async validation.
+  fake.child.stdout.write(marker.subarray(0, 2));
+  fake.child.stdout.write(
+    Buffer.concat([
+      marker.subarray(2),
+      line({
+        schema_version: 'ava-reconstruct-stream-1',
+        report: {},
+        artifacts: descriptors,
+      }),
+      chunk('canonical.json'),
+    ]),
+  );
+  fake.child.stdout.write(
+    Buffer.concat([
+      chunk('book.epub'),
+      chunk('reconstruction-report.json'),
+      line({ complete: true }),
+    ]),
+  );
+  await turn();
+  expect(validationStarted).toBe(true);
+  expect(fake.child.stdout.isPaused()).toBe(true);
+  expect(artifactSignal?.aborted).toBe(false);
+  expect(staged).toEqual([]);
+  acceptCanonical();
+  await turn();
+  fake.child.stdout.end();
+  await turn();
+  fake.child.emit('close', 0);
+  await expect(outcome).resolves.toMatchObject({ exitCode: 0 });
+  expect(sink.finish().artifacts).toEqual(descriptors);
+  expect(staged).toEqual(descriptors.map(({ path }) => path));
+  expect(fake.child.kill).not.toHaveBeenCalled();
 });
 
 it('does not start its owned attach process after prior cancellation', async () => {
