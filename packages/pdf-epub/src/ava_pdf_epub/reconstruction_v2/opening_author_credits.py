@@ -3,12 +3,28 @@
 from typing import Any
 
 from .assembly_state import AssemblyState
-from .opening_credit_value import opening_credit_parts
+from .opening_credit_value import EDITION, opening_credit_parts
 from .printed_claim import printed_claim
 
 MAX_OPENING_BLOCKS = 16
 MAX_CREDIT_GAP_PT = 35
 MAX_CREDIT_RELATIVE_SIZE = 1
+
+
+def separate_title_label(text: str, title_text: str, source_author: str) -> bool:
+    """Recognize a repeated-title edition label, without granting it metadata authority."""
+    text, title_text = " ".join(text.split()), " ".join(title_text.split())
+    if not title_text or title_text == " ".join(source_author.split()):
+        return False
+    for separator in (" — ", " – "):
+        repeated, found, label = text.partition(separator)
+        if found and repeated == title_text:
+            match = EDITION.fullmatch(label)
+            # A role-bearing phrase may be another credit, not an ordinary title label.
+            return match is not None and not {"by", "author", "автор", "автором"}.intersection(
+                match["prefix"].casefold().split()
+            )
+    return False
 
 
 def opening_author_credits(
@@ -71,7 +87,15 @@ def opening_credit_group(
         ):
             break
         gap = segment.box.y0 - previous.box.y1
-        value = opening_credit_parts(block.get("content", {}).get("text", ""), source_author)
+        text = block.get("content", {}).get("text", "")
+        value = opening_credit_parts(text, source_author)
+        if (
+            found is not None
+            and 0 < gap < MAX_CREDIT_GAP_PT
+            and block["kind"] == "paragraph"
+            and separate_title_label(text, title.get("content", {}).get("text", ""), source_author)
+        ):
+            break
         if not 0 < gap < MAX_CREDIT_GAP_PT or value is None or found is not None:
             return None
         found = (block, value)
