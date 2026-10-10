@@ -42,16 +42,16 @@ export function ReportStateNotice({
         </ButtonLink>
       )}
       {query && ["changed", "invalid", "unavailable"].includes(state) && (
-        <ButtonLink
+        <a
           href={reportHref({
             ...query,
             eventCursor: undefined,
             costCursor: undefined,
           })}
-          size="sm"
+          className="inline-flex min-h-10 items-center underline"
         >
           Start this view again
-        </ButtonLink>
+        </a>
       )}
     </div>
   );

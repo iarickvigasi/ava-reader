@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { reportHref } from "@/features/admin/pdf-reports/query";
 import { object } from "@/features/admin/pdf-reports/parse-response";
 import type {
@@ -25,8 +24,7 @@ export function ReportLookupResults({ report }: { report: ReportData }) {
             id = String(row.conversionId);
           return (
             <li key={id}>
-              <Link
-                prefetch={false}
+              <a
                 className="break-all underline"
                 href={reportHref({
                   kind: "conversionId",
@@ -35,7 +33,7 @@ export function ReportLookupResults({ report }: { report: ReportData }) {
                 })}
               >
                 {id} · {String(row.status)} · {String(row.stage)}
-              </Link>
+              </a>
             </li>
           );
         })}

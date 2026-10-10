@@ -1,4 +1,3 @@
-import Link from "next/link";
 import {
   reportHref,
   reportViews,
@@ -21,6 +20,7 @@ export function ReportResult({
   if (query.kind !== "conversionId")
     return <ReportLookupResults report={report} />;
   const cursorKey = query.view === "cost" ? "costCursor" : "eventCursor";
+  // Report query changes reload the document after soft navigation retained old evidence.
   return (
     <section className="space-y-5" aria-label="Conversion investigation">
       <h2 className="break-all font-display text-3xl">
@@ -28,15 +28,14 @@ export function ReportResult({
       </h2>
       <nav aria-label="Report views" className="flex flex-wrap gap-4">
         {reportViews.map((view) => (
-          <Link
-            prefetch={false}
+          <a
             key={view}
             className="capitalize underline"
             aria-current={view === query.view ? "page" : undefined}
             href={reportHref({ ...query, view })}
           >
             {view === "events" ? "Timeline" : view}
-          </Link>
+          </a>
         ))}
       </nav>
       {report.omittedFields > 0 && (
@@ -75,21 +74,19 @@ export function ReportResult({
       <ReportJsonPanel title="Safe report fields" value={value} />
       {query.view !== "snapshot" && (
         <div className="flex flex-wrap gap-4">
-          <Link
-            prefetch={false}
+          <a
             className="underline"
             href={reportHref({ ...query, [cursorKey]: undefined })}
           >
             Start this view again
-          </Link>
+          </a>
           {report.nextCursor && (
-            <Link
-              prefetch={false}
+            <a
               className="underline"
               href={reportHref({ ...query, [cursorKey]: report.nextCursor })}
             >
               Next {query.view === "cost" ? "cost" : "timeline"} page
-            </Link>
+            </a>
           )}
         </div>
       )}
