@@ -7,9 +7,7 @@ import type {
   CoordinatorDependencies,
   CoordinatorInput,
 } from './coordinator-types';
-import { preparePages } from './prepare-pages';
-import { refineBook } from './refine-book';
-import { streamReconstruction } from './stream-reconstruction';
+import { runAttempt } from './run-attempt';
 import { candidateEnvelope } from './candidate-envelope';
 import { outputInventory } from './output-inventory';
 
@@ -46,46 +44,20 @@ export async function runReconstruction(
       leaseRemainingMs: input.leaseRemainingMs,
     };
   };
-  const prepared = await observe('EXTRACTION', () =>
-    preparePages({
-      deps,
-      sandboxInput,
-      sourceSha256: job.source.sha256,
-      pageLimit: job.source_page_limit,
-      providerMode: job.provider_mode,
-      profileId: job.profile_id,
-    }),
-  );
-  await deps.progress({ stage: 'RECONSTRUCTION' });
-  const refinements = await observe('STRUCTURE_REFINEMENT', () =>
-    refineBook({
-      responses: prepared.responses,
-      deps,
-      sandboxInput,
-      sourceSha256: job.source.sha256,
-      providerMode: job.provider_mode,
-      profileId: job.profile_id,
-    }),
-  );
-  const auxiliaryBytes = Buffer.from(
-    JSON.stringify({
-      mode: 'reconstruct_stream',
-      input: {
-        schema_version: 'ava-reconstruct-input-1',
-        source_feature_policy: 'ava-ocr-source-features-1',
-        profile_id: job.profile_id,
-        source_sha256: job.source.sha256,
-        responses: prepared.responses,
-        refinements,
+  const prepared = await observe('ATTEMPT_RECONSTRUCTION', () =>
+    runAttempt(
+      {
+        deps,
+        sandboxInput,
+        sourceSha256: job.source.sha256,
+        pageLimit: job.source_page_limit,
+        providerMode: job.provider_mode,
+        profileId: job.profile_id,
       },
-    }),
+      semantic,
+    ),
   );
-  if (auxiliaryBytes.length > 64 * 1024 ** 2)
-    throw new PdfRuntimeError('RESOURCE_LIMIT');
-  const { stagedByPath, book, reportBytes, header, report } = await observe(
-    'ASSEMBLY',
-    () => streamReconstruction(deps, sandboxInput, auxiliaryBytes, semantic),
-  );
+  const { stagedByPath, book, reportBytes, header, report } = prepared;
   if (
     !book ||
     !reportBytes ||

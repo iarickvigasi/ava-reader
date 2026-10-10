@@ -7,7 +7,10 @@ import type { runSandbox } from '../runtime/run-sandbox';
 import type { WorkerObserver } from '../runtime/worker-observer';
 export type CoordinatorDependencies = {
   sandbox: (input: SandboxInput) => ReturnType<typeof runSandbox>;
-  dispatch: (task: ProviderTask) => Promise<{ output: string }>;
+  dispatch: (
+    task: ProviderTask,
+    runtimeSignal?: AbortSignal,
+  ) => Promise<{ output: string }>;
   stageArtifact: (artifact: StreamArtifact, bytes: Buffer) => Promise<string>;
   progress: (progress: JobProgress) => Promise<void>;
   observer?: WorkerObserver;

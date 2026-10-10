@@ -44,9 +44,16 @@ export function workerDependencies(
         }),
       );
     },
-    dispatch: (task) => {
+    dispatch: (task, runtimeSignal) => {
+      const providerSignal = runtimeSignal
+        ? AbortSignal.any([signal, runtimeSignal])
+        : signal;
       const action = () =>
-        dispatchPdfProvider(prisma, { authority, task, signal }, testTransport);
+        dispatchPdfProvider(
+          prisma,
+          { authority, task, signal: providerSignal },
+          testTransport,
+        );
       if (!observer) return action();
       const unit = observer.nextUnit('provider');
       return observer.track(

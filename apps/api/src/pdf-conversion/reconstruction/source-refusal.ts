@@ -3,6 +3,8 @@ import { PdfRuntimeError } from '../runtime/runtime-error';
 
 const digest = z.string().regex(/^[a-f0-9]{64}$/);
 const identity = z.string().regex(/^[A-Za-z][A-Za-z0-9_.-]{0,119}$/);
+// A legal 100-finding diagnostic can exceed 64KiB; retain it without truncating findings.
+export const SOURCE_REFUSAL_BYTES = 256 * 1024;
 const box = z
   .object({
     coordinate_space: z.literal('page_points_top_left'),
@@ -66,7 +68,8 @@ export class SourceContentError extends PdfRuntimeError {
 }
 
 export function parseSourceRefusal(bytes: Buffer, sourceSha256: string) {
-  if (bytes.length > 64 * 1024) throw new PdfRuntimeError('INVALID_RESULT');
+  if (bytes.length > SOURCE_REFUSAL_BYTES)
+    throw new PdfRuntimeError('INVALID_RESULT');
   let raw: unknown;
   try {
     raw = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
