@@ -68,6 +68,22 @@ Use Node 22+, the repository's pinned pnpm, Docker, PostgreSQL and the worker's 
 [worker README](../packages/pdf-epub/README.md). Select an explicit disposable database for tests.
 Never apply fault tests or local pilot identities to production data.
 
+The API Docker image builds the locked, non-editable Python package from the same source
+as its generated contracts and sets `AVA_PDF_CONTRACT_PYTHON` to
+`/opt/ava-contracts/.venv/bin/python`. Its Dockerfile-specific context allowlist excludes
+environment files, private books, output and research; the final image copies compiled API
+files, its dependency closure, Prisma migrations/configuration and the installed Python environment.
+Prisma's CLI remains in that closure because startup still migrates before starting the API;
+this image is not claimed to contain only production-classified Node dependencies. Inspect the
+built image and exercise the actual installed semantic bridge before activation.
+
+The final `api-runtime` target runs as UID10001 and keeps `AVA_PDF_RUNTIME_ENABLED=0` by default.
+`compose.dev.yaml` selects the separate `api-development` target with the existing development
+ownership, source bind and watch entrypoint, so Prisma generation can write its image-local store.
+Packaging the semantic bridge does not qualify the converter runner, dependency readiness, graceful drain,
+serialized production migrations or restore/rollback. No Docker CLI, daemon mount or broader
+worker authority is introduced. Select and qualify that runner boundary separately.
+
 ```sh
 pnpm install --frozen-lockfile
 pnpm --filter api db:migrate:deploy
