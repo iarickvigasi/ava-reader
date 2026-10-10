@@ -25,6 +25,8 @@ RUN uv sync --locked --no-dev --no-editable
 
 FROM node:22.22.0-bookworm-slim@sha256:dd9d21971ec4395903fa6143c2b9267d048ae01ca6d3ea96f16cb30df6187d94 AS api-build
 WORKDIR /app
+# Node slim omits system CAs; bootstrap HTTPS APT from the pinned public bundle.
+COPY --from=python-runtime /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 RUN printf '%s\n' \
       'deb [check-valid-until=no] https://snapshot.debian.org/archive/debian/20260927T000000Z bookworm main' \
       'deb [check-valid-until=no] https://snapshot.debian.org/archive/debian/20260927T000000Z bookworm-updates main' \
