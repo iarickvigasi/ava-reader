@@ -1,5 +1,6 @@
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { PassThrough } from 'node:stream';
 import { dockerExchange } from './docker-exchange';
 import { ExchangeFailure } from './exchange-failure';
 import { testConfig } from './config-fixture';
@@ -13,6 +14,100 @@ const spawnMock = jest.mocked(spawn);
 afterEach(() => {
   jest.useRealTimers();
   jest.clearAllMocks();
+});
+
+it('accepts a next control after the worker reads its ACK while the write callback is pending', async () => {
+  const fake = fakeDocker(),
+    controller = new AbortController(),
+    input = exchangeInput(),
+    callbacks: number[] = [],
+    artifacts: Buffer[] = [];
+  let releaseFirstWrite: (() => void) | undefined,
+    writeReleased = false,
+    ackReceived = false,
+    failure: string | undefined;
+  fake.child.stdin = new PassThrough({
+    transform(chunk: Buffer, _encoding, done) {
+      // Readable bytes can reach the worker before the local Writable callback.
+      this.push(chunk);
+      if (!releaseFirstWrite) {
+        releaseFirstWrite = () => {
+          writeReleased = true;
+          done();
+        };
+      } else done();
+    },
+  });
+  fake.child.stdin.on('data', (bytes: Buffer) => {
+    expect(bytes.length).toBe(4 + bytes.readUInt32BE());
+    const ack = JSON.parse(bytes.subarray(4).toString()) as ExchangeEnvelope;
+    expect(ack.payload).toEqual([]);
+    if (ack.sequence === 1) {
+      ackReceived = true;
+      expect(writeReleased).toBe(false);
+      // This is a compliant response to received ACK bytes, not an unsolicited
+      // control during the host callback or a coalesced worker request.
+      fake.child.stdout.write(frame(envelope(2, 'refinement_batch')));
+    }
+  });
+  const respond = input.onExchange!;
+  input.onExchange = (bytes, signal) => {
+    callbacks.push((JSON.parse(bytes.toString()) as ExchangeEnvelope).sequence);
+    return respond(bytes, signal);
+  };
+  input.onStdout = (bytes) => {
+    artifacts.push(bytes);
+    return Promise.resolve();
+  };
+  spawnMock.mockReturnValue(fake.child as never);
+  const result = dockerExchange(
+    testConfig,
+    'owned',
+    input,
+    1000,
+    controller.signal,
+  );
+  const outcome = result.then(
+    (value) => value,
+    (error: unknown) => {
+      failure = error instanceof Error ? error.message : 'UNTYPED_REJECTION';
+      return error;
+    },
+  );
+  try {
+    fake.child.stdout.write(frame(envelope()));
+    await turn();
+    expect(ackReceived).toBe(true);
+    expect(writeReleased).toBe(false);
+    expect(callbacks).toEqual([1]);
+    expect(failure).toBeUndefined();
+    releaseFirstWrite!();
+    await turn();
+    expect(callbacks).toEqual([1, 2]);
+    expect(fake.child.stdin.writableEnded).toBe(true);
+    fake.child.stdout.write(
+      Buffer.concat([
+        frame(envelope(3, 'artifacts')),
+        Buffer.from('{"complete":true}\n'),
+      ]),
+    );
+    await turn();
+    fake.child.stdout.end();
+    await turn();
+    fake.child.emit('close', 0);
+    await expect(outcome).resolves.toMatchObject({ exitCode: 0 });
+    expect(Buffer.concat(artifacts)).toEqual(
+      Buffer.from('{"complete":true}\n'),
+    );
+    expect(fake.child.kill).not.toHaveBeenCalled();
+  } finally {
+    if (!writeReleased) releaseFirstWrite?.();
+    controller.abort();
+    await outcome;
+    fake.child.stdin.destroy();
+    fake.child.stdout.destroy();
+    fake.child.stderr.destroy();
+  }
 });
 
 it('keeps artifact input paused during deferred canonical validation after a split marker', async () => {
@@ -105,6 +200,152 @@ it('keeps artifact input paused during deferred canonical validation after a spl
   expect(staged).toEqual(descriptors.map(({ path }) => path));
   expect(fake.child.kill).not.toHaveBeenCalled();
 });
+
+it.each(['complete', 'abort'] as const)(
+  'serializes exit-time stdout resume during deferred artifact validation: %s',
+  async (completion) => {
+    const fake = fakeDocker();
+    spawnMock.mockReturnValue(fake.child as never);
+    const input = exchangeInput(),
+      controller = new AbortController(),
+      data = Buffer.from('authored artifact bytes'),
+      descriptors = [
+        'canonical.json',
+        'book.epub',
+        'reconstruction-report.json',
+      ].map((path) => ({
+        path,
+        sha256: createHash('sha256').update(data).digest('hex'),
+        byte_length: data.length,
+      })),
+      staged: string[] = [];
+    let releaseCanonical = () => {},
+      releaseBook = () => {},
+      canonicalStarted = false,
+      bookStarted = false,
+      activeWrites = 0,
+      maxActiveWrites = 0,
+      settled = false,
+      artifactSignal: AbortSignal | undefined;
+    const acknowledged = input.onExchange!;
+    input.onExchange = (bytes, signal) => {
+      artifactSignal = signal;
+      return acknowledged(bytes, signal);
+    };
+    const sink = artifactStream(async (descriptor) => {
+      if (descriptor.path === 'canonical.json') {
+        canonicalStarted = true;
+        await new Promise<void>((resolve) => {
+          releaseCanonical = resolve;
+        });
+      } else if (descriptor.path === 'book.epub') {
+        bookStarted = true;
+        await new Promise<void>((resolve) => {
+          releaseBook = resolve;
+        });
+      }
+      if (!artifactSignal?.aborted) staged.push(descriptor.path);
+    });
+    input.onStdout = async (bytes) => {
+      activeWrites++;
+      maxActiveWrites = Math.max(maxActiveWrites, activeWrites);
+      try {
+        await sink.write(bytes);
+      } finally {
+        activeWrites--;
+      }
+    };
+    const outcome = dockerExchange(
+      testConfig,
+      'owned',
+      input,
+      1000,
+      controller.signal,
+    ).then(
+      (value) => {
+        settled = true;
+        return value;
+      },
+      (error: unknown) => {
+        settled = true;
+        return error;
+      },
+    );
+    try {
+      fake.child.stdout.write(frame(envelope()));
+      await turn();
+      fake.child.stdout.write(frame(envelope(2, 'refinement_batch')));
+      await turn();
+      const line = (value: unknown) =>
+          Buffer.from(JSON.stringify(value) + '\n'),
+        chunk = (path: string) =>
+          line({ path, offset: 0, base64: data.toString('base64') });
+      fake.child.stdout.write(
+        Buffer.concat([
+          frame(envelope(3, 'artifacts')),
+          line({
+            schema_version: 'ava-reconstruct-stream-1',
+            report: {},
+            artifacts: descriptors,
+          }),
+          chunk('canonical.json'),
+        ]),
+      );
+      await turn();
+      expect(canonicalStarted).toBe(true);
+      expect(fake.child.stdout.isPaused()).toBe(true);
+      fake.child.stdout.end(
+        Buffer.concat([
+          chunk('book.epub'),
+          chunk('reconstruction-report.json'),
+          line({ complete: true }),
+        ]),
+      );
+      // Node's child exit flushStdio resumes readable pipes even when the
+      // application paused them while awaiting an asynchronous artifact sink.
+      fake.child.stdout.resume();
+      await turn();
+      expect(fake.child.stdout.readableEnded).toBe(true);
+      fake.child.emit('close', 0);
+      await turn();
+      expect(maxActiveWrites).toBe(1);
+      expect(settled).toBe(false);
+      expect(bookStarted).toBe(false);
+      expect(staged).toEqual([]);
+      if (completion === 'abort') {
+        controller.abort();
+        await expect(outcome).resolves.toThrow('DISPATCH_NOT_AUTHORIZED');
+        expect(artifactSignal?.aborted).toBe(true);
+        releaseCanonical();
+        await turn();
+        expect(bookStarted).toBe(false);
+        expect(staged).toEqual([]);
+        expect(activeWrites).toBe(0);
+        expect(fake.child.kill).toHaveBeenCalledWith('SIGKILL');
+      } else {
+        releaseCanonical();
+        await turn();
+        expect(bookStarted).toBe(true);
+        expect(settled).toBe(false);
+        expect(staged).toEqual(['canonical.json']);
+        releaseBook();
+        await expect(outcome).resolves.toMatchObject({ exitCode: 0 });
+        expect(activeWrites).toBe(0);
+        expect(sink.finish().artifacts).toEqual(descriptors);
+        expect(staged).toEqual(descriptors.map(({ path }) => path));
+        expect(fake.child.kill).not.toHaveBeenCalled();
+      }
+    } finally {
+      controller.abort();
+      releaseCanonical();
+      releaseBook();
+      await outcome;
+      await turn();
+      fake.child.stdout.destroy();
+      fake.child.stderr.destroy();
+    }
+  },
+);
 
 it('does not start its owned attach process after prior cancellation', async () => {
   const controller = new AbortController();

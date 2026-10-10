@@ -89,8 +89,13 @@ export function dockerExchange(
     });
     child.stdout.on('data', (data: Buffer) => {
       if (settled) return;
-      const work: Promise<void> = stream
-        .write(data)
+      // Child exit can resume paused stdio while artifact validation is pending.
+      // Order artifact writes; control frames still use immediate protocol checks.
+      const artifacts = stream.artifacts;
+      if (artifacts) child.stdout.pause();
+      const work: Promise<void> = (
+        artifacts ? pending.then(() => stream.write(data)) : stream.write(data)
+      )
         .then(() => {
           // An older fragmented read cannot release a newer artifact sink's pause.
           if (!settled && pending === work) child.stdout.resume();

@@ -119,6 +119,9 @@ export function exchangeStream(
       replyBytes += frame.length;
       if (replyBytes > MAX_EXCHANGE_REPLY_TOTAL)
         throw new PdfRuntimeError('RESOURCE_LIMIT');
+      // The worker can read its ACK before the local write callback settles.
+      // Queue its next frame until waiting clears; pending owns stdout resume.
+      pause();
       await send(frame, protocol.lastReply);
       waiting = false;
     },
