@@ -136,6 +136,29 @@ jobs:
             --entrypoint /worker/.venv/bin/python "$image" -B /scripts/smoke.py \
             --out /evidence/native-smoke --epubcheck-jar /opt/epubcheck/epubcheck.jar \
             2>&1 | tee "$RUNNER_TEMP/pdf-ci/smoke.log"
+      - name: Archive authored native evidence as the worker user
+        if: always()
+        timeout-minutes: 5
+        run: |
+          if [ ! -f "$RUNNER_TEMP/pdf-ci/image-id.txt" ] || [ ! -d "$RUNNER_TEMP/pdf-ci/evidence/native-smoke" ]; then
+            echo "No authored native smoke directory and image available to archive."
+            exit 0
+          fi
+          image=$(cat "$RUNNER_TEMP/pdf-ci/image-id.txt")
+          docker run --rm -i --pull never --network none --read-only --user 10001:10001 \
+            --cpus 1 --memory 2g --pids-limit 32 --cap-drop ALL \
+            --security-opt no-new-privileges \
+            --mount "type=bind,src=$RUNNER_TEMP/pdf-ci/evidence,dst=/evidence" \
+            --entrypoint /worker/.venv/bin/python "$image" -I -B - <<'PY' 2>&1 | tee "$RUNNER_TEMP/pdf-ci/archive.log"
+          import os
+          import tarfile
+
+          # Only the new authored archive is public-readable; private job modes stay intact.
+          with open("/evidence/native-smoke.tar.gz", "xb") as output:
+              os.fchmod(output.fileno(), 0o644)
+              with tarfile.open(fileobj=output, mode="w:gz", dereference=False) as archive:
+                  archive.add("/evidence/native-smoke", arcname="native-smoke")
+          PY
       - name: Retain only authored checks and logs
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -148,7 +171,9 @@ jobs:
             ${{ runner.temp }}/pdf-ci/build.log
             ${{ runner.temp }}/pdf-ci/tests.log
             ${{ runner.temp }}/pdf-ci/smoke.log
-            ${{ runner.temp }}/pdf-ci/evidence
+            ${{ runner.temp }}/pdf-ci/archive.log
+            ${{ runner.temp }}/pdf-ci/evidence/installed.json
+            ${{ runner.temp }}/pdf-ci/evidence/native-smoke.tar.gz
           if-no-files-found: error
           include-hidden-files: false
           retention-days: 7

@@ -69,6 +69,9 @@ For the exact installed commands, use the workflow rather than mounting local pr
 seven-day artifact contains only source/test hash manifests, commit/image identities, build/test
 logs and outputs generated from authored fixtures. Neither repository `output/` nor environment
 files/user books are uploaded. A failed first run remains failed; a rerun has a separate artifact.
+The worker user archives native-smoke outputs, including partial failed output when present, into a
+new readable archive. The uploader reads that archive and the installed-suite JSON directly;
+it never traverses private job directories. Original job file/directory modes remain unchanged.
 
 These jobs are repository/package checks, not authenticated upload-to-Read, live OCR quality,
 durable SQL/provider accounting, full-book performance, phone/offline usability or release approval.
