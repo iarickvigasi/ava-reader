@@ -15,10 +15,16 @@ export function splitWords(text: string): string[] {
 
 function chapterInlines(block: ReaderBlock): ReaderInline[] {
   if (block.kind === 'list') {
-    return block.items.flatMap((item) => item.inlines);
+    return block.items.flatMap((item) => [
+      ...item.inlines,
+      ...(item.children ?? []).flatMap(chapterInlines),
+    ]);
   }
 
-  if (block.kind === 'image') {
+  if (block.kind === 'table')
+    return block.cells.flatMap((cell) => cell.inlines);
+
+  if (block.kind === 'image' || block.kind === 'separator') {
     return [];
   }
 

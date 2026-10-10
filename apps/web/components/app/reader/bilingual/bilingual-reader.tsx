@@ -92,6 +92,7 @@ export function BilingualReader(props: ReadyReaderProps) {
         enabled={reader.prefetchNextChapter}
         size={size}
         fontScale={props.fontScale}
+        expectedContentRevision={props.payload.readerPackage?.final_content_id}
       />
     </section>
   );

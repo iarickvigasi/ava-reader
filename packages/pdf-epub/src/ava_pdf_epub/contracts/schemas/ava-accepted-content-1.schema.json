@@ -1,0 +1,228 @@
+{
+  "$comment": "Generated from ava_pdf_epub.contracts. Graph, digest, normalization and authority semantics require the pinned Python validator; structural success never grants readiness.",
+  "$defs": {
+    "Artifact": {
+      "additionalProperties": false,
+      "properties": {
+        "byte_length": {
+          "maximum": 2147483648,
+          "minimum": 1,
+          "title": "Byte Length",
+          "type": "integer"
+        },
+        "format": {
+          "enum": [
+            "PDF",
+            "CANONICAL_JSON",
+            "EPUB",
+            "READER_PACKAGE",
+            "REPORT_JSON",
+            "IMAGE"
+          ],
+          "title": "Format",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "media_type": {
+          "enum": [
+            "application/pdf",
+            "application/json",
+            "application/epub+zip",
+            "image/png",
+            "image/jpeg"
+          ],
+          "title": "Media Type",
+          "type": "string"
+        },
+        "path": {
+          "maxLength": 240,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*(/[A-Za-z0-9][A-Za-z0-9._-]*)*$",
+          "title": "Path",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "SOURCE_PDF",
+            "CANONICAL_BOOK",
+            "DERIVED_EPUB",
+            "DERIVED_READER",
+            "VALIDATION_REPORT",
+            "DIAGNOSTIC",
+            "RESOURCE"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "role",
+        "format",
+        "media_type",
+        "path",
+        "sha256",
+        "byte_length"
+      ],
+      "title": "Artifact",
+      "type": "object"
+    }
+  },
+  "$id": "urn:ava:contract:ava-accepted-content-1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "adapter_fingerprint": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Adapter Fingerprint",
+      "type": "string"
+    },
+    "authority": {
+      "const": "server_first_publication",
+      "title": "Authority",
+      "type": "string"
+    },
+    "cancellation_epoch": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Cancellation Epoch",
+      "type": "integer"
+    },
+    "canonical_book": {
+      "$ref": "#/$defs/Artifact"
+    },
+    "canonical_schema": {
+      "const": "ava-book-2",
+      "title": "Canonical Schema",
+      "type": "string"
+    },
+    "capability_report_sha256": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Capability Report Sha256",
+      "type": "string"
+    },
+    "config_sha256": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Config Sha256",
+      "type": "string"
+    },
+    "epub": {
+      "$ref": "#/$defs/Artifact"
+    },
+    "final_content_id": {
+      "maxLength": 120,
+      "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+      "title": "Final Content Id",
+      "type": "string"
+    },
+    "library_item_id": {
+      "maxLength": 120,
+      "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+      "title": "Library Item Id",
+      "type": "string"
+    },
+    "operation_id": {
+      "maxLength": 120,
+      "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+      "title": "Operation Id",
+      "type": "string"
+    },
+    "owner_id": {
+      "maxLength": 120,
+      "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+      "title": "Owner Id",
+      "type": "string"
+    },
+    "profile_id": {
+      "enum": [
+        "ava-pdf-prose-en-v2",
+        "ava-pdf-prose-en-uk-v3"
+      ],
+      "title": "Profile Id",
+      "type": "string"
+    },
+    "publication_fence": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "title": "Publication Fence",
+      "type": "integer"
+    },
+    "reader_build_fingerprint": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Reader Build Fingerprint",
+      "type": "string"
+    },
+    "reader_package": {
+      "$ref": "#/$defs/Artifact"
+    },
+    "reader_schema": {
+      "const": "ava-reader-3",
+      "title": "Reader Schema",
+      "type": "string"
+    },
+    "resources": {
+      "items": {
+        "$ref": "#/$defs/Artifact"
+      },
+      "maxItems": 1000,
+      "title": "Resources",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "ava-accepted-content-1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/Artifact"
+    },
+    "validation_report": {
+      "$ref": "#/$defs/Artifact"
+    }
+  },
+  "required": [
+    "schema_version",
+    "authority",
+    "operation_id",
+    "owner_id",
+    "library_item_id",
+    "final_content_id",
+    "profile_id",
+    "canonical_schema",
+    "reader_schema",
+    "source",
+    "canonical_book",
+    "reader_package",
+    "epub",
+    "validation_report",
+    "resources",
+    "config_sha256",
+    "capability_report_sha256",
+    "adapter_fingerprint",
+    "reader_build_fingerprint",
+    "publication_fence",
+    "cancellation_epoch"
+  ],
+  "title": "AcceptedContentV1",
+  "type": "object"
+}

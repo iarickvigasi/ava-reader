@@ -23,12 +23,14 @@ export function collectionViewToLibraryCollection(
       libraryItemId: book.libraryItemId,
       slug: book.slug,
       title: book.title,
+      metadataEditVersion: book.metadataEditVersion,
       authors: book.authors,
       coverImageUrl: book.coverImageUrl,
       completionPercent: book.completionPercent,
       ...(book.finishedAt !== undefined ? { finishedAt: book.finishedAt } : {}),
       // Stored as plain string in Dexie; values were always written from the
       // BookFileFormat union, so the cast is sound.
+      pdfImport: book.pdfImport,
       primaryFormat: book.primaryFormat as BookFileFormat,
       lastReadAt: book.lastReadAt ?? "",
     })),

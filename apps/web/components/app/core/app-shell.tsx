@@ -4,6 +4,7 @@ import { NetworkMonitor } from "@/features/offline/net/network-monitor";
 
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
+import { PdfImportObserver } from "./pdf-import-observer";
 import { AppNavigation } from "@/components/app/core/app-navigation";
 import { AppToast } from "@/components/app/core/app-toast";
 import { LegacyLocalStorageCleanupRunner } from "@/components/app/core/legacy-localstorage-cleanup-runner";
@@ -60,6 +61,7 @@ export function AppShell({
       <SignedOutRedirectRunner />
       <AuthStatusNotice />
       <AccountSyncRunner />
+      <PdfImportObserver />
       <RoutePrecacheRunner />
       <BackgroundPrimer />
       <DownloadedChapterLabelMigration />

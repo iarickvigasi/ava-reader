@@ -45,7 +45,7 @@ services:
           "CMD",
           "node",
           "-e",
-          "fetch('http://127.0.0.1:4000/api/health').then(async (response) => { if (!response.ok) process.exit(1); const payload = await response.json(); process.exit(payload.service === 'api' ? 0 : 1); }).catch(() => process.exit(1))"
+          "fetch('http://127.0.0.1:4000/api/health').then(async (response) => { if (!response.ok) process.exit(1); const payload = await response.json(); process.exit(payload.service === 'api' && payload.status === 'ok' && payload.database === 'up' ? 0 : 1); }).catch(() => process.exit(1))"
         ]
       interval: 15s
       timeout: 5s
@@ -98,7 +98,7 @@ services:
       [
         "node",
         "-e",
-        "const verify = async () => { const apiResponse = await fetch('http://api:4000/api/health'); if (!apiResponse.ok) throw new Error('API returned ' + apiResponse.status); const apiPayload = await apiResponse.json(); if (apiPayload.status !== 'ok' || apiPayload.database !== 'up') throw new Error('Unexpected API payload: ' + JSON.stringify(apiPayload)); const webResponse = await fetch('http://web:3000'); if (!webResponse.ok) throw new Error('Web returned ' + webResponse.status); const html = await webResponse.text(); if (!html.includes('Ava Reader') || !html.includes('Investigate deeper') || !html.includes('Create account')) throw new Error('Web page did not render the expected landing state.'); const signInResponse = await fetch('http://web:3000/sign-in'); if (!signInResponse.ok) throw new Error('Sign-in page returned ' + signInResponse.status); const signInHtml = await signInResponse.text(); if (!signInHtml.includes('Continue with Google') || !signInHtml.includes('Continue with Email')) throw new Error('Sign-in page did not render the expected auth controls.'); console.log('Verified Docker stack.'); console.log(JSON.stringify(apiPayload, null, 2)); }; verify().catch((error) => { console.error(error); process.exit(1); });"
+        "const verify = async () => { const apiResponse = await fetch('http://api:4000/api/health'); if (!apiResponse.ok) throw new Error('API returned ' + apiResponse.status); const apiPayload = await apiResponse.json(); if (apiPayload.service !== 'api' || apiPayload.status !== 'ok' || apiPayload.database !== 'up') throw new Error('Unexpected API payload: ' + JSON.stringify(apiPayload)); const webResponse = await fetch('http://web:3000'); if (!webResponse.ok) throw new Error('Web returned ' + webResponse.status); const html = await webResponse.text(); if (!html.includes('Ava Reader') || !html.includes('Investigate deeper') || !html.includes('Create account')) throw new Error('Web page did not render the expected landing state.'); const signInResponse = await fetch('http://web:3000/sign-in'); if (!signInResponse.ok) throw new Error('Sign-in page returned ' + signInResponse.status); const signInHtml = await signInResponse.text(); if (!signInHtml.includes('Continue with Google') || !signInHtml.includes('Continue with Email')) throw new Error('Sign-in page did not render the expected auth controls.'); console.log('Verified Docker stack.'); console.log(JSON.stringify(apiPayload, null, 2)); }; verify().catch((error) => { console.error(error); process.exit(1); });"
       ]
 
 volumes:

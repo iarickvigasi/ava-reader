@@ -1,12 +1,10 @@
+import { readerLeaves } from "./jump-target";
 import type {
   ReaderBlock,
   ReaderChapterPayload,
   ReaderRangeLocator,
 } from "@/lib/api-types";
-import {
-  segmentSentences,
-  type SentenceSegment,
-} from "./sentence-segments";
+import { segmentSentences, type SentenceSegment } from "./sentence-segments";
 
 // Hard ceiling for the derived context string. The server accepts up to 8 KB;
 // anything past a couple of sentences stops helping the prompt.
@@ -41,13 +39,12 @@ function findStartBlock(
 ): StartBlock | null {
   const chapter = chapters.find((c) => c.chapterId === locator.chapterId);
   if (!chapter) return null;
-  const index = chapter.blocks.findIndex(
-    (block) => block.id === locator.startBlockId,
-  );
+  const blocks = readerLeaves(chapter.blocks, locator.startBlockId);
+  const index = blocks.findIndex((block) => block.id === locator.startBlockId);
   if (index === -1) return null;
-  const block = chapter.blocks[index];
+  const block = blocks[index];
   if (!hasSentenceText(block)) return null;
-  return { block, blocks: chapter.blocks, index };
+  return { block, blocks, index };
 }
 
 // The locator's offsets were measured against the rendered DOM, which can

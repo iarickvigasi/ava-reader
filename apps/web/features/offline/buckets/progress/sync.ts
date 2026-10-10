@@ -1,3 +1,4 @@
+import { READER_CAPABILITY_HEADERS } from "@/features/reader/canonical/headers";
 // Flushes locally-dirty reading progress up to the server. A dirty row is a
 // position the user advanced (often offline) that the reader itself never
 // managed to PATCH. Mounted app-wide via ProgressSyncRunner and kicked on
@@ -62,7 +63,11 @@ async function doFlush(getToken: GetToken): Promise<{ synced: number }> {
     }
     // A failed PATCH leaves the row dirty; the next reconnect tick retries.
   }
-  if (synced && db === getDb()) void Promise.allSettled([revalidateHome(getToken), revalidateLibrary(getToken)]);
+  if (synced && db === getDb())
+    void Promise.allSettled([
+      revalidateHome(getToken),
+      revalidateLibrary(getToken),
+    ]);
   return { synced };
 }
 
@@ -84,6 +89,7 @@ async function patchProgress(
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
           Accept: "application/json",
+          ...READER_CAPABILITY_HEADERS,
         },
         body: JSON.stringify({ locator, readAt }),
       },
@@ -94,11 +100,16 @@ async function patchProgress(
     const server = (await response.json()) as ReaderProgressPayload;
     // Adopt the server's canonical position — under most-recent-wins it may be
     // another device's newer locator (our stale write was rejected).
-    await markProgressSyncedIfUnchanged(libraryItemId, locator, {
-      locator: server.locator,
-      completionPercent: server.completionPercent,
-      lastReadAt: server.lastReadAt,
-    }, db);
+    await markProgressSyncedIfUnchanged(
+      libraryItemId,
+      locator,
+      {
+        locator: server.locator,
+        completionPercent: server.completionPercent,
+        lastReadAt: server.lastReadAt,
+      },
+      db,
+    );
     return true;
   } catch {
     return false;

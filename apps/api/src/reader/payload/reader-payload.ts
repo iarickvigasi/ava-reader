@@ -1,3 +1,4 @@
+import { readerFailureMessage } from '../epub/source-finding-storage';
 import { BadRequestException, type Logger } from '@nestjs/common';
 import { BookFileFormat, BookFileKind, ProcessingStatus } from '@prisma/client';
 import type { PrismaService } from '../../prisma/prisma.service';
@@ -11,6 +12,7 @@ import { loadReaderPackage } from '../package/load-reader-package';
 import { selectChapter, selectChapterWindow } from '../package/select-chapter';
 import { createProgressSummary } from '../progress/progress-summary';
 import type { ReaderStatusPayload } from './reader-payload-types';
+import { readerOfflineManifest } from './offline-manifest';
 
 // The four reader statuses and what produces each are specified in
 // docs/specs/2-reader/2.7-reader-payload.md.
@@ -48,9 +50,7 @@ export async function buildReaderPayload(params: {
     if (latestRun?.status === ProcessingStatus.FAILED) {
       return {
         book,
-        message:
-          latestRun.errorMessage ??
-          'The EPUB could not be prepared for the reader.',
+        message: readerFailureMessage(latestRun.errorMessage),
         progress,
         status: 'FAILED',
       };
@@ -84,6 +84,7 @@ export async function buildReaderPayload(params: {
   }
 
   return {
+    ...readerOfflineManifest(readerPackage, derivedReader),
     activeChapterId: selectedChapter.chapterId,
     book,
     chapters: selectChapterWindow(readerPackage, selectedChapter.chapterId),

@@ -1,3 +1,6 @@
+import type { LibraryBookInfoDetails } from "./library-book-info";
+export type { LibraryBookInfoDetails } from "./library-book-info";
+import type { PdfImportSummary } from "./pdf-import";
 import type { BookFileFormat } from "./shared";
 
 export type CompletionItem = {
@@ -10,6 +13,8 @@ export type CompletionItem = {
 // collection, the home "currently reading" widget. Anything that knows a book
 // at all knows at least this much. Subtypes add screen-specific extras.
 export type LibraryCardBook = {
+  metadataEditVersion?: number;
+  pdfImport?: PdfImportSummary | null;
   authors: string[];
   completionPercent: number;
   // Older list payloads can omit the finish date; null explicitly clears it.
@@ -66,56 +71,15 @@ export type LibraryCollectionPayload = {
 // `lastReadAt` here is the strict ReadingProgress.lastReadAt (nullable if the
 // user has never opened the book) — distinct from the card's "engagement"
 // timestamp, which is why it lives on the details side, not the card.
-export type LibraryBookInfoDetails = {
-  addedAt: string;
-  // Pages of countable prose, from the chapter-purpose analysis — notes,
-  // references and contents pages excluded. Null until a book is analysed,
-  // in which case reading time falls back to `approximatePageCount`.
-  approximateBodyPageCount: number | null;
-  approximatePageCount: number | null;
-  chapterLabel: string | null;
-  collections: Array<{
-    id: string;
-    kind: "SMART" | "CUSTOM";
-    name: string;
-    smartKey: string | null;
-  }>;
-  description: string | null;
-  genres: string[];
-  // Explicitly recorded completion date, independent of reading progress.
-  finishedAt: string | null;
-  language: string | null;
-  lastReadAt: string | null;
-  minutesRead: number;
-  publishedYear: number | null;
-  source: "IMPORTED" | "CATALOG";
-};
-
 export type LibraryBookInfo = LibraryCardBook & LibraryBookInfoDetails;
 
 export type LibraryBookInfoPayload = {
   book: LibraryBookInfo;
 };
 
-export type LibraryCollectionRenamePayload = {
-  collectionId: string;
-  description: string | null;
-  name: string;
-};
-
-export type LibraryCollectionDeletePayload = {
-  collectionId: string;
-  state: "deleted";
-};
-
-export type LibraryBookCollectionsInput = {
-  libraryItemId: string;
-  addCollectionIds: string[];
-  removeCollectionIds: string[];
-};
-
-export type LibraryBookCollectionsPayload = {
-  libraryItemId: string;
-  collections: LibraryBookInfo["collections"];
-  affectedCollections: LibraryCollection[];
-};
+export type {
+  LibraryCollectionRenamePayload,
+  LibraryCollectionDeletePayload,
+  LibraryBookCollectionsInput,
+  LibraryBookCollectionsPayload,
+} from "./library-collection-actions";

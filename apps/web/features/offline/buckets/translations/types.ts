@@ -6,6 +6,7 @@ export type TranslationScope = {
   libraryItemId: string;
   chapterId: string;
   targetLang: string;
+  expectedContentRevision?: string;
 };
 
 export type TranslationChapterRow = BilingualChapter & { fetchedAt: string };

@@ -1,9 +1,16 @@
+import {
+  pdfLibrarySummary,
+  type PdfLibraryRecord,
+} from './pdf-import/operations/library-summary';
 import { BookFileFormat, type BookFileKind } from '@prisma/client';
-import { buildCoverImageUrl } from '../shared/cover-image-url';
+import { libraryCoverUrl } from './covers/library-cover-url';
 import { findPrimarySourceFile } from '../shared/primary-book-file';
 
 type LibraryBookItem = {
   book: {
+    pdfImport?: PdfLibraryRecord | null;
+    canonicalImportPrivate?: boolean;
+    pdfImportPrivate?: boolean;
     authors: string[];
     coverBlob: { mimeType: string } | null;
     files: {
@@ -13,6 +20,7 @@ type LibraryBookItem = {
     }[];
     id: string;
     title: string;
+    metadataEditVersion?: number;
   };
   id: string;
   finishedAt: Date | null;
@@ -28,11 +36,11 @@ export function serializeLibraryBook(
 ) {
   return {
     authors: item.book.authors,
+    metadataEditVersion: item.book.metadataEditVersion,
+    pdfImport: pdfLibrarySummary(item.book.pdfImport),
     completionPercent: engagement.completionPercent,
     finishedAt: item.finishedAt?.toISOString() ?? null,
-    coverImageUrl: item.book.coverBlob
-      ? buildCoverImageUrl(item.book.id)
-      : null,
+    coverImageUrl: libraryCoverUrl(item.book, item.id),
     lastReadAt: engagement.lastReadAt.toISOString(),
     libraryItemId: item.id,
     offlineRequested: item.offlineRequested,

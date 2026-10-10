@@ -1,4 +1,5 @@
 // Builds the cached reader payload: active chapter and immediate neighbours.
+import { readCanonicalCache } from "./canonical-cache";
 
 import type {
   ReaderChapterPayload,
@@ -10,6 +11,7 @@ import { collectTocChapterEntries } from "@/features/reader/toc";
 import { getDb } from "../../db";
 import { readProgress } from "../progress/storage";
 import { readReaderMetadata } from "./reader-metadata";
+import { readBookAvailability } from "./storage";
 
 export async function loadReaderPayloadFromCache(
   libraryItemId: string,
@@ -17,7 +19,10 @@ export async function loadReaderPayloadFromCache(
 ): Promise<ReaderStatusPayload | null> {
   const db = getDb();
 
-  const book = await db.books.get(libraryItemId);
+  const availability = await readBookAvailability(libraryItemId);
+  // Existing prepared EPUB passages remain readable without claiming a whole
+  // book download from their older TOC-only manifest.
+  const book = availability.readable ? availability.book : undefined;
   if (!book) {
     return null;
   }
@@ -28,6 +33,7 @@ export async function loadReaderPayloadFromCache(
   if (orderedIds.length === 0) {
     return null;
   }
+  if (chapterId && !orderedIds.includes(chapterId)) return null;
   const activeId =
     chapterId && orderedIds.includes(chapterId) ? chapterId : orderedIds[0]!;
   const activeIndex = orderedIds.indexOf(activeId);
@@ -66,7 +72,7 @@ export async function loadReaderPayloadFromCache(
     });
   }
 
-  if (chapters.length === 0) {
+  if (!chapters.some((chapter) => chapter.chapterId === activeId)) {
     return null;
   }
 
@@ -82,7 +88,9 @@ export async function loadReaderPayloadFromCache(
   const progressRow = await readProgress(libraryItemId);
   if (getDb() !== db) return null;
 
-  return {
+  return readCanonicalCache(book, {
+    chapterIds: book.chapterIds,
+    contentRevision: book.contentRevision,
     status: "READY",
     activeChapterId: activeId,
     book: metadata,
@@ -94,5 +102,5 @@ export async function loadReaderPayloadFromCache(
       locator: progressRow?.locator ?? null,
     },
     toc,
-  };
+  });
 }

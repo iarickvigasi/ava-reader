@@ -8,6 +8,7 @@ import { planGroups } from '../../reader/epub/edge-grouping/plan-groups';
 import { regroupPackage } from '../../reader/epub/edge-grouping/regroup-package';
 import { regroupIndex } from './regroup-index';
 import { checkReferences } from './check-references';
+import { hasRemovedSourceTarget } from './has-removed-source-target';
 import { EDGE_GROUPING_VERSION } from '../../reader/epub/edge-grouping/types';
 import type { EdgePackage } from '../../reader/epub/edge-grouping/types';
 
@@ -16,6 +17,15 @@ export async function processFile(
   file: BookFile,
   apply: boolean,
 ) {
+  const book = await prisma.book.findUniqueOrThrow({
+    where: { id: file.bookId },
+    select: { pdfImportPrivate: true, canonicalImportPrivate: true },
+  });
+  if (book.pdfImportPrivate || book.canonicalImportPrivate)
+    return {
+      status: 'blocked',
+      blockers: ['Finished PDF/canonical books are excluded from regrouping'],
+    };
   const stored = await prisma.storedBlob.findUniqueOrThrow({
     where: { id: file.blobId },
     select: { bytes: true },
@@ -50,6 +60,8 @@ export async function processFile(
   const pkg = regroupPackage(original, groups);
   const removed = new Set(groups.flatMap((g) => g.chapterIds.slice(1)));
   const blockers = await checkReferences(prisma, file.bookId, removed);
+  if (hasRemovedSourceTarget(original, removed))
+    blockers.push('Source internal links target removed chapters');
   let index: ReturnType<typeof regroupIndex> | undefined;
   try {
     index = regroupIndex(file.readingProgressIndex, pkg, groups);

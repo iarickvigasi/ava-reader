@@ -1,10 +1,10 @@
+import { canonicalStyle } from "@/features/reader/canonical/style";
 import type { CSSProperties } from "react";
 import type { ReaderBlock, ReaderBlockAlign } from "@/lib/api-types";
 
-// Default first-line indent for paragraphs that don't have one set on
-// the block. Books that ship no styling at all still look book-like;
-// books that DO style their paragraphs (Dune-style stylesheets with
-// .indent / .nonindent) override this via block.textIndent.
+// Legacy EPUBs keep their established reader indent. Canonical source styles
+// use a neutral default when an observation is unknown; this is presentation,
+// never evidence that the source was flush left.
 const DEFAULT_PARAGRAPH_INDENT_EM = 1.5;
 
 // `text-left` is the default; we omit it so the class string stays
@@ -22,7 +22,9 @@ const ALIGNMENT_CLASS_BY_VALUE: Record<ReaderBlockAlign, string> = {
 // font-weight. Inline styles override utility classes on purpose — a
 // heading's default `font-bold` should give way to `font-weight: 600`
 // when the source asks for semibold.
-export function resolveBlockStyle(block: ReaderBlock): CSSProperties | undefined {
+export function resolveBlockStyle(
+  block: ReaderBlock,
+): CSSProperties | undefined {
   const style: Record<string, unknown> = {};
 
   if ("fontSizeScale" in block && block.fontSizeScale) {
@@ -30,7 +32,7 @@ export function resolveBlockStyle(block: ReaderBlock): CSSProperties | undefined
   }
 
   const indentEm = resolveParagraphIndentEm(block);
-  if (indentEm > 0) {
+  if (indentEm !== 0) {
     style.textIndent = `${indentEm}em`;
   }
 
@@ -38,6 +40,19 @@ export function resolveBlockStyle(block: ReaderBlock): CSSProperties | undefined
     style.fontWeight = block.fontWeight;
   }
 
+  const canonical = canonicalStyle(block.presentation);
+  delete canonical.fontSize;
+  Object.assign(style, canonical);
+  if (block.presentation?.relative_size != null) {
+    style["--reader-block-scale"] = block.presentation.relative_size;
+    // Canonical heading sizes are measured against prose, not the default
+    // semantic heading enlargement. Native inline sizes remain relative to
+    // their containing line and must still inherit this resolved block size.
+    if (block.canonical && block.kind === "heading") {
+      style["--reader-heading-base-small"] = "1.16rem";
+      style["--reader-heading-base-large"] = "1.34rem";
+    }
+  }
   return Object.keys(style).length > 0 ? (style as CSSProperties) : undefined;
 }
 
@@ -66,5 +81,5 @@ function resolveParagraphIndentEm(block: ReaderBlock): number {
     return block.textIndent;
   }
 
-  return DEFAULT_PARAGRAPH_INDENT_EM;
+  return block.canonical ? 0 : DEFAULT_PARAGRAPH_INDENT_EM;
 }

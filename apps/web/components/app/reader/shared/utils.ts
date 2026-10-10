@@ -1,3 +1,4 @@
+import { canonicalPayload } from "@/features/reader/canonical/payload";
 import type { CSSProperties } from "react";
 import type { ReaderLocator, ReaderStatusPayload } from "@/lib/api-types";
 import type { RestoreIntent } from "@/features/reader/navigation";
@@ -137,7 +138,11 @@ export function normalizeReaderStatusPayload(
   };
 
   if (isReadyReaderPayload(candidate)) {
-    return payload;
+    try {
+      return canonicalPayload(payload);
+    } catch {
+      /* fail closed below */
+    }
   }
 
   return {
@@ -155,7 +160,7 @@ export function isInteractiveTarget(target: EventTarget | null) {
 
   return Boolean(
     target.closest(
-      "a, button, input, select, textarea, [contenteditable='true']",
+      "a, button, input, select, textarea, [contenteditable='true'], [data-reader-table-scroll]",
     ),
   );
 }

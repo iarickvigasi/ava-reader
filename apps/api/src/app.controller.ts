@@ -12,6 +12,7 @@ export class AppController {
   }
 
   @Get('health')
+  @Header('Cache-Control', 'no-store')
   getHealth() {
     return this.appService.getHealth();
   }

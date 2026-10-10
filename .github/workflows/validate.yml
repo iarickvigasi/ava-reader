@@ -1,0 +1,179 @@
+name: Validate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+# No repository/environment secrets, privileged PR triggers, shared caches or live services.
+env:
+  CI: "true"
+  NODE_ENV: test
+  DATABASE_URL: postgresql://build:build@127.0.0.1:1/build
+  OPENROUTER_API_KEY: ""
+  CLERK_SECRET_KEY: ""
+  CLERK_PUBLISHABLE_KEY: ""
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ""
+  AVA_PDF_RUNTIME_ENABLED: "0"
+  PYTHONDONTWRITEBYTECODE: "1"
+  UV_PYTHON_DOWNLOADS: never
+
+jobs:
+  application:
+    name: Application and contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22.22.0"
+          package-manager-cache: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        id: python
+        with:
+          python-version: "3.12.14"
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.9.26"
+          enable-cache: false
+      - name: Install locked dependencies
+        env:
+          CI_PYTHON: ${{ steps.python.outputs.python-path }}
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.30.3 --activate
+          pnpm install --frozen-lockfile
+          uv sync --locked --extra dev --no-editable --python "$CI_PYTHON" --project packages/pdf-epub
+          printf 'AVA_PDF_CONTRACT_PYTHON=%s/packages/pdf-epub/.venv/bin/python\n' "$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
+      - name: Check generated contracts
+        run: |
+          pnpm --filter api pdf:contracts:check
+          pnpm --filter api pdf:reconstruction:check
+      - name: Types, lint and complete application unit suites
+        run: |
+          pnpm --filter api typecheck
+          pnpm --filter web typecheck
+          pnpm --filter api lint
+          pnpm --filter web lint
+          pnpm --filter api exec jest --runInBand
+          pnpm --filter web exec vitest run --maxWorkers=2
+      - name: Build API and exercise the installed semantic bridge
+        run: |
+          pnpm --filter api build
+          pnpm --filter api pdf:contracts:smoke
+      - name: Build the web app without auth or API credentials
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_API_BASE_URL: http://127.0.0.1:1
+          NEXT_PUBLIC_AVA_READER_QA: "0"
+          GIT_SHA: ${{ github.sha }}
+        run: pnpm --filter web build
+      - name: Converter static checks
+        working-directory: packages/pdf-epub
+        run: |
+          .venv/bin/python -m ruff check src tests scripts
+          .venv/bin/python -m ruff format --check src tests scripts
+          .venv/bin/python -m mypy src/ava_pdf_epub
+          .venv/bin/python -m unittest discover -s scripts -p test_ci_installed.py -v
+
+  installed-converter:
+    name: Installed converter
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Bind public source and test inputs
+        run: |
+          mkdir -p "$RUNNER_TEMP/pdf-ci"
+          install -d -m 0777 "$RUNNER_TEMP/pdf-ci/evidence"
+          python3 packages/pdf-epub/scripts/ci_installed.py manifest \
+            --root packages/pdf-epub --out "$RUNNER_TEMP/pdf-ci/manifest.json"
+          git rev-parse HEAD > "$RUNNER_TEMP/pdf-ci/revision.txt"
+      - name: Build the pinned non-editable worker
+        run: |
+          docker build --iidfile "$RUNNER_TEMP/pdf-ci/image-id.txt" \
+            packages/pdf-epub 2>&1 | tee "$RUNNER_TEMP/pdf-ci/build.log"
+      - name: Verify installed bytes and run all packaged tests without networking
+        timeout-minutes: 50
+        run: |
+          image=$(cat "$RUNNER_TEMP/pdf-ci/image-id.txt")
+          docker run --rm --network none --read-only --user 10001:10001 \
+            --cpus 1 --memory 2g --pids-limit 32 --cap-drop ALL \
+            --security-opt no-new-privileges \
+            --tmpfs /tmp:rw,nosuid,nodev,size=1073741824,mode=1777 \
+            --tmpfs /data:rw,nosuid,nodev,size=134217728,mode=1777 \
+            --mount "type=bind,src=$GITHUB_WORKSPACE/packages/pdf-epub/tests,dst=/tests,readonly" \
+            --mount "type=bind,src=$GITHUB_WORKSPACE/packages/pdf-epub/scripts/ci_installed.py,dst=/ci/check.py,readonly" \
+            --mount "type=bind,src=$RUNNER_TEMP/pdf-ci/manifest.json,dst=/ci/manifest.json,readonly" \
+            --mount "type=bind,src=$RUNNER_TEMP/pdf-ci/evidence,dst=/evidence" \
+            --entrypoint /worker/.venv/bin/python "$image" -I -B /ci/check.py check \
+            --manifest /ci/manifest.json --tests /tests --out /evidence/installed.json \
+            2>&1 | tee "$RUNNER_TEMP/pdf-ci/tests.log"
+      - name: Authored native CLI smoke and independent EPUBCheck
+        run: |
+          image=$(cat "$RUNNER_TEMP/pdf-ci/image-id.txt")
+          docker run --rm --network none --read-only --user 10001:10001 \
+            --cpus 1 --memory 2g --pids-limit 32 --cap-drop ALL \
+            --security-opt no-new-privileges \
+            --tmpfs /tmp:rw,nosuid,nodev,size=1073741824,mode=1777 \
+            --mount "type=bind,src=$GITHUB_WORKSPACE/packages/pdf-epub/scripts,dst=/scripts,readonly" \
+            --mount "type=bind,src=$RUNNER_TEMP/pdf-ci/evidence,dst=/evidence" \
+            --entrypoint /worker/.venv/bin/python "$image" -B /scripts/smoke.py \
+            --out /evidence/native-smoke --epubcheck-jar /opt/epubcheck/epubcheck.jar \
+            2>&1 | tee "$RUNNER_TEMP/pdf-ci/smoke.log"
+      - name: Archive authored native evidence as the worker user
+        if: always()
+        timeout-minutes: 5
+        run: |
+          if [ ! -f "$RUNNER_TEMP/pdf-ci/image-id.txt" ] || [ ! -d "$RUNNER_TEMP/pdf-ci/evidence/native-smoke" ]; then
+            echo "No authored native smoke directory and image available to archive."
+            exit 0
+          fi
+          image=$(cat "$RUNNER_TEMP/pdf-ci/image-id.txt")
+          docker run --rm -i --pull never --network none --read-only --user 10001:10001 \
+            --cpus 1 --memory 2g --pids-limit 32 --cap-drop ALL \
+            --security-opt no-new-privileges \
+            --mount "type=bind,src=$RUNNER_TEMP/pdf-ci/evidence,dst=/evidence" \
+            --entrypoint /worker/.venv/bin/python "$image" -I -B - <<'PY' 2>&1 | tee "$RUNNER_TEMP/pdf-ci/archive.log"
+          import os
+          import tarfile
+
+          # Only the new authored archive is public-readable; private job modes stay intact.
+          with open("/evidence/native-smoke.tar.gz", "xb") as output:
+              os.fchmod(output.fileno(), 0o644)
+              with tarfile.open(fileobj=output, mode="w:gz", dereference=False) as archive:
+                  archive.add("/evidence/native-smoke", arcname="native-smoke")
+          PY
+      - name: Retain only authored checks and logs
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: installed-converter-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/pdf-ci/manifest.json
+            ${{ runner.temp }}/pdf-ci/revision.txt
+            ${{ runner.temp }}/pdf-ci/image-id.txt
+            ${{ runner.temp }}/pdf-ci/build.log
+            ${{ runner.temp }}/pdf-ci/tests.log
+            ${{ runner.temp }}/pdf-ci/smoke.log
+            ${{ runner.temp }}/pdf-ci/archive.log
+            ${{ runner.temp }}/pdf-ci/evidence/installed.json
+            ${{ runner.temp }}/pdf-ci/evidence/native-smoke.tar.gz
+          if-no-files-found: error
+          include-hidden-files: false
+          retention-days: 7

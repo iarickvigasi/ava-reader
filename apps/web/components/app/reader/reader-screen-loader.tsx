@@ -7,9 +7,12 @@ import { ReaderShellSkeleton } from "./reader-shell-skeleton";
 import { useReaderScreenLoader } from "./use-reader-screen-loader";
 
 export function ReaderScreenLoader() {
-  const result = useReaderScreenLoader();
+  const { result, retry } = useReaderScreenLoader();
   if (!result) return <ReaderShellSkeleton />;
   if (result.kind === "not-found") return <UnavailablePage kind="notFound" />;
+  if (result.kind === "upgrade-required") {
+    return <UnavailablePage kind="readerUpgrade" onRetry={retry} />;
+  }
   if (result.kind === "loaded") {
     return (
       <ReaderScreen
@@ -18,5 +21,5 @@ export function ReaderScreenLoader() {
       />
     );
   }
-  return <OfflineRouteFallback routeKey="generic" />;
+  return <OfflineRouteFallback routeKey="generic" onRetry={retry} />;
 }

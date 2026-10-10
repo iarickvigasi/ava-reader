@@ -1,231 +1,46 @@
-import type { CSSProperties } from "react";
 import type { ReaderBlock } from "@/lib/api-types";
-import { cn } from "@/lib/cn";
-import { resolveAlignmentClass, resolveBlockStyle } from "./reader-block-style";
-import { ReaderInlineContent } from "./reader-inline-content";
-import {
-  BLOCKQUOTE_CLASS,
-  HEADING_CLASS,
-  LIST_CLASS,
-  PARAGRAPH_CLASS,
-} from "./reader-block-classes";
+import { ReaderTextBlockView } from "./reader-text-block";
+import { ReaderStructuredList } from "./reader-structured-list";
+import { ReaderStructuredTable } from "./reader-structured-table";
+import { ReaderFigure } from "./reader-figure";
+import { useReaderBlockProps } from "./block-props";
+import { resolveBlockStyle } from "./reader-block-style";
 
-type SharedBlockProps = {
-  "data-block-id": string;
-  "data-chapter-id": string;
-  "data-reader-block-kind": string;
-  "data-reader-block": "true";
-  id: string | undefined;
-  style?: CSSProperties;
-};
-
-// Paragraph and blockquote share a single union variant, so a
-// kind-by-kind Extract collapses to never. These aliases pull the
-// variants out by hand.
-type TextReaderBlock = Extract<
-  ReaderBlock,
-  { kind: "paragraph" | "blockquote" }
->;
-type HeadingReaderBlock = Extract<ReaderBlock, { kind: "heading" }>;
-type ListReaderBlock = Extract<ReaderBlock, { kind: "list" }>;
-type ImageReaderBlock = Extract<ReaderBlock, { kind: "image" }>;
-
-type WithSharedProps<TBlock> = {
-  block: TBlock;
-  sharedProps: SharedBlockProps;
-  alignmentClass: string;
-};
-
-const FIGURE_MIN_HEIGHT_PX = 160;
-const FIGURE_RESERVED_HEIGHT_PX = 64;
-
-type HeadingTag = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
-const HEADING_LEVEL_MIN = 1;
-const HEADING_LEVEL_MAX = 6;
-
-export function ReaderBlockView({
-  block,
-  chapterId,
-  pageHeight,
-  forceColumnBreakBefore,
-}: {
+export function ReaderBlockView(props: {
   block: ReaderBlock;
   chapterId: string;
   pageHeight: number;
   forceColumnBreakBefore?: boolean;
 }) {
-  const sharedProps = createSharedBlockProps(
-    block,
-    chapterId,
-    forceColumnBreakBefore,
-  );
-  const alignmentClass = resolveAlignmentClass(block);
-
-  switch (block.kind) {
-    case "heading":
-      return (
-        <HeadingBlock
-          block={block}
-          sharedProps={sharedProps}
-          alignmentClass={alignmentClass}
-        />
-      );
-    case "blockquote":
-      return (
-        <BlockquoteBlock
-          block={block}
-          sharedProps={sharedProps}
-          alignmentClass={alignmentClass}
-        />
-      );
-    case "list":
-      return (
-        <ListBlock
-          block={block}
-          sharedProps={sharedProps}
-          alignmentClass={alignmentClass}
-        />
-      );
-    case "image":
-      return (
-        <ImageBlock
-          block={block}
-          sharedProps={sharedProps}
-          pageHeight={pageHeight}
-        />
-      );
-    default:
-      return (
-        <ParagraphBlock
-          block={block}
-          sharedProps={sharedProps}
-          alignmentClass={alignmentClass}
-        />
-      );
-  }
-}
-
-function createSharedBlockProps(
-  block: ReaderBlock,
-  chapterId: string,
-  forceColumnBreakBefore: boolean | undefined,
-): SharedBlockProps {
-  const blockStyle = resolveBlockStyle(block);
-  // When the block is the first of a "spillover" chapter rendered
-  // after a single-page chapter, force it into a fresh column so the
-  // prior chapter stays alone in its column.
-  const style = forceColumnBreakBefore
-    ? ({ ...(blockStyle ?? {}), breakBefore: "column" } as CSSProperties)
-    : blockStyle;
-
-  return {
-    "data-block-id": block.id,
-    "data-chapter-id": chapterId,
-    "data-reader-block-kind": block.kind,
-    "data-reader-block": "true",
-    id: block.anchorId ?? undefined,
-    ...(style ? { style } : {}),
+  const blockProps = useReaderBlockProps();
+  const { block, chapterId, forceColumnBreakBefore } = props;
+  const style = {
+    ...resolveBlockStyle(block),
+    ...(forceColumnBreakBefore ? { breakBefore: "column" as const } : {}),
   };
-}
-
-function HeadingBlock({
-  block,
-  sharedProps,
-  alignmentClass,
-}: WithSharedProps<HeadingReaderBlock>) {
-  const level = clampHeadingLevel(block.level);
-  const Tag = `h${level}` as HeadingTag;
-
-  return (
-    <Tag {...sharedProps} className={cn(HEADING_CLASS, alignmentClass)}>
-      <ReaderInlineContent inlines={block.inlines} />
-    </Tag>
-  );
-}
-
-function clampHeadingLevel(level: number): 1 | 2 | 3 | 4 | 5 | 6 {
-  if (level <= HEADING_LEVEL_MIN) return 1;
-  if (level >= HEADING_LEVEL_MAX) return 6;
-  return level as 2 | 3 | 4 | 5;
-}
-
-function BlockquoteBlock({
-  block,
-  sharedProps,
-  alignmentClass,
-}: WithSharedProps<TextReaderBlock>) {
-  return (
-    <blockquote
-      {...sharedProps}
-      className={cn(BLOCKQUOTE_CLASS, alignmentClass)}
-    >
-      <ReaderInlineContent inlines={block.inlines} />
-    </blockquote>
-  );
-}
-
-function ListBlock({
-  block,
-  sharedProps,
-  alignmentClass,
-}: WithSharedProps<ListReaderBlock>) {
-  const Tag = block.ordered ? "ol" : "ul";
-  const className = cn(
-    LIST_CLASS,
-    block.ordered ? "list-decimal" : "list-disc",
-    alignmentClass,
-  );
-
-  return (
-    <Tag {...sharedProps} className={className}>
-      {block.items.map((item) => (
-        <li key={item.id}>
-          <ReaderInlineContent inlines={item.inlines} />
-        </li>
-      ))}
-    </Tag>
-  );
-}
-
-function ImageBlock({
-  block,
-  sharedProps,
-  pageHeight,
-}: {
-  block: ImageReaderBlock;
-  sharedProps: SharedBlockProps;
-  pageHeight: number;
-}) {
-  const maxHeight = resolveImageMaxHeight(pageHeight);
-
-  return (
-    <figure {...sharedProps} className="break-inside-avoid-column space-y-3">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        alt={block.alt ?? ""}
-        className="w-full rounded-card object-contain"
-        src={block.src}
-        style={{ maxHeight }}
+  if (block.kind === "list")
+    return (
+      <ReaderStructuredList block={block} chapterId={chapterId} style={style} />
+    );
+  if (block.kind === "table")
+    return (
+      <ReaderStructuredTable
+        block={block}
+        chapterId={chapterId}
+        pageHeight={props.pageHeight}
+        style={style}
       />
-    </figure>
-  );
-}
-
-function resolveImageMaxHeight(pageHeight: number): string | undefined {
-  if (pageHeight <= 0) return undefined;
-  const available = pageHeight - FIGURE_RESERVED_HEIGHT_PX;
-  return `${Math.max(FIGURE_MIN_HEIGHT_PX, Math.floor(available))}px`;
-}
-
-function ParagraphBlock({
-  block,
-  sharedProps,
-  alignmentClass,
-}: WithSharedProps<TextReaderBlock>) {
-  // text-indent comes through sharedProps.style (see resolveBlockStyle).
+    );
+  if (block.kind === "image")
+    return <ReaderFigure {...props} block={block} style={style} />;
+  if (block.kind === "separator")
+    return (
+      <hr
+        {...blockProps(block, chapterId, style)}
+        className="my-4 border-line"
+      />
+    );
   return (
-    <p {...sharedProps} className={cn(PARAGRAPH_CLASS, alignmentClass)}>
-      <ReaderInlineContent inlines={block.inlines} />
-    </p>
+    <ReaderTextBlockView block={block} chapterId={chapterId} style={style} />
   );
 }

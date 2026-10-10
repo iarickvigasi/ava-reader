@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { useRenderSyncedRef } from "./use-render-synced-ref";
 
 /**
  * Owns the "restore settled" signal. After the decision effect places the
@@ -7,7 +8,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
  * Cancelled on chapter/intent change and on unmount so a stale frame can't mark
  * a new cycle settled prematurely.
  */
-export function useSettleRestoreCycle() {
+export function useSettleRestoreCycle(activeRestoreCycleKey: string) {
+  const currentCycleRef = useRenderSyncedRef(activeRestoreCycleKey);
   const frameRef = useRef<number | null>(null);
   const [settledRestoreCycleKey, setSettledRestoreCycleKey] = useState<
     string | null
@@ -21,17 +23,24 @@ export function useSettleRestoreCycle() {
   }, []);
 
   const scheduleSettle = useCallback(
-    (restoreCycleKey: string) => {
+    (restoreCycleKey: string, onSettled?: () => void) => {
       cancelSettle();
-      frameRef.current = window.requestAnimationFrame(() => {
+      const frame = window.requestAnimationFrame(() => {
+        if (
+          frameRef.current !== frame ||
+          currentCycleRef.current !== restoreCycleKey
+        )
+          return;
         frameRef.current = null;
         setSettledRestoreCycleKey(restoreCycleKey);
+        onSettled?.();
       });
+      frameRef.current = frame;
     },
-    [cancelSettle],
+    [cancelSettle, currentCycleRef],
   );
 
-  useEffect(() => cancelSettle, [cancelSettle]);
+  useLayoutEffect(() => cancelSettle, [activeRestoreCycleKey, cancelSettle]);
 
   return { cancelSettle, scheduleSettle, settledRestoreCycleKey };
 }

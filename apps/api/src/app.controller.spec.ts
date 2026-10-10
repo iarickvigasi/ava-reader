@@ -1,3 +1,4 @@
+import { ServiceUnavailableException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -12,6 +13,7 @@ describe('AppController', () => {
   });
 
   beforeEach(async () => {
+    getHealth.mockClear();
     const app: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
       providers: [
@@ -37,6 +39,16 @@ describe('AppController', () => {
   });
 
   describe('health', () => {
+    it('preserves the dependency-unavailable exception for the HTTP adapter', async () => {
+      const failure = new ServiceUnavailableException({
+        status: 'degraded',
+        service: 'api',
+        database: 'down',
+      });
+      getHealth.mockRejectedValueOnce(failure);
+      await expect(appController.getHealth()).rejects.toBe(failure);
+    });
+
     it('should return the API health payload', async () => {
       await expect(appController.getHealth()).resolves.toEqual({
         status: 'ok',

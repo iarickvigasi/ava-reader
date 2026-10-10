@@ -139,6 +139,15 @@ Notes:
 - API: `http://localhost:4000/api/health`
 - PostgreSQL: `postgresql://postgres:postgres@localhost:15432/ava_reader?schema=public`
 
+## Pull request validation
+
+The `Validate` workflow runs application types, lint, unit tests, builds and generated PDF contracts
+without application secrets or a database. A separate job builds the pinned PDF worker, compares
+installed package/test bytes with the checkout, requires the complete unskipped converter suite in a
+network-disabled container, and runs the authored native CLI smoke with EPUBCheck. Only those authored
+check outputs and logs are uploaded for seven days; no deployed service or provider is exercised.
+See [PDF verification](docs/pdf-conversion-verification.md#pull-request-ci) for commands and limits.
+
 ## Notes
 
 - Database schema lives in `apps/api/prisma/schema.prisma`.
@@ -152,6 +161,9 @@ Notes:
 - `/app/admin/catalog` is an internal admin route for managing the public-domain catalog from the web app.
 - `apps/mobile` is intentionally just a placeholder for now.
 - Docker verification runs from a dedicated `verify` container on the same Compose network, so the smoke test checks real in-network connectivity rather than only host access.
+- API health returns HTTP 503 when its database check fails; Compose requires `service: api`,
+  `status: ok` and `database: up`. The uncached `/api/reachability` marker has no database dependency.
+  See the [health contract and PDF readiness limits](docs/pdf-conversion-operations.md#api-health-and-dependency-readiness).
 - If `3000`, `4000`, or `15432` are already taken on your machine, override them in `.env` or inline when starting Compose, for example `WEB_HOST_PORT=3001 API_HOST_PORT=4001 POSTGRES_HOST_PORT=15433 NEXT_PUBLIC_API_BASE_URL=http://localhost:4001 pnpm docker:up`.
 
 ## Roles and Demo Data
@@ -235,3 +247,32 @@ pnpm build
 pnpm --filter api admin:grant you@example.com
 pnpm --filter api db:seed:home-demo you@example.com
 ```
+
+## PDF conversion
+
+Select **Convert to EPUB** during PDF import to prepare one finished readable book. Its Library
+entry retains the original PDF and accepted EPUB; conversion occurs once and finished content stays
+fixed. The implementation is a development candidate, with scoped native-flow evidence and remaining
+scanned/mixed, typography, offline/device and release gates.
+
+Reader and Library format downloads use the same owned source/publication checks. The reader's
+Download panel offers existing available files; it does not start a new conversion.
+Accepted PDF reader loads reuse bounded semantic-validation receipts while checking actual bytes,
+structural schemas and current access on every request; see the operations guide for cache limits.
+
+Conversion investigations now retain an admission-wide reference, safe ordered events and a separate
+exact provider-cost projection. ADMIN lookup/export and trusted report repair are described in the
+operations guide; the verification guide includes the guarded disposable-database proof. Worker
+measurements, real authenticated operator flows, retention and release qualification remain open.
+
+- [Product behavior and pipeline](docs/pdf-conversion.md)
+- [Build, worker configuration and operations](docs/pdf-conversion-operations.md)
+- [Verification, normal-app walkthrough and current limitations](docs/pdf-conversion-verification.md)
+- [Standalone worker package](packages/pdf-epub/README.md)
+
+Web builds regenerate the reader source identity before compiling; qualification still requires
+recorded reader verification. Local navigation fault controls are disabled by default and use a
+separate, explicit QA build identity. See the operations guide for this test-only setup.
+
+The PRODUCT reader qualification catalog is empty; installing or merging code does not enable a
+production provider route, reader qualification or private-file cleanup.

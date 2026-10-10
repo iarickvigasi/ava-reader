@@ -6,12 +6,6 @@ import { ReadyReaderProgress } from "./ready-reader-progress";
 import { ReaderFrame } from "./reader-frame";
 import { ReaderPageViewport } from "./reader-page-viewport";
 import {
-  READER_PANEL_AI_CHATS,
-  READER_PANEL_AI_COMMENTS,
-  READER_PANEL_AI_TOOLBOX,
-  READER_PANEL_CONTENTS,
-  READER_PANEL_HIGHLIGHTS,
-  READER_PANEL_PREFERENCES,
   READER_VISIBILITY_HIDDEN,
 } from "../shared/constants";
 import type { ReadyReaderProps } from "../shared/types";
@@ -29,6 +23,7 @@ export function ReadyReader({
   isRefreshingWindow,
   libraryItemId,
   onSelectChapter,
+  onTurnChapter,
   onVisibleLocatorChange,
   payload,
   restoreIntent,
@@ -36,19 +31,7 @@ export function ReadyReader({
   embedded = false,
 }: ReadyReaderProps & { embedded?: boolean }) {
   const { activePanel } = useReaderUi();
-  const isContentsOpen = activePanel === READER_PANEL_CONTENTS;
-  const isPreferencesOpen = activePanel === READER_PANEL_PREFERENCES;
-  const isAiChatsOpen = activePanel === READER_PANEL_AI_CHATS;
-  const isHighlightsOpen = activePanel === READER_PANEL_HIGHLIGHTS;
-  const isAiCommentsOpen = activePanel === READER_PANEL_AI_COMMENTS;
-  const isAiToolboxOpen = activePanel === READER_PANEL_AI_TOOLBOX;
-  const isPanelOpen =
-    isContentsOpen ||
-    isPreferencesOpen ||
-    isAiChatsOpen ||
-    isHighlightsOpen ||
-    isAiCommentsOpen ||
-    isAiToolboxOpen;
+  const isPanelOpen = activePanel !== null;
 
   // Look up the immediate neighbours so the spread logic can fill column 2
   // with the next chapter when the active chapter is single-page, and skip
@@ -91,7 +74,7 @@ export function ReadyReader({
     isPanelOpen,
     libraryItemId,
     nextChapter,
-    onSelectChapter,
+    onSelectChapter: onTurnChapter ?? onSelectChapter,
     onVisibleLocatorChange,
     previousChapter,
     restoreIntent,

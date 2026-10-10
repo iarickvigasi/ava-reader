@@ -29,6 +29,12 @@ function harness() {
     newBlobId: 'new',
   });
   const prisma = {
+    book: {
+      findUniqueOrThrow: jest.fn().mockResolvedValue({
+        pdfImportPrivate: false,
+        canonicalImportPrivate: false,
+      }),
+    },
     bookFile: { findMany: jest.fn().mockResolvedValue([{ blobId: 'epub' }]) },
     storedBlob: {
       findUniqueOrThrow: jest
@@ -84,4 +90,21 @@ it('rejects mismatched source bytes before building a plan', async () => {
   pkg.manifest.sourceChecksum = 'different';
   await expect(processFile(prisma, file, true)).rejects.toThrow('checksum');
   expect(savePackage).not.toHaveBeenCalled();
+});
+it('blocks regrouping that would strand an authored typed link, retaining source bytes', async () => {
+  const { prisma, file, pkg } = harness();
+  const first = pkg.chapters[0].blocks[0];
+  if (first.kind !== 'paragraph') throw new Error('Expected fixture paragraph');
+  first.inlines[0] = {
+    kind: 'text',
+    text: 'Go',
+    target: { chapterId: 'c1', blockId: 'c1::b1', textOffset: 0 },
+  };
+  const original = JSON.stringify(pkg);
+  expect(await processFile(prisma, file, true)).toMatchObject({
+    status: 'blocked',
+    blockers: ['Source internal links target removed chapters'],
+  });
+  expect(savePackage).not.toHaveBeenCalled();
+  expect(JSON.stringify(pkg)).toBe(original);
 });

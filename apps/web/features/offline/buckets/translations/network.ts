@@ -1,3 +1,4 @@
+import { READER_CAPABILITY_HEADERS } from "@/features/reader/canonical/headers";
 import { getPublicApiBaseUrl } from "@/lib/api";
 
 import { isCurrentTranslationBucket } from "./bucket";
@@ -23,6 +24,7 @@ export async function requestTranslation(
       signal: requestSignal,
       cache: "no-store",
       headers: {
+        ...READER_CAPABILITY_HEADERS,
         Authorization: `Bearer ${token}`,
         Accept: "application/json",
         "Content-Type": "application/json",

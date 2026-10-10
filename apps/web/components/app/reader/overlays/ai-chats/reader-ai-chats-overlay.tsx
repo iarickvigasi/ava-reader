@@ -36,6 +36,7 @@ function AiChatsBackdrop({ onClose }: { onClose: () => void }) {
   return (
     <button
       type="button"
+      tabIndex={-1}
       aria-label={t("closePanel")}
       className="pointer-events-auto absolute inset-0 bg-transparent md:left-94"
       onClick={onClose}

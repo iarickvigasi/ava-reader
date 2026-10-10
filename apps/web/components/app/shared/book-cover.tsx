@@ -1,5 +1,8 @@
 "use client";
 
+import type { BookCoverProps } from "./book-cover-props";
+import { OwnedCoverSource } from "./owned-cover-source";
+import { ownedCoverItemId } from "@/features/offline/buckets/book";
 import { cn } from "@/lib/cn";
 import { BookCoverFallback } from "./book-cover-fallback";
 import { useBookCoverSrc } from "./use-book-cover-src";
@@ -27,21 +30,14 @@ const RATIO_CLASS = {
   book: "aspect-2/3",
 } as const;
 
-export function BookCover({
+function BookCoverArtwork({
   alt,
   className,
   libraryItemId = null,
   ratio = "book",
   src,
   title,
-}: {
-  alt: string;
-  className?: string;
-  libraryItemId?: null | string;
-  ratio?: keyof typeof RATIO_CLASS;
-  src: string | null;
-  title: string;
-}) {
+}: BookCoverProps) {
   const { artwork, effectiveSrc, handleFailure, handleRef, measure } =
     useBookCoverSrc(src, libraryItemId);
 
@@ -63,7 +59,10 @@ export function BookCover({
       style={artwork ? { aspectRatio: artwork.ratio } : undefined}
     >
       {!artwork && (
-        <BookCoverFallback className="absolute inset-0 size-full" title={title} />
+        <BookCoverFallback
+          className="absolute inset-0 size-full"
+          title={title}
+        />
       )}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -75,5 +74,19 @@ export function BookCover({
         src={effectiveSrc}
       />
     </div>
+  );
+}
+
+export function BookCover(props: BookCoverProps) {
+  const ownedId = ownedCoverItemId(props.src);
+  return ownedId && props.src ? (
+    <OwnedCoverSource
+      src={props.src}
+      libraryItemId={props.libraryItemId === ownedId ? ownedId : null}
+    >
+      {(src) => <BookCoverArtwork {...props} libraryItemId={null} src={src} />}
+    </OwnedCoverSource>
+  ) : (
+    <BookCoverArtwork {...props} />
   );
 }

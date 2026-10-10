@@ -2,6 +2,7 @@ import { writeUnlessDeleted } from "../library/deleted-items";
 import type { BilingualChapter } from "@/lib/api-types/bilingual";
 
 import type { AvaReaderDB } from "../../db";
+import { validateTranslationChapter } from "./validate";
 import { translationKey } from "./id";
 import type { TranslationScope } from "./types";
 
@@ -11,6 +12,11 @@ export async function readTranslationChapter(
 ) {
   const row = await db.translations.get(translationKey(scope));
   if (!row) return null;
+  try {
+    validateTranslationChapter(row, scope);
+  } catch {
+    return null;
+  }
   const {
     libraryItemId,
     chapterId,
@@ -37,8 +43,10 @@ export async function writeTranslationChapter(
   db: AvaReaderDB,
   chapter: BilingualChapter,
 ) {
-  await writeUnlessDeleted(db, chapter.libraryItemId, [db.translations], () => db.translations.put({
-    ...chapter,
-    fetchedAt: new Date().toISOString(),
-  }));
+  await writeUnlessDeleted(db, chapter.libraryItemId, [db.translations], () =>
+    db.translations.put({
+      ...chapter,
+      fetchedAt: new Date().toISOString(),
+    }),
+  );
 }

@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+import { validCanonicalCatalog } from "@/features/reader/bilingual/content/validate-canonical-catalog";
 import { useTranslateTargetLang } from "@/components/app/preferences/use-translate-target-lang";
 import { useTranslationChapter } from "@/features/offline/buckets/translations";
 import { useBilingualSize } from "@/features/reader/bilingual/measurement/use-bilingual-size";
@@ -11,8 +13,23 @@ export function useBilingualPageState(props: ReadyReaderProps) {
     props.libraryItemId,
     props.activeChapter.chapterId,
     targetLang,
+    props.payload.readerPackage?.final_content_id,
   );
-  const measuringChapter = cache.chapter;
+  const revision = props.payload.readerPackage?.final_content_id;
+  const invalid = useMemo(
+    () =>
+      !!(
+        revision &&
+        cache.chapter &&
+        !validCanonicalCatalog(
+          cache.chapter,
+          props.activeChapter.blocks,
+          revision,
+        )
+      ),
+    [revision, cache.chapter, props.activeChapter.blocks],
+  );
+  const measuringChapter = invalid ? null : cache.chapter;
   const { surfaceRef, size } = useBilingualSize();
   const {
     measurementRef,
@@ -29,7 +46,14 @@ export function useBilingualPageState(props: ReadyReaderProps) {
     props,
   });
   return {
-    cache,
+    cache: invalid
+      ? {
+          ...cache,
+          chapter: null,
+          status: "error" as const,
+          error: "The translation source does not match this book.",
+        }
+      : cache,
     targetLang,
     measuringChapter,
     surfaceRef,

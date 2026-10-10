@@ -1,0 +1,15 @@
+**
+!pyproject.toml
+!uv.lock
+!README.md
+!src/
+!src/**
+!scripts/
+!scripts/dependency_inventory.py
+!scripts/fetch_epubcheck.py
+!scripts/epubcheck-distribution.json
+src/**/__pycache__/
+src/**/*.pyc
+src/*.egg-info/
+!licenses/
+!licenses/uv-MIT.txt

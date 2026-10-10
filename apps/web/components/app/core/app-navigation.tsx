@@ -16,6 +16,7 @@ import { cn } from "@/lib/cn";
 import { readerNavItems, readerUtilityItems } from "./reader-navigation-items";
 import { ReaderNavItem } from "./reader-nav-item";
 import { ReaderMobileNavigation } from "./reader-mobile-navigation";
+import { ReaderDownloadButton } from "./reader-download-button";
 import { ConnectNavigationIcon } from "./connect-navigation-icon";
 import { LibraryNavigationIcon } from "./library-navigation-icon";
 import { ExploreIcon } from "./explore-icon";
@@ -260,6 +261,8 @@ function ReaderUtilityItem({
 }) {
   const t = useTranslations("nav.reader");
   const Icon = item.icon;
+
+  if (item.id === "downloadBook") return <ReaderDownloadButton />;
 
   return (
     <button

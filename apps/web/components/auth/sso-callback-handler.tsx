@@ -1,37 +1,24 @@
 "use client";
 
 import { AuthenticateWithRedirectCallback, useAuth } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { AuthShell } from "@/components/auth/auth-shell";
+import { useTranslations } from "next-intl";
+import { AuthShell } from "./auth-shell";
+import { AuthReadinessNotice } from "./auth-readiness-notice";
+import { AUTH_TIMEOUT_MS } from "@/features/auth/with-deadline";
 
 export function SsoCallbackHandler() {
-  const router = useRouter();
   const { isLoaded } = useAuth();
-  const [message, setMessage] = useState("Finishing Google authentication...");
-
+  const t = useTranslations("auth.shared.readiness");
+  const [expired, setExpired] = useState(false);
   useEffect(() => {
-    if (!isLoaded) {
-      return;
-    }
-
-    const stallTimer = window.setTimeout(() => {
-      setMessage(
-        "Google authentication is taking longer than expected. Returning you to sign in...",
-      );
-      window.setTimeout(() => {
-        router.replace("/sign-in?notice=oauth_continue");
-      }, 1500);
-    }, 15000);
-
-    return () => {
-      window.clearTimeout(stallTimer);
-    };
-  }, [isLoaded, router]);
-
+    // Bound bootstrap and callback UI time. Reload recovers a stalled page.
+    const timer = setTimeout(() => setExpired(true), AUTH_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, []);
   return (
     <>
-      {isLoaded ? (
+      {isLoaded && !expired ? (
         <AuthenticateWithRedirectCallback
           signInUrl="/sign-in"
           signUpUrl="/sign-up"
@@ -42,11 +29,12 @@ export function SsoCallbackHandler() {
           signUpForceRedirectUrl="/app"
         />
       ) : null}
-      <AuthShell title="Just a moment" subtitle={message}>
-        <div className="rounded-card bg-white/68 px-5 py-8 text-center">
-          <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-line border-t-ink" />
-          <div id="clerk-captcha" />
-        </div>
+      <AuthShell title={t("callbackTitle")}>
+        <AuthReadinessNotice
+          readiness={isLoaded ? "ready" : "loading"}
+          operation={expired ? "timed-out" : isLoaded ? "pending" : "idle"}
+        />
+        <div id="clerk-captcha" />
       </AuthShell>
     </>
   );

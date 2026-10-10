@@ -39,6 +39,7 @@ describe('ReaderController', () => {
       'clerk_1',
       'library-1',
       'chapter-2',
+      { schema: '', build: '' },
     );
   });
 

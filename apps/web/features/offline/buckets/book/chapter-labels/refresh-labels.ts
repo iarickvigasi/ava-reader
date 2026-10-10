@@ -34,6 +34,7 @@ async function refreshBooks(db: AvaReaderDB, input: Input) {
       const book = await db.books.get(id);
       if (
         !book ||
+        book.canonical?.readerPackage ||
         (book.metadata as ReaderBookPayload)?.primaryFormat !== "EPUB"
       )
         continue;
@@ -54,7 +55,7 @@ async function refreshBooks(db: AvaReaderDB, input: Input) {
           .where("libraryItemId")
           .equals(id)
           .modify((row) => {
-            if (!current()) return;
+            if (!current() || row.canonical?.readerPackage) return;
             const toc = patchLegacyLabels(
               (row.toc ?? []) as ReaderTocNode[],
               payload.toc,

@@ -50,6 +50,7 @@ it.each([1, 0])(
         blobId: 'old-blob',
         updatedAt: file.updatedAt,
         isPrimary: true,
+        book: { pdfImportPrivate: false, canonicalImportPrivate: false },
       },
       data: { blobId: 'new-blob', readingProgressIndex: Prisma.DbNull },
     });

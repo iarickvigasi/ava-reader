@@ -35,6 +35,26 @@ export function translationSelection(
     return { ...selection, locator: null };
   const start = offsetIn(firstElement, range.startContainer, range.startOffset);
   const end = offsetIn(lastElement, range.endContainer, range.endOffset);
+  if (first.kind === "literal" && first.id === last.id)
+    return {
+      ...selection,
+      locator: {
+        chapterId: chapter.chapterId,
+        startBlockId: first.blockId,
+        endBlockId: first.blockId,
+        startOffset: first.startOffset + start,
+        endOffset: first.startOffset + end,
+        contextBefore: "",
+        contextAfter: "",
+      },
+      context: first.text,
+    };
+  if (
+    chapter.units
+      .slice(firstIndex, lastIndex + 1)
+      .some((u) => u.kind !== "sentence")
+  )
+    return { ...selection, locator: null };
   return {
     ...selection,
     locator: {

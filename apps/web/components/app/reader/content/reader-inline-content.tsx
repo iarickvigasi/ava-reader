@@ -1,43 +1,62 @@
+import { useReaderMeasurement } from "./reader-measurement-context";
+import { ReaderInternalLink } from "./reader-internal-link";
 import type { ReaderInline } from "@/lib/api-types";
 import { cn } from "@/lib/cn";
 import { ReaderInlineImage } from "./reader-inline-image";
+import { ReaderContentLink } from "./reader-content-link";
 import { ReaderInlineScript } from "./reader-inline-script";
 import { ReaderInlineText } from "./reader-inline-text";
-
-const READER_INLINE_KIND_IMAGE = "image";
+import { groupInlineLinkOccurrences } from "@/features/reader/group-inline-link-occurrences";
 
 const LINK_CLASS = "underline decoration-line/60 underline-offset-4";
 
-// Dispatches each run to the component for its text type. A run's styling
-// nests outwards: text, then its vertical script, then the link wrapper.
+// Preserve each run's styling/script inside its semantic occurrence's link.
 export function ReaderInlineContent({ inlines }: { inlines: ReaderInline[] }) {
+  const measurement = useReaderMeasurement();
   return (
     <>
-      {inlines.map((inline, index) => {
-        const key = `${inline.kind}-${index}`;
+      {groupInlineLinkOccurrences(inlines).map((group) => {
+        const key = `${group.kind}-${group.sourceIndex}`;
 
-        if (inline.kind === READER_INLINE_KIND_IMAGE) {
-          return inline.href ? (
-            <a key={key} href={inline.href} className={LINK_CLASS}>
-              <ReaderInlineImage inline={inline} />
-            </a>
-          ) : (
-            <span key={key}>
-              <ReaderInlineImage inline={inline} />
-            </span>
+        if (group.kind === "image") {
+          return (
+            <ReaderContentLink key={key} link={group.inline}>
+              <ReaderInlineImage inline={group.inline} />
+            </ReaderContentLink>
           );
         }
 
-        const content = (
-          <ReaderInlineScript script={inline.script}>
-            <ReaderInlineText inline={inline} />
+        const inline = group.inlines[0];
+        const content = group.inlines.map((run, index) => (
+          <ReaderInlineScript
+            key={index}
+            inheritSize={run.presentation?.relative_size != null}
+            script={
+              run.script ??
+              (run.presentation?.vertical_align === "super" ||
+              run.presentation?.vertical_align === "sub"
+                ? run.presentation.vertical_align
+                : undefined)
+            }
+          >
+            <ReaderInlineText inline={run} />
           </ReaderInlineScript>
-        );
+        ));
 
+        if (inline.target)
+          return (
+            <ReaderInternalLink
+              key={key}
+              target={inline.target}
+              sourceOffset={inline.sourceOffset}
+            >
+              {content}
+            </ReaderInternalLink>
+          );
         return inline.href ? (
           <a
             key={key}
-            href={inline.href}
+            href={measurement ? undefined : inline.href}
             className={cn(LINK_CLASS, "hover:text-title")}
           >
             {content}

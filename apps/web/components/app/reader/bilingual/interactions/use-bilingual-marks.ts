@@ -1,3 +1,4 @@
+import { flowBlockIndex } from "@/features/reader/bilingual/content/flow-block-index";
 import { useLayoutEffect, type RefObject } from "react";
 import type { ReaderBlock } from "@/lib/api-types/reader";
 import { useAiCommentsContext } from "../../overlays/ai-comments/ai-comments-context";
@@ -35,7 +36,7 @@ export function useBilingualMarks({
     applyBilingualMarks({
       article,
       chapterId,
-      blockIds: blocks.map((block) => block.id),
+      blockIds: [...flowBlockIndex(blocks).keys()],
       highlights,
       comments,
     });

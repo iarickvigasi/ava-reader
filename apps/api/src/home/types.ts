@@ -1,3 +1,4 @@
+import type { PdfLibraryRecord } from '../library/pdf-import/operations/library-summary';
 import type { Prisma, User, UserRole } from '@prisma/client';
 
 export type LibraryItemRecord = Prisma.LibraryItemGetPayload<{
@@ -11,7 +12,7 @@ export type LibraryItemRecord = Prisma.LibraryItemGetPayload<{
     };
     progress: true;
   };
-}>;
+}> & { book: { pdfImport?: PdfLibraryRecord | null } };
 
 export type CatalogEntryRecord = Prisma.CatalogEntryGetPayload<{
   include: {
