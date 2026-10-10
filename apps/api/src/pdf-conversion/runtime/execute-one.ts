@@ -42,8 +42,22 @@ export async function executeOne(
     signal,
   );
   const observer = claim.jobId
-    ? workerObserver(claim, workerObservationSink(prisma, claim), guard.signal)
+    ? workerObserver(
+        claim,
+        workerObservationSink(prisma, claim, guard.signal),
+        guard.signal,
+      )
     : undefined;
+  let drainStarted = false;
+  const drain = async () => {
+    if (drainStarted) return;
+    drainStarted = true;
+    try {
+      await observer?.drain(Math.min(1000, guard.remainingMs()));
+    } catch {
+      /* Optional capture cannot replace the original action. */
+    }
+  };
   try {
     const result = await runClaimedContent(
       prisma,
@@ -53,6 +67,7 @@ export async function executeOne(
       guard,
       observer,
     );
+    await drain();
     observer?.finishCapture();
     const complete = () =>
       underLease(
@@ -82,6 +97,7 @@ export async function executeOne(
       };
 
     let saved: { status: string; code: string };
+    await drain();
     observer?.finishCapture();
     try {
       saved = await underLease(

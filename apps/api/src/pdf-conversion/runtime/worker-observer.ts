@@ -89,6 +89,29 @@ export function workerObserver(
     summary: sink.summary,
     snapshot: () =>
       closed ? safeObservationWatermark(closed, attemptId) : snapshot(),
+    async drain(milliseconds: number) {
+      if (signal.aborted || !Number.isFinite(milliseconds) || milliseconds <= 0)
+        return;
+      // Delivery remains optional. Bound the wait without changing intended-count sealing.
+      await new Promise<void>((resolve) => {
+        let finished = false;
+        const done = () => {
+          if (finished) return;
+          finished = true;
+          clearTimeout(timer);
+          signal.removeEventListener('abort', done);
+          resolve();
+        };
+        const timer = setTimeout(done, Math.min(1000, milliseconds));
+        signal.addEventListener('abort', done, { once: true });
+        try {
+          void sink.whenSettled().then(done, done);
+        } catch {
+          done();
+        }
+        if (signal.aborted) done();
+      });
+    },
     finishCapture() {
       // Abort may return before nested work/cleanup settles. No final count is
       // asserted in that case, nor while any tracked action remains active.

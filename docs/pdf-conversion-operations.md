@@ -43,9 +43,20 @@ capture; observations have immutable per-attempt delivery ordinals. The declared
 `COORDINATOR_PRE_SETTLEMENT_WORKER_EVENT_DELIVERY`: source loading, reconstruction, staging and
 metadata work before handoff to candidate/failure/wait settlement. Only after tracked work ends
 without abort does the coordinator close that boundary. The existing authenticated lifecycle event
-retains its exact final count in the same transaction as settlement. It does not await optional
-diagnostic writes or drain their queue, and never relaxes their authority. Progress events retain
-open known-prefix watermarks. Aborted/outstanding work and killed producers stay unsealed.
+retains its exact final intended count in the same transaction as settlement. Before closing the
+boundary, the coordinator allows at most one second for queued writes, clipped to its remaining
+lease and interrupted by abort. It adds no diagnostic renewal; the existing lease lifecycle is
+unchanged. A drain timeout can leave pending writes; the seal proves the intended count, not
+successful delivery. Progress events
+retain open known-prefix watermarks. Aborted/outstanding work and killed producers stay unsealed.
+
+The queue holds at most 16 pending writes. Each write uses a freshly fenced transaction with
+100 ms maximum acquisition wait and a 750 ms timeout. Only an explicit busy queue/cost advisory
+lock retries, for at most three attempts with 10/25 ms backoff outside transactions. Revocation,
+invalid binding/schema and unknown transaction outcomes do not retry. Safe warnings classify loss
+and include validated operation/attempt IDs for correlation, without source content or raw errors.
+Queued or newly emitted observations stop once abort is observed; this is not atomic cancellation
+of an already-authorized append. Missing delivery remains visible in report coverage.
 
 Authenticated report snapshots and exports project retained capture at a fixed journal watermark.
 `RECORDED` means all declared producer ordinals through a valid retained seal are present; it proves

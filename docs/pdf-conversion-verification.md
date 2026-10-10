@@ -118,7 +118,13 @@ normal failure/recovery/provider-wait and candidate acceptance, then verify exac
 counts and late-authority refusal/delivery. Reconstruction and database results are test fixtures;
 candidate semantics use a controlled validator. These witnesses do not run a real conversion,
 database contention/rollback or normal operator account. An abort witness lets tracked background
-work finish after the coordinator returns and requires capture to remain unsealed.
+work finish after the coordinator returns, discards queued/late observations once abort is observed
+and requires capture to remain unsealed with its final count unknown. Retry/drain regressions cover
+fresh authority after transient contention, three-attempt exhaustion, unknown transaction outcomes,
+duplicate keys, safe correlated loss warnings, a one-second drain cap and clipping to the remaining
+lease. They preserve the original action/error on diagnostic timeout or rejection, and retain the
+existing `authority_lost` outcome on abort. Actual PostgreSQL contention and normal native conversion
+capture still require separate runtime evidence.
 
 Run the packaged OCR cases in the installed worker: a host suite that skips cases requiring
 `/usr/bin/tesseract` leaves those cases unqualified. Record process/native-hint/end-scratch scopes

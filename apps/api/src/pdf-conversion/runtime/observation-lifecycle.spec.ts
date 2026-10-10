@@ -11,7 +11,10 @@ import { workerObservationSink } from './worker-observation-sink';
 import { secretDigest } from '../../library/pdf-import/jobs/secrets';
 import { DEFAULT_JOB_POLICY } from '../../library/pdf-import/jobs/policy';
 import { recordOperationEvent } from '../../library/pdf-import/reports/operation-event';
-import { retainedEventInput } from '../../library/pdf-import/reports/event-contract';
+import {
+  retainedEventInput,
+  safeEventSchema,
+} from '../../library/pdf-import/reports/event-contract';
 import { projectObservationCoverage } from '../../library/pdf-import/reports/observation-coverage';
 import { PdfRuntimeError } from './runtime-error';
 import { PdfProviderError } from '../../library/pdf-import/providers/errors';
@@ -358,7 +361,7 @@ it('real controlled candidate acceptance retains closure and permits freshly fen
   expect(view()).toMatchObject({ state: 'RECORDED', complete: true });
   expect(fixture.journal.at(-1)?.details).toHaveProperty('observationDelivery');
 });
-it('abort returns without sealing tracked background work that ends after executeOne', async () => {
+it('abort leaves background capture unsealed and appends no queued or post-abort observations', async () => {
   const fixture = setup();
   await declare(fixture);
   const controller = new AbortController();
@@ -401,6 +404,25 @@ it('abort returns without sealing tracked background work that ends after execut
   expect(observed?.finishCapture()).toBeUndefined();
   fixture.release();
   await mockSink?.whenSettled();
+  // Both the held START and post-abort END are refused by the aborted capture guard.
+  expect(mockSink?.summary()).toMatchObject({
+    pending: 0,
+    lost: 2,
+    state: 'PARTIAL',
+  });
+  expect(observed?.snapshot()).toMatchObject({
+    sealed: false,
+    throughOrdinal: 2,
+    reportedFailures: 2,
+  });
+  expect(fixture.journal).toHaveLength(1);
+  expect(
+    fixture.journal.every(
+      (row) =>
+        !safeEventSchema.parse(retainedEventInput(row)).details
+          .observationDelivery,
+    ),
+  ).toBe(true);
   expect(
     projectObservationCoverage(
       fixture.journal.map((row) => ({
@@ -412,6 +434,6 @@ it('abort returns without sealing tracked background work that ends after execut
   ).toMatchObject({
     state: 'UNSEALED',
     complete: false,
-    producers: [{ exactFinalCountKnown: false, recordedOrdinalCount: 2 }],
+    producers: [{ exactFinalCountKnown: false, recordedOrdinalCount: 0 }],
   });
 });
