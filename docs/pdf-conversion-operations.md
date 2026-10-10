@@ -32,6 +32,12 @@ and reaped children, RSS is a process-lifetime maximum, and scratch is a bounded
 at command end. These are not container peaks. Language is a bounded native-text heuristic;
 applied profile, observed inventory, validated output and process-local reuse remain separate.
 
+For `attempt_stream`, one `prepare_source` phase measures active upfront page preparation and
+excludes host response waits. Whole-command `work_ms` includes those waits; neither measurement
+includes interpreter startup or observation export. Attempt reuse observations describe private
+checkpoints, separately from decoded-cache hits. They do not count PDF opens or establish
+physical I/O, container peak resources or full-book throughput.
+
 Optional journal writes are bounded and freshly fenced. New claims declare expected coordinator
 capture; observations have immutable per-attempt delivery ordinals. The declared producer scope is
 `COORDINATOR_PRE_SETTLEMENT_WORKER_EVENT_DELIVERY`: source loading, reconstruction, staging and

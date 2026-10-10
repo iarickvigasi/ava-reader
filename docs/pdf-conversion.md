@@ -41,6 +41,16 @@ Repeated reads verify byte identity even when the parsed page is cached. This bo
 without dropping pages, changing text or relaxing source/coverage checks. Scratch observations are
 not accepted reader content or durable operator investigation records.
 
+The integrated coordinator uses one finite `attempt_stream` session per leased attempt. It prepares
+each page once, retires parsers before host response waits and reuses verified private checkpoints
+for fresh refinement and final assembly state. The host acknowledges each page/batch, dispatches
+one advertised task at a time and waits for worker semantic acceptance before the next request.
+Provider authority, budgets and receipts remain on the host; session cancellation also fences
+dispatch and artifact staging. Current source-feature coverage is required before returning a
+candidate. Standalone entrypoints remain available. See the
+[finite attempt protocol](../packages/pdf-epub/README.md#finite-reconstruction-attempt).
+This source implementation does not establish full-book performance or scanned/mixed release qualification.
+
 Worker contracts and API types are generated from the locked Python package. Unknown fields,
 stale source/task hashes, invented nodes/styles, missing text/resources or unresolved required
 structure fail closed. Historical recognition prompts 13/14 require each decimal, alphabetic or Roman ordered
