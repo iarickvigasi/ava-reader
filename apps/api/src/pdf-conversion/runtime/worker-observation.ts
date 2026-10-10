@@ -27,6 +27,7 @@ export const workerCommand = z.enum([
   'prepare_refinement',
   'reconstruct',
   'reconstruct_stream',
+  'attempt_stream',
   'validate_tasks',
   'validate_refinement',
 ]);
@@ -225,8 +226,14 @@ export const workerObservationPacket = z
       .strict(),
     reuse: z
       .object({
-        source_preparation: z.literal('none'),
-        scope: z.literal('worker_process_local_decode_and_annotation_memo'),
+        source_preparation: z.enum([
+          'none',
+          'attempt_private_page_checkpoints',
+        ]),
+        scope: z.enum([
+          'worker_process_local_decode_and_annotation_memo',
+          'worker_attempt_private_checkpoints_and_process_local_decode_and_annotation_memo',
+        ]),
         checkpoint_decode: z.object({ hits: count, misses: count }).strict(),
         annotation_view: z.object({ hits: count, misses: count }).strict(),
       })
@@ -240,6 +247,18 @@ export const workerObservationPacket = z
   })
   .strict()
   .superRefine((value, context) => {
+    const attempt = value.command === 'attempt_stream';
+    if (
+      (value.reuse.source_preparation !== 'none' && !attempt) ||
+      value.reuse.scope !==
+        (attempt
+          ? 'worker_attempt_private_checkpoints_and_process_local_decode_and_annotation_memo'
+          : 'worker_process_local_decode_and_annotation_memo')
+    )
+      context.addIssue({
+        code: 'custom',
+        message: 'Reuse scope differs from command',
+      });
     if (Date.parse(value.ended_at) < Date.parse(value.started_at))
       context.addIssue({
         code: 'custom',

@@ -88,6 +88,35 @@ function packet() {
 }
 const line = (value: unknown) =>
   WORKER_OBSERVATION_PREFIX + JSON.stringify(value) + '\n';
+it('admits truthful attempt-local reuse without changing or widening standalone packets', () => {
+  const value = packet();
+  const attempt = {
+    ...value,
+    command: 'attempt_stream',
+    reuse: {
+      ...value.reuse,
+      scope:
+        'worker_attempt_private_checkpoints_and_process_local_decode_and_annotation_memo',
+      source_preparation: 'attempt_private_page_checkpoints',
+    },
+  };
+  expect(workerObservationPacket.safeParse(attempt).success).toBe(true);
+  expect(
+    workerObservationPacket.safeParse({
+      ...attempt,
+      reuse: { ...attempt.reuse, source_preparation: 'none' },
+    }).success,
+  ).toBe(true);
+  expect(
+    workerObservationPacket.safeParse({ ...value, reuse: attempt.reuse })
+      .success,
+  ).toBe(false);
+  expect(
+    workerObservationPacket.safeParse({ ...attempt, reuse: value.reuse })
+      .success,
+  ).toBe(false);
+  expect(workerObservationPacket.parse(value)).toEqual(value);
+});
 it('accepts a bound validation-only packet without claiming verified source/profile or resources', () => {
   const value = packet();
   expect(

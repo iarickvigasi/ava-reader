@@ -10,6 +10,7 @@ export type SandboxInput = {
   jobBytes?: Buffer;
   auxiliaryBytes?: Buffer;
   onStdout?: (chunk: Buffer) => Promise<void>;
+  onExchange?: (request: Buffer, signal: AbortSignal) => Promise<Buffer>;
   module:
     | 'ava_pdf_epub.runtime'
     | 'ava_pdf_epub.runtime.inspect'
