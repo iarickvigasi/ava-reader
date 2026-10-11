@@ -16,9 +16,11 @@ SEPARATORS = str.maketrans(
         "\u2212": "-",
     }
 )
+# Short edition/format descriptors preserve existing labels without scanning narrative sentences.
 LABEL = re.compile(
     r"\b(?:printed\s+)?ISBN(?:-1[03])?"
-    r"(?:\s*\([A-Za-z][A-Za-z -]{0,28}\))?\s*:?\s*",
+    r"(?:\s*\([A-Za-z][A-Za-z -]{0,28}\)|"
+    r"(?-i:(?:[ \t]+[A-Za-z][A-Za-z-]{0,13}){1,2}))?\s*:?\s*",
     re.I,
 )
 # Whitespace and one optional group hyphen may wrap in the printed source.

@@ -86,6 +86,44 @@ class PrintedIdentifiers(unittest.TestCase):
             with self.subTest(text=text):
                 self.assertFalse(identifiers(printed_metadata(source_state(text), None)))
 
+    def test_bounded_plain_label_descriptors_preserve_printed_and_info_candidates(self):
+        for text in [
+            "ISBN paperback: 9780000000002",
+            "Printed ISBN test claim: 9780000000002",
+            "ISBN test claim 9780000000002",
+        ]:
+            with self.subTest(text=text):
+                state = source_state(text, False)
+                before = copy.deepcopy(state.blocks)
+                claims = identifiers(printed_metadata(state, None))
+                self.assertEqual(
+                    [(ISBN13, "candidate")], [(c["value"], c["status"]) for c in claims]
+                )
+                self.assertEqual(state.blocks[-1]["evidence"], claims[0]["evidence"])
+                self.assertEqual(before, state.blocks)
+        front = identifiers(printed_metadata(source_state("ISBN paperback: 9780000000002"), None))
+        self.assertEqual([(ISBN13, "accepted")], [(c["value"], c["status"]) for c in front])
+        for text in [
+            "ISBN arbitrary narrative words 9780000000002",
+            "ISBN unboundedlongdescriptor: 9780000000002",
+            "ISBN Kit claim: 9780000000002",
+            "ISBN test claim: 9780000000003",
+            "ISBN test claim: 9780000000002-77",
+        ]:
+            with self.subTest(text=text):
+                self.assertFalse(identifiers(printed_metadata(source_state(text), None)))
+        state = source_state("Printed ISBN test claim: 9780000000002", False)
+        info = SimpleNamespace(author=None, title=None, subject="ISBN test claim 9780000000019")
+        with patch(
+            "ava_pdf_epub.reconstruction_v2.assemble_metadata.PdfReader",
+            return_value=SimpleNamespace(metadata=info),
+        ):
+            claims = identifiers(assemble_metadata(Path("unused.pdf"), state, "conversion"))
+        self.assertEqual(
+            {("9780000000002", "candidate"), ("9780000000019", "candidate")},
+            {(c["value"], c["status"]) for c in claims},
+        )
+
     def test_standalone_bare_and_explicit_x_checksum(self):
         for text, value in [("0 306 40615 2", "0306406152"), ("ISBN 080442957x", "080442957X")]:
             with self.subTest(text=text):
