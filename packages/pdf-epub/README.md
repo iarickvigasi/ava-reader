@@ -574,6 +574,23 @@ review remains a blocking finding. True poem/quote and activity controls preserv
 styles and exact EPUB reimport. Current full-book normal import/source/reader qualification remains
 required; historical accepted content stays fixed.
 
+### Printed identifiers and uncertain edition records
+
+Explicit ISBN labels can occur inside a source paragraph without a colon. New discovery validates
+ISBN10/ISBN13 checksums, supports bounded parenthetical label qualifiers and printed groups with
+Unicode hyphens, nonbreaking spaces or line wraps, and keeps newly
+embedded claims as candidates unless existing labelled bibliographic authority establishes them.
+A short eligible frontmatter/bibliographic record ending with a bare valid ISBN can retain that
+identifier and its directly adjacent printed year as source-edition candidates. Arbitrary body
+numbers, phone/order labels and attached word-years do not establish these claims. Printed year,
+ISBN and publisher are not automatically combined into one accepted edition. Source words and
+positions stay fixed; only identifier spelling is normalized in the metadata claim.
+
+Matching candidate metadata retains the actual printed block's evidence even when PDF Info already
+contains the same ISBN; merging evidence does not promote certainty or collapse different scopes/
+schemes. Candidates survive generated EPUB reimport but are excluded from accepted OPF metadata.
+The generated EPUB identifier remains its conversion URN, not the source ISBN.
+
 ### Language-only uncertainty
 
 In the opt-in English/Ukrainian profile, uncertain language alone does not request a new

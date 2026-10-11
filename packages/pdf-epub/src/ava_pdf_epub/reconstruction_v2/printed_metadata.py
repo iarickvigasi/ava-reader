@@ -7,6 +7,7 @@ from .assembly_state import AssemblyState
 from .metadata_scope import metadata_scope
 from .opening_author_credits import opening_author_credits
 from .printed_claim import printed_claim as _claim
+from .printed_identifiers import identifier_claims
 
 LABELS = {
     "author": ("contributor", "author"),
@@ -74,9 +75,15 @@ def printed_metadata(state: AssemblyState, source_author: str | None) -> list[di
                 output.append(claim)
     for block in state.blocks:
         text = block.get("content", {}).get("text", "")
-        if block["kind"] != "paragraph" or not PATTERN.match(text):
+        if block["kind"] != "paragraph":
             continue
+        labelled = PATTERN.match(text)
         status = "accepted" if block["id"] in eligible else "candidate"
+        output.extend(
+            identifier_claims(block, status if labelled else "candidate", block["id"] in eligible)
+        )
+        if not labelled:
+            continue
         matches = list(PATTERN.finditer(text))
         for index, match in enumerate(matches):
             end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
@@ -90,11 +97,4 @@ def printed_metadata(state: AssemblyState, source_author: str | None) -> list[di
                 if role:
                     claim["contributor_role"] = role
                 output.append(claim)
-        isbn = re.search(r"ISBN[^0-9]{0,40}([0-9][0-9Xx -]{8,20}[0-9Xx])", text)
-        if isbn:
-            value = re.sub(r"[^0-9Xx]", "", isbn[1])
-            if len(value) in {10, 13}:
-                output.append(
-                    {**_claim("identifier", value, block, status), "identifier_scheme": "isbn"}
-                )
     return output

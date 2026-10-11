@@ -1,6 +1,5 @@
 """Preserve source metadata with provenance; do not promote unprinted conflicts to facts."""
 
-import re
 from pathlib import Path
 from typing import Any
 
@@ -8,6 +7,7 @@ from pypdf import PdfReader
 
 from .assembly_state import AssemblyState
 from .metadata_scope import metadata_scope
+from .printed_identifiers import explicit_isbns
 from .printed_metadata import printed_metadata
 
 
@@ -57,22 +57,19 @@ def assemble_metadata(source: Path, state: AssemblyState, document_id: str) -> l
             claim["contributor_role"] = "author"
         claims.append(claim)
     subject = str(getattr(info, "subject", "") or "")
-    match = re.search(r"ISBN[^0-9]{0,40}([0-9][0-9Xx -]{8,20}[0-9Xx])", subject)
-    if match:
-        value = re.sub(r"[^0-9Xx]", "", match[1])
-        if len(value) in {10, 13}:
-            claims.append(
-                dict(
-                    id="metadata-info-isbn",
-                    field="identifier",
-                    value=value,
-                    identifier_scheme="isbn",
-                    status="candidate",
-                    scope="source_edition",
-                    origin="source",
-                    evidence=state.blocks[0]["evidence"],
-                )
+    for index, value in enumerate(explicit_isbns(subject)):
+        claims.append(
+            dict(
+                id="metadata-info-isbn" if index == 0 else f"metadata-info-isbn-{index}",
+                field="identifier",
+                value=value,
+                identifier_scheme="isbn",
+                status="candidate",
+                scope="source_edition",
+                origin="source",
+                evidence=state.blocks[0]["evidence"],
             )
+        )
     for claim in claims:
         if claim["field"] in {"title", "contributor"} and any(
             p["status"] == "accepted"
@@ -90,20 +87,21 @@ def assemble_metadata(source: Path, state: AssemblyState, document_id: str) -> l
                 if c["field"] == value["field"]
                 and _comparison_value(c) == _comparison_value(value)
                 and c.get("contributor_role") == value.get("contributor_role")
+                and c.get("scope") == value.get("scope")
+                and c.get("identifier_scheme") == value.get("identifier_scheme")
             ),
             None,
         )
         if existing is None:
             claims.append(dict(id=f"metadata-printed-{len(claims)}", **value))
-        elif value["status"] == "accepted" and existing["status"] != "conflict":
-            if existing["status"] == "accepted":
-                # Compare credit whitespace only for identity; preserve the first printed spelling.
-                evidence = [*existing.get("evidence", []), *value.get("evidence", [])]
-                existing["evidence"] = [
-                    item for i, item in enumerate(evidence) if item not in evidence[:i]
-                ]
-            else:
-                existing.update(value)
+        elif value["status"] == "accepted" and existing["status"] not in {"accepted", "conflict"}:
+            existing.update(value)
+        else:
+            # New source evidence strengthens provenance without promoting uncertain facts.
+            evidence = [*existing.get("evidence", []), *value.get("evidence", [])]
+            existing["evidence"] = [
+                item for i, item in enumerate(evidence) if item not in evidence[:i]
+            ]
     return claims
 
 
