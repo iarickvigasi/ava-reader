@@ -2,7 +2,10 @@ import { restoreSucceeded } from "./restore-succeeded";
 import { useReaderNavigationActions } from "../../state/reader-navigation-context";
 import { useLayoutEffect } from "react";
 import { useRestorePositionPin } from "./use-restore-position-pin";
-import { READER_MEASUREMENT_STATUS_PENDING } from "../measurement/resolve-measurement";
+import {
+  READER_MEASUREMENT_STATUS_PENDING,
+  resolveMeasurementStatus,
+} from "../measurement/resolve-measurement";
 import { resolveRestoreStep } from "./resolve-restore-step";
 import { useRenderSyncedRef } from "./use-render-synced-ref";
 import type { UseRestoreDecisionInput } from "./use-restore-controller.types";
@@ -39,7 +42,8 @@ export function useRestoreDecision({
     if (
       !activePaginationLayoutKey ||
       !activeMeasurementEntry ||
-      activeMeasurementEntry.status === READER_MEASUREMENT_STATUS_PENDING
+      resolveMeasurementStatus(activeMeasurementEntry) ===
+        READER_MEASUREMENT_STATUS_PENDING
     ) {
       return;
     }
@@ -76,6 +80,11 @@ export function useRestoreDecision({
       position.restorePage = decision.nextPageIndex;
     }
     scheduleSettle(activeRestoreCycleKey, () => {
+      if (
+        resolveMeasurementStatus(activeMeasurementEntry) ===
+        READER_MEASUREMENT_STATUS_PENDING
+      )
+        return false;
       if (currentRestoreIntent && decision.shouldConsumeRestoreIntent)
         navigationRef.current?.settle(
           currentRestoreIntent,

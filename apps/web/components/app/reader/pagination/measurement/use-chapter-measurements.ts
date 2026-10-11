@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect } from "react";
+import { useCallback, useLayoutEffect, useRef } from "react";
 import type { ReaderChapterPayload } from "@/lib/api-types";
 import {
   createPendingReaderMeasurementEntry,
@@ -34,6 +34,7 @@ export function useChapterMeasurements({
   pageBoxRefs: ChapterRefReader<HTMLDivElement>;
   pageBoxWidth: number;
 }) {
+  const generation = useRef({ live: false });
   const createLayoutKey = useCallback(
     (chapterId: string) =>
       createPaginationLayoutKey({
@@ -48,14 +49,21 @@ export function useChapterMeasurements({
 
   const measureChapter = useCallback(
     (chapterId: string) => {
+      const article = articleRefs.get(chapterId),
+        pageBox = pageBoxRefs.get(chapterId),
+        measuredGeneration = generation.current;
       onMeasurement(
         measureChapterEntry({
-          article: articleRefs.get(chapterId),
-          pageBox: pageBoxRefs.get(chapterId),
+          article,
+          pageBox,
           chapterId,
           layoutKey: createLayoutKey(chapterId),
           columnCount: resolveReaderColumnCount(pageBoxWidth),
           pageGap: PAGE_GAP,
+          isCurrent: () =>
+            measuredGeneration.live &&
+            articleRefs.get(chapterId) === article &&
+            pageBoxRefs.get(chapterId) === pageBox,
         }),
       );
     },
@@ -80,15 +88,21 @@ export function useChapterMeasurements({
   }, [chapters, createLayoutKey, onMeasurement]);
 
   useLayoutEffect(() => {
+    const currentGeneration = { live: true };
+    generation.current = currentGeneration;
     publishPendingMeasurements();
     measureAllChapters();
 
-    return observeMeasurementTriggers({
+    const cleanup = observeMeasurementTriggers({
       articleRefs,
       chapters,
       onTrigger: measureAllChapters,
       pageBoxRefs,
     });
+    return () => {
+      currentGeneration.live = false;
+      cleanup();
+    };
   }, [
     articleRefs,
     chapters,

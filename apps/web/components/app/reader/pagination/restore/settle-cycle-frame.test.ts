@@ -67,3 +67,14 @@ it("layout cleanup cancels a scheduled frame and cannot consume a cancelled jump
   f.frames[0]();
   expect(hooks.settled).not.toHaveBeenCalled();
 });
+
+it("a retired measurement vetoes settling without blocking a fresh same-key frame", () => {
+  const f = fixture();
+  const cycle = f.useRenderCycle("same-key");
+  cycle.scheduleSettle("same-key", () => false);
+  f.frames[0]();
+  expect(hooks.settled).not.toHaveBeenCalled();
+  cycle.scheduleSettle("same-key", () => true);
+  f.frames[1]();
+  expect(hooks.settled).toHaveBeenCalledExactlyOnceWith("same-key");
+});

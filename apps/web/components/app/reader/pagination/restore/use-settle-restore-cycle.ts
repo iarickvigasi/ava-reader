@@ -23,7 +23,7 @@ export function useSettleRestoreCycle(activeRestoreCycleKey: string) {
   }, []);
 
   const scheduleSettle = useCallback(
-    (restoreCycleKey: string, onSettled?: () => void) => {
+    (restoreCycleKey: string, onSettled?: () => boolean | void) => {
       cancelSettle();
       const frame = window.requestAnimationFrame(() => {
         if (
@@ -32,8 +32,8 @@ export function useSettleRestoreCycle(activeRestoreCycleKey: string) {
         )
           return;
         frameRef.current = null;
+        if (onSettled?.() === false) return;
         setSettledRestoreCycleKey(restoreCycleKey);
-        onSettled?.();
       });
       frameRef.current = frame;
     },
