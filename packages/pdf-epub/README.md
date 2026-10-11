@@ -557,6 +557,23 @@ prevents mixing with ordinary prose. Isolated/unconfirmed pairs are not automati
 Authored canonical/EPUB/reimport controls and original pages97/98 checks pass; full new-candidate
 normal import and reader/source qualification remain required before completion.
 
+### Unmarked display rows and poetry
+
+Three to twelve native items introduced by a colon and separated by semicolons can retain
+intentional row breaks in a paragraph. The bounded rule stays within one source page/column,
+matching typography and at most24 source lines. Items must be indented, or margin-aligned with a
+visibly separated introduction. A wrapped final item uses a normal layout-space join.
+It preserves text/spans and measured inset without inventing list markers or declaring poetry.
+This is source-delimited display preservation, not support for every unmarked list or semantic proof
+that a colon/semicolon sequence cannot be poetry. Other source patterns keep their normal routing.
+
+Punctuation and close line geometry never directly establish verse. Isolated native line groups,
+including strongly separated groups at the body margin, remain source-crop role candidates.
+A source-backed decision distinguishes verse, quoted prose and ordinary paragraph text; missing
+review remains a blocking finding. True poem/quote and activity controls preserve canonical text,
+styles and exact EPUB reimport. Current full-book normal import/source/reader qualification remains
+required; historical accepted content stays fixed.
+
 ### Language-only uncertainty
 
 In the opt-in English/Ukrainian profile, uncertain language alone does not request a new

@@ -28,6 +28,8 @@ def _compatible(a: Placement, b: Placement, following: Placement | None, tail: P
         return False
     if left.kind not in {"paragraph", "code", "verse", "quote"}:
         return False
+    if left.preserve_line_breaks != right.preserve_line_breaks:
+        return False
     if left.structure_candidate or right.structure_candidate:
         return False
     height = max(1, right.box.y1 - right.box.y0)
@@ -55,8 +57,9 @@ def _compatible(a: Placement, b: Placement, following: Placement | None, tail: P
     return True
 
 
-def _join(left: Segment, right: Segment) -> Segment:
-    separator = "\n" if left.kind in {"code", "verse"} else " "
+def _join(left: Segment, right: Segment, separator: str | None = None) -> Segment:
+    if separator is None:
+        separator = "\n" if left.kind in {"code", "verse"} or left.preserve_line_breaks else " "
     offset = len(left.text) + len(separator)
     return Segment.model_validate(
         {

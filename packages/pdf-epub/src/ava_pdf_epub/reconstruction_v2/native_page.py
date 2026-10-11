@@ -6,6 +6,7 @@ from ..worker_observation import observe
 from .borderless_tables import borderless_tables
 from .classify_lines import classify_lines
 from .geometry import overlap
+from .native_delimited_lines import preserve_delimited_lines
 from .native_graphics import native_graphics
 from .native_literal_candidates import native_literal_candidates
 from .native_paired_lines import preserve_paired_lines
@@ -62,7 +63,9 @@ def native_page(
             ]
         )
     )
-    ordered = native_literal_candidates(reading_order(content, page.width_pt))
+    ordered = native_literal_candidates(
+        preserve_delimited_lines(reading_order(content, page.width_pt), page)
+    )
     observe(
         "layout",
         page.number,

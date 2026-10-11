@@ -11,9 +11,12 @@ from pathlib import Path
 from unittest.mock import patch
 
 from ava_pdf_epub.contracts.common import document_digest
+from ava_pdf_epub.reconstruction_v2.prepare_refinement_source import prepare_refinement_source
 from ava_pdf_epub.reconstruction_v2.protocol import ReconstructionInput
 from ava_pdf_epub.reconstruction_v2.reconstruct_source import reconstruct_source
 from ava_pdf_epub.reconstruction_v2.stream_output import stream_artifacts
+
+from .test_native_literal import responses as literal_responses
 
 
 class StreamTests(unittest.TestCase):
@@ -25,6 +28,10 @@ class StreamTests(unittest.TestCase):
             responses=[],
         )
         with tempfile.TemporaryDirectory() as directory:
+            batch = prepare_refinement_source(source, Path(directory) / "roles", request)
+            request = request.model_copy(
+                update={"refinements": literal_responses(batch.tasks, "verse")}
+            )
             result, report = reconstruct_source(source, Path(directory), request)
         with patch("ava_pdf_epub.reconstruction_v2.stream_output.CHUNK_BYTES", 113):
             records = [json.loads(line) for line in stream_artifacts(result, report)]

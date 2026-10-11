@@ -1,4 +1,4 @@
-"""Keep printed markers as source evidence while identifying list and literal-line groups."""
+"""Keep printed list markers as source evidence; punctuation never proves poetry."""
 
 from .list_markers import MARKER, marker_value
 from .segments import Segment
@@ -35,15 +35,4 @@ def native_roles(segments: list[Segment]) -> list[Segment]:
         else:
             indents = []
         output.append(segment)
-    for i in range(len(output) - 2):
-        group = output[i : i + 3]
-        if (
-            all(s.kind == "paragraph" and len(s.text) < 65 for s in group)
-            and all(
-                0 < b.box.y0 - a.box.y1 < 10 and abs(a.box.x0 - b.box.x0) < 3
-                for a, b in zip(group, group[1:], strict=False)
-            )
-            and all(s.text.rstrip().endswith((",", ";")) for s in group[:2])
-        ):
-            output[i : i + 3] = [s.model_copy(update={"kind": "verse"}) for s in group]
     return output

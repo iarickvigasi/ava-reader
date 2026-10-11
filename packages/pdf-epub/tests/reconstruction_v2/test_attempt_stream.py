@@ -28,6 +28,7 @@ from .mixed_heading_fixtures import decisions, recognition, source_pdf
 from .raster_region_fixture import authored_mixed
 from .refinement_helpers import authored_responses, source_case
 from .source_feature_answers import decisions as feature_decisions
+from .test_native_literal import responses as literal_responses
 from .test_raster_text import text_image
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -147,7 +148,7 @@ class AttemptStreamTests(unittest.TestCase):
     def test_native_exact_tasks_canonical_epub_resources_report_and_one_preparation(self):
         source = FIXTURES / "native.pdf"
         pages = [prepare_page(source, self.root / "pages", number) for number in range(1, 9)]
-        self.equivalent(source, pages, [], lambda _: [])
+        self.equivalent(source, pages, [], lambda tasks: literal_responses(tasks, "verse"))
 
     def test_ukrainian_exact_artifacts_and_mutable_checkpoint_phase_isolation(self):
         source = FIXTURES / "uk-native.pdf"

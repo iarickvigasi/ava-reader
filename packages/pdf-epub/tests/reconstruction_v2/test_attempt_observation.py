@@ -9,11 +9,13 @@ from pathlib import Path
 from unittest.mock import patch
 
 from ava_pdf_epub.reconstruction_v2.attempt_stream import attempt_stream
+from ava_pdf_epub.reconstruction_v2.refinement_contract import BookRefinementTask
 from ava_pdf_epub.worker_observation import ACTIVE
 from ava_pdf_epub.worker_observation_packet import PREFIX
 
 from .attempt_peer import PeerOutput
 from .test_attempt_stream import FIXTURES, request
+from .test_native_literal import responses as literal_responses
 from .worker_observation_fixture import observation_context
 
 
@@ -36,12 +38,26 @@ class AttemptObservationTests(unittest.TestCase):
                 constructor(instance, *args, **kwargs)
                 instances.append(instance)
 
+            role_receipts = {}
+
             def callback(packet):
                 if packet["kind"] == "page" and packet["payload"]["page_number"] == 1:
                     self.assertEqual(1, len(observation.phases))
                 self.assertIsNone(instances[0]._reader)
                 self.assertIsNone(instances[0]._document)
                 clock[0] += 10000  # A fake ten-second host wait; no sleeping/provider.
+                if packet["kind"] == "refinement_batch":
+                    tasks = [
+                        BookRefinementTask.model_validate(t) for t in packet["payload"]["tasks"]
+                    ]
+                    role_receipts.update(
+                        {
+                            r.task_id: r.model_dump(mode="json")
+                            for r in literal_responses(tasks, "verse")
+                        }
+                    )
+                if packet["kind"] == "refinement":
+                    return [role_receipts[packet["payload"]["task_id"]]]
                 return []
 
             peer = PeerOutput(callback)

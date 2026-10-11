@@ -24,18 +24,35 @@ def _wraps(source: str, compact: bool, compounds: bool) -> list[tuple[int, int, 
     return events
 
 
+def _selected_wraps(
+    source: str, text: str, events: list[tuple[int, int, str]]
+) -> list[tuple[int, int, str]] | None:
+    source_at = canonical_at = 0
+    selected = []
+    for start, end, replacement in events:
+        unchanged = source[source_at:start]
+        if not text.startswith(unchanged, canonical_at):
+            return None
+        canonical_at += len(unchanged)
+        original = source[start:end]
+        if text.startswith(original, canonical_at):
+            canonical_at += len(original)
+        elif text.startswith(replacement, canonical_at):
+            selected.append((start, end, replacement))
+            canonical_at += len(replacement)
+        else:
+            return None
+        source_at = end
+    return selected if source[source_at:] == text[canonical_at:] else None
+
+
 def line_wrap_map(source: str, text: str) -> dict[str, Any]:
-    # Legacy identity whitespace and compact wrapping both remain exact modes.
+    # Retained display separators remain exact identity spans; only layout wraps change.
     # Compound mode removes only proven layout whitespace between letter-hyphen/letter.
     for compact, compounds in ((False, False), (True, False), (False, True), (True, True)):
-        events = _wraps(source, compact, compounds)
-        parts: list[str] = []
-        at = 0
-        for start, end, replacement in events:
-            parts.extend((source[at:start], replacement))
-            at = end
-        parts.append(source[at:])
-        if "".join(parts) == text:
+        selected = _selected_wraps(source, text, _wraps(source, compact, compounds))
+        if selected is not None:
+            events = selected
             break
     else:
         raise ValueError("Unaccounted source-to-canonical text transformation")

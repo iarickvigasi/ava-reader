@@ -6,6 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from ava_pdf_epub.reconstruction_v2.prepare_refinement_source import prepare_refinement_source
 from ava_pdf_epub.reconstruction_v2.protocol import ReconstructionInput
 from ava_pdf_epub.reconstruction_v2.reconstruct_source import reconstruct_source
 
@@ -13,6 +14,7 @@ from .supplemental_metadata_checks import (
     assert_qualification_metadata,
     assert_supplemental_metadata,
 )
+from .test_native_literal import responses as literal_responses
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -20,15 +22,16 @@ FIXTURES = Path(__file__).parent / "fixtures"
 def convert(name):
     source = FIXTURES / f"{name}.pdf"
     with tempfile.TemporaryDirectory() as directory:
-        return reconstruct_source(
-            source,
-            Path(directory),
-            ReconstructionInput(
-                schema_version="ava-reconstruct-input-1",
-                source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
-                responses=[],
-            ),
-        )[0]
+        request = ReconstructionInput(
+            schema_version="ava-reconstruct-input-1",
+            source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
+            responses=[],
+        )
+        batch = prepare_refinement_source(source, Path(directory) / "roles", request)
+        request = request.model_copy(
+            update={"refinements": literal_responses(batch.tasks, "paragraph")}
+        )
+        return reconstruct_source(source, Path(directory), request)[0]
 
 
 class SupplementalTests(unittest.TestCase):

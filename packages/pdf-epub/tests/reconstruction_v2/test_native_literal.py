@@ -26,7 +26,8 @@ BODY = [
 ]
 
 
-def source_pdf(path, role, lines=LINES):
+def source_pdf(path, role, lines=LINES, inset=84, body=None):
+    body = BODY if body is None else body
     writer = PdfWriter()
     page = writer.add_blank_page(width=600, height=800)
     font = DictionaryObject(
@@ -41,10 +42,10 @@ def source_pdf(path, role, lines=LINES):
     )
     rows = [("Preface", 48, 740)]
     rows += [
-        (line, 84, y)
+        (line, inset, y)
         for line, y in zip(lines, [690 - 15 * i for i in range(len(lines))], strict=True)
     ]
-    rows += [(line, 48, y) for line, y in zip(BODY, [620, 605, 590, 575], strict=True)]
+    rows += [(line, 48, 620 - index * 15) for index, line in enumerate(body)]
     stream = DecodedStreamObject()
     stream.set_data(
         "\n".join(f"BT /F1 11 Tf {x} {y} Td ({text}) Tj ET" for text, x, y in rows).encode()
@@ -172,3 +173,28 @@ class NativeLiteral(unittest.TestCase):
             tasks = prepare_refinement(path, path.parent, pages, segments, state)
             refined = apply_refinement(segments, tasks, responses(tasks, "quote"), state)
             self.assertEqual("quote", next(s for s in refined if s.id == literal.id).kind)
+
+    def test_strongly_separated_margin_lines_require_source_role_not_punctuation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "prose.pdf"
+            lines = ["An ordinary statement.", "A second short statement.", "The keeper returns."]
+            source_pdf(path, "paragraph", lines, inset=48, body=BODY[:1])
+            pages = prepare_source(path, path.parent, hashlib.sha256(path.read_bytes()).hexdigest())
+            _, segments, state = source_segments(path, path.parent, pages, [])
+            literal = next(s for s in segments if s.kind == "verse" and s.structure_candidate)
+            self.assertEqual("\n".join(lines), literal.text)
+            tasks = prepare_refinement(path, path.parent, pages, segments, state)
+            self.assertTrue(any(literal.id in task.decision_ids for task in tasks))
+            unreviewed = reconstruct(path, path.parent, pages, [])
+            self.assertTrue(
+                any(
+                    f.code == "NATIVE_ROLE_UNCORROBORATED"
+                    and f.severity == "blocking"
+                    and f.block_id == literal.id
+                    for f in unreviewed.structure_findings
+                )
+            )
+            result = reconstruct(path, path.parent, pages, [], responses(tasks, "paragraph"))
+            block = next(b for b in result.book.blocks if b.id == literal.id)
+            self.assertEqual("paragraph", block.kind)
+            self.assertEqual(" ".join(lines), block.content.text)

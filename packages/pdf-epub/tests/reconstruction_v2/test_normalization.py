@@ -45,6 +45,24 @@ class NormalizationTests(unittest.TestCase):
             with self.subTest(text=text), self.assertRaisesRegex(ValueError, "Unaccounted"):
                 line_wrap_map("kept \ntext", text)
 
+    def test_item_newlines_remain_identity_while_only_wrapped_line_changes(self) -> None:
+        source = "A😀B;\nпам’ять;\nwrapped final\nitem."
+        text = "A😀B;\nпам’ять;\nwrapped final item."
+        mapping = NormalizationMap.model_validate(line_wrap_map(source, text))
+        mapping.validate_canonical(text)
+        changed = [s for s in mapping.segments if s.kind == "line_wrap"]
+        self.assertEqual(1, len(changed))
+        self.assertEqual(source.rindex("\n"), changed[0].source_start)
+        for offset in range(len(source) + 1):
+            self.assertEqual(offset, mapping.source_boundary(offset))
+        for changed in [
+            text.replace("item.", "invented item."),
+            text.replace("пам’ять", "rewritten"),
+            text.replace("item.", "item!"),
+        ]:
+            with self.subTest(changed=changed), self.assertRaisesRegex(ValueError, "Unaccounted"):
+                line_wrap_map(source, changed)
+
     def test_real_pdf_with_trailing_line_spaces_exports_and_round_trips(self) -> None:
         import hashlib
         import tempfile

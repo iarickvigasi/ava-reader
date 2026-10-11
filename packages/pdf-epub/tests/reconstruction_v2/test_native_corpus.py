@@ -6,7 +6,10 @@ import unittest
 from pathlib import Path
 
 from ava_pdf_epub.reconstruction_v2.prepare_page import prepare_page
+from ava_pdf_epub.reconstruction_v2.prepare_refinement import prepare_refinement
 from ava_pdf_epub.reconstruction_v2.reconstruct import reconstruct
+from ava_pdf_epub.reconstruction_v2.source_segments import source_segments
+from tests.reconstruction_v2.test_native_literal import responses
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -19,7 +22,10 @@ class NativeCorpus(unittest.TestCase):
             scratch = Path(directory)
             pages = [prepare_page(source, scratch, i) for i in range(1, 9)]
             self.assertTrue(all(not p.tasks for p in pages))
-            result = reconstruct(source, scratch, pages, [])
+            _, segments, state = source_segments(source, scratch, pages, [])
+            tasks = prepare_refinement(source, scratch, pages, segments, state)
+            # The pre-authored poem oracle supplies role authority, never punctuation alone.
+            result = reconstruct(source, scratch, pages, [], responses(tasks, "verse"))
         book = result.book
         text = {b.content.text: b for b in book.blocks if hasattr(b, "content")}
         for expected in oracle["paragraphs"]:

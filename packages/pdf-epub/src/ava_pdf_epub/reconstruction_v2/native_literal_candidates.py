@@ -18,10 +18,17 @@ def native_literal_candidates(ordered: list[Placement]) -> list[Placement]:
             and not p.segment.structure_candidate
             and len(p.segment.text) >= 60
         ]
-        if len(body) >= 4:
+        if body:
             metrics[column] = (
                 median(s.box.x1 - s.box.x0 for s in body),
-                min(s.box.x0 for s in body),
+                min(
+                    p.segment.box.x0
+                    for p in ordered
+                    if p.column == column
+                    and p.segment.kind == "paragraph"
+                    and not p.segment.structure_candidate
+                ),
+                len(body),
             )
     index = 0
     while index < len(ordered):
@@ -31,7 +38,7 @@ def native_literal_candidates(ordered: list[Placement]) -> list[Placement]:
             output.append(first)
             index += 1
             continue
-        width, margin = metrics[first.column]
+        width, margin, body_count = metrics[first.column]
         height = max(1, segment.box.y1 - segment.box.y0)
         previous = ordered[index - 1] if index else None
         isolated = (
@@ -44,6 +51,13 @@ def native_literal_candidates(ordered: list[Placement]) -> list[Placement]:
             index += 1
             continue
         width_limit = width * (1.05 if segment.text.lstrip().startswith(("«", "“", '"')) else 0.85)
+        margin_aligned = abs(segment.box.x0 - margin) <= 3
+        strong_separation = (
+            previous is None
+            or previous.column != first.column
+            or segment.box.y0 - previous.segment.box.y1 >= height * 2
+        )
+        unindented = margin_aligned and strong_separation
         group: list[Placement] = []
         for offset in range(index, len(ordered)):
             current = ordered[offset]
@@ -57,7 +71,7 @@ def native_literal_candidates(ordered: list[Placement]) -> list[Placement]:
                 or len(s.native_line_ids) != 1
                 or not s.text.strip()
                 or s.box.x1 - s.box.x0 > width_limit
-                or s.box.x0 - margin < height * 0.7
+                or not ((body_count >= 4 and s.box.x0 - margin >= height * 0.7) or unindented)
                 or abs(s.box.x0 - segment.box.x0) > 3
                 or (group and not 0 <= s.box.y0 - group[-1].segment.box.y1 <= height * 1.2)
             ):
@@ -69,7 +83,11 @@ def native_literal_candidates(ordered: list[Placement]) -> list[Placement]:
         separated = (
             following is None
             or following.column != first.column
-            or (bool(group) and following.segment.box.y0 - group[-1].segment.box.y1 >= height)
+            or (
+                bool(group)
+                and following.segment.box.y0 - group[-1].segment.box.y1
+                >= height * (2 if unindented else 1)
+            )
         )
         if isolated and separated and 3 <= len(group) <= 12:
             literal = segment.model_copy(update={"kind": "verse"})
