@@ -33,10 +33,13 @@ not which scripts could be rendered. The calibrated Cyrillic companions below re
 
 The seven main assets total 1,691,332B (previous delivered main subsets total 1,494,436B; previous
 Latin preload assets total 191,700B in the inspected build). They use `preload: false` and `display: swap`
-to load the face actually used from AVA's origin, rather than preload the whole inventory on every
-route. First use can swap from the preserved fallback face. This is a deliberate loading change,
-not a claim of equal transfer size, identical rendered layout or browser qualification. The stock build
-and offline precache must include all faces before release.
+so CSS requests the used face from AVA's origin without an HTML preload for the whole inventory.
+First use can swap from the preserved fallback face. The build manifest also lists every emitted
+WOFF/WOFF2 asset; the service worker attempts to cache all of them in the background on activation,
+including unused italic faces. This adds the full font inventory to that background transfer. Asset
+precaching is best effort: a listed file alone does not prove a completed browser cache or an offline
+reading result. This is a deliberate loading change, not a claim of equal transfer size, identical
+rendered layout or browser qualification. Verify cached faces and actual offline reading before release.
 
 ### Main sources and rebuild
 
