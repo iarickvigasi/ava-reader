@@ -13,6 +13,62 @@ describe('book analysis scheduled settlement', () => {
   productionPollerTimers();
   beforeEach(() => analyse.mockReset());
 
+  it('claims and settles pending work on a later scheduled tick after a queue rejection', async () => {
+    const { service, lookup, claim, update, model, warn } = pollerFixture();
+    const run = { bookId: 'recovered-book', id: 'recovered-run' };
+    lookup
+      .mockRejectedValueOnce(
+        Object.assign(new Error('private database URI'), { code: 'P1001' }),
+      )
+      .mockResolvedValueOnce(run);
+    analyse.mockResolvedValueOnce(undefined);
+    service.onModuleInit();
+    try {
+      await jest.advanceTimersByTimeAsync(2000);
+      expect(lookup).toHaveBeenCalledTimes(1);
+      expect(claim).not.toHaveBeenCalled();
+      expect(analyse).not.toHaveBeenCalled();
+      expect(model).not.toHaveBeenCalled();
+      expect(update).not.toHaveBeenCalled();
+      expect(warn.mock.calls).toEqual([
+        [
+          'Book background analysis unavailable (P1001); checking again on the next poll.',
+        ],
+      ]);
+
+      await jest.advanceTimersByTimeAsync(2000);
+      expect(lookup).toHaveBeenCalledTimes(2);
+      expect(claim).toHaveBeenCalledTimes(1);
+      expect(claim).toHaveBeenCalledWith({
+        where: { id: run.id, status: 'PENDING' },
+        data: {
+          completedAt: null,
+          errorMessage: null,
+          status: 'PROCESSING',
+        },
+      });
+      expect(analyse).toHaveBeenCalledTimes(1);
+      expect(analyse.mock.calls[0]?.[0].bookId).toBe(run.bookId);
+      expect(model).toHaveBeenCalledTimes(1);
+      expect(update).toHaveBeenCalledTimes(1);
+      expect(update.mock.calls[0]?.[0]).toMatchObject({
+        where: { id: run.id },
+        data: { status: 'READY', errorMessage: null },
+      });
+      expect(update.mock.calls[0]?.[0].data.completedAt).toBeInstanceOf(Date);
+      expect(warn).toHaveBeenCalledTimes(1);
+
+      await jest.advanceTimersByTimeAsync(2000);
+      expect(lookup).toHaveBeenCalledTimes(3);
+      expect(claim).toHaveBeenCalledTimes(1);
+      expect(analyse).toHaveBeenCalledTimes(1);
+      expect(model).toHaveBeenCalledTimes(1);
+      expect(update).toHaveBeenCalledTimes(1);
+    } finally {
+      service.onModuleDestroy();
+    }
+  });
+
   it('contains failure bookkeeping rejection without replaying the provider call', async () => {
     const { service, lookup, claim, update, model, warn } = pollerFixture();
     const analysisError = new Error('private provider URI and book content');
