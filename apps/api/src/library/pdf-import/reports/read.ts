@@ -105,6 +105,24 @@ export async function readReportCost(
   limit?: string,
 ) {
   const record = await reportRecord(tx, id);
+  if (
+    record.coverage === 'EPUB_PREPARATION' &&
+    record.operationKey === null &&
+    record.operationId === null
+  )
+    return {
+      schemaVersion: 1,
+      conversionId: id,
+      state: 'MISSING',
+      actualComplete: false,
+      reason: 'NATIVE_EPUB_PROVIDER_COST_NOT_APPLICABLE',
+      ledgerCoverage: 'NOT_APPLICABLE',
+      infrastructure: {
+        compute: 'NOT_MEASURED',
+        storage: 'NOT_MEASURED',
+        delivery: 'NOT_MEASURED',
+      },
+    };
   const stored = await tx.pdfConversionCost.findUnique({
     where: { conversionId: id },
   });

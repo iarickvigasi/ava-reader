@@ -1,3 +1,4 @@
+import { EpubLeaseExpired, EpubHeartbeatUnavailable } from './errors';
 import type { PrismaService } from '../../prisma/prisma.service';
 import { jobTransaction } from '../pdf-import/jobs/transaction';
 import { requireEpubClaim, type EpubClaim } from './claim-authority';
@@ -32,7 +33,7 @@ export function epubLease(
       .then((ms) => {
         deadline = started + ms;
       })
-      .catch(() => controller.abort())
+      .catch(() => controller.abort(new EpubHeartbeatUnavailable()))
       .finally(() => {
         pending = undefined;
       });
@@ -41,7 +42,7 @@ export function epubLease(
     if (!pending) refresh();
   }, 10000);
   const expiry = setInterval(() => {
-    if (performance.now() >= deadline) controller.abort();
+    if (performance.now() >= deadline) controller.abort(new EpubLeaseExpired());
   }, 100);
   return {
     signal: controller.signal,

@@ -166,3 +166,34 @@ it('does not invent final historical zero when a historical snapshot has no reta
     },
   );
 });
+
+it('native EPUB investigations expose provider cost as not applicable without reading or fabricating a ledger', async () => {
+  const tx = {
+    pdfConversionInvestigation: {
+      findUnique: jest.fn().mockResolvedValue({
+        ...record,
+        id: 'epub-run-real',
+        operationKey: null,
+        operationId: null,
+        coverage: 'EPUB_PREPARATION',
+      }),
+    },
+    pdfConversionCost: { findUnique: jest.fn() },
+    pdfProviderGrant: { findUnique: jest.fn() },
+  };
+  expect(await readReportCost(tx as unknown as Tx, 'epub-run-real')).toEqual({
+    schemaVersion: 1,
+    conversionId: 'epub-run-real',
+    state: 'MISSING',
+    actualComplete: false,
+    reason: 'NATIVE_EPUB_PROVIDER_COST_NOT_APPLICABLE',
+    ledgerCoverage: 'NOT_APPLICABLE',
+    infrastructure: {
+      compute: 'NOT_MEASURED',
+      storage: 'NOT_MEASURED',
+      delivery: 'NOT_MEASURED',
+    },
+  });
+  expect(tx.pdfConversionCost.findUnique).not.toHaveBeenCalled();
+  expect(tx.pdfProviderGrant.findUnique).not.toHaveBeenCalled();
+});

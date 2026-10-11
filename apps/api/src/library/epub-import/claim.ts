@@ -1,3 +1,5 @@
+import { markEpubClaimLimit } from './claim-limit';
+import { recordEpubEvent } from './diagnostics';
 import { randomBytes } from 'node:crypto';
 import type { PrismaService } from '../../prisma/prisma.service';
 import {
@@ -9,12 +11,13 @@ import { secretDigest } from '../pdf-import/jobs/secrets';
 import { hasClaimCapacity } from '../pdf-import/jobs/claim-capacity';
 import { DEFAULT_JOB_POLICY } from '../pdf-import/jobs/policy';
 import { CANONICAL_EPUB_PIPELINE } from './enqueue';
-import { requireEpubClaim, type EpubClaim } from './claim-authority';
+import { requireEpubClaim, type CanonicalEpubClaim } from './claim-authority';
 export async function claimCanonicalEpub(
   prisma: PrismaService,
   beforeClaim?: () => void,
-): Promise<(EpubClaim & { leaseRemainingMs: number }) | null> {
-  return jobTransaction(prisma, async (tx) => {
+): Promise<CanonicalEpubClaim | null> {
+  const failures: { runId: string; fence: number; code: string }[] = [];
+  const claim = await jobTransaction(prisma, async (tx) => {
     const now = await databaseNow(tx);
     const runs = await tx.bookProcessingRun.findMany({
       where: {
@@ -40,17 +43,9 @@ export async function claimCanonicalEpub(
         run.attemptCount >= 3 ||
         (run.activeDeadlineAt && run.activeDeadlineAt <= now)
       ) {
-        await tx.bookProcessingRun.update({
-          where: { id: run.id },
-          data: {
-            status: 'FAILED',
-            completedAt: now,
-            errorMessage: 'The EPUB could not be prepared.',
-            leaseExpiresAt: null,
-            leaseTokenHash: null,
-          },
-        });
-        continue;
+        failures.push(await markEpubClaimLimit(tx, run, now, Boolean(item)));
+        // Report one refused predecessor before granting any later lease.
+        return null;
       }
       if (
         !(await hasClaimCapacity(
@@ -82,10 +77,23 @@ export async function claimCanonicalEpub(
       const confirmed = await requireEpubClaim(tx, authority);
       return {
         ...authority,
+        recoveredExpiredLease: run.status === 'PROCESSING',
+        claimedAt: confirmed.now,
+        queuedAt: run.createdAt,
         leaseRemainingMs:
           confirmed.run.leaseExpiresAt!.getTime() - confirmed.now.getTime(),
       };
     }
     return null;
   });
+  for (const failure of failures)
+    await recordEpubEvent(prisma, failure.runId, {
+      kind: 'FAILED',
+      stage: 'EPUB_CLAIM',
+      severity: 'ERROR',
+      code: failure.code,
+      attemptFence: failure.fence,
+      details: { outcome: 'FAILED' },
+    });
+  return claim;
 }

@@ -15,6 +15,16 @@ export function reconcileConversionReport(
       (await tx.pdfConversionInvestigation.findUnique({
         where: { id: reference },
       })) ?? (await ensureOperationInvestigation(tx, reference));
+    if (
+      record.coverage === 'EPUB_PREPARATION' &&
+      record.operationKey === null &&
+      record.operationId === null
+    )
+      return {
+        conversionId: record.id,
+        state: 'MISSING',
+        reason: 'NATIVE_EPUB_PROVIDER_COST_NOT_APPLICABLE',
+      };
     const cost = await refreshConversionCost(tx, record.id);
     return {
       conversionId: record.id,

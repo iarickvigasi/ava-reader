@@ -1,5 +1,6 @@
 import { artifactStream } from '../../pdf-conversion/runtime/artifact-stream';
-export class InvalidImportedEpub extends Error {}
+import { InvalidImportedEpub, EpubLeaseExpired } from './errors';
+export { InvalidImportedEpub, EpubLeaseExpired } from './errors';
 export function importOutput(artifacts: Map<string, Buffer>) {
   const stream = artifactStream((descriptor, bytes) => {
     artifacts.set(descriptor.path, bytes);
@@ -25,6 +26,22 @@ export function importOutput(artifacts: Map<string, Buffer>) {
       if (
         typeof first === 'object' &&
         first !== null &&
+        'version' in first &&
+        first.version === 'ava-runtime-error-1'
+      ) {
+        if (
+          !('code' in first) ||
+          first.code !== 'LEASE_EXPIRED' ||
+          Object.keys(first).length !== 2 ||
+          initial.length !== newline + 1
+        )
+          throw new Error('EPUB_IMPORT_INVALID_RECEIPT');
+        refusal = 'LEASE_EXPIRED';
+        return;
+      }
+      if (
+        typeof first === 'object' &&
+        first !== null &&
         'schema_version' in first &&
         first.schema_version === 'ava-epub-import-error-1'
       ) {
@@ -45,6 +62,8 @@ export function importOutput(artifacts: Map<string, Buffer>) {
       initial = Buffer.alloc(0);
     },
     finish(exitCode: number | null) {
+      if (refusal === 'LEASE_EXPIRED' && exitCode === 1)
+        throw new EpubLeaseExpired();
       if (refusal === 'INVALID_EPUB' && exitCode === 1)
         throw new InvalidImportedEpub(
           'The EPUB does not match its declared content.',

@@ -1,16 +1,16 @@
 import type { PrismaService } from '../../prisma/prisma.service';
 import { jobTransaction } from '../pdf-import/jobs/transaction';
 import { requireEpubClaim, type EpubClaim } from './claim-authority';
-import { InvalidImportedEpub } from './import-output';
+import { permanentEpubFailure } from './failure-code';
 export async function failEpubAttempt(
   prisma: PrismaService,
   claim: EpubClaim,
   error: unknown,
 ) {
-  await jobTransaction(prisma, async (tx) => {
+  return jobTransaction(prisma, async (tx) => {
     const { run, now } = await requireEpubClaim(tx, claim);
     const terminal =
-      error instanceof InvalidImportedEpub ||
+      permanentEpubFailure(error) ||
       run.attemptCount >= 3 ||
       !run.activeDeadlineAt ||
       run.activeDeadlineAt <= now;
@@ -24,5 +24,10 @@ export async function failEpubAttempt(
         leaseTokenHash: null,
       },
     });
-  }).catch(() => {});
+    return terminal ? 'FAILED' : 'PENDING';
+  }).catch((error) =>
+    error instanceof Error && error.message === 'EPUB_IMPORT_AUTHORITY_INVALID'
+      ? 'AUTHORITY_LOST'
+      : 'SETTLEMENT_UNAVAILABLE',
+  );
 }

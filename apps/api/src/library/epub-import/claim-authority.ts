@@ -41,3 +41,10 @@ export async function requireEpubClaim(
     throw new Error('EPUB_IMPORT_AUTHORITY_INVALID');
   return { run, now };
 }
+
+export type CanonicalEpubClaim = EpubClaim & {
+  leaseRemainingMs: number;
+  recoveredExpiredLease: boolean;
+  claimedAt: Date;
+  queuedAt: Date;
+};

@@ -285,6 +285,31 @@ route/reuse/resource/detected-inventory observations, journal-loss visibility, a
 retention/backup behavior still need their separate acceptance gates. No cleanup policy or scheduler
 is activated by this reporting implementation.
 
+### Canonical EPUB preparation reports
+
+Initial canonical EPUB imports also use the private ADMIN report interface. Their investigation
+ID is `epub-run-<processing-run-id>`, with coverage `EPUB_PREPARATION` and the real run, owner,
+Library item and source digest. PDF operation/profile/page fields remain null. Older attempts
+are not reconstructed: a first captured snapshot can explicitly report missing earlier history.
+
+Coordinator events retain the first stage/outcome for each attempt fence, capped at 96 events.
+Claim, sandbox execution, semantic validation, storage and activation observations
+remain separate. Durations exclude diagnostic writes and do not measure worker-internal phases or
+container peaks. Overflow, stale-fence evidence and failed writes leave explicit gaps; write failure
+also emits a safe warning. Diagnostics cannot grant publication, change an import outcome or authorize
+another provider call. Journal unavailability can still prevent retaining the warning as a report gap.
+
+Transient validation/activation failures reuse the prepared bytes and are bounded by the existing
+active deadline. A permanently invalid,
+still-unaccepted candidate is terminalized under its current fence, while a bounded rotating scan
+allows later candidates to progress. Missing reader qualification remains a qualification wait;
+it is not evidence of corrupt content. READY/FAILED imports and accepted content stay fixed.
+
+Native EPUB preparation has no PDF provider ledger. Its cost view returns `MISSING` with reason
+`NATIVE_EPUB_PROVIDER_COST_NOT_APPLICABLE` and ledger coverage `NOT_APPLICABLE`; this is not a
+final zero-cost projection. Compute, storage and delivery cost remain unmeasured. The trusted
+report refresh command does not manufacture a provider cost row for these imports.
+
 ## Provider accounting
 
 From `apps/api`, use `pnpm exec ts-node src/scripts/pdf-provider-admin.ts` with a command below.
