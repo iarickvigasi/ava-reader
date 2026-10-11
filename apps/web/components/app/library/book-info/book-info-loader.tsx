@@ -7,6 +7,7 @@
 
 import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useEffect, useRef, useState } from "react";
+import { useMountedDeviceOwner } from "@/features/offline/lifecycle/device-owner-context";
 
 import LibraryBookInfoLoading from "@/app/app/library/books/[slug]/loading";
 import { OfflineRouteFallback } from "@/components/app/core/offline-route-fallback";
@@ -28,6 +29,8 @@ import {
 } from "@/lib/app-routes";
 
 const BOOK_INFO_PATH_PREFIX = "/app/library/books/";
+const AUTH_BOOT_TIMEOUT_MS = 2_500;
+const AUTH_POLL_INTERVAL_MS = 100;
 
 type LoaderState =
   | { status: "loading" }
@@ -36,15 +39,22 @@ type LoaderState =
   | { status: "notFound" };
 
 export function BookInfoLoader() {
-  const { getToken } = useAuth();
+  const { getToken, isLoaded, userId } = useAuth();
+  const ownerId = useMountedDeviceOwner();
   const online = useNetworkState();
   const [state, setState] = useState<LoaderState>({ status: "loading" });
   const [attempt, setAttempt] = useState(0);
   const wasOffline = useRef(false);
+  const authRef = useRef({ getToken, isLoaded, userId });
+  useEffect(() => {
+    authRef.current = { getToken, isLoaded, userId };
+  }, [getToken, isLoaded, userId]);
 
   useEffect(() => {
     const slug = slugFromPath(window.location.pathname, BOOK_INFO_PATH_PREFIX);
     if (!slug) {
+      // The external route, rather than a derived render value, owns this load.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setState({ status: "notFound" });
       return;
     }
@@ -56,14 +66,50 @@ export function BookInfoLoader() {
       : APP_LIBRARY_HREF;
     let cancelled = false;
     let missing = false;
+    let authTimer: ReturnType<typeof setTimeout> | undefined;
+    let stopWaiting = () => {};
+    const waitForAuthBoot = () =>
+      new Promise<void>((resolve) => {
+        const startedAt = Date.now();
+        const finish = () => {
+          clearTimeout(authTimer);
+          stopWaiting = () => {};
+          resolve();
+        };
+        stopWaiting = finish;
+        const tick = () => {
+          if (
+            cancelled ||
+            authRef.current.isLoaded ||
+            Date.now() - startedAt >= AUTH_BOOT_TIMEOUT_MS
+          ) {
+            finish();
+          } else {
+            authTimer = setTimeout(tick, AUTH_POLL_INTERVAL_MS);
+          }
+        };
+        tick();
+      });
     setState({ status: "loading" });
     void readWithRevalidate({
       isOnline,
-      read: () => readBookInfoBySlug(slug),
-      revalidate: () =>
-        revalidateBookInfo(slug, getToken, () => {
+      read: () =>
+        cancelled ? Promise.resolve(null) : readBookInfoBySlug(slug),
+      revalidate: async () => {
+        // Cached/offline details do not need Clerk. A network miss must wait
+        // for this mounted owner's current authentication, never another owner.
+        await waitForAuthBoot();
+        const auth = authRef.current;
+        if (
+          cancelled ||
+          !ownerId ||
+          !auth.isLoaded ||
+          auth.userId !== ownerId
+        ) return;
+        await revalidateBookInfo(slug, auth.getToken, () => {
           missing = true;
-        }),
+        });
+      },
     })
       .then((book) => {
         if (cancelled) {
@@ -80,10 +126,11 @@ export function BookInfoLoader() {
       });
     return () => {
       cancelled = true;
+      stopWaiting();
     };
-    // getToken's identity is deliberately not a dep; `attempt` drives reruns.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [attempt]);
+    // Authentication updates its ref; only an explicit retry or owner change
+    // starts a new load, preserving ready details during session refresh.
+  }, [attempt, ownerId]);
 
   // Auto-retry when the connection returns and we have nothing to show.
   useEffect(() => {
@@ -93,6 +140,8 @@ export function BookInfoLoader() {
     }
     if (wasOffline.current && state.status !== "loading") {
       wasOffline.current = false;
+      // Reconnect is an external event; keep the existing one-shot recovery.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (state.status === "unavailable") setAttempt((current) => current + 1);
     }
   }, [online, state.status]);
@@ -104,7 +153,12 @@ export function BookInfoLoader() {
     return <UnavailablePage kind="notFound" />;
   }
   if (state.status === "unavailable") {
-    return <OfflineRouteFallback routeKey="generic" />;
+    return (
+      <OfflineRouteFallback
+        routeKey="generic"
+        onRetry={() => setAttempt((current) => current + 1)}
+      />
+    );
   }
   return (
     <>
