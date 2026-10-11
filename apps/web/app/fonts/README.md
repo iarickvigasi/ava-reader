@@ -1,4 +1,64 @@
-# Cyrillic companions
+# Font assets
+
+## Main fonts
+
+The root layout uses committed `next/font/local` faces, so a build no longer downloads Google
+Fonts CSS or depends on the extensionless URL parsing affected by
+[Next issue #99114](https://github.com/vercel/next.js/issues/99114). The previous Google loader already
+self-hosted browser requests; this changes the build dependency, not the font designs or a runtime
+Google request. Existing CSS family names, variables, configured styles/weights and fallback geometry
+are preserved. `fallbacks.css` retains the previous generated Arial/Times New Roman metric overrides
+rather than allowing the local loader to recalculate them.
+
+| Asset | Family | CSS weight/style | Retained variable axes | Bytes |
+| --- | --- | --- | --- | ---: |
+| `abhaya-libre-400.woff2` | Abhaya Libre | 400 normal | none | 120,144 |
+| `abhaya-libre-700.woff2` | Abhaya Libre | 700 normal | none | 123,920 |
+| `abhaya-libre-800.woff2` | Abhaya Libre | 800 normal | none | 123,304 |
+| `afacad-normal.woff2` | Afacad | 400–700 normal | wght:400–700 | 43,616 |
+| `inter-normal.woff2` | Inter | 100–900 normal | wght:100–900 | 236,444 |
+| `noto-serif-normal.woff2` | Noto Serif | separate 400/700 normal faces | wght:100–900 | 466,684 |
+| `noto-serif-italic.woff2` | Noto Serif | separate 400/700 italic faces | wght:100–900 | 577,220 |
+
+Noto's two files are each registered twice with discrete 400/700 CSS descriptors, matching the old
+loader; intermediate weight interpolation is not newly introduced. The original Google calls
+requested no nonweight axes. Inter's optical-size default 14 and Noto's width default 100 are fixed
+in the rebuilt assets, matching the previous compiled faces, while all original weight variation
+remains. Noto normal/italic versions are 2.015/2.013; Inter 4.001; Afacad 1.000; Abhaya 1.050.
+
+Every original Unicode cmap entry is retained; there is no glyph subsetting. Inter and both Noto
+faces include all 66 Ukrainian upper/lowercase letters, Greek and combining accents. Their coverage
+includes the previously delivered script faces: `subsets: ["latin"]` controlled Google preloading,
+not which scripts could be rendered. The calibrated Cyrillic companions below remain unchanged.
+
+The seven main assets total 1,691,332B (previous delivered main subsets total 1,494,436B; previous
+Latin preload assets total 191,700B in the inspected build). They use `preload: false` and `display: swap`
+to load the face actually used from AVA's origin, rather than preload the whole inventory on every
+route. First use can swap from the preserved fallback face. This is a deliberate loading change,
+not a claim of equal transfer size, identical rendered layout or browser qualification. The stock build
+and offline precache must include all faces before release.
+
+### Main sources and rebuild
+
+Official [Google Fonts commit bd8f81d](https://github.com/google/fonts/tree/bd8f81ddb5c74d5c8897b36ad88b440266245103/ofl)
+was retrieved 2026-10-11. Download the seven original relative paths listed in `build-main.py` plus
+each family's `OFL.txt` from that immutable commit, preserving the family directories. The script
+checks every original SHA-256 and license SHA-256 before producing output. The four adjacent main
+`*-OFL.txt` files are unmodified SIL OFL 1.1 originals. It does not borrow unbound `.next` binaries.
+
+Use an isolated Python 3.12 environment with `fonttools[woff]==4.65.0`, `brotli==1.2.0` and
+`zopfli==0.4.3`:
+
+```sh
+python apps/web/app/fonts/build-main.py /path/to/pinned-originals /path/to/rebuilt-fonts
+```
+
+The output is seven complete WOFF2 files and four licenses. Fixed timestamps, pinned tools,
+unchanged cmap checks and original-byte checks make the result reproducible. Compare the output
+with committed files before copying it into the app; normal web builds use only committed assets
+and require no font-conversion tools or font network requests.
+
+## Cyrillic companions
 
 Latin keeps Afacad (body) and Abhaya Libre (display). The local, script-only faces precede
 their fallback stacks, so Cyrillic cannot fall through to Arial/Times. Inter UI and Noto

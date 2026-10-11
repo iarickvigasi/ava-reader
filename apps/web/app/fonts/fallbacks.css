@@ -1,0 +1,37 @@
+/* Preserve the previous next/font/google fallback geometry; see README.md. */
+
+@font-face {
+  font-family: Abhaya Libre Fallback;
+  src: local("Times New Roman");
+  ascent-override: 83.78%;
+  descent-override: 33.90%;
+  line-gap-override: 0.00%;
+  size-adjust: 100.24%;
+}
+
+@font-face {
+  font-family: Afacad Fallback;
+  src: local("Arial");
+  ascent-override: 111.84%;
+  descent-override: 37.28%;
+  line-gap-override: 0.00%;
+  size-adjust: 89.41%;
+}
+
+@font-face {
+  font-family: Inter Fallback;
+  src: local("Arial");
+  ascent-override: 90.44%;
+  descent-override: 22.52%;
+  line-gap-override: 0.00%;
+  size-adjust: 107.12%;
+}
+
+@font-face {
+  font-family: "Noto Serif Fallback";
+  src: local("Times New Roman");
+  ascent-override: 90.29%;
+  descent-override: 24.75%;
+  line-gap-override: 0.00%;
+  size-adjust: 118.40%;
+}
