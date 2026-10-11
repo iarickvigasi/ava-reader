@@ -7,6 +7,7 @@ import {
 import { cleanupDeletedProviderPayloads } from './pdf-import/providers/cleanup-deleted-payloads';
 import { cleanupExpiredPdfStaging } from './pdf-import/artifacts/cleanup-staging';
 import { PrismaService } from '../prisma/prisma.service';
+import { backgroundFailureCode } from '../shared/background-failure-code';
 
 // Blobs are written outside the metadata transaction (see
 // LibraryService.importBook). On failure, we best-effort delete them,
@@ -69,7 +70,9 @@ export class OrphanBlobCleanupService implements OnModuleInit, OnModuleDestroy {
 
       return result.count;
     } catch (error) {
-      this.logger.error('Orphan blob cleanup failed.', error);
+      this.logger.error(
+        `Orphan blob cleanup unavailable (${backgroundFailureCode(error)}); checking again on the next sweep.`,
+      );
       return 0;
     } finally {
       this.isTickRunning = false;

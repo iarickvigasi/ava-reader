@@ -1,3 +1,5 @@
+import { backgroundFailureCode } from '../shared/background-failure-code';
+
 // Infrastructure failures pause polling; only a claimed import decides its own outcome.
 export class ReaderProcessingLoop {
   private running = false;
@@ -19,15 +21,7 @@ export class ReaderProcessingLoop {
       this.failures = Math.min(this.failures + 1, 5);
       const retryMs = Math.min(2000 * 2 ** (this.failures - 1), 30000);
       this.retryAt = performance.now() + retryMs;
-      const code =
-        typeof error === 'object' &&
-        error !== null &&
-        'code' in error &&
-        typeof error.code === 'string' &&
-        /^P[0-9]{4}$/.test(error.code)
-          ? error.code
-          : 'BACKGROUND_UNAVAILABLE';
-      report(code, retryMs);
+      report(backgroundFailureCode(error), retryMs);
       return false;
     } finally {
       this.running = false;
