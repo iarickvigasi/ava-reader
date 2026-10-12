@@ -30,7 +30,7 @@ export function checkStreamProfile(
       const permitted =
         profile === 'epub-import'
           ? /^resources\/[a-f0-9]{64}$/.test(item.path)
-          : /^(resources\/[A-Za-z0-9._/-]+\.(png|jpg|jpeg)|images\/[a-f0-9]{64}\.png)$/.test(
+          : /^(resources\/[A-Za-z0-9._/-]+\.(png|jpg|jpeg)|images\/[a-f0-9]{64}\.(png|jpg|jpeg))$/.test(
               item.path,
             );
       if (!permitted) throw new PdfRuntimeError('INVALID_RESULT');

@@ -57,3 +57,56 @@ describe('full-book artifact capacity', () => {
     );
   });
 });
+
+describe('source image stream compatibility', () => {
+  const sourceSha =
+    'f46c3075f2926db6e3146308182cf61c3aaefc9f8711b198d6c2a37040fd46f9';
+  const image = (path: string, byte_length = 7106) => ({
+    path,
+    sha256: sourceSha,
+    byte_length,
+  });
+
+  it.each(['png', 'jpg', 'jpeg'])(
+    'accepts the qualified source %s path emitted by reconstruction',
+    (extension) => {
+      expect(() =>
+        checkStreamProfile([
+          ...manifest('reconstruction', 1024),
+          image(`images/${sourceSha}.${extension}`),
+        ]),
+      ).not.toThrow();
+    },
+  );
+
+  it.each([
+    'images/logo.jpg',
+    `images/${'g'.repeat(64)}.jpg`,
+    `images/${sourceSha}.jpg.extra`,
+    `images/${sourceSha}.svg`,
+    `images/${sourceSha.toUpperCase()}.jpg`,
+    `images/../${sourceSha}.jpg`,
+  ])('rejects unsupported or malformed source image path %s', (path) => {
+    expect(() =>
+      checkStreamProfile([...manifest('reconstruction', 1024), image(path)]),
+    ).toThrow('INVALID_RESULT');
+  });
+
+  it('keeps the EPUB-import resource namespace separate', () => {
+    expect(() =>
+      checkStreamProfile(
+        [...manifest('epub-import', 1024), image(`images/${sourceSha}.jpg`)],
+        'epub-import',
+      ),
+    ).toThrow('INVALID_RESULT');
+  });
+
+  it('keeps aggregate source-image bytes bounded', () => {
+    expect(() =>
+      checkStreamProfile([
+        ...manifest('reconstruction', 1024),
+        image(`images/${sourceSha}.jpg`, 201 * mib),
+      ]),
+    ).toThrow('RESOURCE_LIMIT');
+  });
+});
