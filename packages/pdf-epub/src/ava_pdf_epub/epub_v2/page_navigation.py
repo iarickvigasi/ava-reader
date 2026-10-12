@@ -10,7 +10,7 @@ def source_page_listing(ctx: Context) -> ET.Element:
     listing = element("ol")
     for number, address in sorted(ctx.page_starts.items()):
         item = element("li")
-        href = "../" + ctx.paths[address.target.chapter_id] + f"#page-{number}"
+        href = "../" + ctx.block_paths[address.target.block_id] + f"#page-{number}"
         item.append(element("a", {"href": href}, ctx.page_labels[number]))
         listing.append(item)
     return listing

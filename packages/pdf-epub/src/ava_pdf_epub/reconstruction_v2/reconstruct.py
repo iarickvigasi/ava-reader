@@ -10,6 +10,7 @@ from typing import Any
 from ..contracts.book import CanonicalBookV2
 from ..contracts.profiles import BILINGUAL_PROFILE
 from ..epub_v2.export import export_epub
+from ..epub_v2.profiles import export_profile
 from ..worker_observation import phase
 from .annotation_findings import annotation_findings
 from .apply_refinement import apply_refinement
@@ -133,7 +134,11 @@ def reconstruct(
     gc.collect()
     return ReconstructedBook(
         book=book,
-        epub=export_epub(book, state.assets),
+        epub=export_epub(
+            book,
+            state.assets,
+            profile=export_profile(book, split_sections=source_feature_policy is not None),
+        ),
         assets=state.assets,
         structure_findings=[*state.structure_findings, *annotation_findings(source)],
         refinement_evidence=state.refinement_evidence,

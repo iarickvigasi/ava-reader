@@ -2,11 +2,13 @@
 
 from dataclasses import dataclass
 
+from ..contracts.blocks import TableBlock
 from ..contracts.book import CanonicalBookV2
 from ..contracts.graph_index import index_book
 from ..contracts.graph_links import TEXT_NODES
 from ..contracts.links import ExternalTarget, InternalTarget, NoteTarget
 from ..contracts.page_starts import page_addresses
+from .sections import publication_parts
 
 
 def ident(kind: str, value: str) -> str:
@@ -17,6 +19,7 @@ def ident(kind: str, value: str) -> str:
 class Context:
     book: CanonicalBookV2
     exact_source_pages: bool = False
+    split_sections: bool = False
 
     def __post_init__(self) -> None:
         self.nodes, self.owners = index_book(self.book)
@@ -25,6 +28,21 @@ class Context:
             for p in self.book.pages
         }
         self.paths = {c.id: f"text/{ident('ch', c.id)}.xhtml" for c in self.book.chapters}
+        self.parts = publication_parts(self.book, split_sections=self.split_sections)
+        openings = {c.id: c.block_ids[0] for c in self.book.chapters}
+        self.part_paths = {
+            part.opening_id: self.paths[part.chapter_id]
+            if part.opening_id == openings[part.chapter_id]
+            else f"text/{ident('section', part.opening_id)}.xhtml"
+            for part in self.parts
+        }
+        self.block_paths = {
+            id_: self.part_paths[part.opening_id] for part in self.parts for id_ in part.block_ids
+        }
+        for block in self.book.blocks:
+            if isinstance(block, TableBlock):
+                for cell in block.cells:
+                    self.block_paths[cell.id] = self.block_paths[block.id]
         self.styles = {s.id: s for s in self.book.styles}
         self.resources = {r.id: r for r in self.book.resources}
         self.groups = {g.id: g for g in self.book.lists}
@@ -59,8 +77,8 @@ class Context:
         fragment = ident("b", target.block_id)
         if target.offset:
             fragment = ident("loc", target.block_id) + f"-{target.offset}"
-        return "../" + self.paths[target.chapter_id] + "#" + fragment
+        return "../" + self.block_paths[target.block_id] + "#" + fragment
 
     def backlink(self, callout: str) -> str:
-        chapter = self.owners[self.inline_owners[callout]]
-        return "../" + self.paths[chapter] + "#" + ident("s", callout)
+        block = self.inline_owners[callout]
+        return "../" + self.block_paths[block] + "#" + ident("s", callout)

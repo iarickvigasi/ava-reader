@@ -39,6 +39,6 @@ def package_document(ctx: Context, entries: dict[str, bytes]) -> bytes:
         ET.SubElement(manifest, "item", attrs)
         file_ids[path[5:]] = attrs["id"]
     spine = ET.SubElement(root, "spine")
-    for chapter in ctx.book.spine:
-        ET.SubElement(spine, "itemref", {"idref": file_ids[ctx.paths[chapter]]})
+    for part in ctx.parts:
+        ET.SubElement(spine, "itemref", {"idref": file_ids[ctx.part_paths[part.opening_id]]})
     return bytes(ET.tostring(root, encoding="utf-8", xml_declaration=True))

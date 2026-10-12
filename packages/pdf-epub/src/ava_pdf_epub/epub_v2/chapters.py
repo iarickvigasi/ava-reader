@@ -1,4 +1,4 @@
-"""One XHTML per logical chapter; list hierarchy follows canonical preorder."""
+"""Versioned publication files preserve logical hierarchy and canonical preorder."""
 
 import xml.etree.ElementTree as ET
 
@@ -31,12 +31,20 @@ def render_list(group_id: str, ctx: Context) -> ET.Element:
 def chapter_documents(ctx: Context, *, printed_page_labels: bool = False) -> dict[str, bytes]:
     output = {}
     seen_pages: set[int] = set()
-    for chapter in ctx.book.chapters:
+    chapters = {c.id: c for c in ctx.book.chapters}
+    for part in ctx.parts:
+        chapter = chapters[part.chapter_id]
         body = element(
-            "body", {f"{{{EPUB}}}type": chapter.role, "id": ident("chapter", chapter.id)}
+            "body",
+            {
+                f"{{{EPUB}}}type": chapter.role,
+                "id": ident("chapter", chapter.id)
+                if part.opening_id == chapter.block_ids[0]
+                else ident("section", part.opening_id),
+            },
         )
         emitted_groups: set[str] = set()
-        for block_id in chapter.block_ids:
+        for block_id in part.block_ids:
             block = ctx.nodes[block_id]
             if isinstance(block, ListItemBlock):
                 group = ctx.groups[block.list_id]
@@ -46,8 +54,8 @@ def chapter_documents(ctx: Context, *, printed_page_labels: bool = False) -> dic
             else:
                 body.append(render_block(block_id, ctx))
         add_page_anchors(body, ctx, seen_pages, printed_page_labels=printed_page_labels)
-        output["EPUB/" + ctx.paths[chapter.id]] = document(
-            chapter.title,
+        output["EPUB/" + ctx.part_paths[part.opening_id]] = document(
+            part.title,
             body,
             package_language(ctx.book) if ctx.book.profile_id == BILINGUAL_PROFILE else "en",
         )

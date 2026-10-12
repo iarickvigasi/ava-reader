@@ -429,6 +429,18 @@ versioned independently of package version `0.1.0`; the legacy standalone result
 
 Canonical v2 has an isolated `epub_v2` export/reimport boundary, separate from the legacy extraction
 CLI. It preserves structured content and source evidence in a declared generated EPUB profile.
+Projection `ava-epub-canonical-2.4` gives the opening/title and each accepted major H2 section
+its own XHTML/spine file. Boundaries follow direct TOC children of one H1 logical chapter root,
+not PDF pages, inferred titles or nested subsections. Logical chapter membership, heading ranks,
+text/offset identities and source aliases stay fixed. Lists/items remain whole; a boundary that
+would divide a figure/table from its caption or credit is kept within one file. TOC links,
+notes/returns, text offsets and source-page links use the target block's actual publication file.
+Profiles 2.1–2.3 retain their original single-file-per-chapter projections when explicitly
+selected or reimported; portable validation reproduces the declared profile exactly.
+Reconstruction with the historical omitted `source_feature_policy` retains its old chapter
+projection; the current source policy enables section-file partitioning.
+`conservation_report` describes the default candidate projection unless its `profile` argument
+selects a specific historical projection; it does not infer a supplied EPUB's declared profile.
 [Content checks and limits](../../docs/pdf-conversion-verification.md) distinguish authored-fixture conservation
 from PDF reconstruction, ordinary import, publication and renderer qualification.
 

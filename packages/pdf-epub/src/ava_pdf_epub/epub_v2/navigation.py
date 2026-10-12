@@ -36,7 +36,7 @@ def navigation(ctx: Context, *, printed_page_labels: bool = False) -> bytes:
         for evidence in block.evidence:
             if evidence.page not in seen:
                 item = element("li")
-                href = "../" + ctx.paths[ctx.owners[block.id]] + f"#page-{evidence.page}"
+                href = "../" + ctx.block_paths[block.id] + f"#page-{evidence.page}"
                 label = (
                     ctx.page_labels[evidence.page] if printed_page_labels else str(evidence.page)
                 )

@@ -4,12 +4,17 @@ from ..contracts.book import CanonicalBookV2
 from ..contracts.common import document_digest
 from ..contracts.graph_links import TEXT_NODES
 from .context import Context, ident
-from .profiles import SOURCE_PAGE_PROFILE, export_profile
+from .profiles import SECTION_FILE_PROFILE, export_profile, validate_profile
 
 
-def conservation_report(book: CanonicalBookV2) -> dict[str, object]:
+def conservation_report(book: CanonicalBookV2, *, profile: str | None = None) -> dict[str, object]:
     book = CanonicalBookV2.model_validate(book.model_dump())
-    ctx = Context(book, exact_source_pages=export_profile(book) == SOURCE_PAGE_PROFILE)
+    profile = export_profile(book) if profile is None else profile
+    ctx = Context(
+        book,
+        exact_source_pages=validate_profile(book, profile),
+        split_sections=profile == SECTION_FILE_PROFILE,
+    )
     mapping = []
     for address in book.addresses:
         fragment = address.fragment
@@ -20,7 +25,7 @@ def conservation_report(book: CanonicalBookV2) -> dict[str, object]:
             {
                 "source_resource": address.resource_path,
                 "source_fragment": fragment,
-                "epub_resource": "EPUB/" + ctx.paths[address.target.chapter_id],
+                "epub_resource": "EPUB/" + ctx.block_paths[address.target.block_id],
                 "epub_fragment": f"page-{address.source_page}"
                 if address.source_page is not None
                 else ident(kind, fragment),
@@ -29,7 +34,7 @@ def conservation_report(book: CanonicalBookV2) -> dict[str, object]:
         )
     return {
         "adapter": "ava-canonical-reader-1",
-        "epub_profile": export_profile(book),
+        "epub_profile": profile,
         "canonical_sha256": document_digest(book),
         "source_addresses": mapping,
         "text_segments": [n.id for n in ctx.nodes.values() if isinstance(n, TEXT_NODES)],
