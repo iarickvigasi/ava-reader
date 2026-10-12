@@ -12,6 +12,7 @@ export class PdfRuntimeError extends Error {
     readonly code: RuntimeFailure,
     readonly faultAcknowledgement?: FaultAcknowledgement,
     readonly cleanupFailed = false,
+    readonly workerObservation?: WorkerObservationResult,
   ) {
     super(code);
     this.name = 'PdfRuntimeError';
@@ -21,3 +22,4 @@ export class PdfRuntimeError extends Error {
   }
 }
 import type { FaultAcknowledgement } from './fault-acknowledgement';
+import type { WorkerObservationResult } from './worker-observation';

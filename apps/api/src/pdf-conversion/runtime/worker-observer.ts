@@ -3,7 +3,7 @@ import type { SafeConversionEvent } from '../../library/pdf-import/reports/event
 import type { workerObservationSink } from './worker-observation-sink';
 import type { SandboxInput } from './container-arguments';
 import { checksumBuffer } from '../../shared/blob-utils';
-import { workerBinding } from './worker-observation';
+import { workerBinding, workerObservationResult } from './worker-observation';
 import { PdfRuntimeError } from './runtime-error';
 import { SourceContentError } from '../reconstruction/source-refusal';
 import { PdfProviderError } from '../../library/pdf-import/providers/errors';
@@ -213,6 +213,13 @@ export function workerObserver(
                   .map((finding) => ({ kind: 'source', ...finding })),
               };
           }
+          if (stage === 'WORKER_COMMAND' && error instanceof PdfRuntimeError) {
+            const observation = workerObservationResult.safeParse(
+              error.workerObservation,
+            );
+            if (observation.success)
+              failure.workerObservation = observation.data;
+          }
         } catch {
           /* Missing failure observations remain unavailable. */
         }
@@ -224,7 +231,10 @@ export function workerObserver(
             ...details,
             ...failure,
             outcome: signal.aborted ? 'ABORTED' : 'FAILED',
-            workerObservation: { status: 'UNOBSERVED', reason: 'UNAVAILABLE' },
+            workerObservation: failure.workerObservation ?? {
+              status: 'UNOBSERVED',
+              reason: 'UNAVAILABLE',
+            },
             ...workEventDetails(work),
           },
           workEventTiming(work),

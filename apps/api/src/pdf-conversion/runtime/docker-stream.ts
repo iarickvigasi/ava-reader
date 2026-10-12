@@ -2,6 +2,10 @@ import { spawn } from 'node:child_process';
 import type { PdfRuntimeConfig } from './runtime-config';
 import { PdfRuntimeError, type RuntimeFailure } from './runtime-error';
 import { workerStderr } from './worker-stderr';
+import {
+  commandObservation,
+  type ObservationContext,
+} from './command-observation';
 // Pause the pipe while a bounded artifact chunk is verified/persisted by the host.
 export function dockerStream(
   config: PdfRuntimeConfig,
@@ -10,6 +14,7 @@ export function dockerStream(
   consume: (chunk: Buffer) => Promise<void>,
   signal: AbortSignal,
   observeWorker = false,
+  observationContext?: ObservationContext,
 ) {
   return new Promise<{
     exitCode: number | null;
@@ -43,7 +48,14 @@ export function dockerStream(
       failure ??= collected.exhausted ? 'RESOURCE_LIMIT' : undefined;
       if (failure) {
         child.kill('SIGKILL');
-        reject(new PdfRuntimeError(failure));
+        reject(
+          new PdfRuntimeError(
+            failure,
+            undefined,
+            false,
+            commandObservation(collected, observationContext),
+          ),
+        );
       } else resolve({ exitCode, stdout: Buffer.alloc(0), ...collected });
     };
     const abort = () => finish('DISPATCH_NOT_AUTHORIZED'),

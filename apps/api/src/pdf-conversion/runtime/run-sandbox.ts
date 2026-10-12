@@ -113,6 +113,7 @@ export async function runSandbox(
       failure.code,
       failure.faultAcknowledgement,
       cleanupFailed,
+      failure.workerObservation,
     );
   if (cleanupFailed || !response)
     throw new PdfRuntimeError('WORKER_CRASH', undefined, cleanupFailed);

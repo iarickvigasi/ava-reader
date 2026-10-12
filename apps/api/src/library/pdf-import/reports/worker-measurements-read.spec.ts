@@ -213,6 +213,7 @@ it('shows available bound failed-command measurements without changing capture/o
         'ANNOTATIONS_ORIGINAL_TOP_LEVEL_OBJECTS_ONLY',
         'REUSE_ATTEMPT_PRIVATE_AND_PROCESS_LOCAL_NOT_SAVED_PROVIDER_CALLS',
         'AVAILABILITY_NOT_ALL_COMMANDS_OR_SOURCE_FIDELITY',
+        'WORKER_OUTCOME_DISTINCT_FROM_COORDINATOR_OUTCOME',
       ],
     },
     observationCoverage: { state: 'RECORDED', complete: true },
@@ -413,3 +414,62 @@ it('does not count the same attempt/unit with another request digest as a second
     },
   });
 });
+
+it('retains completed worker measurements when the host rejects its output, without changing the failed operation', async () => {
+  const f = fixture((events) => {
+    const completed = observedPacket(events);
+    completed.outcome = 'completed';
+    completed.failure_code = null;
+    for (const phase of completed.phases) phase.outcome = 'completed';
+    events[1].details.failureCode = 'INVALID_RESULT';
+    const event = Object.fromEntries(
+      Object.entries(events[1]).filter(
+        ([key]) => key !== 'sequence' && key !== 'createdAt',
+      ),
+    );
+    expect(safeEventSchema.safeParse(event).success).toBe(true);
+  });
+  const snapshot = await f.snapshot(),
+    exported = await f.exported();
+  expect(snapshot).toMatchObject({
+    status: 'FAILED',
+    workerMeasurements: {
+      packetCount: 1,
+      rejectedPacketCount: 0,
+      workDurations: 'AVAILABLE',
+      resources: 'AVAILABLE',
+      sourceFidelity: 'NOT_ESTABLISHED',
+      failureCode: null,
+    },
+  });
+  expect(snapshot.workerMeasurements?.limitations).toContain(
+    'WORKER_OUTCOME_DISTINCT_FROM_COORDINATOR_OUTCOME',
+  );
+  expect(exported.investigation.workerMeasurements).toEqual(
+    snapshot.workerMeasurements,
+  );
+  expect(record.status).toBe('FAILED');
+  expect(record.evidenceGaps).toEqual(REPORT_GAPS);
+});
+
+it.each([undefined, 'WORKER_CRASH', 'SOURCE_MISMATCH'])(
+  'still refuses unproven completed-worker/failed-host mismatch with code %s',
+  async (failureCode) => {
+    const f = fixture((events) => {
+      const completed = observedPacket(events);
+      completed.outcome = 'completed';
+      completed.failure_code = null;
+      for (const phase of completed.phases) phase.outcome = 'completed';
+      events[1].details.failureCode = failureCode;
+    });
+    expect(await f.snapshot()).toMatchObject({
+      status: 'FAILED',
+      evidenceGaps: REPORT_GAPS,
+      workerMeasurements: {
+        packetCount: 0,
+        rejectedPacketCount: 1,
+        workDurations: 'NOT_OBSERVED',
+      },
+    });
+  },
+);

@@ -19,6 +19,7 @@ const limits = [
   'ANNOTATIONS_ORIGINAL_TOP_LEVEL_OBJECTS_ONLY',
   'REUSE_ATTEMPT_PRIVATE_AND_PROCESS_LOCAL_NOT_SAVED_PROVIDER_CALLS',
   'AVAILABILITY_NOT_ALL_COMMANDS_OR_SOURCE_FIDELITY',
+  'WORKER_OUTCOME_DISTINCT_FROM_COORDINATOR_OUTCOME',
 ] as const;
 const envelope = (event: SafeConversionEvent) =>
   JSON.stringify([
@@ -95,7 +96,12 @@ export function workerMeasurements(record?: MeasurementRecord) {
         bound.profile_id !== event.details.profileId ||
         bound.worker_fingerprint !== event.details.workerFingerprint ||
         bound.unit_id !== event.details.unitId ||
-        packet.outcome.toUpperCase() !== event.details.outcome ||
+        (packet.outcome.toUpperCase() !== event.details.outcome &&
+          !(
+            packet.outcome === 'completed' &&
+            event.details.outcome === 'FAILED' &&
+            event.details.failureCode === 'INVALID_RESULT'
+          )) ||
         seen.has(key)
       ) {
         rejectedPacketCount++;

@@ -8,6 +8,7 @@ import { PdfRuntimeError } from './runtime-error';
 import { workerStderr } from './worker-stderr';
 import { writeExchangeReply } from './write-exchange-reply';
 import { exchangeEntry } from './exchange-entry';
+import { commandObservation } from './command-observation';
 
 export function dockerExchange(
   config: PdfRuntimeConfig,
@@ -52,10 +53,20 @@ export function dockerExchange(
       if (failure !== undefined) {
         child.kill('SIGKILL');
         reject(
-          failure instanceof ExchangeFailure ||
-            failure instanceof PdfRuntimeError
+          failure instanceof ExchangeFailure
             ? failure
-            : new PdfRuntimeError('INVALID_RESULT'),
+            : new PdfRuntimeError(
+                failure instanceof PdfRuntimeError
+                  ? failure.code
+                  : 'INVALID_RESULT',
+                failure instanceof PdfRuntimeError
+                  ? failure.faultAcknowledgement
+                  : undefined,
+                failure instanceof PdfRuntimeError
+                  ? failure.cleanupFailed
+                  : false,
+                commandObservation(collected, input),
+              ),
         );
       } else resolve({ exitCode: code, stdout: Buffer.alloc(0), ...collected });
     };

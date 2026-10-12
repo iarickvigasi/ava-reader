@@ -5,10 +5,8 @@ import { dockerExchange } from './docker-exchange';
 import { faultAcknowledgement } from './fault-acknowledgement';
 import type { PdfRuntimeConfig } from './runtime-config';
 import { PdfRuntimeError } from './runtime-error';
-import {
-  parseWorkerObservation,
-  type WorkerObservationResult,
-} from './worker-observation';
+import { type WorkerObservationResult } from './worker-observation';
+import { commandObservation } from './command-observation';
 
 export async function startContainer(
   config: PdfRuntimeConfig,
@@ -42,6 +40,7 @@ export async function startContainer(
           input.onStdout,
           signal,
           Boolean(input.observationBinding),
+          input,
         )
       : await dockerCommand(
           config,
@@ -55,29 +54,29 @@ export async function startContainer(
           signal,
           input.faultContext,
           Boolean(input.observationBinding),
+          input,
         );
   const acknowledgement = faultAcknowledgement(
     result.stderr,
     input.faultContext,
   );
-  if (result.exitCode === 137 || result.exitCode === 152)
-    throw new PdfRuntimeError('RESOURCE_LIMIT', acknowledgement);
-  let workerObservation: WorkerObservationResult =
-    !input.observationBinding || !input.observationCommand
-      ? { status: 'UNOBSERVED', reason: 'UNAVAILABLE' }
-      : result.observationMalformed
-        ? { status: 'UNOBSERVED', reason: 'MALFORMED' }
-        : parseWorkerObservation(
-            result.observationStderr,
-            input.observationBinding,
-            input.observationCommand,
-          );
+  let workerObservation: WorkerObservationResult = commandObservation(
+    result,
+    input,
+  );
   if (
     workerObservation.status === 'OBSERVED' &&
     (result.exitCode === 0) !==
       (workerObservation.packet.outcome === 'completed')
   )
     workerObservation = { status: 'UNOBSERVED', reason: 'MALFORMED' };
+  if (result.exitCode === 137 || result.exitCode === 152)
+    throw new PdfRuntimeError(
+      'RESOURCE_LIMIT',
+      acknowledgement,
+      false,
+      workerObservation,
+    );
   return {
     exitCode: result.exitCode,
     stdout: result.stdout,

@@ -3,6 +3,10 @@ import type { PdfRuntimeConfig } from './runtime-config';
 import { PdfRuntimeError, type RuntimeFailure } from './runtime-error';
 import { workerStderr } from './worker-stderr';
 import {
+  commandObservation,
+  type ObservationContext,
+} from './command-observation';
+import {
   faultAcknowledgement,
   type FaultExpectation,
 } from './fault-acknowledgement';
@@ -15,6 +19,7 @@ export function dockerCommand(
   signal?: AbortSignal,
   expectedFault?: FaultExpectation,
   observeWorker = false,
+  observationContext?: ObservationContext,
 ) {
   return new Promise<{
     exitCode: number | null;
@@ -52,6 +57,8 @@ export function dockerCommand(
           new PdfRuntimeError(
             failure,
             faultAcknowledgement(collected.stderr, expectedFault),
+            false,
+            commandObservation(collected, observationContext),
           ),
         );
       } else resolve({ exitCode, stdout: Buffer.concat(chunks), ...collected });
