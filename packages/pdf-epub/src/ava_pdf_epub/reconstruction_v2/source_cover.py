@@ -47,11 +47,7 @@ def preserve_source_cover(
     evidence = [dict(page=1, region_id=region_id, method="render", box=box.model_dump())]
     state.evidence[region_id] = evidence
     segment = Segment(id=region_id, page=1, kind="figure", box=box, method="render")
-    known = {r["id"] for r in state.resources}
     cover = assemble_figure(segment, prepared[0], scratch, state)["resource_id"]
-    if cover in known:
-        resource = next(r for r in state.resources if r["id"] == cover)
-        resource["evidence"] = [*resource["evidence"], *evidence]
     pages[0]["regions"].append(
         dict(id=region_id, box=box.model_dump(), band=0, column=0, role="cover", route="render")
     )
