@@ -56,3 +56,54 @@ it('canonicalizes known fields and hashes producer keys without retaining their 
   expect(a.payloadSha256).toBe(b.payloadSha256);
   expect(a.producerKey).not.toContain('server-producer');
 });
+
+it.each(['google-vertex/global', 'google-vertex/global/priority'])(
+  'captures an immutable selected endpoint %s without confusing it with an object ID',
+  (providerSlug) => {
+    const event = safeEventSchema.parse({
+      kind: 'PROVIDER_SETTLED',
+      stage: 'PROVIDER',
+      details: {
+        routeSelection: {
+          routeId: 'route-selected',
+          providerSlug,
+          modelId: 'google/gemini-3.8-flash',
+          configurationSha256: 'a'.repeat(64),
+          evidence: 'IMMUTABLE_ROUTE_SELECTION',
+          observedProvider: 'UNKNOWN',
+        },
+      },
+    });
+    expect(event.details.routeSelection?.providerSlug).toBe(providerSlug);
+  },
+);
+it.each([
+  'https://private.example/path',
+  '/private/endpoint',
+  'Bearer-private',
+  'sk-secret',
+  'provider//endpoint',
+  'provider/sk-secret',
+  'provider/Bearer-private',
+  'provider?token=private',
+])(
+  'refuses unsafe selected endpoint %s before journal persistence',
+  (providerSlug) => {
+    expect(() =>
+      safeEventSchema.parse({
+        kind: 'PROVIDER_SETTLED',
+        stage: 'PROVIDER',
+        details: {
+          routeSelection: {
+            routeId: 'route-selected',
+            providerSlug,
+            modelId: 'google/gemini-3.8-flash',
+            configurationSha256: 'a'.repeat(64),
+            evidence: 'IMMUTABLE_ROUTE_SELECTION',
+            observedProvider: 'UNKNOWN',
+          },
+        },
+      }),
+    ).toThrow();
+  },
+);

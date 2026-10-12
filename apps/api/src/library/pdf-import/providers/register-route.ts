@@ -2,6 +2,7 @@ import type { Prisma, PrismaClient } from '@prisma/client';
 import { routePolicy } from './route-policy';
 import { jsonHash } from './hash';
 import { PdfProviderError } from './errors';
+import { isProviderEndpointSlug } from './endpoint-slug';
 export async function registerPdfRoute(
   prisma: PrismaClient,
   input: {
@@ -22,7 +23,7 @@ export async function registerPdfRoute(
   if (
     !/^[A-Za-z0-9_.:-]{1,100}$/.test(spec.accountKey) ||
     !/^[A-Za-z0-9_.:/-]{1,160}$/.test(spec.modelId) ||
-    !/^[A-Za-z0-9_.:/-]{1,100}$/.test(spec.providerSlug) ||
+    !isProviderEndpointSlug(spec.providerSlug) ||
     !['live', 'stub', 'replay'].includes(spec.mode) ||
     (spec.mode === 'live' && !config.pilotInventory && !config.importPolicy) ||
     (config.importPolicy && spec.mode !== 'live') ||

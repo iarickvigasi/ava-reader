@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import type { PdfConversionEvent } from '@prisma/client';
 import { z } from 'zod';
+import { isProviderEndpointSlug } from '../providers/endpoint-slug';
 import {
   workerObservationResult,
   workerSourceFinding,
@@ -185,7 +186,7 @@ export const safeEventSchema = z
         routeSelection: z
           .object({
             routeId: reportId,
-            providerSlug: reportId,
+            providerSlug: z.string().refine(isProviderEndpointSlug),
             modelId: z
               .string()
               .regex(/^[A-Za-z0-9][A-Za-z0-9._:/-]{0,199}$/)

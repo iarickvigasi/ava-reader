@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { reportId } from './event-contract';
+import { isProviderEndpointSlug } from '../providers/endpoint-slug';
 
 export type ReportCall = {
   id: string;
@@ -175,11 +176,9 @@ function itemize(call: ReportCall) {
       !/^(?:sk[-_]|bearer)/i.test(call.modelId)
         ? call.modelId
         : 'UNAVAILABLE',
-    routeProvider:
-      typeof call.routeProvider === 'string' &&
-      /^[A-Za-z0-9_-]{1,80}$/.test(call.routeProvider)
-        ? call.routeProvider
-        : 'UNAVAILABLE',
+    routeProvider: isProviderEndpointSlug(call.routeProvider)
+      ? call.routeProvider
+      : 'UNAVAILABLE',
     routeId: safeReference(call.routeId),
     tariffSha256: safeDigest(call.tariffSha256),
     configurationSha256: safeDigest(call.configurationSha256),

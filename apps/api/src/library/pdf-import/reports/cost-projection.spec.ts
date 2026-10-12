@@ -134,3 +134,81 @@ it('unsafe receipt identifiers never expose paths/headers or turn a known charge
   });
   expect(JSON.stringify(result)).not.toContain('PRIVATE');
 });
+
+it.each(['google-vertex/global', 'google-vertex/global/priority'])(
+  'retains the selected endpoint %s and exact seven settled charges on a failed conversion',
+  (routeProvider) => {
+    const amounts = [
+      32013750n,
+      21663750n,
+      28548750n,
+      15960000n,
+      17857500n,
+      11730000n,
+      27652500n,
+    ];
+    const calls = amounts.map((amount, index) => ({
+      ...call(`call-${index}`, 'SETTLED', 1032192750n, amount),
+      modelId: 'google/gemini-3.8-flash',
+      routeProvider,
+      stage: index < 4 ? 'EXTRACTION' : 'RECONSTRUCTION',
+      providerGenerationId: `gen-1791822803-${index}`,
+    }));
+    const result = projectConversionCost(calls, true);
+    expect(result).toMatchObject({
+      knownActualNano: '155426250',
+      reservedNano: '0',
+      uncertainNano: '0',
+      actualComplete: true,
+      state: 'FINAL',
+      callCount: 7,
+      infrastructure: {
+        compute: 'NOT_MEASURED',
+        storage: 'NOT_MEASURED',
+        delivery: 'NOT_MEASURED',
+      },
+      breakdown: [
+        expect.objectContaining({
+          routeProvider,
+          stage: 'EXTRACTION',
+          calls: 4,
+          knownActualNano: '98186250',
+        }),
+        expect.objectContaining({
+          routeProvider,
+          stage: 'RECONSTRUCTION',
+          calls: 3,
+          knownActualNano: '57240000',
+        }),
+      ],
+    });
+    expect(
+      result.calls.every((row) => row.routeProvider === routeProvider),
+    ).toBe(true);
+  },
+);
+it.each([
+  'https://private.example/path',
+  '/private/endpoint',
+  'Bearer-private',
+  'sk-secret',
+  'provider//endpoint',
+  'provider/sk-secret',
+  'provider/Bearer-private',
+  'provider?token=private',
+])(
+  'does not expose unsafe provider endpoint %s or label its receipt complete',
+  (routeProvider) => {
+    const result = projectConversionCost(
+      [{ ...call('safe-call', 'SETTLED', 9n, 5n), routeProvider }],
+      true,
+    );
+    expect(result).toMatchObject({
+      knownActualNano: '5',
+      actualComplete: false,
+      state: 'INCOMPLETE',
+    });
+    expect(result.calls[0].routeProvider).toBe('UNAVAILABLE');
+    expect(JSON.stringify(result)).not.toContain(routeProvider);
+  },
+);
