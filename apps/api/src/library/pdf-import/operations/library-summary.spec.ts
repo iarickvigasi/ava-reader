@@ -83,8 +83,14 @@ describe('PDF Library status', () => {
     const findUnique = jest
       .fn()
       .mockResolvedValue({ ...operation, deletedAt: new Date() });
-    const prisma = {
+    const tx = {
       pdfImportOperation: { findUnique },
+      $executeRawUnsafe: jest.fn().mockResolvedValue(0),
+    };
+    const prisma = {
+      $transaction: jest.fn((work: (value: typeof tx) => unknown) =>
+        Promise.resolve(work(tx)),
+      ),
     } as unknown as PrismaService;
     await expect(findPdfRequest(prisma, 'owner', 'request')).rejects.toThrow(
       'This import was deleted',

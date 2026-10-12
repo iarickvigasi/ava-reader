@@ -229,6 +229,21 @@ startup reaps only marked same-UID private runtime directories after deadline pl
 An inactive operator host still needs a deployment janitor. Production private-file cleanup remains
 disabled with no scheduler; do not equate download revocation with physical erasure.
 
+## Upload receipt lookup
+
+`GET /api/library/pdf-imports/requests/:requestKey` checks the authenticated owner's
+accepted operation first. Only a source-bound journal refusal with no operation and no active
+admission returns `410`/`PDF_ADMISSION_REFUSED`, with matching `requestKey`, `sourceSha256`,
+`investigationId` and explicit `operationId: null`. Lookup uses a read-only snapshot and does not
+repair or mutate the journal or costs. Missing, active or unavailable history stays uncertain;
+generic `410` and removed-operation responses are not proof of a pre-admission refusal.
+
+The client confirms that receipt against its current owner/request/source before ending the
+receipt check. It never blindly repeats POST or rotates an uncertain identity. After confirmed
+non-acceptance, the next explicit file selection may create a fresh import request; it does not
+restart a Failed, Stopped, Ready or removed operation or replace finished content. Existing
+source-duplicate and removal policies continue to apply.
+
 ## Conversion investigation and cost reports
 
 Authenticated conversion intake requires a durable investigation reference before capacity and
