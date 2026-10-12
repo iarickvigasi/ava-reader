@@ -17,6 +17,7 @@ def furniture_ids(
     sightings: Counter[str] = Counter()
     eligible: list[tuple[str, str]] = []
     count = 0
+    artifacts: dict[tuple[object, ...], list[tuple[int, str]]] = {}
     printer_ids: set[str] = set()
     for page in pages:
         count += 1
@@ -29,6 +30,22 @@ def furniture_ids(
         ]
         body = median(body_sizes) if body_sizes else None
         for line in page.lines:
+            ink = [g for g in line.glyphs if g.text.strip()]
+            if (
+                ink
+                and all(g.source_artifact and g.visible for g in ink)
+                and (line.box.y1 <= page.height_pt * 0.08 or line.box.y0 >= page.height_pt * 0.92)
+            ):
+                artifact_key = (
+                    line.text,
+                    page.width_pt,
+                    page.height_pt,
+                    line.box.x0,
+                    line.box.y0,
+                    line.box.x1,
+                    line.box.y1,
+                )
+                artifacts.setdefault(artifact_key, []).append((page.number, line.id))
             if (
                 profile_id == BILINGUAL_PROFILE
                 and body is not None
@@ -42,6 +59,14 @@ def furniture_ids(
             eligible.append((line.id, key))
     repeated = {key for key, count in sightings.items() if count >= max(2, count // 2)}
     folio = re.compile(r"(?:(?:Print\s+)?page\s+)?(?:#|[ivxlcdm]+)", re.IGNORECASE)
-    return printer_ids | {
-        ident for ident, key in eligible if key in repeated or folio.fullmatch(key)
+    source_artifacts = {
+        ident
+        for sightings in artifacts.values()
+        if len(sightings) == len({page for page, _ in sightings}) >= 3
+        for _, ident in sightings
     }
+    return (
+        printer_ids
+        | source_artifacts
+        | {ident for ident, key in eligible if key in repeated or folio.fullmatch(key)}
+    )

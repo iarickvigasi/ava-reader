@@ -16,7 +16,12 @@ class Glyph(Record):
     font: str = Field(max_length=500)
     size: float = Field(gt=0, le=500)
     visible: bool
+    source_artifact: bool = Field(default=False, exclude_if=lambda v: not v)
+    list_body_mcid: int | None = Field(default=None, ge=0, le=9999, exclude_if=lambda v: v is None)
     paint_bold: bool = Field(default=False, exclude_if=lambda v: not v)
+    paint_ink_color: str | None = Field(
+        default=None, pattern=r"^#[0-9a-f]{6}$", exclude_if=lambda v: v is None
+    )
     paint_color: str | None = Field(
         default=None, pattern=r"^#[0-9a-f]{6}$", exclude_if=lambda v: v is None
     )
@@ -33,6 +38,7 @@ class NativeLine(Record):
 class Graphic(Record):
     box: Box
     kind: Literal["image", "vector"]
+    underline_line_id: str | None = Field(default=None, exclude_if=lambda v: v is None)
     source_image: EmbeddedImage | None = Field(default=None, exclude_if=lambda v: v is None)
 
 

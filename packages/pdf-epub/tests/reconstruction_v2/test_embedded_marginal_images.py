@@ -157,7 +157,7 @@ class EmbeddedMarginalImageTests(unittest.TestCase):
             self.assertEqual(3, sum(s.kind == "figure" for p in pages for s in p.native_segments))
             result = reconstruct(source, root / "scratch", pages, [])
             figures = [b for b in result.book.blocks if b.kind == "figure"]
-            self.assertEqual(3, len(figures))
+            self.assertEqual(1, len(figures))
             self.assertTrue(all(b.decorative for b in figures))
             self.assertEqual(1, len({b.resource_id for b in figures}))
             resource = next(r for r in result.book.resources if r.id == figures[0].resource_id)
@@ -170,7 +170,8 @@ class EmbeddedMarginalImageTests(unittest.TestCase):
                 Image.open(io.BytesIO(actual)) as copied,
             ):
                 self.assertEqual(original.tobytes(), copied.tobytes())
-            self.assertEqual([1, 2, 3], [f.evidence[0].page for f in figures])
+            self.assertEqual([3], [e.page for e in figures[0].evidence])
+            self.assertEqual([1, 2, 3], [e.page for e in resource.evidence])
             self.assertEqual(
                 3,
                 sum(

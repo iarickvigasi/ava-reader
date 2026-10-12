@@ -295,7 +295,14 @@ known rectangular clips. Images overlapping observed tables, masks, Decode overr
 DecodeParms/orientation/color and mixed raster prose retain the existing recognition/render route.
 Explicit JPEG ColorTransform 1 is accepted only with matching RGB DCT/JFIF appearance evidence. Qualification happens after all pages are prepared,
 before model exchange. Every actual occurrence keeps its source box; resource bytes alone may dedupe.
-This proves asset identity and intrinsic proportions, not a new print-relative reader size contract.
+Source-tagged repeated marginal decoration may appear once at its final actual source page, retaining every
+original occurrence in page regions and figure/resource evidence. Linked marginal text remains a
+source credit, and image link callers retain their original occurrence. Checked direct-page list-body
+MCIDs qualify only close hanging-line wraps with compatible visible glyphs; missing/nested/contradictory
+structure keeps the previous route. This proves asset identity and intrinsic proportions, not a new
+print-relative reader size contract. A single source-marked marginal literal URI underline may remain
+native text only with exact ink/color/geometry corroboration; its annotation still passes the unchanged
+glyph-range/link validator. Unknown decorations retain the rendered/review path.
 
 Unranked native openings spanning source pages request bounded source-crop heading comparisons.
 They remain headings and cannot change typography, discard repeated titles or establish chapters

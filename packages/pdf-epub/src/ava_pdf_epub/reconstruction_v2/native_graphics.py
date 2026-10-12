@@ -24,6 +24,8 @@ def native_graphics(page: PageObservation, tables: list[Segment]) -> list[Segmen
             groups.append([graphic])
     segments = []
     for index, group in enumerate(groups):
+        if len(group) == 1 and group[0].underline_line_id is not None:
+            continue  # Qualified source URI ink remains native text with underline style.
         box = union([g.box for g in group])
         if box.x1 - box.x0 < 1 or box.y1 - box.y0 < 1:
             continue
@@ -63,6 +65,7 @@ def native_graphics(page: PageObservation, tables: list[Segment]) -> list[Segmen
                 method="native" if prose or asset is not None else "render",
                 source_image=asset,
                 decorative=asset is not None,
+                source_marginal_furniture=asset is not None,
             )
         )
     return segments

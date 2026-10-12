@@ -19,6 +19,7 @@ from .observe_tables import TableObservation
 from .paragraphs import join_paragraphs
 from .reading_order import reading_order
 from .segments import Segment
+from .tagged_list_wraps import join_tagged_list_wraps
 
 
 def native_page(
@@ -66,6 +67,7 @@ def native_page(
     ordered = native_literal_candidates(
         preserve_delimited_lines(reading_order(content, page.width_pt), page)
     )
+    ordered = join_tagged_list_wraps(ordered, page)
     observe(
         "layout",
         page.number,

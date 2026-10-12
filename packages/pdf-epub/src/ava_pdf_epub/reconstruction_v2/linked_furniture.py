@@ -33,6 +33,8 @@ def preserve_linked_furniture(
         output[number] = []
         for segment in qualified[number]:
             source_linked = any(overlap(segment.box, box) for box in boxes)
+            if source_linked and segment.source_marginal_furniture:
+                segment = segment.model_copy(update={"source_marginal_furniture": False})
             if (
                 segment.kind == "furniture"
                 and segment.text

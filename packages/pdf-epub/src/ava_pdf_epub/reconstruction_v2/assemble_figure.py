@@ -40,6 +40,11 @@ def assemble_figure(
     ident = "image-" + digest[:24]
     suffix = "png" if media_type == "image/png" else "jpg"
     path = f"images/{digest}.{suffix}"
+    evidence = (
+        [e.model_dump() for e in segment.source_image_occurrences]
+        if segment.source_image_occurrences
+        else state.evidence[segment.id]
+    )
     if ident not in state.assets:
         state.assets[ident] = data
         state.resources.append(
@@ -51,9 +56,16 @@ def assemble_figure(
                 media_type=media_type,
                 width=width,
                 height=height,
-                evidence=state.evidence[segment.id],
+                evidence=evidence,
             )
         )
+    else:
+        resource = next(r for r in state.resources if r["id"] == ident)
+        for occurrence in evidence:
+            if occurrence not in resource["evidence"]:
+                resource["evidence"].append(occurrence)
+        if len(resource["evidence"]) > 500:
+            raise ValueError("Source image occurrence evidence bound exceeded")
     return dict(
         resource_id=ident,
         caption_id=None,

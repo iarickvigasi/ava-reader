@@ -5,7 +5,7 @@ from typing import Literal
 from pydantic import Field, model_validator
 
 from ..contracts.common import Record
-from ..contracts.source import Box
+from ..contracts.source import Box, Evidence
 from ..contracts.styles import Style
 from .embedded_image import EmbeddedImage
 
@@ -72,6 +72,10 @@ class Segment(Record):
     related_to: str | None = Field(default=None, max_length=120)
     alt: str = Field(default="", max_length=4000)
     source_image: EmbeddedImage | None = Field(default=None, exclude_if=lambda v: v is None)
+    source_image_occurrences: list[Evidence] = Field(
+        default_factory=list, max_length=500, exclude_if=lambda v: not v
+    )
+    source_marginal_furniture: bool = Field(default=False, exclude_if=lambda v: not v)
     decorative: bool = Field(default=False, exclude_if=lambda v: not v)
 
     @model_validator(mode="after")
@@ -83,4 +87,8 @@ class Segment(Record):
             self.kind != "figure" or not self.source_image.qualified
         ):
             raise ValueError("Qualified source image must belong to a figure")
+        if self.source_image_occurrences and self.source_image is None:
+            raise ValueError("Image occurrence evidence requires a qualified source image")
+        if self.source_marginal_furniture and (self.source_image is None or not self.decorative):
+            raise ValueError("Source marginal furniture requires a qualified decorative image")
         return self
