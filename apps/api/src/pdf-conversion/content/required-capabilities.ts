@@ -38,7 +38,13 @@ export function requiredCapabilities(book: CanonicalBookV2) {
     if (block.kind === 'note') required.add('notes');
     if (block.kind === 'figure') required.add('figures');
     if (block.kind === 'table') required.add('tables');
-    if (block.kind === 'list_item') required.add('lists');
+    if (block.kind === 'list_item') {
+      required.add('lists');
+      if (block.marker_style_id != null) {
+        required.add('list-marker-styles');
+        useStyle(block.marker_style_id);
+      }
+    }
     if (block.kind === 'code' || block.kind === 'verse')
       required.add('literal-text');
   }

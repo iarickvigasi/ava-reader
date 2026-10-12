@@ -37,6 +37,7 @@ class NoteBlock(BlockBase):
 class ListItemBlock(BlockBase):
     kind: Literal["list_item"]
     list_id: Id
+    marker_style_id: Id | None = Field(default=None, exclude_if=lambda value: value is None)
     content: TextValue
 
 

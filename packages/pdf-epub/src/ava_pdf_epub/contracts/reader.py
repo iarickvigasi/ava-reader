@@ -19,6 +19,7 @@ Capability = Literal[
     "annotation-styles",
     "language",
     "source-page-starts",
+    "list-marker-styles",
 ]
 
 
@@ -28,7 +29,7 @@ class ReaderPackageV3(Record):
     final_content_id: Id
     canonical_hash_algorithm: Literal["ava-json-v1"]
     canonical_sha256: Digest
-    required_capabilities: list[Capability] = Field(min_length=1, max_length=11)
+    required_capabilities: list[Capability] = Field(min_length=1, max_length=12)
     book: CanonicalBookV2
 
     @model_validator(mode="after")

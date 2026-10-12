@@ -49,6 +49,9 @@ def assemble_blocks(
                 )
             if segment.kind == "list_item":
                 block["list_id"] = "pending"
+                marker_id = state.marker_presentations.get(segment.id)
+                if marker_id is not None:
+                    block["marker_style_id"] = marker_id
         state.blocks.append(block)
     for previous, current in zip(state.blocks, state.blocks[1:], strict=False):
         if not source_tables and previous["kind"] == "caption" and current["kind"] == "table":

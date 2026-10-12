@@ -31,6 +31,35 @@ const bytes = (value: unknown) => Buffer.from(JSON.stringify(value));
 const semantic = jest.fn(() => Promise.resolve(true));
 
 describe('reader compatibility', () => {
+  it('refuses styled markers without their explicit reader capability', async () => {
+    const reader = parseContractJson(
+      fixtureBytes('ava-reader-3'),
+    ) as ReaderPackageV3;
+    const item = reader.book.blocks.find((b) => b.kind === 'list_item')!;
+    if (item.kind !== 'list_item') throw Error('fixture requires list');
+    item.marker_style_id = 'source-marker';
+    reader.book.styles.push({ id: 'source-marker', bold: false });
+    reader.required_capabilities.push('list-marker-styles');
+    const previous = reader.required_capabilities.filter(
+      (c) => c !== 'list-marker-styles',
+    );
+    expect(
+      await negotiateReader(
+        bytes(reader),
+        { versions: [3], capabilities: previous },
+        semantic,
+      ),
+    ).toEqual({ status: 'upgrade_required', version: 3 });
+    expect(
+      (
+        await negotiateReader(
+          bytes(reader),
+          { versions: [3], capabilities: reader.required_capabilities },
+          semantic,
+        )
+      ).status,
+    ).toBe('compatible');
+  });
   it('requires the explicit capability for exact source-page books', async () => {
     const input = fixtureBytes('ava-reader-3', 'source-pages');
     const reader = parseContractJson(input) as ReaderPackageV3;

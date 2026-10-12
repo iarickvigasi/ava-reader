@@ -2,9 +2,10 @@
 
 from typing import TYPE_CHECKING
 
-from .blocks import BlockBase, FigureBlock, ProseBlock, TableBlock
+from .blocks import BlockBase, FigureBlock, ListItemBlock, ProseBlock, TableBlock
 from .common import unique
 from .graph_links import TEXT_NODES
+from .marker_styles import validate_marker_style
 
 if TYPE_CHECKING:
     from .book import CanonicalBookV2
@@ -20,6 +21,7 @@ def validate_assets(
     paths = [p for c in book.chapters for p in c.resource_paths] + [r.path for r in book.resources]
     unique(paths, "publication resource path")
     styles = {s.id for s in book.styles}
+    style_records = {s.id: s for s in book.styles}
     resources = {r.id for r in book.resources}
     if book.cover_resource_id is not None and book.cover_resource_id not in resources:
         raise ValueError("Unknown cover resource")
@@ -31,11 +33,15 @@ def validate_assets(
     total_text = 0
     for node in nodes.values():
         refs = [node.style_id]
+        if isinstance(node, ListItemBlock):
+            refs.append(node.marker_style_id)
         if isinstance(node, TEXT_NODES):
             total_text += len(node.content.text.encode("utf-8"))
             refs.extend(s.style_id for s in node.content.spans)
         if any(r is not None and r not in styles for r in refs):
             raise ValueError("Unknown style identity")
+        if isinstance(node, ListItemBlock) and node.marker_style_id is not None:
+            validate_marker_style(style_records[node.marker_style_id])
         if isinstance(node, ProseBlock) and node.kind in {"verse", "code"}:
             lines = node.content.text.split("\n")
             if len(lines) > 80 or any(len(line) > 4096 for line in lines):

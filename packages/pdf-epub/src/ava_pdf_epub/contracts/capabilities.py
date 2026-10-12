@@ -13,6 +13,14 @@ def required_capabilities(book: CanonicalBookV2) -> set[str]:
         result.add(SOURCE_PAGE_CAPABILITY)
     nodes, _ = index_book(book)
     referenced = {n.style_id for n in nodes.values() if n.style_id}
+    markers = {
+        n.marker_style_id
+        for n in nodes.values()
+        if isinstance(n, ListItemBlock) and n.marker_style_id is not None
+    }
+    referenced.update(markers)
+    if markers:
+        result.update({"styles", "list-marker-styles"})
     referenced.update(
         s.style_id
         for n in nodes.values()

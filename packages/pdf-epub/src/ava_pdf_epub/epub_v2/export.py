@@ -41,7 +41,7 @@ def export_entries(
     entries.update(validate_assets(book, assets))
     entries.update(chapter_documents(ctx, printed_page_labels=profile != LEGACY_PROFILE))
     entries["EPUB/nav/nav.xhtml"] = navigation(ctx, printed_page_labels=profile != LEGACY_PROFILE)
-    entries["EPUB/styles/book.css"] = stylesheet(book.styles)
+    entries["EPUB/styles/book.css"] = stylesheet(book.styles, book.blocks)
     entries["EPUB/package.opf"] = package_document(ctx, entries)
     if len(entries) > MAX_ENTRIES or any(len(data) > MAX_ENTRY_BYTES for data in entries.values()):
         raise ValueError("EPUB entry bound exceeded")

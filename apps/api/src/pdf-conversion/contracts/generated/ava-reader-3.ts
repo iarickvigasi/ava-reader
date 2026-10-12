@@ -125,6 +125,7 @@ export type Evidence4 = [Evidence1, ...Evidence1[]];
 export type Id4 = string;
 export type Kind7 = 'list_item';
 export type ListId = string;
+export type MarkerStyleId = string | null;
 export type StyleId4 = string | null;
 export type Alt = string;
 export type CaptionId = string | null;
@@ -339,7 +340,7 @@ export type CanonicalSha256 = string;
 export type FinalContentId = string;
 /**
  * @minItems 1
- * @maxItems 11
+ * @maxItems 12
  */
 export type RequiredCapabilities = [
   (
@@ -354,6 +355,7 @@ export type RequiredCapabilities = [
     | 'annotation-styles'
     | 'language'
     | 'source-page-starts'
+    | 'list-marker-styles'
   ),
   ...(
     | 'text'
@@ -367,6 +369,7 @@ export type RequiredCapabilities = [
     | 'annotation-styles'
     | 'language'
     | 'source-page-starts'
+    | 'list-marker-styles'
   )[],
 ];
 export type SchemaVersion1 = 'ava-reader-3';
@@ -491,6 +494,7 @@ export interface ListItemBlock {
   id: Id4;
   kind: Kind7;
   list_id: ListId;
+  marker_style_id?: MarkerStyleId;
   style_id?: StyleId4;
 }
 export interface FigureBlock {

@@ -4,6 +4,7 @@ import re
 
 from .assembly_state import AssemblyState
 from .list_markers import MARKER, marker_style
+from .marker_typography import marker_typography
 from .segments import Segment
 
 
@@ -52,6 +53,9 @@ def printed_markers(segments: list[Segment], state: AssemblyState) -> list[Segme
             if segment.kind == "list_item":
                 label = marker["marker"]
                 state.marker_styles[segment.id] = marker_style(label, segment.list_start)
+                style_id = state.style_id(marker_typography(segment, len(label)))
+                if style_id is not None:
+                    state.marker_presentations[segment.id] = style_id
             cut = marker.end()
             state.internal_targets = [
                 (owner, start - cut, end - cut, target, offset)

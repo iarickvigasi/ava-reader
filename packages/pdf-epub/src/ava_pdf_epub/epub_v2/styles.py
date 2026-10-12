@@ -1,5 +1,6 @@
 """Finite styles only; unknown produces no declaration and false/zero is explicit."""
 
+from ..contracts.blocks import Block, ListItemBlock
 from ..contracts.styles import Style
 from .context import ident
 
@@ -49,7 +50,7 @@ def declarations(style: Style) -> str:
     return ";".join(f"{k}:{v}" for k, v in values)
 
 
-def stylesheet(styles: list[Style]) -> bytes:
+def stylesheet(styles: list[Style], blocks: list[Block] | None = None) -> bytes:
     baseline = (
         "body{font-family:serif;line-height:1.5}"
         "[data-ava-text]{white-space:pre-wrap}"
@@ -58,6 +59,16 @@ def stylesheet(styles: list[Style]) -> bytes:
         ".note-returns{font-size:.8em}.verse{font-family:inherit}"
         ".caption{font-size:.9em}.credit{font-size:.8em}"
     )
-    return (
+    output = (
         baseline + "\n" + "\n".join(f".{ident('style', s.id)}{{{declarations(s)}}}" for s in styles)
-    ).encode("utf-8")
+    )
+    lookup = {style.id: style for style in styles}
+    for block in blocks or []:
+        if isinstance(block, ListItemBlock) and block.marker_style_id is not None:
+            style = lookup[block.marker_style_id]
+            # Neutral source ink follows the reading system's current text ink.
+            marker = style.model_copy(
+                update={"color": None if style.color == "#000000" else style.color}
+            )
+            output += f"\n#{ident('b', block.id)}::marker{{{declarations(marker)}}}"
+    return output.encode("utf-8")

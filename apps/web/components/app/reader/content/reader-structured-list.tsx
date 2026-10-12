@@ -5,6 +5,7 @@ import { LIST_CLASS } from "./reader-block-classes";
 import { useReaderBlockProps } from "./block-props";
 import { structuredLeafStyle } from "./structured-leaf-style";
 import { resolveBlockStyle } from "./reader-block-style";
+import { listMarkerProps } from "./list-marker-style";
 
 export function ReaderStructuredList({
   block,
@@ -36,24 +37,31 @@ export function ReaderStructuredList({
       start={block.ordered ? block.start : undefined}
       className={`[--reader-list-base:1.12rem] sm:[--reader-list-base:1.28rem] ${LIST_CLASS} ${block.ordered ? "list-decimal" : "list-disc"}`}
     >
-      {block.items.map((item) => (
-        <li key={item.id} style={structuredLeafStyle(item, "list")}>
-          <span
-            {...blockProps(item, chapterId)}
-            data-reader-block-kind="paragraph"
+      {block.items.map((item) => {
+        const marker = listMarkerProps(item);
+        return (
+          <li
+            key={item.id}
+            {...marker}
+            style={{ ...structuredLeafStyle(item, "list"), ...marker.style }}
           >
-            <ReaderInlineContent inlines={item.inlines} />
-          </span>
-          {item.children?.map((child) => (
-            <ReaderStructuredList
-              key={child.id}
-              block={child}
-              chapterId={chapterId}
-              style={resolveBlockStyle(child)}
-            />
-          ))}
-        </li>
-      ))}
+            <span
+              {...blockProps(item, chapterId)}
+              data-reader-block-kind="paragraph"
+            >
+              <ReaderInlineContent inlines={item.inlines} />
+            </span>
+            {item.children?.map((child) => (
+              <ReaderStructuredList
+                key={child.id}
+                block={child}
+                chapterId={chapterId}
+                style={resolveBlockStyle(child)}
+              />
+            ))}
+          </li>
+        );
+      })}
     </Tag>
   );
 }

@@ -3,6 +3,7 @@ import { flowSourceAttributes } from "@/features/reader/bilingual/content/flow-s
 import { groupFlowListItems } from "@/features/reader/bilingual/content/group-flow-list-items";
 import { cn } from "@/lib/cn";
 import { structuredLeafStyle } from "../../content/structured-leaf-style";
+import { listMarkerProps } from "../../content/list-marker-style";
 import { LIST_CLASS } from "@/components/app/reader/content/reader-block-classes";
 import {
   resolveAlignmentClass,
@@ -50,10 +51,12 @@ export function BilingualFlowList({
             ? flowSourceAttributes(item.units, chapter.chapterId, block.kind)
             : {};
         const sourceItem = block.items[item.itemIndex];
+        const marker = sourceItem ? listMarkerProps(sourceItem) : {};
         const continued = item.units[0].unit.startOffset > item.startOffset;
         return (
           <li
             key={item.id}
+            {...marker}
             {...itemAttributes}
             value={
               block.ordered ? (block.start ?? 1) + item.itemIndex : undefined
@@ -62,6 +65,7 @@ export function BilingualFlowList({
             data-bilingual-flow-item-start={item.startOffset}
             style={{
               ...(sourceItem ? structuredLeafStyle(sourceItem, "list") : {}),
+              ...marker.style,
               ...(continued ? { listStyleType: "none" } : {}),
             }}
           >

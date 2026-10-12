@@ -125,6 +125,7 @@ export type Evidence4 = [Evidence1, ...Evidence1[]];
 export type Id4 = string;
 export type Kind7 = 'list_item';
 export type ListId = string;
+export type MarkerStyleId = string | null;
 export type StyleId4 = string | null;
 export type Alt = string;
 export type CaptionId = string | null;
@@ -445,6 +446,7 @@ export interface ListItemBlock {
   id: Id4;
   kind: Kind7;
   list_id: ListId;
+  marker_style_id?: MarkerStyleId;
   style_id?: StyleId4;
 }
 export interface FigureBlock {

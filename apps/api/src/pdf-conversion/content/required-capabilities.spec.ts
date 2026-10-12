@@ -40,3 +40,22 @@ it('requires exact source-page support from marked addresses only', () => {
   legacy.addresses[0].fragment = 'ava-source-page-1';
   expect(requiredCapabilities(legacy)).not.toContain('source-page-starts');
 });
+
+it('requires independent marker qualification including marker-only colors', () => {
+  const input = book();
+  const item = input.blocks.find((b) => b.kind === 'list_item')!;
+  if (item.kind !== 'list_item') throw Error('fixture requires list');
+  const body = JSON.stringify(item.content);
+  input.styles.push({ id: 'source-marker', bold: false, color: '#1f3763' });
+  expect(requiredCapabilities(input)).not.toContain('list-marker-styles');
+  item.marker_style_id = 'source-marker';
+  expect(requiredCapabilities(input)).toEqual(
+    expect.arrayContaining([
+      'styles',
+      'lists',
+      'list-marker-styles',
+      'annotation-styles',
+    ]),
+  );
+  expect(JSON.stringify(item.content)).toBe(body);
+});

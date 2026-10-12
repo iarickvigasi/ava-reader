@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 from ..contracts.blocks import (
     FigureBlock,
     HeadingBlock,
+    ListItemBlock,
     NoteBlock,
     SeparatorBlock,
     TableBlock,
@@ -23,6 +24,8 @@ def render_block(block_id: str, ctx: Context) -> ET.Element:
     attrs = {"id": ident("b", block.id), "data-ava-block": block.id}
     if block.style_id is not None:
         attrs["class"] = ident("style", block.style_id)
+    if isinstance(block, ListItemBlock) and block.marker_style_id is not None:
+        attrs["data-ava-marker-style"] = block.marker_style_id
     if isinstance(block, TableBlock):
         return render_table(block, attrs, ctx)
     if isinstance(block, FigureBlock):

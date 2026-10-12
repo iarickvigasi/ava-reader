@@ -5,6 +5,7 @@ import { canonicalLeaf } from "@/features/reader/bilingual/content/canonical-lea
 import { resolveBlockStyle } from "../../content/reader-block-style";
 import { structuredLeafStyle } from "../../content/structured-leaf-style";
 import { LIST_CLASS } from "../../content/reader-block-classes";
+import { listMarkerProps } from "../../content/list-marker-style";
 import { BilingualFlowSentences } from "./bilingual-flow-sentences";
 export function BilingualStructuredList(props: BilingualFlowBlockProps) {
   const selected = new Set(
@@ -40,14 +41,17 @@ export function BilingualStructuredList(props: BilingualFlowBlockProps) {
           const children = item.children?.filter(contains) ?? [];
           if (!units.length && !children.length) return null;
           const leaf = canonicalLeaf(list, item.id)!;
+          const marker = listMarkerProps(item);
           return (
             <li
               key={item.id}
+              {...marker}
               value={list.ordered ? (list.start ?? 1) + index : undefined}
               data-bilingual-flow-item={item.id}
               data-bilingual-flow-item-start={0}
               style={{
                 ...structuredLeafStyle(item, "list"),
+                ...marker.style,
                 ...(!units.length || units[0].unit.startOffset > 0
                   ? { listStyleType: "none" }
                   : {}),

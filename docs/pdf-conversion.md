@@ -67,6 +67,18 @@ Malformed responses fail with retained investigation evidence. This source candi
 scanned/mixed qualification evidence.
 Text ranges use canonical code-point offsets with explicit UTF-16 browser mapping; surrogate splits
 are refused. Image bytes have validated media type, dimensions and hashes.
+Printed list prefixes are separated from body text only after their observed font and color are
+captured. An optional item `marker_style_id` references the existing finite Style records; it is
+omitted when unknown, preserving earlier canonical hashes and generated EPUB bytes. Marker styles
+allow family, bold, italic, small caps, item-relative size and color, independently of body layout.
+Mixed or conflicting marker glyph presentation is refused rather than guessed. Generated XHTML
+and CSS use item-specific `::marker` rules; complete visible-projection comparison verifies those
+rules during ordinary generated-EPUB reimport. The reader projects the same style on normal and
+bilingual list items, including explicit regular font traits, without adding labels to canonical
+text or locator offsets. Styled markers require `list-marker-styles` in addition to their existing
+capabilities; unsupported readers remain ineligible for acceptance. Neutral black follows reader
+ink, while source colors remain unchanged under the existing source-style policy. Authored tests
+do not establish supplied-book fidelity or light/dark reader qualification.
 The reader groups consecutive styled text runs from one semantic link occurrence into one anchor.
 It retains all characters/styles and the exact caller/target offsets; separate callers remain
 separate links even when they share a destination. Accepted EPUB and canonical content stay fixed.

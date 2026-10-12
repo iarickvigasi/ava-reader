@@ -23,6 +23,7 @@ export type ReaderBlockBase = {
   canonicalText?: TextValue;
 };
 export type ReaderListItem = ReaderBlockBase & {
+  markerPresentation?: Style;
   inlines: ReaderInline[];
   children?: ReaderListBlock[];
 };

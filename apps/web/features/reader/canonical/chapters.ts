@@ -25,10 +25,18 @@ export function canonicalChapters(
     start: group.start ?? undefined,
     canonical: true,
     items: group.item_ids.map((id) => {
+      const source = lookup.blocks.get(id);
+      if (source?.kind !== "list_item") throw new Error("Invalid list item");
+      const markerPresentation = source.marker_style_id
+        ? lookup.styles.get(source.marker_style_id)
+        : undefined;
+      if (source.marker_style_id && !markerPresentation)
+        throw new Error("Missing canonical marker style");
       const block = canonicalBlock(book, id, urls);
       if (!("inlines" in block)) throw new Error("Invalid list item");
       return {
         ...block,
+        ...(markerPresentation ? { markerPresentation } : {}),
         inlines: block.inlines,
         children: (lookup.childLists.get(id) ?? []).map(list),
       };

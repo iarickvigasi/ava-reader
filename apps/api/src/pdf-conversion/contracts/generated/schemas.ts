@@ -490,6 +490,18 @@ export const contractSchemas = {
             title: 'List Id',
             type: 'string',
           },
+          marker_style_id: {
+            anyOf: [
+              {
+                maxLength: 120,
+                pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Marker Style Id',
+          },
           style_id: {
             anyOf: [
               {
@@ -2814,6 +2826,18 @@ export const contractSchemas = {
             title: 'List Id',
             type: 'string',
           },
+          marker_style_id: {
+            anyOf: [
+              {
+                maxLength: 120,
+                pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Marker Style Id',
+          },
           style_id: {
             anyOf: [
               {
@@ -3646,10 +3670,11 @@ export const contractSchemas = {
             'annotation-styles',
             'language',
             'source-page-starts',
+            'list-marker-styles',
           ],
           type: 'string',
         },
-        maxItems: 11,
+        maxItems: 12,
         minItems: 1,
         title: 'Required Capabilities',
         type: 'array',

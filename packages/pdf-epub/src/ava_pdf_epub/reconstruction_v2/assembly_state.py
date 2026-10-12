@@ -18,6 +18,7 @@ class AssemblyState:
     lists: list[dict[str, Any]] = field(default_factory=list)
     evidence: dict[str, list[dict[str, Any]]] = field(default_factory=dict)
     marker_styles: dict[str, str] = field(default_factory=dict)
+    marker_presentations: dict[str, str] = field(default_factory=dict)
     segments: dict[str, Any] = field(default_factory=dict)
     internal_targets: list[tuple[str, int, int, str, int]] = field(default_factory=list)
     aliases: dict[str, tuple[str, int]] = field(default_factory=dict)
@@ -47,6 +48,7 @@ class AssemblyState:
         """After relationships/addresses are compiled, raw observations are no longer used."""
         self.evidence.clear()
         self.marker_styles.clear()
+        self.marker_presentations.clear()
         self.segments.clear()
         self.internal_targets.clear()
         self.aliases.clear()
