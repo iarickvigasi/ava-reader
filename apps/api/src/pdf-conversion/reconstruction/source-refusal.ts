@@ -29,6 +29,7 @@ export const sourceRefusalSchema = z
               'ESSENTIAL_STRUCTURE_UNSUPPORTED',
               'RECOGNITION_UNRESOLVED',
               'SOURCE_LANGUAGE_UNSUPPORTED',
+              'HEADING_PARENT_MISSING',
             ]),
             severity: z.literal('blocking'),
             page: z.number().int().min(1).max(500),
@@ -51,15 +52,35 @@ export const sourceRefusalSchema = z
       .min(1)
       .max(100),
   })
-  .strict();
+  .strict()
+  .superRefine((value, context) => {
+    if (
+      value.findings.some(
+        (finding) => finding.code === 'HEADING_PARENT_MISSING',
+      ) &&
+      (value.stage !== 'assembly' ||
+        value.findings.some(
+          (finding) => finding.code !== 'HEADING_PARENT_MISSING',
+        ))
+    )
+      context.addIssue({
+        code: 'custom',
+        message: 'Hierarchy refusal must identify assembly only',
+      });
+  });
 export type SourceRefusalDiagnostic = z.infer<typeof sourceRefusalSchema>;
 
 export class SourceContentError extends PdfRuntimeError {
   private readonly value: SourceRefusalDiagnostic;
   constructor(diagnostic: SourceRefusalDiagnostic) {
-    super('UNSUPPORTED_PDF');
     const parsed = sourceRefusalSchema.safeParse(diagnostic);
     if (!parsed.success) throw new PdfRuntimeError('INVALID_RESULT');
+    // Invalid hierarchy is a reconstruction refusal, not unsupported source content.
+    super(
+      parsed.data.findings[0].code === 'HEADING_PARENT_MISSING'
+        ? 'INVALID_RESULT'
+        : 'UNSUPPORTED_PDF',
+    );
     this.value = parsed.data;
   }
   diagnostic() {

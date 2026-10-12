@@ -4,6 +4,7 @@ import { task, response } from './test-fixture';
 import { wireSegment } from './wire-segment-fixture';
 import { SourceContentError, parseSourceRefusal } from './source-refusal';
 import { bindTaskRefusal } from './bind-task-refusal';
+import { failureCode } from '../runtime/failure-code';
 
 function refusal(change: Partial<typeof response> = {}) {
   try {
@@ -137,3 +138,48 @@ it('rejects foreign source, oversized packets and malformed UTF-8', () => {
     parseSourceRefusal(Buffer.from([255]), task.source_sha256),
   ).toThrow('INVALID_RESULT');
 });
+
+it('retains a finite assembly hierarchy refusal and source location while keeping the public outcome INVALID_RESULT', () => {
+  const original = refusal().diagnostic();
+  const diagnostic = {
+    ...original,
+    stage: 'assembly',
+    findings: [
+      {
+        ...original.findings[0],
+        code: 'HEADING_PARENT_MISSING',
+        page: 2,
+        block_id: 'heading-two',
+      },
+    ],
+  };
+  const error = parseSourceRefusal(
+    Buffer.from(JSON.stringify(diagnostic)),
+    task.source_sha256,
+  );
+  expect(error.diagnostic()).toEqual(diagnostic);
+  expect(error.code).toBe('INVALID_RESULT');
+  expect(failureCode(error)).toBe('INVALID_RESULT');
+  expect(refusal().code).toBe('UNSUPPORTED_PDF');
+  expect(JSON.stringify(error.diagnostic())).not.toContain(
+    'private source prose',
+  );
+});
+it.each([{ stage: 'extraction' }, { mixed: true }])(
+  'refuses a malformed or mixed hierarchy diagnostic %j',
+  (change) => {
+    const original = refusal().diagnostic();
+    const finding = { ...original.findings[0], code: 'HEADING_PARENT_MISSING' };
+    const diagnostic = {
+      ...original,
+      stage: change.stage ?? 'assembly',
+      findings: change.mixed ? [finding, original.findings[0]] : [finding],
+    };
+    expect(() =>
+      parseSourceRefusal(
+        Buffer.from(JSON.stringify(diagnostic)),
+        task.source_sha256,
+      ),
+    ).toThrow('INVALID_RESULT');
+  },
+);

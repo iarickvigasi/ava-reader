@@ -1,4 +1,8 @@
 import type { Tx } from '../jobs/types';
+import {
+  workerMeasurements,
+  type MeasurementRecord,
+} from './worker-measurements';
 import { retainedEventInput, safeEventSchema } from './event-contract';
 import {
   MAX_OBSERVATION_ROWS,
@@ -10,8 +14,14 @@ export async function readObservationCoverage(
   tx: Tx,
   id: string,
   watermark: number,
+  scope?: MeasurementRecord,
 ) {
-  const rows: ObservationRow[] = [];
+  const rows: ObservationRow[] = [],
+    measurements = workerMeasurements(scope);
+  const finish = (scanComplete: boolean) => ({
+    ...projectObservationCoverage(rows, watermark, scanComplete),
+    workerMeasurements: measurements.finish(scanComplete),
+  });
   let after = 0;
   while (rows.length < MAX_OBSERVATION_ROWS) {
     const take = Math.min(100, MAX_OBSERVATION_ROWS - rows.length);
@@ -26,6 +36,9 @@ export async function readObservationCoverage(
       // delivery identities/counters are retained by this projection.
       const event = parsed.success ? parsed.data : undefined;
       const details = event?.details;
+      if (event) measurements.observe(event);
+      else if (row.kind === 'STAGE_ENDED' && row.stage === 'WORKER_COMMAND')
+        measurements.missingCommand();
       rows.push({
         sequence: row.sequence,
         event: event
@@ -52,13 +65,12 @@ export async function readObservationCoverage(
           : { kind: 'INVALID_CAPTURE_EVENT' },
       });
     }
-    if (!batch.length || batch.length < take)
-      return projectObservationCoverage(rows, watermark);
+    if (!batch.length || batch.length < take) return finish(true);
     after = batch.at(-1)!.sequence;
   }
   const remaining = await tx.pdfConversionEvent.findFirst({
     where: { conversionId: id, sequence: { gt: after, lte: watermark } },
     select: { sequence: true },
   });
-  return projectObservationCoverage(rows, watermark, !remaining);
+  return finish(!remaining);
 }

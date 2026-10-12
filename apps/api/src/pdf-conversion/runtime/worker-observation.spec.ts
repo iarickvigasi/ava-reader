@@ -225,3 +225,53 @@ it('retains bounded source coordinates and refuses a finding outside its qualifi
     }).success,
   ).toBe(false);
 });
+
+it('retains a bounded hierarchy failure in an assembly command without accepting private text or a false extraction cause', () => {
+  const p = packet();
+  const value = {
+    ...p,
+    command: 'reconstruct' as const,
+    outcome: 'failed' as const,
+    failure_code: 'HEADING_PARENT_MISSING',
+    findings_complete: true,
+    findings: [
+      {
+        kind: 'source',
+        severity: 'blocking',
+        code: 'HEADING_PARENT_MISSING',
+        page: 2,
+        box: {
+          coordinate_space: 'page_points_top_left',
+          x0: 1,
+          y0: 2,
+          x1: 10,
+          y1: 12,
+        },
+        region_box: {
+          coordinate_space: 'page_points_top_left',
+          x0: 0,
+          y0: 0,
+          x1: 20,
+          y1: 20,
+        },
+        block_id: 'heading-two',
+        segment_id_sha256: 'e'.repeat(64),
+        task_id: 'refinement-two',
+        render_sha256: null,
+      },
+    ],
+  };
+  expect(workerObservationPacket.parse(value)).toEqual(value);
+  expect(
+    workerObservationPacket.safeParse({ ...value, outcome: 'aborted' }).success,
+  ).toBe(false);
+  expect(
+    workerObservationPacket.safeParse({ ...value, command: 'prepare' }).success,
+  ).toBe(false);
+  expect(
+    workerObservationPacket.safeParse({
+      ...value,
+      findings: [{ ...value.findings[0], text: 'PRIVATE_BOOK_CANARY' }],
+    }).success,
+  ).toBe(false);
+});

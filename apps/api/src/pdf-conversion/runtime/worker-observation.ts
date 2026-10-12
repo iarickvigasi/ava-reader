@@ -35,6 +35,7 @@ const sourceCode = z.enum([
   'ESSENTIAL_STRUCTURE_UNSUPPORTED',
   'RECOGNITION_UNRESOLVED',
   'SOURCE_LANGUAGE_UNSUPPORTED',
+  'HEADING_PARENT_MISSING',
 ]);
 const admissionCode = z.enum([
   'PDF_ACTIVE_CONTENT_UNSUPPORTED',
@@ -248,6 +249,25 @@ export const workerObservationPacket = z
   .strict()
   .superRefine((value, context) => {
     const attempt = value.command === 'attempt_stream';
+    if (
+      (value.failure_code === 'HEADING_PARENT_MISSING' ||
+        value.findings.some(
+          (finding) => finding.code === 'HEADING_PARENT_MISSING',
+        )) &&
+      (!['reconstruct', 'reconstruct_stream', 'attempt_stream'].includes(
+        value.command,
+      ) ||
+        value.failure_code !== 'HEADING_PARENT_MISSING' ||
+        value.outcome !== 'failed' ||
+        value.findings.some(
+          (finding) => finding.code !== 'HEADING_PARENT_MISSING',
+        ) ||
+        (value.findings_complete && !value.findings.length))
+    )
+      context.addIssue({
+        code: 'custom',
+        message: 'Hierarchy finding requires an assembly failure',
+      });
     if (
       (value.reuse.source_preparation !== 'none' && !attempt) ||
       value.reuse.scope !==

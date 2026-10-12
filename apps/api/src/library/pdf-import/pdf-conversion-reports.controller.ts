@@ -68,7 +68,7 @@ export class PdfConversionReportsController {
       });
       return {
         schemaVersion: 1,
-        results: rows.slice(0, 20).map(recordView),
+        results: rows.slice(0, 20).map((row) => recordView(row)),
         complete: rows.length <= 20,
       };
     });
@@ -81,14 +81,13 @@ export class PdfConversionReportsController {
   ) {
     return this.read(request, async (tx) => {
       const record = await reportRecord(tx, id);
+      const { workerMeasurements, ...observationCoverage } =
+        await readObservationCoverage(tx, id, record.nextSequence, record);
       return {
         schemaVersion: 1,
-        ...recordView(record),
-        observationCoverage: await readObservationCoverage(
-          tx,
-          id,
-          record.nextSequence,
-        ),
+        ...recordView(record, workerMeasurements),
+        workerMeasurements,
+        observationCoverage,
       };
     });
   }
@@ -123,15 +122,14 @@ export class PdfConversionReportsController {
     return this.read(request, async (tx) => {
       const record = await reportRecord(tx, id);
       const timeline = await readReportEvents(tx, id, cursor, limit);
+      const { workerMeasurements, ...observationCoverage } =
+        await readObservationCoverage(tx, id, timeline.watermark, record);
       const result = {
         schemaVersion: 1,
         investigation: {
-          ...recordView(record),
-          observationCoverage: await readObservationCoverage(
-            tx,
-            id,
-            timeline.watermark,
-          ),
+          ...recordView(record, workerMeasurements),
+          workerMeasurements,
+          observationCoverage,
         },
         timeline,
         cost: await readReportCost(tx, id),

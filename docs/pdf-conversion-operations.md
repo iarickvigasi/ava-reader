@@ -140,19 +140,19 @@ without modifying finished content or introducing a reader retry/reconversion ac
 Provide `DATABASE_URL` privately. Operator scripts do not automatically load dotenv files.
 Configure these trusted environment values; reader input must never supply paths, image or credentials:
 
-| Variable | Value/purpose |
-|---|---|
-| `AVA_PDF_RUNTIME_ENABLED` | `1` to enable configured isolated execution |
-| `AVA_PDF_DOCKER_BINARY` | Absolute Docker executable path |
-| `AVA_PDF_DOCKER_HOST` | Absolute local Unix Docker socket URI |
-| `AVA_PDF_WORKER_IMAGE` | Exact `sha256:` image ID, not a mutable tag |
-| `AVA_PDF_CONTRACT_PYTHON` | Absolute trusted installed-worker Python interpreter |
-| `AVA_PDF_WORKER_TOKEN` | Privately injected random worker credential; never put in argv/logs |
-| `AVA_PDF_WORKER_PRINCIPAL` | Registered principal ID returned by registration |
-| `AVA_PDF_WORKER_MODES` | Admin registration only: comma-separated modes; default `native`; use `native,live` for a configured normal import worker |
-| `AVA_PDF_IMPORT_PROFILE` | Server-only admission profile: absent uses `ava-pdf-prose-en-v2`; `ava-pdf-prose-en-uk-v3` opts into the English/Ukrainian candidate. Reader input cannot select profile. Activate only with matching worker/provider/reader qualification; v3 is not product-qualified yet |
-| `AVA_PDF_PROVIDER_ROUTE_ID` | API import selection: registered active normal import route ID; absent defaults to native-only jobs |
-| `AVA_PDF_READER_QUALIFICATION_ID` | Valid registered reader/adapter build qualification; test IDs cannot authorize production |
+| Variable                          | Value/purpose                                                                                                                                                                                                                                                               |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AVA_PDF_RUNTIME_ENABLED`         | `1` to enable configured isolated execution                                                                                                                                                                                                                                 |
+| `AVA_PDF_DOCKER_BINARY`           | Absolute Docker executable path                                                                                                                                                                                                                                             |
+| `AVA_PDF_DOCKER_HOST`             | Absolute local Unix Docker socket URI                                                                                                                                                                                                                                       |
+| `AVA_PDF_WORKER_IMAGE`            | Exact `sha256:` image ID, not a mutable tag                                                                                                                                                                                                                                 |
+| `AVA_PDF_CONTRACT_PYTHON`         | Absolute trusted installed-worker Python interpreter                                                                                                                                                                                                                        |
+| `AVA_PDF_WORKER_TOKEN`            | Privately injected random worker credential; never put in argv/logs                                                                                                                                                                                                         |
+| `AVA_PDF_WORKER_PRINCIPAL`        | Registered principal ID returned by registration                                                                                                                                                                                                                            |
+| `AVA_PDF_WORKER_MODES`            | Admin registration only: comma-separated modes; default `native`; use `native,live` for a configured normal import worker                                                                                                                                                   |
+| `AVA_PDF_IMPORT_PROFILE`          | Server-only admission profile: absent uses `ava-pdf-prose-en-v2`; `ava-pdf-prose-en-uk-v3` opts into the English/Ukrainian candidate. Reader input cannot select profile. Activate only with matching worker/provider/reader qualification; v3 is not product-qualified yet |
+| `AVA_PDF_PROVIDER_ROUTE_ID`       | API import selection: registered active normal import route ID; absent defaults to native-only jobs                                                                                                                                                                         |
+| `AVA_PDF_READER_QUALIFICATION_ID` | Valid registered reader/adapter build qualification; test IDs cannot authorize production                                                                                                                                                                                   |
 
 ```sh
 pnpm --filter api pdf:jobs:admin register NAME IMAGE_SHA256_HEX
@@ -255,13 +255,13 @@ operation. Finished content and provider accounting remain separate authorities.
 
 The API exposes these ADMIN-only, private/no-store reads under `/api`:
 
-| Route | Result |
-|---|---|
-| `GET /admin/pdf-conversion-reports/lookup` | Exact lookup by one of operationId, bookId, libraryItemId or failureId; at most 20 results with a completeness flag |
-| `GET /admin/pdf-conversion-reports/:conversionId` | Safe source/profile/status/reference snapshot and explicit evidence gaps |
-| `GET /admin/pdf-conversion-reports/:conversionId/events` | Ordered timeline, bounded limit/cursor and fixed watermark |
-| `GET /admin/pdf-conversion-reports/:conversionId/cost` | Separate persisted cost projection, bounded call details and freshness verdict |
-| `GET /admin/pdf-conversion-reports/:conversionId/export` | Bounded JSON investigation/timeline/cost page; not raw document/provider payload export |
+| Route                                                    | Result                                                                                                              |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `GET /admin/pdf-conversion-reports/lookup`               | Exact lookup by one of operationId, bookId, libraryItemId or failureId; at most 20 results with a completeness flag |
+| `GET /admin/pdf-conversion-reports/:conversionId`        | Safe source/profile/status/reference snapshot and explicit evidence gaps                                            |
+| `GET /admin/pdf-conversion-reports/:conversionId/events` | Ordered timeline, bounded limit/cursor and fixed watermark                                                          |
+| `GET /admin/pdf-conversion-reports/:conversionId/cost`   | Separate persisted cost projection, bounded call details and freshness verdict                                      |
+| `GET /admin/pdf-conversion-reports/:conversionId/export` | Bounded JSON investigation/timeline/cost page; not raw document/provider payload export                             |
 
 Use normal authenticated operator access. Possession of an investigation reference does not grant
 access. Fresh ADMIN membership is checked before and after the database snapshot. General events
@@ -330,16 +330,16 @@ report refresh command does not manufacture a provider cost row for these import
 From `apps/api`, use `pnpm exec ts-node src/scripts/pdf-provider-admin.ts` with a command below.
 No administration command itself sends a provider request. Supply credentials privately.
 
-| Command | Purpose |
-|---|---|
-| `metrics` | Aggregate budget/reservation states; not a transactional snapshot |
-| `register-budget JSON` | Create/exactly verify immutable cap plus historical known/unknown baseline |
-| `register-route JSON` | Pin permitted model/provider, endpoint/privacy evidence, source/tasks, schema and tariff |
-| `settle CALL_ID RECEIPT_JSON` | Attach an authoritative provider receipt; never invent billing |
-| `release-undispatched CALL_ID` | Only if no dispatch intent committed |
-| `reactivate-reconciled ROUTE_ID` | Only after every unknown receipt is accounted for |
-| `resume-reconciled OPERATION_ID` | Reconciled nonterminal wait; never Failed |
-| `revoke-route ROUTE_ID` | Permanently deny future dispatch |
+| Command                          | Purpose                                                                                  |
+| -------------------------------- | ---------------------------------------------------------------------------------------- |
+| `metrics`                        | Aggregate budget/reservation states; not a transactional snapshot                        |
+| `register-budget JSON`           | Create/exactly verify immutable cap plus historical known/unknown baseline               |
+| `register-route JSON`            | Pin permitted model/provider, endpoint/privacy evidence, source/tasks, schema and tariff |
+| `settle CALL_ID RECEIPT_JSON`    | Attach an authoritative provider receipt; never invent billing                           |
+| `release-undispatched CALL_ID`   | Only if no dispatch intent committed                                                     |
+| `reactivate-reconciled ROUTE_ID` | Only after every unknown receipt is accounted for                                        |
+| `resume-reconciled OPERATION_ID` | Reconciled nonterminal wait; never Failed                                                |
+| `revoke-route ROUTE_ID`          | Permanently deny future dispatch                                                         |
 
 Strict route/tariff types are in `apps/api/src/library/pdf-import/providers`. Rates use USD per
 million tokens plus explicit request/image fees; reserves include maximum context/output/images.
@@ -429,3 +429,13 @@ authentication, change accepted content, or grant PRODUCT qualification. The ope
 excluded with other development routes from the reader manifest; bind its separate source hashes
 in the private runtime receipt. After QA, build again without the flag before preparing release
 evidence. Never treat the instrumented test identity as the default product build.
+
+Snapshot and Export derive `workerMeasurements` from validated, source/job/attempt-bound packets at
+the same retained timeline watermark. Available command timing, reuse, resource and inventory fields
+replace absence labels with explicit scope gaps. Delivery completeness remains separate. Command
+wall time excludes interpreter startup and observation export; nested phases are not summable. CPU
+covers the worker and reaped children, RSS is worker lifetime maximum, and scratch is logical bytes at
+command end. Language detection is bounded and layout can remain unknown even with a full inventory.
+The last recorded worker failure code does not replace the public operation outcome or establish
+source fidelity. These reads do not repair historical provider-event mirrors or change any ledger,
+accepted content, conversion state or authority.

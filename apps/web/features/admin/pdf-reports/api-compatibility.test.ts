@@ -67,3 +67,40 @@ it("preserves a production-schema-validated packet, scope, timestamps, annotatio
     { sequence: 1, recordedAt: "2026-10-09T10:00:00.025Z", ...event },
   ]);
 });
+
+it("preserves bounded worker measurement availability with its scope limits and keeps capture/delivery/fidelity distinct", () => {
+  const summary = {
+    scope: "BOUND_RECORDED_WORKER_COMMANDS_AT_WATERMARK",
+    packetCount: 1,
+    rejectedPacketCount: 0,
+    missingPacketCount: 0,
+    scanComplete: true,
+    workDurations: "AVAILABLE",
+    checkpointReuse: "AVAILABLE",
+    resources: "AVAILABLE",
+    inventory: "AVAILABLE",
+    sourceFidelity: "NOT_ESTABLISHED",
+    failureCode: "RECONSTRUCTION_REVIEW_REQUIRED",
+    limitations: [
+      "RSS_WORKER_LIFETIME_MAX_NOT_CONTAINER_PEAK",
+      "LANGUAGE_HEURISTIC_LAYOUT_MAY_BE_UNKNOWN",
+    ],
+  };
+  const parsed = parseReportResponse(
+    {
+      schemaVersion: 1,
+      conversionId: "pdf-1",
+      status: "FAILED",
+      stage: "RECONSTRUCTION",
+      coverage: "API_LIFECYCLE",
+      evidenceGaps: ["RESOURCES_OUTSIDE_RECORDED_WORKER_PROCESS"],
+      workerMeasurements: summary,
+      observationCoverage: { state: "RECORDED", complete: true },
+    },
+    { kind: "conversionId", reference: "pdf-1", view: "snapshot" },
+  );
+  expect(parsed.omittedFields).toBe(0);
+  expect(parsed.value.workerMeasurements).toEqual(summary);
+  expect(parsed.value.coverage).toBe("API_LIFECYCLE");
+  expect(parsed.value.status).toBe("FAILED");
+});

@@ -4,6 +4,7 @@ export const safeFields = new Set(
   `
 schemaVersion conversionId operationId bookId libraryItemId jobId failureId finalContentId
 sourceSha256 sourceBytes sourcePages configSha256 profileId workerFingerprint status stage
+workerMeasurements packetCount rejectedPacketCount missingPacketCount scanComplete workDurations checkpointReuse sourceFidelity limitations
 coverage evidenceGaps sequenceWatermark activeAdmissionCount createdAt updatedAt costSummaryId
 retention class policyConfigured eligibleForPurgeAt observationCoverage state complete watermark
 results events nextCursor sequence recordedAt kind severity code attemptId attemptFence generation

@@ -10,6 +10,10 @@ import {
 import { parseEventPage, eventPageCursor } from './cursor';
 import { loadConversionProjection } from './load-ledger';
 import { costPage, costCursor } from './cost-cursor';
+import {
+  measurementEvidenceGaps,
+  type WorkerMeasurements,
+} from './worker-measurements';
 
 export async function adminReportRead<T>(
   prisma: PrismaService,
@@ -35,7 +39,10 @@ export async function reportRecord(tx: Tx, id: string) {
     throw new NotFoundException('Conversion investigation not found.');
   return record;
 }
-export function recordView(record: Awaited<ReturnType<typeof reportRecord>>) {
+export function recordView(
+  record: Awaited<ReturnType<typeof reportRecord>>,
+  measurements?: WorkerMeasurements,
+) {
   return {
     conversionId: record.id,
     operationId: record.operationKey,
@@ -53,7 +60,7 @@ export function recordView(record: Awaited<ReturnType<typeof reportRecord>>) {
     status: record.status,
     stage: record.stage,
     coverage: record.coverage,
-    evidenceGaps: record.evidenceGaps,
+    evidenceGaps: measurementEvidenceGaps(record.evidenceGaps, measurements),
     sequenceWatermark: record.nextSequence,
     activeAdmissionCount: record.activeAdmissionCount,
     createdAt: record.createdAt.toISOString(),

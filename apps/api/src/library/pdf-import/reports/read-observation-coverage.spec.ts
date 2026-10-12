@@ -1,5 +1,8 @@
 import type { Tx } from '../jobs/types';
 import { readObservationCoverage } from './read-observation-coverage';
+import { measurementPacket } from './worker-measurements-fixture';
+import { measurementEvidenceGaps } from './worker-measurements';
+import { REPORT_GAPS } from './record';
 jest.mock('./observation-coverage', () => ({
   ...jest.requireActual<typeof import('./observation-coverage')>(
     './observation-coverage',
@@ -89,4 +92,54 @@ it('private or corrupt event JSON never reaches projected output', async () => {
   const result = await readObservationCoverage(tx, 'conversion', 1);
   expect(result.state).toBe('INCONSISTENT');
   expect(JSON.stringify(result)).not.toContain(canary);
+});
+
+it('does not clear unavailable gaps from one measured command when the bounded scan is incomplete', async () => {
+  const packet = structuredClone(measurementPacket);
+  Object.assign(packet.binding, {
+    operation_id: 'conversion',
+    job_id: details.jobId,
+    attempt_id: identity.attemptId,
+    unit_id: 'unit-measured',
+    source_sha256: details.sourceSha256,
+    config_sha256: details.configSha256,
+    profile_id: details.profileId,
+    worker_fingerprint: details.workerFingerprint,
+    attempt_fence: identity.attemptFence,
+  });
+  packet.inventory.observed_profile_id = packet.binding.profile_id;
+  const observed = {
+    ...row(2),
+    kind: 'STAGE_ENDED',
+    stage: 'WORKER_COMMAND',
+    details: {
+      ...details,
+      unitId: packet.binding.unit_id,
+      outcome: 'FAILED',
+      observationDelivery: { producerId: identity.attemptId, ordinal: 1 },
+      workerObservation: { status: 'OBSERVED', packet },
+    },
+  };
+  const tx = {
+    pdfConversionEvent: {
+      findMany: jest.fn().mockResolvedValue([row(1), observed]),
+      findFirst: jest.fn().mockResolvedValue({ sequence: 3 }),
+    },
+  } as unknown as Tx;
+  const result = await readObservationCoverage(tx, 'conversion', 3, {
+    operationKey: 'conversion',
+    ...details,
+  });
+  expect(result).toMatchObject({
+    state: 'BOUNDED_SCAN_INCOMPLETE',
+    workerMeasurements: {
+      packetCount: 1,
+      scanComplete: false,
+      workDurations: 'PARTIAL',
+      resources: 'PARTIAL',
+    },
+  });
+  expect(
+    measurementEvidenceGaps(REPORT_GAPS, result.workerMeasurements),
+  ).toEqual(REPORT_GAPS);
 });
