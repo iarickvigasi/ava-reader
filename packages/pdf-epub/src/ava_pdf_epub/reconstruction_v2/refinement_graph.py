@@ -5,6 +5,12 @@ import re
 from .segments import Segment
 
 
+class HeadingParentMissing(ValueError):
+    def __init__(self, segment: Segment) -> None:
+        self.segment = segment
+        super().__init__("Heading skips an observed parent")
+
+
 def validate_refined_graph(segments: list[Segment], parents: dict[str, str | None]) -> None:
     ancestors: dict[int, str] = {}
     numbered_parents: dict[str, tuple[str, int]] = {}
@@ -21,7 +27,7 @@ def validate_refined_graph(segments: list[Segment], parents: dict[str, str | Non
             numbered_parents.clear()
         expected = ancestors.get(level - 1) if level > 1 else None
         if level > 1 and expected is None:
-            raise ValueError("Heading skips an observed parent")
+            raise HeadingParentMissing(segment)
         if segment.id in parents and parents[segment.id] != expected:
             raise ValueError("Refined parent is not the preceding source ancestor")
         # Printed prefixes constrain rank only when their own parent is observed.

@@ -10,10 +10,14 @@ from ..contracts.common import Digest, Id, Record
 from ..contracts.source import Box
 from .prepared import PreparedPage
 from .recognition_contract import RecognitionTask
+from .refinement_contract import AnyRefinementTask
 from .segments import Segment
 
 RefusalCode = Literal[
-    "ESSENTIAL_STRUCTURE_UNSUPPORTED", "RECOGNITION_UNRESOLVED", "SOURCE_LANGUAGE_UNSUPPORTED"
+    "ESSENTIAL_STRUCTURE_UNSUPPORTED",
+    "RECOGNITION_UNRESOLVED",
+    "SOURCE_LANGUAGE_UNSUPPORTED",
+    "HEADING_PARENT_MISSING",
 ]
 
 
@@ -44,6 +48,15 @@ class SourceRefusalDiagnostic(Record):
     stage: Literal["extraction", "assembly"]
     findings: list[SourceBlockingFinding] = Field(min_length=1, max_length=100)
 
+    @model_validator(mode="after")
+    def hierarchy_stage(self) -> "SourceRefusalDiagnostic":
+        if any(f.code == "HEADING_PARENT_MISSING" for f in self.findings) and (
+            self.stage != "assembly"
+            or any(f.code != "HEADING_PARENT_MISSING" for f in self.findings)
+        ):
+            raise ValueError("Heading parent diagnostics require unmixed assembly findings")
+        return self
+
 
 class SourceContentRefusal(ValueError):
     def __init__(self, diagnostic: SourceRefusalDiagnostic) -> None:
@@ -52,6 +65,7 @@ class SourceContentRefusal(ValueError):
             "ESSENTIAL_STRUCTURE_UNSUPPORTED": "Essential unsupported source content",
             "RECOGNITION_UNRESOLVED": "Essential recognition uncertainty requires source review",
             "SOURCE_LANGUAGE_UNSUPPORTED": "Unsupported recognition language",
+            "HEADING_PARENT_MISSING": "Heading skips an observed parent",
         }
         super().__init__(reasons[diagnostic.findings[0].code])
 
@@ -106,6 +120,26 @@ def refuse_segment(prepared: PreparedPage, segment: Segment) -> None:
                     page=segment.page,
                     box=segment.box,
                     region_box=segment.box,
+                    **_identity(segment),
+                )
+            ],
+        )
+    )
+
+
+def refuse_heading_parent(task: "AnyRefinementTask", segment: Segment) -> None:
+    raise SourceContentRefusal(
+        SourceRefusalDiagnostic(
+            source_sha256=task.source_sha256,
+            stage="assembly",
+            findings=[
+                SourceBlockingFinding(
+                    code="HEADING_PARENT_MISSING",
+                    page=segment.page,
+                    box=segment.box,
+                    region_box=segment.box,
+                    task_id=task.task_id,
+                    render_sha256=task.image.sha256,
                     **_identity(segment),
                 )
             ],

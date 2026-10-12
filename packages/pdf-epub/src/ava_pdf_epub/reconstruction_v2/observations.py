@@ -15,6 +15,10 @@ class Glyph(Record):
     font: str = Field(max_length=500)
     size: float = Field(gt=0, le=500)
     visible: bool
+    paint_bold: bool = Field(default=False, exclude_if=lambda v: not v)
+    paint_color: str | None = Field(
+        default=None, pattern=r"^#[0-9a-f]{6}$", exclude_if=lambda v: v is None
+    )
 
 
 class NativeLine(Record):

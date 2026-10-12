@@ -17,7 +17,13 @@ def prepare_refinement_source(
 ) -> RefinementBatch:
     if request.refinements:
         raise ValueError("Comparison preparation cannot consume previous refinement decisions")
-    prepared = prepare_source(source, scratch, request.source_sha256, request.profile_id)
+    prepared = prepare_source(
+        source,
+        scratch,
+        request.source_sha256,
+        request.profile_id,
+        source_feature_policy=request.source_feature_policy,
+    )
     return prepare_refinement_from_pages(source, scratch, prepared, request)
 
 

@@ -2,13 +2,19 @@
 
 from ..contracts.common import document_digest
 from .assembly_state import AssemblyState
-from .refinement_contract import AnyRefinementResponse, AnyRefinementTask, BookRefinementResponse
+from .refinement_contract import (
+    AnyRefinementResponse,
+    AnyRefinementTask,
+    BookRefinementResponse,
+    BookRefinementTask,
+)
 from .refinement_digest import observation_digest
-from .refinement_graph import validate_refined_graph
+from .refinement_graph import HeadingParentMissing, validate_refined_graph
 from .refinement_joins import refined_boundaries
 from .refinement_response import accept_refinement
 from .segments import Segment
 from .source_feature_task_contract import SourceFeatureTask
+from .source_refusal import refuse_heading_parent
 
 
 def apply_refinement(
@@ -102,7 +108,17 @@ def apply_refinement(
                 )
             segment = Segment.model_validate(values)
         result.append(segment)
-    validate_refined_graph(result, parents)
+    try:
+        validate_refined_graph(result, parents)
+    except HeadingParentMissing as error:
+        owners = [
+            t
+            for t in tasks
+            if isinstance(t, BookRefinementTask) and error.segment.id in t.decision_ids
+        ]
+        if len(owners) == 1:
+            refuse_heading_parent(owners[0], error.segment)
+        raise
     result = refined_boundaries(result, edges)
     state.refined_joins.update(edges)
     state.refinement_evidence.extend(evidence)

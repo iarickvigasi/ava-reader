@@ -55,6 +55,8 @@ def observe_glyphs(
                 font=str(char.get("fontname", "")),
                 size=float(char["size"]),
                 visible=visible,
+                paint_bold=char.get("paint_bold") is True,
+                paint_color=char.get("paint_color"),
             )
         )
     return glyphs, sorted(risks)

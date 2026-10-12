@@ -6,7 +6,13 @@ import unittest
 from pathlib import Path
 
 from pypdf import PdfReader
-from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject, NumberObject
+from pypdf.generic import (
+    ArrayObject,
+    DecodedStreamObject,
+    DictionaryObject,
+    NameObject,
+    NumberObject,
+)
 
 from ava_pdf_epub.reconstruction_v2.prepare_page import prepare_page
 from ava_pdf_epub.reconstruction_v2.visibility import display_risks
@@ -28,12 +34,16 @@ def source_with_clip(prefix, *, state=None, suffix=b"Q"):
     return document
 
 
-def risks(document, bounds=(20, 247, 290, 260), *, transformed=False):
+def risks(document, bounds=(20, 247, 290, 260), *, transformed=False, filled_stroke=False):
     data = io.BytesIO()
     document.write(data)
     reader = PdfReader(data)
     return display_risks(
-        reader.pages[0], reader, glyph_bounds=bounds, allow_transformed_rectangles=transformed
+        reader.pages[0],
+        reader,
+        glyph_bounds=bounds,
+        allow_transformed_rectangles=transformed,
+        allow_filled_stroke=filled_stroke,
     )
 
 
@@ -132,3 +142,62 @@ class NativeVisibilityState(unittest.TestCase):
             "conditional_visibility", risks(source_with_clip(b"q 0 0 300 400 re W n "), None)
         )
         self.assertIn("complex_graphics_state", risks(source_with_clip(b"Q ", suffix=b"")))
+
+
+class FormVisibilityState(unittest.TestCase):
+    def document(self, mode, *, restored=False, nested=False):
+        document = source_with_clip(f"q {mode} Tr /Outer Do Q ".encode(), suffix=b"")
+        page = document.pages[0]
+        resources = DictionaryObject({NameObject("/Font"): page["/Resources"]["/Font"]})
+        inner = DecodedStreamObject()
+        inner.set_data(
+            (b"0 Tr " if restored else b"") + b"BT /F1 10 Tf 20 250 Td (Authored form words.) Tj ET"
+        )
+        inner.update(
+            {
+                NameObject("/Type"): NameObject("/XObject"),
+                NameObject("/Subtype"): NameObject("/Form"),
+                NameObject("/BBox"): ArrayObject([NumberObject(n) for n in [0, 0, 300, 400]]),
+                NameObject("/Resources"): resources,
+            }
+        )
+        reference = document._add_object(inner)
+        if nested:
+            outer = DecodedStreamObject()
+            outer.set_data(b"/Inner Do")
+            outer.update(
+                {
+                    NameObject("/Type"): NameObject("/XObject"),
+                    NameObject("/Subtype"): NameObject("/Form"),
+                    NameObject("/BBox"): inner["/BBox"],
+                    NameObject("/Resources"): DictionaryObject(
+                        {
+                            NameObject("/XObject"): DictionaryObject(
+                                {NameObject("/Inner"): reference}
+                            )
+                        }
+                    ),
+                }
+            )
+            reference = document._add_object(outer)
+        page["/Resources"][NameObject("/XObject")] = DictionaryObject(
+            {NameObject("/Outer"): reference}
+        )
+        return document
+
+    def test_forms_retain_inherited_stroke_hidden_and_clip_mode_review(self):
+        for mode in (1, 2, 3, 7):
+            for nested in (False, True):
+                with self.subTest(mode=mode, nested=nested):
+                    self.assertIn(
+                        "nonstandard_text_rendering",
+                        risks(self.document(mode, nested=nested), filled_stroke=True),
+                    )
+
+    def test_explicit_form_fill_restoration_and_q_restore_do_not_hide_plain_text(self):
+        for nested in (False, True):
+            self.assertEqual([], risks(self.document(3, restored=True, nested=nested)))
+
+    def test_unknown_paint_object_is_not_proven_image_only_even_under_local_clip(self):
+        source = source_with_clip(b"q 10 10 5 5 re W n /Unknown Do Q ", suffix=b"")
+        self.assertIn("complex_graphics_state", risks(source))

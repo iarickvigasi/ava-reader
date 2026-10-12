@@ -277,6 +277,24 @@ resource, hash, semantic or deadline checks. EPUB import finishes EPUBCheck befo
 canonical/reader models. See [operational limits](../../docs/pdf-conversion-operations.md).
 This is not a hostile multi-tenant service boundary. SQLite on NFS/distributed replicas is unsupported.
 
+## Native paint and heading qualification
+
+Native routing inspects text-affecting clips in their saved graphics scope: an isolated image clip
+restored before text does not make unrelated glyphs unreadable. Unknown/compound clips touching
+text, hidden or stroke-only text, soft masks and unknown graphics state retain recognition review.
+Under the explicitly selected current source-comparison policy, visible fill-and-stroke emphasis
+is qualified per glyph in the existing pdfplumber layout pass,
+only with thin positive stroke width, matching plain colors, ordinary outline fonts, uniform positive
+transforms and undashed paint. It preserves exact native words/ranges; unsupported paint stays reviewed.
+Direct DeviceRGB/DeviceGray ink uses the existing source color style; neutral black follows reader ink.
+Absent policy/paint fields preserve historical standalone typography and serialized observations.
+
+Unranked native openings spanning source pages request bounded source-crop heading comparisons.
+They remain headings and cannot change typography, discard repeated titles or establish chapters
+without complete source-bound decisions. The global parent validator remains strict. A missing
+observed heading parent emits `HEADING_PARENT_MISSING` with bounded page/block/geometry provenance;
+unknown failures explicitly have incomplete diagnostics. These diagnostics contain no book text.
+
 ## Deliberate unsupported/review paths
 
 - Annotation policy is shared by admission and v2 preparation. Verified empty FreeText is inert;

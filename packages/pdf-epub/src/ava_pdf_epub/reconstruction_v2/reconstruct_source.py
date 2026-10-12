@@ -14,7 +14,13 @@ from .report import ReconstructionReport, reconstruction_report
 def reconstruct_source(
     source: Path, scratch: Path, request: ReconstructionInput
 ) -> tuple[ReconstructedBook, ReconstructionReport]:
-    prepared = prepare_source(source, scratch, request.source_sha256, request.profile_id)
+    prepared = prepare_source(
+        source,
+        scratch,
+        request.source_sha256,
+        request.profile_id,
+        source_feature_policy=request.source_feature_policy,
+    )
     return reconstruct_from_pages(source, scratch, prepared, request)
 
 

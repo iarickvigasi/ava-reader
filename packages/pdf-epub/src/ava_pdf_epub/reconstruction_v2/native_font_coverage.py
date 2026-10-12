@@ -3,7 +3,8 @@
 from collections import Counter
 
 from ..contracts.source import Box
-from .font_traits import FontTraits, font_traits
+from .font_style import glyph_traits
+from .font_traits import FontTraits
 from .observations import NativeLine, PageObservation
 
 
@@ -28,7 +29,7 @@ def native_font_coverage(
         for glyph in line.glyphs:
             bounds = glyph.box
             key = (glyph.text, bounds.x0, bounds.y0, bounds.x1, bounds.y1)
-            face = font_traits(glyph.font)
+            face = glyph_traits(glyph)
             if (
                 not glyph.visible
                 or not _contains(line.box, bounds)

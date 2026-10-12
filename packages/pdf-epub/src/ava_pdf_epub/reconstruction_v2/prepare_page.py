@@ -18,9 +18,16 @@ from .source_preparation import ParsedPage, SourcePreparation
 
 
 def prepare_page(
-    source: Path, scratch: Path, page_number: int, profile_id: ProfileId = LEGACY_PROFILE
+    source: Path,
+    scratch: Path,
+    page_number: int,
+    profile_id: ProfileId = LEGACY_PROFILE,
+    *,
+    source_feature_policy: str | None = None,
 ) -> PreparedPage:
-    with SourcePreparation(source, scratch, profile_id) as preparation:
+    with SourcePreparation(
+        source, scratch, profile_id, source_feature_policy=source_feature_policy
+    ) as preparation:
         return prepare_from_source(preparation, page_number)
 
 
@@ -35,7 +42,14 @@ def _prepare_page(
     scratch, profile_id = preparation.scratch, preparation.profile_id
     has_visible = "visible" in parsed.kinds
     page = parsed.page
-    observation = observe_page(parsed.view, parsed.view_reader, page, page_number, scratch)
+    observation = observe_page(
+        parsed.view,
+        parsed.view_reader,
+        page,
+        page_number,
+        scratch,
+        capture_paint=preparation.source_feature_policy is not None,
+    )
     if language_uncertain(observation.lines, profile_id):
         observation = observation.model_copy(
             update={"risks": [*observation.risks, "language_uncertain"]}

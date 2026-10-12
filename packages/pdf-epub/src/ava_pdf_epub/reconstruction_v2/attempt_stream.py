@@ -81,7 +81,13 @@ def _prepared_attempt(
     with ExitStack() as owner:
         with phase("prepare_source"):
             preparation = owner.enter_context(
-                SourcePreparation(source, scratch, request.profile_id, request.source_sha256)
+                SourcePreparation(
+                    source,
+                    scratch,
+                    request.profile_id,
+                    request.source_sha256,
+                    source_feature_policy=request.source_feature_policy,
+                )
             )
             pages = PageCheckpoints(Path(tempfile.mkdtemp(prefix="observations-", dir=scratch)))
             seen_tasks: set[str] = set()

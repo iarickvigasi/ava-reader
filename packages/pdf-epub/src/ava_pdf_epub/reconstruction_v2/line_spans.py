@@ -4,12 +4,13 @@ from statistics import median
 from typing import Literal
 
 from ..contracts.styles import Style
-from .font_traits import FontTraits, font_traits
+from .font_style import glyph_traits
+from .font_traits import FontTraits
 from .native_review import NativeReviewRequired
 from .observations import NativeLine
 from .segments import ObservedSpan
 
-Signature = tuple[FontTraits, Literal["super", "sub", "baseline"], float]
+Signature = tuple[FontTraits, Literal["super", "sub", "baseline"], float, str | None]
 
 
 def line_spans(line: NativeLine) -> list[ObservedSpan]:
@@ -23,7 +24,7 @@ def line_spans(line: NativeLine) -> list[ObservedSpan]:
     active: tuple[int, int, int, Signature] | None = None
 
     def emit(run: tuple[int, int, int, Signature]) -> None:
-        start, end, index, (traits, vertical, relative) = run
+        start, end, index, (traits, vertical, relative, color) = run
         spans.append(
             ObservedSpan(
                 start=start,
@@ -36,6 +37,7 @@ def line_spans(line: NativeLine) -> list[ObservedSpan]:
                     small_caps=traits.small_caps,
                     vertical_align=vertical,
                     relative_size=relative,
+                    color=color,
                 ),
             )
         )
@@ -56,7 +58,12 @@ def line_spans(line: NativeLine) -> list[ObservedSpan]:
             if glyph.box.y1 < baseline - 2
             else ("sub" if glyph.box.y1 > baseline + 2 else "baseline")
         )
-        signature = (font_traits(glyph.font), vertical, max(0.5, min(3.0, glyph.size / body)))
+        signature = (
+            glyph_traits(glyph),
+            vertical,
+            max(0.5, min(3.0, glyph.size / body)),
+            glyph.paint_color,
+        )
         if active is not None and active[1] == at and active[3] == signature:
             active = (active[0], end, active[2], signature)
         else:

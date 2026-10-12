@@ -10,13 +10,20 @@ from pypdf import PdfReader
 from ..extract import render_page
 from .geometry import rectangle
 from .native_lines import native_lines
+from .native_paint import painted_chars
 from .observations import Graphic, PageObservation
 from .observe_glyphs import observe_glyphs
 from .visibility import display_risks
 
 
 def observe_page(
-    path: Path, reader: PdfReader, page: Any, number: int, scratch: Path
+    path: Path,
+    reader: PdfReader,
+    page: Any,
+    number: int,
+    scratch: Path,
+    *,
+    capture_paint: bool = False,
 ) -> PageObservation:
     rendered = scratch / "renders" / f"page-{number:04d}.png"
     rendered.parent.mkdir(parents=True, exist_ok=True)
@@ -29,7 +36,8 @@ def observe_page(
     with Image.open(rendered) as raw:
         raw.load()
         image = raw.convert("L")
-    glyphs, risks = observe_glyphs(page.chars, image, (left, top, right, bottom))
+    chars, filled_stroke_qualified = painted_chars(page) if capture_paint else (page.chars, False)
+    glyphs, risks = observe_glyphs(chars, image, (left, top, right, bottom))
     source_page = reader.pages[number - 1]
     native_bounds = None
     crop = source_page.cropbox
@@ -49,7 +57,12 @@ def observe_page(
             float(crop.left) + max(g.box.x1 for g in glyphs),
             float(crop.top) - min(g.box.y0 for g in glyphs),
         )
-    risks += display_risks(source_page, reader, glyph_bounds=native_bounds)
+    risks += display_risks(
+        source_page,
+        reader,
+        glyph_bounds=native_bounds,
+        allow_filled_stroke=filled_stroke_qualified,
+    )
     graphics: list[Graphic] = []
     for kind, objects in [
         ("image", page.images),

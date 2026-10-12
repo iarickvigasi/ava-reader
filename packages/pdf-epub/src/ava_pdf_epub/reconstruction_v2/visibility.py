@@ -20,6 +20,7 @@ def display_risks(
     *,
     glyph_bounds: tuple[float, float, float, float] | None = None,
     allow_transformed_rectangles: bool = False,
+    allow_filled_stroke: bool = False,
 ) -> list[str]:
     contents = page.get_contents()
     if contents is None:
@@ -34,6 +35,9 @@ def display_risks(
         0,
         glyph_bounds,
         allow_transformed_rectangles,
+        allow_filled_stroke,
+        False,
+        0,
     )
     return sorted(risks)
 
@@ -47,6 +51,9 @@ def _inspect(
     depth: int,
     glyph_bounds: tuple[float, float, float, float] | None,
     allow_transformed_rectangles: bool,
+    allow_filled_stroke: bool,
+    clip_unsafe: bool,
+    mode: int,
 ) -> None:
     stream = stream.get_object() if hasattr(stream, "get_object") else stream
     resources = resources.get_object() if hasattr(resources, "get_object") else resources
@@ -58,19 +65,19 @@ def _inspect(
     if len(content.operations) > 1000000:
         raise ValueError("PDF content operation limit exceeded")
     matrix: AxisMatrix | None = (1, 1, 0, 0)
-    stack: list[AxisMatrix | None] = []
+    stack: list[tuple[AxisMatrix | None, bool, int]] = []
     path_rectangles = 0
     path_encloses = False
     path_other = False
     for values, operator in content.operations:
         if operator == b"q":
-            stack.append(matrix)
+            stack.append((matrix, clip_unsafe, mode))
         elif operator == b"Q":
             if not stack:
                 risks.add("complex_graphics_state")
                 matrix = None
             else:
-                matrix = stack.pop()
+                matrix, clip_unsafe, mode = stack.pop()
         elif operator == b"cm":
             matrix = axis_matrix(values, matrix)
         elif operator == b"re":
@@ -83,11 +90,17 @@ def _inspect(
         elif operator in {b"m", b"l", b"c", b"v", b"y", b"h"}:
             path_other = True
 
-        if operator == b"Tr" and values and int(values[0]) != 0:
-            risks.add("nonstandard_text_rendering")
-        if operator in {b"W", b"W*"}:
-            if path_rectangles != 1 or path_other or not path_encloses:
+        if operator == b"Tr":
+            mode = int(values[0]) if len(values) == 1 else -1
+        if operator in {b"Tj", b"TJ", b"'", b'"'}:
+            if clip_unsafe:
                 risks.add("conditional_visibility")
+            if mode != 0 and not (mode == 2 and allow_filled_stroke):
+                risks.add("nonstandard_text_rendering")
+            if mode >= 4:
+                clip_unsafe = True
+        if operator in {b"W", b"W*"}:
+            clip_unsafe = clip_unsafe or path_rectangles != 1 or path_other or not path_encloses
         if operator == b"gs" and (
             len(values) != 1 or not inert_graphics_state(resources, values[0])
         ):
@@ -96,9 +109,11 @@ def _inspect(
             path_rectangles, path_encloses, path_other = 0, False, False
         if operator == b"BDC" and values and str(values[0]) == "/OC":
             risks.add("optional_content")
-        if operator == b"Do" and values:
-            obj = resources.get("/XObject", {}).get(values[0])
-            if obj is not None:
+        if operator == b"Do":
+            obj = resources.get("/XObject", {}).get(values[0]) if len(values) == 1 else None
+            if obj is None:
+                risks.add("complex_graphics_state")
+            else:
                 obj = obj.get_object()
                 if obj.get("/Subtype") == "/Form":
                     _inspect(
@@ -110,4 +125,10 @@ def _inspect(
                         depth + 1,
                         None,
                         allow_transformed_rectangles,
+                        False,  # The glyph parser does not prove inherited Form paint state.
+                        clip_unsafe,
+                        mode,
                     )
+
+                elif obj.get("/Subtype") != "/Image":
+                    risks.add("complex_graphics_state")

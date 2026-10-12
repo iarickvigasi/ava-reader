@@ -64,10 +64,17 @@ def source_structure(
     starts = {s.id for s in segments if s.chapter_start}
     if claims and starts and not starts.issubset(promoted):
         raise ValueError("Printed contents or outline omits a detected chapter")
+    unranked_native: set[str] = set()
     if not starts and not promoted:
         major = [s for s in segments if s.kind == "heading" and s.heading_level == 1]
         if len({s.page for s in major}) > 1 and any(s.method != "ocr" for s in major):
-            raise ValueError("Unnumbered chapter hierarchy requires whole-book source review")
+            unranked_native = {
+                s.id for s in segments if s.kind == "heading" and s.method == "native"
+            }
+            segments = [
+                s.model_copy(update={"structure_candidate": True}) if s.id in unranked_native else s
+                for s in segments
+            ]
         # OCR ranks already receive blocking source findings below. Let those
         # findings route to whole-book source-crop refinement instead of refusing
         # before the review task can be prepared. No rank is corroborated here.
@@ -122,7 +129,9 @@ def source_structure(
             segment = segment.model_copy(update={"structure_candidate": False})
         resolved.append(segment)
     result = resolved
-    state.structure_findings.extend(structure_findings(result, ranked, deferred_native))
+    state.structure_findings.extend(
+        structure_findings(result, ranked, deferred_native, unranked_native)
+    )
     printer_ids = set(printer_labels) if prepared[0].profile_id == BILINGUAL_PROFILE else None
     source_references(result, folios, state, printer_ids)
     return result

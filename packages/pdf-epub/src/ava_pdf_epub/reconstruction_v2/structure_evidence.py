@@ -5,17 +5,25 @@ from .segments import Segment
 
 
 def structure_findings(
-    segments: list[Segment], ranked: set[str], deferred_native: set[str] | None = None
+    segments: list[Segment],
+    ranked: set[str],
+    deferred_native: set[str] | None = None,
+    unranked_native: set[str] | None = None,
 ) -> list[Finding]:
     deferred_native = deferred_native or set()
+    unranked_native = unranked_native or set()
     return [
         Finding(
-            code="MIXED_NATIVE_HIERARCHY_UNCORROBORATED"
+            code="NATIVE_HEADING_HIERARCHY_UNCORROBORATED"
+            if segment.id in unranked_native
+            else "MIXED_NATIVE_HIERARCHY_UNCORROBORATED"
             if segment.id in deferred_native
             else "NATIVE_ROLE_UNCORROBORATED"
             if segment.structure_candidate
             else "OCR_HIERARCHY_UNCORROBORATED",
-            message="Native heading ancestry through OCR needs whole-book source corroboration."
+            message="Unranked native openings need whole-book source-backed heading comparison."
+            if segment.id in unranked_native
+            else "Native heading ancestry through OCR needs whole-book source corroboration."
             if segment.id in deferred_native
             else "Native same-font opening needs source-backed role corroboration."
             if segment.structure_candidate

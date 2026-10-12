@@ -74,7 +74,10 @@ class SourceStructureTests(unittest.TestCase):
 
     def test_uncorroborated_unnumbered_chapters_and_unresolved_page_refuse(self):
         reader = PdfReader(FIXTURES / "unnumbered-chapters.pdf")
-        for indices, error in [([1, 2], "Unnumbered chapter"), ([2], "Printed page reference")]:
+        for indices, error in [
+            ([1, 2], "Refinement task coverage differs"),
+            ([2], "Printed page reference"),
+        ]:
             with tempfile.TemporaryDirectory() as directory:
                 source = Path(directory) / "source.pdf"
                 writer = PdfWriter()

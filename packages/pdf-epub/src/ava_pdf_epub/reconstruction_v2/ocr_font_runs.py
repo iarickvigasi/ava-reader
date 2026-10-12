@@ -4,7 +4,8 @@ from collections import Counter
 from typing import Any
 
 from ..contracts.styles import Style
-from .font_traits import FontTraits, font_traits
+from .font_style import glyph_traits
+from .font_traits import FontTraits
 from .observations import Glyph
 from .segments import ObservedSpan, Segment
 
@@ -14,7 +15,7 @@ FONT_FIELDS = {"family", "bold", "italic"}
 def qualified_font_runs(segment: Segment, glyphs: list[Glyph]) -> Segment | None:
     native: list[tuple[str, FontTraits]] = []
     for glyph in glyphs:
-        traits = font_traits(glyph.font)
+        traits = glyph_traits(glyph)
         if traits.family is None or not glyph.visible:
             return None
         native.extend((c, traits) for c in glyph.text if not c.isspace())

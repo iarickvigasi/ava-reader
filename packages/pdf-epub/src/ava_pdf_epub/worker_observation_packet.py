@@ -104,7 +104,7 @@ def failure(
             ],
             complete,
         )
-    return "RECONSTRUCTION_REVIEW_REQUIRED", [], True
+    return "RECONSTRUCTION_REVIEW_REQUIRED", [], False
 
 
 def encode(packet: dict[str, object]) -> bytes | None:

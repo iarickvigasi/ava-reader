@@ -19,6 +19,7 @@ from ..annotation_view_cache import cached_view
 from ..contracts.private_files import snapshot
 from ..contracts.profiles import ProfileId, checked_profile
 from ..worker_observation import observe
+from .source_feature_contract import FEATURE_POLICY
 
 PARSER_WINDOW_PAGES = 2
 
@@ -39,8 +40,17 @@ class ParsedPage:
 
 class SourcePreparation:
     def __init__(
-        self, source: Path, scratch: Path, profile_id: ProfileId, expected_sha256: str | None = None
+        self,
+        source: Path,
+        scratch: Path,
+        profile_id: ProfileId,
+        expected_sha256: str | None = None,
+        *,
+        source_feature_policy: str | None = None,
     ):
+        if source_feature_policy not in {None, FEATURE_POLICY}:
+            raise ValueError("Unknown source feature policy")
+        self.source_feature_policy = source_feature_policy
         self.source, self.scratch = source, scratch
         self.profile_id = checked_profile(profile_id)
         self._source_identity = identity(source)
