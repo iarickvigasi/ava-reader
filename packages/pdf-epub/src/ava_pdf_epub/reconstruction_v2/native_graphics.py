@@ -45,7 +45,9 @@ def native_graphics(page: PageObservation, tables: list[Segment]) -> list[Segmen
             if prose
             else (None, [])
         )
-        if not prose:
+        asset = group[0].source_image if len(group) == 1 and not enclosed else None
+        asset = asset if asset is not None and asset.qualified else None
+        if not prose and asset is None:
             box = _padded(box, page, {line.id for line in enclosed})
         segments.append(
             Segment(
@@ -58,7 +60,9 @@ def native_graphics(page: PageObservation, tables: list[Segment]) -> list[Segmen
                 spans=spans,
                 alt=text if not prose else "",
                 native_line_ids=[line.id for line in enclosed],
-                method="native" if prose else "render",
+                method="native" if prose or asset is not None else "render",
+                source_image=asset,
+                decorative=asset is not None,
             )
         )
     return segments

@@ -1,6 +1,8 @@
 """Private, hash-verified observations with a byte-bounded two-page decode cache."""
 
 import hashlib
+import os
+import tempfile
 from collections import OrderedDict
 from collections.abc import Iterator, Mapping, Sequence
 from pathlib import Path
@@ -37,6 +39,63 @@ class PageCheckpoints(Sequence[PreparedPage]):
         self._entries.append((name, hashlib.sha256(data).hexdigest()))
         self._bytes += len(data)
         self._geometry.append(geometry)
+
+    def qualify(self, index: int, page: PreparedPage) -> None:
+        """Replace an internally qualified observation before any host/model exchange."""
+        old = self[index]
+        if (
+            old.source_sha256,
+            old.source_byte_length,
+            old.source_page_count,
+            old.profile_id,
+            old.observation.number,
+            old.observation.render_sha256,
+        ) != (
+            page.source_sha256,
+            page.source_byte_length,
+            page.source_page_count,
+            page.profile_id,
+            page.observation.number,
+            page.observation.render_sha256,
+        ):
+            raise ValueError("Qualified page identity differs")
+        if (
+            old.observation.model_dump(exclude={"graphics"})
+            != page.observation.model_dump(exclude={"graphics"})
+            or old.tables != page.tables
+            or len(old.observation.graphics) != len(page.observation.graphics)
+        ):
+            raise ValueError("Qualified page changed source observations")
+        for before, after in zip(old.observation.graphics, page.observation.graphics, strict=True):
+            if before.model_dump(exclude={"source_image"}) != after.model_dump(
+                exclude={"source_image"}
+            ):
+                raise ValueError("Qualified graphic changed source geometry")
+            if before.source_image is None:
+                if after.source_image is not None:
+                    raise ValueError("Qualification invented an embedded image")
+            elif after.source_image is None or before.source_image.model_dump(
+                exclude={"qualified"}
+            ) != after.source_image.model_dump(exclude={"qualified"}):
+                raise ValueError("Qualified graphic changed source image")
+        _, prior = self._read(index)
+        data = page.model_dump_json().encode("utf-8")
+        if len(data) > PAGE_BYTES or self._bytes - len(prior) + len(data) > TOTAL_BYTES:
+            raise ValueError("Page checkpoint byte limit exceeded")
+        name, _ = self._entries[index]
+        with tempfile.NamedTemporaryFile(
+            dir=self.root, prefix="qualified-", delete=False
+        ) as output:
+            temporary = Path(output.name)
+            output.write(data)
+        try:
+            os.replace(temporary, self.root / name)
+        finally:
+            temporary.unlink(missing_ok=True)
+        self._entries[index] = (name, hashlib.sha256(data).hexdigest())
+        self._bytes += len(data) - len(prior)
+        self._geometry[index] = geometry_from(page.observation)
+        self.clear_cache()
 
     def __len__(self) -> int:
         return len(self._entries)

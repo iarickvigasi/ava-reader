@@ -289,6 +289,14 @@ transforms and undashed paint. It preserves exact native words/ranges; unsupport
 Direct DeviceRGB/DeviceGray ink uses the existing source color style; neutral black follows reader ink.
 Absent policy/paint fields preserve historical standalone typography and serialized observations.
 
+The current policy can preserve exact PNG/JPEG source bytes for repeated small, isolated marginal
+images explicitly marked Artifact. Positive-axis opaque paint must show the whole image through
+known rectangular clips. Images overlapping observed tables, masks, Decode overrides, unknown
+DecodeParms/orientation/color and mixed raster prose retain the existing recognition/render route.
+Explicit JPEG ColorTransform 1 is accepted only with matching RGB DCT/JFIF appearance evidence. Qualification happens after all pages are prepared,
+before model exchange. Every actual occurrence keeps its source box; resource bytes alone may dedupe.
+This proves asset identity and intrinsic proportions, not a new print-relative reader size contract.
+
 Unranked native openings spanning source pages request bounded source-crop heading comparisons.
 They remain headings and cannot change typography, discard repeated titles or establish chapters
 without complete source-bound decisions. The global parent validator remains strict. A missing

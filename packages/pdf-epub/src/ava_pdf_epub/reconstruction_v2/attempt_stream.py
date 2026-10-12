@@ -13,6 +13,7 @@ from .prepare_page import prepare_from_source
 from .prepare_refinement_source import prepare_refinement_from_pages
 from .protocol import ReconstructionInput, prepared_result
 from .protocol_output import encode_packet
+from .qualify_embedded_images import qualify_embedded_images
 from .reconstruct_source import reconstruct_from_pages
 from .source_preparation import SourcePreparation
 from .source_refusal import SourceContentRefusal
@@ -120,6 +121,7 @@ def _prepared_attempt(
                 )
                 pages.append(page)
                 del page
+            qualify_embedded_images(pages, scratch, request.source_feature_policy)
             preparation.verify_inputs()
             preparation.retire_parsers()
         yield preparation, pages

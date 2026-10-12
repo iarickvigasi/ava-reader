@@ -8,6 +8,7 @@ from PIL import Image
 from pypdf import PdfReader
 
 from ..extract import render_page
+from .embedded_image_capture import capture_image_assets
 from .geometry import rectangle
 from .native_lines import native_lines
 from .native_paint import painted_chars
@@ -63,6 +64,8 @@ def observe_page(
         glyph_bounds=native_bounds,
         allow_filled_stroke=filled_stroke_qualified,
     )
+    names = {"/" + str(obj["name"]) for obj in page.images if obj.get("tag") == "Artifact"}
+    assets = capture_image_assets(source_page, reader, scratch, names) if capture_paint else {}
     graphics: list[Graphic] = []
     for kind, objects in [
         ("image", page.images),
@@ -79,7 +82,14 @@ def observe_page(
                 width,
                 height,
             )
-            graphics.append(Graphic(box=box, kind=cast(Literal["image", "vector"], kind)))
+            asset = (
+                assets.get((box.x0, box.y0, box.x1, box.y1))
+                if kind == "image" and obj.get("tag") == "Artifact"
+                else None
+            )
+            graphics.append(
+                Graphic(box=box, kind=cast(Literal["image", "vector"], kind), source_image=asset)
+            )
     return PageObservation(
         number=number,
         width_pt=width,

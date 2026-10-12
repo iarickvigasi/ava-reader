@@ -26,7 +26,9 @@ def raster_regions(
     with Image.open(scratch / page.render_path) as source:
         image = source.convert("L")
         for graphic in page.graphics:
-            if graphic.kind != "image":
+            if graphic.kind != "image" or (
+                graphic.source_image is not None and graphic.source_image.qualified
+            ):
                 continue
             if any(overlap(graphic.box, line.box) > 0 for line in page.lines):
                 return [full]

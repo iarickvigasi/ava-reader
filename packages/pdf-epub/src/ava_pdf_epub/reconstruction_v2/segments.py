@@ -7,6 +7,7 @@ from pydantic import Field, model_validator
 from ..contracts.common import Record
 from ..contracts.source import Box
 from ..contracts.styles import Style
+from .embedded_image import EmbeddedImage
 
 
 class ObservedSpan(Record):
@@ -70,10 +71,16 @@ class Segment(Record):
     cells: list[list[ObservedCell]] = Field(default_factory=list, max_length=20)
     related_to: str | None = Field(default=None, max_length=120)
     alt: str = Field(default="", max_length=4000)
+    source_image: EmbeddedImage | None = Field(default=None, exclude_if=lambda v: v is None)
+    decorative: bool = Field(default=False, exclude_if=lambda v: not v)
 
     @model_validator(mode="after")
     def source_shape(self) -> "Segment":
         from .segment_checks import validate_segment
 
         validate_segment(self)
+        if self.source_image is not None and (
+            self.kind != "figure" or not self.source_image.qualified
+        ):
+            raise ValueError("Qualified source image must belong to a figure")
         return self

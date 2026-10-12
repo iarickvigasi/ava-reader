@@ -7,6 +7,7 @@ from pydantic import Field, model_validator
 from ..contracts.common import Digest, Record
 from ..contracts.source import Box
 from ..contracts.styles import Style
+from .embedded_image import EmbeddedImage
 
 
 class Glyph(Record):
@@ -32,6 +33,7 @@ class NativeLine(Record):
 class Graphic(Record):
     box: Box
     kind: Literal["image", "vector"]
+    source_image: EmbeddedImage | None = Field(default=None, exclude_if=lambda v: v is None)
 
 
 class RequiredRegion(Record):

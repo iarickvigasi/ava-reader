@@ -7,6 +7,7 @@ from ..contracts.profiles import LEGACY_PROFILE, ProfileId
 from ..worker_observation import phase
 from .page_checkpoints import PageCheckpoints
 from .prepare_page import prepare_from_source
+from .qualify_embedded_images import qualify_embedded_images
 from .source_preparation import SourcePreparation
 
 
@@ -36,4 +37,5 @@ def _prepare_source(
         pages = PageCheckpoints(Path(tempfile.mkdtemp(prefix="observations-", dir=scratch)))
         for number in range(1, preparation.count + 1):
             pages.append(prepare_from_source(preparation, number))
+        qualify_embedded_images(pages, scratch, source_feature_policy)
     return pages
