@@ -25,6 +25,15 @@ const effectHost = vi.hoisted(() => {
       pending.clear();
       cursor = 0;
     },
+    callback<T>(value: T, deps: readonly unknown[]): T {
+      const id = cursor++;
+      const before = slots[id] as
+        | { value: T; deps: readonly unknown[] }
+        | undefined;
+      if (!before || deps.some((dep, i) => !Object.is(dep, before.deps[i])))
+        slots[id] = { value, deps };
+      return (slots[id] as { value: T }).value;
+    },
     ref<T>(value: T) {
       const id = cursor++;
       return (slots[id] ??= { current: value }) as { current: T };
@@ -80,6 +89,7 @@ const effectHost = vi.hoisted(() => {
 });
 vi.mock("react", async (original) => ({
   ...(await original<typeof import("react")>()),
+  useCallback: effectHost.callback,
   useRef: effectHost.ref,
   useState: effectHost.state,
   useEffect: effectHost.effect,

@@ -469,7 +469,9 @@
         },
         "pending": {
           "title": "Download queued",
-          "description": "We'll download it when you're back online — tap to cancel"
+          "description": "We'll download it when you're back online — tap to cancel",
+          "preparingDescription": "We'll download it when the book is ready — tap to cancel",
+          "unavailableDescription": "This book is unavailable — tap to cancel the request"
         },
         "aborting": {
           "title": "Cancelling download",

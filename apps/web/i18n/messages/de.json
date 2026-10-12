@@ -469,7 +469,9 @@
         },
         "pending": {
           "title": "Download geplant",
-          "description": "Wir laden es herunter, sobald du wieder online bist – zum Abbrechen tippen"
+          "description": "Wir laden es herunter, sobald du wieder online bist – zum Abbrechen tippen",
+          "preparingDescription": "Wir laden das Buch herunter, sobald es bereit ist — zum Abbrechen tippen",
+          "unavailableDescription": "Dieses Buch ist nicht verfügbar — zum Abbrechen der Anfrage tippen"
         },
         "aborting": {
           "title": "Download wird abgebrochen",

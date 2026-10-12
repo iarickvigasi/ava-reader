@@ -469,7 +469,9 @@
         },
         "pending": {
           "title": "Téléchargement en attente",
-          "description": "Nous le téléchargerons dès que vous serez en ligne — appuyez pour annuler"
+          "description": "Nous le téléchargerons dès que vous serez en ligne — appuyez pour annuler",
+          "preparingDescription": "Nous téléchargerons le livre quand il sera prêt — touchez pour annuler",
+          "unavailableDescription": "Ce livre est indisponible — touchez pour annuler la demande"
         },
         "aborting": {
           "title": "Annulation du téléchargement",

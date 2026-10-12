@@ -77,6 +77,7 @@ export function LibraryBookInfoScreen({
             collections={book.collections}
             finishedAt={book.finishedAt ?? null}
             libraryItemId={book.libraryItemId}
+            pdfImport={book.pdfImport}
           />
         </section>
         <BookAnnotations

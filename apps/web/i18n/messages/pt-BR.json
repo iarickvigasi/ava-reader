@@ -469,7 +469,9 @@
         },
         "pending": {
           "title": "Download na fila",
-          "description": "Vamos baixar quando você estiver on-line novamente — toque para cancelar"
+          "description": "Vamos baixar quando você estiver on-line novamente — toque para cancelar",
+          "preparingDescription": "Vamos baixar quando o livro estiver pronto — toque para cancelar",
+          "unavailableDescription": "Este livro está indisponível — toque para cancelar a solicitação"
         },
         "aborting": {
           "title": "Cancelando download",

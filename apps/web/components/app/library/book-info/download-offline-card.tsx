@@ -4,6 +4,9 @@ import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useTranslations } from "next-intl";
 import { type ComponentProps, useCallback, useEffect, useState } from "react";
 
+import { isPdfReadable } from "@/features/library/pdf-imports/is-readable";
+import type { PdfImportSummary } from "@/lib/api-types/pdf-import";
+
 import { ReaderDownloadIcon } from "@/components/app/shared/app-icons";
 import {
   useBookOfflineState,
@@ -29,12 +32,15 @@ import { resolveOfflineCard } from "./resolve-offline-card";
 // on reconnect (see specs/4-offline/4.2-save-sync, specs/4-offline/4.3-save-button).
 export function DownloadOfflineCard({
   libraryItemId,
+  pdfImport,
 }: {
   libraryItemId: string;
+  pdfImport?: PdfImportSummary | null;
 }) {
   const t = useTranslations("library.bookInfo.saveForOffline");
   const { getToken } = useAuth();
   const online = useNetworkState();
+  const readable = isPdfReadable(pdfImport);
   const snapshot = useBookSaveStatus(libraryItemId);
   const { save, remove, cancel } = useSaveBook(libraryItemId);
   const {
@@ -100,7 +106,7 @@ export function DownloadOfflineCard({
   // A queued request downloads as soon as we're online and on this page; the
   // background primer is the page-independent safety net for when we are not.
   useEffect(() => {
-    if (kind !== "queued" || !online) {
+    if (kind !== "queued" || !online || !readable) {
       return;
     }
     void save("explicit").then((outcome) => {
@@ -108,7 +114,7 @@ export function DownloadOfflineCard({
         refresh();
       }
     });
-  }, [kind, online, save, refresh]);
+  }, [kind, online, readable, save, refresh]);
 
   const props = ((): ComponentProps<typeof ActionCard> => {
     switch (kind) {
@@ -147,7 +153,14 @@ export function DownloadOfflineCard({
         return {
           icon: ReaderDownloadIcon,
           title: t("pending.title"),
-          description: t("pending.description"),
+          description: t(
+            readable
+              ? "pending.description"
+              : pdfImport?.status === "FAILED" ||
+                  pdfImport?.status === "STOPPED"
+                ? "pending.unavailableDescription"
+                : "pending.preparingDescription",
+          ),
           onClick: cancelSave,
         };
       case "keep":
