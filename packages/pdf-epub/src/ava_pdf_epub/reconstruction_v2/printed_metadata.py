@@ -8,6 +8,7 @@ from .metadata_scope import metadata_scope
 from .opening_author_credits import opening_author_credits
 from .printed_claim import printed_claim as _claim
 from .printed_identifiers import identifier_claims
+from .printed_title_claim import printed_title_claim
 
 LABELS = {
     "author": ("contributor", "author"),
@@ -30,7 +31,16 @@ PATTERN = re.compile(
 
 def printed_metadata(state: AssemblyState, source_author: str | None) -> list[dict[str, Any]]:
     title, eligible = metadata_scope(state)
+    if (
+        state.printed_title is not None
+        and title is not None
+        and title["id"] == state.printed_title[0]
+    ):
+        title = None  # This candidate has its own explicit title-or-null authority.
     output = opening_author_credits(state, title, source_author)
+    classified_title = printed_title_claim(state)
+    if classified_title is not None:
+        output.append(classified_title)
     if title is not None:
         output.append(_claim("title", title["content"]["text"], title))
         index = state.blocks.index(title)

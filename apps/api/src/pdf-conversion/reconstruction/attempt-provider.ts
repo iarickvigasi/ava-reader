@@ -1,11 +1,10 @@
 import type { CoordinatorDependencies } from './coordinator-types';
 import type { RecognitionTask } from './generated/RecognitionTask';
-import type { BookRefinementTask } from './generated/BookRefinementTask';
-import type { SourceFeatureTask } from './generated/SourceFeatureTask';
+import type { RefinementTask } from './refinement-packets';
+import { refinementResponse } from './refinement-response';
 import { providerTask } from './provider-task';
 import { refinementProviderTask } from './refinement-provider-task';
 import { recognitionResponse } from './recognition-response';
-import { parsePacket } from './validate-packet';
 
 export type AttemptContext = {
   deps: CoordinatorDependencies;
@@ -31,7 +30,7 @@ export async function recognizeAttemptTask(
 }
 
 export async function refineAttemptTask(
-  task: BookRefinementTask | SourceFeatureTask,
+  task: RefinementTask,
   context: AttemptContext,
   signal: AbortSignal,
 ) {
@@ -41,11 +40,5 @@ export async function refineAttemptTask(
     signal,
   );
   context.checkActive(signal);
-  return parsePacket(
-    task.response_schema_version === 'ava-book-refinement-response-4'
-      ? 'SourceFeatureResponse'
-      : 'BookRefinementResponse',
-    Buffer.from(receipt.output),
-    2 * 1024 ** 2,
-  );
+  return refinementResponse(task, receipt.output);
 }

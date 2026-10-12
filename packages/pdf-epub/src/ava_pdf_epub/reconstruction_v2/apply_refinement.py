@@ -7,6 +7,8 @@ from .refinement_contract import (
     AnyRefinementTask,
     BookRefinementResponse,
     BookRefinementTask,
+    PrintedTitleResponse,
+    PrintedTitleTask,
 )
 from .refinement_digest import observation_digest
 from .refinement_graph import HeadingParentMissing, validate_refined_graph
@@ -34,6 +36,20 @@ def apply_refinement(
     for task in tasks:
         response = receipts[task.task_id]
         accept_refinement(task, response)
+        if isinstance(task, PrintedTitleTask):
+            if state.printed_title is not None or not isinstance(response, PrintedTitleResponse):
+                raise ValueError("Repeated or mismatched printed title authority")
+            state.printed_title = (task.node.id, task.node.text_sha256, response.decision.role)
+            evidence.append(
+                dict(
+                    task_sha256=document_digest(task),
+                    response_sha256=document_digest(response),
+                    observation_sha256=task.observation_sha256,
+                    task_id=task.task_id,
+                    node_ids=[task.node.id],
+                )
+            )
+            continue
         if isinstance(task, SourceFeatureTask):
             feature_tasks.append(task)
             continue

@@ -11,7 +11,12 @@ from .attempt_exchange import ExchangeWriter, json_bytes, strict_json, write_byt
 from .page_checkpoints import PageCheckpoints
 from .prepare_page import prepare_from_source
 from .prepare_refinement_source import prepare_refinement_from_pages
-from .protocol import ReconstructionInput, prepared_result
+from .protocol import (
+    AnyReconstructionInput,
+    ReconstructionInput,
+    prepared_result,
+    reconstruction_input,
+)
 from .protocol_output import encode_packet
 from .qualify_embedded_images import qualify_embedded_images
 from .reconstruct_source import reconstruct_from_pages
@@ -58,12 +63,17 @@ def initial_input(data: bytes) -> ReconstructionInput:
 
 def _input(
     initial: ReconstructionInput, responses: list[Any], refinements: list[Any]
-) -> ReconstructionInput:
+) -> AnyReconstructionInput:
     # Each phase validates new models from raw receipts. No mutable response or
     # assembly object created during comparison is reused for final assembly.
     raw = {**initial.model_dump(mode="json"), "responses": responses, "refinements": refinements}
+    if any(
+        isinstance(r, dict) and r.get("schema_version") == "ava-printed-title-response-1"
+        for r in refinements
+    ):
+        raw["schema_version"] = "ava-reconstruct-input-2"
     encode_packet({"mode": "reconstruct_stream", "input": raw}, REQUEST_BYTES)
-    return ReconstructionInput.model_validate(raw)
+    return reconstruction_input(raw)
 
 
 def _validate_refinement(task: Any, response: Any) -> None:
@@ -75,7 +85,7 @@ def _validate_refinement(task: Any, response: Any) -> None:
 
 @contextmanager
 def _prepared_attempt(
-    source: Path, scratch: Path, request: ReconstructionInput
+    source: Path, scratch: Path, request: AnyReconstructionInput
 ) -> Iterator[tuple[SourcePreparation, PageCheckpoints]]:
     # The one phase contains active preparation only, never host/model waits.
     # Once it ends the guard remains owned, but all decoded parsers are retired.

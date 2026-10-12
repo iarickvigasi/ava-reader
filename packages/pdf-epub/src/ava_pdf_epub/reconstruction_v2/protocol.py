@@ -2,13 +2,17 @@
 
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from ..contracts.common import Digest, Record
 from ..contracts.profiles import LEGACY_PROFILE, ProfileId
 from .prepared import PreparedPage
 from .recognition_contract import RecognitionResponse, RecognitionTask
-from .refinement_contract import AnyRefinementResponse
+from .refinement_contract import (
+    AnyRefinementResponse,
+    HistoricalRefinementResponse,
+    PrintedTitleResponse,
+)
 
 
 class PrepareResult(Record):
@@ -30,7 +34,38 @@ class ReconstructionInput(Record):
         default=None, exclude_if=lambda v: v is None
     )
     responses: list[RecognitionResponse] = Field(max_length=25000)
+    refinements: list[HistoricalRefinementResponse] = Field(default_factory=list, max_length=32)
+
+
+class PrintedTitleReconstructionInput(Record):
+    schema_version: Literal["ava-reconstruct-input-2"]
+    profile_id: ProfileId = LEGACY_PROFILE
+    source_sha256: Digest
+    source_feature_policy: Literal["ava-ocr-source-features-1"] | None = Field(
+        default=None, exclude_if=lambda v: v is None
+    )
+    responses: list[RecognitionResponse] = Field(max_length=25000)
     refinements: list[AnyRefinementResponse] = Field(default_factory=list, max_length=32)
+
+    @model_validator(mode="after")
+    def title_authority(self) -> "PrintedTitleReconstructionInput":
+        if sum(isinstance(response, PrintedTitleResponse) for response in self.refinements) != 1:
+            raise ValueError(
+                "Current reconstruction input requires exactly one printed-title receipt"
+            )
+        return self
+
+
+AnyReconstructionInput = ReconstructionInput | PrintedTitleReconstructionInput
+
+
+def reconstruction_input(raw: object) -> AnyReconstructionInput:
+    current = isinstance(raw, dict) and raw.get("schema_version") == "ava-reconstruct-input-2"
+    return (
+        PrintedTitleReconstructionInput.model_validate(raw)
+        if current
+        else ReconstructionInput.model_validate(raw)
+    )
 
 
 def prepared_result(prepared: PreparedPage) -> PrepareResult:

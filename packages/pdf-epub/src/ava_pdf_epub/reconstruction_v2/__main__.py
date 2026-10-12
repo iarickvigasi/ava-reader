@@ -10,7 +10,7 @@ from ..worker_observation import Observation, observe, phase
 from .attempt_stream import AttemptFailure, attempt_stream
 from .prepare_page import prepare_page
 from .prepare_refinement_source import prepare_refinement_source
-from .protocol import ReconstructionInput, prepared_result
+from .protocol import prepared_result, reconstruction_input
 from .protocol_output import candidate_packet, encode_packet
 from .reconstruct_source import reconstruct_source
 from .source_refusal import SourceContentRefusal
@@ -65,14 +65,14 @@ def main() -> None:
             result = prepared_result(prepared)
             output = encode_packet(result.model_dump(mode="json"), 8 * 1024 * 1024)
         elif request.get("mode") == "prepare_refinement" and set(request) == {"mode", "input"}:
-            parsed = ReconstructionInput.model_validate(request["input"])
+            parsed = reconstruction_input(request["input"])
             batch = prepare_refinement_source(source, root, parsed)
             output = encode_packet(batch.model_dump(mode="json"), 24 * 1024 * 1024)
         elif request.get("mode") in {"reconstruct", "reconstruct_stream"} and set(request) == {
             "mode",
             "input",
         }:
-            parsed = ReconstructionInput.model_validate(request["input"])
+            parsed = reconstruction_input(request["input"])
             book, report = reconstruct_source(source, root, parsed)
             if request["mode"] == "reconstruct_stream":
                 for record in stream_artifacts(book, report):

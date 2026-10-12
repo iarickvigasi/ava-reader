@@ -1,16 +1,13 @@
+import type { RefinementTask, RefinementResponse } from './refinement-packets';
 import { createHash } from 'node:crypto';
-import type { BookRefinementTask } from './generated/BookRefinementTask';
-import type { SourceFeatureTask } from './generated/SourceFeatureTask';
-import type { SourceFeatureResponse } from './generated/SourceFeatureResponse';
-import type { BookRefinementResponse } from './generated/BookRefinementResponse';
 import type { CoordinatorDependencies } from './coordinator-types';
 import type { SandboxInput } from '../runtime/container-arguments';
 import { PdfRuntimeError } from '../runtime/runtime-error';
 import { parseSourceRefusal } from './source-refusal';
 
 export async function validateRefinement(
-  task: BookRefinementTask | SourceFeatureTask,
-  response: BookRefinementResponse | SourceFeatureResponse | null,
+  task: RefinementTask,
+  response: RefinementResponse | null,
   sandbox: CoordinatorDependencies['sandbox'],
   input: () => SandboxInput,
 ) {

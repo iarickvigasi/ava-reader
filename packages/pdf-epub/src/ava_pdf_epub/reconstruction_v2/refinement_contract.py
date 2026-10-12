@@ -2,7 +2,7 @@
 
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from ..contracts.common import Digest, Record
 from .legacy_refinement_contract import (
@@ -38,14 +38,30 @@ from .legacy_refinement_contract import (
 from .legacy_refinement_contract import (
     RefinementStyle as RefinementStyle,
 )
+from .printed_title_contract import PrintedTitleResponse as PrintedTitleResponse
+from .printed_title_contract import PrintedTitleTask as PrintedTitleTask
 from .source_feature_task_contract import SourceFeatureResponse as SourceFeatureResponse
 from .source_feature_task_contract import SourceFeatureTask as SourceFeatureTask
 
-AnyRefinementTask = BookRefinementTask | SourceFeatureTask
-AnyRefinementResponse = BookRefinementResponse | SourceFeatureResponse
+HistoricalRefinementTask = BookRefinementTask | SourceFeatureTask
+HistoricalRefinementResponse = BookRefinementResponse | SourceFeatureResponse
+AnyRefinementTask = HistoricalRefinementTask | PrintedTitleTask
+AnyRefinementResponse = HistoricalRefinementResponse | PrintedTitleResponse
 
 
 class RefinementBatch(Record):
     schema_version: Literal["ava-book-refinement-batch-1"]
     source_sha256: Digest
-    tasks: list[AnyRefinementTask] = Field(max_length=32)
+    tasks: list[HistoricalRefinementTask] = Field(max_length=32)
+
+
+class PrintedTitleRefinementBatch(Record):
+    schema_version: Literal["ava-book-refinement-batch-2"]
+    source_sha256: Digest
+    tasks: list[AnyRefinementTask] = Field(min_length=1, max_length=32)
+
+    @model_validator(mode="after")
+    def title_authority(self) -> "PrintedTitleRefinementBatch":
+        if sum(isinstance(task, PrintedTitleTask) for task in self.tasks) != 1:
+            raise ValueError("Current refinement batch requires exactly one printed-title task")
+        return self

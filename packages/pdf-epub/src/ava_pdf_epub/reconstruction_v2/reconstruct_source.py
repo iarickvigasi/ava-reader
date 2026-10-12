@@ -6,13 +6,13 @@ from pathlib import Path
 from ..worker_observation import phase
 from .prepare_source import prepare_source
 from .prepared import PreparedPage
-from .protocol import ReconstructionInput
+from .protocol import AnyReconstructionInput
 from .reconstruct import ReconstructedBook, reconstruct
 from .report import ReconstructionReport, reconstruction_report
 
 
 def reconstruct_source(
-    source: Path, scratch: Path, request: ReconstructionInput
+    source: Path, scratch: Path, request: AnyReconstructionInput
 ) -> tuple[ReconstructedBook, ReconstructionReport]:
     prepared = prepare_source(
         source,
@@ -25,7 +25,7 @@ def reconstruct_source(
 
 
 def reconstruct_from_pages(
-    source: Path, scratch: Path, prepared: Sequence[PreparedPage], request: ReconstructionInput
+    source: Path, scratch: Path, prepared: Sequence[PreparedPage], request: AnyReconstructionInput
 ) -> tuple[ReconstructedBook, ReconstructionReport]:
     """Create final assembly state afresh from unchanged private source checkpoints."""
     with phase("reconstruct"):
@@ -34,7 +34,7 @@ def reconstruct_from_pages(
             scratch,
             prepared,
             request.responses,
-            request.refinements,
+            list(request.refinements),
             source_feature_policy=request.source_feature_policy,
         )
         return result, reconstruction_report(result, sum(len(p.tasks) for p in prepared))

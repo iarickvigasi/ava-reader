@@ -7,14 +7,14 @@ from ..worker_observation import phase
 from .prepare_refinement import prepare_refinement
 from .prepare_source import prepare_source
 from .prepared import PreparedPage
-from .protocol import ReconstructionInput
-from .refinement_contract import RefinementBatch
+from .protocol import PrintedTitleReconstructionInput, ReconstructionInput
+from .refinement_contract import PrintedTitleRefinementBatch, PrintedTitleTask, RefinementBatch
 from .source_segments import source_segments
 
 
 def prepare_refinement_source(
-    source: Path, scratch: Path, request: ReconstructionInput
-) -> RefinementBatch:
+    source: Path, scratch: Path, request: ReconstructionInput | PrintedTitleReconstructionInput
+) -> RefinementBatch | PrintedTitleRefinementBatch:
     if request.refinements:
         raise ValueError("Comparison preparation cannot consume previous refinement decisions")
     prepared = prepare_source(
@@ -28,22 +28,31 @@ def prepare_refinement_source(
 
 
 def prepare_refinement_from_pages(
-    source: Path, scratch: Path, prepared: Sequence[PreparedPage], request: ReconstructionInput
-) -> RefinementBatch:
+    source: Path,
+    scratch: Path,
+    prepared: Sequence[PreparedPage],
+    request: ReconstructionInput | PrintedTitleReconstructionInput,
+) -> RefinementBatch | PrintedTitleRefinementBatch:
     """Use private source checkpoints with a newly created refinement assembly state."""
     if request.refinements:
         raise ValueError("Comparison preparation cannot consume previous refinement decisions")
     with phase("prepare_refinement"):
         _, segments, state = source_segments(source, scratch, prepared, request.responses)
-        return RefinementBatch(
-            schema_version="ava-book-refinement-batch-1",
-            source_sha256=request.source_sha256,
-            tasks=prepare_refinement(
-                source,
-                scratch,
-                prepared,
-                segments,
-                state,
-                source_feature_policy=request.source_feature_policy,
-            ),
+        tasks = prepare_refinement(
+            source,
+            scratch,
+            prepared,
+            segments,
+            state,
+            source_feature_policy=request.source_feature_policy,
+        )
+        raw = dict(
+            source_sha256=request.source_sha256, tasks=[t.model_dump(mode="json") for t in tasks]
+        )
+        if any(isinstance(t, PrintedTitleTask) for t in tasks):
+            return PrintedTitleRefinementBatch.model_validate(
+                dict(schema_version="ava-book-refinement-batch-2", **raw)
+            )
+        return RefinementBatch.model_validate(
+            dict(schema_version="ava-book-refinement-batch-1", **raw)
         )

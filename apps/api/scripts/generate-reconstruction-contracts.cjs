@@ -10,15 +10,17 @@ const target = resolve(
 );
 const program = `
 import json
-from ava_pdf_epub.reconstruction_v2.protocol import PrepareResult, ReconstructionInput
+from ava_pdf_epub.reconstruction_v2.protocol import PrepareResult, ReconstructionInput, PrintedTitleReconstructionInput
 from ava_pdf_epub.reconstruction_v2.recognition_contract import RecognitionTask, RecognitionResponse
 from ava_pdf_epub.reconstruction_v2 import recognition_prompt, ordered_list_prompt, text_style_prompt
 from ava_pdf_epub.reconstruction_v2.report import ReconstructionReport
-from ava_pdf_epub.reconstruction_v2.refinement_contract import BookRefinementTask, BookRefinementResponse, RefinementBatch
+from ava_pdf_epub.reconstruction_v2.refinement_contract import BookRefinementTask, BookRefinementResponse, RefinementBatch, PrintedTitleRefinementBatch
+from ava_pdf_epub.reconstruction_v2.printed_title_contract import PrintedTitleTask, PrintedTitleResponse
+from ava_pdf_epub.reconstruction_v2.printed_title_prompt import PRINTED_TITLE_PROMPT, PRINTED_TITLE_PROMPT_VERSION
 from ava_pdf_epub.reconstruction_v2.refinement_prompt import REFINEMENT_PROMPT, REFINEMENT_PROMPT_VERSION, BIBLIOGRAPHIC_PROMPT, LEGACY_REFINEMENT_PROMPT, MIXED_HIERARCHY_PROMPT, MIXED_HIERARCHY_PROMPT_VERSION
 from ava_pdf_epub.reconstruction_v2.source_feature_prompt import SOURCE_FEATURE_PROMPT, SOURCE_FEATURE_PROMPT_VERSION
 from ava_pdf_epub.reconstruction_v2.source_feature_task_contract import SourceFeatureTask, SourceFeatureResponse
-classes = [SourceFeatureTask, SourceFeatureResponse, PrepareResult, ReconstructionInput, RecognitionTask, RecognitionResponse, ReconstructionReport, BookRefinementTask, BookRefinementResponse, RefinementBatch]
+classes = [SourceFeatureTask, SourceFeatureResponse, PrepareResult, ReconstructionInput, RecognitionTask, RecognitionResponse, ReconstructionReport, BookRefinementTask, BookRefinementResponse, RefinementBatch, PrintedTitleTask, PrintedTitleResponse, PrintedTitleRefinementBatch, PrintedTitleReconstructionInput]
 prompts = [("RECOGNITION_PROMPT", recognition_prompt.SYSTEM_PROMPT), ("RECOGNITION_PROMPT_VERSION", recognition_prompt.PROMPT_VERSION)]
 for prefix in ("MERGED_TABLE", "PINNED_TABLE", "EXPLICIT_STYLE", "PINNED_STYLE", "ANCHORED_STYLE", "PINNED_ANCHORED", "BOUNDARY_STYLE", "PINNED_BOUNDARY", "UNICODE_STYLE", "PINNED_UNICODE"):
     for suffix in ("_PROMPT", "_PROMPT_VERSION"):
@@ -28,7 +30,7 @@ for name in ("ORDERED_LIST_PROMPT", "ORDERED_LIST_PROMPT_VERSION", "PINNED_ORDER
     prompts.append((name, getattr(ordered_list_prompt, name)))
 for name in ("TEXT_STYLE_PROMPT", "TEXT_STYLE_PROMPT_VERSION", "PINNED_TEXT_STYLE_PROMPT", "PINNED_TEXT_STYLE_PROMPT_VERSION"):
     prompts.append((name, getattr(text_style_prompt, name)))
-print(json.dumps(dict(schemas={c.__name__: c.model_json_schema() for c in classes}, prompts=prompts, legacyRefinementPrompt=LEGACY_REFINEMENT_PROMPT, refinementPrompt=REFINEMENT_PROMPT, refinementPromptVersion=REFINEMENT_PROMPT_VERSION, bibliographicPrompt=BIBLIOGRAPHIC_PROMPT, mixedHierarchyPrompt=MIXED_HIERARCHY_PROMPT, mixedHierarchyPromptVersion=MIXED_HIERARCHY_PROMPT_VERSION, sourceFeaturePrompt=SOURCE_FEATURE_PROMPT, sourceFeaturePromptVersion=SOURCE_FEATURE_PROMPT_VERSION),sort_keys=True,separators=(',',':')))
+print(json.dumps(dict(schemas={c.__name__: c.model_json_schema() for c in classes}, prompts=prompts, legacyRefinementPrompt=LEGACY_REFINEMENT_PROMPT, refinementPrompt=REFINEMENT_PROMPT, refinementPromptVersion=REFINEMENT_PROMPT_VERSION, bibliographicPrompt=BIBLIOGRAPHIC_PROMPT, mixedHierarchyPrompt=MIXED_HIERARCHY_PROMPT, mixedHierarchyPromptVersion=MIXED_HIERARCHY_PROMPT_VERSION, sourceFeaturePrompt=SOURCE_FEATURE_PROMPT, sourceFeaturePromptVersion=SOURCE_FEATURE_PROMPT_VERSION, printedTitlePrompt=PRINTED_TITLE_PROMPT, printedTitlePromptVersion=PRINTED_TITLE_PROMPT_VERSION),sort_keys=True,separators=(',',':')))
 `;
 async function emit(name, content) {
   const formatted = await prettier.format(content, {
@@ -86,6 +88,14 @@ async function main() {
       JSON.stringify(data.sourceFeaturePrompt) +
       ';\nexport const SOURCE_FEATURE_PROMPT_VERSION = ' +
       JSON.stringify(data.sourceFeaturePromptVersion) +
+      ';\n',
+  );
+  await emit(
+    'printed-title-prompt.ts',
+    '/* Generated; do not edit. */\nexport const PRINTED_TITLE_PROMPT = ' +
+      JSON.stringify(data.printedTitlePrompt) +
+      ';\nexport const PRINTED_TITLE_PROMPT_VERSION = ' +
+      JSON.stringify(data.printedTitlePromptVersion) +
       ';\n',
   );
   await emit(

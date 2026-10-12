@@ -3,11 +3,21 @@
 from ..contracts.common import unique
 from ..contracts.styles import Style
 from .continuation_boundary import JOIN_STYLE
+from .printed_title_contract import PrintedTitleResponse, PrintedTitleTask
 from .refinement_contract import AnyRefinementResponse, AnyRefinementTask, BookRefinementResponse
 from .source_feature_task_contract import SourceFeatureResponse, SourceFeatureTask
 
 
 def accept_refinement(task: AnyRefinementTask, response: AnyRefinementResponse) -> None:
+    if isinstance(task, PrintedTitleTask):
+        from .printed_title_response import accept_printed_title
+
+        if not isinstance(response, PrintedTitleResponse):
+            raise ValueError("Printed title response authority differs")
+        accept_printed_title(task, response)
+        return
+    if isinstance(response, PrintedTitleResponse):
+        raise ValueError("Historical refinement cannot consume a printed-title receipt")
     if (
         response.task_id,
         response.source_sha256,

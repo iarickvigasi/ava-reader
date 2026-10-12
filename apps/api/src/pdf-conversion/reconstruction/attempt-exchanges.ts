@@ -1,12 +1,14 @@
+import {
+  type RefinementResponse,
+  type RefinementBatchPacket,
+  validateRefinementBatch,
+} from './refinement-packets';
 import type { ExchangeEnvelope } from '../runtime/exchange-protocol';
 import { exchangeProtocol } from '../runtime/exchange-protocol';
 import { PdfRuntimeError } from '../runtime/runtime-error';
 import { validatePacket } from './validate-packet';
 import type { PrepareResult } from './generated/PrepareResult';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
-import type { RefinementBatch } from './generated/RefinementBatch';
-import type { BookRefinementResponse } from './generated/BookRefinementResponse';
-import type { SourceFeatureResponse } from './generated/SourceFeatureResponse';
 import { parseSourceRefusal, type SourceContentError } from './source-refusal';
 import {
   recognizeAttemptTask,
@@ -23,13 +25,13 @@ export function attemptExchanges(context: AttemptContext) {
   });
   const taskIds = new Set<string>();
   const responses: RecognitionResponse[] = [];
-  const refinements: (BookRefinementResponse | SourceFeatureResponse)[] = [];
+  const refinements: RefinementResponse[] = [];
   let currentPage: PrepareResult | undefined,
     pages: number | undefined,
     preparedPages = 0,
     recognitionIndex = 0,
     responseBytes = 0,
-    batch: RefinementBatch | undefined,
+    batch: RefinementBatchPacket | undefined,
     refinementIndex = 0,
     failed = false,
     terminal = false,
@@ -48,7 +50,10 @@ export function attemptExchanges(context: AttemptContext) {
     });
   };
   const reconstructionInput = () => ({
-    schema_version: 'ava-reconstruct-input-1',
+    schema_version:
+      batch?.schema_version === 'ava-book-refinement-batch-2'
+        ? 'ava-reconstruct-input-2'
+        : 'ava-reconstruct-input-1',
     source_feature_policy: 'ava-ocr-source-features-1',
     profile_id: context.profileId,
     source_sha256: context.sourceSha256,
@@ -135,7 +140,7 @@ export function attemptExchanges(context: AttemptContext) {
     }
     if (envelope.kind === 'refinement_batch') {
       if (batch || !pages || preparedPages !== pages) return invalid();
-      const prepared = validatePacket('RefinementBatch', envelope.payload);
+      const prepared = validateRefinementBatch(envelope.payload);
       if (
         prepared.source_sha256 !== context.sourceSha256 ||
         prepared.tasks.some(

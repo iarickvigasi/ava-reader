@@ -11,7 +11,7 @@ from PIL import Image
 from ..contracts.common import unique
 
 if TYPE_CHECKING:
-    from .refinement_contract import AnyRefinementTask
+    from .refinement_contract import HistoricalRefinementTask
 
 
 def refinement_identifier(value: dict[str, object]) -> str:
@@ -29,7 +29,7 @@ def refinement_identifier(value: dict[str, object]) -> str:
     )
 
 
-def validate_refinement_task(task: "AnyRefinementTask") -> None:
+def validate_refinement_task(task: "HistoricalRefinementTask") -> None:
     if task.task_id != refinement_identifier(task.model_dump(mode="json")):
         raise ValueError("Refinement task identity mismatch")
     for values, label in [

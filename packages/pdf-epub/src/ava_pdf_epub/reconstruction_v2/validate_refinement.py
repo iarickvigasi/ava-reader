@@ -3,6 +3,7 @@
 import hashlib
 import json
 
+from .printed_title_contract import PrintedTitleResponse, PrintedTitleTask
 from .refinement_contract import BookRefinementResponse, BookRefinementTask
 from .refinement_response import accept_refinement
 from .source_feature_task_contract import SourceFeatureResponse, SourceFeatureTask
@@ -13,15 +14,20 @@ def validate_refinement(data: bytes) -> dict[str, object]:
     if set(raw) != {"mode", "task", "response"} or raw["mode"] != "validate_refinement":
         raise ValueError("Invalid refinement validation packet")
     current = raw["task"].get("schema_version") == "ava-book-refinement-task-4"
+    title = raw["task"].get("schema_version") == "ava-printed-title-task-1"
     task = (
-        SourceFeatureTask.model_validate(raw["task"])
-        if current
+        PrintedTitleTask.model_validate(raw["task"])
+        if title
+        else SourceFeatureTask.model_validate(raw["task"])
+        if current or title
         else BookRefinementTask.model_validate(raw["task"])
     )
     if raw["response"] is not None:
         response = (
-            SourceFeatureResponse.model_validate(raw["response"])
-            if current
+            PrintedTitleResponse.model_validate(raw["response"])
+            if title
+            else SourceFeatureResponse.model_validate(raw["response"])
+            if current or title
             else BookRefinementResponse.model_validate(raw["response"])
         )
         accept_refinement(task, response)

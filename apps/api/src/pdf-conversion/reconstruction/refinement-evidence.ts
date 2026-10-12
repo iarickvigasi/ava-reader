@@ -1,17 +1,23 @@
-import type { BookRefinementTask } from './generated/BookRefinementTask';
-import type { SourceFeatureTask } from './generated/SourceFeatureTask';
+import type { RefinementTask } from './refinement-packets';
 
 type RefinementEvidenceMaps = {
   required_decision_evidence: Record<string, (string | undefined)[]>;
   required_join_evidence: Record<string, (string | undefined)[]>;
+  required_title_evidence?: Record<string, string[]>;
   required_metadata_evidence?: Record<string, (string | undefined)[]>;
   required_feature_evidence?: Record<string, Record<string, string[]>>;
 };
 
 // These IDs are mechanical obligations, not a visual judgment for the model.
 export function refinementEvidence(
-  task: BookRefinementTask | SourceFeatureTask,
+  task: RefinementTask,
 ): RefinementEvidenceMaps {
+  if (task.schema_version === 'ava-printed-title-task-1')
+    return {
+      required_decision_evidence: {},
+      required_join_evidence: {},
+      required_title_evidence: { [task.node.id]: task.crops.map((c) => c.id) },
+    };
   if (task.schema_version === 'ava-book-refinement-task-4')
     return {
       required_decision_evidence: {},

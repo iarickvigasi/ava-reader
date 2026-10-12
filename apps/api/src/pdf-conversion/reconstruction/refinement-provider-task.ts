@@ -7,27 +7,36 @@ import {
   REFINEMENT_PROMPT,
 } from './generated/refinement-prompt';
 import { recognitionSchemas } from './generated/schemas';
-import type { BookRefinementTask } from './generated/BookRefinementTask';
-import type { SourceFeatureTask } from './generated/SourceFeatureTask';
-import { validatePacket } from './validate-packet';
+import {
+  type RefinementTask,
+  validateRefinementTask,
+  refinementResponseName,
+} from './refinement-packets';
+import { PRINTED_TITLE_PROMPT } from './generated/printed-title-prompt';
 import { refinementEvidence } from './refinement-evidence';
 import { PdfRuntimeError } from '../runtime/runtime-error';
 import { SOURCE_FEATURE_PROMPT } from './generated/refinement-prompt';
 
 export function refinementProviderTask(
-  input: BookRefinementTask | SourceFeatureTask,
+  input: RefinementTask,
   sourceSha256: string,
 ): ProviderTask {
-  const task =
-    input.schema_version === 'ava-book-refinement-task-4'
-      ? validatePacket('SourceFeatureTask', structuredClone(input))
-      : validatePacket('BookRefinementTask', structuredClone(input));
+  const task = validateRefinementTask(structuredClone(input));
   const image = Buffer.from(task.image.base64, 'base64');
   if (
     task.source_sha256 !== sourceSha256 ||
     image.length !== task.image.byte_length ||
     image.toString('base64') !== task.image.base64 ||
     createHash('sha256').update(image).digest('hex') !== task.image.sha256
+  )
+    throw new PdfRuntimeError('SOURCE_MISMATCH');
+  if (
+    task.schema_version === 'ava-printed-title-task-1' &&
+    (createHash('sha256').update(task.node.text).digest('hex') !==
+      task.node.text_sha256 ||
+      new Set(task.crops.map((c) => c.id)).size !== 2 ||
+      new Set(task.crops.map((c) => c.part)).size !== 2 ||
+      task.crops.some((c) => c.node_id !== task.node.id))
   )
     throw new PdfRuntimeError('SOURCE_MISMATCH');
   const { image: pixels, ...context } = task;
@@ -44,15 +53,17 @@ export function refinementProviderTask(
       {
         role: 'system',
         content:
-          task.prompt_version === 'ava-book-refinement-7'
-            ? SOURCE_FEATURE_PROMPT
-            : task.prompt_version === 'ava-book-refinement-4'
-              ? BIBLIOGRAPHIC_PROMPT
-              : task.prompt_version === 'ava-book-refinement-3'
-                ? LEGACY_REFINEMENT_PROMPT
-                : task.prompt_version === 'ava-book-refinement-6'
-                  ? MIXED_HIERARCHY_PROMPT
-                  : REFINEMENT_PROMPT,
+          task.schema_version === 'ava-printed-title-task-1'
+            ? PRINTED_TITLE_PROMPT
+            : task.prompt_version === 'ava-book-refinement-7'
+              ? SOURCE_FEATURE_PROMPT
+              : task.prompt_version === 'ava-book-refinement-4'
+                ? BIBLIOGRAPHIC_PROMPT
+                : task.prompt_version === 'ava-book-refinement-3'
+                  ? LEGACY_REFINEMENT_PROMPT
+                  : task.prompt_version === 'ava-book-refinement-6'
+                    ? MIXED_HIERARCHY_PROMPT
+                    : REFINEMENT_PROMPT,
       },
       {
         role: 'user',
@@ -63,7 +74,9 @@ export function refinementProviderTask(
               ...context,
               ...refinementEvidence(task),
               evidence_instruction:
-                "Copy the required evidence IDs for EACH node/edge from these maps. Different nodes on the same page may have different body references. Do not substitute another node's reference crop.",
+                task.schema_version === 'ava-printed-title-task-1'
+                  ? 'Copy BOTH required_title_evidence IDs for this exact opening node. Classify the unchanged whole heading as title or null; do not infer an author or alter chapter roles.'
+                  : "Copy the required evidence IDs for EACH node/edge from these maps. Different nodes on the same page may have different body references. Do not substitute another node's reference crop.",
               image_sha256: pixels.sha256,
               image: {
                 width: pixels.width,
@@ -81,9 +94,6 @@ export function refinementProviderTask(
         ],
       },
     ],
-    responseSchema:
-      task.response_schema_version === 'ava-book-refinement-response-4'
-        ? recognitionSchemas.SourceFeatureResponse
-        : recognitionSchemas.BookRefinementResponse,
+    responseSchema: recognitionSchemas[refinementResponseName(task)],
   };
 }

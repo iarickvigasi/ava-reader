@@ -100,9 +100,13 @@ def prepare_refinement(
         raw["task_id"] = refinement_identifier(raw)
         tasks.append(BookRefinementTask.model_validate(raw))
     if source_feature_policy is not None:
+        from .printed_title_task import printed_title_task
         from .source_feature_tasks import source_feature_tasks
 
         tasks.extend(source_feature_tasks(source, scratch, prepared, segments, state, len(tasks)))
+        title = printed_title_task(segments, page_map, scratch, source_sha, digest)
+        if title is not None:
+            tasks.append(title)
     if len(tasks) > 32:
         raise ValueError("Too many refinement tasks")
     return tasks

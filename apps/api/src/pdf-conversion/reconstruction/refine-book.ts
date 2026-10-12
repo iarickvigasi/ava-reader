@@ -1,11 +1,13 @@
 import type { RecognitionTask } from './generated/RecognitionTask';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
-import type { BookRefinementResponse } from './generated/BookRefinementResponse';
-import type { SourceFeatureResponse } from './generated/SourceFeatureResponse';
+import {
+  type RefinementResponse,
+  parseRefinementBatch,
+} from './refinement-packets';
+import { refinementResponse } from './refinement-response';
 import type { CoordinatorDependencies } from './coordinator-types';
 import type { SandboxInput } from '../runtime/container-arguments';
 import { PdfRuntimeError } from '../runtime/runtime-error';
-import { parsePacket } from './validate-packet';
 import { refinementProviderTask } from './refinement-provider-task';
 import { validateRefinement } from './validate-refinement';
 import { parseSourceRefusal } from './source-refusal';
@@ -17,7 +19,7 @@ export async function refineBook(input: {
   profileId?: RecognitionTask['profile_id'];
   deps: CoordinatorDependencies;
   sandboxInput: () => SandboxInput;
-}): Promise<(BookRefinementResponse | SourceFeatureResponse)[]> {
+}): Promise<RefinementResponse[]> {
   // Native text can still contain unresolved same-font chapter/list roles.
   // The source comparison stage returns no tasks for already-qualified structure.
   const auxiliaryBytes = Buffer.from(
@@ -42,7 +44,7 @@ export async function refineBook(input: {
   if (prepared.exitCode === 1)
     throw parseSourceRefusal(prepared.stdout, input.sourceSha256);
   if (prepared.exitCode !== 0) throw new PdfRuntimeError('INVALID_RESULT');
-  const batch = parsePacket('RefinementBatch', prepared.stdout, 24 * 1024 ** 2);
+  const batch = parseRefinementBatch(prepared.stdout, 24 * 1024 ** 2);
   if (
     batch.source_sha256 !== input.sourceSha256 ||
     batch.tasks.some(
@@ -53,7 +55,7 @@ export async function refineBook(input: {
   if (batch.tasks.length && input.providerMode === 'native')
     throw new PdfRuntimeError('DISPATCH_NOT_AUTHORIZED');
   const seen = new Set<string>(),
-    responses: (BookRefinementResponse | SourceFeatureResponse)[] = [];
+    responses: RefinementResponse[] = [];
   for (const task of batch.tasks) {
     if (seen.has(task.task_id)) throw new PdfRuntimeError('INVALID_RESULT');
     seen.add(task.task_id);
@@ -67,13 +69,7 @@ export async function refineBook(input: {
     const receipt = await input.deps.dispatch(
       refinementProviderTask(task, input.sourceSha256),
     );
-    const response = parsePacket(
-      task.response_schema_version === 'ava-book-refinement-response-4'
-        ? 'SourceFeatureResponse'
-        : 'BookRefinementResponse',
-      Buffer.from(receipt.output),
-      2 * 1024 ** 2,
-    );
+    const response = refinementResponse(task, receipt.output);
     await validateRefinement(
       task,
       response,

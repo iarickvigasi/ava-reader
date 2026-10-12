@@ -12,8 +12,16 @@ import type { BookRefinementResponse } from './generated/BookRefinementResponse'
 import type { SourceFeatureTask } from './generated/SourceFeatureTask';
 import type { SourceFeatureResponse } from './generated/SourceFeatureResponse';
 import type { RefinementBatch } from './generated/RefinementBatch';
+import type { PrintedTitleTask } from './generated/PrintedTitleTask';
+import type { PrintedTitleResponse } from './generated/PrintedTitleResponse';
+import type { PrintedTitleRefinementBatch } from './generated/PrintedTitleRefinementBatch';
+import type { PrintedTitleReconstructionInput } from './generated/PrintedTitleReconstructionInput';
 
 type Packets = {
+  PrintedTitleTask: PrintedTitleTask;
+  PrintedTitleResponse: PrintedTitleResponse;
+  PrintedTitleRefinementBatch: PrintedTitleRefinementBatch;
+  PrintedTitleReconstructionInput: PrintedTitleReconstructionInput;
   BookRefinementTask: BookRefinementTask;
   BookRefinementResponse: BookRefinementResponse;
   SourceFeatureTask: SourceFeatureTask;
@@ -43,6 +51,25 @@ export function validatePacket<K extends keyof Packets>(
 ): Packets[K] {
   if (!validators.get(name)?.(value))
     throw new PdfRuntimeError('INVALID_RESULT');
+  if (name === 'PrintedTitleRefinementBatch') {
+    const packet = value as unknown as PrintedTitleRefinementBatch;
+    if (
+      packet.tasks.filter(
+        (task) => task.schema_version === 'ava-printed-title-task-1',
+      ).length !== 1
+    )
+      throw new PdfRuntimeError('INVALID_RESULT');
+  }
+  if (name === 'PrintedTitleReconstructionInput') {
+    const packet = value as unknown as PrintedTitleReconstructionInput;
+    if (
+      (packet.refinements ?? []).filter(
+        (response) =>
+          response.schema_version === 'ava-printed-title-response-1',
+      ).length !== 1
+    )
+      throw new PdfRuntimeError('INVALID_RESULT');
+  }
   return value as unknown as Packets[K];
 }
 export function parsePacket<K extends keyof Packets>(

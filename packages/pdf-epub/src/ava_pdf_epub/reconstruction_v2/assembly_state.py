@@ -3,7 +3,7 @@
 import hashlib
 import json
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Literal
 
 from ..contracts.styles import Style
 from .findings import Finding
@@ -29,6 +29,7 @@ class AssemblyState:
     source_linked_furniture_ids: set[str] = field(default_factory=set)
     refinement_evidence: list[dict[str, Any]] = field(default_factory=list)
     bibliographic_roles: dict[str, tuple[str | None, str]] = field(default_factory=dict)
+    printed_title: tuple[str, str, Literal["title"] | None] | None = None
     refined_joins: dict[tuple[str, str], bool] = field(default_factory=dict)
     source_feature_policy: str | None = None
     source_feature_evidence: list[dict[str, Any]] = field(default_factory=list)
@@ -58,6 +59,7 @@ class AssemblyState:
         self.source_linked_furniture_ids.clear()
         self.refined_joins.clear()
         self.bibliographic_roles.clear()
+        self.printed_title = None
 
     def release_source_workspace(self) -> None:
         """After canonical validation, retain only assets and report evidence for export."""
