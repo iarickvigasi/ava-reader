@@ -16,7 +16,8 @@ export async function observePdfImports(getToken: GetToken) {
     let changed = await syncPdfNotices(db, getToken);
     for (const intent of await pendingPdfUploadIntents(db)) {
       if (db !== getDb()) return;
-      if (await reconcilePdfRequest(db, getToken, intent)) changed = true;
+      const lookup = await reconcilePdfRequest(db, getToken, intent);
+      if (lookup?.state === "accepted") changed = true;
     }
     const rows = await db.libraryItems.toArray();
     const ids = rows.flatMap((row) =>

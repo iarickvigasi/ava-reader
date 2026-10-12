@@ -19,7 +19,9 @@ it("reconciles an accepted upload whose response was lost without another POST",
   let accepted = false;
   const fetcher = vi.fn(async (_url: string, init: RequestInit) => {
     if (init.method === "POST") {
-      expect((init.body as FormData).get("originalFilename")).toBe("Книга ґрунт.pdf");
+      expect((init.body as FormData).get("originalFilename")).toBe(
+        "Книга ґрунт.pdf",
+      );
       accepted = true;
       throw new Error("lost response");
     }
@@ -28,7 +30,9 @@ it("reconciles an accepted upload whose response was lost without another POST",
       : new Response(null, { status: 404 });
   });
   vi.stubGlobal("fetch", fetcher);
-  const file = new File(["%PDF-test"], "Книга ґрунт.pdf", { type: "application/pdf" });
+  const file = new File(["%PDF-test"], "Книга ґрунт.pdf", {
+    type: "application/pdf",
+  });
   expect((await importPdfFile(file, async () => "token")).state).toBe(
     "uncertain",
   );
@@ -55,4 +59,61 @@ it("keeps duplicate source identity and stops polling definitive admission rejec
       .state,
   ).toBe("rejected");
   expect(await pendingPdfUploadIntents(getDb())).toEqual([]);
+});
+
+it.each([200, 400, 409])(
+  "keeps malformed POST%d uncertain without repeating the request",
+  async (status) => {
+    const fetcher = vi.fn(async (_url: string, init: RequestInit) =>
+      init.method === "POST"
+        ? Response.json(
+            {
+              libraryItemId: { invalid: true },
+              ...(status === 409 ? { code: "PDF_ALREADY_IMPORTED" } : {}),
+            },
+            { status },
+          )
+        : new Response(null, { status: 404 }),
+    );
+    vi.stubGlobal("fetch", fetcher);
+    const file = new File(["%PDF-malformed"], "book.pdf", {
+      type: "application/pdf",
+    });
+    expect((await importPdfFile(file, async () => "token")).state).toBe(
+      "uncertain",
+    );
+    const prior = (await pendingPdfUploadIntents(getDb()))[0];
+    expect((await importPdfFile(file, async () => "token")).state).toBe(
+      "uncertain",
+    );
+    expect((await pendingPdfUploadIntents(getDb()))[0]).toEqual(prior);
+    expect(
+      fetcher.mock.calls.filter((call) => call[1].method === "POST"),
+    ).toHaveLength(1);
+  },
+);
+it("observes acceptance after a503 without dispatching another POST", async () => {
+  let posted = false;
+  const fetcher = vi.fn(async (_url: string, init: RequestInit) => {
+    if (init.method === "POST") {
+      posted = true;
+      return Response.json({ code: "TEMPORARY_ERROR" }, { status: 503 });
+    }
+    return posted
+      ? Response.json(pdfStatus)
+      : new Response(null, { status: 404 });
+  });
+  vi.stubGlobal("fetch", fetcher);
+  expect(
+    await importPdfFile(
+      new File(["%PDF-existing"], "book.pdf"),
+      async () => "token",
+    ),
+  ).toMatchObject({
+    state: "existing",
+    libraryItemId: pdfStatus.libraryItemId,
+  });
+  expect(
+    fetcher.mock.calls.filter((call) => call[1].method === "POST"),
+  ).toHaveLength(1);
 });

@@ -10,8 +10,20 @@ export async function storePdfUploadIntent(
   return db.transaction("rw", db.meta, async () => {
     if (db !== getDb()) return null;
     const key = PDF_REQUEST_PREFIX + intent.sourceSha256;
-    const prior = await db.meta.get(key);
-    if (prior) return prior.value as PdfUploadIntent;
+    const prior = (await db.meta.get(key))?.value as
+      | PdfUploadIntent
+      | undefined;
+    if (prior && prior.sourceSha256 !== intent.sourceSha256) return null;
+    if (
+      prior &&
+      !(
+        prior.rejected === true &&
+        prior.refusalCode === "PDF_ADMISSION_REFUSED" &&
+        !prior.libraryItemId
+      )
+    )
+      return prior;
+    if (db !== getDb()) return null;
     await db.meta.put({ key, value: intent, updatedAt: intent.createdAt });
     return intent;
   });
@@ -22,11 +34,25 @@ export async function settlePdfUploadIntent(
   intent: PdfUploadIntent,
   libraryItemId: string,
 ) {
-  if (db !== getDb()) return;
-  await db.meta.put({
-    key: PDF_REQUEST_PREFIX + intent.sourceSha256,
-    value: { ...intent, libraryItemId },
-    updatedAt: new Date().toISOString(),
+  if (db !== getDb()) return false;
+  return db.transaction("rw", db.meta, async () => {
+    const key = PDF_REQUEST_PREFIX + intent.sourceSha256;
+    const current = (await db.meta.get(key))?.value as
+      | PdfUploadIntent
+      | undefined;
+    if (
+      db !== getDb() ||
+      current?.requestKey !== intent.requestKey ||
+      current.sourceSha256 !== intent.sourceSha256 ||
+      (current.libraryItemId && current.libraryItemId !== libraryItemId)
+    )
+      return false;
+    await db.meta.put({
+      key,
+      value: { ...current, libraryItemId },
+      updatedAt: new Date().toISOString(),
+    });
+    return true;
   });
 }
 
@@ -44,11 +70,30 @@ export async function pendingPdfUploadIntents(db: AvaReaderDB) {
 export async function rejectPdfUploadIntent(
   db: AvaReaderDB,
   intent: PdfUploadIntent,
+  refusalCode?: "PDF_ADMISSION_REFUSED",
 ) {
-  if (db !== getDb()) return;
-  await db.meta.put({
-    key: PDF_REQUEST_PREFIX + intent.sourceSha256,
-    value: { ...intent, rejected: true },
-    updatedAt: new Date().toISOString(),
+  if (db !== getDb()) return false;
+  return db.transaction("rw", db.meta, async () => {
+    const key = PDF_REQUEST_PREFIX + intent.sourceSha256;
+    const current = (await db.meta.get(key))?.value as
+      | PdfUploadIntent
+      | undefined;
+    if (
+      db !== getDb() ||
+      current?.requestKey !== intent.requestKey ||
+      current.sourceSha256 !== intent.sourceSha256 ||
+      current.libraryItemId
+    )
+      return false;
+    await db.meta.put({
+      key,
+      value: {
+        ...current,
+        rejected: true,
+        ...(refusalCode ? { refusalCode } : {}),
+      },
+      updatedAt: new Date().toISOString(),
+    });
+    return true;
   });
 }

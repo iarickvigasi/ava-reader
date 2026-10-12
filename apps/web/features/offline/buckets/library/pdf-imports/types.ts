@@ -5,6 +5,7 @@ export type PdfUploadIntent = {
   createdAt: string;
   libraryItemId?: string;
   rejected?: boolean;
+  refusalCode?: "PDF_ADMISSION_REFUSED";
 };
 export type GetToken = () => Promise<string | null>;
 export type ImportResult = {
