@@ -22,7 +22,7 @@ export async function stagePdfStreamArtifact(
   } as const;
   const role =
     roles[descriptor.path as keyof typeof roles] ??
-    (/^(resources\/[A-Za-z0-9._/-]+\.(png|jpg|jpeg)|images\/[a-f0-9]{64}\.png)$/.test(
+    (/^(resources\/[A-Za-z0-9._/-]+\.(png|jpg|jpeg)|images\/[a-f0-9]{64}\.(png|jpg|jpeg))$/.test(
       descriptor.path,
     )
       ? [
