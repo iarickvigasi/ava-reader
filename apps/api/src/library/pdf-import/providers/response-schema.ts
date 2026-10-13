@@ -13,9 +13,11 @@ export function providerResponseSchema(modelId: string, task: ProviderTask) {
         ? recognitionSchemas.BookRefinementResponse
         : task.schemaVersion === 'ava-printed-title-response-1'
           ? recognitionSchemas.PrintedTitleResponse
-          : task.schemaVersion === 'ava-book-refinement-response-4'
-            ? recognitionSchemas.SourceFeatureResponse
-            : null;
+          : task.schemaVersion === 'ava-recognition-anchor-context-response-1'
+            ? recognitionSchemas.RecognitionAnchorContextResponse
+            : task.schemaVersion === 'ava-book-refinement-response-4'
+              ? recognitionSchemas.SourceFeatureResponse
+              : null;
   if (!modelId.startsWith('google/gemini-') || !schema)
     return task.responseSchema;
   if (jsonHash(task.responseSchema) !== jsonHash(schema))

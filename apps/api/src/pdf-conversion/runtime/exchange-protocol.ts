@@ -6,11 +6,14 @@ export const MAX_EXCHANGE_REPLY = 64 * 1024 ** 2 + 1024;
 export const MAX_EXCHANGE_REPLY_TOTAL = 64 * 1024 ** 2 + 25533 * 1024;
 export type ExchangeBinding = { source_sha256: string; profile_id: string };
 export type ExchangeEnvelope = ExchangeBinding & {
-  schema_version: 'ava-reconstruction-exchange-1';
+  schema_version:
+    | 'ava-reconstruction-exchange-1'
+    | 'ava-recognition-anchor-context-exchange-1';
   sequence: number;
   kind:
     | 'page'
     | 'recognition'
+    | 'anchor_context'
     | 'refinement_batch'
     | 'refinement'
     | 'artifacts'
@@ -39,6 +42,8 @@ export function exchangeProtocol(binding: ExchangeBinding) {
     batch = false,
     terminal = false;
   let pending: string[] = [];
+  let lastRecognition: string | undefined;
+  const correctedParents = new Set<string>();
   return {
     get lastReply() {
       return batch && pending.length === 0;
@@ -47,11 +52,15 @@ export function exchangeProtocol(binding: ExchangeBinding) {
       if (bytes.length > MAX_EXCHANGE_FRAME)
         throw new PdfRuntimeError('RESOURCE_LIMIT');
       const value = exchangeJson(bytes) as ExchangeEnvelope;
+      const correction =
+        value?.schema_version === 'ava-recognition-anchor-context-exchange-1';
       if (
         !value ||
         Object.keys(value).sort().join() !==
           'kind,payload,profile_id,schema_version,sequence,source_sha256' ||
-        value.schema_version !== 'ava-reconstruction-exchange-1' ||
+        (!correction &&
+          value.schema_version !== 'ava-reconstruction-exchange-1') ||
+        correction !== (value.kind === 'anchor_context') ||
         !Number.isSafeInteger(value.sequence) ||
         value.sequence !== sequence + 1 ||
         value.sequence > 25534 ||
@@ -64,6 +73,7 @@ export function exchangeProtocol(binding: ExchangeBinding) {
         ![
           'page',
           'recognition',
+          'anchor_context',
           'refinement_batch',
           'refinement',
           'artifacts',
@@ -79,7 +89,7 @@ export function exchangeProtocol(binding: ExchangeBinding) {
       const limit =
         value.kind === 'page'
           ? 8 * 1024 ** 2 + 1024
-          : value.kind === 'refinement_batch'
+          : value.kind === 'refinement_batch' || correction
             ? MAX_EXCHANGE_FRAME
             : value.kind === 'recognition' || value.kind === 'refinement'
               ? 1024
@@ -89,12 +99,31 @@ export function exchangeProtocol(binding: ExchangeBinding) {
         if (batch || pending.length || pages >= 500)
           throw new PdfRuntimeError('INVALID_RESULT');
         pending = taskIds(value.payload, 50);
+        lastRecognition = undefined;
         pages++;
       } else if (value.kind === 'refinement_batch') {
         if (batch || !pages || pending.length)
           throw new PdfRuntimeError('INVALID_RESULT');
         pending = taskIds(value.payload, 32);
+        lastRecognition = undefined;
         batch = true;
+      } else if (correction) {
+        const task = value.payload as {
+          task_id?: unknown;
+          original_task_id?: unknown;
+        } | null;
+        if (
+          batch ||
+          !lastRecognition ||
+          !task ||
+          typeof task.task_id !== 'string' ||
+          !task.task_id.length ||
+          task.original_task_id !== lastRecognition ||
+          correctedParents.has(lastRecognition)
+        )
+          throw new PdfRuntimeError('INVALID_RESULT');
+        correctedParents.add(lastRecognition);
+        lastRecognition = undefined;
       } else if (value.kind === 'recognition' || value.kind === 'refinement') {
         const task = value.payload as { task_id?: unknown } | null;
         if (
@@ -109,6 +138,8 @@ export function exchangeProtocol(binding: ExchangeBinding) {
         )
           throw new PdfRuntimeError('INVALID_RESULT');
         pending.shift();
+        lastRecognition =
+          value.kind === 'recognition' ? task.task_id : undefined;
         if (value.kind === 'recognition') recognitions++;
         else refinements++;
       } else {
@@ -133,8 +164,11 @@ export function exchangeReply(bytes: Buffer, request: ExchangeEnvelope) {
   )
     throw new PdfRuntimeError('RESOURCE_LIMIT');
   const value = exchangeJson(bytes) as ExchangeEnvelope;
-  const count =
-    request.kind === 'recognition' || request.kind === 'refinement' ? 1 : 0;
+  const count = ['recognition', 'refinement', 'anchor_context'].includes(
+    request.kind,
+  )
+    ? 1
+    : 0;
   if (
     !value ||
     Object.keys(value).sort().join() !== Object.keys(request).sort().join() ||

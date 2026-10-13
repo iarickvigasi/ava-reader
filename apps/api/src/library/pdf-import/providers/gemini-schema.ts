@@ -73,12 +73,14 @@ export function geminiRecognitionSchema(
   }
   const output = lower(input);
   output.description =
-    version === 'ava-printed-title-response-1'
-      ? 'AVA finite printed-title comparison. Classify only the supplied whole opening heading as title or null using both exact source crop IDs. Never replace text, infer authorship or alter chapter roles. Host validates exact task/source/image/node/text/evidence binding.'
-      : version === 'ava-book-refinement-response-4'
-        ? 'AVA finite OCR source-feature comparison. Return each requested feature exactly once with observed/unknown/not_applicable disposition and source-local crop IDs. Known false/zero remain observed. Only declared paragraph/quote roles and sparse source styles are permitted; text, spans, metadata and chapter identity stay immutable. Host validates complete feature/evidence scope.'
-        : version === 'ava-book-refinement-response-3'
-          ? 'AVA structure-only source comparison. Decide exact supplied IDs, source-evidenced heading ancestry and sparse typography. Never return replacement text or new nodes. Host validates complete scope and relationships.'
-          : 'AVA recognition v2. Kind-specific observations are mandatory when applicable: headings need heading_level and chapter_start; chapter starts need level 1 and chapter_role; notes need note_label and note_role; list items need list_ordered and list_depth, every ordered decimal/alphabetic/Roman item also needs its own observed integer list_start; tables need cells; figures need alt; captions and credits need related_to. Preserve core fields and sparse styles. The host independently validates all bounds and relationships.';
+    version === 'ava-recognition-anchor-context-response-1'
+      ? 'AVA context-only inline-anchor correction. Return each requested original span exactly once with only its immediately adjacent before/after context. Never replace quotation, text, style, geometry or destinations. Host validates exact task/source/render/original-response/span binding and unique quotation matches; uncertainty remains unresolved.'
+      : version === 'ava-printed-title-response-1'
+        ? 'AVA finite printed-title comparison. Classify only the supplied whole opening heading as title or null using both exact source crop IDs. Never replace text, infer authorship or alter chapter roles. Host validates exact task/source/image/node/text/evidence binding.'
+        : version === 'ava-book-refinement-response-4'
+          ? 'AVA finite OCR source-feature comparison. Return each requested feature exactly once with observed/unknown/not_applicable disposition and source-local crop IDs. Known false/zero remain observed. Only declared paragraph/quote roles and sparse source styles are permitted; text, spans, metadata and chapter identity stay immutable. Host validates complete feature/evidence scope.'
+          : version === 'ava-book-refinement-response-3'
+            ? 'AVA structure-only source comparison. Decide exact supplied IDs, source-evidenced heading ancestry and sparse typography. Never return replacement text or new nodes. Host validates complete scope and relationships.'
+            : 'AVA recognition v2. Kind-specific observations are mandatory when applicable: headings need heading_level and chapter_start; chapter starts need level 1 and chapter_role; notes need note_label and note_role; list items need list_ordered and list_depth, every ordered decimal/alphabetic/Roman item also needs its own observed integer list_start; tables need cells; figures need alt; captions and credits need related_to. Preserve core fields and sparse styles. The host independently validates all bounds and relationships.';
   return output;
 }

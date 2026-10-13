@@ -30,6 +30,7 @@ export const workerCommand = z.enum([
   'attempt_stream',
   'validate_tasks',
   'validate_refinement',
+  'validate_anchor_context',
 ]);
 const sourceCode = z.enum([
   'ESSENTIAL_STRUCTURE_UNSUPPORTED',

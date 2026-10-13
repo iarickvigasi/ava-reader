@@ -18,8 +18,12 @@ import type { PrintedTitleTask } from './generated/PrintedTitleTask';
 import type { PrintedTitleResponse } from './generated/PrintedTitleResponse';
 import type { PrintedTitleRefinementBatch } from './generated/PrintedTitleRefinementBatch';
 import type { PrintedTitleReconstructionInput } from './generated/PrintedTitleReconstructionInput';
+import type { RecognitionAnchorContextTask } from './generated/RecognitionAnchorContextTask';
+import type { RecognitionAnchorContextResponse } from './generated/RecognitionAnchorContextResponse';
 
 type Packets = {
+  RecognitionAnchorContextTask: RecognitionAnchorContextTask;
+  RecognitionAnchorContextResponse: RecognitionAnchorContextResponse;
   NativeLayoutPrepareResult: NativeLayoutPrepareResult;
   NativeLayoutReconstructionInput: NativeLayoutReconstructionInput;
   PrintedTitleTask: PrintedTitleTask;

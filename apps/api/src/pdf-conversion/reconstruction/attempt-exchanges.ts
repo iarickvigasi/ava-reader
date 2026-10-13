@@ -11,10 +11,13 @@ import { reconstructionRequest } from './reconstruction-request';
 import type { NativeLayoutPrepareResult } from './generated/NativeLayoutPrepareResult';
 import type { PrepareResult } from './generated/PrepareResult';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
+import type { RecognitionTask } from './generated/RecognitionTask';
+import { anchorContextBinding } from './anchor-context-binding';
 import { parseSourceRefusal, type SourceContentError } from './source-refusal';
 import {
   recognizeAttemptTask,
   refineAttemptTask,
+  correctAttemptAnchorContext,
   type AttemptContext,
 } from './attempt-provider';
 
@@ -28,6 +31,15 @@ export function attemptExchanges(context: AttemptContext) {
   const taskIds = new Set<string>();
   const responses: RecognitionResponse[] = [];
   const refinements: RefinementResponse[] = [];
+  const correctionIds = new Set<string>();
+  let correctionUnresolved = false;
+  let lastOriginal:
+    | {
+        task: RecognitionTask;
+        response: RecognitionResponse;
+        index: number;
+      }
+    | undefined;
   let currentPage: PrepareResult | NativeLayoutPrepareResult | undefined,
     pages: number | undefined,
     preparedPages = 0,
@@ -36,6 +48,7 @@ export function attemptExchanges(context: AttemptContext) {
     batch: RefinementBatchPacket | undefined,
     refinementIndex = 0,
     failed = false,
+    handling = false,
     terminal = false,
     refusal: SourceContentError | PdfRuntimeError | undefined;
   const invalid = () => {
@@ -69,7 +82,9 @@ export function attemptExchanges(context: AttemptContext) {
     envelope: ExchangeEnvelope,
     signal: AbortSignal,
   ): Promise<unknown[]> {
+    if (correctionUnresolved && envelope.kind !== 'refusal') return invalid();
     if (envelope.kind === 'page') {
+      lastOriginal = undefined;
       const prepared = context.sourceLayoutPolicy
         ? validatePacket('NativeLayoutPrepareResult', envelope.payload)
         : validatePacket('PrepareResult', envelope.payload);
@@ -128,6 +143,7 @@ export function attemptExchanges(context: AttemptContext) {
       return [];
     }
     if (envelope.kind === 'recognition') {
+      lastOriginal = undefined;
       const task = currentPage?.tasks[recognitionIndex];
       if (
         batch ||
@@ -136,14 +152,63 @@ export function attemptExchanges(context: AttemptContext) {
       )
         return invalid();
       const response = await recognizeAttemptTask(task, context, signal);
+      if (failed) return invalid();
       responseBytes += Buffer.byteLength(JSON.stringify(response)) + 1;
       if (responseBytes > 60 * 1024 ** 2)
         throw new PdfRuntimeError('RESOURCE_LIMIT');
       responses.push(response);
+      lastOriginal = { task, response, index: responses.length - 1 };
       recognitionIndex++;
       return [response];
     }
+    if (envelope.kind === 'anchor_context') {
+      if (
+        !lastOriginal ||
+        batch ||
+        context.providerMode === 'native' ||
+        context.sourceLayoutPolicy !== 'ava-native-layout-1'
+      )
+        return invalid();
+      const parent = lastOriginal;
+      const task = anchorContextBinding(
+        envelope.payload,
+        parent.task,
+        parent.response,
+      );
+      if (taskIds.has(task.task_id) || correctionIds.has(task.task_id))
+        return invalid();
+      // Consume the one opportunity before dispatch, including WAIT/uncertain failures.
+      lastOriginal = undefined;
+      correctionIds.add(task.task_id);
+      const result = await correctAttemptAnchorContext(
+        task,
+        parent.task,
+        parent.response,
+        {
+          ...context,
+          checkActive: (activeSignal) => {
+            if (failed) return invalid();
+            context.checkActive(activeSignal);
+          },
+        },
+        signal,
+      );
+      if (failed) return invalid();
+      if (!result.corrected) {
+        correctionUnresolved = true;
+        return [result.response];
+      }
+      responseBytes +=
+        Buffer.byteLength(JSON.stringify(result.corrected)) -
+        Buffer.byteLength(JSON.stringify(parent.response));
+      if (responseBytes > 60 * 1024 ** 2)
+        throw new PdfRuntimeError('RESOURCE_LIMIT');
+      responses[parent.index] = result.corrected;
+      inputBound();
+      return [result.response];
+    }
     if (envelope.kind === 'refinement_batch') {
+      lastOriginal = undefined;
       if (batch || !pages || preparedPages !== pages) return invalid();
       const prepared = validateRefinementBatch(envelope.payload);
       if (
@@ -219,7 +284,11 @@ export function attemptExchanges(context: AttemptContext) {
   }
   return {
     async exchange(bytes: Buffer, signal: AbortSignal) {
-      if (failed) return invalid();
+      if (failed || handling) {
+        failed = true;
+        return invalid();
+      }
+      handling = true;
       try {
         context.checkActive(signal);
         const envelope = protocol.accept(bytes);
@@ -229,6 +298,7 @@ export function attemptExchanges(context: AttemptContext) {
         )
           throw new PdfRuntimeError('SOURCE_MISMATCH');
         const payload = await handle(envelope, signal);
+        if (failed) return invalid();
         context.checkActive(signal);
         return ['artifacts', 'refusal'].includes(envelope.kind)
           ? Buffer.alloc(0)
@@ -236,9 +306,15 @@ export function attemptExchanges(context: AttemptContext) {
       } catch (error) {
         failed = true;
         throw error;
+      } finally {
+        handling = false;
       }
     },
     finish(exitCode: number | null) {
+      if (handling) {
+        failed = true;
+        return invalid();
+      }
       if (failed) return invalid();
       if (refusal) {
         if (exitCode !== 1) return invalid();

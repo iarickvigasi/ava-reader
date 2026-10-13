@@ -8,6 +8,7 @@ import type { RecognitionTask } from './generated/RecognitionTask';
 import { attemptExchanges } from './attempt-exchanges';
 import { reconstructionSink } from './reconstruction-sink';
 import { validateSourceFeatures } from '../../library/pdf-import/publication/source-report-features';
+import { validateAnchorContext } from './validate-anchor-context';
 
 export async function runAttempt(
   input: {
@@ -26,7 +27,18 @@ export async function runAttempt(
     input.sandboxInput();
     if (signal?.aborted) throw new PdfRuntimeError('DISPATCH_NOT_AUTHORIZED');
   };
-  const exchanges = attemptExchanges({ ...input, checkActive });
+  const exchanges = attemptExchanges({
+    ...input,
+    checkActive,
+    validateAnchorContext: (correction, task, signal) =>
+      validateAnchorContext(
+        correction,
+        task,
+        input.deps.sandbox,
+        input.sandboxInput,
+        signal,
+      ),
+  });
   const sink = reconstructionSink(input.deps, checkActive, semantic);
   const result = await input.deps.sandbox({
     ...input.sandboxInput(),

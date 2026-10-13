@@ -6,6 +6,11 @@ import { refinementResponse } from './refinement-response';
 import { providerTask } from './provider-task';
 import { refinementProviderTask } from './refinement-provider-task';
 import { recognitionResponse } from './recognition-response';
+import type { RecognitionResponse } from './generated/RecognitionResponse';
+import type { RecognitionAnchorContextTask } from './generated/RecognitionAnchorContextTask';
+import { anchorContextProviderTask } from './anchor-context-provider-task';
+import { anchorContextResponse } from './anchor-context-response';
+import { PdfRuntimeError } from '../runtime/runtime-error';
 
 export type AttemptContext = {
   deps: CoordinatorDependencies;
@@ -14,6 +19,11 @@ export type AttemptContext = {
   providerMode: string;
   pageLimit: number;
   sourceLayoutPolicy?: NativeLayoutPolicy;
+  validateAnchorContext?: (
+    correction: RecognitionAnchorContextTask,
+    task: RecognitionTask,
+    signal: AbortSignal,
+  ) => Promise<void>;
   checkActive: (signal: AbortSignal) => void;
 };
 
@@ -43,4 +53,24 @@ export async function refineAttemptTask(
   );
   context.checkActive(signal);
   return refinementResponse(task, receipt.output);
+}
+
+export async function correctAttemptAnchorContext(
+  task: RecognitionAnchorContextTask,
+  parent: RecognitionTask,
+  original: RecognitionResponse,
+  context: AttemptContext,
+  signal: AbortSignal,
+) {
+  context.checkActive(signal);
+  if (!context.validateAnchorContext)
+    throw new PdfRuntimeError('DISPATCH_NOT_AUTHORIZED');
+  await context.validateAnchorContext(task, parent, signal);
+  context.checkActive(signal);
+  const receipt = await context.deps.dispatch(
+    anchorContextProviderTask(task, parent, original),
+    signal,
+  );
+  context.checkActive(signal);
+  return anchorContextResponse(task, receipt.output, parent, original);
 }
