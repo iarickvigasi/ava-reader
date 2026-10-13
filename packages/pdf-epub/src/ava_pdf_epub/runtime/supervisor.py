@@ -3,6 +3,7 @@
 import json
 import os
 import signal
+import struct
 import subprocess
 import sys
 import time
@@ -10,6 +11,22 @@ from pathlib import Path
 
 from ..contracts.private_files import snapshot
 from .lease_reader import read_lease
+
+# Exact server-captured opt-in configurations. Historical configurations remain untouched.
+# These identities are also verified against the compiled API admission selector in tests.
+_LAYOUT_CONFIGS = {
+    "ava-pdf-prose-en-v2": "937942d4a700d14ac59de24559044e098726fe355173f93680dd4fe0a9929060",
+    "ava-pdf-prose-en-uk-v3": "da2d14755d575a3b0fe0c8a0430dfe093996e144e62bf31c2cc04df450a4e315",
+}
+
+
+def _unique(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    result: dict[str, object] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("Duplicate exchange key")
+        result[key] = value
+    return result
 
 
 def exchange_input(target: str) -> int | None:
@@ -20,19 +37,11 @@ def exchange_input(target: str) -> int | None:
     if marker != "attempt_stream" or target != "ava_pdf_epub.reconstruction_v2":
         raise ValueError("Unapproved exchange entry")
 
-    def unique(pairs: list[tuple[str, object]]) -> dict[str, object]:
-        result = {}
-        for key, value in pairs:
-            if key in result:
-                raise ValueError("Duplicate exchange key")
-            result[key] = value
-        return result
-
     packet = json.loads(
         snapshot(Path("/input"), "reconstruction-request.json", 67108864),
-        object_pairs_hook=unique,
+        object_pairs_hook=_unique,
     )
-    job = json.loads(snapshot(Path("/input"), "job.json", 65536), object_pairs_hook=unique)
+    job = json.loads(snapshot(Path("/input"), "job.json", 65536), object_pairs_hook=_unique)
     if not isinstance(packet, dict) or set(packet) != {"mode", "input"} or packet["mode"] != marker:
         raise ValueError("Unapproved exchange request")
     request = packet["input"]
@@ -43,13 +52,25 @@ def exchange_input(target: str) -> int | None:
         "responses",
         "refinements",
     }
+    layout = (
+        isinstance(request, dict) and request.get("schema_version") == "ava-reconstruct-input-3"
+    )
     if (
         not isinstance(request, dict)
         or not required <= set(request)
-        or set(request) - required - {"source_feature_policy"}
+        or set(request)
+        - required
+        - (
+            {"source_feature_policy", "source_layout_policy"}
+            if layout
+            else {"source_feature_policy"}
+        )
     ):
         raise ValueError("Unapproved exchange fields")
-    if request["schema_version"] != "ava-reconstruct-input-1" or request["profile_id"] not in (
+    if request["schema_version"] not in (
+        "ava-reconstruct-input-1",
+        "ava-reconstruct-input-3",
+    ) or request["profile_id"] not in (
         "ava-pdf-prose-en-v2",
         "ava-pdf-prose-en-uk-v3",
     ):
@@ -77,7 +98,59 @@ def exchange_input(target: str) -> int | None:
         or job.get("profile_id") != request["profile_id"]
     ):
         raise ValueError("Exchange job differs")
+    config = job.get("config_sha256")
+    if layout:
+        if (
+            request.get("source_layout_policy") != "ava-native-layout-1"
+            or request.get("source_feature_policy") != "ava-ocr-source-features-1"
+            or config != _LAYOUT_CONFIGS[request["profile_id"]]
+        ):
+            raise ValueError("Exchange layout differs from captured configuration")
+    elif config in _LAYOUT_CONFIGS.values():
+        raise ValueError("Captured layout cannot use legacy exchange input")
     return None
+
+
+def _entry_refusal(target: str) -> None:
+    """A rejected pre-child entry is not a lease failure or a worker's source finding."""
+    if (
+        target != "ava_pdf_epub.reconstruction_v2"
+        or os.environ.get("AVA_PDF_RUNTIME_EXCHANGE") != "attempt_stream"
+    ):
+        return
+    try:
+        job = json.loads(snapshot(Path("/input"), "job.json", 65536), object_pairs_hook=_unique)
+        if not isinstance(job, dict) or not isinstance(job.get("source"), dict):
+            return
+        digest, profile = job["source"].get("sha256"), job.get("profile_id")
+        if (
+            not isinstance(digest, str)
+            or len(digest) != 64
+            or any(c not in "0123456789abcdef" for c in digest)
+            or profile not in _LAYOUT_CONFIGS
+        ):
+            return
+        data = json.dumps(
+            {
+                "schema_version": "ava-reconstruction-exchange-1",
+                "sequence": 1,
+                "source_sha256": digest,
+                "profile_id": profile,
+                "kind": "refusal",
+                "payload": {
+                    "schema_version": "ava-reconstruction-error-1",
+                    "code": "RECONSTRUCTION_REVIEW_REQUIRED",
+                },
+            },
+            separators=(",", ":"),
+        ).encode()
+        if len(data) > 1024:
+            return
+        sys.stdout.buffer.write(struct.pack(">I", len(data)) + data)
+        sys.stdout.buffer.flush()
+    except Exception:
+        # No arbitrary parser/resource text and no invented source/job binding.
+        return
 
 
 def main() -> None:
@@ -96,6 +169,11 @@ def main() -> None:
     first_sequence = None
     try:
         child_input = exchange_input(target)
+    except Exception:
+        _entry_refusal(target)
+        print("AVA_PDF_EXCHANGE_ENTRY_REFUSED", file=sys.stderr, flush=True)
+        raise SystemExit(1) from None
+    try:
         while True:
             updated = read_lease(
                 sequence,
