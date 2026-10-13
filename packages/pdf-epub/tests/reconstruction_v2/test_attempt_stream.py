@@ -279,6 +279,10 @@ class AttemptStreamTests(unittest.TestCase):
                 "ava_pdf_epub.reconstruction_v2.attempt_stream.validate_tasks",
                 side_effect=validation,
             ),
+            patch(
+                "ava_pdf_epub.reconstruction_v2.recognition_anchor_exchange.validate_tasks",
+                side_effect=validation,
+            ),
             self.assertRaises(AttemptFailure),
         ):
             attempt_stream(
