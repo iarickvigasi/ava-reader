@@ -1,4 +1,4 @@
-import { ButtonLink } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import type { ReportState } from "@/features/admin/pdf-reports/types";
 import {
   REPORT_ROUTE,
@@ -26,20 +26,31 @@ const messages: Record<Exclude<ReportState, "ready">, string> = {
 export function ReportStateNotice({
   state,
   query,
+  onRetry,
 }: {
   state: Exclude<ReportState, "ready">;
   query?: ReportQuery;
+  onRetry?: () => void;
 }) {
   return (
     <div className="space-y-3">
-      <p role={state === "empty" ? "status" : "alert"}>{messages[state]}</p>
+      <p role={state === "empty" ? "status" : "alert"}>
+        {onRetry && state === "signIn"
+          ? "Your operator session could not be verified. Retry this report or sign in again."
+          : messages[state]}
+      </p>
       {["signIn", "accessChanged"].includes(state) && (
         <ButtonLink
-          href={`/sign-in?redirect_url=${encodeURIComponent(REPORT_ROUTE)}`}
+          href={`/sign-in?redirect_url=${encodeURIComponent(query ? reportHref(query) : REPORT_ROUTE)}`}
           size="sm"
         >
           Sign in
         </ButtonLink>
+      )}
+      {onRetry && ["signIn", "accessChanged"].includes(state) && (
+        <Button type="button" onClick={onRetry} size="sm" variant="soft">
+          Retry report
+        </Button>
       )}
       {query && ["changed", "invalid", "unavailable"].includes(state) && (
         <a

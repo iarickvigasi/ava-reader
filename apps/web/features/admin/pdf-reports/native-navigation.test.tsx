@@ -109,3 +109,15 @@ it("opens a lookup match as its own snapshot and restarts stale costs without ei
     view: "cost",
   });
 });
+
+it("preserves exact report reference, view and both cursors through sign-in recovery", () => {
+  const signIn = links(
+    renderToStaticMarkup(<ReportStateNotice state="signIn" query={query} />),
+  ).find(({ label }) => label === "Sign in")!;
+  const target = new URL(
+    signIn.url.searchParams.get("redirect_url")!,
+    "https://ava.invalid",
+  );
+  expect(target.pathname).toBe(REPORT_ROUTE);
+  expect(Object.fromEntries(target.searchParams)).toEqual(query);
+});

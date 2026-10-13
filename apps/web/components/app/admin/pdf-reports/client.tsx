@@ -3,7 +3,11 @@ import { useAuth } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { beginReportRead } from "@/features/admin/pdf-reports/read-client";
 import type { LoadedReport } from "@/features/admin/pdf-reports/load-report";
-import type { Search } from "@/features/admin/pdf-reports/query";
+import {
+  parseReportQuery,
+  type ReportQuery,
+  type Search,
+} from "@/features/admin/pdf-reports/query";
 import { ReportSearchForm } from "./search-form";
 import { ReportStateNotice } from "./state-notice";
 import { ReportResult } from "./result";
@@ -16,7 +20,14 @@ export function ReportClient({
   invalidSearch?: boolean;
 }) {
   const auth = useAuth();
-  const key = JSON.stringify([auth.userId, auth.sessionId, search]);
+  const [retry, setRetry] = useState(0);
+  const key = JSON.stringify([auth.userId, auth.sessionId, search, retry]);
+  let requestedQuery: ReportQuery | undefined;
+  try {
+    requestedQuery = parseReportQuery(search) ?? undefined;
+  } catch {
+    /* Invalid queries have no recovery target. */
+  }
   const [loaded, setLoaded] = useState<{ key: string; result: LoadedReport }>();
   useEffect(() => {
     if (!auth.isLoaded || !auth.isSignedIn || !auth.userId) return;
@@ -25,7 +36,8 @@ export function ReportClient({
     );
   }, [auth.isLoaded, auth.isSignedIn, auth.userId, key, search]);
   if (!auth.isLoaded) return <p role="status">Checking operator session…</p>;
-  if (!auth.isSignedIn) return <ReportStateNotice state="signIn" />;
+  if (!auth.isSignedIn)
+    return <ReportStateNotice state="signIn" query={requestedQuery} />;
   if (!loaded || loaded.key !== key)
     return <p role="status">Loading conversion report…</p>;
   const result: LoadedReport =
@@ -38,7 +50,15 @@ export function ReportClient({
         <ReportSearchForm />
       )}
       {result.state !== "ready" ? (
-        <ReportStateNotice state={result.state} query={result.query} />
+        <ReportStateNotice
+          state={result.state}
+          query={requestedQuery}
+          onRetry={
+            ["signIn", "accessChanged"].includes(result.state)
+              ? () => setRetry((value) => value + 1)
+              : undefined
+          }
+        />
       ) : (
         result.query &&
         result.report && (

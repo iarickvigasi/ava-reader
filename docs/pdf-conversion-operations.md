@@ -288,8 +288,13 @@ admission response's `investigationId` as the investigation reference. Timeline 
 four events per page; the separate cost view reads 25 calls. Timeline and cost cursors are separate.
 Downloaded JSON contains the current safe viewer projection, not the full history;
 unsupported fields are disclosed. The route bypasses service-worker documents and route precache,
-and its visible report is hidden when the signed-in account changes. It provides no conversion,
-retry or accounting writes. Source checks do not establish a normal operator acceptance pass.
+and its visible report is hidden when the signed-in account or session changes. An unavailable
+operator-session check offers an explicit **Retry report** while that account remains signed in;
+it performs another authorized read, without automatically retrying a denial. Sign-in recovery
+preserves the validated report reference, view and both cursors. Only internal, valid report return
+targets are accepted; other sign-in targets retain the ordinary Home return. These controls provide
+no conversion restart or accounting writes. Source checks do not establish a normal operator
+acceptance pass.
 
 Amounts are exact USD nanodollars, represented as decimal strings. Count each provider call once;
 its four enforcement-budget allocations are not four charges. Distinguish settled charges, held

@@ -15,13 +15,17 @@ import { useAuthReadiness } from "@/features/auth/use-auth-readiness";
 import { useAuthOperation } from "@/features/auth/use-auth-operation";
 import { startFreshGoogleSignIn } from "@/features/auth/start-fresh-google-sign-in";
 
+import { reportReturnTarget } from "@/features/admin/pdf-reports/auth-return";
+
 type SignInFlowProps = {
   initialNotice?: string;
+  returnTo?: string;
 };
 
 type Phase = "idle" | "email" | "code";
 
-export function SignInFlow({ initialNotice }: SignInFlowProps) {
+export function SignInFlow({ initialNotice, returnTo }: SignInFlowProps) {
+  const target = reportReturnTarget(returnTo);
   const t = useTranslations("auth.signIn");
   const tShared = useTranslations("auth.shared");
   const { signIn, errors, fetchStatus } = useSignIn();
@@ -43,9 +47,9 @@ export function SignInFlow({ initialNotice }: SignInFlowProps) {
 
   useEffect(() => {
     if (isSignedIn) {
-      router.replace("/app");
+      router.replace(target);
     }
-  }, [isSignedIn, router]);
+  }, [isSignedIn, router, target]);
 
   if (isSignedIn) {
     return null;
@@ -61,7 +65,7 @@ export function SignInFlow({ initialNotice }: SignInFlowProps) {
           return;
         }
 
-        const targetUrl = decorateUrl("/app");
+        const targetUrl = decorateUrl(target);
         router.replace(targetUrl);
       },
     });
@@ -69,7 +73,10 @@ export function SignInFlow({ initialNotice }: SignInFlowProps) {
 
   const startGoogle = async () => {
     setLocalMessage(undefined);
-    const started = await startFreshGoogleSignIn(() => clerk.client?.signIn);
+    const started = await startFreshGoogleSignIn(
+      () => clerk.client?.signIn,
+      target,
+    );
     if (!operation.canCall()) return;
     if (!started) setLocalMessage(t("errors.googleStartFailed"));
   };

@@ -2,6 +2,8 @@ import { getTranslations } from "next-intl/server";
 import { MissingAuthConfiguration } from "@/components/auth/missing-auth-configuration";
 import { SignInFlow } from "@/components/auth/sign-in-flow";
 
+import { reportReturnTarget } from "@/features/admin/pdf-reports/auth-return";
+
 type SignInPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
@@ -31,5 +33,10 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   const t = await getTranslations("auth.signIn.notices");
   const initialNotice = noticeKey ? t(noticeKey) : undefined;
 
-  return <SignInFlow initialNotice={initialNotice} />;
+  return (
+    <SignInFlow
+      initialNotice={initialNotice}
+      returnTo={reportReturnTarget(params.redirect_url)}
+    />
+  );
 }
