@@ -18,10 +18,30 @@ class NativeLineOffset(Record):
     text_sha256: Digest
 
 
+def mapped_native_ids(segments: list[Segment]) -> set[str]:
+    return {
+        ident
+        for s in segments
+        if s.method == "native" and s.text and s.kind not in {"table", "figure"}
+        for ident in s.native_line_ids
+    }
+
+
 def native_line_offsets(
     page: PageObservation, segments: list[Segment], selected: set[str]
 ) -> list[NativeLineOffset]:
     lines = {line.id: line for line in page.lines}
+    if len(lines) != len(page.lines) or len({s.id for s in segments}) != len(segments):
+        raise ValueError("Repeated native source or owner identity")
+    if any(s.page != page.number or s.method == "ocr" for s in segments):
+        raise ValueError("Native page carrier contains a foreign or recognized owner")
+    if any(
+        s.text
+        and s.kind not in {"table", "figure"}
+        and (s.method != "native" or not s.native_line_ids)
+        for s in segments
+    ):
+        raise ValueError("Native text owner has no source line identity")
     if not selected.issubset(lines):
         raise ValueError("Native line map contains a foreign source line")
     output: list[NativeLineOffset] = []
@@ -33,6 +53,8 @@ def native_line_offsets(
             raise ValueError("Native line map has an unqualified owner")
         cursor = 0
         for ident in segment.native_line_ids:
+            if ident not in lines:
+                raise ValueError("Native owner names a foreign source line")
             line = lines[ident]
             if ident in owners:
                 raise ValueError("Native line has more than one mapped owner")
@@ -72,6 +94,7 @@ def mapped_line_offset(
     entry = mappings[line.id]
     if (
         entry.line_id != line.id
+        or owner.method != "native"
         or entry.segment_id != owner.id
         or line.id not in owner.native_line_ids
         or entry.end - entry.start != len(line.text)

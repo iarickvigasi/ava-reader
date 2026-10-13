@@ -7,7 +7,7 @@ from pydantic import Field, model_validator
 from ..contracts.common import Digest, Record
 from ..contracts.profiles import LEGACY_PROFILE, ProfileId
 from .native_layout_policy import NativeLayoutPolicy
-from .native_line_offsets import NativeLineOffset, mapped_line_offset
+from .native_line_offsets import NativeLineOffset, mapped_native_ids, native_line_offsets
 from .observations import PageObservation
 from .observe_tables import TableObservation
 from .recognition_contract import RecognitionTask
@@ -31,10 +31,9 @@ class NativeLayoutPreparedPage(Record):
     def ownership(self) -> "NativeLayoutPreparedPage":
         if len({m.line_id for m in self.native_line_maps}) != len(self.native_line_maps):
             raise ValueError("Repeated native source line map")
-        lines = {line.id: line for line in self.observation.lines}
-        for mapping in self.native_line_maps:
-            owners = [s for s in self.native_segments if mapping.line_id in s.native_line_ids]
-            if len(owners) != 1 or mapping.line_id not in lines:
-                raise ValueError("Native source line map has no unique owner")
-            mapped_line_offset(lines[mapping.line_id], owners[0], {mapping.line_id: mapping})
+        expected = native_line_offsets(
+            self.observation, self.native_segments, mapped_native_ids(self.native_segments)
+        )
+        if expected != self.native_line_maps:
+            raise ValueError("Native source line maps do not reproduce exact ordered ownership")
         return self
