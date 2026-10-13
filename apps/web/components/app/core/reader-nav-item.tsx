@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { readerPanelId } from "@/features/reader/panel-id";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/cn";
@@ -92,13 +91,5 @@ export function ReaderNavItem({
     );
   }
 
-  if (!item.href) {
-    return <div className={className}>{content}</div>;
-  }
-
-  return (
-    <Link aria-label={label} className={className} href={item.href}>
-      {content}
-    </Link>
-  );
+  return null;
 }

@@ -116,23 +116,19 @@
 }
 
 :root[data-theme="dark"] .connect-book-switch-track {
-  background: var(--paper);
-}
-
-:root[data-theme="dark"] .peer:checked ~ .connect-book-switch-track {
-  background: var(--brand-fill);
-}
-
-:root[data-theme="dark"] .connect-book-switch-thumb {
   background: var(--soft-tone-fill);
 }
 
-:root[data-theme="dark"] .peer:checked ~ .connect-book-switch-thumb {
-  background: var(--brand-foreground);
+:root[data-theme="dark"] .peer:checked ~ .connect-book-switch-track {
+  background: var(--soft-tone-fill);
 }
 
-:root:not([data-theme="dark"]) .connect-feature-icon {
+:root[data-theme="dark"] .connect-book-switch-thumb {
   background: var(--paper);
+}
+
+:root[data-theme="dark"] .peer:checked ~ .connect-book-switch-thumb {
+  background: var(--brand-fill);
 }
 
 :root:not([data-theme="dark"]) .connect-hide-profile-button {

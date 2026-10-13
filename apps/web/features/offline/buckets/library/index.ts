@@ -69,3 +69,4 @@ export {
 } from "./pdf-imports/observation-health";
 
 export { usePdfNotices } from "./pdf-imports/notifications/use-notices";
+export { readReaderCover } from "./read-reader-cover";

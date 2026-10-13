@@ -84,7 +84,7 @@
   "explore": {
     "eyebrow": "Explorar",
     "title": "La navegación completa del catálogo llega después",
-    "body": "La pantalla de inicio ya muestra libros destacados y flujos rápidos para añadirlos. Esta sección los ampliará con filtros, descubrimiento y exploración de metadatos.",
+    "body": "Pronto podrás descubrir libros de todo el mundo y leer gratis libros de dominio público en cualquier idioma.",
     "backToHome": "Volver al inicio",
     "openLibrary": "Abrir la biblioteca"
   },
@@ -125,13 +125,13 @@
       "intro": "Comencemos tu exploración. Elige un libro para sumergirte y daremos forma al resto del lector a su alrededor.",
       "import": {
         "title": "Importa tu primer libro",
-        "body": "Lleva tu EPUB o PDF a una biblioteca privada que te acompañe en todos tus dispositivos.",
-        "action": "Subir libro"
+        "body": "Lleva tu EPUB a una biblioteca privada que te acompañe en todos tus dispositivos.",
+        "action": "Subir un libro"
       },
       "explore": {
-        "title": "Explora libros de dominio público",
-        "body": "Empieza con un título de dominio público seleccionado y añádelo a tu estantería con un toque.",
-        "comingSoon": "El catálogo de libros de dominio público está en proceso.",
+        "title": "Explora libros de dominio público (en desarrollo)",
+        "body": "Elige un libro de dominio público y añádelo a tu estantería con un toque.",
+        "comingSoon": "El catálogo de libros de dominio público está en desarrollo.",
         "action": "Explorar el catálogo"
       }
     },
@@ -225,6 +225,21 @@
       "title": "Contacto con los desarrolladores",
       "subtitle": "¿Tienes una idea o una pregunta?",
       "message": "Escribir a {name} por Telegram"
+    },
+    "features": {
+      "label": "Funciones de la plataforma",
+      "understand": {
+        "title": "Una comprensión más profunda",
+        "body": "Traducciones de palabras, explicaciones de la IA y el origen de palabras y expresiones — todo junto al texto. Descubre significados ocultos y referencias culturales sin interrumpir la lectura."
+      },
+      "languages": {
+        "title": "Un libro, dos idiomas",
+        "body": "El original y una traducción paralela, uno al lado de la otra — para comprender el texto y aprender un idioma de forma natural y en contexto."
+      },
+      "habit": {
+        "title": "La lectura como parte de la vida",
+        "body": "Sigue tu progreso, reúne citas y cultiva el hábito de leer cada día. Tus libros favoritos están disponibles sin conexión a internet."
+      }
     }
   },
   "reader": {
@@ -442,11 +457,6 @@
       "newCollection": "Nueva colección",
       "importBook": "Importar nuevo libro"
     },
-    "empty": {
-      "eyebrow": "Biblioteca",
-      "title": "Tus colecciones aparecerán aquí mientras construyes tu mundo de lectura.",
-      "body": "Importa libros o añádelos desde el catálogo público y AVA empezará a organizarlos en colecciones personales."
-    },
     "collection": {
       "itemsAndUnread": "{items} elementos • {unread} sin leer",
       "viewAll": "Ver todo",
@@ -612,6 +622,31 @@
         "title": "Crear colección",
         "create": "Crear colección",
         "creating": "Creando…"
+      }
+    },
+    "introduction": {
+      "eyebrow": "Biblioteca",
+      "title": "Tus colecciones",
+      "body": "Reúne tus libros, organízalos en colecciones y encuentra tu próxima lectura."
+    },
+    "empty": {
+      "eyebrow": "Biblioteca",
+      "title": "Tus colecciones aparecerán aquí mientras construyes tu mundo de lectura.",
+      "body": "Importa libros o añádelos desde el catálogo público y organízalos en colecciones personales"
+    },
+    "features": {
+      "label": "Próximamente",
+      "narration": {
+        "title": "Historias que cobran vida con la voz",
+        "body": "Estamos desarrollando una narración expresiva con voces distintas para cada personaje. El control por voz permitirá pausar y reanudar la narración, incluso cuando tengas las manos ocupadas."
+      },
+      "formats": {
+        "title": "Libros en distintos formatos",
+        "body": "Compatibilidad con EPUB, PDF, FB2 y otros formatos."
+      },
+      "together": {
+        "title": "Muchas más novedades",
+        "body": "Lectura y escucha compartidas del mismo libro en pareja. Las escritoras podrán publicar sus propios libros y encontrar a sus primeros lectores."
       }
     }
   },
@@ -830,16 +865,16 @@
     "comingSoon": "Próximamente",
     "features": {
       "people": {
-        "title": "Encuentra a tu gente",
-        "body": "Conoce a lectores que exploran los mismos libros, autores e ideas y descubre personas con intereses similares."
+        "title": "Un círculo de lectoras afines",
+        "body": "Comparte con tus amigos listas de los libros que estás leyendo. Conoce a lectoras que se apasionan por los mismos libros, autores e ideas."
       },
       "share": {
-        "title": "Comparte tu mundo lector",
-        "body": "Publica listas de lectura, notas, reflexiones, reseñas y tus citas favoritas. Dale a tus descubrimientos un espacio en tu propia página."
+        "title": "Un espacio personal para ideas",
+        "body": "Listas de lectura, notas, descubrimientos, reseñas y citas favoritas en tu página personal. Crea un mapa de conocimiento y conecta ideas aprendidas de distintos libros."
       },
       "conversation": {
-        "title": "Continúa la conversación",
-        "body": "Habla sobre lo que has leído, charla con otros lectores y transforma los intereses compartidos en nuevas amistades."
+        "title": "Libros que nos unen",
+        "body": "Reflexiones sobre lo leído, intercambio de ideas y conversaciones de las que nacen nuevas perspectivas y amistades."
       }
     },
     "privacyTitle": "Tu vida lectora, tú decides.",
@@ -853,7 +888,7 @@
     },
     "profile": {
       "title": "Preséntate",
-      "body": "Unas palabras pueden iniciar una gran conversación. Cuéntales a otras lectoras y otros lectores qué te gusta leer.",
+      "body": "Cuéntales a otros lectores sobre ti",
       "introduction": "Sobre ti · obligatorio",
       "placeholder": "Me encanta la ficción que invita a pensar, las historias inesperadas y los libros que cambian mi forma de ver el mundo.",
       "counter": "{count} / {limit} caracteres",

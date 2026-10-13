@@ -24,7 +24,7 @@ export function ConnectProfileForm({ user }: { user: CurrentUserPayload }) {
         <div className="space-y-3">
           <label
             htmlFor="connect-introduction"
-            className="block font-ui text-xs leading-4 uppercase tracking-[0.16em] text-muted"
+            className="block font-ui text-[0.675rem] font-bold leading-4 uppercase tracking-[0.16em] text-muted sm:text-[0.625rem]"
           >
             {t("introduction")}
           </label>
@@ -39,7 +39,7 @@ export function ConnectProfileForm({ user }: { user: CurrentUserPayload }) {
             placeholder={t("placeholder")}
             value={model.values.introduction}
             onChange={(event) => model.setIntroduction(event.target.value)}
-            className="block w-full resize-none overflow-hidden rounded-control bg-paper px-4 py-3 text-lg leading-7 text-copy-strong outline-none transition focus-visible:ring-2 focus-visible:ring-line-strong sm:overflow-auto"
+            className="block w-full resize-none overflow-hidden rounded-card bg-soft-fill px-4 py-3 text-lg leading-7 text-copy-strong outline-none transition focus-visible:ring-2 focus-visible:ring-line-strong sm:overflow-auto"
           />
           <p
             id="connect-introduction-limit"

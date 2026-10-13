@@ -30,16 +30,25 @@ const RATIO_CLASS = {
   book: "aspect-2/3",
 } as const;
 
+type FittedBookCoverProps = BookCoverProps & { fit?: boolean };
+
 function BookCoverArtwork({
   alt,
   className,
+  fit = false,
   libraryItemId = null,
   ratio = "book",
   src,
   title,
-}: BookCoverProps) {
+}: FittedBookCoverProps) {
   const { artwork, effectiveSrc, handleFailure, handleRef, measure } =
     useBookCoverSrc(src, libraryItemId);
+  const aspectRatio = artwork?.ratio ?? (ratio === "book" ? 2 / 3 : 1);
+  // Fitted covers live inside a size query container, so both bounds are known.
+  const style = {
+    aspectRatio,
+    ...(fit ? { width: `min(100cqw, ${aspectRatio * 100}cqh)` } : {}),
+  };
 
   const frame = cn(
     "overflow-hidden rounded-cover",
@@ -50,14 +59,11 @@ function BookCoverArtwork({
   // No src, or every source we know (the offline-saved blob, then network)
   // has failed — the browser would otherwise paint its broken-image icon.
   if (!effectiveSrc) {
-    return <BookCoverFallback className={frame} title={title} />;
+    return <BookCoverFallback className={frame} title={title} style={style} />;
   }
 
   return (
-    <div
-      className={cn("relative bg-paper-strong", frame)}
-      style={artwork ? { aspectRatio: artwork.ratio } : undefined}
-    >
+    <div className={cn("relative bg-paper-strong", frame)} style={style}>
       {!artwork && (
         <BookCoverFallback
           className="absolute inset-0 size-full"
@@ -77,7 +83,7 @@ function BookCoverArtwork({
   );
 }
 
-export function BookCover(props: BookCoverProps) {
+export function BookCover(props: FittedBookCoverProps) {
   const ownedId = ownedCoverItemId(props.src);
   return ownedId && props.src ? (
     <OwnedCoverSource

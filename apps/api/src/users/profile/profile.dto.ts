@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-export const INTRODUCTION_MINIMUM = 50;
-export const INTRODUCTION_LIMIT = 180;
+export const INTRODUCTION_MINIMUM = 80;
+export const INTRODUCTION_LIMIT = 800;
 
 export const telegramUrlSchema = z
   .string()

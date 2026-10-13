@@ -1,3 +1,5 @@
+import { findNextReaderChapter } from "@/features/reader/find-next-reader-chapter";
+import { BilingualLoadingCover } from "./loading/bilingual-loading-cover";
 import { useTranslations } from "next-intl";
 import { BilingualPanes } from "./layout/bilingual-panes";
 import { bilingualLanguageTag } from "@/features/reader/bilingual/content/language-tag";
@@ -24,9 +26,7 @@ export function BilingualReader(props: ReadyReaderProps) {
     size,
     ...reader
   } = useBilingualReader(props);
-  const nextSource = props.payload.chapters.find(
-    (item) => item.chapterId === props.activeChapter.nextChapterId,
-  );
+  const nextSource = findNextReaderChapter(props);
   return (
     <section
       data-bilingual-reader
@@ -71,6 +71,7 @@ export function BilingualReader(props: ReadyReaderProps) {
               )}
             </BilingualPanes>
           </div>
+          <BilingualLoadingCover props={props} reader={reader} />
         </ReaderPageViewport>
         <BilingualReaderFooter reader={reader} props={props} />
       </ReaderFrame>

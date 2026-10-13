@@ -10,7 +10,9 @@ export function ConnectBookSwitch({
   return (
     <div className="space-y-2">
       <label className="flex cursor-pointer items-center justify-between gap-4">
-        <span className="text-lg text-copy-strong">{t("showBook")}</span>
+        <span className="text-xs font-semibold uppercase tracking-[0.14em] text-ink">
+          {t("showBook")}
+        </span>
         <span className="relative inline-flex shrink-0">
           <input
             type="checkbox"

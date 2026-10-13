@@ -84,7 +84,7 @@
   "explore": {
     "eyebrow": "Explore",
     "title": "Full catalog browsing lands next",
-    "body": "Home already surfaces featured books and quick add flows. This dedicated route will expand that into filtering, discovery, and richer metadata exploration.",
+    "body": "Soon, you’ll be able to discover books from around the world and read public-domain books for free in any language.",
     "backToHome": "Back to Home",
     "openLibrary": "Open Library"
   },
@@ -124,15 +124,15 @@
       "welcome": "Welcome to AVA Reader",
       "intro": "Let's start your exploration. Choose a book to dive into and we'll shape the rest of the reader around it.",
       "import": {
-        "title": "Import Your First Book",
-        "body": "Bring your EPUB or PDF into a private library that follows you across devices.",
-        "action": "Upload book"
+        "title": "Import your first book",
+        "body": "Bring your EPUB into a private library that follows you across devices.",
+        "action": "Upload a book"
       },
       "explore": {
-        "title": "Explore Public Domain Books",
-        "body": "Start with a curated public-domain title and add it to your shelf in one tap.",
-        "comingSoon": "Public domain books catalog is in progress.",
-        "action": "Browse Catalog"
+        "title": "Browse public-domain books (in development)",
+        "body": "Choose a public-domain book and add it to your shelf with one tap.",
+        "comingSoon": "The public-domain book catalog is in development.",
+        "action": "Browse the catalog"
       }
     },
     "stats": {
@@ -225,6 +225,21 @@
       "title": "Contact the developers",
       "subtitle": "Have an idea or a question?",
       "message": "Message {name} on Telegram"
+    },
+    "features": {
+      "label": "Platform features",
+      "understand": {
+        "title": "Deeper understanding",
+        "body": "Word translations, AI explanations, and the origins of words and phrases — all alongside the text. Discover hidden meanings and cultural references without interrupting your reading."
+      },
+      "languages": {
+        "title": "One book, two languages",
+        "body": "The original and a parallel translation side by side — for understanding the text and learning a language naturally in context."
+      },
+      "habit": {
+        "title": "Reading as part of everyday life",
+        "body": "Track your progress, collect quotes, and build a daily reading habit. Your favourite books are available without an internet connection."
+      }
     }
   },
   "reader": {
@@ -442,11 +457,6 @@
       "newCollection": "New collection",
       "importBook": "Import new book"
     },
-    "empty": {
-      "eyebrow": "Library",
-      "title": "Your collections will appear here as you build your reading world.",
-      "body": "Import books or add them from the public catalog and AVA will start organizing them into personal collections."
-    },
     "collection": {
       "itemsAndUnread": "{items} items • {unread} unread",
       "viewAll": "View all",
@@ -612,6 +622,31 @@
         "title": "Create collection",
         "create": "Create collection",
         "creating": "Creating…"
+      }
+    },
+    "introduction": {
+      "eyebrow": "Library",
+      "title": "Your collections",
+      "body": "Keep your books together, organize them into collections, and find your next read."
+    },
+    "empty": {
+      "eyebrow": "Library",
+      "title": "Your collections will appear here as you build your reading world.",
+      "body": "Import books or add them from the public catalog and organize them into personal collections"
+    },
+    "features": {
+      "label": "Coming soon",
+      "narration": {
+        "title": "Stories brought to life through voice",
+        "body": "Expressive narration with distinct voices for characters is currently in development. Voice controls will let you pause and resume narration, even when your hands are busy."
+      },
+      "formats": {
+        "title": "Books in different formats",
+        "body": "Support for EPUB, PDF, FB2, and other formats."
+      },
+      "together": {
+        "title": "Many more things to discover",
+        "body": "Shared reading and listening to the same book as a couple. Writers will be able to publish their own books and reach their first readers."
       }
     }
   },
@@ -830,16 +865,16 @@
     "comingSoon": "Coming soon",
     "features": {
       "people": {
-        "title": "Find your people",
-        "body": "Meet readers exploring the same books, authors, and ideas — and discover people with similar interests."
+        "title": "A circle of like-minded readers",
+        "body": "Share lists of the books you’re reading with friends. Meet women readers who share your enthusiasm for the same books, authors, and ideas."
       },
       "share": {
-        "title": "Share your reading world",
-        "body": "Publish reading lists, notes, insights, reviews, and favourite quotes. Give your discoveries a place on your own page."
+        "title": "A personal space for ideas",
+        "body": "Reading lists, notes, discoveries, reviews, and favourite quotes on your personal page. Create a knowledge map and connect ideas you’ve learned from different books."
       },
       "conversation": {
-        "title": "Keep the conversation going",
-        "body": "Discuss what you’ve read, chat with other readers, and turn shared interests into new friendships."
+        "title": "Books that bring us together",
+        "body": "Reflections on what you’ve read, exchanges of ideas, and conversations that inspire new perspectives and friendships."
       }
     },
     "privacyTitle": "Your reading life, your choice.",
@@ -853,7 +888,7 @@
     },
     "profile": {
       "title": "Introduce yourself",
-      "body": "A few words can be the start of a great conversation. Tell other readers what you enjoy reading.",
+      "body": "Tell other readers about yourself",
       "introduction": "About you · required",
       "placeholder": "I love thoughtful fiction, unexpected histories, and books that change how I see the world.",
       "counter": "{count} / {limit} characters",

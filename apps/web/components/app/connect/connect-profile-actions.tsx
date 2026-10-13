@@ -9,11 +9,12 @@ export function ConnectProfileActions({
   model: ReturnType<typeof useConnectProfile>;
 }) {
   const t = useTranslations("connect.profile");
-  const showSave = model.published && (model.dirty || model.status === "error");
   return (
-    <div className="flex min-h-44 flex-wrap content-start items-start justify-center gap-3 text-center sm:min-h-0 sm:items-center sm:justify-start sm:text-left">
+    <div className="flex min-h-44 flex-wrap content-start items-center justify-center gap-3 text-center sm:min-h-0 sm:justify-end sm:text-left">
       {(!model.published || model.dirty || model.status === "error") && (
         <Button
+          size="sm"
+          className="min-h-12! px-8! font-bold! tracking-[0.2em]! bg-soft-fill! text-ink! hover:bg-brand-fill! hover:text-brand-foreground!"
           type="submit"
           disabled={!model.valid || model.busy || !model.ready}
         >
@@ -24,29 +25,30 @@ export function ConnectProfileActions({
         <Button
           type="button"
           variant="soft"
-          className="connect-hide-profile-button"
+          size="sm"
+          className="connect-hide-profile-button min-h-12! px-8! font-bold! tracking-[0.2em]! bg-soft-fill! hover:bg-soft-fill! hover:text-ink! [[data-theme=light]_&]:hover:bg-soft-tone-fill! [[data-theme=dark]_&]:hover:bg-soft-tone-fill!"
           disabled={model.busy || !model.ready}
           onClick={model.hide}
         >
           {t("hide")}
         </Button>
       )}
-      {!model.published && model.status === "hidden" && (
-        <p className="text-sm text-muted">{t("hideHint")}</p>
-      )}
-      {(model.status === "published" || model.status === "error") && (
-        <p
-          role="status"
-          aria-live="polite"
-          className={cn(
-            "text-sm",
-            model.status === "error" ? "text-danger" : "text-muted",
-            showSave ? "w-full" : "w-full sm:min-w-0 sm:flex-1",
-          )}
-        >
-          {t(model.status)}
-        </p>
-      )}
+      <p
+        role="status"
+        aria-live="polite"
+        className={cn(
+          "order-first min-h-5 w-full min-w-0 text-sm sm:mr-auto sm:w-auto",
+          model.status === "error" ? "text-danger" : "text-muted",
+        )}
+      >
+        {t(
+          model.status === "error"
+            ? "error"
+            : model.published
+              ? "published"
+              : "hideHint",
+        )}
+      </p>
     </div>
   );
 }

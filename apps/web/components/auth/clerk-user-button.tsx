@@ -8,14 +8,16 @@ import { Button, ButtonLink } from "@/components/ui/button";
 import type { CurrentUserPayload } from "@/lib/api-types/user";
 import { useLocalSignOut } from "@/features/auth/use-local-sign-out";
 import { useUserMenuDismissal } from "@/features/auth/use-user-menu-dismissal";
-import { UserAvatarFallback } from "./user-avatar-fallback";
+import { UserMenuTrigger } from "./user-menu-trigger";
 
 // App-owned sign-out distinguishes explicit intent from provider session loss.
 // A native details menu remains usable when Clerk's CDN is unavailable.
 export function UserMenuButton({
   currentUser = null,
+  showName = false,
 }: {
   currentUser?: CurrentUserPayload | null;
+  showName?: boolean;
 }) {
   const clerk = useClerk();
   const [editing, setEditing] = useState(false);
@@ -26,12 +28,7 @@ export function UserMenuButton({
   return (
     <>
       <details ref={menuRef} className="relative">
-        <summary
-          aria-label={t("menu")}
-          className="cursor-pointer list-none rounded-full [&::-webkit-details-marker]:hidden"
-        >
-          <UserAvatarFallback currentUser={currentUser} />
-        </summary>
+        <UserMenuTrigger currentUser={currentUser} showName={showName} />
         <div className="absolute right-0 z-50 mt-3 grid min-w-52 gap-2 rounded-card bg-paper p-3 shadow-(--shadow-card)">
           {currentUser && (
             <Button

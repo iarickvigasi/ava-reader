@@ -1,12 +1,11 @@
 # Home dashboard
 
-> Status: shipped · Updated: 2026-09-25 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
+> Status: shipped · Updated: 2026-10-13 · ADRs: [[3-offline-first-dexie-buckets]] · Code:
 > apps/web/components/app/home, apps/web/features/offline/buckets/home
 
 ## Summary
 
-The signed-in landing page: continue reading, reading stats, daily goal, recent annotations, and
-discovery. The daily entry point into the habit.
+The signed-in landing page: resume reading, stats, daily goal, annotations, and discovery.
 
 ## Scope
 
@@ -78,6 +77,8 @@ discovery. The daily entry point into the habit.
     Offline users can browse already loaded weeks. Missing weeks remain retryable; authentication
     recovery or reconnect automatically retries the requested week without a page reload.
     Token and request deadlines prevent an indefinitely pending skeleton.
+12. A localized `FeatureCards` introduction. Empty Home places it after welcome/import actions;
+    populated Home places it immediately before developer contacts and feedback.
 
 Developer contacts appear above feedback on mobile and in the left column beside it on desktop;
 see [[10-user-profile]] for eligibility,
@@ -90,8 +91,7 @@ serves the shell; client hydrates from the cached row.
 
 ## Edge cases
 
-Cold start offline (no cached payload) → minimal shell; stale payload + fresh local deltas; no
-current book.
+Cold start offline → minimal shell; stale payload + fresh local deltas; no current book.
 
 ## Acceptance criteria
 

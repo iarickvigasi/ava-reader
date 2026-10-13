@@ -1,3 +1,7 @@
+"use client";
+
+import { ReaderLoadingCover } from "./view/reader-loading-cover";
+
 // Pulse skeleton shown while the reader shell resolves its payload from Dexie
 // or the network (ADR 4). Mirrors the reader's exact chrome (same canvas,
 // sidebar offset, and column width as reader-screen.tsx / ready-reader.tsx)
@@ -6,8 +10,9 @@
 export function ReaderShellSkeleton() {
   return (
     <div className="h-dvh bg-paper text-ink">
-      <div className="mx-auto h-full max-w-375 overflow-hidden md:pl-20">
-        <div className="px-4 pb-2 pt-2 sm:px-6 sm:pb-5 sm:pt-8 md:px-7 md:pt-8 lg:px-8">
+      <div className="relative mx-auto h-full max-w-375 overflow-hidden md:pl-20">
+        <div className="relative h-full px-4 pb-2 pt-2 sm:px-6 sm:pb-5 sm:pt-8 md:px-7 md:pt-8 lg:px-8">
+          <ReaderLoadingCover loading />
           <section className="mx-auto flex h-full max-w-312 min-w-0 flex-col">
             <div className="hidden sm:block">
               <div className="h-7 w-72 animate-pulse rounded bg-paper-strong" />

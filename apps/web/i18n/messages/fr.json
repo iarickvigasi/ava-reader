@@ -84,7 +84,7 @@
   "explore": {
     "eyebrow": "Explorer",
     "title": "La navigation complète du catalogue arrive bientôt",
-    "body": "L'accueil propose déjà des livres mis en avant et un ajout rapide. Cette section les enrichira avec des filtres, de la découverte et une exploration plus riche des métadonnées.",
+    "body": "Bientôt, vous pourrez découvrir des livres du monde entier et lire gratuitement des livres du domaine public dans toutes les langues.",
     "backToHome": "Retour à l'accueil",
     "openLibrary": "Ouvrir la bibliothèque"
   },
@@ -125,13 +125,13 @@
       "intro": "Commençons votre exploration. Choisissez un livre dans lequel plonger et nous façonnerons le reste du lecteur autour de lui.",
       "import": {
         "title": "Importez votre premier livre",
-        "body": "Apportez votre EPUB ou PDF dans une bibliothèque privée qui vous suit sur tous vos appareils.",
-        "action": "Téléverser un livre"
+        "body": "Apportez votre EPUB dans une bibliothèque privée qui vous suit sur tous vos appareils.",
+        "action": "Importer un livre"
       },
       "explore": {
-        "title": "Explorer les livres du domaine public",
-        "body": "Commencez par un titre du domaine public sélectionné et ajoutez-le à votre étagère en un geste.",
-        "comingSoon": "Le catalogue des livres du domaine public est en cours de préparation.",
+        "title": "Parcourez les livres du domaine public (en développement)",
+        "body": "Choisissez un livre du domaine public et ajoutez-le à votre bibliothèque en un geste.",
+        "comingSoon": "Le catalogue de livres du domaine public est en cours de développement.",
         "action": "Parcourir le catalogue"
       }
     },
@@ -225,6 +225,21 @@
       "title": "Contacter les développeurs",
       "subtitle": "Une idée ou une question ?",
       "message": "Écrire à {name} sur Telegram"
+    },
+    "features": {
+      "label": "Fonctionnalités de la plateforme",
+      "understand": {
+        "title": "Une compréhension plus profonde",
+        "body": "Traduction de mots, explications de l’IA et exploration de l’origine des mots et des expressions — tout est à côté du texte. Découvrez les sens cachés et les références culturelles sans interrompre votre lecture."
+      },
+      "languages": {
+        "title": "Un livre, deux langues",
+        "body": "L’original et une traduction parallèle côte à côte — pour comprendre le texte et apprendre une langue naturellement, en contexte."
+      },
+      "habit": {
+        "title": "La lecture au cœur du quotidien",
+        "body": "Suivez vos progrès, recueillez des citations et cultivez l’habitude de lire chaque jour. Vos livres préférés sont disponibles sans connexion internet."
+      }
     }
   },
   "reader": {
@@ -442,11 +457,6 @@
       "newCollection": "Nouvelle collection",
       "importBook": "Importer un nouveau livre"
     },
-    "empty": {
-      "eyebrow": "Bibliothèque",
-      "title": "Vos collections apparaîtront ici à mesure que vous construirez votre univers de lecture.",
-      "body": "Importez des livres ou ajoutez-les depuis le catalogue public, et AVA commencera à les organiser en collections personnelles."
-    },
     "collection": {
       "itemsAndUnread": "{items} éléments • {unread} non lu(s)",
       "viewAll": "Tout voir",
@@ -612,6 +622,31 @@
         "title": "Créer une collection",
         "create": "Créer la collection",
         "creating": "Création…"
+      }
+    },
+    "introduction": {
+      "eyebrow": "Bibliothèque",
+      "title": "Vos collections",
+      "body": "Gardez vos livres ensemble, organisez-les en collections et trouvez votre prochaine lecture."
+    },
+    "empty": {
+      "eyebrow": "Bibliothèque",
+      "title": "Vos collections apparaîtront ici à mesure que vous construirez votre univers de lecture.",
+      "body": "Importez des livres ou ajoutez-les depuis le catalogue public et organisez-les en collections personnelles"
+    },
+    "features": {
+      "label": "Bientôt disponible",
+      "narration": {
+        "title": "Des histoires qui prennent vie en voix",
+        "body": "Une narration expressive avec des voix distinctes pour les personnages est en cours de développement. La commande vocale permettra de mettre la narration en pause et de la reprendre, même lorsque vos mains sont occupées."
+      },
+      "formats": {
+        "title": "Des livres dans différents formats",
+        "body": "Prise en charge des formats EPUB, PDF, FB2 et d’autres formats."
+      },
+      "together": {
+        "title": "Bien d’autres découvertes",
+        "body": "Lecture et écoute partagées d’un même livre en couple. Les autrices pourront publier leurs propres livres et rencontrer leurs premiers lecteurs."
       }
     }
   },
@@ -830,16 +865,16 @@
     "comingSoon": "Bientôt disponible",
     "features": {
       "people": {
-        "title": "Trouvez vos affinités",
-        "body": "Rencontrez des lectrices qui explorent les mêmes livres, auteurs et idées, et découvrez des personnes aux intérêts similaires."
+        "title": "Un cercle de lectrices qui vous ressemblent",
+        "body": "Partagez avec vos amis des listes des livres que vous lisez. Rencontrez des lectrices passionnées par les mêmes livres, auteurs et idées."
       },
       "share": {
-        "title": "Partagez vos lectures",
-        "body": "Publiez vos listes de lecture, notes, réflexions, avis et citations préférées. Donnez une place à vos découvertes sur votre propre page."
+        "title": "Un espace personnel pour vos idées",
+        "body": "Listes de lecture, notes, découvertes, avis et citations préférées sur votre page personnelle. Créez une carte des connaissances et reliez les idées tirées de différents livres."
       },
       "conversation": {
-        "title": "Prolongez la conversation",
-        "body": "Discutez de vos lectures, échangez avec d’autres lectrices et faites naître de nouvelles amitiés autour de vos intérêts communs."
+        "title": "Des livres qui nous rapprochent",
+        "body": "Réflexions sur vos lectures, échanges d’idées et conversations qui font naître de nouveaux regards et des amitiés."
       }
     },
     "privacyTitle": "Vos lectures, vos choix.",
@@ -853,7 +888,7 @@
     },
     "profile": {
       "title": "Présentez-vous",
-      "body": "Quelques mots peuvent lancer une belle conversation. Dites aux autres lectrices et lecteurs ce que vous aimez lire.",
+      "body": "Parlez de vous aux autres lecteurs",
       "introduction": "À propos de vous · obligatoire",
       "placeholder": "J’aime les romans qui font réfléchir, les histoires inattendues et les livres qui changent mon regard sur le monde.",
       "counter": "{count} / {limit} caractères",

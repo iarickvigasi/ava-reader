@@ -3,6 +3,8 @@ import type { ReaderStatusPayload } from "@/lib/api-types/reader";
 import { ReaderPayloadError } from "./data/reader-payload-error";
 import { useReaderScreenLoader } from "./use-reader-screen-loader";
 import { ReaderScreenLoader } from "./reader-screen-loader";
+import { ReaderCoverContext } from "@/features/reader/reader-cover-context";
+import { ReaderCoverTransition } from "./view/reader-cover-transition";
 
 // Run the real hook and orchestration with the repository's injected-hook
 // test pattern. Effects commit after render; deferred requests expose races.
@@ -24,7 +26,8 @@ const hooks = vi.hoisted(() => ({
   skeleton: vi.fn(),
   online: true,
 }));
-vi.mock("react", () => ({
+vi.mock("react", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("react")>()),
   useState: (initial: unknown) => {
     const index = hooks.stateCursor++;
     if (!(index in hooks.states)) hooks.states[index] = initial;
@@ -53,6 +56,9 @@ vi.mock("react", () => ({
       hooks.effects[index] = { deps, cleanup: effect() || undefined };
     });
   },
+}));
+vi.mock("@/features/reader/use-reader-cover", () => ({
+  useReaderCover: () => null,
 }));
 vi.mock("@/features/auth/use-offline-auth", () => ({
   useOfflineAuth: () => ({
@@ -112,7 +118,10 @@ function screenBoundary() {
   hooks.stateCursor = hooks.refCursor = hooks.effectCursor = 0;
   const boundary = ReaderScreenLoader();
   hooks.pending.splice(0).forEach((commit) => commit());
-  return boundary;
+  expect(boundary.type).toBe(ReaderCoverContext);
+  const transition = boundary.props.children;
+  expect(transition.type).toBe(ReaderCoverTransition);
+  return transition.props.children;
 }
 const turn = () => new Promise<void>((resolve) => setImmediate(resolve));
 function unmount() {

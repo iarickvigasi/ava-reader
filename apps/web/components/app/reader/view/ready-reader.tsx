@@ -1,3 +1,4 @@
+import { ReaderLoadingCover } from "./reader-loading-cover";
 import { useEffect, useMemo } from "react";
 import { useReaderUi } from "@/components/app/core/reader-ui-context";
 import { ReaderArticle } from "../content/reader-article";
@@ -5,9 +6,7 @@ import { ReaderPaginationPreloader } from "../pagination/measurement/reader-pagi
 import { ReadyReaderProgress } from "./ready-reader-progress";
 import { ReaderFrame } from "./reader-frame";
 import { ReaderPageViewport } from "./reader-page-viewport";
-import {
-  READER_VISIBILITY_HIDDEN,
-} from "../shared/constants";
+import { READER_VISIBILITY_HIDDEN } from "../shared/constants";
 import type { ReadyReaderProps } from "../shared/types";
 import { useReaderPagination } from "../pagination/use-reader-pagination";
 import { useHighlightSelectionBridge } from "../selection/use-highlight-selection-bridge";
@@ -157,9 +156,12 @@ export function ReadyReader({
               style={articleStyle}
             />
           </div>
-          {shouldMaskArticle ? (
-            <div className="pointer-events-none absolute inset-0 bg-paper/55 backdrop-blur-[2px]" />
-          ) : null}
+          {!embedded && (
+            <ReaderLoadingCover
+              loading={shouldMaskArticle}
+              book={payload.book}
+            />
+          )}
         </ReaderPageViewport>
 
         {!embedded && (

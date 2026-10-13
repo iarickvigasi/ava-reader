@@ -84,7 +84,7 @@
   "explore": {
     "eyebrow": "Entdecken",
     "title": "Vollständiges Stöbern im Katalog kommt als Nächstes",
-    "body": "Die Startseite zeigt bereits ausgewählte Bücher und schnelle Hinzufüge-Flows. Diese Ansicht erweitert sie um Filter, Entdeckung und reichhaltigere Metadaten-Erkundung.",
+    "body": "Bald kannst du Bücher aus aller Welt entdecken und gemeinfreie Bücher kostenlos in jeder Sprache lesen.",
     "backToHome": "Zurück zur Startseite",
     "openLibrary": "Bibliothek öffnen"
   },
@@ -125,14 +125,14 @@
       "intro": "Lass uns mit deiner Erkundung beginnen. Wähle ein Buch, in das du eintauchen möchtest, und wir gestalten den Rest des Lesers darum herum.",
       "import": {
         "title": "Importiere dein erstes Buch",
-        "body": "Bring deine EPUB- oder PDF-Datei in eine private Bibliothek, die dich auf allen Geräten begleitet.",
-        "action": "Buch hochladen"
+        "body": "Bring deine EPUB-Datei in eine private Bibliothek, die dich auf allen Geräten begleitet.",
+        "action": "Ein Buch hochladen"
       },
       "explore": {
-        "title": "Bücher aus dem Public Domain entdecken",
-        "body": "Beginne mit einem kuratierten Public-Domain-Titel und füge ihn mit einem Tipp deinem Regal hinzu.",
-        "comingSoon": "Der Public-Domain-Katalog ist in Arbeit.",
-        "action": "Katalog durchsuchen"
+        "title": "Entdecke gemeinfreie Bücher (in Entwicklung)",
+        "body": "Wähle ein gemeinfreies Buch und füge es mit einem Tippen deinem Regal hinzu.",
+        "comingSoon": "Der Katalog gemeinfreier Bücher ist in Entwicklung.",
+        "action": "Katalog ansehen"
       }
     },
     "stats": {
@@ -225,6 +225,21 @@
       "title": "Kontakt zum Entwicklerteam",
       "subtitle": "Hast du eine Idee oder eine Frage?",
       "message": "{name} auf Telegram schreiben"
+    },
+    "features": {
+      "label": "Funktionen der Plattform",
+      "understand": {
+        "title": "Tieferes Verständnis",
+        "body": "Wortübersetzungen, KI-Erklärungen und die Herkunft von Wörtern und Wendungen — alles direkt neben dem Text. Entdecke verborgene Bedeutungen und kulturelle Anspielungen, ohne das Lesen zu unterbrechen."
+      },
+      "languages": {
+        "title": "Ein Buch, zwei Sprachen",
+        "body": "Original und parallele Übersetzung nebeneinander — um den Text zu verstehen und eine Sprache ganz natürlich im Kontext zu lernen."
+      },
+      "habit": {
+        "title": "Lesen als Teil des Lebens",
+        "body": "Verfolge deinen Fortschritt, sammle Zitate und pflege deine tägliche Leseroutine. Deine Lieblingsbücher sind auch ohne Internetverbindung verfügbar."
+      }
     }
   },
   "reader": {
@@ -442,11 +457,6 @@
       "newCollection": "Neue Sammlung",
       "importBook": "Neues Buch importieren"
     },
-    "empty": {
-      "eyebrow": "Bibliothek",
-      "title": "Deine Sammlungen erscheinen hier, während du deine Lesewelt aufbaust.",
-      "body": "Importiere Bücher oder füge sie aus dem öffentlichen Katalog hinzu, und AVA beginnt, sie in persönliche Sammlungen zu organisieren."
-    },
     "collection": {
       "itemsAndUnread": "{items} Einträge • {unread} ungelesen",
       "viewAll": "Alle ansehen",
@@ -612,6 +622,31 @@
         "title": "Sammlung erstellen",
         "create": "Sammlung erstellen",
         "creating": "Wird erstellt…"
+      }
+    },
+    "introduction": {
+      "eyebrow": "Bibliothek",
+      "title": "Deine Sammlungen",
+      "body": "Bewahre deine Bücher an einem Ort auf, ordne sie in Sammlungen und finde deine nächste Lektüre."
+    },
+    "empty": {
+      "eyebrow": "Bibliothek",
+      "title": "Deine Sammlungen erscheinen hier, während du deine Lesewelt aufbaust.",
+      "body": "Importiere Bücher oder füge sie aus dem öffentlichen Katalog hinzu und ordne sie in persönlichen Sammlungen"
+    },
+    "features": {
+      "label": "Demnächst",
+      "narration": {
+        "title": "Geschichten, die durch Stimmen lebendig werden",
+        "body": "Ausdrucksstarke Lesungen mit eigenen Stimmen für die Figuren sind derzeit in Entwicklung. Mit Sprachsteuerung kannst du die Lesung pausieren und fortsetzen, auch wenn du die Hände voll hast."
+      },
+      "formats": {
+        "title": "Bücher in verschiedenen Formaten",
+        "body": "Unterstützung für EPUB, PDF, FB2 und weitere Formate."
+      },
+      "together": {
+        "title": "Viele weitere Entdeckungen",
+        "body": "Gemeinsames Lesen und Hören desselben Buches als Paar. Schriftstellerinnen können ihre eigenen Bücher veröffentlichen und ihre ersten Leserinnen und Leser erreichen."
       }
     }
   },
@@ -830,16 +865,16 @@
     "comingSoon": "Demnächst",
     "features": {
       "people": {
-        "title": "Finde Gleichgesinnte",
-        "body": "Entdecke Menschen, die dieselben Bücher, Autoren und Ideen erkunden und ähnliche Interessen haben."
+        "title": "Ein Kreis gleichgesinnter Leserinnen",
+        "body": "Teile Listen der Bücher, die du liest, mit Freunden. Lerne Leserinnen kennen, die sich für dieselben Bücher, Autoren und Ideen begeistern."
       },
       "share": {
-        "title": "Teile deine Lesewelt",
-        "body": "Veröffentliche Leselisten, Notizen, Erkenntnisse, Rezensionen und Lieblingszitate. Gib deinen Entdeckungen einen Platz auf deiner eigenen Seite."
+        "title": "Ein persönlicher Raum für Ideen",
+        "body": "Leselisten, Notizen, Entdeckungen, Rezensionen und Lieblingszitate auf deiner persönlichen Seite. Erstelle eine Wissenskarte und verbinde Ideen aus verschiedenen Büchern."
       },
       "conversation": {
-        "title": "Bleib im Gespräch",
-        "body": "Diskutiere über das Gelesene, chatte mit anderen Leserinnen und Lesern und lass aus gemeinsamen Interessen neue Freundschaften entstehen."
+        "title": "Bücher, die uns verbinden",
+        "body": "Gedanken zum Gelesenen, Ideenaustausch und Gespräche, aus denen neue Perspektiven und Freundschaften entstehen."
       }
     },
     "privacyTitle": "Deine Lesewelt, deine Entscheidung.",
@@ -853,7 +888,7 @@
     },
     "profile": {
       "title": "Stell dich vor",
-      "body": "Ein paar Worte können ein gutes Gespräch beginnen. Erzähle anderen Leserinnen und Lesern, was du gerne liest.",
+      "body": "Erzähle anderen Leserinnen und Lesern von dir",
       "introduction": "Über dich · erforderlich",
       "placeholder": "Ich liebe nachdenkliche Romane, überraschende Geschichten und Bücher, die meinen Blick auf die Welt verändern.",
       "counter": "{count} / {limit} Zeichen",

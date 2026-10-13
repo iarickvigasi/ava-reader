@@ -1,4 +1,4 @@
-import { useEffect, useRef, type Dispatch, type SetStateAction } from "react";
+import { useRef, type Dispatch, type SetStateAction } from "react";
 import type { ReaderLocator, ReaderStatusPayload } from "@/lib/api-types";
 import type { ReaderControllerAuth } from "../../../shared/types";
 import type { ReaderResumePhase } from "../../../shared/constants";
@@ -35,14 +35,6 @@ export function useReaderProgressSync({
   const pendingServerLocatorRef = useRef<ReaderLocator | null>(null);
   const pendingServerLocatorKeyRef = useRef<string | null>(null);
   const scheduledPersistTimeoutRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (scheduledPersistTimeoutRef.current !== null) {
-        window.clearTimeout(scheduledPersistTimeoutRef.current);
-      }
-    };
-  }, []);
 
   const persistPendingProgress = usePersistServerProgress({
     getToken,

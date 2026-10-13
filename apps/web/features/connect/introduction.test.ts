@@ -6,16 +6,16 @@ import {
 } from "./introduction";
 
 it("counts and limits Unicode code points without breaking surrogate pairs", () => {
-  const value = "📚".repeat(181);
-  expect(introductionLength(value)).toBe(181);
-  expect(clampIntroduction(value)).toBe("📚".repeat(180));
+  const value = "📚".repeat(801);
+  expect(introductionLength(value)).toBe(801);
+  expect(clampIntroduction(value)).toBe("📚".repeat(800));
 });
 
-it("requires 50–180 trimmed code points to publish", () => {
-  expect(isPublishableIntroduction("a".repeat(49))).toBe(false);
-  expect(isPublishableIntroduction(" " + "a".repeat(49) + " ")).toBe(false);
-  expect(isPublishableIntroduction("a".repeat(50))).toBe(true);
-  expect(isPublishableIntroduction("📚".repeat(50))).toBe(true);
-  expect(isPublishableIntroduction("a".repeat(180))).toBe(true);
-  expect(isPublishableIntroduction("a".repeat(181))).toBe(false);
+it("requires 80–800 trimmed code points to publish", () => {
+  expect(isPublishableIntroduction("a".repeat(79))).toBe(false);
+  expect(isPublishableIntroduction(" " + "a".repeat(79) + " ")).toBe(false);
+  expect(isPublishableIntroduction("a".repeat(80))).toBe(true);
+  expect(isPublishableIntroduction("📚".repeat(80))).toBe(true);
+  expect(isPublishableIntroduction("a".repeat(800))).toBe(true);
+  expect(isPublishableIntroduction("a".repeat(801))).toBe(false);
 });
