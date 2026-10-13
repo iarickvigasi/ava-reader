@@ -2,6 +2,7 @@
 
 from typing import Literal
 
+from ..contracts.layout_normalization_v3 import LayoutNormalizationMapV3
 from ..contracts.layout_wrap import compound_wrap
 from .assembly_state import AssemblyState
 from .continuation_boundary import inferred_continuation
@@ -64,6 +65,10 @@ def stream_joins(segments: list[Segment], state: AssemblyState) -> list[Segment]
             )
             left_map = state.normalization_maps.get(previous.id)
             right_map = state.normalization_maps.get(segment.id)
+            if isinstance(left_map, LayoutNormalizationMapV3) or isinstance(
+                right_map, LayoutNormalizationMapV3
+            ):
+                raise ValueError("Sparse lexical normalization must follow confirmed source joins")
             if left_map is not None or right_map is not None:
                 authority = left_map if left_map is not None else right_map
                 assert authority is not None

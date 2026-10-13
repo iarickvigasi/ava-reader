@@ -10,6 +10,7 @@ from .native_layout_policy import NATIVE_LAYOUT_POLICY, NativeLayoutPolicy
 from .page_checkpoints import PageCheckpoints
 from .prepared_native_layout import NativeLayoutPreparedPage
 from .prepared_native_structure import NativeStructurePreparedPage
+from .prepared_native_word_wrap import NativeWordWrapPreparedPage
 from .prepared_types import AnyPreparedPage
 from .qualify_embedded_images import qualify_embedded_images
 from .qualify_native_layout import qualify_native_layout
@@ -54,6 +55,10 @@ def verify_source_colours(
             from .qualify_native_structure import qualify_native_structure
 
             qualify_native_structure(fresh_pages, scratch, pages[0].source_structure_policy)
+        if isinstance(pages[0], NativeWordWrapPreparedPage):
+            from .qualify_native_word_wrap import qualify_native_word_wrap
+
+            qualify_native_word_wrap(fresh_pages, scratch, pages[0].source_normalization_policy)
         for page, fresh in zip(pages, fresh_pages, strict=True):
             if not isinstance(
                 page, (NativeLayoutPreparedPage, NativeStructurePreparedPage)

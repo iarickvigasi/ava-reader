@@ -6,6 +6,8 @@ from dataclasses import dataclass, field
 from typing import Any, Literal
 
 from ..contracts.layout_normalization import LayoutNormalizationMap
+from ..contracts.layout_normalization_v3 import LayoutNormalizationMapV3
+from ..contracts.layout_prefix_cut_v3 import PrefixCutReceipt
 from ..contracts.styles import Style
 from .findings import Finding
 from .native_hyphen_decisions import NativeHyphenDecision
@@ -25,11 +27,21 @@ class AssemblyState:
     list_body_geometry: dict[str, tuple[float, float, float]] = field(default_factory=dict)
     segments: dict[str, Any] = field(default_factory=dict)
     internal_targets: list[tuple[str, int, int, str, int]] = field(default_factory=list)
+    source_reference_containers: dict[str, str] = field(default_factory=dict)
     aliases: dict[str, tuple[str, int]] = field(default_factory=dict)
     native_line_maps: dict[str, NativeLineOffset] = field(default_factory=dict)
     native_hyphen_decisions: list[NativeHyphenDecision] = field(default_factory=list)
     native_source_lines: dict[str, str] = field(default_factory=dict)
-    normalization_maps: dict[str, LayoutNormalizationMap] = field(default_factory=dict)
+    normalization_maps: dict[str, LayoutNormalizationMap | LayoutNormalizationMapV3] = field(
+        default_factory=dict
+    )
+    word_wrap_active: bool = False
+    source_prefix_cuts: dict[str, PrefixCutReceipt] = field(default_factory=dict)
+    bibliographic_source_ranges: dict[str, tuple[int, int, int, str, str, str]] = field(
+        default_factory=dict
+    )
+    bibliographic_projections: dict[str, str] = field(default_factory=dict)
+    bibliographic_claim_owners: dict[str, str] = field(default_factory=dict)
     placements: dict[str, tuple[int, int, int]] = field(default_factory=dict)
     flush_starts: dict[str, bool] = field(default_factory=dict)
     structure_findings: list[Finding] = field(default_factory=list)
@@ -61,11 +73,16 @@ class AssemblyState:
         self.list_body_geometry.clear()
         self.segments.clear()
         self.internal_targets.clear()
+        self.source_reference_containers.clear()
         self.aliases.clear()
         self.native_line_maps.clear()
         self.native_hyphen_decisions.clear()
         self.native_source_lines.clear()
         self.normalization_maps.clear()
+        self.source_prefix_cuts.clear()
+        self.bibliographic_source_ranges.clear()
+        self.bibliographic_projections.clear()
+        self.bibliographic_claim_owners.clear()
         self.placements.clear()
         self.flush_starts.clear()
         self.page_labels.clear()

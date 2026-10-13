@@ -1,7 +1,7 @@
 import { PdfRuntimeError } from './runtime-error';
 export type PendingExchangeTask = {
   id: string;
-  kind: 'recognition' | 'native_structure' | 'refinement';
+  kind: 'recognition' | 'native_structure' | 'refinement' | 'word_wrap';
 };
 
 export function exchangeTasks(
@@ -16,7 +16,9 @@ export function exchangeTasks(
   const tasks = packet?.tasks;
   if (!Array.isArray(tasks) || tasks.length > maximum)
     throw new PdfRuntimeError('INVALID_RESULT');
-  const current = packet?.schema_version === 'ava-prepare-result-3';
+  const current = ['ava-prepare-result-3', 'ava-prepare-result-4'].includes(
+    String(packet?.schema_version),
+  );
   const pending = tasks.map(
     (task: { task_id?: unknown; schema_version?: unknown } | null) => {
       const native = task?.schema_version === 'ava-native-structure-task-1';

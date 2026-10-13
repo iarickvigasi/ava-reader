@@ -245,7 +245,7 @@ class ListBodyGeometry(unittest.TestCase):
             self.assertIn(sys.platform, baselines, "No qualified rendering baseline")
             with (
                 patch(
-                    "ava_pdf_epub.reconstruction_v2.reconstruct.capture_list_bodies",
+                    "ava_pdf_epub.reconstruction_v2.legacy_reconstruction_assembly.capture_list_bodies",
                     side_effect=AssertionError("Omitted policy cannot capture body geometry"),
                 ),
                 patch(

@@ -1,6 +1,8 @@
 import {
   capturedSourceLayoutPolicy,
   capturedSourceStructurePolicy,
+  capturedSourceNormalizationPolicy,
+  NATIVE_WORD_WRAP_POLICY,
   NATIVE_LAYOUT_POLICY,
   NATIVE_STRUCTURE_POLICY,
 } from '../../library/pdf-import/admission/profile';
@@ -46,12 +48,22 @@ export function exchangeEntry(input: SandboxInput) {
       request.profile_id,
       job.config_sha256,
     );
+    const wrap = capturedSourceNormalizationPolicy(
+      request.profile_id,
+      job.config_sha256,
+    );
     if (
-      request.schema_version === 'ava-reconstruct-input-4'
-        ? layout !== NATIVE_LAYOUT_POLICY || native !== NATIVE_STRUCTURE_POLICY
-        : request.schema_version === 'ava-reconstruct-input-3'
-          ? layout !== NATIVE_LAYOUT_POLICY || native !== undefined
-          : layout !== undefined || native !== undefined
+      request.schema_version === 'ava-reconstruct-input-5'
+        ? layout !== NATIVE_LAYOUT_POLICY ||
+          native !== NATIVE_STRUCTURE_POLICY ||
+          wrap !== NATIVE_WORD_WRAP_POLICY
+        : request.schema_version === 'ava-reconstruct-input-4'
+          ? layout !== NATIVE_LAYOUT_POLICY ||
+            native !== NATIVE_STRUCTURE_POLICY ||
+            wrap !== undefined
+          : request.schema_version === 'ava-reconstruct-input-3'
+            ? layout !== NATIVE_LAYOUT_POLICY || native !== undefined
+            : layout !== undefined || native !== undefined
     )
       throw new Error('Exchange policy binding');
     return true;

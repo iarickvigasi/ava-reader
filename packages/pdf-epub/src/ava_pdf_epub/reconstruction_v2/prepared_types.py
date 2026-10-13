@@ -3,8 +3,14 @@
 from .prepared import PreparedPage
 from .prepared_native_layout import NativeLayoutPreparedPage
 from .prepared_native_structure import NativeStructurePreparedPage
+from .prepared_native_word_wrap import NativeWordWrapPreparedPage
 
-AnyPreparedPage = PreparedPage | NativeLayoutPreparedPage | NativeStructurePreparedPage
+AnyPreparedPage = (
+    PreparedPage
+    | NativeLayoutPreparedPage
+    | NativeStructurePreparedPage
+    | NativeWordWrapPreparedPage
+)
 
 
 def layout_policy(page: AnyPreparedPage) -> str | None:

@@ -1,3 +1,4 @@
+import type { NativeWordWrapPrepareResult } from './generated/NativeWordWrapPrepareResult';
 import type { AttemptContext } from './attempt-provider';
 import type { PrepareResult } from './generated/PrepareResult';
 import type { NativeLayoutPrepareResult } from './generated/NativeLayoutPrepareResult';
@@ -7,7 +8,10 @@ import type { RecognitionTask } from './generated/RecognitionTask';
 import { validatePacket } from './validate-packet';
 import { PdfRuntimeError } from '../runtime/runtime-error';
 export type PreparedAttemptPage = Omit<
-  PrepareResult | NativeLayoutPrepareResult | NativeStructurePrepareResult,
+  | PrepareResult
+  | NativeLayoutPrepareResult
+  | NativeStructurePrepareResult
+  | NativeWordWrapPrepareResult,
   'tasks'
 > & { tasks: (RecognitionTask | NativeStructureTask)[] };
 
@@ -16,15 +20,22 @@ export function preparedAttemptPage(
   context: AttemptContext,
   state: { preparedPages: number; pages?: number; batch: boolean },
 ): PreparedAttemptPage {
-  const prepared = context.sourceStructurePolicy
-    ? validatePacket('NativeStructurePrepareResult', payload)
-    : context.sourceLayoutPolicy
-      ? validatePacket('NativeLayoutPrepareResult', payload)
-      : validatePacket('PrepareResult', payload);
+  const prepared = context.sourceNormalizationPolicy
+    ? validatePacket('NativeWordWrapPrepareResult', payload)
+    : context.sourceStructurePolicy
+      ? validatePacket('NativeStructurePrepareResult', payload)
+      : context.sourceLayoutPolicy
+        ? validatePacket('NativeLayoutPrepareResult', payload)
+        : validatePacket('PrepareResult', payload);
   const tasks: (RecognitionTask | NativeStructureTask)[] = prepared.tasks;
   if (
     'source_layout_policy' in prepared &&
     prepared.source_layout_policy !== context.sourceLayoutPolicy
+  )
+    throw new PdfRuntimeError('SOURCE_MISMATCH');
+  if (
+    'source_normalization_policy' in prepared &&
+    prepared.source_normalization_policy !== context.sourceNormalizationPolicy
   )
     throw new PdfRuntimeError('SOURCE_MISMATCH');
   if (

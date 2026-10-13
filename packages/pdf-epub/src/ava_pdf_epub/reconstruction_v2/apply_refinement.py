@@ -1,6 +1,6 @@
 """Apply source-bound structure-only decisions to copies, retaining original observations."""
 
-from ..contracts.common import document_digest
+from ..contracts.common import document_digest, text_digest
 from .assembly_state import AssemblyState
 from .refinement_contract import (
     AnyRefinementResponse,
@@ -63,6 +63,18 @@ def apply_refinement(
                 assert metadata.start is not None and metadata.end is not None
                 node = next(n for n in task.nodes if n.id == metadata.node_id)
                 text = node.text_excerpt[metadata.start : metadata.end]
+                if state.word_wrap_active:
+                    original = next(s.text for s in segments if s.id == metadata.node_id)
+                    if text_digest(original) != node.text_sha256:
+                        raise ValueError("Bibliographic original owner differs from its task")
+                    state.bibliographic_source_ranges[metadata.node_id] = (
+                        metadata.start,
+                        metadata.end,
+                        len(original),
+                        node.text_sha256,
+                        document_digest(task),
+                        document_digest(response),
+                    )
             state.bibliographic_roles[metadata.node_id] = (metadata.role, text)
         for decision in response.decisions:
             if decision.node_id in updates:

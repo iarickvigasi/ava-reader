@@ -42,28 +42,11 @@ class LayoutHyphenCandidate(Record):
 
     @model_validator(mode="after")
     def source_order(self) -> "LayoutHyphenCandidate":
-        if not (
-            self.left.source_start
-            <= self.source_start
-            < self.left.source_end
-            <= self.right.source_start
-            <= self.source_end
-            < self.right.source_end
-        ):
-            raise ValueError("Layout-hyphen boundary is outside its ordered source lines")
-        if self.left.line_id == self.right.line_id:
-            raise ValueError("Layout-hyphen boundary requires distinct source lines")
-        left, right = self.left, self.right
-        if self.boundary == "page":
-            if right.page != left.page + 1:
-                raise ValueError("Layout-hyphen page continuation is not consecutive")
-        elif left.page != right.page:
-            raise ValueError("Layout-hyphen line/column boundary changes source page")
-        elif self.boundary == "line":
-            if left.region_id != right.region_id or left.box.y0 >= right.box.y0:
-                raise ValueError("Layout-hyphen line continuation changes reading region/order")
-        elif left.region_id == right.region_id or left.box.x0 >= right.box.x0:
-            raise ValueError("Layout-hyphen column continuation changes reading region/order")
+        from .layout_hyphen_order import validate_hyphen_order
+
+        validate_hyphen_order(
+            self.left, self.right, self.source_start, self.source_end, self.boundary
+        )
         return self
 
 

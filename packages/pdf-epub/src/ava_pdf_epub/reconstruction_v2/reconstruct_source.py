@@ -9,6 +9,7 @@ from .prepared_types import AnyPreparedPage
 from .protocol import AnyReconstructionInput
 from .protocol_native_layout import NativeLayoutReconstructionInput
 from .protocol_native_structure import NativeStructureReconstructionInput
+from .protocol_native_word_wrap import NativeWordWrapReconstructionInput
 from .reconstruct import ReconstructedBook, reconstruct
 from .report import ReconstructionReport, reconstruction_report
 
@@ -25,13 +26,25 @@ def reconstruct_source(
         source_layout_policy=(
             request.source_layout_policy
             if isinstance(
-                request, (NativeLayoutReconstructionInput, NativeStructureReconstructionInput)
+                request,
+                (
+                    NativeLayoutReconstructionInput,
+                    NativeStructureReconstructionInput,
+                    NativeWordWrapReconstructionInput,
+                ),
             )
             else None
         ),
         source_structure_policy=(
             request.source_structure_policy
-            if isinstance(request, NativeStructureReconstructionInput)
+            if isinstance(
+                request, (NativeStructureReconstructionInput, NativeWordWrapReconstructionInput)
+            )
+            else None
+        ),
+        source_normalization_policy=(
+            request.source_normalization_policy
+            if isinstance(request, NativeWordWrapReconstructionInput)
             else None
         ),
     )
@@ -55,14 +68,31 @@ def reconstruct_from_pages(
             source_feature_policy=request.source_feature_policy,
             native_structure_responses=(
                 request.native_structure_responses
-                if isinstance(request, NativeStructureReconstructionInput)
+                if isinstance(
+                    request, (NativeStructureReconstructionInput, NativeWordWrapReconstructionInput)
+                )
                 else None
             ),
             source_layout_policy=(
                 request.source_layout_policy
                 if isinstance(
-                    request, (NativeLayoutReconstructionInput, NativeStructureReconstructionInput)
+                    request,
+                    (
+                        NativeLayoutReconstructionInput,
+                        NativeStructureReconstructionInput,
+                        NativeWordWrapReconstructionInput,
+                    ),
                 )
+                else None
+            ),
+            source_normalization_policy=(
+                request.source_normalization_policy
+                if isinstance(request, NativeWordWrapReconstructionInput)
+                else None
+            ),
+            word_wrap_responses=(
+                request.word_wrap_responses
+                if isinstance(request, NativeWordWrapReconstructionInput)
                 else None
             ),
         )

@@ -31,6 +31,8 @@ export const workerCommand = z.enum([
   'validate_tasks',
   'validate_refinement',
   'validate_anchor_context',
+  'prepare_word_wrap',
+  'validate_word_wrap',
 ]);
 const sourceCode = z.enum([
   'ESSENTIAL_STRUCTURE_UNSUPPORTED',

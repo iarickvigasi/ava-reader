@@ -1,56 +1,9 @@
+import type { Packets } from './packet-types';
 import { validatePacketAuthority } from './validate-packet-authority';
 import Ajv2020 from 'ajv/dist/2020';
 import { recognitionSchemas } from './generated/schemas';
-import type { NativeLayoutPrepareResult } from './generated/NativeLayoutPrepareResult';
-import type { NativeLayoutReconstructionInput } from './generated/NativeLayoutReconstructionInput';
-import type { PrepareResult } from './generated/PrepareResult';
-import type { RecognitionResponse } from './generated/RecognitionResponse';
-import type { RecognitionTask } from './generated/RecognitionTask';
-import type { ReconstructionInput } from './generated/ReconstructionInput';
-import type { ReconstructionReport } from './generated/ReconstructionReport';
 import { PdfRuntimeError } from '../runtime/runtime-error';
 
-import type { BookRefinementTask } from './generated/BookRefinementTask';
-import type { BookRefinementResponse } from './generated/BookRefinementResponse';
-import type { SourceFeatureTask } from './generated/SourceFeatureTask';
-import type { SourceFeatureResponse } from './generated/SourceFeatureResponse';
-import type { RefinementBatch } from './generated/RefinementBatch';
-import type { PrintedTitleTask } from './generated/PrintedTitleTask';
-import type { PrintedTitleResponse } from './generated/PrintedTitleResponse';
-import type { PrintedTitleRefinementBatch } from './generated/PrintedTitleRefinementBatch';
-import type { PrintedTitleReconstructionInput } from './generated/PrintedTitleReconstructionInput';
-import type { RecognitionAnchorContextTask } from './generated/RecognitionAnchorContextTask';
-import type { RecognitionAnchorContextResponse } from './generated/RecognitionAnchorContextResponse';
-
-import type { NativeStructurePrepareResult } from './generated/NativeStructurePrepareResult';
-import type { NativeStructureReconstructionInput } from './generated/NativeStructureReconstructionInput';
-import type { NativeStructureTask } from './generated/NativeStructureTask';
-import type { NativeStructureResponse } from './generated/NativeStructureResponse';
-
-type Packets = {
-  NativeStructurePrepareResult: NativeStructurePrepareResult;
-  NativeStructureReconstructionInput: NativeStructureReconstructionInput;
-  NativeStructureTask: NativeStructureTask;
-  NativeStructureResponse: NativeStructureResponse;
-  RecognitionAnchorContextTask: RecognitionAnchorContextTask;
-  RecognitionAnchorContextResponse: RecognitionAnchorContextResponse;
-  NativeLayoutPrepareResult: NativeLayoutPrepareResult;
-  NativeLayoutReconstructionInput: NativeLayoutReconstructionInput;
-  PrintedTitleTask: PrintedTitleTask;
-  PrintedTitleResponse: PrintedTitleResponse;
-  PrintedTitleRefinementBatch: PrintedTitleRefinementBatch;
-  PrintedTitleReconstructionInput: PrintedTitleReconstructionInput;
-  BookRefinementTask: BookRefinementTask;
-  BookRefinementResponse: BookRefinementResponse;
-  SourceFeatureTask: SourceFeatureTask;
-  SourceFeatureResponse: SourceFeatureResponse;
-  RefinementBatch: RefinementBatch;
-  PrepareResult: PrepareResult;
-  RecognitionTask: RecognitionTask;
-  RecognitionResponse: RecognitionResponse;
-  ReconstructionInput: ReconstructionInput;
-  ReconstructionReport: ReconstructionReport;
-};
 const ajv = new Ajv2020({
   strict: true,
   allErrors: false,

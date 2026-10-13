@@ -10,7 +10,8 @@ def internal_links(state: AssemblyState, owners: dict[str, str]) -> None:
     for index, (origin, start, end, target, offset) in enumerate(state.internal_targets):
         origin, delta = _resolve(origin, state)
         target, shift = _resolve(target, state)
-        if origin not in by_id or target not in owners:
+        container = state.source_reference_containers.get(target, target)
+        if origin not in by_id or container not in owners:
             raise ValueError("Source reference anchor disappeared during reconstruction")
         node, _ = by_id[origin]
         node["content"]["spans"].append(
@@ -20,7 +21,7 @@ def internal_links(state: AssemblyState, owners: dict[str, str]) -> None:
                 end=end + delta,
                 link=dict(
                     kind="internal",
-                    chapter_id=owners[target],
+                    chapter_id=owners[container],
                     block_id=target,
                     offset=offset + shift,
                 ),

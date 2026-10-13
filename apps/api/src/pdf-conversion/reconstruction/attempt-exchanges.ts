@@ -2,6 +2,8 @@ import {
   preparedAttemptPage,
   type PreparedAttemptPage,
 } from './prepared-attempt-page';
+import { wordWrapAttempt } from './word-wrap-attempt';
+import type { WordWrapResponse } from './generated/WordWrapResponse';
 import { observeAttemptPage } from './observe-attempt-page';
 import { resolveNativeStructureAttemptTask } from './native-structure-attempt';
 import {
@@ -28,10 +30,13 @@ import {
 // The worker accepts each response before requesting another task. Keeping that
 // round trip prevents spending on later tasks after an invalid earlier response.
 export function attemptExchanges(context: AttemptContext) {
-  const protocol = exchangeProtocol({
-    source_sha256: context.sourceSha256,
-    profile_id: context.profileId,
-  });
+  const protocol = exchangeProtocol(
+    {
+      source_sha256: context.sourceSha256,
+      profile_id: context.profileId,
+    },
+    !!context.sourceNormalizationPolicy,
+  );
   const taskIds = new Set<string>();
   const responses: RecognitionResponse[] = [];
   const nativeStructureResponses: NativeStructureResponse[] = [];
@@ -49,7 +54,11 @@ export function attemptExchanges(context: AttemptContext) {
     pages: number | undefined,
     preparedPages = 0,
     pageTaskIndex = 0,
-    responseBytes = context.sourceStructurePolicy ? 4 : 2,
+    responseBytes = context.sourceNormalizationPolicy
+      ? 6
+      : context.sourceStructurePolicy
+        ? 4
+        : 2,
     batch: RefinementBatchPacket | undefined,
     refinementIndex = 0,
     failed = false,
@@ -76,6 +85,7 @@ export function attemptExchanges(context: AttemptContext) {
       refinements,
       batch?.schema_version === 'ava-book-refinement-batch-2',
       nativeStructureResponses,
+      wordWrap.responses,
     );
   const inputBound = () => {
     if (
@@ -85,20 +95,37 @@ export function attemptExchanges(context: AttemptContext) {
       throw new PdfRuntimeError('RESOURCE_LIMIT');
   };
   const retainResponse = (
-    response: RecognitionResponse | NativeStructureResponse,
+    response: RecognitionResponse | NativeStructureResponse | WordWrapResponse,
   ) => {
     const priorCount =
-      response.schema_version === 'ava-native-structure-response-1'
-        ? nativeStructureResponses.length
-        : responses.length;
+      response.schema_version === 'ava-native-word-wrap-response-1'
+        ? wordWrap.responses.length
+        : response.schema_version === 'ava-native-structure-response-1'
+          ? nativeStructureResponses.length
+          : responses.length;
     responseBytes +=
       Buffer.byteLength(JSON.stringify(response)) + (priorCount ? 1 : 0);
     if (
       responseBytes > 60 * 1024 ** 2 ||
-      responses.length + nativeStructureResponses.length >= 25000
+      (response.schema_version !== 'ava-native-word-wrap-response-1' &&
+        responses.length + nativeStructureResponses.length >= 25000)
     )
       throw new PdfRuntimeError('RESOURCE_LIMIT');
   };
+  const wordWrap = wordWrapAttempt(
+    {
+      ...context,
+      checkActive: (signal) => {
+        if (failed) invalid();
+        context.checkActive(signal);
+      },
+    },
+    (id) =>
+      taskIds.has(id) ||
+      correctionIds.has(id) ||
+      !!batch?.tasks.some((task) => task.task_id === id),
+    retainResponse,
+  );
   async function handle(
     envelope: ExchangeEnvelope,
     signal: AbortSignal,
@@ -249,6 +276,28 @@ export function attemptExchanges(context: AttemptContext) {
       inputBound();
       return [response];
     }
+    if (envelope.kind === 'word_wrap_batch') {
+      lastOriginal = undefined;
+      if (
+        !batch ||
+        !pages ||
+        refinementIndex !== batch.tasks.length ||
+        preparedPages !== pages
+      )
+        return invalid();
+      wordWrap.accept(envelope.payload, pages);
+      inputBound();
+      return [];
+    }
+    if (envelope.kind === 'word_wrap') {
+      const response = await wordWrap.resolve(
+        (envelope.payload as { task_id: string }).task_id,
+        signal,
+      );
+      if (failed) return invalid();
+      inputBound();
+      return [response];
+    }
     if (envelope.kind === 'artifacts') {
       if (
         !batch ||
@@ -263,6 +312,7 @@ export function attemptExchanges(context: AttemptContext) {
         (batch.schema_version === 'ava-book-refinement-batch-2' ? 1 : 0)
       )
         invalid();
+      wordWrap.complete();
       inputBound();
       terminal = true;
       return [];

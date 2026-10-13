@@ -7,6 +7,7 @@ from pydantic import Field, model_validator
 from .blocks import Block
 from .common import Id, Record
 from .layout_normalization import LayoutNormalizationMap
+from .layout_normalization_v3 import LayoutNormalizationMapV3
 from .links import Address
 from .metadata import MetadataClaim
 from .profiles import ProfileId
@@ -43,7 +44,9 @@ class CanonicalBookV2(Record):
         nodes, _ = index_book(self)
         if any(
             isinstance(node, TEXT_NODES)
-            and isinstance(node.content.normalization, LayoutNormalizationMap)
+            and isinstance(
+                node.content.normalization, (LayoutNormalizationMap, LayoutNormalizationMapV3)
+            )
             and node.content.normalization.source_pdf_sha256 != self.source.sha256
             for node in nodes.values()
         ):

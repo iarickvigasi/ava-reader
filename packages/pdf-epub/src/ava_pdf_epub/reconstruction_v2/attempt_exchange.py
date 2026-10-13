@@ -17,6 +17,7 @@ TOTAL_REPLY_BYTES = 64 * 1024 * 1024 + 25533 * 1024
 ExchangeKind = Literal[
     "page", "recognition", "refinement_batch", "refinement", "artifacts", "refusal"
 ]
+ExchangeKind2 = ExchangeKind | Literal["word_wrap_batch", "word_wrap"]
 
 
 def _unique(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -49,6 +50,15 @@ class Exchange(Record):
     payload: Any
 
 
+class Exchange2(Record):
+    schema_version: Literal["ava-reconstruction-exchange-2"]
+    sequence: int = Field(ge=1, le=25600)
+    source_sha256: Digest
+    profile_id: ProfileId
+    kind: ExchangeKind2
+    payload: Any
+
+
 def _exact(stream: BinaryIO, size: int) -> bytes:
     result = bytearray()
     while len(result) < size:
@@ -59,15 +69,22 @@ def _exact(stream: BinaryIO, size: int) -> bytes:
     return bytes(result)
 
 
-def _read_exchange(stream: BinaryIO, bound: int) -> tuple[Exchange, int]:
+def _read_exchange(
+    stream: BinaryIO, bound: int, version: Literal[1, 2] = 1
+) -> tuple[Exchange | Exchange2, int]:
     size = struct.unpack(">I", _exact(stream, 4))[0]
     if not 0 < size <= bound:
         raise ValueError("Attempt reply byte bound exceeded")
-    return Exchange.model_validate(strict_json(_exact(stream, size))), size + 4
+    raw = strict_json(_exact(stream, size))
+    return (
+        Exchange2.model_validate(raw) if version == 2 else Exchange.model_validate(raw)
+    ), size + 4
 
 
 def read_exchange(stream: BinaryIO) -> Exchange:
-    return _read_exchange(stream, REPLY_BYTES)[0]
+    value = _read_exchange(stream, REPLY_BYTES)[0]
+    assert isinstance(value, Exchange)
+    return value
 
 
 def write_bytes(stream: BinaryIO, data: bytes) -> None:
@@ -81,33 +98,49 @@ def write_bytes(stream: BinaryIO, data: bytes) -> None:
 
 
 class ExchangeWriter:
-    def __init__(self, stream: BinaryIO, source_sha256: str, profile_id: ProfileId):
-        self.stream = stream
-        self.source_sha256, self.profile_id = source_sha256, profile_id
-        self.sequence = 0
-        self.terminal = False
-        self._reply_bytes = 0
+    def __init__(
+        self,
+        stream: BinaryIO,
+        source_sha256: str,
+        profile_id: ProfileId,
+        *,
+        version: Literal[1, 2] = 1,
+    ):
+        if type(version) is not int or version not in {1, 2}:
+            raise ValueError("Unknown attempt exchange version")
+        self.stream: BinaryIO = stream
+        self.source_sha256: str = source_sha256
+        self.profile_id: ProfileId = profile_id
+        self.sequence: int = 0
+        self.terminal: bool = False
+        self._reply_bytes: int = 0
         self._anchor_context_parents: set[str] = set()
+        self.version: Literal[1, 2] = version
 
-    def emit(self, kind: ExchangeKind, payload: Any) -> Exchange:
+    def emit(self, kind: ExchangeKind2, payload: Any) -> Exchange | Exchange2:
         if self.terminal:
             raise ValueError("Attempt control follows terminal marker")
-        packet = Exchange(
-            schema_version="ava-reconstruction-exchange-1",
-            sequence=self.sequence + 1,
-            source_sha256=self.source_sha256,
-            profile_id=self.profile_id,
-            kind=kind,
-            payload=payload,
+        model = Exchange2 if self.version == 2 else Exchange
+        packet = model.model_validate(
+            dict(
+                schema_version="ava-reconstruction-exchange-2"
+                if self.version == 2
+                else "ava-reconstruction-exchange-1",
+                sequence=self.sequence + 1,
+                source_sha256=self.source_sha256,
+                profile_id=self.profile_id,
+                kind=kind,
+                payload=payload,
+            )
         )
         data = json_bytes(packet.model_dump(mode="json"))
         bound = (
             PAGE_CONTROL_BYTES
-            if kind == "page"
+            if kind in {"page", "word_wrap_batch"}
             else REFINEMENT_CONTROL_BYTES
             if kind == "refinement_batch"
             else 1024
-            if kind in {"recognition", "refinement"}
+            if kind in {"recognition", "refinement", "word_wrap"}
             else TERMINAL_CONTROL_BYTES
         )
         if len(data) > bound:
@@ -117,17 +150,26 @@ class ExchangeWriter:
         self.terminal = kind in {"artifacts", "refusal"}
         return packet
 
-    def reply(self, stream: BinaryIO, request: Exchange) -> list[Any]:
+    def reply(self, stream: BinaryIO, request: Exchange | Exchange2) -> list[Any]:
         reply, size = _read_exchange(
-            stream, min(REPLY_BYTES, TOTAL_REPLY_BYTES - self._reply_bytes - 4)
+            stream, min(REPLY_BYTES, TOTAL_REPLY_BYTES - self._reply_bytes - 4), self.version
         )
         self._reply_bytes += size
         if (
             reply.sequence != request.sequence
+            or reply.schema_version != request.schema_version
             or reply.source_sha256 != self.source_sha256
             or reply.profile_id != self.profile_id
             or reply.kind != request.kind
-            or request.kind not in {"page", "recognition", "refinement_batch", "refinement"}
+            or request.kind
+            not in {
+                "page",
+                "recognition",
+                "refinement_batch",
+                "refinement",
+                "word_wrap_batch",
+                "word_wrap",
+            }
             or not isinstance(reply.payload, list)
         ):
             raise ValueError("Attempt reply belongs to another exchange")

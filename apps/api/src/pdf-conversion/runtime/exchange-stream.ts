@@ -22,10 +22,19 @@ export function exchangeStream(
     source: { sha256: string };
     profile_id: string;
   };
-  const protocol = exchangeProtocol({
-      source_sha256: job.source.sha256,
-      profile_id: job.profile_id,
-    }),
+  const wrap =
+    (
+      exchangeJson(input.auxiliaryBytes!) as {
+        input: { schema_version: string };
+      }
+    ).input.schema_version === 'ava-reconstruct-input-5';
+  const protocol = exchangeProtocol(
+      {
+        source_sha256: job.source.sha256,
+        profile_id: job.profile_id,
+      },
+      wrap,
+    ),
     header = Buffer.alloc(4);
   let headerBytes = 0,
     body: Buffer | undefined,

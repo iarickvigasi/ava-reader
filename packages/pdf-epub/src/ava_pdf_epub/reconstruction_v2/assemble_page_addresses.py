@@ -2,6 +2,7 @@
 
 from typing import Any
 
+from ..contracts.layout_normalization_v3 import LayoutNormalizationMapV3
 from ..contracts.page_starts import page_fragment
 from .assembly_state import AssemblyState
 from .internal_links import _resolve
@@ -27,6 +28,12 @@ def assemble_page_addresses(
         if target not in nodes or target not in owners or type(offset) is not int or offset < 0:
             raise ValueError("Captured source-page alias has no exact canonical owner")
         node = nodes[target]
+        from .word_wrap_projections import ProjectedPageStart, verify_projected_page_start
+
+        if isinstance(start, ProjectedPageStart):
+            normalization = node.get("content", {}).get("normalization")
+            mapping = LayoutNormalizationMapV3.model_validate(normalization)
+            verify_projected_page_start(start, target, offset, mapping)
         if not any(
             e["page"] == number and e["region_id"] == start.region_id for e in node["evidence"]
         ):

@@ -1,26 +1,11 @@
-import { checksumBuffer } from '../../../shared/blob-utils';
+import { NATIVE_WORD_WRAP_POLICY } from './native-word-wrap-policy';
+import { PDF_IMPORT_PROFILE, PDF_IMPORT_PROFILE_V3 } from './base-profile';
+export {
+  PDF_IMPORT_PROFILE,
+  PDF_IMPORT_PROFILE_V3,
+  PDF_CONFIG_HASH,
+} from './base-profile';
 
-export const PDF_IMPORT_PROFILE = Object.freeze({
-  profileId: 'ava-pdf-prose-en-v2',
-  schemaVersion: 1,
-  maxSourceBytes: 50 * 1024 * 1024,
-  maxPages: 500,
-  maxRasterPixels: 20_000_000,
-  maxRasterEdge: 6000,
-  inspectionTimeoutMs: 30_000,
-  stagingTtlMs: 60 * 60 * 1000,
-});
-export const PDF_CONFIG_HASH = checksumBuffer(
-  Buffer.from(JSON.stringify(PDF_IMPORT_PROFILE)),
-);
-
-// New profiles are selected by the server only for new imports. The legacy configuration
-// and checksum remain exact; persisted operations always execute their captured profile.
-export const PDF_IMPORT_PROFILE_V3 = Object.freeze({
-  ...PDF_IMPORT_PROFILE,
-  profileId: 'ava-pdf-prose-en-uk-v3',
-  schemaVersion: 3,
-});
 export const NATIVE_LAYOUT_POLICY = 'ava-native-layout-1' as const;
 export type NativeLayoutPolicy = typeof NATIVE_LAYOUT_POLICY;
 export const NATIVE_STRUCTURE_POLICY = 'ava-native-structure-1' as const;
@@ -41,21 +26,44 @@ const STRUCTURE_V3 = Object.freeze({
   ...LAYOUT_V3,
   sourceStructurePolicy: NATIVE_STRUCTURE_POLICY,
 });
+const NORMALIZATION_LEGACY = Object.freeze({
+  ...STRUCTURE_LEGACY,
+  sourceNormalizationPolicy: NATIVE_WORD_WRAP_POLICY,
+});
+const NORMALIZATION_V3 = Object.freeze({
+  ...STRUCTURE_V3,
+  sourceNormalizationPolicy: NATIVE_WORD_WRAP_POLICY,
+});
 export type PdfImportConfiguration =
   | typeof PDF_IMPORT_PROFILE
   | typeof PDF_IMPORT_PROFILE_V3
   | typeof LAYOUT_LEGACY
   | typeof LAYOUT_V3
   | typeof STRUCTURE_LEGACY
-  | typeof STRUCTURE_V3;
+  | typeof STRUCTURE_V3
+  | typeof NORMALIZATION_LEGACY
+  | typeof NORMALIZATION_V3;
 export function pdfImportConfiguration(
   profileId?: string,
   sourceLayoutPolicy?: unknown,
   sourceStructurePolicy?: unknown,
+  sourceNormalizationPolicy?: unknown,
 ): PdfImportConfiguration {
   const legacy = !profileId || profileId === PDF_IMPORT_PROFILE.profileId;
   if (!legacy && profileId !== PDF_IMPORT_PROFILE_V3.profileId)
     throw new Error('PDF_IMPORT_PROFILE_INVALID');
+  if (
+    sourceNormalizationPolicy !== undefined &&
+    sourceNormalizationPolicy !== ''
+  ) {
+    if (
+      sourceNormalizationPolicy !== NATIVE_WORD_WRAP_POLICY ||
+      sourceStructurePolicy !== NATIVE_STRUCTURE_POLICY ||
+      sourceLayoutPolicy !== NATIVE_LAYOUT_POLICY
+    )
+      throw new Error('PDF_IMPORT_PROFILE_INVALID');
+    return legacy ? NORMALIZATION_LEGACY : NORMALIZATION_V3;
+  }
   if (sourceStructurePolicy !== undefined && sourceStructurePolicy !== '') {
     if (
       sourceStructurePolicy !== NATIVE_STRUCTURE_POLICY ||
@@ -71,24 +79,10 @@ export function pdfImportConfiguration(
   return legacy ? LAYOUT_LEGACY : LAYOUT_V3;
 }
 
-// Execution follows captured configuration identity, never the current selector.
-export function capturedSourceLayoutPolicy(
-  profileId: string,
-  configSha256: unknown,
-): NativeLayoutPolicy | undefined {
-  const current = pdfImportConfiguration(profileId, NATIVE_LAYOUT_POLICY);
-  const structure = pdfImportConfiguration(
-    profileId,
-    NATIVE_LAYOUT_POLICY,
-    NATIVE_STRUCTURE_POLICY,
-  );
-  return [current, structure].some(
-    (configuration) =>
-      checksumBuffer(Buffer.from(JSON.stringify(configuration))) ===
-      configSha256,
-  )
-    ? NATIVE_LAYOUT_POLICY
-    : undefined;
-}
-
+export { capturedSourceLayoutPolicy } from './captured-layout-policy';
 export { capturedSourceStructurePolicy } from './captured-structure-policy';
+export { capturedSourceNormalizationPolicy } from './captured-normalization-policy';
+export {
+  NATIVE_WORD_WRAP_POLICY,
+  type SourceNormalizationPolicy,
+} from './native-word-wrap-policy';

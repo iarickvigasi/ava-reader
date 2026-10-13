@@ -19,6 +19,7 @@ export type ProviderTask = {
   schemaVersion: string;
   messages: ProviderMessage[];
   responseSchema: Record<string, unknown>;
+  maxOutputTokens?: number;
 };
 export type ProviderDispatch = {
   authority: AttemptAuthority;

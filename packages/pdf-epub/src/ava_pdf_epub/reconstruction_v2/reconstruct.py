@@ -11,9 +11,7 @@ from ..contracts.book import CanonicalBookV2
 from ..contracts.profiles import BILINGUAL_PROFILE
 from ..epub_v2.export import export_epub
 from ..epub_v2.profiles import export_profile
-from ..worker_observation import phase
 from .annotation_findings import annotation_findings
-from .apply_refinement import apply_refinement
 from .assemble_addresses import assemble_addresses
 from .assemble_blocks import assemble_blocks
 from .assemble_chapters import assemble_chapters
@@ -22,25 +20,20 @@ from .assemble_lists import assemble_lists
 from .assemble_metadata import assemble_metadata
 from .assemble_page_addresses import assemble_page_addresses
 from .book_language import language_metadata
-from .compound_wraps import compact_native_compounds
-from .continuation_margins import continuation_margins
 from .findings import Finding
+from .legacy_reconstruction_assembly import legacy_reconstruction_assembly
 from .native_layout_policy import NativeLayoutPolicy
 from .native_size_presentation import apply_native_sizes
 from .native_structure_contract import NativeStructureResponse
-from .normalize_list_bodies import capture_list_bodies, normalize_list_bodies
-from .normalize_native_hyphens import normalize_native_hyphens
-from .ocr_font_faces import corroborate_ocr_font_faces
-from .prepare_refinement import prepare_refinement
+from .native_word_wrap_policy import NativeWordWrapPolicy
+from .normalize_list_bodies import normalize_list_bodies
 from .prepared_types import AnyPreparedPage
-from .printed_markers import printed_markers
 from .recognition_contract import RecognitionResponse
 from .refinement_contract import AnyRefinementResponse
 from .source_cover import preserve_source_cover
 from .source_feature_contract import FEATURE_POLICY
-from .source_page_starts import capture_page_starts
-from .source_segments import source_segments
-from .stream_joins import stream_joins
+from .word_wrap_contract import WordWrapResponse
+from .word_wrap_reconstruct import reconstruct_word_wrap_assembly
 
 
 @dataclass
@@ -63,46 +56,41 @@ def reconstruct(
     source_feature_policy: str | None = None,
     source_layout_policy: NativeLayoutPolicy | None = None,
     native_structure_responses: list[NativeStructureResponse] | None = None,
+    source_normalization_policy: NativeWordWrapPolicy | None = None,
+    word_wrap_responses: list[WordWrapResponse] | None = None,
 ) -> ReconstructedBook:
-    pages, segments, state = source_segments(
-        source,
-        scratch,
-        prepared,
-        responses,
-        source_layout_policy=source_layout_policy,
-        native_structure_responses=native_structure_responses,
-    )
-    if refinements is not None:
-        with phase("prepare_refinement"):
-            tasks = prepare_refinement(
-                source,
-                scratch,
-                prepared,
-                segments,
-                state,
-                source_feature_policy=source_feature_policy,
-            )
-        if tasks or refinements:
-            segments = apply_refinement(segments, tasks, refinements, state)
-        del tasks
-    if source_feature_policy is not None and refinements is None:
-        raise ValueError("Current source feature policy requires complete refinement receipts")
+    if source_normalization_policy is not None:
+        if source_feature_policy != FEATURE_POLICY:
+            raise ValueError("Sparse lexical reconstruction requires captured source features")
+        assembly = reconstruct_word_wrap_assembly(
+            source,
+            scratch,
+            prepared,
+            responses,
+            refinements,
+            native_structure_responses,
+            source_layout_policy,
+            source_normalization_policy,
+            word_wrap_responses,
+        )
+    else:
+        if word_wrap_responses is not None:
+            raise ValueError("Sparse lexical receipts require their captured policy")
+        assembly = legacy_reconstruction_assembly(
+            source,
+            scratch,
+            prepared,
+            responses,
+            refinements,
+            source_feature_policy,
+            source_layout_policy,
+            native_structure_responses,
+        )
+    pages, segments, state = assembly.pages, assembly.segments, assembly.state
+    size_sources, page_starts = assembly.size_sources, assembly.page_starts
+    del assembly
     from .source_feature_report import source_feature_coverage
 
-    segments = corroborate_ocr_font_faces(source, prepared, segments, state)
-    for page in pages:
-        page["label"] = state.page_labels.get(page["number"])
-    if source_feature_policy == FEATURE_POLICY:
-        capture_list_bodies(segments, prepared, state)
-    segments = compact_native_compounds(printed_markers(segments, state), state)
-    segments = normalize_native_hyphens(segments, state)
-    for segment in segments:
-        state.segments[segment.id] = segment
-    continuation_margins(segments, prepared, scratch, state)
-    # Keep page-owned observations; stream joins can replace them with cross-page nodes.
-    size_sources = segments
-    page_starts = capture_page_starts(segments, state)
-    segments = stream_joins(segments, state)
     assemble_blocks(segments, prepared, scratch, state)
     chapters, toc = assemble_chapters(state)
     assemble_lists(state, chapters)

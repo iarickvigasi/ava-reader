@@ -11,12 +11,15 @@ from .attempt_stream import AttemptFailure, attempt_stream
 from .prepare_page import prepare_page
 from .prepare_refinement_source import prepare_refinement_source
 from .protocol import prepared_result, reconstruction_input
+from .protocol_native_word_wrap import NativeWordWrapReconstructionInput
 from .protocol_output import candidate_packet, encode_packet
 from .reconstruct_source import reconstruct_source
 from .source_refusal import SourceContentRefusal
 from .stream_output import stream_artifacts
 from .validate_refinement import validate_refinement
 from .validate_tasks import validate_tasks
+from .validate_word_wrap import validate_word_wrap
+from .word_wrap_prepare import prepare_word_wrap_source
 
 
 def main() -> None:
@@ -35,6 +38,10 @@ def main() -> None:
             from .recognition_anchor_context import validate_anchor_context
 
             sys.stdout.buffer.write(encode_packet(validate_anchor_context(raw_request), 1024))
+            sys.stdout.buffer.flush()
+            return
+        if request.get("mode") == "validate_word_wrap":
+            sys.stdout.buffer.write(encode_packet(validate_word_wrap(raw_request), 1024))
             sys.stdout.buffer.flush()
             return
         if request.get("mode") in {"validate_tasks", "validate_refinement"}:
@@ -74,6 +81,12 @@ def main() -> None:
             parsed = reconstruction_input(request["input"])
             batch = prepare_refinement_source(source, root, parsed)
             output = encode_packet(batch.model_dump(mode="json"), 24 * 1024 * 1024)
+        elif request.get("mode") == "prepare_word_wrap" and set(request) == {"mode", "input"}:
+            parsed = reconstruction_input(request["input"])
+            if not isinstance(parsed, NativeWordWrapReconstructionInput):
+                raise ValueError("Sparse lexical preparation requires captured Input5")
+            wrap_batch = prepare_word_wrap_source(source, root, parsed)
+            output = encode_packet(wrap_batch.model_dump(mode="json"), 8 * 1024 * 1024)
         elif request.get("mode") in {"reconstruct", "reconstruct_stream"} and set(request) == {
             "mode",
             "input",

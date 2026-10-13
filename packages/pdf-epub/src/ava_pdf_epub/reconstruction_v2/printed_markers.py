@@ -2,6 +2,8 @@
 
 import re
 
+from ..contracts.common import text_digest
+from ..contracts.layout_prefix_cut_v3 import PrefixCutReceipt
 from .assembly_state import AssemblyState
 from .list_markers import MARKER, marker_style
 from .marker_typography import marker_typography
@@ -57,12 +59,55 @@ def printed_markers(segments: list[Segment], state: AssemblyState) -> list[Segme
                 if style_id is not None:
                     state.marker_presentations[segment.id] = style_id
             cut = marker.end()
-            state.internal_targets = [
-                (owner, start - cut, end - cut, target, offset)
-                if owner == segment.id
-                else (owner, start, end, target, offset)
-                for owner, start, end, target, offset in state.internal_targets
-            ]
+            if state.word_wrap_active and segment.method == "native":
+                source = segment.source_text
+                if (
+                    not source
+                    or not segment.native_line_ids
+                    or not source.startswith(segment.text[:cut])
+                ):
+                    raise ValueError("Printed marker lacks an exact native source prefix")
+                line_id = segment.native_line_ids[0]
+                first_line = source.split("\n", 1)[0]
+                prefix = source[:cut]
+                printed_marker = prefix.strip()
+                label = (
+                    segment.note_label
+                    if segment.kind == "note"
+                    else marker["marker"].strip("[]().")
+                )
+                if label is None or line_id in state.source_prefix_cuts:
+                    raise ValueError("Repeated or unlabelled native marker cut")
+                state.source_prefix_cuts[line_id] = PrefixCutReceipt(
+                    line_id=line_id,
+                    raw_prefix=prefix,
+                    raw_prefix_sha256=text_digest(prefix),
+                    original_line_sha256=text_digest(first_line),
+                    role="note" if segment.kind == "note" else "list_item",
+                    label=label,
+                    marker_text=printed_marker,
+                )
+            if state.word_wrap_active:
+                from .layout_hyphen_offsets import layout_hyphen_range
+                from .marker_cut_positions import marker_cut_positions
+
+                marker_cut_positions(segment.id, cut, len(segment.text), state)
+                for span in segment.spans:
+                    if span.url or span.note_label or span.target_text:
+                        layout_hyphen_range(
+                            span.start,
+                            span.end,
+                            [(0, cut)],
+                            len(segment.text),
+                            referenced=True,
+                        )
+            else:
+                state.internal_targets = [
+                    (owner, start - cut, end - cut, target, offset)
+                    if owner == segment.id
+                    else (owner, start, end, target, offset)
+                    for owner, start, end, target, offset in state.internal_targets
+                ]
             spans = [
                 s.model_copy(update={"start": max(s.start, cut) - cut, "end": s.end - cut})
                 for s in segment.spans

@@ -15,11 +15,13 @@ COMMANDS = {
     "attempt_stream",
     "prepare",
     "prepare_refinement",
+    "prepare_word_wrap",
     "reconstruct",
     "reconstruct_stream",
     "validate_tasks",
     "validate_refinement",
     "validate_anchor_context",
+    "validate_word_wrap",
 }
 SAFE_ADMISSION_CODES = {
     "PDF_ACTIVE_CONTENT_UNSUPPORTED",

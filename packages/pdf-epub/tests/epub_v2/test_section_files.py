@@ -346,7 +346,7 @@ class SectionFileTests(unittest.TestCase):
             request = request.model_copy(update={"refinements": receipts})
             with (
                 patch(
-                    "ava_pdf_epub.reconstruction_v2.reconstruct.capture_list_bodies",
+                    "ava_pdf_epub.reconstruction_v2.legacy_reconstruction_assembly.capture_list_bodies",
                     wraps=capture_list_bodies,
                 ) as capture,
                 patch(

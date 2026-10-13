@@ -1,3 +1,4 @@
+import type { NativeWordWrapReconstructionInput } from './generated/NativeWordWrapReconstructionInput';
 import type { PrintedTitleRefinementBatch } from './generated/PrintedTitleRefinementBatch';
 import type { PrintedTitleReconstructionInput } from './generated/PrintedTitleReconstructionInput';
 import type { NativeLayoutReconstructionInput } from './generated/NativeLayoutReconstructionInput';
@@ -14,8 +15,13 @@ export function validatePacketAuthority(name: string, value: unknown) {
     )
       throw new PdfRuntimeError('INVALID_RESULT');
   }
-  if (name === 'NativeStructureReconstructionInput') {
-    const packet = value as NativeStructureReconstructionInput;
+  if (
+    name === 'NativeStructureReconstructionInput' ||
+    name === 'NativeWordWrapReconstructionInput'
+  ) {
+    const packet = value as
+      | NativeStructureReconstructionInput
+      | NativeWordWrapReconstructionInput;
     if (
       packet.responses.length + packet.native_structure_responses.length >
         25000 ||

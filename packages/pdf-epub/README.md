@@ -17,7 +17,11 @@ source/profile and pins the worker build. Native text needs no recognition call;
 chapter/list roles may require bounded structure comparison. Qualified structure remains zero-call.
 New imports may explicitly capture native source-ID structure decisions through server policy
 `ava-native-structure-1` together with `ava-native-layout-1`. Distinct captured hashes select
-private Input4/Prepare3 packets; old Layout1 captures retain Input3 unchanged. Providers return
+private Input4/Prepare3 packets; old Layout1 captures retain Input3 unchanged.
+The separate `ava-native-word-wrap-1` source normalization opt-in additionally requires both
+policies and captures distinct Input5/Prepare4 configuration hashes. A finite catalogue after
+accepted refinements sends only short verbatim contexts and opaque IDs for lexical decisions;
+source assembly and exact normalization stay in the worker. Historical captures are unchanged. Providers return
 only ordered source-line groups, eligible note-callout span IDs and pinned boundary dispositions.
 Literal text, measured styles and spans remain worker-owned. This opt-in requires matching worker,
 host admission and provider authorization; the selector does not activate itself.
@@ -528,6 +532,12 @@ unsafe glyphs or source partitions retain the unchanged recognition fallback.
 Controls use a four-byte unsigned big-endian length followed by UTF-8 JSON. Every
 `ava-reconstruction-exchange-1` envelope has exactly `schema_version`, increasing `sequence`,
 `source_sha256`, `profile_id`, `kind` and `payload`. Replies repeat the same envelope binding.
+Captured Input5 uses `ava-reconstruction-exchange-2` for generic controls, followed by an
+acknowledged `word_wrap_batch` and its ordered `word_wrap` task controls after refinements.
+Native structure and anchor context controls retain their own original namespaces and sequence
+limits; the new generic namespace allows at most 25,600 controls with the existing byte caps.
+Each word-wrap reply contains one separately typed WordWrapResponse; batch replies are `[]`.
+Even an empty catalogue is acknowledged before artifacts.
 Only one exchange is outstanding; unknown or duplicate keys, wrong binding/order, oversized
 messages, truncation and unexpected EOF are refused.
 

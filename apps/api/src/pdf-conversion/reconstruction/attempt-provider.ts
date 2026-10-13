@@ -1,6 +1,8 @@
+import type { WordWrapTask } from './generated/WordWrapTask';
 import type {
   NativeLayoutPolicy,
   NativeStructurePolicy,
+  SourceNormalizationPolicy,
 } from '../../library/pdf-import/admission/profile';
 import type { CoordinatorDependencies } from './coordinator-types';
 import type { RecognitionTask } from './generated/RecognitionTask';
@@ -23,6 +25,8 @@ export type AttemptContext = {
   pageLimit: number;
   sourceLayoutPolicy?: NativeLayoutPolicy;
   sourceStructurePolicy?: NativeStructurePolicy;
+  sourceNormalizationPolicy?: SourceNormalizationPolicy;
+  validateWordWrap?: (task: WordWrapTask, signal: AbortSignal) => Promise<void>;
   validateAnchorContext?: (
     correction: RecognitionAnchorContextTask,
     task: RecognitionTask,

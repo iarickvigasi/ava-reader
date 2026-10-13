@@ -5,6 +5,7 @@ import { jsonBytes, jsonHash } from './hash';
 import { routePolicy } from './route-policy';
 import { PdfProviderError } from './errors';
 import type { ProviderTask } from './types';
+import { tokenCost, usdToNano } from './money';
 import { requirePilotTask } from './pilot-task';
 import { providerResponseSchema } from './response-schema';
 export function prepareProviderRequest(
@@ -37,11 +38,24 @@ export function prepareProviderRequest(
     config.schemaHashes[value.schemaVersion] !== jsonHash(value.responseSchema)
   )
     throw new PdfProviderError('PDF_PROVIDER_REQUEST_UNAUTHORIZED');
+  if (
+    value.maxOutputTokens !== undefined &&
+    value.maxOutputTokens > config.maxOutputTokens
+  )
+    throw new PdfProviderError('PDF_PROVIDER_REQUEST_LIMIT');
+  const maxOutputTokens = value.maxOutputTokens ?? config.maxOutputTokens;
+  const maximumNano =
+    policy.maximumNano -
+    tokenCost(
+      usdToNano(tariff.completionPerMillionUsd),
+      config.maxOutputTokens,
+    ) +
+    tokenCost(usdToNano(tariff.completionPerMillionUsd), maxOutputTokens);
   const effort = config.reasoningEffortByPrompt?.[value.promptVersion];
   const request = jsonBytes({
     model: route.modelId,
     messages: value.messages,
-    max_tokens: config.maxOutputTokens,
+    max_tokens: maxOutputTokens,
     ...(effort ? { reasoning: { effort } } : {}),
     stream: false,
     response_format: {
@@ -76,6 +90,7 @@ export function prepareProviderRequest(
   requirePilotTask(config, value, requestSha256, taskSha256);
   return {
     ...policy,
+    maximumNano,
     request,
     requestSha256,
     taskSha256,

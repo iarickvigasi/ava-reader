@@ -1,6 +1,8 @@
+import { validateWordWrap } from './validate-word-wrap';
 import type {
   NativeLayoutPolicy,
   NativeStructurePolicy,
+  SourceNormalizationPolicy,
 } from '../../library/pdf-import/admission/profile';
 import { reconstructionRequest } from './reconstruction-request';
 import type { SemanticValidator } from '../contracts/types';
@@ -23,6 +25,7 @@ export async function runAttempt(
     profileId: RecognitionTask['profile_id'];
     sourceLayoutPolicy?: NativeLayoutPolicy;
     sourceStructurePolicy?: NativeStructurePolicy;
+    sourceNormalizationPolicy?: SourceNormalizationPolicy;
   },
   semantic: SemanticValidator,
 ) {
@@ -34,6 +37,8 @@ export async function runAttempt(
   const exchanges = attemptExchanges({
     ...input,
     checkActive,
+    validateWordWrap: (task, signal) =>
+      validateWordWrap(task, input.deps.sandbox, input.sandboxInput, signal),
     validateAnchorContext: (correction, task, signal) =>
       validateAnchorContext(
         correction,

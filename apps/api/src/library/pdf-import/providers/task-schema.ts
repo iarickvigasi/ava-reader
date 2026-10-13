@@ -37,5 +37,6 @@ export const providerTaskSchema = z
       .min(2)
       .max(8),
     responseSchema: z.record(z.string(), z.unknown()),
+    maxOutputTokens: z.number().int().min(1).max(65536).optional(),
   })
   .strict();

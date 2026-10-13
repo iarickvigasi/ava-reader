@@ -6,6 +6,7 @@ from typing import Any
 from .assembly_state import AssemblyState
 from .metadata_scope import metadata_scope
 from .opening_author_credits import opening_author_credits
+from .printed_bibliographic_claims import printed_bibliographic_claims
 from .printed_claim import printed_claim as _claim
 from .printed_identifiers import identifier_claims
 from .printed_title_claim import printed_title_claim
@@ -67,22 +68,7 @@ def printed_metadata(state: AssemblyState, source_author: str | None) -> list[di
                 )
             ):
                 output.append(_claim("subtitle", text, following))
-    for block in state.blocks:
-        selected = state.bibliographic_roles.get(block["id"])
-        if selected and selected[0] is not None and block["id"] in eligible:
-            classified_role, selected_text = selected
-            assert classified_role is not None
-            text = selected_text.strip()
-            metadata_field = (
-                "contributor"
-                if classified_role in {"author", "translator", "editor", "illustrator"}
-                else classified_role
-            )
-            if text:
-                claim = _claim(metadata_field, text, block)
-                if metadata_field == "contributor":
-                    claim["contributor_role"] = classified_role
-                output.append(claim)
+    output.extend(printed_bibliographic_claims(state, eligible))
     for block in state.blocks:
         text = block.get("content", {}).get("text", "")
         if block["kind"] != "paragraph":
