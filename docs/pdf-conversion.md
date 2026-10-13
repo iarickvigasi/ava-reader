@@ -83,7 +83,8 @@ For new imports, the explicit `ava-ocr-source-features-1` reconstruction policy 
 derive native list-body indentation from visible, uniquely owned glyphs after the printed marker.
 Each list/depth/page/column supplies its own body baseline; genuine body indentation and nested
 membership remain separate from the number gutter. Unknown or OCR geometry is not reinterpreted.
-Generated projection `ava-epub-canonical-2.5` separates body layout from `::marker` layout and retains
+When a list body declares nonzero indentation/inset, default generated projection
+`ava-epub-canonical-2.5` separates body layout from `::marker` layout and retains
 section, text and address identities. Explicit projections 2.1–2.4 reproduce their historical bytes.
 The reader can separate marker/body layout for an existing book without replacing accepted content;
 it preserves legacy style values and does not claim to recover unknown long/short-item alignment.
@@ -96,7 +97,8 @@ Generated EPUB projection `ava-epub-canonical-2.2` preserves declared printed pa
 the page list and pagebreak accessibility names. Targets retain physical page IDs, so Roman numerals
 and restarted numbering cannot collide. Missing or blank labels use the physical page number for
 navigation without changing canonical source data. The historical unlabelled projection is `2.1`;
-current semantic-list exports use `2.5` as described above. All declared versions require complete
+current displaced-list exports use `2.5` as described above. Neutral/unknown list geometry and marker
+styling alone retain prior default page/section behavior. All declared versions require complete
 visible-projection/resource comparison.
 Changing a profile marker cannot hide altered text, styles, links or page labels.
 

@@ -13,9 +13,34 @@ from .test_section_files import section_book
 
 
 class ListBodyLayout(unittest.TestCase):
+    def test_neutral_or_unknown_list_geometry_does_not_change_implicit_profile_bytes(self):
+        original, assets, _ = fixture()
+        expected = export_epub(original, assets, profile="ava-epub-canonical-2.1")
+        self.assertEqual(expected, export_epub(original, assets))
+        for indent, inset in [(None, None), (0, 0)]:
+            raw = original.model_dump()
+            item = next(b for b in raw["blocks"] if b["kind"] == "list_item")
+            raw["styles"].append(dict(id="neutral", indent_em=indent, block_indent_em=inset))
+            item["style_id"] = "neutral"
+            book = CanonicalBookV2.model_validate(raw)
+            with self.subTest(indent=indent, inset=inset):
+                self.assertEqual(
+                    export_epub(book, assets, profile="ava-epub-canonical-2.1"),
+                    export_epub(book, assets),
+                )
+                # Explicit new projection remains available without relabelling old bytes.
+                data = export_epub(book, assets, profile="ava-epub-canonical-2.5")
+                self.assertEqual((book, assets), portable_epub(data))
+
     def test_body_only_clearance_preserves_real_signed_displacement(self):
         original, assets, _ = fixture()
-        for indent, inset, padding in [(-2, 0, "2"), (-2, 0.5, "1.5"), (-2, 2, None), (1, 0, None)]:
+        for indent, inset, padding in [
+            (-2, 0, "2"),
+            (-2, 0.5, "1.5"),
+            (-2, 2, None),
+            (1, 0, None),
+            (0, 2, None),
+        ]:
             raw = original.model_dump()
             item = next(b for b in raw["blocks"] if b["kind"] == "list_item")
             raw["styles"].append(dict(id="body", indent_em=indent, block_indent_em=inset))
@@ -37,6 +62,19 @@ class ListBodyLayout(unittest.TestCase):
                 else:
                     self.assertIn(f"padding-inline-start:{padding}em", body.get("style"))
                 self.assertEqual((book, assets), portable_epub(export_epub(book, assets)))
+
+    def test_marker_only_and_unreferenced_geometry_do_not_select_body_projection(self):
+        original, assets, _ = fixture()
+        raw = original.model_dump()
+        item = next(b for b in raw["blocks"] if b["kind"] == "list_item")
+        raw["styles"].extend(
+            [dict(id="unused-inset", indent_em=2), dict(id="marker", color="#1f3763", bold=True)]
+        )
+        item["marker_style_id"] = "marker"
+        book = CanonicalBookV2.model_validate(raw)
+        self.assertEqual(
+            export_epub(book, assets, profile="ava-epub-canonical-2.1"), export_epub(book, assets)
+        )
 
     def test_all_four_explicit_historical_exports_are_byte_exact(self):
         # Captured on clean 0ecb before this correction, from this authored source graph.

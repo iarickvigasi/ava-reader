@@ -1,9 +1,11 @@
 """The numbered gutter and body first-line displacement are different source measurements."""
 
 import hashlib
+import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from ava_pdf_epub.contracts.common import document_digest
 from ava_pdf_epub.contracts.profiles import BILINGUAL_PROFILE
@@ -225,15 +227,58 @@ class ListBodyGeometry(unittest.TestCase):
                 profile_id=BILINGUAL_PROFILE,
                 source_feature_policy=FEATURE_POLICY,
             )
-            result = reconstruct(source, root / "scratch", prepared, [])
+            # These whole-book digests include rendered furniture assets. Preserve
+            # the clean 0ecb Mac baseline; the Linux baseline was independently
+            # obtained from exact 0ecb package bytes on the same installed Linux
+            # image/dependencies as current source, with both outputs identical.
+            # Neither rendering is a universal cross-platform byte oracle.
+            baselines = {
+                "darwin": (
+                    "a1e9369a2816c5470bf782f7bf1a0091a258ca69ecc3ee62d4985fd6d9bf4873",
+                    "75e8fc09786506e6f6f01adaf1386cf3282641f5fb9937accd3b33828b52358c",
+                ),
+                "linux": (
+                    "6579ae32a005584ae18461837ff1bd2e5105075e23b1e789d2b1e54df3c29aa0",
+                    "3b77ed0c2e9053d72677ea124c190d44e50bc5ed9afa897ed285454019005715",
+                ),
+            }
+            self.assertIn(sys.platform, baselines, "No qualified rendering baseline")
+            with (
+                patch(
+                    "ava_pdf_epub.reconstruction_v2.reconstruct.capture_list_bodies",
+                    side_effect=AssertionError("Omitted policy cannot capture body geometry"),
+                ),
+                patch(
+                    "ava_pdf_epub.reconstruction_v2.reconstruct.normalize_list_bodies",
+                    side_effect=AssertionError("Omitted policy cannot normalize body geometry"),
+                ),
+            ):
+                result = reconstruct(source, root / "scratch", prepared, [])
+            self.assertEqual(baselines[sys.platform][0], document_digest(result.book))
+            self.assertEqual(baselines[sys.platform][1], hashlib.sha256(result.epub).hexdigest())
             self.assertEqual(
-                "a1e9369a2816c5470bf782f7bf1a0091a258ca69ecc3ee62d4985fd6d9bf4873",
-                document_digest(result.book),
+                "f0ebf732b71471203aea09d12bc37cd888d9703022684dcd2d31f8f6297bb36a",
+                result.book.source.sha256,
+            )
+            styles = {style.id: style for style in result.book.styles}
+            items = [block for block in result.book.blocks if block.kind == "list_item"]
+            self.assertEqual(
+                ["p1-line2", "p1-line4", "p2-line1", "p2-line3", "p3-line1", "p3-line3"],
+                [item.id for item in items],
             )
             self.assertEqual(
-                "75e8fc09786506e6f6f01adaf1386cf3282641f5fb9937accd3b33828b52358c",
-                hashlib.sha256(result.epub).hexdigest(),
+                [
+                    "One question wraps into the complete item and emphasis.",
+                    "A separate numbered item stays separate.",
+                ]
+                * 3,
+                [item.content.text for item in items],
             )
+            self.assertEqual([13, 25, 37], [value.start for value in result.book.lists])
+            for index, item in enumerate(items):
+                style = styles[item.style_id]
+                expected = (-1.668, 1.668) if index % 2 == 0 else (None, None)
+                self.assertEqual(expected, (style.indent_em, style.block_indent_em))
             _, segments, state = source_segments(source, root / "scratch", prepared, [])
             capture_list_bodies(segments, prepared, state)
             raw = result.book.model_dump()

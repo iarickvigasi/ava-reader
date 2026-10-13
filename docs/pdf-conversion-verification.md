@@ -209,6 +209,9 @@ legacy values on a separate body wrapper; they establish neither recovered legac
 actual browser layout. Verify the existing fixed book on the newly built reader separately.
 Negative zero/small-inset controls verify body-only marker clearance while retaining signed relative
 indentation; source-normalized bodies already have a nonnegative start and need no safety padding.
+Default selection uses nonzero declared list-body geometry; neutral/unknown bodies and marker-only
+changes preserve earlier default bytes. Platform-sensitive source-renderer hashes require an actual
+same-toolchain predecessor comparison; a host-rendered whole-book hash is not a Linux source oracle.
 
 API metadata regressions preserve accepted portable title/author claims without changing provenance
 or overriding new-entry edits/clears. PDF source-only metadata filling retains its own regression.

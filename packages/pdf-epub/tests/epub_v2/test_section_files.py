@@ -17,7 +17,6 @@ from ava_pdf_epub.epub_v2.export import export_entries, export_epub
 from ava_pdf_epub.epub_v2.portable import portable_epub
 from ava_pdf_epub.epub_v2.profiles import (
     LEGACY_PROFILE,
-    LIST_BODY_PROFILE,
     PAGE_LABEL_PROFILE,
     SOURCE_PAGE_PROFILE,
 )
@@ -239,12 +238,13 @@ class SectionFileTests(unittest.TestCase):
                         + address["epub_fragment"],
                     )
 
-    def test_historical_projection_and_current_list_body_projection_stay_distinct(self):
+    def test_neutral_list_geometry_retains_the_historical_default_projection(self):
         book, assets, _ = fixture()
         entries = export_entries(book, assets, profile=LEGACY_PROFILE)
         default = export_entries(book, assets)
         self.assertEqual(LEGACY_PROFILE.encode(), entries["META-INF/ava-profile"])
-        self.assertEqual(LIST_BODY_PROFILE.encode(), default["META-INF/ava-profile"])
+        self.assertEqual(LEGACY_PROFILE.encode(), default["META-INF/ava-profile"])
+        self.assertEqual(entries, default)
         self.assertEqual(entries["EPUB/ava-canonical.json"], default["EPUB/ava-canonical.json"])
         self.assertEqual((book, assets), portable_epub(archive_bytes(entries)))
 
@@ -260,7 +260,7 @@ class SectionFileTests(unittest.TestCase):
             book = CanonicalBookV2.model_validate(raw)
             entries = export_entries(book, assets)
             with self.subTest(mode=mode):
-                self.assertEqual(LIST_BODY_PROFILE.encode(), entries["META-INF/ava-profile"])
+                self.assertEqual(SOURCE_PAGE_PROFILE.encode(), entries["META-INF/ava-profile"])
                 self.assertEqual(1, len([p for p in entries if p.startswith("EPUB/text/")]))
 
     def test_caption_figure_unit_remains_in_one_file_without_reordering_source(self):

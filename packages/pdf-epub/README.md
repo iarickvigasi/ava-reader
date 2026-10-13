@@ -435,7 +435,9 @@ not PDF pages, inferred titles or nested subsections. Logical chapter membership
 text/offset identities and source aliases stay fixed. Lists/items remain whole; a boundary that
 would divide a figure/table from its caption or credit is kept within one file. TOC links,
 notes/returns, text offsets and source-page links use the target block's actual publication file.
-Current section exports containing semantic lists use `ava-epub-canonical-2.5`. It retains the
+Current section exports with a nonzero declared list-body indent or inset use
+`ava-epub-canonical-2.5`. Neutral or unknown list geometry retains the previous default page/section
+projection; a marker style alone does not select 2.5. Explicit 2.5 remains available. It retains the
 section/link rules and places body indentation on a separate block inside each item; the semantic
 marker keeps its independent font and color. With explicit
 `source_feature_policy: "ava-ocr-source-features-1"`, the pinned worker measures native body glyphs

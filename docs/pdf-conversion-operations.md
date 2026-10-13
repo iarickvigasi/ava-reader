@@ -135,7 +135,9 @@ source-fidelity and normal reader qualification remain separate.
 Native semantic-list body normalization uses the same explicit `ava-ocr-source-features-1` request
 authority already selected by the API. It requires the new pinned worker/package implementation and
 matching host validator; an omitted policy retains historical canonical geometry. Current list
-exports declare `ava-epub-canonical-2.5`; explicit 2.1–2.4 exports and existing accepted content stay
+exports with nonzero declared list-body indentation/inset select `ava-epub-canonical-2.5`; neutral or
+unknown list geometry retains the previous default page/section projection. Explicit 2.5 remains
+available, while explicit 2.1–2.4 exports and existing accepted content stay
 fixed. The reader body-wrapper change also changes its source fingerprint: generate and verify the
 new reader build rather than reusing an older qualification as current visual evidence. No new model
 call, provider prompt, canonical field or content replacement is introduced by this geometry repair.

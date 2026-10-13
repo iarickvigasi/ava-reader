@@ -20,8 +20,16 @@ PROFILES = (
 
 
 def export_profile(book: CanonicalBookV2, *, split_sections: bool = True) -> str:
-    if split_sections and any(isinstance(b, ListItemBlock) for b in book.blocks):
-        return LIST_BODY_PROFILE
+    if split_sections:
+        styles = {s.id: s for s in book.styles}
+        for block in book.blocks:
+            style = styles.get(block.style_id or "")
+            if (
+                isinstance(block, ListItemBlock)
+                and style is not None
+                and (style.indent_em or style.block_indent_em)
+            ):
+                return LIST_BODY_PROFILE
     if split_sections and len(publication_parts(book, split_sections=True)) > len(book.chapters):
         return SECTION_FILE_PROFILE
     if page_addresses(book):
