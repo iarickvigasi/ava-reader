@@ -721,7 +721,7 @@ normal import and reader/source qualification remain required before completion.
 
 Three to twelve native items introduced by a colon and separated by semicolons can retain
 intentional row breaks in a paragraph. The bounded rule stays within one source page/column,
-matching typography and at most24 source lines. Items must be indented, or margin-aligned with a
+matching typography and at most 24 source lines. Items must be indented, or margin-aligned with a
 visibly separated introduction. A wrapped final item uses a normal layout-space join.
 It preserves text/spans and measured inset without inventing list markers or declaring poetry.
 This is source-delimited display preservation, not support for every unmarked list or semantic proof
@@ -875,3 +875,22 @@ provider output before host color-case normalization. Repair controls use
 regenerates eligibility before dispatch. Model requests expose the original image and
 only the requested segment IDs, roles and short contexts. The complete original output
 stays private, and the final input retains a replayable geometry proof.
+
+### Complete frontmatter title comparison
+
+The server-only `ava-frontmatter-title-1` policy selects closed Input7 and
+`ava-book-refinement-batch-3` on top of the captured Layout1, Structure1, WordWrap1
+and RecognitionRepair1 policies. One Title2 task compares at most 24 unchanged source
+headings within the first 16 pages before a proven body/Contents boundary. It uses
+readable title/page-context panels at 2 pixels per point, with each panel bounded at 2048 pixels per edge,
+the complete sheet bounded at 4096 pixels per edge and 4 MiB. Overflow refuses; no catalogue,
+source text or image panel is truncated to fit.
+
+The response selects one whole source node by ID/hash with its exact title/context
+evidence, or declines. Completeness is a source comparison judgment; the number of
+large OCR headings does not prove a title is partial. Cover corroboration is separate
+and requires exact first-page heading/context evidence. The selected title does not
+change typography, chapter roles, selectable text or reading order. The task shares
+the existing 32 refinement slots and provider grant/spend caps. Historical Title1,
+Inputs1–6 and Batch1–2 stay closed. This opt-in requires matching generated contracts,
+worker, semantic validator and provider authorization before corpus/reader qualification.

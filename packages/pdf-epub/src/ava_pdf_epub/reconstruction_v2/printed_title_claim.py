@@ -1,6 +1,6 @@
 """A validated role selects one whole source heading, without granting credit authority."""
 
-from typing import Any
+from typing import Any, Literal
 
 from ..contracts.common import text_digest
 from ..contracts.layout_normalization_v3 import LayoutNormalizationMapV3
@@ -9,9 +9,16 @@ from .printed_claim import printed_claim
 
 
 def printed_title_claim(state: AssemblyState) -> dict[str, Any] | None:
-    if state.printed_title is None:
-        return None
-    ident, digest, role = state.printed_title
+    role: Literal["title"] | None
+    if state.source_title_policy == "ava-frontmatter-title-1":
+        if state.frontmatter_title is None:
+            return None
+        ident, digest = state.frontmatter_title
+        role = "title"
+    else:
+        if state.printed_title is None:
+            return None
+        ident, digest, role = state.printed_title
     block = next((b for b in state.blocks if b["id"] == ident), None)
     if block is None or block["kind"] != "heading":
         raise ValueError("Classified printed title heading is absent")
@@ -24,4 +31,8 @@ def printed_title_claim(state: AssemblyState) -> dict[str, Any] | None:
             raise ValueError(
                 "Classified printed title whole text changed without checked projection"
             )
-    return printed_claim("title", text.strip(), block) if role == "title" else None
+    return (
+        printed_claim("title", text if state.source_title_policy else text.strip(), block)
+        if role == "title"
+        else None
+    )

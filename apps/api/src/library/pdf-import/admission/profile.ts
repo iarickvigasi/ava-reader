@@ -1,3 +1,4 @@
+import { FRONTMATTER_TITLE_POLICY } from './frontmatter-title-policy';
 import { RECOGNITION_GEOMETRY_REPAIR_POLICY } from './recognition-geometry-policy';
 import { NATIVE_WORD_WRAP_POLICY } from './native-word-wrap-policy';
 import { PDF_IMPORT_PROFILE, PDF_IMPORT_PROFILE_V3 } from './base-profile';
@@ -43,6 +44,14 @@ const GEOMETRY_V3 = Object.freeze({
   ...NORMALIZATION_V3,
   recognitionRepairPolicy: RECOGNITION_GEOMETRY_REPAIR_POLICY,
 });
+const TITLE_LEGACY = Object.freeze({
+  ...GEOMETRY_LEGACY,
+  sourceTitlePolicy: FRONTMATTER_TITLE_POLICY,
+});
+const TITLE_V3 = Object.freeze({
+  ...GEOMETRY_V3,
+  sourceTitlePolicy: FRONTMATTER_TITLE_POLICY,
+});
 export type PdfImportConfiguration =
   | typeof PDF_IMPORT_PROFILE
   | typeof PDF_IMPORT_PROFILE_V3
@@ -53,17 +62,31 @@ export type PdfImportConfiguration =
   | typeof NORMALIZATION_LEGACY
   | typeof NORMALIZATION_V3
   | typeof GEOMETRY_LEGACY
-  | typeof GEOMETRY_V3;
+  | typeof GEOMETRY_V3
+  | typeof TITLE_LEGACY
+  | typeof TITLE_V3;
 export function pdfImportConfiguration(
   profileId?: string,
   sourceLayoutPolicy?: unknown,
   sourceStructurePolicy?: unknown,
   sourceNormalizationPolicy?: unknown,
   recognitionRepairPolicy?: unknown,
+  sourceTitlePolicy?: unknown,
 ): PdfImportConfiguration {
   const legacy = !profileId || profileId === PDF_IMPORT_PROFILE.profileId;
   if (!legacy && profileId !== PDF_IMPORT_PROFILE_V3.profileId)
     throw new Error('PDF_IMPORT_PROFILE_INVALID');
+  if (sourceTitlePolicy !== undefined && sourceTitlePolicy !== '') {
+    if (
+      sourceTitlePolicy !== FRONTMATTER_TITLE_POLICY ||
+      recognitionRepairPolicy !== RECOGNITION_GEOMETRY_REPAIR_POLICY ||
+      sourceNormalizationPolicy !== NATIVE_WORD_WRAP_POLICY ||
+      sourceStructurePolicy !== NATIVE_STRUCTURE_POLICY ||
+      sourceLayoutPolicy !== NATIVE_LAYOUT_POLICY
+    )
+      throw new Error('PDF_IMPORT_PROFILE_INVALID');
+    return legacy ? TITLE_LEGACY : TITLE_V3;
+  }
   if (recognitionRepairPolicy !== undefined && recognitionRepairPolicy !== '') {
     if (
       recognitionRepairPolicy !== RECOGNITION_GEOMETRY_REPAIR_POLICY ||
@@ -114,3 +137,9 @@ export {
   RECOGNITION_GEOMETRY_REPAIR_POLICY,
   type RecognitionRepairPolicy,
 } from './recognition-geometry-policy';
+
+export { capturedSourceTitlePolicy } from './captured-title-policy';
+export {
+  FRONTMATTER_TITLE_POLICY,
+  type SourceTitlePolicy,
+} from './frontmatter-title-policy';

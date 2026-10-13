@@ -8,6 +8,10 @@ from .prepare_refinement import prepare_refinement
 from .prepare_source import prepare_source
 from .prepared_types import AnyPreparedPage
 from .protocol import AnyReconstructionInput
+from .protocol_frontmatter_title import (
+    FrontmatterTitleReconstructionInput,
+    FrontmatterTitleRefinementBatch,
+)
 from .protocol_native_layout import NativeLayoutReconstructionInput
 from .protocol_native_structure import NativeStructureReconstructionInput
 from .protocol_native_word_wrap import NativeWordWrapReconstructionInput
@@ -17,7 +21,7 @@ from .source_segments import source_segments
 
 def prepare_refinement_source(
     source: Path, scratch: Path, request: AnyReconstructionInput
-) -> RefinementBatch | PrintedTitleRefinementBatch:
+) -> RefinementBatch | PrintedTitleRefinementBatch | FrontmatterTitleRefinementBatch:
     if request.refinements:
         raise ValueError("Comparison preparation cannot consume previous refinement decisions")
     prepared = prepare_source(
@@ -59,7 +63,7 @@ def prepare_refinement_from_pages(
     scratch: Path,
     prepared: Sequence[AnyPreparedPage],
     request: AnyReconstructionInput,
-) -> RefinementBatch | PrintedTitleRefinementBatch:
+) -> RefinementBatch | PrintedTitleRefinementBatch | FrontmatterTitleRefinementBatch:
     """Use private source checkpoints with a newly created refinement assembly state."""
     if request.refinements:
         raise ValueError("Comparison preparation cannot consume previous refinement decisions")
@@ -74,6 +78,11 @@ def prepare_refinement_from_pages(
                 if isinstance(
                     request, (NativeStructureReconstructionInput, NativeWordWrapReconstructionInput)
                 )
+                else None
+            ),
+            source_title_policy=(
+                request.source_title_policy
+                if isinstance(request, FrontmatterTitleReconstructionInput)
                 else None
             ),
             source_layout_policy=(
@@ -96,10 +105,23 @@ def prepare_refinement_from_pages(
             segments,
             state,
             source_feature_policy=request.source_feature_policy,
+            source_title_policy=(
+                request.source_title_policy
+                if isinstance(request, FrontmatterTitleReconstructionInput)
+                else None
+            ),
         )
         raw = dict(
             source_sha256=request.source_sha256, tasks=[t.model_dump(mode="json") for t in tasks]
         )
+        if isinstance(request, FrontmatterTitleReconstructionInput):
+            return FrontmatterTitleRefinementBatch.model_validate(
+                dict(
+                    schema_version="ava-book-refinement-batch-3",
+                    source_title_policy=request.source_title_policy,
+                    **raw,
+                )
+            )
         if any(isinstance(t, PrintedTitleTask) for t in tasks):
             return PrintedTitleRefinementBatch.model_validate(
                 dict(schema_version="ava-book-refinement-batch-2", **raw)

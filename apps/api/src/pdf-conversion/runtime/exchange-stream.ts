@@ -27,7 +27,9 @@ export function exchangeStream(
       input: { schema_version: string };
     }
   ).input.schema_version;
-  const geometry = marker === 'ava-reconstruct-input-6';
+  const geometry =
+    marker === 'ava-reconstruct-input-6' ||
+    marker === 'ava-reconstruct-input-7';
   const wrap = marker === 'ava-reconstruct-input-5' || geometry;
   const protocol = exchangeProtocol(
       {

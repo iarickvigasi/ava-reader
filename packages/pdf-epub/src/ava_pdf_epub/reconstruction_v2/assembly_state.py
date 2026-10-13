@@ -50,6 +50,15 @@ class AssemblyState:
     refinement_evidence: list[dict[str, Any]] = field(default_factory=list)
     bibliographic_roles: dict[str, tuple[str | None, str]] = field(default_factory=dict)
     printed_title: tuple[str, str, Literal["title"] | None] | None = None
+    source_title_policy: str | None = None
+    frontmatter_title_compared: bool = False
+    frontmatter_title: tuple[str, str] | None = None
+    frontmatter_cover: list[tuple[str, str]] = field(default_factory=list)
+    source_outline_aliases: list[tuple[str, int, int]] = field(default_factory=list)
+    source_outline_alias_parents: dict[int, tuple[str, int, int] | None] = field(
+        default_factory=dict
+    )
+    source_outline_targets: dict[tuple[str, int, int], str] = field(default_factory=dict)
     refined_joins: dict[tuple[str, str], bool] = field(default_factory=dict)
     source_feature_policy: str | None = None
     source_feature_evidence: list[dict[str, Any]] = field(default_factory=list)
@@ -90,6 +99,11 @@ class AssemblyState:
         self.refined_joins.clear()
         self.bibliographic_roles.clear()
         self.printed_title = None
+        self.frontmatter_title = None
+        self.frontmatter_cover.clear()
+        self.source_outline_aliases.clear()
+        self.source_outline_alias_parents.clear()
+        self.source_outline_targets.clear()
 
     def release_source_workspace(self) -> None:
         """After canonical validation, retain only assets and report evidence for export."""

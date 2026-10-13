@@ -1,3 +1,4 @@
+import { frontmatterTitleProviderTask } from './frontmatter-title-provider-task';
 import { createHash } from 'node:crypto';
 import type { ProviderTask } from '../../library/pdf-import/providers/types';
 import {
@@ -22,6 +23,8 @@ export function refinementProviderTask(
   sourceSha256: string,
 ): ProviderTask {
   const task = validateRefinementTask(structuredClone(input));
+  if (task.schema_version === 'ava-printed-title-task-2')
+    return frontmatterTitleProviderTask(task, sourceSha256);
   const image = Buffer.from(task.image.base64, 'base64');
   if (
     task.source_sha256 !== sourceSha256 ||

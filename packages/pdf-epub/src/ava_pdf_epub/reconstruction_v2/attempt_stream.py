@@ -20,9 +20,14 @@ from .page_checkpoints import PageCheckpoints
 from .prepare_page import prepare_from_source
 from .prepare_refinement_source import prepare_refinement_from_pages
 from .prepared_native_structure import NativeStructurePreparedPage
+from .printed_title_v2_contract import FrontmatterTitleTask
 from .protocol import (
     AnyReconstructionInput,
     prepared_result,
+)
+from .protocol_frontmatter_title import (
+    FrontmatterTitleReconstructionInput,
+    FrontmatterTitleRefinementBatch,
 )
 from .protocol_native_layout import NativeLayoutReconstructionInput
 from .protocol_native_structure import NativeStructureReconstructionInput
@@ -264,6 +269,14 @@ def _run(
                 request, responses, [], native_responses, geometry_corrections=geometry_corrections
             ),
         )
+        if isinstance(request, FrontmatterTitleReconstructionInput):
+            if (
+                not isinstance(batch, FrontmatterTitleRefinementBatch)
+                or batch.source_title_policy != request.source_title_policy
+            ):
+                raise ValueError("Complete-title batch differs from captured input")
+        elif isinstance(batch, FrontmatterTitleRefinementBatch):
+            raise ValueError("Complete-title batch requires its captured input")
         if batch.source_sha256 != request.source_sha256 or len(
             {task.task_id for task in batch.tasks}
         ) != len(batch.tasks):
@@ -273,6 +286,10 @@ def _run(
             if (
                 refinement_task.source_sha256 != request.source_sha256
                 or refinement_task.profile_id != request.profile_id
+                or (
+                    isinstance(refinement_task, FrontmatterTitleTask)
+                    and refinement_task.source_page_count != preparation.count
+                )
             ):
                 raise ValueError("Refinement task belongs to another source/profile")
             _validate_refinement(refinement_task.model_dump(mode="json"), None)

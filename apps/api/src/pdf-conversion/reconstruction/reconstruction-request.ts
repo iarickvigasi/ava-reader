@@ -3,6 +3,7 @@ import type {
   NativeStructurePolicy,
   SourceNormalizationPolicy,
   RecognitionRepairPolicy,
+  SourceTitlePolicy,
 } from '../../library/pdf-import/admission/profile';
 import type { RecognitionGeometryProof } from './generated/RecognitionGeometryProof';
 import type { WordWrapResponse } from './generated/WordWrapResponse';
@@ -18,6 +19,7 @@ export function reconstructionRequest(
     sourceStructurePolicy?: NativeStructurePolicy;
     sourceNormalizationPolicy?: SourceNormalizationPolicy;
     recognitionRepairPolicy?: RecognitionRepairPolicy;
+    sourceTitlePolicy?: SourceTitlePolicy;
   },
   responses: RecognitionResponse[] = [],
   refinements: RefinementResponse[] = [],
@@ -27,17 +29,19 @@ export function reconstructionRequest(
   geometryCorrections: RecognitionGeometryProof[] = [],
 ) {
   return {
-    schema_version: identity.recognitionRepairPolicy
-      ? 'ava-reconstruct-input-6'
-      : identity.sourceNormalizationPolicy
-        ? 'ava-reconstruct-input-5'
-        : identity.sourceStructurePolicy
-          ? 'ava-reconstruct-input-4'
-          : identity.sourceLayoutPolicy
-            ? 'ava-reconstruct-input-3'
-            : titleScheduled
-              ? 'ava-reconstruct-input-2'
-              : 'ava-reconstruct-input-1',
+    schema_version: identity.sourceTitlePolicy
+      ? 'ava-reconstruct-input-7'
+      : identity.recognitionRepairPolicy
+        ? 'ava-reconstruct-input-6'
+        : identity.sourceNormalizationPolicy
+          ? 'ava-reconstruct-input-5'
+          : identity.sourceStructurePolicy
+            ? 'ava-reconstruct-input-4'
+            : identity.sourceLayoutPolicy
+              ? 'ava-reconstruct-input-3'
+              : titleScheduled
+                ? 'ava-reconstruct-input-2'
+                : 'ava-reconstruct-input-1',
     ...(identity.sourceLayoutPolicy
       ? {
           source_layout_policy: identity.sourceLayoutPolicy,
@@ -60,6 +64,9 @@ export function reconstructionRequest(
           recognition_repair_policy: identity.recognitionRepairPolicy,
           geometry_corrections: geometryCorrections,
         }
+      : {}),
+    ...(identity.sourceTitlePolicy
+      ? { source_title_policy: identity.sourceTitlePolicy }
       : {}),
     source_feature_policy: 'ava-ocr-source-features-1',
     profile_id: identity.profileId,

@@ -42,7 +42,7 @@ def printed_metadata(state: AssemblyState, source_author: str | None) -> list[di
     classified_title = printed_title_claim(state)
     if classified_title is not None:
         output.append(classified_title)
-    if title is not None:
+    if title is not None and state.source_title_policy is None:
         output.append(_claim("title", title["content"]["text"], title))
         index = state.blocks.index(title)
         if index + 1 < len(state.blocks):

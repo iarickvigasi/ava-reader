@@ -2,6 +2,7 @@
 
 from ..contracts.common import document_digest, text_digest
 from .assembly_state import AssemblyState
+from .printed_title_v2_contract import FrontmatterTitleResponse, FrontmatterTitleTask
 from .refinement_contract import (
     AnyRefinementResponse,
     AnyRefinementTask,
@@ -21,8 +22,8 @@ from .source_refusal import refuse_heading_parent
 
 def apply_refinement(
     segments: list[Segment],
-    tasks: list[AnyRefinementTask],
-    responses: list[AnyRefinementResponse],
+    tasks: list[AnyRefinementTask | FrontmatterTitleTask],
+    responses: list[AnyRefinementResponse | FrontmatterTitleResponse],
     state: AssemblyState,
 ) -> list[Segment]:
     if any(t.observation_sha256 != observation_digest(segments) for t in tasks):
@@ -36,6 +37,13 @@ def apply_refinement(
     for task in tasks:
         response = receipts[task.task_id]
         accept_refinement(task, response)
+        if isinstance(task, FrontmatterTitleTask):
+            from .frontmatter_title_apply import apply_frontmatter_title
+
+            if not isinstance(response, FrontmatterTitleResponse):
+                raise ValueError("Complete title response authority differs")
+            apply_frontmatter_title(task, response, state)
+            continue
         if isinstance(task, PrintedTitleTask):
             if state.printed_title is not None or not isinstance(response, PrintedTitleResponse):
                 raise ValueError("Repeated or mismatched printed title authority")
@@ -95,6 +103,10 @@ def apply_refinement(
                 + [d.node_id for d in response.metadata_decisions],
             )
         )
+    if state.frontmatter_title is not None:
+        selected_role = state.bibliographic_roles.get(state.frontmatter_title[0])
+        if selected_role is not None and selected_role[0] is not None:
+            raise ValueError("Selected book title conflicts with a bibliographic role")
     result = []
     for segment in segments:
         patch = updates.get(segment.id)
@@ -153,6 +165,11 @@ def apply_refinement(
     state.structure_findings = [f for f in state.structure_findings if f.block_id not in updates]
     from .source_feature_apply import apply_source_features
 
-    result = apply_source_features(result, feature_tasks, receipts, state)
+    feature_receipts = {
+        ident: response
+        for ident, response in receipts.items()
+        if not isinstance(response, FrontmatterTitleResponse)
+    }
+    result = apply_source_features(result, feature_tasks, feature_receipts, state)
     # A refused join already separated the endpoints; only true joins need a role/style recheck.
     return refined_boundaries(result, {key: value for key, value in edges.items() if value})

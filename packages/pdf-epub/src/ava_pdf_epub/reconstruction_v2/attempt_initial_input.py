@@ -3,6 +3,7 @@
 from .attempt_exchange import strict_json
 from .attempt_initial_fields import validate_initial_fields
 from .protocol import ReconstructionInput
+from .protocol_frontmatter_title import FrontmatterTitleReconstructionInput
 from .protocol_native_layout import NativeLayoutReconstructionInput
 from .protocol_native_structure import NativeStructureReconstructionInput
 from .protocol_native_word_wrap import NativeWordWrapReconstructionInput
@@ -15,6 +16,7 @@ InitialInput = (
     | NativeStructureReconstructionInput
     | NativeWordWrapReconstructionInput
     | RecognitionGeometryReconstructionInput
+    | FrontmatterTitleReconstructionInput
 )
 
 
@@ -29,7 +31,9 @@ def initial_input(data: bytes) -> InitialInput:
     validate_initial_fields(raw["input"])
     marker = raw["input"].get("schema_version")
     request: InitialInput = (
-        RecognitionGeometryReconstructionInput.model_validate(raw["input"])
+        FrontmatterTitleReconstructionInput.model_validate(raw["input"])
+        if marker == "ava-reconstruct-input-7"
+        else RecognitionGeometryReconstructionInput.model_validate(raw["input"])
         if marker == "ava-reconstruct-input-6"
         else NativeWordWrapReconstructionInput.model_validate(raw["input"])
         if marker == "ava-reconstruct-input-5"

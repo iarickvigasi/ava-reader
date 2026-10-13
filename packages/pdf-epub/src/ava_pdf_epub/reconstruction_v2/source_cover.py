@@ -27,6 +27,10 @@ def preserve_source_cover(
     if len(titles) != 1:
         return None
     title_evidence = titles[0].get("evidence", [])
+    if state.source_title_policy == "ava-frontmatter-title-1":
+        from .frontmatter_title_apply import corroborated_cover_evidence
+
+        title_evidence = corroborated_cover_evidence(state)
     if not title_evidence or any(e["page"] != 1 for e in title_evidence):
         return None
     page = prepared[0].observation

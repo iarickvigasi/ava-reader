@@ -5,7 +5,8 @@ export type InitialExchangeInput = {
     | 'ava-reconstruct-input-3'
     | 'ava-reconstruct-input-4'
     | 'ava-reconstruct-input-5'
-    | 'ava-reconstruct-input-6';
+    | 'ava-reconstruct-input-6'
+    | 'ava-reconstruct-input-7';
   profile_id: string;
   source_sha256: string;
   source_feature_policy?: string;
@@ -13,6 +14,7 @@ export type InitialExchangeInput = {
   source_structure_policy?: string;
   source_normalization_policy?: string;
   recognition_repair_policy?: string;
+  source_title_policy?: string;
   geometry_corrections?: unknown[];
   responses: unknown[];
   native_structure_responses?: unknown[];
@@ -23,7 +25,9 @@ export type InitialExchangeInput = {
 export function initialExchangeInput(value: unknown): InitialExchangeInput {
   const request = value as InitialExchangeInput | null;
   const layout = request?.schema_version === 'ava-reconstruct-input-3';
-  const geometry = request?.schema_version === 'ava-reconstruct-input-6';
+  const title = request?.schema_version === 'ava-reconstruct-input-7';
+  const geometry =
+    request?.schema_version === 'ava-reconstruct-input-6' || title;
   const wrap =
     request?.schema_version === 'ava-reconstruct-input-5' || geometry;
   const native = request?.schema_version === 'ava-reconstruct-input-4' || wrap;
@@ -37,6 +41,7 @@ export function initialExchangeInput(value: unknown): InitialExchangeInput {
     ...(layout || native ? ['source_layout_policy'] : []),
     ...(wrap ? ['source_normalization_policy', 'word_wrap_responses'] : []),
     ...(geometry ? ['recognition_repair_policy', 'geometry_corrections'] : []),
+    ...(title ? ['source_title_policy'] : []),
     ...(native
       ? ['source_structure_policy', 'native_structure_responses']
       : []),
@@ -71,6 +76,7 @@ export function initialExchangeInput(value: unknown): InitialExchangeInput {
       (request.source_normalization_policy !== 'ava-native-word-wrap-1' ||
         !Array.isArray(request.word_wrap_responses) ||
         request.word_wrap_responses.length)) ||
+    (title && request.source_title_policy !== 'ava-frontmatter-title-1') ||
     (geometry &&
       (request.recognition_repair_policy !==
         'ava-recognition-geometry-repair-1' ||

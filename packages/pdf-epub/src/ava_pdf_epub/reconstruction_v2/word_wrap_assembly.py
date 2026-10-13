@@ -17,6 +17,7 @@ from .ocr_font_faces import corroborate_ocr_font_faces
 from .prepare_refinement import prepare_refinement
 from .prepared_types import AnyPreparedPage
 from .printed_markers import printed_markers
+from .printed_title_v2_contract import FrontmatterTitleResponse
 from .recognition_contract import RecognitionResponse
 from .refinement_contract import AnyRefinementResponse
 from .segments import Segment
@@ -40,9 +41,11 @@ def word_wrap_assembly(
     scratch: Path,
     prepared: Sequence[AnyPreparedPage],
     responses: list[RecognitionResponse],
-    refinements: list[AnyRefinementResponse],
+    refinements: list[AnyRefinementResponse | FrontmatterTitleResponse],
     native_structure_responses: list[NativeStructureResponse],
     source_layout_policy: NativeLayoutPolicy,
+    *,
+    source_title_policy: str | None = None,
 ) -> WordWrapAssembly:
     pages, segments, state = source_segments(
         source,
@@ -50,12 +53,19 @@ def word_wrap_assembly(
         prepared,
         responses,
         source_layout_policy=source_layout_policy,
+        source_title_policy=source_title_policy,
         native_structure_responses=native_structure_responses,
     )
     state.word_wrap_active = True
     with phase("prepare_refinement"):
         tasks = prepare_refinement(
-            source, scratch, prepared, segments, state, source_feature_policy=FEATURE_POLICY
+            source,
+            scratch,
+            prepared,
+            segments,
+            state,
+            source_feature_policy=FEATURE_POLICY,
+            source_title_policy=source_title_policy,
         )
     segments = apply_refinement(segments, tasks, refinements, state)
     segments = corroborate_ocr_font_faces(source, prepared, segments, state)

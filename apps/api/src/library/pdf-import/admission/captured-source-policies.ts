@@ -3,6 +3,8 @@ import {
   capturedSourceStructurePolicy,
   capturedSourceNormalizationPolicy,
   capturedRecognitionRepairPolicy,
+  capturedSourceTitlePolicy,
+  RECOGNITION_GEOMETRY_REPAIR_POLICY,
   NATIVE_LAYOUT_POLICY,
   NATIVE_STRUCTURE_POLICY,
   NATIVE_WORD_WRAP_POLICY,
@@ -12,6 +14,15 @@ export function capturedSourcePolicies(
   profileId: string,
   configSha256: unknown,
 ) {
+  const sourceTitlePolicy = capturedSourceTitlePolicy(profileId, configSha256);
+  if (sourceTitlePolicy)
+    return {
+      sourceLayoutPolicy: NATIVE_LAYOUT_POLICY,
+      sourceStructurePolicy: NATIVE_STRUCTURE_POLICY,
+      sourceNormalizationPolicy: NATIVE_WORD_WRAP_POLICY,
+      recognitionRepairPolicy: RECOGNITION_GEOMETRY_REPAIR_POLICY,
+      sourceTitlePolicy,
+    };
   const recognitionRepairPolicy = capturedRecognitionRepairPolicy(
     profileId,
     configSha256,

@@ -15,6 +15,9 @@ from ava_pdf_epub.reconstruction_v2.protocol_native_layout import NativeLayoutPr
 from ava_pdf_epub.reconstruction_v2.protocol_native_structure import NativeStructurePrepareResult, NativeStructureReconstructionInput
 from ava_pdf_epub.reconstruction_v2.protocol_native_word_wrap import NativeWordWrapPrepareResult, NativeWordWrapReconstructionInput
 from ava_pdf_epub.reconstruction_v2.protocol_recognition_geometry import RecognitionGeometryReconstructionInput
+from ava_pdf_epub.reconstruction_v2.protocol_frontmatter_title import FrontmatterTitleReconstructionInput, FrontmatterTitleRefinementBatch
+from ava_pdf_epub.reconstruction_v2.printed_title_v2_contract import FrontmatterTitleTask, FrontmatterTitleResponse
+from ava_pdf_epub.reconstruction_v2.printed_title_v2_prompt import PRINTED_TITLE_V2_PROMPT, PRINTED_TITLE_V2_PROMPT_VERSION
 from ava_pdf_epub.reconstruction_v2.recognition_geometry_contract import RecognitionGeometryTask, RecognitionGeometryResponse, RecognitionGeometryProof
 from ava_pdf_epub.reconstruction_v2.recognition_geometry_prompt import GEOMETRY_PROMPT, GEOMETRY_PROMPT_VERSION
 from ava_pdf_epub.reconstruction_v2.word_wrap_contract import WordWrapTask, WordWrapResponse, WordWrapBatch
@@ -31,7 +34,7 @@ from ava_pdf_epub.reconstruction_v2.printed_title_prompt import PRINTED_TITLE_PR
 from ava_pdf_epub.reconstruction_v2.refinement_prompt import REFINEMENT_PROMPT, REFINEMENT_PROMPT_VERSION, BIBLIOGRAPHIC_PROMPT, LEGACY_REFINEMENT_PROMPT, MIXED_HIERARCHY_PROMPT, MIXED_HIERARCHY_PROMPT_VERSION
 from ava_pdf_epub.reconstruction_v2.source_feature_prompt import SOURCE_FEATURE_PROMPT, SOURCE_FEATURE_PROMPT_VERSION
 from ava_pdf_epub.reconstruction_v2.source_feature_task_contract import SourceFeatureTask, SourceFeatureResponse
-classes = [RecognitionGeometryReconstructionInput, RecognitionGeometryTask, RecognitionGeometryResponse, RecognitionGeometryProof, NativeWordWrapPrepareResult, NativeWordWrapReconstructionInput, WordWrapTask, WordWrapResponse, WordWrapBatch, NativeStructurePrepareResult, NativeStructureReconstructionInput, NativeStructureTask, NativeStructureResponse, SourceFeatureTask, SourceFeatureResponse, PrepareResult, ReconstructionInput, RecognitionTask, RecognitionResponse, ReconstructionReport, BookRefinementTask, BookRefinementResponse, RefinementBatch, PrintedTitleTask, PrintedTitleResponse, PrintedTitleRefinementBatch, PrintedTitleReconstructionInput, NativeLayoutPrepareResult, NativeLayoutReconstructionInput, RecognitionAnchorContextTask, RecognitionAnchorContextResponse]
+classes = [FrontmatterTitleReconstructionInput, FrontmatterTitleRefinementBatch, FrontmatterTitleTask, FrontmatterTitleResponse, RecognitionGeometryReconstructionInput, RecognitionGeometryTask, RecognitionGeometryResponse, RecognitionGeometryProof, NativeWordWrapPrepareResult, NativeWordWrapReconstructionInput, WordWrapTask, WordWrapResponse, WordWrapBatch, NativeStructurePrepareResult, NativeStructureReconstructionInput, NativeStructureTask, NativeStructureResponse, SourceFeatureTask, SourceFeatureResponse, PrepareResult, ReconstructionInput, RecognitionTask, RecognitionResponse, ReconstructionReport, BookRefinementTask, BookRefinementResponse, RefinementBatch, PrintedTitleTask, PrintedTitleResponse, PrintedTitleRefinementBatch, PrintedTitleReconstructionInput, NativeLayoutPrepareResult, NativeLayoutReconstructionInput, RecognitionAnchorContextTask, RecognitionAnchorContextResponse]
 prompts = [("RECOGNITION_PROMPT", recognition_prompt.SYSTEM_PROMPT), ("RECOGNITION_PROMPT_VERSION", recognition_prompt.PROMPT_VERSION)]
 for prefix in ("MERGED_TABLE", "PINNED_TABLE", "EXPLICIT_STYLE", "PINNED_STYLE", "ANCHORED_STYLE", "PINNED_ANCHORED", "BOUNDARY_STYLE", "PINNED_BOUNDARY", "UNICODE_STYLE", "PINNED_UNICODE"):
     for suffix in ("_PROMPT", "_PROMPT_VERSION"):
@@ -41,7 +44,7 @@ for name in ("ORDERED_LIST_PROMPT", "ORDERED_LIST_PROMPT_VERSION", "PINNED_ORDER
     prompts.append((name, getattr(ordered_list_prompt, name)))
 for name in ("TEXT_STYLE_PROMPT", "TEXT_STYLE_PROMPT_VERSION", "PINNED_TEXT_STYLE_PROMPT", "PINNED_TEXT_STYLE_PROMPT_VERSION"):
     prompts.append((name, getattr(text_style_prompt, name)))
-print(json.dumps(dict(schemas={c.__name__: c.model_json_schema() for c in classes}, prompts=prompts, legacyRefinementPrompt=LEGACY_REFINEMENT_PROMPT, refinementPrompt=REFINEMENT_PROMPT, refinementPromptVersion=REFINEMENT_PROMPT_VERSION, bibliographicPrompt=BIBLIOGRAPHIC_PROMPT, mixedHierarchyPrompt=MIXED_HIERARCHY_PROMPT, mixedHierarchyPromptVersion=MIXED_HIERARCHY_PROMPT_VERSION, sourceFeaturePrompt=SOURCE_FEATURE_PROMPT, sourceFeaturePromptVersion=SOURCE_FEATURE_PROMPT_VERSION, printedTitlePrompt=PRINTED_TITLE_PROMPT, printedTitlePromptVersion=PRINTED_TITLE_PROMPT_VERSION, nativeStructurePrompt=NATIVE_STRUCTURE_PROMPT, nativeStructurePromptVersion=NATIVE_STRUCTURE_PROMPT_VERSION, wordWrapPrompt=WORD_WRAP_PROMPT, wordWrapPromptVersion=WORD_WRAP_PROMPT_VERSION, wordWrapResponseSchemaVersion=WORD_WRAP_RESPONSE_SCHEMA_VERSION, anchorContextPrompt=ANCHOR_CONTEXT_PROMPT, anchorContextPromptVersion=ANCHOR_CONTEXT_PROMPT_VERSION, geometryPrompt=GEOMETRY_PROMPT, geometryPromptVersion=GEOMETRY_PROMPT_VERSION),sort_keys=True,separators=(',',':')))
+print(json.dumps(dict(schemas={c.__name__: c.model_json_schema() for c in classes}, prompts=prompts, legacyRefinementPrompt=LEGACY_REFINEMENT_PROMPT, refinementPrompt=REFINEMENT_PROMPT, refinementPromptVersion=REFINEMENT_PROMPT_VERSION, bibliographicPrompt=BIBLIOGRAPHIC_PROMPT, mixedHierarchyPrompt=MIXED_HIERARCHY_PROMPT, mixedHierarchyPromptVersion=MIXED_HIERARCHY_PROMPT_VERSION, sourceFeaturePrompt=SOURCE_FEATURE_PROMPT, sourceFeaturePromptVersion=SOURCE_FEATURE_PROMPT_VERSION, printedTitlePrompt=PRINTED_TITLE_PROMPT, printedTitlePromptVersion=PRINTED_TITLE_PROMPT_VERSION, nativeStructurePrompt=NATIVE_STRUCTURE_PROMPT, nativeStructurePromptVersion=NATIVE_STRUCTURE_PROMPT_VERSION, wordWrapPrompt=WORD_WRAP_PROMPT, wordWrapPromptVersion=WORD_WRAP_PROMPT_VERSION, wordWrapResponseSchemaVersion=WORD_WRAP_RESPONSE_SCHEMA_VERSION, anchorContextPrompt=ANCHOR_CONTEXT_PROMPT, anchorContextPromptVersion=ANCHOR_CONTEXT_PROMPT_VERSION, geometryPrompt=GEOMETRY_PROMPT, geometryPromptVersion=GEOMETRY_PROMPT_VERSION, printedTitleV2Prompt=PRINTED_TITLE_V2_PROMPT, printedTitleV2PromptVersion=PRINTED_TITLE_V2_PROMPT_VERSION),sort_keys=True,separators=(',',':')))
 `;
 async function emit(name, content) {
   const formatted = await prettier.format(content, {
@@ -107,6 +110,14 @@ async function main() {
       JSON.stringify(data.printedTitlePrompt) +
       ';\nexport const PRINTED_TITLE_PROMPT_VERSION = ' +
       JSON.stringify(data.printedTitlePromptVersion) +
+      ';\n',
+  );
+  await emit(
+    'printed-title-v2-prompt.ts',
+    '/* Generated; do not edit. */\nexport const PRINTED_TITLE_V2_PROMPT = ' +
+      JSON.stringify(data.printedTitleV2Prompt) +
+      ';\nexport const PRINTED_TITLE_V2_PROMPT_VERSION = ' +
+      JSON.stringify(data.printedTitleV2PromptVersion) +
       ';\n',
   );
   await emit(

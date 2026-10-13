@@ -30,8 +30,11 @@ def source_segments(
     *,
     source_layout_policy: NativeLayoutPolicy | None = None,
     native_structure_responses: list[NativeStructureResponse] | None = None,
+    source_title_policy: str | None = None,
 ) -> tuple[list[dict[str, Any]], list[Segment], AssemblyState]:
-    state = AssemblyState()
+    if source_title_policy not in {None, "ava-frontmatter-title-1"}:
+        raise ValueError("Unsupported source title policy")
+    state = AssemblyState(source_title_policy=source_title_policy)
     qualified = qualify_pages(
         source,
         scratch,

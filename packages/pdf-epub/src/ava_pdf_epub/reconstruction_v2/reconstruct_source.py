@@ -7,6 +7,7 @@ from ..worker_observation import phase
 from .prepare_source import prepare_source
 from .prepared_types import AnyPreparedPage
 from .protocol import AnyReconstructionInput
+from .protocol_frontmatter_title import FrontmatterTitleReconstructionInput
 from .protocol_native_layout import NativeLayoutReconstructionInput
 from .protocol_native_structure import NativeStructureReconstructionInput
 from .protocol_native_word_wrap import NativeWordWrapReconstructionInput
@@ -70,6 +71,11 @@ def reconstruct_from_pages(
             request.responses,
             list(request.refinements),
             source_feature_policy=request.source_feature_policy,
+            source_title_policy=(
+                request.source_title_policy
+                if isinstance(request, FrontmatterTitleReconstructionInput)
+                else None
+            ),
             native_structure_responses=(
                 request.native_structure_responses
                 if isinstance(

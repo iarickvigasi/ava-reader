@@ -1,5 +1,6 @@
 import {
   RECOGNITION_GEOMETRY_REPAIR_POLICY,
+  FRONTMATTER_TITLE_POLICY,
   NATIVE_WORD_WRAP_POLICY,
   NATIVE_LAYOUT_POLICY,
   NATIVE_STRUCTURE_POLICY,
@@ -44,25 +45,37 @@ export function exchangeEntry(input: SandboxInput) {
       sourceStructurePolicy: native,
       sourceNormalizationPolicy: wrap,
       recognitionRepairPolicy: repair,
+      sourceTitlePolicy: title,
     } = capturedSourcePolicies(request.profile_id, job.config_sha256);
     if (
-      request.schema_version === 'ava-reconstruct-input-6'
+      request.schema_version !== 'ava-reconstruct-input-7' &&
+      title !== undefined
+    )
+      throw new Error('Exchange title policy binding');
+    if (
+      request.schema_version === 'ava-reconstruct-input-7'
         ? layout !== NATIVE_LAYOUT_POLICY ||
           native !== NATIVE_STRUCTURE_POLICY ||
           wrap !== NATIVE_WORD_WRAP_POLICY ||
-          repair !== RECOGNITION_GEOMETRY_REPAIR_POLICY
-        : request.schema_version === 'ava-reconstruct-input-5'
+          repair !== RECOGNITION_GEOMETRY_REPAIR_POLICY ||
+          title !== FRONTMATTER_TITLE_POLICY
+        : request.schema_version === 'ava-reconstruct-input-6'
           ? layout !== NATIVE_LAYOUT_POLICY ||
             native !== NATIVE_STRUCTURE_POLICY ||
             wrap !== NATIVE_WORD_WRAP_POLICY ||
-            repair !== undefined
-          : request.schema_version === 'ava-reconstruct-input-4'
+            repair !== RECOGNITION_GEOMETRY_REPAIR_POLICY
+          : request.schema_version === 'ava-reconstruct-input-5'
             ? layout !== NATIVE_LAYOUT_POLICY ||
               native !== NATIVE_STRUCTURE_POLICY ||
-              wrap !== undefined
-            : request.schema_version === 'ava-reconstruct-input-3'
-              ? layout !== NATIVE_LAYOUT_POLICY || native !== undefined
-              : layout !== undefined || native !== undefined
+              wrap !== NATIVE_WORD_WRAP_POLICY ||
+              repair !== undefined
+            : request.schema_version === 'ava-reconstruct-input-4'
+              ? layout !== NATIVE_LAYOUT_POLICY ||
+                native !== NATIVE_STRUCTURE_POLICY ||
+                wrap !== undefined
+              : request.schema_version === 'ava-reconstruct-input-3'
+                ? layout !== NATIVE_LAYOUT_POLICY || native !== undefined
+                : layout !== undefined || native !== undefined
     )
       throw new Error('Exchange policy binding');
     return true;

@@ -10,14 +10,23 @@ export async function validateRefinement(
   response: RefinementResponse | null,
   sandbox: CoordinatorDependencies['sandbox'],
   input: () => SandboxInput,
+  signal?: AbortSignal,
 ) {
   const auxiliaryBytes = Buffer.from(
     JSON.stringify({ mode: 'validate_refinement', task, response }),
   );
   if (auxiliaryBytes.length > 8 * 1024 ** 2)
     throw new PdfRuntimeError('RESOURCE_LIMIT');
+  const environment = input();
   const result = await sandbox({
-    ...input(),
+    ...environment,
+    ...(signal
+      ? {
+          signal: environment.signal
+            ? AbortSignal.any([environment.signal, signal])
+            : signal,
+        }
+      : {}),
     auxiliaryBytes,
     observationCommand: { command: 'validate_refinement', page_number: null },
   });

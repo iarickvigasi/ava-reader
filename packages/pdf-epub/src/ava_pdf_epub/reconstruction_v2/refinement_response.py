@@ -4,11 +4,24 @@ from ..contracts.common import unique
 from ..contracts.styles import Style
 from .continuation_boundary import JOIN_STYLE
 from .printed_title_contract import PrintedTitleResponse, PrintedTitleTask
+from .printed_title_v2_contract import FrontmatterTitleResponse, FrontmatterTitleTask
 from .refinement_contract import AnyRefinementResponse, AnyRefinementTask, BookRefinementResponse
 from .source_feature_task_contract import SourceFeatureResponse, SourceFeatureTask
 
 
-def accept_refinement(task: AnyRefinementTask, response: AnyRefinementResponse) -> None:
+def accept_refinement(
+    task: AnyRefinementTask | FrontmatterTitleTask,
+    response: AnyRefinementResponse | FrontmatterTitleResponse,
+) -> None:
+    if isinstance(task, FrontmatterTitleTask):
+        from .printed_title_v2_response import accept_frontmatter_title
+
+        if not isinstance(response, FrontmatterTitleResponse):
+            raise ValueError("Complete title response authority differs")
+        accept_frontmatter_title(task, response)
+        return
+    if isinstance(response, FrontmatterTitleResponse):
+        raise ValueError("Historical refinement cannot consume complete-title authority")
     if isinstance(task, PrintedTitleTask):
         from .printed_title_response import accept_printed_title
 

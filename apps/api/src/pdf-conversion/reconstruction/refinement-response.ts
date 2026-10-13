@@ -1,9 +1,19 @@
+import { bindFrontmatterTitleResponse } from './frontmatter-title-response';
 import type { RefinementTask } from './refinement-packets';
 import { refinementResponseName } from './refinement-packets';
 import { parsePacket } from './validate-packet';
 import { PdfRuntimeError } from '../runtime/runtime-error';
 // New title authority is exact source classification; historical response semantics stay unchanged.
 export function refinementResponse(task: RefinementTask, output: string) {
+  if (task.schema_version === 'ava-printed-title-task-2')
+    return bindFrontmatterTitleResponse(
+      task,
+      parsePacket(
+        'FrontmatterTitleResponse',
+        Buffer.from(output),
+        2 * 1024 ** 2,
+      ),
+    );
   const response = parsePacket(
     refinementResponseName(task),
     Buffer.from(output),

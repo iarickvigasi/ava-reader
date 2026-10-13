@@ -1,3 +1,7 @@
+import type { FrontmatterTitleTask } from './generated/FrontmatterTitleTask';
+import type { FrontmatterTitleResponse } from './generated/FrontmatterTitleResponse';
+import type { FrontmatterTitleRefinementBatch } from './generated/FrontmatterTitleRefinementBatch';
+import type { FrontmatterTitleReconstructionInput } from './generated/FrontmatterTitleReconstructionInput';
 import type { RecognitionGeometryTask } from './generated/RecognitionGeometryTask';
 import type { RecognitionGeometryResponse } from './generated/RecognitionGeometryResponse';
 import type { RecognitionGeometryProof } from './generated/RecognitionGeometryProof';
@@ -31,6 +35,11 @@ import type { NativeStructureTask } from './generated/NativeStructureTask';
 import type { NativeStructureResponse } from './generated/NativeStructureResponse';
 
 export type Packets = {
+  FrontmatterTitleTask: FrontmatterTitleTask;
+  FrontmatterTitleResponse: FrontmatterTitleResponse;
+  FrontmatterTitleRefinementBatch: FrontmatterTitleRefinementBatch;
+  FrontmatterTitleReconstructionInput: FrontmatterTitleReconstructionInput;
+
   RecognitionGeometryTask: RecognitionGeometryTask;
   RecognitionGeometryResponse: RecognitionGeometryResponse;
   RecognitionGeometryProof: RecognitionGeometryProof;

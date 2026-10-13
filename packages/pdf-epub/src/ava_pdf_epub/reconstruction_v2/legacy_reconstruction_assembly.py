@@ -15,6 +15,7 @@ from .ocr_font_faces import corroborate_ocr_font_faces
 from .prepare_refinement import prepare_refinement
 from .prepared_types import AnyPreparedPage
 from .printed_markers import printed_markers
+from .printed_title_v2_contract import FrontmatterTitleResponse
 from .recognition_contract import RecognitionResponse
 from .refinement_contract import AnyRefinementResponse
 from .source_feature_contract import FEATURE_POLICY
@@ -29,10 +30,12 @@ def legacy_reconstruction_assembly(
     scratch: Path,
     prepared: Sequence[AnyPreparedPage],
     responses: list[RecognitionResponse],
-    refinements: list[AnyRefinementResponse] | None,
+    refinements: list[AnyRefinementResponse | FrontmatterTitleResponse] | None,
     source_feature_policy: str | None,
     source_layout_policy: NativeLayoutPolicy | None,
     native_structure_responses: list[NativeStructureResponse] | None,
+    *,
+    source_title_policy: str | None = None,
 ) -> WordWrapAssembly:
     pages, segments, state = source_segments(
         source,
@@ -40,6 +43,7 @@ def legacy_reconstruction_assembly(
         prepared,
         responses,
         source_layout_policy=source_layout_policy,
+        source_title_policy=source_title_policy,
         native_structure_responses=native_structure_responses,
     )
     if refinements is not None:
@@ -51,6 +55,7 @@ def legacy_reconstruction_assembly(
                 segments,
                 state,
                 source_feature_policy=source_feature_policy,
+                source_title_policy=source_title_policy,
             )
         if tasks or refinements:
             segments = apply_refinement(segments, tasks, refinements, state)

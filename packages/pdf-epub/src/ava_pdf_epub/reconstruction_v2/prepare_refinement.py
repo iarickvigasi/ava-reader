@@ -11,8 +11,14 @@ from ..contracts.profiles import BILINGUAL_PROFILE
 from .assembly_state import AssemblyState
 from .page_checkpoints import PreparedPageMap
 from .prepared_types import AnyPreparedPage
+from .printed_title_v2_contract import FrontmatterTitleTask
 from .refinement_catalogue import refinement_catalogue
-from .refinement_contract import AnyRefinementTask, BookRefinementTask, RefinementEdge
+from .refinement_contract import (
+    AnyRefinementTask,
+    BookRefinementTask,
+    PrintedTitleTask,
+    RefinementEdge,
+)
 from .refinement_digest import observation_digest
 from .refinement_groups import refinement_groups
 from .refinement_identity import refinement_identifier
@@ -30,15 +36,21 @@ def prepare_refinement(
     state: AssemblyState,
     *,
     source_feature_policy: str | None = None,
-) -> list[AnyRefinementTask]:
+    source_title_policy: str | None = None,
+) -> list[AnyRefinementTask | FrontmatterTitleTask]:
     from .source_feature_contract import FEATURE_POLICY
 
     if source_feature_policy not in {None, FEATURE_POLICY}:
         raise ValueError("Unsupported source feature policy")
+    if source_title_policy not in {None, "ava-frontmatter-title-1"}:
+        raise ValueError("Unsupported source title policy")
+    if source_title_policy is not None and source_feature_policy != FEATURE_POLICY:
+        raise ValueError("Complete title requires captured source features")
     catalogue = refinement_catalogue(
         segments,
         state,
         include_bibliography=prepared[0].profile_id == BILINGUAL_PROFILE,
+        source_title_policy=source_title_policy,
         source_author=getattr(PdfReader(source).metadata, "author", None)
         if prepared[0].profile_id == BILINGUAL_PROFILE
         else None,
@@ -54,7 +66,7 @@ def prepare_refinement(
     source_sha = hashlib.sha256(source.read_bytes()).hexdigest()
     segment_map, page_map = {s.id: s for s in segments}, PreparedPageMap(prepared)
     tail_ids = {e.previous_id for e in catalogue.edges}
-    tasks: list[AnyRefinementTask] = []
+    tasks: list[AnyRefinementTask | FrontmatterTitleTask] = []
     groups: list[tuple[list[str], list[str], list[RefinementEdge], list[str]]] = [
         (decisions, crop_ids, edges, [])
         for decisions, crop_ids, edges in refinement_groups(
@@ -104,7 +116,13 @@ def prepare_refinement(
         from .source_feature_tasks import source_feature_tasks
 
         tasks.extend(source_feature_tasks(source, scratch, prepared, segments, state, len(tasks)))
-        title = printed_title_task(segments, page_map, scratch, source_sha, digest)
+        title: PrintedTitleTask | FrontmatterTitleTask | None
+        if source_title_policy is not None:
+            from .printed_title_v2_task import frontmatter_title_task
+
+            title = frontmatter_title_task(segments, page_map, scratch, source_sha, digest)
+        else:
+            title = printed_title_task(segments, page_map, scratch, source_sha, digest)
         if title is not None:
             tasks.append(title)
     if len(tasks) > 32:

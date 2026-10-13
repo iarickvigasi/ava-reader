@@ -12,8 +12,26 @@ from .segments import Segment
 
 
 def bibliographic_candidates(
-    segments: list[Segment], source_author: str | None = None
+    segments: list[Segment],
+    source_author: str | None = None,
+    *,
+    source_title_policy: str | None = None,
 ) -> list[str]:
+    if source_title_policy == "ava-frontmatter-title-1":
+        from .printed_title_v2_candidates import frontmatter_bibliographic_ids
+
+        eligible = frontmatter_bibliographic_ids(segments)
+        return [
+            s.id
+            for s in segments
+            if s.id in eligible
+            and s.text.strip().casefold() not in NON_TITLE_HEADINGS
+            and not PATTERN.match(s.text)
+            and 0 < len(s.text.strip()) <= 200
+            and len(s.text.split()) <= 24
+        ]
+    if source_title_policy is not None:
+        raise ValueError("Unsupported source title policy")
     # Reuse bibliographic authority rather than treating every early-page name as a credit.
     state = AssemblyState()
     state.segments = {s.id: s for s in segments}

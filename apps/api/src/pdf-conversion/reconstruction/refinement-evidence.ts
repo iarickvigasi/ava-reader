@@ -1,3 +1,4 @@
+import { frontmatterTitleEvidence } from './frontmatter-title-binding';
 import type { RefinementTask } from './refinement-packets';
 
 type RefinementEvidenceMaps = {
@@ -12,6 +13,17 @@ type RefinementEvidenceMaps = {
 export function refinementEvidence(
   task: RefinementTask,
 ): RefinementEvidenceMaps {
+  if (task.schema_version === 'ava-printed-title-task-2')
+    return {
+      required_decision_evidence: {},
+      required_join_evidence: {},
+      required_title_evidence: Object.fromEntries(
+        task.nodes.map((node) => [
+          node.id,
+          frontmatterTitleEvidence(task, node.id),
+        ]),
+      ),
+    };
   if (task.schema_version === 'ava-printed-title-task-1')
     return {
       required_decision_evidence: {},

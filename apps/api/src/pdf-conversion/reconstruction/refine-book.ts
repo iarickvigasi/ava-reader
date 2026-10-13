@@ -49,6 +49,8 @@ export async function refineBook(input: {
     throw parseSourceRefusal(prepared.stdout, input.sourceSha256);
   if (prepared.exitCode !== 0) throw new PdfRuntimeError('INVALID_RESULT');
   const batch = parseRefinementBatch(prepared.stdout, 24 * 1024 ** 2);
+  if (batch.schema_version === 'ava-book-refinement-batch-3')
+    throw new PdfRuntimeError('DISPATCH_NOT_AUTHORIZED');
   if (
     batch.source_sha256 !== input.sourceSha256 ||
     batch.tasks.some(

@@ -28,10 +28,29 @@ def source_structure(
     folios = source_folios(prepared, qualified, printer_labels)
     state.page_labels = {page: label for label, page in folios.items()}
     folios = {label.casefold(): page for label, page in folios.items()}
-    printed = printed_contents(
-        segments, native_contents_claims(prepared, segments, state.native_line_maps)
-    )
-    claims = [*printed, *outline_claims(source)]
+    rows = native_contents_claims(prepared, segments, state.native_line_maps)
+    if state.source_title_policy == "ava-frontmatter-title-1":
+        from .plain_contents_claims import plain_contents_claims
+
+        outline = outline_claims(source)
+        rows.extend(plain_contents_claims(segments, outline, folios))
+    printed = printed_contents(segments, rows)
+    if state.source_title_policy is None:
+        outline = outline_claims(source)
+    if state.source_title_policy == "ava-frontmatter-title-1":
+        from .source_outline_aliases import separate_outline_aliases
+
+        first_body_page = min(
+            (
+                c.pdf_page
+                if c.pdf_page is not None
+                else folios.get((c.printed_page or "").casefold(), 501)
+                for c in printed
+            ),
+            default=17,
+        )
+        outline = separate_outline_aliases(outline, printed, first_body_page, state, folios=folios)
+    claims = [*printed, *outline]
     promoted: dict[str, int] = {}
     ranked: set[str] = set()
     for claim in claims:
@@ -52,6 +71,10 @@ def source_structure(
         if len(matches) != 1:
             raise ValueError("Contents or outline disagrees with a chapter opening")
         target = matches[0]
+        if state.source_title_policy == "ava-frontmatter-title-1" and claim.source_id is None:
+            state.source_outline_targets[(title_key(claim.title), page, claim.depth or 0)] = (
+                target.id
+            )
         depth = claim.depth if claim.depth is not None else (target.heading_level or 1) - 1
         if target.id in promoted and promoted[target.id] != depth:
             raise ValueError("Contents and outline hierarchy disagree")
@@ -68,7 +91,15 @@ def source_structure(
             if at < 0:
                 raise ValueError("Contents label cannot be aligned with canonical text")
             state.internal_targets.append((owner.id, at, at + len(claim.title), target.id, 0))
-    starts = {s.id for s in segments if s.chapter_start}
+    starts = {
+        s.id
+        for s in segments
+        if s.chapter_start
+        and not (
+            state.source_title_policy == "ava-frontmatter-title-1"
+            and s.chapter_role == "frontmatter"
+        )
+    }
     if claims and starts and not starts.issubset(promoted):
         raise ValueError("Printed contents or outline omits a detected chapter")
     unranked_native: set[str] = set()
@@ -111,12 +142,27 @@ def source_structure(
                 update={"chapter_start": True, "chapter_role": "frontmatter"}
             )
     deferred_native: set[str] = set()
-    result = heading_hierarchy(
-        result,
-        prepared,
-        {key for key, depth in promoted.items() if depth > 0},
-        deferred_native,
-    )
+    sections = {key for key, depth in promoted.items() if depth > 0}
+    if state.source_title_policy == "ava-frontmatter-title-1" and promoted:
+        first_body = min(s.page for s in result if s.id in promoted and promoted[s.id] == 0)
+        prefix = [s for s in result if s.page < first_body]
+        opening = next((s.id for s in prefix if s.kind == "heading"), None)
+        prefix = [
+            s.model_copy(
+                update={
+                    "chapter_start": s.id == opening,
+                    "chapter_role": "frontmatter" if s.id == opening else None,
+                    "heading_level": 1 if s.id == opening else s.heading_level,
+                }
+            )
+            if s.kind == "heading"
+            else s
+            for s in prefix
+        ]
+        body = [s for s in result if s.page >= first_body]
+        result = prefix + heading_hierarchy(body, prepared, sections, deferred_native)
+    else:
+        result = heading_hierarchy(result, prepared, sections, deferred_native)
     # A source-observed notes heading already establishes the numbered entry role;
     # do not ask a second model to reinterpret those entries as chapters.
     notes = False

@@ -10,6 +10,7 @@ import { observeAttemptPage } from './observe-attempt-page';
 import { resolveNativeStructureAttemptTask } from './native-structure-attempt';
 import {
   type RefinementResponse,
+  type RefinementTask,
   type RefinementBatchPacket,
   validateRefinementBatch,
 } from './refinement-packets';
@@ -323,11 +324,21 @@ export function attemptExchanges(context: AttemptContext) {
       if (batch || !pages || preparedPages !== pages) return invalid();
       const prepared = validateRefinementBatch(envelope.payload);
       if (
+        context.sourceTitlePolicy
+          ? prepared.schema_version !== 'ava-book-refinement-batch-3' ||
+            prepared.source_title_policy !== context.sourceTitlePolicy
+          : prepared.schema_version === 'ava-book-refinement-batch-3'
+      )
+        throw new PdfRuntimeError('DISPATCH_NOT_AUTHORIZED');
+      const tasks: RefinementTask[] = prepared.tasks;
+      if (
         prepared.source_sha256 !== context.sourceSha256 ||
-        prepared.tasks.some(
+        tasks.some(
           (task) =>
             task.source_sha256 !== context.sourceSha256 ||
-            task.profile_id !== context.profileId,
+            task.profile_id !== context.profileId ||
+            (task.schema_version === 'ava-printed-title-task-2' &&
+              task.source_page_count !== pages),
         )
       )
         throw new PdfRuntimeError('SOURCE_MISMATCH');
@@ -392,6 +403,17 @@ export function attemptExchanges(context: AttemptContext) {
           (r) => r.schema_version === 'ava-printed-title-response-1',
         ).length !==
         (batch.schema_version === 'ava-book-refinement-batch-2' ? 1 : 0)
+      )
+        invalid();
+      if (
+        refinements.filter(
+          (r) => r.schema_version === 'ava-printed-title-response-2',
+        ).length !==
+        (batch.schema_version === 'ava-book-refinement-batch-3'
+          ? batch.tasks.filter(
+              (task) => task.schema_version === 'ava-printed-title-task-2',
+            ).length
+          : 0)
       )
         invalid();
       wordWrap.complete();

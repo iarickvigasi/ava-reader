@@ -31,6 +31,11 @@ _GEOMETRY_CONFIGS = {
     "ava-pdf-prose-en-uk-v3": "a12919c9d07e696b224aafc0e4f5d648d0e66406306b443f58628609595073e4",
 }
 
+_TITLE_CONFIGS = {
+    "ava-pdf-prose-en-v2": "d8bb90385b949c5bf22eefafdb427ff3a76a25ba3e8ce006f1e28c3c7f348e5b",
+    "ava-pdf-prose-en-uk-v3": "5fed6a113e4851d26b843716cf48bbddf954e64155c82fd0655e63607600b8d4",
+}
+
 
 def _unique(pairs: list[tuple[str, object]]) -> dict[str, object]:
     result: dict[str, object] = {}
@@ -73,9 +78,12 @@ def exchange_input(target: str) -> int | None:
     word_wrap = isinstance(request, dict) and request.get("schema_version") in (
         "ava-reconstruct-input-5",
         "ava-reconstruct-input-6",
+        "ava-reconstruct-input-7",
     )
-    geometry = (
-        isinstance(request, dict) and request.get("schema_version") == "ava-reconstruct-input-6"
+    title = isinstance(request, dict) and request.get("schema_version") == "ava-reconstruct-input-7"
+    geometry = isinstance(request, dict) and request.get("schema_version") in (
+        "ava-reconstruct-input-6",
+        "ava-reconstruct-input-7",
     )
     if (
         not isinstance(request, dict)
@@ -91,6 +99,7 @@ def exchange_input(target: str) -> int | None:
             }
             | ({"source_normalization_policy", "word_wrap_responses"} if word_wrap else set())
             | ({"recognition_repair_policy", "geometry_corrections"} if geometry else set())
+            | ({"source_title_policy"} if title else set())
             if native or word_wrap
             else {"source_feature_policy", "source_layout_policy"}
             if layout
@@ -104,6 +113,7 @@ def exchange_input(target: str) -> int | None:
         "ava-reconstruct-input-4",
         "ava-reconstruct-input-5",
         "ava-reconstruct-input-6",
+        "ava-reconstruct-input-7",
     ) or request["profile_id"] not in (
         "ava-pdf-prose-en-v2",
         "ava-pdf-prose-en-uk-v3",
@@ -142,7 +152,9 @@ def exchange_input(target: str) -> int | None:
             or request.get("source_feature_policy") != "ava-ocr-source-features-1"
             or config
             != (
-                _GEOMETRY_CONFIGS
+                _TITLE_CONFIGS
+                if title
+                else _GEOMETRY_CONFIGS
                 if geometry
                 else _WORD_WRAP_CONFIGS
                 if word_wrap
@@ -163,11 +175,14 @@ def exchange_input(target: str) -> int | None:
             and request.get("recognition_repair_policy") != "ava-recognition-geometry-repair-1"
         ):
             raise ValueError("Exchange geometry repair differs from captured configuration")
+        if title and request.get("source_title_policy") != "ava-frontmatter-title-1":
+            raise ValueError("Exchange title differs from captured configuration")
     elif config in (
         *_LAYOUT_CONFIGS.values(),
         *_STRUCTURE_CONFIGS.values(),
         *_WORD_WRAP_CONFIGS.values(),
         *_GEOMETRY_CONFIGS.values(),
+        *_TITLE_CONFIGS.values(),
     ):
         raise ValueError("Captured layout cannot use legacy exchange input")
     return None

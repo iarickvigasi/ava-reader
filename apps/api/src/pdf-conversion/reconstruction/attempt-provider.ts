@@ -1,3 +1,6 @@
+import type { FrontmatterTitleTask } from './generated/FrontmatterTitleTask';
+import type { FrontmatterTitleResponse } from './generated/FrontmatterTitleResponse';
+import { FRONTMATTER_TITLE_POLICY } from '../../library/pdf-import/admission/profile';
 import type { RecognitionGeometryTask } from './generated/RecognitionGeometryTask';
 import { geometryProviderTask } from './geometry-provider-task';
 import { geometryResponse } from './geometry-response';
@@ -7,6 +10,7 @@ import type {
   NativeStructurePolicy,
   SourceNormalizationPolicy,
   RecognitionRepairPolicy,
+  SourceTitlePolicy,
 } from '../../library/pdf-import/admission/profile';
 import type { CoordinatorDependencies } from './coordinator-types';
 import type { RecognitionTask } from './generated/RecognitionTask';
@@ -31,6 +35,12 @@ export type AttemptContext = {
   sourceStructurePolicy?: NativeStructurePolicy;
   sourceNormalizationPolicy?: SourceNormalizationPolicy;
   recognitionRepairPolicy?: RecognitionRepairPolicy;
+  sourceTitlePolicy?: SourceTitlePolicy;
+  validateFrontmatterTitle?: (
+    task: FrontmatterTitleTask,
+    response: FrontmatterTitleResponse | null,
+    signal: AbortSignal,
+  ) => Promise<void>;
   validateGeometry?: (
     correction: RecognitionGeometryTask,
     task: RecognitionTask,
@@ -68,12 +78,31 @@ export async function refineAttemptTask(
   signal: AbortSignal,
 ) {
   context.checkActive(signal);
+  if (task.schema_version === 'ava-printed-title-task-2') {
+    if (
+      context.sourceTitlePolicy !== FRONTMATTER_TITLE_POLICY ||
+      !context.validateFrontmatterTitle
+    )
+      throw new PdfRuntimeError('DISPATCH_NOT_AUTHORIZED');
+    await context.validateFrontmatterTitle(task, null, signal);
+    context.checkActive(signal);
+  }
   const receipt = await context.deps.dispatch(
     refinementProviderTask(task, context.sourceSha256),
     signal,
   );
   context.checkActive(signal);
-  return refinementResponse(task, receipt.output);
+  const response = refinementResponse(task, receipt.output);
+  if (task.schema_version === 'ava-printed-title-task-2') {
+    if (
+      response.schema_version !== 'ava-printed-title-response-2' ||
+      !context.validateFrontmatterTitle
+    )
+      throw new PdfRuntimeError('INVALID_RESULT');
+    await context.validateFrontmatterTitle(task, response, signal);
+    context.checkActive(signal);
+  }
+  return response;
 }
 
 export async function correctAttemptAnchorContext(

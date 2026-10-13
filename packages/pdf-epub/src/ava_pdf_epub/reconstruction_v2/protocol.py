@@ -10,6 +10,7 @@ from .prepared_native_layout import NativeLayoutPreparedPage
 from .prepared_native_structure import NativeStructurePreparedPage
 from .prepared_native_word_wrap import NativeWordWrapPreparedPage
 from .prepared_types import AnyPreparedPage
+from .protocol_frontmatter_title import FrontmatterTitleReconstructionInput
 from .protocol_native_layout import NativeLayoutPrepareResult, NativeLayoutReconstructionInput
 from .protocol_native_structure import (
     NativeStructurePrepareResult,
@@ -76,10 +77,13 @@ AnyReconstructionInput = (
     | NativeStructureReconstructionInput
     | NativeWordWrapReconstructionInput
     | RecognitionGeometryReconstructionInput
+    | FrontmatterTitleReconstructionInput
 )
 
 
 def reconstruction_input(raw: object) -> AnyReconstructionInput:
+    if isinstance(raw, dict) and raw.get("schema_version") == "ava-reconstruct-input-7":
+        return FrontmatterTitleReconstructionInput.model_validate(raw)
     if isinstance(raw, dict) and raw.get("schema_version") == "ava-reconstruct-input-6":
         return RecognitionGeometryReconstructionInput.model_validate(raw)
     if isinstance(raw, dict) and raw.get("schema_version") == "ava-reconstruct-input-5":

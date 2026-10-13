@@ -28,6 +28,7 @@ from .native_structure_contract import NativeStructureResponse
 from .native_word_wrap_policy import NativeWordWrapPolicy
 from .normalize_list_bodies import normalize_list_bodies
 from .prepared_types import AnyPreparedPage
+from .printed_title_v2_contract import FrontmatterTitleResponse
 from .recognition_contract import RecognitionResponse
 from .refinement_contract import AnyRefinementResponse
 from .source_cover import preserve_source_cover
@@ -51,13 +52,14 @@ def reconstruct(
     scratch: Path,
     prepared: Sequence[AnyPreparedPage],
     responses: list[RecognitionResponse],
-    refinements: list[AnyRefinementResponse] | None = None,
+    refinements: list[AnyRefinementResponse | FrontmatterTitleResponse] | None = None,
     *,
     source_feature_policy: str | None = None,
     source_layout_policy: NativeLayoutPolicy | None = None,
     native_structure_responses: list[NativeStructureResponse] | None = None,
     source_normalization_policy: NativeWordWrapPolicy | None = None,
     word_wrap_responses: list[WordWrapResponse] | None = None,
+    source_title_policy: str | None = None,
 ) -> ReconstructedBook:
     if source_normalization_policy is not None:
         if source_feature_policy != FEATURE_POLICY:
@@ -72,6 +74,7 @@ def reconstruct(
             source_layout_policy,
             source_normalization_policy,
             word_wrap_responses,
+            source_title_policy=source_title_policy,
         )
     else:
         if word_wrap_responses is not None:
@@ -85,6 +88,7 @@ def reconstruct(
             source_feature_policy,
             source_layout_policy,
             native_structure_responses,
+            source_title_policy=source_title_policy,
         )
     pages, segments, state = assembly.pages, assembly.segments, assembly.state
     size_sources, page_starts = assembly.size_sources, assembly.page_starts
@@ -93,6 +97,8 @@ def reconstruct(
 
     assemble_blocks(segments, prepared, scratch, state)
     chapters, toc = assemble_chapters(state)
+    from .source_outline_aliases import add_outline_navigation
+
     assemble_lists(state, chapters)
     if source_feature_policy == FEATURE_POLICY:
         normalize_list_bodies(state)
@@ -107,6 +113,10 @@ def reconstruct(
     cover = preserve_source_cover(prepared, pages, chapters, metadata, scratch, state)
     addresses = assemble_addresses(state, chapters)
     assemble_page_addresses(page_starts, state, chapters, addresses)
+    from .frontmatter_navigation import frontmatter_navigation
+
+    frontmatter_navigation(state, chapters, toc, addresses)
+    add_outline_navigation(state, chapters, toc, addresses)
     apply_native_sizes(size_sources, prepared, state)
     # All relationships are now compiled into the graph; drop source-only objects
     # before validating the owned canonical representation.

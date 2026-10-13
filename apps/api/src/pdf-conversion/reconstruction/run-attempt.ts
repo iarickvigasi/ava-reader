@@ -1,3 +1,4 @@
+import { validateRefinement } from './validate-refinement';
 import { validateGeometry } from './validate-geometry';
 import { validateWordWrap } from './validate-word-wrap';
 import type {
@@ -5,6 +6,7 @@ import type {
   NativeStructurePolicy,
   SourceNormalizationPolicy,
   RecognitionRepairPolicy,
+  SourceTitlePolicy,
 } from '../../library/pdf-import/admission/profile';
 import { reconstructionRequest } from './reconstruction-request';
 import type { SemanticValidator } from '../contracts/types';
@@ -29,6 +31,7 @@ export async function runAttempt(
     sourceStructurePolicy?: NativeStructurePolicy;
     sourceNormalizationPolicy?: SourceNormalizationPolicy;
     recognitionRepairPolicy?: RecognitionRepairPolicy;
+    sourceTitlePolicy?: SourceTitlePolicy;
   },
   semantic: SemanticValidator,
 ) {
@@ -40,6 +43,14 @@ export async function runAttempt(
   const exchanges = attemptExchanges({
     ...input,
     checkActive,
+    validateFrontmatterTitle: (task, response, signal) =>
+      validateRefinement(
+        task,
+        response,
+        input.deps.sandbox,
+        input.sandboxInput,
+        signal,
+      ),
     validateGeometry: (task, original, signal) =>
       validateGeometry(
         task,
