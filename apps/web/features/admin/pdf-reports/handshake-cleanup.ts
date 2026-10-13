@@ -3,7 +3,7 @@ import { REPORT_ROUTE } from "./query";
 
 // Clerk backend's development resolveHandshake removes exactly these keys.
 // This only checks its redirect context; Clerk still owns token verification.
-const transportKeys = [
+export const reportHandshakeKeys = [
   "__clerk_handshake",
   "__clerk_handshake_nonce",
   "__clerk_help",
@@ -33,7 +33,7 @@ export function isReportHandshakeCleanup(
       )
     )
       return false;
-    for (const key of transportKeys) {
+    for (const key of reportHandshakeKeys) {
       if (request.searchParams.getAll(key).length > 1) return false;
       request.searchParams.delete(key);
     }

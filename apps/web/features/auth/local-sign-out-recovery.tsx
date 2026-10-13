@@ -3,8 +3,9 @@
 import { useClerk } from "@clerk/nextjs";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { readSignOutIntent } from "./local-sign-out";
+import { isLocallySignedOut, readSignOutIntent } from "./local-sign-out";
 import { finishDeviceSignOut } from "./finish-device-sign-out";
+import { signOutReturnTarget } from "./sign-out-return-target";
 
 export function LocalSignOutRecovery({ blocked }: { blocked: boolean }) {
   const clerk = useClerk();
@@ -22,8 +23,15 @@ export function LocalSignOutRecovery({ blocked }: { blocked: boolean }) {
         /* Durable intent blocks access and retries incomplete cleanup/revocation. */
       } finally {
         running = false;
-        if (!stopped && blocked && pathname.startsWith("/app"))
-          window.location.replace("/sign-in");
+        const intent = readSignOutIntent();
+        if (
+          !stopped &&
+          blocked &&
+          intent &&
+          pathname.startsWith("/app") &&
+          isLocallySignedOut(clerk.user?.id ?? intent.userId, clerk.session?.id)
+        )
+          window.location.replace(signOutReturnTarget(window.location.href));
       }
     }
     void revoke();
