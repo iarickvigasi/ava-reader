@@ -21,6 +21,7 @@ from .protocol_native_layout import NativeLayoutReconstructionInput
 from .protocol_output import encode_packet
 from .qualify_embedded_images import qualify_embedded_images
 from .qualify_native_layout import qualify_native_layout
+from .recognition_anchor_exchange import accept_attempt_recognition
 from .reconstruct_source import reconstruct_from_pages
 from .source_preparation import SourcePreparation
 from .source_refusal import SourceContentRefusal
@@ -185,7 +186,13 @@ def _run(
                 preparation.check_unchanged()
                 if len(returned) != 1 or len(responses) >= 25000:
                     raise ValueError("Recognition task/response coverage differs")
-                response = returned[0]
+                response = accept_attempt_recognition(
+                    recognition_task,
+                    returned[0],
+                    writer,
+                    incoming,
+                    isinstance(request, NativeLayoutReconstructionInput),
+                )
                 # Keep the old individual pair16MiB limit, not a whole-page limit.
                 validate_tasks(
                     json_bytes(

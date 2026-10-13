@@ -87,6 +87,7 @@ class ExchangeWriter:
         self.sequence = 0
         self.terminal = False
         self._reply_bytes = 0
+        self._anchor_context_parents: set[str] = set()
 
     def emit(self, kind: ExchangeKind, payload: Any) -> Exchange:
         if self.terminal:

@@ -19,6 +19,7 @@ COMMANDS = {
     "reconstruct_stream",
     "validate_tasks",
     "validate_refinement",
+    "validate_anchor_context",
 }
 SAFE_ADMISSION_CODES = {
     "PDF_ACTIVE_CONTENT_UNSUPPORTED",

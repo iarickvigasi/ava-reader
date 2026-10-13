@@ -534,6 +534,25 @@ messages, truncation and unexpected EOF are refused.
 | `artifacts` | `null` | None; subsequent stdout uses the existing artifact stream |
 | `refusal` | Existing typed source diagnostic or generic reconstruction error | None; worker exits `1` |
 
+An opt-in native-layout attempt may emit the distinct
+`ava-recognition-anchor-context-exchange-1` / `anchor_context` control after an otherwise
+valid recognition reply fails only an exact-anchor context check. The original Exchange1
+kinds and final Input3 shape remain unchanged. The correction has its own versioned task,
+response and prompt. It may change only `before`/`after` at the identified slots; quoted text,
+styles, links, transcription, geometry and ordering remain fixed. Both the producer and a
+source/job/lease-bound parser-only `validate_anchor_context` host check reject unrelated
+page, region, reference or native-conservation failures before spending.
+
+There is at most one correction pass per parent reply. The API preserves the original and
+correction provider payloads separately and uses a stable parent billing key, so a changed
+or uncertain repeated request cannot authorize another call. Corrections consume the existing
+operation request and funding limits; they do not add a request slot or skip required work.
+The control keeps the existing 8 MiB page bound; provider request/response and aggregate reply
+limits remain unchanged. After a context-only overlay, full original task/response semantics
+run again before the corrected parent enters Input3. Unresolved context remains a typed source
+refusal. This is part of an active initial conversion; it never retries or replaces a Failed book.
+
+
 The worker admits tasks before announcing them and semantically accepts each response before
 requesting the next dispatch. Task controls do not repeat images. After the last refinement
 reply, or an empty batch acknowledgement, the host closes stdin; the worker requires EOF before

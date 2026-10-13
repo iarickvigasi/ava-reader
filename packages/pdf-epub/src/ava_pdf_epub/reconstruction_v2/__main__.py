@@ -31,6 +31,12 @@ def main() -> None:
         request = json.loads(raw_request)
         if observation is not None:
             observation.start(raw_request, request)
+        if request.get("mode") == "validate_anchor_context":
+            from .recognition_anchor_context import validate_anchor_context
+
+            sys.stdout.buffer.write(encode_packet(validate_anchor_context(raw_request), 1024))
+            sys.stdout.buffer.flush()
+            return
         if request.get("mode") in {"validate_tasks", "validate_refinement"}:
             receipt = (
                 validate_tasks(raw_request).model_dump(mode="json")
