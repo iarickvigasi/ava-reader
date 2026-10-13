@@ -121,3 +121,16 @@ it("preserves exact report reference, view and both cursors through sign-in reco
   expect(target.pathname).toBe(REPORT_ROUTE);
   expect(Object.fromEntries(target.searchParams)).toEqual(query);
 });
+
+it("omits credential-shaped cursor values from the sign-in recovery URL", () => {
+  const signIn = links(
+    renderToStaticMarkup(
+      <ReportStateNotice
+        state="signIn"
+        query={{ ...query, eventCursor: "sk-private" }}
+      />,
+    ),
+  ).find(({ label }) => label === "Sign in")!;
+  expect(signIn.url.searchParams.get("redirect_url")).toBe("/app");
+  expect(signIn.url.href).not.toContain("sk-private");
+});

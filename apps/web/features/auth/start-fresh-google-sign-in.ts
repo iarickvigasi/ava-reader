@@ -13,10 +13,15 @@ export async function startFreshGoogleSignIn(
   try {
     const attempt = getAttempt();
     if (!attempt) return false;
+    const target = reportReturnTarget(returnTo);
+    const callback =
+      target === "/app"
+        ? "/auth/sso-callback"
+        : `/auth/sso-callback?${new URLSearchParams({ redirect_url: target })}`;
     await attempt.authenticateWithRedirect({
       strategy: "oauth_google",
-      redirectUrl: "/auth/sso-callback",
-      redirectUrlComplete: reportReturnTarget(returnTo),
+      redirectUrl: callback,
+      redirectUrlComplete: target,
       continueSignIn: false,
     });
     return true;

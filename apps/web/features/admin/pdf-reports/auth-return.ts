@@ -18,6 +18,11 @@ export function reportReturnTarget(value: unknown): string {
     const search: Search = Object.create(null);
     for (const [key, item] of url.searchParams) {
       if (Object.hasOwn(search, key)) return "/app";
+      if (
+        ["eventCursor", "costCursor"].includes(key) &&
+        /^(?:sk[-_]|bearer)/i.test(item)
+      )
+        return "/app";
       search[key] = item;
     }
     const query = parseReportQuery(search);

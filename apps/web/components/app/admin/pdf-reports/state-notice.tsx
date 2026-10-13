@@ -1,4 +1,5 @@
 import { Button, ButtonLink } from "@/components/ui/button";
+import { reportReturnTarget } from "@/features/admin/pdf-reports/auth-return";
 import type { ReportState } from "@/features/admin/pdf-reports/types";
 import {
   REPORT_ROUTE,
@@ -41,7 +42,7 @@ export function ReportStateNotice({
       </p>
       {["signIn", "accessChanged"].includes(state) && (
         <ButtonLink
-          href={`/sign-in?redirect_url=${encodeURIComponent(query ? reportHref(query) : REPORT_ROUTE)}`}
+          href={`/sign-in?redirect_url=${encodeURIComponent(reportReturnTarget(query ? reportHref(query) : REPORT_ROUTE))}`}
           size="sm"
         >
           Sign in

@@ -114,7 +114,6 @@ it("preserves the target through the ordinary fresh Google attempt", async () =>
   await flush();
   expect(sdk.redirect).toHaveBeenCalledWith(
     expect.objectContaining({
-      redirectUrl: "/auth/sso-callback",
       redirectUrlComplete: target,
       continueSignIn: false,
     }),
@@ -140,3 +139,32 @@ it.each([
     expect(sdk.replace).toHaveBeenCalledWith("/app");
   },
 );
+
+it("passes report recovery identity into the Google callback URL as well as completion", async () => {
+  const providers = find<ComponentProps<typeof ProviderList>>(
+    render(),
+    ProviderList,
+  )!;
+  providers.onGoogle();
+  await flush();
+  const callback = new URL(
+    sdk.redirect.mock.calls[0][0].redirectUrl,
+    "https://ava.invalid",
+  );
+  expect(callback.pathname).toBe("/auth/sso-callback");
+  expect(callback.searchParams.get("redirect_url")).toBe(target);
+});
+it.each([
+  "eventCursor=sk-private",
+  "costCursor=sk_private",
+  "eventCursor=Bearer-private",
+])("does not carry credential-shaped %s into auth recovery", async (cursor) => {
+  const invalid = `/app/admin/pdf-reports?kind=conversionId&reference=pdf-1&view=events&${cursor}`;
+  const tree = await SignInPage({
+    searchParams: Promise.resolve({ redirect_url: invalid }),
+  });
+  expect(tree.props.returnTo).toBe("/app");
+  sdk.signedIn = true;
+  render(invalid);
+  expect(sdk.replace).toHaveBeenCalledWith("/app");
+});

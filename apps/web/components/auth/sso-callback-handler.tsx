@@ -7,7 +7,12 @@ import { AuthShell } from "./auth-shell";
 import { AuthReadinessNotice } from "./auth-readiness-notice";
 import { AUTH_TIMEOUT_MS } from "@/features/auth/with-deadline";
 
-export function SsoCallbackHandler() {
+import { reportReturnTarget } from "@/features/admin/pdf-reports/auth-return";
+
+export function SsoCallbackHandler({ returnTo }: { returnTo?: string } = {}) {
+  const target = reportReturnTarget(returnTo);
+  const returnQuery =
+    target === "/app" ? "" : `redirect_url=${encodeURIComponent(target)}`;
   const { isLoaded } = useAuth();
   const t = useTranslations("auth.shared.readiness");
   const [expired, setExpired] = useState(false);
@@ -20,13 +25,13 @@ export function SsoCallbackHandler() {
     <>
       {isLoaded && !expired ? (
         <AuthenticateWithRedirectCallback
-          signInUrl="/sign-in"
+          signInUrl={returnQuery ? `/sign-in?${returnQuery}` : "/sign-in"}
           signUpUrl="/sign-up"
-          firstFactorUrl="/sign-in?notice=oauth_continue"
-          secondFactorUrl="/sign-in?notice=oauth_continue"
+          firstFactorUrl={`/sign-in?notice=oauth_continue${returnQuery ? `&${returnQuery}` : ""}`}
+          secondFactorUrl={`/sign-in?notice=oauth_continue${returnQuery ? `&${returnQuery}` : ""}`}
           continueSignUpUrl="/sign-up?notice=oauth_requirements"
-          signInForceRedirectUrl="/app"
-          signUpForceRedirectUrl="/app"
+          signInForceRedirectUrl={target}
+          signUpForceRedirectUrl={target}
         />
       ) : null}
       <AuthShell title={t("callbackTitle")}>
