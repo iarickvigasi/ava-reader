@@ -764,7 +764,7 @@
     },
     "profile": {
       "title": "Présentez-vous",
-      "body": "Quelques mots peuvent lancer une belle conversation. Dites aux autres lectrices et lecteurs ce que vous aimez lire.",
+      "body": "Parlez de vous aux autres lecteurs",
       "introduction": "À propos de vous · obligatoire",
       "placeholder": "J’aime les romans qui font réfléchir, les histoires inattendues et les livres qui changent mon regard sur le monde.",
       "counter": "{count} / {limit} caractères",

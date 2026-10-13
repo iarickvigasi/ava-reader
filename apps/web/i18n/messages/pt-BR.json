@@ -764,7 +764,7 @@
     },
     "profile": {
       "title": "Apresente-se",
-      "body": "Algumas palavras podem começar uma ótima conversa. Conte às outras leitoras e aos outros leitores o que você gosta de ler.",
+      "body": "Conte aos outros leitores sobre você",
       "introduction": "Sobre você · obrigatório",
       "placeholder": "Adoro romances que fazem pensar, histórias inesperadas e livros que mudam minha forma de ver o mundo.",
       "counter": "{count} / {limit} caracteres",

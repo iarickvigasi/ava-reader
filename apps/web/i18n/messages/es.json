@@ -764,7 +764,7 @@
     },
     "profile": {
       "title": "Preséntate",
-      "body": "Unas palabras pueden iniciar una gran conversación. Cuéntales a otras lectoras y otros lectores qué te gusta leer.",
+      "body": "Cuéntales a otros lectores sobre ti",
       "introduction": "Sobre ti · obligatorio",
       "placeholder": "Me encanta la ficción que invita a pensar, las historias inesperadas y los libros que cambian mi forma de ver el mundo.",
       "counter": "{count} / {limit} caracteres",

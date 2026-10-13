@@ -764,7 +764,7 @@
     },
     "profile": {
       "title": "Introduce yourself",
-      "body": "A few words can be the start of a great conversation. Tell other readers what you enjoy reading.",
+      "body": "Tell other readers about yourself",
       "introduction": "About you · required",
       "placeholder": "I love thoughtful fiction, unexpected histories, and books that change how I see the world.",
       "counter": "{count} / {limit} characters",

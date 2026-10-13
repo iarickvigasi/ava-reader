@@ -8,18 +8,17 @@ export function ConnectProfileSection() {
   const t = useTranslations("connect.profile");
   const user = useCurrentUserCached(null);
   return (
-    <section
-      aria-labelledby="connect-profile-title"
-      className="rounded-shell bg-paper-strong p-6 sm:p-8"
-    >
-      <div className="mb-6 space-y-2">
+    <section aria-labelledby="connect-profile-title" className="min-w-0">
+      <div className="mb-6 space-y-3 text-center">
         <h2
           id="connect-profile-title"
-          className="font-display text-3xl text-ink sm:text-4xl"
+          className="text-[0.8rem] font-bold uppercase tracking-[0.2em] text-muted sm:text-xs sm:tracking-[0.24em]"
         >
           {t("title")}
         </h2>
-        <p className="max-w-2xl text-lg leading-7 text-copy">{t("body")}</p>
+        <p className="font-display text-[2rem] leading-[1.15] tracking-[-0.03em] text-ink sm:text-5xl">
+          {t("body")}
+        </p>
       </div>
       {user ? (
         <ConnectProfileForm key={user.id} user={user} />

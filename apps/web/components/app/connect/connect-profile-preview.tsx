@@ -13,7 +13,7 @@ export function ConnectProfilePreview({
       <p className="font-ui text-[0.675rem] font-bold leading-4 uppercase tracking-[0.16em] text-muted sm:text-[0.625rem]">
         {t("preview")}
       </p>
-      <article className="space-y-5 rounded-card bg-paper p-6">
+      <article className="connect-reader-card space-y-5 rounded-card bg-soft-fill p-6">
         <div className="flex items-center gap-3">
           <UserAvatarFallback currentUser={model.user} />
           <h3 className="wrap-break-word font-display text-2xl text-title">
