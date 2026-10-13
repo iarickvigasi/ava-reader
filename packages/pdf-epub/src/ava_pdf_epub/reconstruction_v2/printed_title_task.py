@@ -4,7 +4,7 @@ from collections.abc import Mapping
 from pathlib import Path
 
 from ..contracts.common import text_digest
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .printed_title_candidates import printed_title_candidate
 from .printed_title_contract import PrintedTitleNode, PrintedTitleTask
 from .printed_title_geometry import title_geometry
@@ -15,7 +15,7 @@ from .segments import Segment
 
 def printed_title_task(
     segments: list[Segment],
-    pages: Mapping[int, PreparedPage],
+    pages: Mapping[int, AnyPreparedPage],
     scratch: Path,
     source_sha: str,
     observation_sha: str,

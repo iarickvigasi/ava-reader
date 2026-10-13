@@ -14,7 +14,7 @@ from .font_style import font_style
 from .geometry import overlap
 from .native_ink import ink_envelope_matches
 from .ocr_font_runs import qualified_font_runs
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .segments import Segment
 
 FONT_FIELDS = {"family", "bold", "italic"}
@@ -27,7 +27,7 @@ BLOCKERS = {
 
 
 def corroborate_ocr_font_faces(
-    source: Path, prepared: Sequence[PreparedPage], segments: list[Segment], state: AssemblyState
+    source: Path, prepared: Sequence[AnyPreparedPage], segments: list[Segment], state: AssemblyState
 ) -> list[Segment]:
     reader = PdfReader(source, strict=True)
     updates = {}

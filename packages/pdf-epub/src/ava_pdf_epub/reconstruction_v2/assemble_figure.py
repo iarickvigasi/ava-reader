@@ -9,12 +9,12 @@ from PIL import Image
 
 from ..contracts.private_files import snapshot
 from .assembly_state import AssemblyState
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .segments import Segment
 
 
 def assemble_figure(
-    segment: Segment, prepared: PreparedPage, scratch: Path, state: AssemblyState
+    segment: Segment, prepared: AnyPreparedPage, scratch: Path, state: AssemblyState
 ) -> dict[str, Any]:
     if segment.source_image is not None:
         asset = segment.source_image
@@ -75,7 +75,9 @@ def assemble_figure(
     )
 
 
-def _source_crop(segment: Segment, prepared: PreparedPage, scratch: Path) -> tuple[bytes, int, int]:
+def _source_crop(
+    segment: Segment, prepared: AnyPreparedPage, scratch: Path
+) -> tuple[bytes, int, int]:
     page, box = prepared.observation, segment.box
     with Image.open(scratch / page.render_path) as source:
         source.load()

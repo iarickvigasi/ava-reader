@@ -6,14 +6,17 @@ from pathlib import Path
 from PIL import Image
 
 from .assembly_state import AssemblyState
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .segments import Segment
 
 CROP_PADDING_PT = 3
 
 
 def continuation_margins(
-    segments: list[Segment], prepared: Sequence[PreparedPage], scratch: Path, state: AssemblyState
+    segments: list[Segment],
+    prepared: Sequence[AnyPreparedPage],
+    scratch: Path,
+    state: AssemblyState,
 ) -> None:
     candidates = set()
     for previous, current in zip(segments, segments[1:], strict=False):

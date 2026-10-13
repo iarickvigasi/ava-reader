@@ -7,13 +7,13 @@ from .assembly_state import AssemblyState
 from .native_indent_context import native_indent_reference
 from .native_indent_peers import indent_peers
 from .native_indent_rows import indent_rows, native_typeface, proven_indent_rows
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .reading_order import reading_order
 from .segments import Segment
 
 
 def recover_native_indents(
-    segments: list[Segment], prepared: Sequence[PreparedPage], state: AssemblyState
+    segments: list[Segment], prepared: Sequence[AnyPreparedPage], state: AssemblyState
 ) -> list[Segment]:
     pages = {p.observation.number: p.observation for p in prepared}
     local = {n: [s for s in segments if s.page == n] for n in pages}

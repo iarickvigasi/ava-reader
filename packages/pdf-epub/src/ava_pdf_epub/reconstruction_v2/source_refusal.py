@@ -8,7 +8,7 @@ from pydantic import Field, model_validator
 
 from ..contracts.common import Digest, Id, Record
 from ..contracts.source import Box
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .recognition_contract import RecognitionTask
 from .refinement_contract import AnyRefinementTask
 from .segments import Segment
@@ -106,7 +106,7 @@ def refuse_task(task: RecognitionTask, code: RefusalCode, segment: Segment | Non
     )
 
 
-def refuse_segment(prepared: PreparedPage, segment: Segment) -> None:
+def refuse_segment(prepared: AnyPreparedPage, segment: Segment) -> None:
     page = prepared.observation
     if segment.page != page.number or not segment.box.within(page.width_pt, page.height_pt):
         raise ValueError("Refused segment is outside its prepared source page")

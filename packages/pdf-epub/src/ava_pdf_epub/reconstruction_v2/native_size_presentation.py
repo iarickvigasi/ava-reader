@@ -7,12 +7,12 @@ from ..contracts.styles import Style
 from .assembly_state import AssemblyState
 from .findings import Finding
 from .native_document_sizes import normalize_native_sizes
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .segments import Segment
 
 
 def apply_native_sizes(
-    segments: list[Segment], prepared: Sequence[PreparedPage], state: AssemblyState
+    segments: list[Segment], prepared: Sequence[AnyPreparedPage], state: AssemblyState
 ) -> None:
     staged = AssemblyState(bibliographic_roles=state.bibliographic_roles)
     normalized = normalize_native_sizes(segments, prepared, staged)

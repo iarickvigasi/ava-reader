@@ -4,7 +4,7 @@ from collections.abc import Sequence
 from statistics import median
 
 from .font_style import glyph_size
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .segments import Segment
 
 
@@ -14,7 +14,7 @@ class MixedHeadingReviewRequired(ValueError):
 
 def heading_hierarchy(
     segments: list[Segment],
-    prepared: Sequence[PreparedPage],
+    prepared: Sequence[AnyPreparedPage],
     corroborated_sections: set[str],
     deferred_native: set[str] | None = None,
 ) -> list[Segment]:

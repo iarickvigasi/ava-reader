@@ -7,7 +7,8 @@ from pathlib import Path
 from ..contracts.profiles import BILINGUAL_PROFILE
 from .assembly_state import AssemblyState
 from .heading_hierarchy import heading_hierarchy
-from .prepared import PreparedPage
+from .native_contents_claims import native_contents_claims
+from .prepared_types import AnyPreparedPage
 from .printer_folio_segments import printer_folio_segments
 from .segments import Segment
 from .source_folios import source_folios
@@ -18,7 +19,7 @@ from .structure_evidence import structure_findings
 
 def source_structure(
     source: Path,
-    prepared: Sequence[PreparedPage],
+    prepared: Sequence[AnyPreparedPage],
     qualified: dict[int, list[Segment]],
     segments: list[Segment],
     state: AssemblyState,
@@ -27,7 +28,7 @@ def source_structure(
     folios = source_folios(prepared, qualified, printer_labels)
     state.page_labels = {page: label for label, page in folios.items()}
     folios = {label.casefold(): page for label, page in folios.items()}
-    printed = printed_contents(segments)
+    printed = printed_contents(segments, native_contents_claims(prepared, segments))
     claims = [*printed, *outline_claims(source)]
     promoted: dict[str, int] = {}
     ranked: set[str] = set()
@@ -57,7 +58,11 @@ def source_structure(
             ranked.add(target.id)
         if claim.source_id:
             owner = next(s for s in segments if s.id == claim.source_id)
-            at = owner.text.find(claim.title)
+            at = (
+                claim.source_offset
+                if claim.source_offset is not None
+                else owner.text.find(claim.title)
+            )
             if at < 0:
                 raise ValueError("Contents label cannot be aligned with canonical text")
             state.internal_targets.append((owner.id, at, at + len(claim.title), target.id, 0))

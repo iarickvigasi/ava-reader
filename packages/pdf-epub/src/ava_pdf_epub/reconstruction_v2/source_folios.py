@@ -5,12 +5,12 @@ from collections.abc import Sequence
 from statistics import median
 
 from .font_style import glyph_size
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .segments import Segment
 
 
 def source_folios(
-    prepared: Sequence[PreparedPage],
+    prepared: Sequence[AnyPreparedPage],
     segments: dict[int, list[Segment]],
     printer_labels: dict[str, tuple[str, int]] | None = None,
 ) -> dict[str, int]:

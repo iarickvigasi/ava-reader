@@ -4,11 +4,15 @@ from .list_markers import MARKER, marker_value
 from .segments import Segment
 
 
-def native_roles(segments: list[Segment]) -> list[Segment]:
+def native_roles(segments: list[Segment], literal_rows: set[str] | None = None) -> list[Segment]:
     output = []
     indents: list[float] = []
     for index, segment in enumerate(segments):
-        match = MARKER.match(segment.text) if segment.kind == "paragraph" else None
+        match = (
+            MARKER.match(segment.text)
+            if segment.kind == "paragraph" and segment.id not in (literal_rows or set())
+            else None
+        )
         if match:
             marker = match["marker"]
             following = (

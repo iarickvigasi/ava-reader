@@ -19,6 +19,7 @@ from ..annotation_view_cache import cached_view
 from ..contracts.private_files import snapshot
 from ..contracts.profiles import ProfileId, checked_profile
 from ..worker_observation import observe
+from .native_layout_policy import NativeLayoutPolicy, validate_layout_policy
 from .source_feature_contract import FEATURE_POLICY
 
 PARSER_WINDOW_PAGES = 2
@@ -47,10 +48,14 @@ class SourcePreparation:
         expected_sha256: str | None = None,
         *,
         source_feature_policy: str | None = None,
+        source_layout_policy: NativeLayoutPolicy | None = None,
     ):
         if source_feature_policy not in {None, FEATURE_POLICY}:
             raise ValueError("Unknown source feature policy")
         self.source_feature_policy = source_feature_policy
+        self.source_layout_policy = validate_layout_policy(source_layout_policy)
+        if self.source_layout_policy is not None and source_feature_policy != FEATURE_POLICY:
+            raise ValueError("Native layout policy requires current source feature authority")
         self.source, self.scratch = source, scratch
         self.profile_id = checked_profile(profile_id)
         self._source_identity = identity(source)

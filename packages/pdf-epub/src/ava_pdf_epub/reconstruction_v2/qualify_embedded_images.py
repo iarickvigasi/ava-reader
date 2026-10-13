@@ -8,7 +8,9 @@ from .attempt_exchange import json_bytes
 from .borderless_tables import borderless_tables
 from .conservation import native_conservation
 from .geometry import overlap
+from .native_line_offsets import mapped_native_ids, native_line_offsets
 from .page_checkpoints import PageCheckpoints
+from .prepared_native_layout import NativeLayoutPreparedPage
 from .protocol import prepared_result
 from .protocol_output import encode_packet
 from .raster_regions import raster_regions
@@ -75,6 +77,14 @@ def qualify_embedded_images(pages: PageCheckpoints, scratch: Path, policy: str |
         result = page.model_copy(
             update={"observation": observation, "native_segments": native, "tasks": tasks}
         )
+        if isinstance(result, NativeLayoutPreparedPage):
+            result = result.model_copy(
+                update={
+                    "native_line_maps": native_line_offsets(
+                        observation, native, mapped_native_ids(native)
+                    )
+                }
+            )
         encode_packet(prepared_result(result).model_dump(mode="json"), 8 * 1024 * 1024)
         validate_tasks(
             json_bytes(

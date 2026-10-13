@@ -6,12 +6,12 @@ from collections.abc import Sequence
 from .assembly_state import AssemblyState
 from .findings import Finding
 from .page_checkpoints import page_geometry
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .segments import Segment
 
 
 def corroborate_running_furniture(
-    prepared: Sequence[PreparedPage],
+    prepared: Sequence[AnyPreparedPage],
     qualified: dict[int, list[Segment]],
     state: AssemblyState,
 ) -> dict[int, list[Segment]]:

@@ -9,10 +9,11 @@ from .assemble_pages import assemble_pages
 from .assembly_state import AssemblyState
 from .continuation_margins import continuation_margins
 from .linked_furniture import preserve_linked_furniture
+from .native_layout_policy import NativeLayoutPolicy
 from .ocr_indents import recover_ocr_indents
 from .ocr_running_furniture import corroborate_running_furniture
 from .pdf_links import apply_pdf_links
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .qualify_pages import qualify_pages
 from .recognition_contract import RecognitionResponse
 from .recover_native_indents import recover_native_indents
@@ -23,11 +24,20 @@ from .source_structure import source_structure
 def source_segments(
     source: Path,
     scratch: Path,
-    prepared: Sequence[PreparedPage],
+    prepared: Sequence[AnyPreparedPage],
     responses: list[RecognitionResponse],
+    *,
+    source_layout_policy: NativeLayoutPolicy | None = None,
 ) -> tuple[list[dict[str, Any]], list[Segment], AssemblyState]:
-    qualified = qualify_pages(source, scratch, prepared, responses)
     state = AssemblyState()
+    qualified = qualify_pages(
+        source,
+        scratch,
+        prepared,
+        responses,
+        source_layout_policy=source_layout_policy,
+        source_line_maps=state.native_line_maps,
+    )
     qualified = preserve_linked_furniture(source, prepared, qualified, state)
     qualified = corroborate_running_furniture(prepared, qualified, state)
     pages, segments = assemble_pages(prepared, qualified, state)

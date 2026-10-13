@@ -10,23 +10,43 @@ from typing import overload
 
 from ..contracts.private_files import snapshot
 from ..worker_observation import observe
+from .native_layout_policy import NativeLayoutPolicy, validate_layout_policy
+from .native_line_offsets import mapped_native_ids, native_line_offsets
 from .page_geometry import PageGeometry, geometry_from
 from .prepared import PreparedPage
+from .prepared_native_layout import NativeLayoutPreparedPage
+from .prepared_types import AnyPreparedPage, layout_policy
 
 PAGE_BYTES = 32 * 1024 * 1024
 TOTAL_BYTES = 1024 * 1024 * 1024
 
 
-class PageCheckpoints(Sequence[PreparedPage]):
-    def __init__(self, root: Path):
+class PageCheckpoints(Sequence[AnyPreparedPage]):
+    def __init__(self, root: Path, source_layout_policy: NativeLayoutPolicy | None = None):
         self.root = root
+        self.source_layout_policy = validate_layout_policy(source_layout_policy)
         self._entries: list[tuple[str, str]] = []
         self._bytes = 0
         self._geometry: list[PageGeometry] = []
-        self._cached: OrderedDict[int, tuple[int, PreparedPage]] = OrderedDict()
+        self._cached: OrderedDict[int, tuple[int, AnyPreparedPage]] = OrderedDict()
         self._cache_bytes = 0
 
-    def append(self, page: PreparedPage) -> None:
+    def append(self, page: AnyPreparedPage) -> None:
+        if self.source_layout_policy is not None and isinstance(page, PreparedPage):
+            page = NativeLayoutPreparedPage.model_validate(
+                {
+                    **page.model_dump(),
+                    "schema_version": "ava-prepared-page-2",
+                    "source_layout_policy": self.source_layout_policy,
+                    "native_line_maps": native_line_offsets(
+                        page.observation,
+                        page.native_segments,
+                        mapped_native_ids(page.native_segments),
+                    ),
+                }
+            )
+        if layout_policy(page) != self.source_layout_policy:
+            raise ValueError("Page checkpoint layout policy differs")
         if page.observation.number != len(self) + 1 or len(self) >= 500:
             raise ValueError("Page checkpoint order or count differs")
         geometry = geometry_from(page.observation)
@@ -40,9 +60,13 @@ class PageCheckpoints(Sequence[PreparedPage]):
         self._bytes += len(data)
         self._geometry.append(geometry)
 
-    def qualify(self, index: int, page: PreparedPage) -> None:
+    def qualify(self, index: int, page: AnyPreparedPage) -> None:
         """Replace an internally qualified observation before any host/model exchange."""
         old = self[index]
+        if isinstance(page, NativeLayoutPreparedPage):
+            page = NativeLayoutPreparedPage.model_validate(page.model_dump())
+        if layout_policy(page) != layout_policy(old):
+            raise ValueError("Qualified page layout policy differs")
         if (
             old.source_sha256,
             old.source_byte_length,
@@ -111,12 +135,12 @@ class PageCheckpoints(Sequence[PreparedPage]):
             self._read(index)
 
     @overload
-    def __getitem__(self, index: int) -> PreparedPage: ...
+    def __getitem__(self, index: int) -> AnyPreparedPage: ...
 
     @overload
-    def __getitem__(self, index: slice) -> Sequence[PreparedPage]: ...
+    def __getitem__(self, index: slice) -> Sequence[AnyPreparedPage]: ...
 
-    def __getitem__(self, index: int | slice) -> PreparedPage | Sequence[PreparedPage]:
+    def __getitem__(self, index: int | slice) -> AnyPreparedPage | Sequence[AnyPreparedPage]:
         if isinstance(index, slice):
             return [self[i] for i in range(*index.indices(len(self)))]
         index, data = self._read(index)
@@ -126,7 +150,13 @@ class PageCheckpoints(Sequence[PreparedPage]):
             observe("reuse", "checkpoint_decode", True)
             return cached[1]
         observe("reuse", "checkpoint_decode", False)
-        page = PreparedPage.model_validate_json(data)
+        page: AnyPreparedPage = (
+            NativeLayoutPreparedPage.model_validate_json(data)
+            if self.source_layout_policy is not None
+            else PreparedPage.model_validate_json(data)
+        )
+        if layout_policy(page) != self.source_layout_policy:
+            raise ValueError("Page checkpoint layout policy differs")
         # Keep the same aggregate serialized bound as the former single-page cache.
         # Hash verification above still runs on every read, including cache hits.
         while self._cached and (
@@ -155,14 +185,14 @@ class PageCheckpoints(Sequence[PreparedPage]):
         return self._geometry[index]
 
 
-def page_geometry(pages: Sequence[PreparedPage], index: int) -> PageGeometry:
+def page_geometry(pages: Sequence[AnyPreparedPage], index: int) -> PageGeometry:
     if isinstance(pages, PageCheckpoints):
         return pages.geometry(index)
     return geometry_from(pages[index].observation)
 
 
-class PreparedPageMap(Mapping[int, PreparedPage]):
-    def __init__(self, pages: Sequence[PreparedPage]):
+class PreparedPageMap(Mapping[int, AnyPreparedPage]):
+    def __init__(self, pages: Sequence[AnyPreparedPage]):
         self.pages = pages
 
     def __len__(self) -> int:
@@ -171,7 +201,7 @@ class PreparedPageMap(Mapping[int, PreparedPage]):
     def __iter__(self) -> Iterator[int]:
         return iter(range(1, len(self.pages) + 1))
 
-    def __getitem__(self, number: int) -> PreparedPage:
+    def __getitem__(self, number: int) -> AnyPreparedPage:
         if not 1 <= number <= len(self.pages):
             raise KeyError(number)
         page = self.pages[number - 1]

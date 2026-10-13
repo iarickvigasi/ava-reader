@@ -5,8 +5,9 @@ from pathlib import Path
 
 from ..worker_observation import phase
 from .prepare_source import prepare_source
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .protocol import AnyReconstructionInput
+from .protocol_native_layout import NativeLayoutReconstructionInput
 from .reconstruct import ReconstructedBook, reconstruct
 from .report import ReconstructionReport, reconstruction_report
 
@@ -20,12 +21,20 @@ def reconstruct_source(
         request.source_sha256,
         request.profile_id,
         source_feature_policy=request.source_feature_policy,
+        source_layout_policy=(
+            request.source_layout_policy
+            if isinstance(request, NativeLayoutReconstructionInput)
+            else None
+        ),
     )
     return reconstruct_from_pages(source, scratch, prepared, request)
 
 
 def reconstruct_from_pages(
-    source: Path, scratch: Path, prepared: Sequence[PreparedPage], request: AnyReconstructionInput
+    source: Path,
+    scratch: Path,
+    prepared: Sequence[AnyPreparedPage],
+    request: AnyReconstructionInput,
 ) -> tuple[ReconstructedBook, ReconstructionReport]:
     """Create final assembly state afresh from unchanged private source checkpoints."""
     with phase("reconstruct"):
@@ -36,5 +45,10 @@ def reconstruct_from_pages(
             request.responses,
             list(request.refinements),
             source_feature_policy=request.source_feature_policy,
+            source_layout_policy=(
+                request.source_layout_policy
+                if isinstance(request, NativeLayoutReconstructionInput)
+                else None
+            ),
         )
         return result, reconstruction_report(result, sum(len(p.tasks) for p in prepared))

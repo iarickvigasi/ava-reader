@@ -9,7 +9,7 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .recognition_contract import RecognitionImage
 from .refinement_contract import RefinementCrop
 from .refinement_sheet_bounds import (
@@ -26,7 +26,7 @@ from .segments import Segment
 def refinement_sheet(
     ids: list[str],
     segments: dict[str, Segment],
-    pages: Mapping[int, PreparedPage],
+    pages: Mapping[int, AnyPreparedPage],
     scratch: Path,
     tail_ids: set[str] | None = None,
 ) -> tuple[list[RefinementCrop], RecognitionImage]:

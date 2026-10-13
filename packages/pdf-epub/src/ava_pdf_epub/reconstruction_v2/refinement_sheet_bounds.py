@@ -6,7 +6,7 @@ from typing import Literal
 
 from ..contracts.source import Box
 from .geometry import rectangle
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .segments import Segment
 
 SCALE = 2
@@ -15,7 +15,7 @@ LABEL_HEIGHT = 32
 
 
 def crop_geometry(
-    segment: Segment, page: PreparedPage, part: Literal["head", "tail"] = "head"
+    segment: Segment, page: AnyPreparedPage, part: Literal["head", "tail"] = "head"
 ) -> tuple[Box, int, int]:
     observed, box = page.observation, segment.box
     top, bottom = box.y0, box.y1
@@ -56,7 +56,7 @@ def crop_parts(
 def sheet_fits(
     ids: list[str],
     segments: dict[str, Segment],
-    pages: Mapping[int, PreparedPage],
+    pages: Mapping[int, AnyPreparedPage],
     tail_ids: set[str] | None = None,
 ) -> bool:
     dimensions = [

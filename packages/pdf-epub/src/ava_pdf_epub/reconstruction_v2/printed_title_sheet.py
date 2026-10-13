@@ -8,14 +8,14 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .printed_title_contract import PrintedTitleCrop, PrintedTitleNode
 from .printed_title_geometry import LABEL_HEIGHT, title_geometry
 from .recognition_contract import RecognitionImage
 
 
 def printed_title_sheet(
-    node: PrintedTitleNode, prepared: PreparedPage, scratch: Path
+    node: PrintedTitleNode, prepared: AnyPreparedPage, scratch: Path
 ) -> tuple[list[PrintedTitleCrop], RecognitionImage]:
     page = prepared.observation
     pieces, width, height = title_geometry(node)

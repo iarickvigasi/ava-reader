@@ -12,13 +12,16 @@ from .associate_figures import associate_figures
 from .associate_table_captions import associate_table_captions
 from .canonical_text import canonical_text
 from .page_checkpoints import PreparedPageMap
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .segments import Segment
 from .source_refusal import refuse_segment
 
 
 def assemble_blocks(
-    segments: list[Segment], prepared: Sequence[PreparedPage], scratch: Path, state: AssemblyState
+    segments: list[Segment],
+    prepared: Sequence[AnyPreparedPage],
+    scratch: Path,
+    state: AssemblyState,
 ) -> None:
     pages = PreparedPageMap(prepared)
     source_tables = bool(prepared) and prepared[0].profile_id == BILINGUAL_PROFILE

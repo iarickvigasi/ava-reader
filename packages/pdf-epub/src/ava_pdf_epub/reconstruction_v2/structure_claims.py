@@ -17,13 +17,16 @@ class StructureClaim:
     printed_page: str | None = None
     pdf_page: int | None = None
     depth: int | None = None
+    source_offset: int | None = None
 
 
 def title_key(text: str) -> str:
     return " ".join(text.split()).casefold()
 
 
-def printed_contents(segments: list[Segment]) -> list[StructureClaim]:
+def printed_contents(
+    segments: list[Segment], qualified_rows: list[StructureClaim] | None = None
+) -> list[StructureClaim]:
     starts = [s.page for s in segments if title_key(s.text) in {"contents", "table of contents"}]
     claims: list[StructureClaim] = []
     for segment in segments:
@@ -33,6 +36,7 @@ def printed_contents(segments: list[Segment]) -> list[StructureClaim]:
             match = re.fullmatch(r"\s*(.+?)\s*\.{2,}\s*(\d+|[ivxlcdmIVXLCDM]+)\s*", line)
             if match:
                 claims.append(StructureClaim(match[1], segment.id, printed_page=match[2]))
+    claims.extend(qualified_rows or [])
     if starts and not claims:
         raise ValueError("Printed contents cannot be resolved from source structure")
     return claims

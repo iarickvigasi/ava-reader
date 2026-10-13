@@ -6,12 +6,12 @@ from ..contracts.styles import Style
 from .assembly_state import AssemblyState
 from .list_body_geometry import list_body_geometry
 from .native_indent_rows import indent_rows
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .segments import Segment
 
 
 def capture_list_bodies(
-    segments: list[Segment], prepared: Sequence[PreparedPage], state: AssemblyState
+    segments: list[Segment], prepared: Sequence[AnyPreparedPage], state: AssemblyState
 ) -> None:
     local_segments: dict[int, list[Segment]] = {}
     selected: dict[int, list[Segment]] = {}

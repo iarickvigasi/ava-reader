@@ -4,13 +4,13 @@ from collections import Counter
 from collections.abc import Sequence
 
 from ..contracts.profiles import BILINGUAL_PROFILE
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .printer_folios import printer_folio_labels
 from .segments import Segment
 
 
 def printer_folio_segments(
-    prepared: Sequence[PreparedPage], qualified: dict[int, list[Segment]], linked_ids: set[str]
+    prepared: Sequence[AnyPreparedPage], qualified: dict[int, list[Segment]], linked_ids: set[str]
 ) -> dict[str, tuple[str, int]]:
     result: dict[str, tuple[str, int]] = {}
     for checkpoint in prepared:

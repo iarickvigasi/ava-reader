@@ -1,7 +1,7 @@
 """Bind PDF link rectangles to observed native glyphs and source-page targets."""
 
 import math
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 
 from pypdf import PdfReader
@@ -15,8 +15,9 @@ from .assembly_state import AssemblyState
 from .findings import Finding
 from .geometry import area, overlap
 from .native_ink import ink_envelope_matches
+from .native_line_offsets import NativeLineOffset, mapped_line_offset
 from .observations import PageObservation
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .segments import ObservedSpan, Segment
 from .source_literal_link import source_literal_link
 
@@ -33,7 +34,12 @@ def _corroborates(text: str, line: str) -> bool:
 
 
 def glyph_ranges(
-    page: PageObservation, segments: list[Segment], box: Box, *, corroborate_ocr: bool = False
+    page: PageObservation,
+    segments: list[Segment],
+    box: Box,
+    *,
+    corroborate_ocr: bool = False,
+    source_line_maps: Mapping[str, NativeLineOffset] | None = None,
 ) -> list[tuple[str, int, int]]:
     ranges: list[tuple[str, int, int]] = []
     for line in page.lines:
@@ -79,9 +85,13 @@ def glyph_ranges(
         if len(owners) != 1:
             raise ValueError("PDF_LINK_TEXT_MAPPING_REQUIRES_REVIEW")
         owner = owners[0]
-        at = owner.text.find(source_text)
-        if at < 0 or owner.text.find(source_text, at + 1) >= 0:
-            raise ValueError("PDF_LINK_TEXT_MAPPING_REQUIRES_REVIEW")
+        mapped = (
+            mapped_line_offset(line, owner, source_line_maps) if owner.method == "native" else None
+        )
+        at = mapped if mapped is not None else owner.text.find(source_text)
+        if mapped is None:
+            if at < 0 or owner.text.find(source_text, at + 1) >= 0:
+                raise ValueError("PDF_LINK_TEXT_MAPPING_REQUIRES_REVIEW")
         for start, end in selected:
             start, end = start + at - source_start, end + at - source_start
             if ranges and ranges[-1][0] == owner.id:
@@ -146,6 +156,8 @@ def page_target(
     segments: list[Segment],
     reader: PdfReader,
     observation: PageObservation,
+    *,
+    source_line_maps: Mapping[str, NativeLineOffset] | None = None,
 ) -> tuple[str, int]:
     local = [s for s in segments if s.page == target.page and s.text]
     if not local or target.page is None:
@@ -191,9 +203,11 @@ def page_target(
             if len(owners) != 1:
                 raise ValueError("PDF_LINK_TARGET_GEOMETRY_REQUIRES_REVIEW")
             owner = owners[0]
-            at = owner.text.find(line.text)
-            if at < 0 or owner.text.find(line.text, at + 1) >= 0:
-                raise ValueError("PDF_LINK_TARGET_GEOMETRY_REQUIRES_REVIEW")
+            at = mapped_line_offset(line, owner, source_line_maps)
+            if at is None:
+                at = owner.text.find(line.text)
+                if at < 0 or owner.text.find(line.text, at + 1) >= 0:
+                    raise ValueError("PDF_LINK_TARGET_GEOMETRY_REQUIRES_REVIEW")
             return owner.id, at
         raise ValueError("PDF_LINK_TARGET_GEOMETRY_REQUIRES_REVIEW")
     return local[0].id, 0
@@ -201,7 +215,7 @@ def page_target(
 
 def apply_pdf_links(
     source: Path,
-    prepared: Sequence[PreparedPage],
+    prepared: Sequence[AnyPreparedPage],
     segments: list[Segment],
     state: AssemblyState,
     scratch: Path | None = None,
@@ -228,10 +242,18 @@ def apply_pdf_links(
                 # A native subset cannot stand in for the rest of a mixed-source link.
                 raise ValueError("PDF_LINK_TEXT_MAPPING_REQUIRES_REVIEW")
             if native:
-                ranges = glyph_ranges(checkpoint.observation, local, rect)
+                ranges = glyph_ranges(
+                    checkpoint.observation, local, rect, source_line_maps=state.native_line_maps
+                )
             else:
                 try:
-                    ranges = glyph_ranges(checkpoint.observation, local, rect, corroborate_ocr=True)
+                    ranges = glyph_ranges(
+                        checkpoint.observation,
+                        local,
+                        rect,
+                        corroborate_ocr=True,
+                        source_line_maps=state.native_line_maps,
+                    )
                 except ValueError:
                     if scratch is None:
                         raise ValueError("PDF_LINK_TEXT_MAPPING_REQUIRES_REVIEW") from None
@@ -296,7 +318,11 @@ def apply_pdf_links(
                         )
                 else:
                     destination, offset = page_target(
-                        target, result, reader, prepared[(target.page or 0) - 1].observation
+                        target,
+                        result,
+                        reader,
+                        prepared[(target.page or 0) - 1].observation,
+                        source_line_maps=state.native_line_maps,
                     )
                     intent = (ident, start, end, destination, offset)
                     if intent not in state.internal_targets:

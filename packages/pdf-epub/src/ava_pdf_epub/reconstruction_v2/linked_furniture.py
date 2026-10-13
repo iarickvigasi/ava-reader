@@ -10,13 +10,13 @@ from .assembly_state import AssemblyState
 from .findings import Finding
 from .geometry import overlap
 from .page_checkpoints import page_geometry
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .segments import Segment
 
 
 def preserve_linked_furniture(
     source: Path,
-    prepared: Sequence[PreparedPage],
+    prepared: Sequence[AnyPreparedPage],
     qualified: dict[int, list[Segment]],
     state: AssemblyState,
 ) -> dict[int, list[Segment]]:

@@ -9,12 +9,15 @@ from PIL import Image
 from ..contracts.styles import Style
 from .assembly_state import AssemblyState
 from .pixel_line_margins import pixel_line_margins
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .segments import Segment
 
 
 def recover_ocr_indents(
-    segments: list[Segment], prepared: Sequence[PreparedPage], scratch: Path, state: AssemblyState
+    segments: list[Segment],
+    prepared: Sequence[AnyPreparedPage],
+    scratch: Path,
+    state: AssemblyState,
 ) -> list[Segment]:
     updates: dict[str, Segment] = {}
     for checkpoint in prepared:

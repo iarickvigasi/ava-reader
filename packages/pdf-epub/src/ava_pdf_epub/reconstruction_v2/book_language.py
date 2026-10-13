@@ -13,7 +13,7 @@ from ..contracts.profiles import response_language
 from .assembly_state import AssemblyState
 from .language_evidence import RUSSIAN_LETTERS, ukrainian_evidence
 from .language_route import ENGLISH_HINTS
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .recognition_contract import RecognitionResponse
 
 
@@ -29,7 +29,7 @@ def observed_language(text: str) -> Literal["en", "uk"] | None:
 
 
 def primary_language(
-    prepared: Sequence[PreparedPage], responses: list[RecognitionResponse]
+    prepared: Sequence[AnyPreparedPage], responses: list[RecognitionResponse]
 ) -> tuple[Literal["en", "uk"], set[int]]:
     lookup = {value.task_id: value for value in responses}
     votes: Counter[str] = Counter()
@@ -70,7 +70,7 @@ def primary_language(
 def language_metadata(
     source: Path,
     state: AssemblyState,
-    prepared: Sequence[PreparedPage],
+    prepared: Sequence[AnyPreparedPage],
     responses: list[RecognitionResponse],
 ) -> list[dict[str, Any]]:
     language, pages = primary_language(prepared, responses)

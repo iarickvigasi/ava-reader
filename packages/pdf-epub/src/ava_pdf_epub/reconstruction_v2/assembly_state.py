@@ -7,6 +7,7 @@ from typing import Any, Literal
 
 from ..contracts.styles import Style
 from .findings import Finding
+from .native_line_offsets import NativeLineOffset
 
 
 @dataclass
@@ -23,6 +24,7 @@ class AssemblyState:
     segments: dict[str, Any] = field(default_factory=dict)
     internal_targets: list[tuple[str, int, int, str, int]] = field(default_factory=list)
     aliases: dict[str, tuple[str, int]] = field(default_factory=dict)
+    native_line_maps: dict[str, NativeLineOffset] = field(default_factory=dict)
     placements: dict[str, tuple[int, int, int]] = field(default_factory=dict)
     flush_starts: dict[str, bool] = field(default_factory=dict)
     structure_findings: list[Finding] = field(default_factory=list)
@@ -55,6 +57,7 @@ class AssemblyState:
         self.segments.clear()
         self.internal_targets.clear()
         self.aliases.clear()
+        self.native_line_maps.clear()
         self.placements.clear()
         self.flush_starts.clear()
         self.page_labels.clear()

@@ -25,11 +25,12 @@ from .book_language import language_metadata
 from .compound_wraps import compact_native_compounds
 from .continuation_margins import continuation_margins
 from .findings import Finding
+from .native_layout_policy import NativeLayoutPolicy
 from .native_size_presentation import apply_native_sizes
 from .normalize_list_bodies import capture_list_bodies, normalize_list_bodies
 from .ocr_font_faces import corroborate_ocr_font_faces
 from .prepare_refinement import prepare_refinement
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .printed_markers import printed_markers
 from .recognition_contract import RecognitionResponse
 from .refinement_contract import AnyRefinementResponse
@@ -53,13 +54,16 @@ class ReconstructedBook:
 def reconstruct(
     source: Path,
     scratch: Path,
-    prepared: Sequence[PreparedPage],
+    prepared: Sequence[AnyPreparedPage],
     responses: list[RecognitionResponse],
     refinements: list[AnyRefinementResponse] | None = None,
     *,
     source_feature_policy: str | None = None,
+    source_layout_policy: NativeLayoutPolicy | None = None,
 ) -> ReconstructedBook:
-    pages, segments, state = source_segments(source, scratch, prepared, responses)
+    pages, segments, state = source_segments(
+        source, scratch, prepared, responses, source_layout_policy=source_layout_policy
+    )
     if refinements is not None:
         with phase("prepare_refinement"):
             tasks = prepare_refinement(

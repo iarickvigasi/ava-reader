@@ -6,13 +6,13 @@ from typing import Any
 from .assembly_state import AssemblyState
 from .geometry import rectangle
 from .page_checkpoints import page_geometry
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .reading_order import reading_order
 from .segments import Segment
 
 
 def assemble_pages(
-    prepared: Sequence[PreparedPage], segments: dict[int, list[Segment]], state: AssemblyState
+    prepared: Sequence[AnyPreparedPage], segments: dict[int, list[Segment]], state: AssemblyState
 ) -> tuple[list[dict[str, Any]], list[Segment]]:
     pages, ordered = [], []
     branding: dict[str, list[Segment]] = {}

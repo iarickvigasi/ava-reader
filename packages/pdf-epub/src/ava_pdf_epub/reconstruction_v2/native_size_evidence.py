@@ -6,12 +6,12 @@ from math import isclose
 
 from .font_style import glyph_size
 from .observations import NativeLine
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .segments import Segment
 
 
 def native_size_evidence(
-    prepared: Sequence[PreparedPage], segments: list[Segment]
+    prepared: Sequence[AnyPreparedPage], segments: list[Segment]
 ) -> tuple[dict[str, float], list[tuple[str, int, float]]]:
     by_page: dict[int, list[Segment]] = defaultdict(list)
     for segment in segments:

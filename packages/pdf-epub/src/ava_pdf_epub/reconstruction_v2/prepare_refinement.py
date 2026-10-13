@@ -10,7 +10,7 @@ from pypdf import PdfReader
 from ..contracts.profiles import BILINGUAL_PROFILE
 from .assembly_state import AssemblyState
 from .page_checkpoints import PreparedPageMap
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .refinement_catalogue import refinement_catalogue
 from .refinement_contract import AnyRefinementTask, BookRefinementTask, RefinementEdge
 from .refinement_digest import observation_digest
@@ -25,7 +25,7 @@ from .segments import Segment
 def prepare_refinement(
     source: Path,
     scratch: Path,
-    prepared: Sequence[PreparedPage],
+    prepared: Sequence[AnyPreparedPage],
     segments: list[Segment],
     state: AssemblyState,
     *,

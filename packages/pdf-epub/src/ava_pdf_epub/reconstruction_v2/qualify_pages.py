@@ -8,15 +8,27 @@ from .accept_response import accept_response
 from .blank_page import blank_page
 from .conservation import native_conservation
 from .furniture import furniture_ids
+from .native_layout_policy import NativeLayoutPolicy, validate_layout_policy
+from .native_line_offsets import NativeLineOffset
 from .native_page import native_page
-from .prepared import PreparedPage
+from .prepared_native_layout import NativeLayoutPreparedPage
+from .prepared_types import AnyPreparedPage, layout_policy
 from .recognition_contract import RecognitionResponse
 from .segments import Segment
 
 
 def qualify_pages(
-    source: Path, scratch: Path, pages: Sequence[PreparedPage], responses: list[RecognitionResponse]
+    source: Path,
+    scratch: Path,
+    pages: Sequence[AnyPreparedPage],
+    responses: list[RecognitionResponse],
+    *,
+    source_layout_policy: NativeLayoutPolicy | None = None,
+    source_line_maps: dict[str, NativeLineOffset] | None = None,
 ) -> dict[int, list[Segment]]:
+    policy = validate_layout_policy(source_layout_policy)
+    if any(layout_policy(page) != policy for page in pages):
+        raise ValueError("Prepared page layout policy differs from reconstruction input")
     digest = hashlib.sha256(source.read_bytes()).hexdigest()
     if not pages or [p.observation.number for p in pages] != list(
         range(1, pages[0].source_page_count + 1)
@@ -46,13 +58,26 @@ def qualify_pages(
         if blank_page(page.observation, scratch):
             output[page.observation.number] = []
             continue
+        mappings: list[NativeLineOffset] = []
         content = native_page(
             page.observation,
             page.tables,
             furniture,
             [t.region_box for t in page.tasks],
             page.profile_id,
+            source_layout_policy=policy,
+            source_line_maps=mappings,
         )
+        if isinstance(page, NativeLayoutPreparedPage):
+            if mappings != page.native_line_maps:
+                raise ValueError("Native layout source line map changed after preparation")
+            if mappings and source_line_maps is None:
+                raise ValueError("Native layout source line maps require an assembly owner")
+            if source_line_maps is not None:
+                for mapping in mappings:
+                    if mapping.line_id in source_line_maps:
+                        raise ValueError("Native source line map crosses page ownership")
+                    source_line_maps[mapping.line_id] = mapping
         native_conservation(page.observation, content, [t.region_box for t in page.tasks])
         for task in page.tasks:
             accepted = accept_response(task, lookup[task.task_id])

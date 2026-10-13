@@ -490,6 +490,22 @@ enabled merely by starting the ordinary worker, and no model call occurs inside 
 `source_feature_policy: "ava-ocr-source-features-1"` selects the current finite comparisons;
 omitting it retains the historical policy. Provider authority remains with the host.
 
+the separately captured, opt-in `source_layout_policy: "ava-native-layout-1"` uses
+`ava-reconstruct-input-3`. It requires the current source-feature policy and complete-source
+preparation before any host/model exchange. Every private checkpoint and announced page uses
+`ava-prepared-page-2` / `ava-prepare-result-2`, including pages with no recognition tasks. Policy,
+source identity and exact native text ownership are rechecked during reconstruction; historical
+input1/input2 and page1 packets keep their original no-layout-policy behavior.
+
+This first deterministic layout policy considers whole-book running furniture before columns,
+preserves qualified isolated ornament rows, and groups source-corresponding Contents labels and
+folios. Grouped lines retain exact codepoint offsets and glyph span styles; printed Contents still
+must agree with actual source openings and folios. It requires visible, aligned glyphs, known font
+roles and known source ink; missing ink is not assumed black. Unknown styles/colour spaces, hidden
+text, mathematical operators and ambiguous rows keep the existing recognition/review route.
+Per-page preparation cannot opt into this complete-source policy. A future IDs-only model layout
+repair is separate from this deterministic policy; current fallback responses remain unchanged.
+
 Controls use a four-byte unsigned big-endian length followed by UTF-8 JSON. Every
 `ava-reconstruction-exchange-1` envelope has exactly `schema_version`, increasing `sequence`,
 `source_sha256`, `profile_id`, `kind` and `payload`. Replies repeat the same envelope binding.

@@ -17,8 +17,10 @@ from .protocol import (
     prepared_result,
     reconstruction_input,
 )
+from .protocol_native_layout import NativeLayoutReconstructionInput
 from .protocol_output import encode_packet
 from .qualify_embedded_images import qualify_embedded_images
+from .qualify_native_layout import qualify_native_layout
 from .reconstruct_source import reconstruct_from_pages
 from .source_preparation import SourcePreparation
 from .source_refusal import SourceContentRefusal
@@ -40,7 +42,7 @@ class AttemptFailure(ValueError):
         self.cause = cause
 
 
-def initial_input(data: bytes) -> ReconstructionInput:
+def initial_input(data: bytes) -> ReconstructionInput | NativeLayoutReconstructionInput:
     if not 0 < len(data) <= REQUEST_BYTES:
         raise ValueError("Attempt request byte bound exceeded")
     raw = strict_json(data)
@@ -49,9 +51,19 @@ def initial_input(data: bytes) -> ReconstructionInput:
     if raw["mode"] != "attempt_stream" or not isinstance(raw["input"], dict):
         raise ValueError("Invalid attempt request mode/input")
     required = {"schema_version", "profile_id", "source_sha256", "responses", "refinements"}
-    if set(raw["input"]) not in (required, required | {"source_feature_policy"}):
+    layout = raw["input"].get("schema_version") == "ava-reconstruct-input-3"
+    valid = (
+        (required | {"source_feature_policy", "source_layout_policy"},)
+        if layout
+        else (required, required | {"source_feature_policy"})
+    )
+    if set(raw["input"]) not in valid:
         raise ValueError("Invalid initial reconstruction input fields")
-    request = ReconstructionInput.model_validate(raw["input"])
+    request = (
+        NativeLayoutReconstructionInput.model_validate(raw["input"])
+        if layout
+        else (ReconstructionInput.model_validate(raw["input"]))
+    )
     if (
         request.responses
         or request.refinements
@@ -62,12 +74,14 @@ def initial_input(data: bytes) -> ReconstructionInput:
 
 
 def _input(
-    initial: ReconstructionInput, responses: list[Any], refinements: list[Any]
+    initial: ReconstructionInput | NativeLayoutReconstructionInput,
+    responses: list[Any],
+    refinements: list[Any],
 ) -> AnyReconstructionInput:
     # Each phase validates new models from raw receipts. No mutable response or
     # assembly object created during comparison is reused for final assembly.
     raw = {**initial.model_dump(mode="json"), "responses": responses, "refinements": refinements}
-    if any(
+    if not isinstance(initial, NativeLayoutReconstructionInput) and any(
         isinstance(r, dict) and r.get("schema_version") == "ava-printed-title-response-1"
         for r in refinements
     ):
@@ -98,9 +112,17 @@ def _prepared_attempt(
                     request.profile_id,
                     request.source_sha256,
                     source_feature_policy=request.source_feature_policy,
+                    source_layout_policy=(
+                        request.source_layout_policy
+                        if isinstance(request, NativeLayoutReconstructionInput)
+                        else None
+                    ),
                 )
             )
-            pages = PageCheckpoints(Path(tempfile.mkdtemp(prefix="observations-", dir=scratch)))
+            pages = PageCheckpoints(
+                Path(tempfile.mkdtemp(prefix="observations-", dir=scratch)),
+                preparation.source_layout_policy,
+            )
             seen_tasks: set[str] = set()
             for number in range(1, preparation.count + 1):
                 page = prepare_from_source(preparation, number)
@@ -132,6 +154,7 @@ def _prepared_attempt(
                 pages.append(page)
                 del page
             qualify_embedded_images(pages, scratch, request.source_feature_policy)
+            qualify_native_layout(pages, scratch, preparation.source_layout_policy)
             preparation.verify_inputs()
             preparation.retire_parsers()
         yield preparation, pages
@@ -140,7 +163,7 @@ def _prepared_attempt(
 def _run(
     source: Path,
     scratch: Path,
-    request: ReconstructionInput,
+    request: ReconstructionInput | NativeLayoutReconstructionInput,
     incoming: BinaryIO,
     outgoing: BinaryIO,
     writer: ExchangeWriter,

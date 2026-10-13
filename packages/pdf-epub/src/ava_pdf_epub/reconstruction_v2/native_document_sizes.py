@@ -7,12 +7,12 @@ from statistics import median
 from .assembly_state import AssemblyState
 from .findings import Finding
 from .native_size_evidence import native_size_evidence
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .segments import Segment
 
 
 def normalize_native_sizes(
-    segments: list[Segment], prepared: Sequence[PreparedPage], state: AssemblyState
+    segments: list[Segment], prepared: Sequence[AnyPreparedPage], state: AssemblyState
 ) -> list[Segment]:
     if not any(
         s.method == "native" and s.style and s.style.relative_size is not None for s in segments

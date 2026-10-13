@@ -9,12 +9,12 @@ from .assemble_figure import assemble_figure
 from .assembly_state import AssemblyState
 from .findings import Finding
 from .geometry import area, overlap
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .segments import Segment
 
 
 def preserve_source_cover(
-    prepared: Sequence[PreparedPage],
+    prepared: Sequence[AnyPreparedPage],
     pages: list[dict[str, Any]],
     chapters: list[dict[str, Any]],
     metadata: list[dict[str, Any]],

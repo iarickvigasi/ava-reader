@@ -6,7 +6,7 @@ from pathlib import Path
 
 from .assembly_state import AssemblyState
 from .page_checkpoints import PreparedPageMap
-from .prepared import PreparedPage
+from .prepared_types import AnyPreparedPage
 from .refinement_digest import observation_digest
 from .refinement_identity import refinement_identifier
 from .segments import Segment
@@ -20,7 +20,7 @@ from .source_feature_uninspected import uninspected_appearance, uninspected_feat
 def source_feature_tasks(
     source: Path,
     scratch: Path,
-    prepared: Sequence[PreparedPage],
+    prepared: Sequence[AnyPreparedPage],
     segments: list[Segment],
     state: AssemblyState,
     existing_tasks: int,
