@@ -27,6 +27,13 @@ import { SsoCallbackHandler } from "./sso-callback-handler";
 import { AuthReadinessNotice } from "./auth-readiness-notice";
 import SsoCallbackPage from "@/app/auth/sso-callback/page";
 import { AUTH_TIMEOUT_MS } from "@/features/auth/with-deadline";
+
+// Next supplies a props object, even when searchParams is omitted. Protect the
+// generated PageProps requirement when a source-only checkout has no .next types.
+type ObjectPageArgument<T extends object> = T;
+export type CallbackPageArgument = ObjectPageArgument<
+  Parameters<typeof SsoCallbackPage>[0]
+>;
 function containsCallback(node: ReactNode): boolean {
   if (Array.isArray(node)) return node.some(containsCallback);
   if (!isValidElement<{ children?: ReactNode }>(node)) return false;
@@ -126,6 +133,8 @@ it("validates the callback page target and preserves ordinary Home defaults", as
       }),
     });
     expect(invalid.props.returnTo).toBe("/app");
+    const ordinary = await SsoCallbackPage({});
+    expect(ordinary.props.returnTo).toBe("/app");
     observed.loaded = true;
     expect(callbackProps(SsoCallbackHandler())?.signInForceRedirectUrl).toBe(
       "/app",
