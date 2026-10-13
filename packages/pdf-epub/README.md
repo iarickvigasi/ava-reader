@@ -593,6 +593,18 @@ treatment remains confined to declared regions; there is no global luminance thr
 The image hash/dimensions are checked before execution; timeout is
 20 seconds, output is capped at 4 MiB, and native diagnostics are suppressed. Matching is exact
 Unicode with whitespace-only alignment, unique geometry/text correspondence and confidence checks.
+After a strict native link-caller mapping refusal, one complete, isolated native line
+can use local word geometry from an exact crop of its unchanged source raster. This
+path requires known upright geometry, visible glyphs, no source risks or inline
+appearance regions, one retained native owner, exact whole-line Unicode tokens and
+source offsets. The parser validates all rows and records the crop origin explicitly;
+word coverage and confidence thresholds remain unchanged. Character accounting
+refuses added ignored punctuation and omitted partial adjacent glyphs. A midpoint
+outside the caller is only a conservative refusal for a partial glyph, never
+acceptance authority. Native text, style and method remain unchanged, and target
+qualification is separate. The primary native and scanned-page paths retain their
+existing rules. At most two private contexts are cached per source page.
+
 Private OCR PNGs preserve measured physical resolution from source page geometry; dropping this
 metadata can cause automatic OCR to omit clearly visible ruled-table words. Pixel content is not
 rescaled by this metadata repair. Scanned table-cell marks use fully contained independent word

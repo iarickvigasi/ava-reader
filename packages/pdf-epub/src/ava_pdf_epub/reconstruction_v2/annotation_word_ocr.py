@@ -1,6 +1,7 @@
 """Bounded local word geometry only for unresolved source annotations."""
 
 import hashlib
+import math
 import os
 import selectors
 import subprocess
@@ -12,10 +13,12 @@ from PIL import Image, ImageChops
 
 from ..annotation_view import annotation_view
 from ..contracts.profiles import BILINGUAL_PROFILE, LEGACY_PROFILE, ProfileId, checked_profile
+from ..contracts.source import Box
 from ..extract import render_page
 from .annotation_word_visibility import source_visible_words
-from .annotation_words import ERROR, MAX_BYTES, AnnotationWord, parse_words
-from .observations import PageObservation
+from .annotation_words import ERROR, MAX_BYTES, AnnotationRasterFrame, AnnotationWord, parse_words
+from .geometry import overlap
+from .observations import NativeLine, PageObservation
 
 TIMEOUT_SECONDS = 20
 MAX_IMAGE_BYTES = 32 * 1024 * 1024
@@ -66,6 +69,68 @@ def _recognize_annotation_words(
         view.save(path, dpi=(view.width / page.width_pt * 72, view.height / page.height_pt * 72))
         output = _run_ocr(path, "eng+ukr" if profile_id == BILINGUAL_PROFILE else "eng")
     return source_visible_words(page, parse_words(output, page), original, clean)
+
+
+def recognize_native_line_words(
+    page: PageObservation,
+    line: NativeLine,
+    caller: Box,
+    scratch: Path,
+    profile_id: ProfileId,
+) -> list[AnnotationWord]:
+    """Corroborate a complete isolated native line in unchanged saved source pixels."""
+    try:
+        checked_profile(profile_id)
+        if page.rotation != 0 or page.required_regions or page.risks or not line.glyphs:
+            raise ValueError(ERROR)
+        envelope = [line.box, caller, *[g.box for g in line.glyphs]]
+        if any(not b.within(page.width_pt, page.height_pt) for b in envelope):
+            raise ValueError(ERROR)
+        w, h = page.render_width, page.render_height
+        left = max(0, math.floor(min(b.x0 for b in envelope) * w / page.width_pt) - 1)
+        top = max(0, math.floor(min(b.y0 for b in envelope) * h / page.height_pt) - 1)
+        right = min(w, math.ceil(max(b.x1 for b in envelope) * w / page.width_pt) + 1)
+        bottom = min(h, math.ceil(max(b.y1 for b in envelope) * h / page.height_pt) + 1)
+        bounds = Box(
+            coordinate_space="page_points_top_left",
+            x0=left * page.width_pt / w,
+            y0=top * page.height_pt / h,
+            x1=right * page.width_pt / w,
+            y1=bottom * page.height_pt / h,
+        )
+        if any(other.id != line.id and overlap(other.box, bounds) for other in page.lines) or any(
+            overlap(graphic.box, bounds) for graphic in page.graphics
+        ):
+            raise ValueError(ERROR)
+        image = (scratch / page.render_path).resolve()
+        if not image.is_relative_to(scratch.resolve()) or not image.is_file():
+            raise ValueError(ERROR)
+        if (
+            image.stat().st_size > MAX_IMAGE_BYTES
+            or hashlib.sha256(image.read_bytes()).hexdigest() != page.render_sha256
+        ):
+            raise ValueError(ERROR)
+        with Image.open(image) as raw:
+            if raw.size != (w, h):
+                raise ValueError(ERROR)
+            original = raw.convert("RGB")
+        try:
+            with original.crop((left, top, right, bottom)) as crop:
+                with tempfile.TemporaryDirectory(prefix="ava-native-line-words-") as directory:
+                    path = Path(directory) / "words.png"
+                    crop.save(path, dpi=(w / page.width_pt * 72, h / page.height_pt * 72))
+                    payload = _run_ocr(
+                        path, "eng+ukr" if profile_id == BILINGUAL_PROFILE else "eng"
+                    )
+                frame = AnnotationRasterFrame(page, left, top, right - left, bottom - top)
+                words = source_visible_words(page, parse_words(payload, frame), original, original)
+        finally:
+            original.close()
+        if hashlib.sha256(image.read_bytes()).hexdigest() != page.render_sha256:
+            raise ValueError(ERROR)
+        return words
+    except (OSError, ValueError):
+        raise ValueError(ERROR) from None
 
 
 def annotation_word_view(rendered: Image.Image, page: PageObservation) -> Image.Image:

@@ -29,6 +29,44 @@ MAX_WORDS = 10000
 
 
 @dataclass(frozen=True)
+class AnnotationRasterFrame:
+    """An explicit pixel crop of an unchanged source page, not a PageObservation."""
+
+    source: PageObservation
+    origin_x: int
+    origin_y: int
+    render_width: int
+    render_height: int
+
+    def __post_init__(self) -> None:
+        values = (self.origin_x, self.origin_y, self.render_width, self.render_height)
+        if (
+            any(type(v) is not int for v in values)
+            or min(self.origin_x, self.origin_y) < 0
+            or min(self.render_width, self.render_height) < 1
+            or self.origin_x + self.render_width > self.source.render_width
+            or self.origin_y + self.render_height > self.source.render_height
+            or self.source.rotation != 0
+        ):
+            raise ValueError(ERROR)
+
+
+def _word_box(
+    frame: PageObservation | AnnotationRasterFrame, left: int, top: int, width: int, height: int
+) -> Box:
+    source = frame.source if isinstance(frame, AnnotationRasterFrame) else frame
+    x = frame.origin_x if isinstance(frame, AnnotationRasterFrame) else 0
+    y = frame.origin_y if isinstance(frame, AnnotationRasterFrame) else 0
+    return Box(
+        coordinate_space="page_points_top_left",
+        x0=(x + left) * source.width_pt / source.render_width,
+        y0=(y + top) * source.height_pt / source.render_height,
+        x1=(x + left + width) * source.width_pt / source.render_width,
+        y1=(y + top + height) * source.height_pt / source.render_height,
+    )
+
+
+@dataclass(frozen=True)
 class AnnotationWord:
     line: tuple[int, int, int]
     ordinal: int
@@ -38,7 +76,9 @@ class AnnotationWord:
     visible: bool = True
 
 
-def parse_words(payload: bytes, page: PageObservation) -> list[AnnotationWord]:
+def parse_words(
+    payload: bytes, page: PageObservation | AnnotationRasterFrame
+) -> list[AnnotationWord]:
     """Read single-image Tesseract TSV, preserving source order and exact Unicode."""
     if len(payload) > MAX_BYTES:
         raise ValueError(ERROR)
@@ -91,13 +131,7 @@ def parse_words(payload: bytes, page: PageObservation) -> list[AnnotationWord]:
                     ordinal=ordinal,
                     text=text,
                     confidence=confidence,
-                    box=Box(
-                        coordinate_space="page_points_top_left",
-                        x0=left * page.width_pt / page.render_width,
-                        y0=top * page.height_pt / page.render_height,
-                        x1=(left + width) * page.width_pt / page.render_width,
-                        y1=(top + height) * page.height_pt / page.render_height,
-                    ),
+                    box=_word_box(page, left, top, width, height),
                 )
             )
         return words

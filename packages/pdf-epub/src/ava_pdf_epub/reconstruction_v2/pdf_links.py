@@ -14,6 +14,7 @@ from .annotation_words import AnnotationWord, exact_word_offsets
 from .assembly_state import AssemblyState
 from .findings import Finding
 from .geometry import area, overlap
+from .native_caller_context import ContextCache, native_caller_ranges
 from .native_ink import ink_envelope_matches
 from .native_line_offsets import NativeLineOffset, mapped_line_offset
 from .observations import PageObservation
@@ -228,6 +229,7 @@ def apply_pdf_links(
         page = reader.pages[number - 1]
         local = [s for s in result if s.page == number]
         words: list[AnnotationWord] | None = None
+        native_words: ContextCache = {}
         for reference in page.get("/Annots", []):
             annotation = reference.get_object()
             if annotation.get("/Subtype") != "/Link":
@@ -242,9 +244,22 @@ def apply_pdf_links(
                 # A native subset cannot stand in for the rest of a mixed-source link.
                 raise ValueError("PDF_LINK_TEXT_MAPPING_REQUIRES_REVIEW")
             if native:
-                ranges = glyph_ranges(
-                    checkpoint.observation, local, rect, source_line_maps=state.native_line_maps
-                )
+                try:
+                    ranges = glyph_ranges(
+                        checkpoint.observation, local, rect, source_line_maps=state.native_line_maps
+                    )
+                except ValueError as error:
+                    if str(error) != "PDF_LINK_TEXT_MAPPING_REQUIRES_REVIEW" or scratch is None:
+                        raise
+                    ranges = native_caller_ranges(
+                        checkpoint.observation,
+                        local,
+                        rect,
+                        scratch,
+                        checkpoint.profile_id,
+                        state.native_line_maps,
+                        native_words,
+                    )
             else:
                 try:
                     ranges = glyph_ranges(
