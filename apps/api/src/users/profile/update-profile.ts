@@ -25,7 +25,7 @@ export async function updateProfile(
         Array.from(introduction.trim()).length < INTRODUCTION_MINIMUM
       )
         throw new BadRequestException(
-          'A published profile requires at least 50 introduction characters.',
+          `A published profile requires at least ${INTRODUCTION_MINIMUM} introduction characters.`,
         );
       const result = await tx.user.updateMany({
         where: {

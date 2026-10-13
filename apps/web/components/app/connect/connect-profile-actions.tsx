@@ -14,7 +14,7 @@ export function ConnectProfileActions({
       {(!model.published || model.dirty || model.status === "error") && (
         <Button
           size="sm"
-          className="min-h-12! px-8! font-bold! tracking-[0.2em]!"
+          className="min-h-12! px-8! font-bold! tracking-[0.2em]! bg-soft-fill! text-ink! hover:bg-brand-fill! hover:text-brand-foreground!"
           type="submit"
           disabled={!model.valid || model.busy || !model.ready}
         >
@@ -26,7 +26,7 @@ export function ConnectProfileActions({
           type="button"
           variant="soft"
           size="sm"
-          className="connect-hide-profile-button min-h-12! px-8! font-bold! tracking-[0.2em]!"
+          className="connect-hide-profile-button min-h-12! px-8! font-bold! tracking-[0.2em]! bg-soft-fill! hover:bg-soft-fill! hover:text-ink! [[data-theme=light]_&]:hover:bg-soft-tone-fill!"
           disabled={model.busy || !model.ready}
           onClick={model.hide}
         >

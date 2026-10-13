@@ -3,7 +3,7 @@ import { updateProfile } from './update-profile';
 
 const current = {
   introduction:
-    'I enjoy thoughtful fiction and discussing books with other readers.',
+    'I enjoy thoughtful fiction, unexpected histories, and discussing meaningful books with other readers.',
   profilePublished: false,
 };
 const findUnique = jest.fn();
@@ -48,17 +48,17 @@ it('hides a profile without deleting the saved introduction or sharing preferenc
     data: { profilePublished: false },
   });
 });
-it('accepts 180 Unicode code points and trims the introduction', async () => {
+it('accepts 800 Unicode code points and trims the introduction', async () => {
   await updateProfile(prisma as never, 'clerk', {
-    introduction: ` ${'📚'.repeat(180)} `,
+    introduction: ` ${'📚'.repeat(800)} `,
   });
   expect(updateMany).toHaveBeenCalledWith(
-    expect.objectContaining({ data: { introduction: '📚'.repeat(180) } }),
+    expect.objectContaining({ data: { introduction: '📚'.repeat(800) } }),
   );
 });
 it.each([
-  { introduction: 'A'.repeat(181) },
-  { introduction: '📚'.repeat(181) },
+  { introduction: 'A'.repeat(801) },
+  { introduction: '📚'.repeat(801) },
   { profilePublished: 'yes' },
   { shareCurrentBook: 1 },
   {},

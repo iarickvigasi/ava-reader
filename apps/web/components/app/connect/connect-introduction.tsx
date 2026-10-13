@@ -22,7 +22,7 @@ export function ConnectIntroduction() {
         <p className="inline-flex items-center gap-3 font-ui text-[0.675rem] font-bold uppercase tracking-[0.16em] text-muted sm:text-[0.625rem]">
           <ConnectNavigationIcon
             aria-hidden="true"
-            className="size-5 text-ink"
+            className="size-4 text-muted"
           />
           {t("eyebrow")}
         </p>

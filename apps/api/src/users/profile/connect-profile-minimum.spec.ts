@@ -13,8 +13,8 @@ beforeEach(() => {
     .mockResolvedValue({ introduction: '', profilePublished: false });
   updateMany.mockReset().mockResolvedValue({ count: 1 });
 });
-it.each(['a'.repeat(49), ' ' + 'a'.repeat(49) + ' ', '📚'.repeat(49)])(
-  'rejects publishing below 50 trimmed code points',
+it.each(['a'.repeat(79), ' ' + 'a'.repeat(79) + ' ', '📚'.repeat(79)])(
+  'rejects publishing below 80 trimmed code points',
   async (introduction) => {
     await expect(
       updateProfile(prisma as never, 'clerk', {
@@ -25,8 +25,8 @@ it.each(['a'.repeat(49), ' ' + 'a'.repeat(49) + ' ', '📚'.repeat(49)])(
     expect(updateMany).not.toHaveBeenCalled();
   },
 );
-it.each(['a'.repeat(50), '📚'.repeat(50)])(
-  'accepts publishing at 50 code points',
+it.each(['a'.repeat(80), '📚'.repeat(80)])(
+  'accepts publishing at 80 code points',
   async (introduction) => {
     await updateProfile(prisma as never, 'clerk', {
       introduction,
@@ -41,11 +41,11 @@ it.each(['a'.repeat(50), '📚'.repeat(50)])(
 );
 it('prevents shortening a published description below the minimum', async () => {
   findUnique.mockResolvedValue({
-    introduction: 'a'.repeat(50),
+    introduction: 'a'.repeat(80),
     profilePublished: true,
   });
   await expect(
-    updateProfile(prisma as never, 'clerk', { introduction: 'a'.repeat(49) }),
+    updateProfile(prisma as never, 'clerk', { introduction: 'a'.repeat(79) }),
   ).rejects.toBeInstanceOf(BadRequestException);
 });
 it('allows hiding a legacy short profile and preserves its description', async () => {

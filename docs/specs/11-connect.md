@@ -26,7 +26,7 @@ soon, not as working features.
 
 ## Your profile
 
-- An introduction is required to publish: 50–180 trimmed Unicode characters.
+- An introduction is required to publish: 80–800 trimmed Unicode characters.
   Show the limit and a live card preview. On mobile the input grows to show all
   entered text; on wider screens it stays three lines tall.
 - The preview starts with avatar and name. It grows as an introduction or shared
