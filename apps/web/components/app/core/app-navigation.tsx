@@ -76,7 +76,7 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
             </div>
           </div>
 
-          <div className="hidden h-20 min-w-0 items-center gap-4 md:flex xl:gap-6">
+          <div className="hidden min-h-20 min-w-0 items-center gap-4 py-4 md:flex xl:gap-6">
             <Link href="/app" className="shrink-0">
               <AppHeaderBrand />
             </Link>

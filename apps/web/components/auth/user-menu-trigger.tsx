@@ -24,7 +24,7 @@ export function UserMenuTrigger({
     >
       {showName && (
         <span
-          className="hidden w-24 min-w-0 truncate text-right text-sm font-semibold text-copy-strong xl:block"
+          className="hidden max-w-48 min-w-0 text-right text-sm font-semibold whitespace-normal text-copy-strong [overflow-wrap:anywhere] xl:block"
           title={name}
         >
           {name}
