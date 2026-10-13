@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { ExploreIcon } from "@/components/app/core/explore-icon";
 import { ConnectNavigationIcon } from "@/components/app/core/connect-navigation-icon";
+import { PageHeader } from "@/components/app/shared/page-header";
 import { ConversationIcon } from "./conversation-icon";
 
 const features = [
@@ -18,24 +19,13 @@ export function ConnectIntroduction() {
       aria-labelledby="connect-title"
       className="space-y-8 sm:space-y-10"
     >
-      <div className="max-w-3xl space-y-5">
-        <p className="inline-flex items-center gap-3 font-ui text-[0.675rem] font-bold uppercase tracking-[0.16em] text-muted sm:text-[0.625rem]">
-          <ConnectNavigationIcon
-            aria-hidden="true"
-            className="size-4 text-muted"
-          />
-          {t("eyebrow")}
-        </p>
-        <h1
-          id="connect-title"
-          className="font-display text-4xl text-ink sm:text-5xl"
-        >
-          {t("title")}
-        </h1>
-        <p className="max-w-2xl text-xl leading-8 text-copy sm:text-2xl sm:leading-9">
-          {t("body")}
-        </p>
-      </div>
+      <PageHeader
+        icon={ConnectNavigationIcon}
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        description={t("body")}
+        titleId="connect-title"
+      />
       <div className="space-y-4">
         <p className="font-ui text-[0.675rem] font-bold uppercase tracking-[0.16em] text-olive sm:text-[0.625rem]">
           {t("comingSoon")}
