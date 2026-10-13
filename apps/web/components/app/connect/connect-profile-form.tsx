@@ -24,7 +24,7 @@ export function ConnectProfileForm({ user }: { user: CurrentUserPayload }) {
         <div className="space-y-3">
           <label
             htmlFor="connect-introduction"
-            className="block font-ui text-xs leading-4 uppercase tracking-[0.16em] text-muted"
+            className="block font-ui text-[0.675rem] font-bold leading-4 uppercase tracking-[0.16em] text-muted sm:text-[0.625rem]"
           >
             {t("introduction")}
           </label>

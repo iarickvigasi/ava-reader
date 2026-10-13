@@ -30,7 +30,9 @@ Cyrillic companions use script-only, size-matched faces; Latin retains its origi
 Font sources, metrics and licenses: [font notes](../apps/web/app/fonts/README.md).
 
 Always the utility — never `font-(--font-x)`. **Eyebrow/overline** (ubiquitous):
-`font-ui text-xs uppercase tracking-[0.16em] text-muted`.
+`font-ui text-[0.675rem] font-bold uppercase tracking-[0.16em] text-muted sm:text-[0.625rem]`.
+Inter eyebrows/overlines use weight 700: 10.8px below `sm`, 10px from `sm`, to visually match
+Home’s Afacad Currently engaged label. Keep contextual colors and tracking; other UI text varies.
 
 ## Radius — tokens; map any ad-hoc value to the nearest
 

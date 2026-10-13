@@ -37,7 +37,7 @@ export function ConnectReaderCard({ reader }: { reader: PublishedReader }) {
       </p>
       {reader.currentBook && (
         <div className="space-y-1 border-t border-line/30 pt-4">
-          <p className="font-ui text-xs uppercase tracking-[0.16em] text-muted">
+          <p className="font-ui text-[0.675rem] font-bold uppercase tracking-[0.16em] text-muted sm:text-[0.625rem]">
             {t("currentlyReading")}
           </p>
           <p className="wrap-break-word text-lg text-ink">

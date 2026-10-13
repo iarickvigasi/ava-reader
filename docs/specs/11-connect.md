@@ -14,6 +14,8 @@ Connect helps signed-in AVA readers meet people with similar reading interests. 
 - Home's Daily mastery heading opens the preserved `/app/insights` page.
 - Both routes are precached for offline navigation.
 - The introduction explains the community and shows three Coming soon cards. Their icon circles are lighter than the cards in the day theme; the night theme keeps its existing colors.
+- All Inter eyebrow labels follow the shared size/weight rule in styles.md: bold (700),
+  10.8px below `sm`, and 10px from `sm`, visually matching Home’s Currently engaged label.
 
 ## Your profile
 

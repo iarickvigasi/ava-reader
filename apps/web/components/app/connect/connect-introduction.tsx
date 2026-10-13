@@ -19,7 +19,7 @@ export function ConnectIntroduction() {
       className="space-y-8 sm:space-y-10"
     >
       <div className="max-w-3xl space-y-5">
-        <p className="inline-flex items-center gap-3 font-ui text-xs uppercase tracking-[0.16em] text-muted">
+        <p className="inline-flex items-center gap-3 font-ui text-[0.675rem] font-bold uppercase tracking-[0.16em] text-muted sm:text-[0.625rem]">
           <ConnectNavigationIcon
             aria-hidden="true"
             className="size-5 text-ink"
@@ -37,7 +37,7 @@ export function ConnectIntroduction() {
         </p>
       </div>
       <div className="space-y-4">
-        <p className="font-ui text-xs uppercase tracking-[0.16em] text-olive">
+        <p className="font-ui text-[0.675rem] font-bold uppercase tracking-[0.16em] text-olive sm:text-[0.625rem]">
           {t("comingSoon")}
         </p>
         <div className="grid gap-4 md:grid-cols-3">

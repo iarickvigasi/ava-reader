@@ -10,7 +10,7 @@ export function ConnectProfilePreview({
   const t = useTranslations("connect.profile");
   return (
     <div className="min-w-0 self-start space-y-3">
-      <p className="font-ui text-xs leading-4 uppercase tracking-[0.16em] text-muted">
+      <p className="font-ui text-[0.675rem] font-bold leading-4 uppercase tracking-[0.16em] text-muted sm:text-[0.625rem]">
         {t("preview")}
       </p>
       <article className="space-y-5 rounded-card bg-paper p-6">
@@ -27,7 +27,7 @@ export function ConnectProfilePreview({
         )}
         {model.values.shareCurrentBook && model.book && (
           <div className="space-y-1 border-t border-line/30 pt-4">
-            <p className="font-ui text-xs uppercase tracking-[0.16em] text-muted">
+            <p className="font-ui text-[0.675rem] font-bold uppercase tracking-[0.16em] text-muted sm:text-[0.625rem]">
               {t("currentlyReading")}
             </p>
             <p className="wrap-break-word text-lg text-ink">
