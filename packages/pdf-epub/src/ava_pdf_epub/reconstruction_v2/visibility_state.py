@@ -3,13 +3,20 @@
 import math
 from typing import Any
 
+from pypdf.generic import BooleanObject
 
-def inert_graphics_state(resources: Any, name: Any) -> bool:
+
+def inert_graphics_state(resources: Any, name: Any, *, allow_raster_settings: bool = False) -> bool:
     states = resources.get("/ExtGState", {})
     states = states.get_object() if hasattr(states, "get_object") else states
     state = states.get(name)
     state = state.get_object() if hasattr(state, "get_object") else state
-    if not isinstance(state, dict) or set(state) - {"/Type", "/BM", "/ca", "/CA"}:
+    allowed = {"/Type", "/BM", "/ca", "/CA"}
+    if allow_raster_settings:
+        allowed |= {"/SA", "/SM"}
+    if not isinstance(state, dict) or set(state) - allowed:
+        return False
+    if allow_raster_settings and not safe_raster_settings(state):
         return False
     if state.get("/Type", "/ExtGState") != "/ExtGState" or state.get("/BM", "/Normal") != "/Normal":
         return False
@@ -17,6 +24,25 @@ def inert_graphics_state(resources: Any, name: Any) -> bool:
         return all(float(state.get(key, 1)) == 1 for key in ("/ca", "/CA"))
     except (ValueError, TypeError, OverflowError):
         return False
+
+
+def safe_raster_settings(state: dict[str, Any]) -> bool:
+    # PDF32000-1 Table58/10.6.3: SM controls smooth shading, not text visibility.
+    # Disabled SA cannot adjust a stroke. BooleanObject(False) itself is truthy.
+    if "/SA" in state:
+        adjust = state["/SA"]
+        if not isinstance(adjust, BooleanObject) or adjust.value is not False:
+            return False
+    if "/SM" in state:
+        smoothness = state["/SM"]
+        if (
+            isinstance(smoothness, bool)
+            or not isinstance(smoothness, (int, float))
+            or not math.isfinite(smoothness)
+            or not 0 <= smoothness <= 1
+        ):
+            return False
+    return True
 
 
 def enclosing_rectangle(

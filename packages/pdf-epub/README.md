@@ -289,6 +289,13 @@ transforms and undashed paint. It preserves exact native words/ranges; unsupport
 Direct DeviceRGB/DeviceGray ink uses the existing source color style; neutral black follows reader ink.
 Absent policy/paint fields preserve historical standalone typography and serialized observations.
 
+The same opt-in source policy admits a graphics state containing typed `SA:false` and finite
+numeric `SM` in 0–1 when its other entries are already opaque/normal. `SM` is smooth-shading
+accuracy, and disabled `SA` does not adjust strokes ([PDF32000-1, Table58 and10.6.3](https://opensource.adobe.com/dc-acrobat-sdk-docs/standards/pdfstandards/pdf/PDF32000_2008.pdf)).
+These settings alone do not require OCR of visible, otherwise qualified native text. Opacity,
+masks, transfer functions, unknown fields, clipping and text-rendering risks remain conservative;
+omitted policy preserves the earlier route. This does not prove a whole book's native fidelity.
+
 The current policy can preserve exact PNG/JPEG source bytes for repeated small, isolated marginal
 images explicitly marked Artifact. Positive-axis opaque paint must show the whole image through
 known rectangular clips. Images overlapping observed tables, masks, Decode overrides, unknown

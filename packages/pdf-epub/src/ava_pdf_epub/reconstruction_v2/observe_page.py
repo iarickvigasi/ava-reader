@@ -88,6 +88,7 @@ def observe_page(
         reader,
         glyph_bounds=native_bounds,
         allow_filled_stroke=filled_stroke_qualified,
+        allow_raster_settings=capture_paint,
     )
     names = {"/" + str(obj["name"]) for obj in page.images if obj.get("tag") == "Artifact"}
     assets = capture_image_assets(source_page, reader, scratch, names) if capture_paint else {}

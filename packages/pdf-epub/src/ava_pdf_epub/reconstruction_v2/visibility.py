@@ -21,6 +21,7 @@ def display_risks(
     glyph_bounds: tuple[float, float, float, float] | None = None,
     allow_transformed_rectangles: bool = False,
     allow_filled_stroke: bool = False,
+    allow_raster_settings: bool = False,
 ) -> list[str]:
     contents = page.get_contents()
     if contents is None:
@@ -36,6 +37,7 @@ def display_risks(
         glyph_bounds,
         allow_transformed_rectangles,
         allow_filled_stroke,
+        allow_raster_settings,
         False,
         0,
     )
@@ -52,6 +54,7 @@ def _inspect(
     glyph_bounds: tuple[float, float, float, float] | None,
     allow_transformed_rectangles: bool,
     allow_filled_stroke: bool,
+    allow_raster_settings: bool,
     clip_unsafe: bool,
     mode: int,
 ) -> None:
@@ -102,7 +105,10 @@ def _inspect(
         if operator in {b"W", b"W*"}:
             clip_unsafe = clip_unsafe or path_rectangles != 1 or path_other or not path_encloses
         if operator == b"gs" and (
-            len(values) != 1 or not inert_graphics_state(resources, values[0])
+            len(values) != 1
+            or not inert_graphics_state(
+                resources, values[0], allow_raster_settings=allow_raster_settings
+            )
         ):
             risks.add("conditional_visibility")
         if operator in {b"n", b"S", b"s", b"f", b"F", b"f*", b"B", b"B*", b"b", b"b*"}:
@@ -126,6 +132,7 @@ def _inspect(
                         None,
                         allow_transformed_rectangles,
                         False,  # The glyph parser does not prove inherited Form paint state.
+                        allow_raster_settings,
                         clip_unsafe,
                         mode,
                     )
