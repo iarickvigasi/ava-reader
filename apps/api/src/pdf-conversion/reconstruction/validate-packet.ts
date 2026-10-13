@@ -1,5 +1,7 @@
 import Ajv2020 from 'ajv/dist/2020';
 import { recognitionSchemas } from './generated/schemas';
+import type { NativeLayoutPrepareResult } from './generated/NativeLayoutPrepareResult';
+import type { NativeLayoutReconstructionInput } from './generated/NativeLayoutReconstructionInput';
 import type { PrepareResult } from './generated/PrepareResult';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
 import type { RecognitionTask } from './generated/RecognitionTask';
@@ -18,6 +20,8 @@ import type { PrintedTitleRefinementBatch } from './generated/PrintedTitleRefine
 import type { PrintedTitleReconstructionInput } from './generated/PrintedTitleReconstructionInput';
 
 type Packets = {
+  NativeLayoutPrepareResult: NativeLayoutPrepareResult;
+  NativeLayoutReconstructionInput: NativeLayoutReconstructionInput;
   PrintedTitleTask: PrintedTitleTask;
   PrintedTitleResponse: PrintedTitleResponse;
   PrintedTitleRefinementBatch: PrintedTitleRefinementBatch;
@@ -57,6 +61,15 @@ export function validatePacket<K extends keyof Packets>(
       packet.tasks.filter(
         (task) => task.schema_version === 'ava-printed-title-task-1',
       ).length !== 1
+    )
+      throw new PdfRuntimeError('INVALID_RESULT');
+  }
+  if (name === 'NativeLayoutReconstructionInput') {
+    const packet = value as unknown as NativeLayoutReconstructionInput;
+    if (
+      (packet.refinements ?? []).filter(
+        (r) => r.schema_version === 'ava-printed-title-response-1',
+      ).length > 1
     )
       throw new PdfRuntimeError('INVALID_RESULT');
   }

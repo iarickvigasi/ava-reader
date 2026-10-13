@@ -1,3 +1,5 @@
+import type { NativeLayoutPolicy } from '../../library/pdf-import/admission/profile';
+import { reconstructionRequest } from './reconstruction-request';
 import type { SemanticValidator } from '../contracts/types';
 import type { SandboxInput } from '../runtime/container-arguments';
 import { PdfRuntimeError } from '../runtime/runtime-error';
@@ -15,6 +17,7 @@ export async function runAttempt(
     pageLimit: number;
     providerMode: string;
     profileId: RecognitionTask['profile_id'];
+    sourceLayoutPolicy?: NativeLayoutPolicy;
   },
   semantic: SemanticValidator,
 ) {
@@ -30,14 +33,7 @@ export async function runAttempt(
     auxiliaryBytes: Buffer.from(
       JSON.stringify({
         mode: 'attempt_stream',
-        input: {
-          schema_version: 'ava-reconstruct-input-1',
-          source_feature_policy: 'ava-ocr-source-features-1',
-          profile_id: input.profileId,
-          source_sha256: input.sourceSha256,
-          responses: [],
-          refinements: [],
-        },
+        input: reconstructionRequest(input),
       }),
     ),
     observationCommand: { command: 'attempt_stream', page_number: null },

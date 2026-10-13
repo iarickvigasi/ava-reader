@@ -1,3 +1,4 @@
+import type { NativeLayoutPolicy } from '../../library/pdf-import/admission/profile';
 import type { RecognitionTask } from './generated/RecognitionTask';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
 import {
@@ -17,11 +18,14 @@ export async function refineBook(input: {
   sourceSha256: string;
   providerMode: string;
   profileId?: RecognitionTask['profile_id'];
+  sourceLayoutPolicy?: NativeLayoutPolicy;
   deps: CoordinatorDependencies;
   sandboxInput: () => SandboxInput;
 }): Promise<RefinementResponse[]> {
   // Native text can still contain unresolved same-font chapter/list roles.
   // The source comparison stage returns no tasks for already-qualified structure.
+  if (input.sourceLayoutPolicy !== undefined)
+    throw new PdfRuntimeError('DISPATCH_NOT_AUTHORIZED');
   const auxiliaryBytes = Buffer.from(
     JSON.stringify({
       mode: 'prepare_refinement',

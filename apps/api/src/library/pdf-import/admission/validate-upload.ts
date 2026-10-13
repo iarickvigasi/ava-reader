@@ -7,6 +7,7 @@ export function validatePdfUpload(input: {
   idempotencyKey: unknown;
   convertToEpub: unknown;
   profileId?: string;
+  sourceLayoutPolicy?: string;
 }) {
   const { file, idempotencyKey, convertToEpub } = input;
   if (convertToEpub !== 'true' && convertToEpub !== true)
@@ -36,7 +37,10 @@ export function validatePdfUpload(input: {
     )
   )
     throw new BadRequestException('The source filename is invalid.');
-  const configuration = pdfImportConfiguration(input.profileId);
+  const configuration = pdfImportConfiguration(
+    input.profileId,
+    input.sourceLayoutPolicy,
+  );
   const configSha256 = checksumBuffer(
     Buffer.from(JSON.stringify(configuration)),
   );

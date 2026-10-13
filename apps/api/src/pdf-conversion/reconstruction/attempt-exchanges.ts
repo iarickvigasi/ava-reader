@@ -7,6 +7,8 @@ import type { ExchangeEnvelope } from '../runtime/exchange-protocol';
 import { exchangeProtocol } from '../runtime/exchange-protocol';
 import { PdfRuntimeError } from '../runtime/runtime-error';
 import { validatePacket } from './validate-packet';
+import { reconstructionRequest } from './reconstruction-request';
+import type { NativeLayoutPrepareResult } from './generated/NativeLayoutPrepareResult';
 import type { PrepareResult } from './generated/PrepareResult';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
 import { parseSourceRefusal, type SourceContentError } from './source-refusal';
@@ -26,7 +28,7 @@ export function attemptExchanges(context: AttemptContext) {
   const taskIds = new Set<string>();
   const responses: RecognitionResponse[] = [];
   const refinements: RefinementResponse[] = [];
-  let currentPage: PrepareResult | undefined,
+  let currentPage: PrepareResult | NativeLayoutPrepareResult | undefined,
     pages: number | undefined,
     preparedPages = 0,
     recognitionIndex = 0,
@@ -49,17 +51,13 @@ export function attemptExchanges(context: AttemptContext) {
       total: pages,
     });
   };
-  const reconstructionInput = () => ({
-    schema_version:
-      batch?.schema_version === 'ava-book-refinement-batch-2'
-        ? 'ava-reconstruct-input-2'
-        : 'ava-reconstruct-input-1',
-    source_feature_policy: 'ava-ocr-source-features-1',
-    profile_id: context.profileId,
-    source_sha256: context.sourceSha256,
-    responses,
-    refinements,
-  });
+  const reconstructionInput = () =>
+    reconstructionRequest(
+      context,
+      responses,
+      refinements,
+      batch?.schema_version === 'ava-book-refinement-batch-2',
+    );
   const inputBound = () => {
     if (
       Buffer.byteLength(JSON.stringify(reconstructionInput())) >
@@ -72,7 +70,14 @@ export function attemptExchanges(context: AttemptContext) {
     signal: AbortSignal,
   ): Promise<unknown[]> {
     if (envelope.kind === 'page') {
-      const prepared = validatePacket('PrepareResult', envelope.payload);
+      const prepared = context.sourceLayoutPolicy
+        ? validatePacket('NativeLayoutPrepareResult', envelope.payload)
+        : validatePacket('PrepareResult', envelope.payload);
+      if (
+        'source_layout_policy' in prepared &&
+        prepared.source_layout_policy !== context.sourceLayoutPolicy
+      )
+        throw new PdfRuntimeError('SOURCE_MISMATCH');
       if (
         batch ||
         prepared.page_number !== preparedPages + 1 ||
@@ -184,6 +189,13 @@ export function attemptExchanges(context: AttemptContext) {
         preparedPages !== pages
       )
         return invalid();
+      if (
+        refinements.filter(
+          (r) => r.schema_version === 'ava-printed-title-response-1',
+        ).length !==
+        (batch.schema_version === 'ava-book-refinement-batch-2' ? 1 : 0)
+      )
+        invalid();
       inputBound();
       terminal = true;
       return [];

@@ -1,3 +1,8 @@
+import { checksumBuffer } from '../../shared/blob-utils';
+import {
+  NATIVE_LAYOUT_POLICY,
+  pdfImportConfiguration,
+} from '../../library/pdf-import/admission/profile';
 import { runReconstruction } from './run-reconstruction';
 import { attemptCandidateFixture } from './attempt-candidate-fixture';
 import type { CoordinatorDependencies } from './coordinator-types';
@@ -6,8 +11,16 @@ import type { ExchangeEnvelope } from '../runtime/exchange-protocol';
 import type { WorkerResultV1 } from '../contracts/generated/ava-pdf-worker-result-1';
 import type { SemanticValidator } from '../contracts/types';
 
-function setup(currentPolicy = true) {
+function setup(currentPolicy = true, layoutPolicy = false) {
   const fixture = attemptCandidateFixture(currentPolicy);
+  if (layoutPolicy)
+    fixture.job.config_sha256 = checksumBuffer(
+      Buffer.from(
+        JSON.stringify(
+          pdfImportConfiguration(fixture.job.profile_id, NATIVE_LAYOUT_POLICY),
+        ),
+      ),
+    );
   const jobController = new AbortController();
   const session = new AbortController();
   let sequence = 0;
@@ -48,7 +61,10 @@ function setup(currentPolicy = true) {
     ).toBe('attempt_stream');
     for (let page = 1; page <= fixture.book.pages.length; page++) {
       const reply = await send(input, 'page', {
-        schema_version: 'ava-prepare-result-1',
+        schema_version: layoutPolicy
+          ? 'ava-prepare-result-2'
+          : 'ava-prepare-result-1',
+        ...(layoutPolicy ? { source_layout_policy: NATIVE_LAYOUT_POLICY } : {}),
         source_sha256: fixture.job.source.sha256,
         profile_id: fixture.job.profile_id,
         source_page_count: fixture.book.pages.length,
@@ -252,4 +268,31 @@ it('rechecks session authority after awaited semantic validation before staging'
   resolve(true);
   await expect(pending).rejects.toThrow('DISPATCH_NOT_AUTHORIZED');
   expect(q.stage).not.toHaveBeenCalled();
+});
+
+it('derives initial Input3 from captured job configuration and completes zero-task Result2 pages without dispatch', async () => {
+  const q = setup(true, true);
+  q.sandbox.mockImplementation(async (input) => {
+    const request = JSON.parse(input.auxiliaryBytes!.toString()) as {
+      input: Record<string, unknown>;
+    };
+    expect(request.input).toMatchObject({
+      schema_version: 'ava-reconstruct-input-3',
+      source_layout_policy: NATIVE_LAYOUT_POLICY,
+      source_feature_policy: 'ava-ocr-source-features-1',
+      responses: [],
+      refinements: [],
+    });
+    await q.prepare(input);
+    await input.onStdout!(q.fixture.stream);
+    q.session.abort();
+    return result();
+  });
+  const completed = await q.run();
+  const candidate = JSON.parse(
+    completed.completion.bytes.toString(),
+  ) as WorkerResultV1;
+  expect(candidate.config_sha256).toBe(q.fixture.job.config_sha256);
+  expect(q.dispatch).not.toHaveBeenCalled();
+  expect(q.sandbox).toHaveBeenCalledTimes(1);
 });

@@ -1,3 +1,4 @@
+import type { NativeLayoutPolicy } from '../../library/pdf-import/admission/profile';
 import type { RecognitionTask } from './generated/RecognitionTask';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
 import type { CoordinatorDependencies } from './coordinator-types';
@@ -15,7 +16,10 @@ export async function preparePages(input: {
   pageLimit: number;
   providerMode: string;
   profileId?: RecognitionTask['profile_id'];
+  sourceLayoutPolicy?: NativeLayoutPolicy;
 }) {
+  if (input.sourceLayoutPolicy !== undefined)
+    throw new PdfRuntimeError('DISPATCH_NOT_AUTHORIZED');
   const profileId = input.profileId ?? 'ava-pdf-prose-en-v2';
   const responses: RecognitionResponse[] = [],
     taskIds = new Set<string>();

@@ -21,15 +21,42 @@ export const PDF_IMPORT_PROFILE_V3 = Object.freeze({
   profileId: 'ava-pdf-prose-en-uk-v3',
   schemaVersion: 3,
 });
+export const NATIVE_LAYOUT_POLICY = 'ava-native-layout-1' as const;
+export type NativeLayoutPolicy = typeof NATIVE_LAYOUT_POLICY;
+const LAYOUT_LEGACY = Object.freeze({
+  ...PDF_IMPORT_PROFILE,
+  sourceLayoutPolicy: NATIVE_LAYOUT_POLICY,
+});
+const LAYOUT_V3 = Object.freeze({
+  ...PDF_IMPORT_PROFILE_V3,
+  sourceLayoutPolicy: NATIVE_LAYOUT_POLICY,
+});
 export type PdfImportConfiguration =
   | typeof PDF_IMPORT_PROFILE
-  | typeof PDF_IMPORT_PROFILE_V3;
+  | typeof PDF_IMPORT_PROFILE_V3
+  | typeof LAYOUT_LEGACY
+  | typeof LAYOUT_V3;
 export function pdfImportConfiguration(
   profileId?: string,
+  sourceLayoutPolicy?: unknown,
 ): PdfImportConfiguration {
-  if (!profileId || profileId === PDF_IMPORT_PROFILE.profileId)
-    return PDF_IMPORT_PROFILE;
-  if (profileId === PDF_IMPORT_PROFILE_V3.profileId)
-    return PDF_IMPORT_PROFILE_V3;
-  throw new Error('PDF_IMPORT_PROFILE_INVALID');
+  const legacy = !profileId || profileId === PDF_IMPORT_PROFILE.profileId;
+  if (!legacy && profileId !== PDF_IMPORT_PROFILE_V3.profileId)
+    throw new Error('PDF_IMPORT_PROFILE_INVALID');
+  if (sourceLayoutPolicy === undefined || sourceLayoutPolicy === '')
+    return legacy ? PDF_IMPORT_PROFILE : PDF_IMPORT_PROFILE_V3;
+  if (sourceLayoutPolicy !== NATIVE_LAYOUT_POLICY)
+    throw new Error('PDF_IMPORT_PROFILE_INVALID');
+  return legacy ? LAYOUT_LEGACY : LAYOUT_V3;
+}
+
+// Execution follows captured configuration identity, never the current selector.
+export function capturedSourceLayoutPolicy(
+  profileId: string,
+  configSha256: unknown,
+): NativeLayoutPolicy | undefined {
+  const current = pdfImportConfiguration(profileId, NATIVE_LAYOUT_POLICY);
+  return checksumBuffer(Buffer.from(JSON.stringify(current))) === configSha256
+    ? NATIVE_LAYOUT_POLICY
+    : undefined;
 }

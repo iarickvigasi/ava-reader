@@ -1,3 +1,4 @@
+import type { NativeLayoutPolicy } from '../../library/pdf-import/admission/profile';
 import type { CoordinatorDependencies } from './coordinator-types';
 import type { RecognitionTask } from './generated/RecognitionTask';
 import type { RefinementTask } from './refinement-packets';
@@ -12,6 +13,7 @@ export type AttemptContext = {
   profileId: RecognitionTask['profile_id'];
   providerMode: string;
   pageLimit: number;
+  sourceLayoutPolicy?: NativeLayoutPolicy;
   checkActive: (signal: AbortSignal) => void;
 };
 

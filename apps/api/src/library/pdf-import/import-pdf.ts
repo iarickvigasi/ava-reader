@@ -72,6 +72,7 @@ async function performImport(
   const identity = validatePdfUpload({
     ...input,
     profileId: process.env.AVA_PDF_IMPORT_PROFILE,
+    sourceLayoutPolicy: process.env.AVA_PDF_SOURCE_LAYOUT_POLICY,
   });
   // Only the entry-owned snapshot reaches this private helper. Keep one
   // defensive buffer copy rather than retaining a second maximum-size PDF.
