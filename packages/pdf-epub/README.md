@@ -682,8 +682,10 @@ fixed multiple-language invocation follows [Tesseract CLI documentation](https:/
 
 Source-cover candidate: a single first-page `cover` render layer may overlap selectable title
 text while ordered content bands retain their original validation. The layer must be bound to
-the identified cover resource. Artwork is preserved from source pixels; cover extraction does
-not rewrite OCR text. The integrated publisher uses the validated resource in the first private
+the identified cover resource. After the existing first-page title/artwork qualification, the
+cover retains the full first-page render, including separate raster strips and page edges.
+Cover extraction does not rewrite selectable text. The integrated publisher uses the validated
+resource in the first private
 PDF publication and serves it through an owned Library cover route. Normal reader qualification
 must be refreshed with the changed structural contracts before activation.
 

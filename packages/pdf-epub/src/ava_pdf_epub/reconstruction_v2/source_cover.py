@@ -43,6 +43,14 @@ def preserve_source_cover(
         for e in title_evidence
     ):
         return None
+    # Qualification uses the source image; the cover retains every first-page pixel.
+    box = Box(
+        coordinate_space="page_points_top_left",
+        x0=0,
+        y0=0,
+        x1=page.width_pt,
+        y1=page.height_pt,
+    )
     region_id = "page1-source-cover"
     evidence = [dict(page=1, region_id=region_id, method="render", box=box.model_dump())]
     state.evidence[region_id] = evidence
