@@ -74,7 +74,30 @@ def render_block(block_id: str, ctx: Context) -> ET.Element:
     node = element(tag, attrs)
     if isinstance(block, NoteBlock):
         node.append(element("span", {"data-ava-generated": "note-label"}, block.label + " "))
-    node.append(render_text(block, ctx))
+    text = render_text(block, ctx)
+    if isinstance(block, ListItemBlock) and ctx.list_body_layout:
+        body_attrs = {"data-ava-list-body": block.id}
+        style = ctx.styles.get(block.style_id) if block.style_id is not None else None
+        geometry = []
+        if style is not None:
+            for key, css in [
+                ("indent_em", "text-indent"),
+                ("block_indent_em", "margin-inline-start"),
+            ]:
+                value = getattr(style, key)
+                if value is not None:
+                    geometry.append(f"{css}:{value:g}em")
+            clearance = max(0, -((style.indent_em or 0) + (style.block_indent_em or 0)))
+            if clearance:
+                # Display safety only; retain the declared geometry in the fixed sidecar.
+                geometry.append(f"padding-inline-start:{clearance:g}em")
+        if geometry:
+            body_attrs["style"] = ";".join(geometry)
+        body = element("div", body_attrs)
+        body.append(text)
+        node.append(body)
+    else:
+        node.append(text)
     if isinstance(block, NoteBlock):
         returns = element("div", {"class": "note-returns", "data-ava-generated": "returns"})
         for index, callout in enumerate(block.callout_ids):

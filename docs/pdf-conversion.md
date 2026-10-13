@@ -79,14 +79,25 @@ text or locator offsets. Styled markers require `list-marker-styles` in addition
 capabilities; unsupported readers remain ineligible for acceptance. Neutral black follows reader
 ink, while source colors remain unchanged under the existing source-style policy. Authored tests
 do not establish supplied-book fidelity or light/dark reader qualification.
+For new imports, the explicit `ava-ocr-source-features-1` reconstruction policy and pinned worker
+derive native list-body indentation from visible, uniquely owned glyphs after the printed marker.
+Each list/depth/page/column supplies its own body baseline; genuine body indentation and nested
+membership remain separate from the number gutter. Unknown or OCR geometry is not reinterpreted.
+Generated projection `ava-epub-canonical-2.5` separates body layout from `::marker` layout and retains
+section, text and address identities. Explicit projections 2.1–2.4 reproduce their historical bytes.
+The reader can separate marker/body layout for an existing book without replacing accepted content;
+it preserves legacy style values and does not claim to recover unknown long/short-item alignment.
+Body-only padding keeps a negative declared start clear of the marker without erasing relative
+first-line displacement or applying the padding to nested child lists.
 The reader groups consecutive styled text runs from one semantic link occurrence into one anchor.
 It retains all characters/styles and the exact caller/target offsets; separate callers remain
 separate links even when they share a destination. Accepted EPUB and canonical content stay fixed.
 Generated EPUB projection `ava-epub-canonical-2.2` preserves declared printed page labels in
 the page list and pagebreak accessibility names. Targets retain physical page IDs, so Roman numerals
 and restarted numbering cannot collide. Missing or blank labels use the physical page number for
-navigation without changing canonical source data. Unlabelled books retain the exact `2.1` projection;
-both declared versions are accepted only after complete visible-projection/resource comparison.
+navigation without changing canonical source data. The historical unlabelled projection is `2.1`;
+current semantic-list exports use `2.5` as described above. All declared versions require complete
+visible-projection/resource comparison.
 Changing a profile marker cannot hide altered text, styles, links or page labels.
 
 Generated-EPUB reimport fills empty Library metadata from all accepted portable title/author claims,

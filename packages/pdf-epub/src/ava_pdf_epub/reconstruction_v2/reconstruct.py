@@ -26,6 +26,7 @@ from .compound_wraps import compact_native_compounds
 from .continuation_margins import continuation_margins
 from .findings import Finding
 from .native_size_presentation import apply_native_sizes
+from .normalize_list_bodies import capture_list_bodies, normalize_list_bodies
 from .ocr_font_faces import corroborate_ocr_font_faces
 from .prepare_refinement import prepare_refinement
 from .prepared import PreparedPage
@@ -33,6 +34,7 @@ from .printed_markers import printed_markers
 from .recognition_contract import RecognitionResponse
 from .refinement_contract import AnyRefinementResponse
 from .source_cover import preserve_source_cover
+from .source_feature_contract import FEATURE_POLICY
 from .source_page_starts import capture_page_starts
 from .source_segments import source_segments
 from .stream_joins import stream_joins
@@ -78,6 +80,8 @@ def reconstruct(
     segments = corroborate_ocr_font_faces(source, prepared, segments, state)
     for page in pages:
         page["label"] = state.page_labels.get(page["number"])
+    if source_feature_policy == FEATURE_POLICY:
+        capture_list_bodies(segments, prepared, state)
     segments = compact_native_compounds(printed_markers(segments, state), state)
     for segment in segments:
         state.segments[segment.id] = segment
@@ -89,6 +93,8 @@ def reconstruct(
     assemble_blocks(segments, prepared, scratch, state)
     chapters, toc = assemble_chapters(state)
     assemble_lists(state, chapters)
+    if source_feature_policy == FEATURE_POLICY:
+        normalize_list_bodies(state)
     assemble_links(state, chapters)
     digest = hashlib.sha256(source.read_bytes()).hexdigest()
     document_id = "pdf-" + digest[:32]

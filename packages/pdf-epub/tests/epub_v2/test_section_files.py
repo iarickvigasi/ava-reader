@@ -7,6 +7,7 @@ import unittest
 import xml.etree.ElementTree as ET
 import zipfile
 from pathlib import Path
+from unittest.mock import patch
 
 from ava_pdf_epub.contracts.book import CanonicalBookV2
 from ava_pdf_epub.contracts.common import document_digest, text_digest
@@ -14,8 +15,17 @@ from ava_pdf_epub.contracts.offsets import codepoint_to_utf16
 from ava_pdf_epub.epub_v2.conservation import conservation_report
 from ava_pdf_epub.epub_v2.export import export_entries, export_epub
 from ava_pdf_epub.epub_v2.portable import portable_epub
-from ava_pdf_epub.epub_v2.profiles import LEGACY_PROFILE, PAGE_LABEL_PROFILE, SOURCE_PAGE_PROFILE
+from ava_pdf_epub.epub_v2.profiles import (
+    LEGACY_PROFILE,
+    LIST_BODY_PROFILE,
+    PAGE_LABEL_PROFILE,
+    SOURCE_PAGE_PROFILE,
+)
 from ava_pdf_epub.epub_v2.xml import EPUB, XHTML
+from ava_pdf_epub.reconstruction_v2.normalize_list_bodies import (
+    capture_list_bodies,
+    normalize_list_bodies,
+)
 from ava_pdf_epub.reconstruction_v2.prepare_refinement_source import prepare_refinement_source
 from ava_pdf_epub.reconstruction_v2.prepare_source import prepare_source
 from ava_pdf_epub.reconstruction_v2.protocol import ReconstructionInput
@@ -229,14 +239,14 @@ class SectionFileTests(unittest.TestCase):
                         + address["epub_fragment"],
                     )
 
-    def test_historical_authored_fixture_bytes_are_still_the_same(self):
+    def test_historical_projection_and_current_list_body_projection_stay_distinct(self):
         book, assets, _ = fixture()
         entries = export_entries(book, assets, profile=LEGACY_PROFILE)
         default = export_entries(book, assets)
-        self.assertEqual(
-            {p: hashlib.sha256(v).hexdigest() for p, v in entries.items()},
-            {p: hashlib.sha256(v).hexdigest() for p, v in default.items()},
-        )
+        self.assertEqual(LEGACY_PROFILE.encode(), entries["META-INF/ava-profile"])
+        self.assertEqual(LIST_BODY_PROFILE.encode(), default["META-INF/ava-profile"])
+        self.assertEqual(entries["EPUB/ava-canonical.json"], default["EPUB/ava-canonical.json"])
+        self.assertEqual((book, assets), portable_epub(archive_bytes(entries)))
 
     def test_unlisted_or_passage_toc_headings_do_not_invent_file_boundaries(self):
         for mode in ["unlisted", "passage"]:
@@ -250,7 +260,7 @@ class SectionFileTests(unittest.TestCase):
             book = CanonicalBookV2.model_validate(raw)
             entries = export_entries(book, assets)
             with self.subTest(mode=mode):
-                self.assertEqual(SOURCE_PAGE_PROFILE.encode(), entries["META-INF/ava-profile"])
+                self.assertEqual(LIST_BODY_PROFILE.encode(), entries["META-INF/ava-profile"])
                 self.assertEqual(1, len([p for p in entries if p.startswith("EPUB/text/")]))
 
     def test_caption_figure_unit_remains_in_one_file_without_reordering_source(self):
@@ -334,7 +344,19 @@ class SectionFileTests(unittest.TestCase):
                 for task in batch.tasks
             ]
             request = request.model_copy(update={"refinements": receipts})
-            result, _ = reconstruct_source(source, root / "assembled", request)
+            with (
+                patch(
+                    "ava_pdf_epub.reconstruction_v2.reconstruct.capture_list_bodies",
+                    wraps=capture_list_bodies,
+                ) as capture,
+                patch(
+                    "ava_pdf_epub.reconstruction_v2.reconstruct.normalize_list_bodies",
+                    wraps=normalize_list_bodies,
+                ) as normalize,
+            ):
+                result, _ = reconstruct_source(source, root / "assembled", request)
+            capture.assert_called_once()
+            normalize.assert_called_once()
             self.assertEqual(1, len(result.book.chapters))
             with zipfile.ZipFile(io.BytesIO(result.epub)) as archive:
                 self.assertEqual(

@@ -3,7 +3,7 @@ import type { ReaderListBlock } from "@/lib/api-types/reader-content";
 import { ReaderInlineContent } from "./reader-inline-content";
 import { LIST_CLASS } from "./reader-block-classes";
 import { useReaderBlockProps } from "./block-props";
-import { structuredLeafStyle } from "./structured-leaf-style";
+import { listBodyStyle } from "./list-body-style";
 import { resolveBlockStyle } from "./reader-block-style";
 import { listMarkerProps } from "./list-marker-style";
 
@@ -39,15 +39,17 @@ export function ReaderStructuredList({
     >
       {block.items.map((item) => {
         const marker = listMarkerProps(item);
+        const layout = listBodyStyle(item);
         return (
           <li
             key={item.id}
             {...marker}
-            style={{ ...structuredLeafStyle(item, "list"), ...marker.style }}
+            style={{ ...layout.item, ...marker.style }}
           >
             <span
               {...blockProps(item, chapterId)}
               data-reader-block-kind="paragraph"
+              style={layout.body}
             >
               <ReaderInlineContent inlines={item.inlines} />
             </span>

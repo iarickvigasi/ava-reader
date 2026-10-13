@@ -151,9 +151,11 @@ class SourcePageProjectionTests(unittest.TestCase):
                 marker = next(n for n in root.iter() if n.get("id") == "page-1")
                 parents = {child: parent for parent in root.iter() for child in parent}
                 if kind == "list_item":
-                    self.assertEqual(
-                        ident("b", book.blocks[0].id), parents[parents[marker]].get("id")
-                    )
+                    owner = parents[marker]
+                    while owner.get("data-ava-block") is None:
+                        owner = parents[owner]
+                    self.assertEqual(ident("b", book.blocks[0].id), owner.get("id"))
+                    self.assertEqual(f"{{{XHTML}}}li", owner.tag)
                 else:
                     siblings = list(parents[marker])
                     self.assertEqual(
@@ -223,7 +225,7 @@ class SourcePageProjectionTests(unittest.TestCase):
             if expected["rename_from"]:
                 raw = rename(raw, expected["rename_from"], "ava-source-page-1")
             book = CanonicalBookV2.model_validate(raw)
-            entries = export_entries(book, assets)
+            entries = export_entries(book, assets, profile=expected["profile"])
             with self.subTest(name=name):
                 self.assertEqual(expected["canonical_sha256"], document_digest(book))
                 self.assertEqual(expected["profile"].encode(), entries["META-INF/ava-profile"])

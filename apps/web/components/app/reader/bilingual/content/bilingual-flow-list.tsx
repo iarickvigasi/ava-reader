@@ -2,7 +2,7 @@ import type { BilingualFlowBlockProps } from "@/features/reader/bilingual/conten
 import { flowSourceAttributes } from "@/features/reader/bilingual/content/flow-source-attributes";
 import { groupFlowListItems } from "@/features/reader/bilingual/content/group-flow-list-items";
 import { cn } from "@/lib/cn";
-import { structuredLeafStyle } from "../../content/structured-leaf-style";
+import { listBodyStyle } from "../../content/list-body-style";
 import { listMarkerProps } from "../../content/list-marker-style";
 import { LIST_CLASS } from "@/components/app/reader/content/reader-block-classes";
 import {
@@ -52,6 +52,7 @@ export function BilingualFlowList({
             : {};
         const sourceItem = block.items[item.itemIndex];
         const marker = sourceItem ? listMarkerProps(sourceItem) : {};
+        const layout = listBodyStyle(sourceItem);
         const continued = item.units[0].unit.startOffset > item.startOffset;
         return (
           <li
@@ -64,17 +65,19 @@ export function BilingualFlowList({
             data-bilingual-flow-item={item.id}
             data-bilingual-flow-item-start={item.startOffset}
             style={{
-              ...(sourceItem ? structuredLeafStyle(sourceItem, "list") : {}),
+              ...layout.item,
               ...marker.style,
               ...(continued ? { listStyleType: "none" } : {}),
             }}
           >
-            <BilingualFlowSentences
-              units={item.units}
-              block={block}
-              chapter={chapter}
-              side={side}
-            />
+            <div style={layout.body}>
+              <BilingualFlowSentences
+                units={item.units}
+                block={block}
+                chapter={chapter}
+                side={side}
+              />
+            </div>
           </li>
         );
       })}

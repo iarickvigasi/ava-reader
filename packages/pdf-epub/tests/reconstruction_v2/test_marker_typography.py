@@ -175,7 +175,8 @@ class MarkerTypography(unittest.TestCase):
         )
         self.assertEqual(parent.marker_style_id, node.get("data-ava-marker-style"))
         self.assertEqual(
-            parent.content.text, "".join(next(n for n in node if n.get("data-ava-text")).itertext())
+            parent.content.text,
+            "".join(next(n for n in node.iter() if n.get("data-ava-text")).itertext()),
         )
 
     def test_unknown_marker_style_stays_absent_and_body_span_offsets_stay_exact(self):

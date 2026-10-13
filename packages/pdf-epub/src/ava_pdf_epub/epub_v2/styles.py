@@ -50,7 +50,9 @@ def declarations(style: Style) -> str:
     return ";".join(f"{k}:{v}" for k, v in values)
 
 
-def stylesheet(styles: list[Style], blocks: list[Block] | None = None) -> bytes:
+def stylesheet(
+    styles: list[Style], blocks: list[Block] | None = None, *, list_body_layout: bool = False
+) -> bytes:
     baseline = (
         "body{font-family:serif;line-height:1.5}"
         "[data-ava-text]{white-space:pre-wrap}"
@@ -62,6 +64,9 @@ def stylesheet(styles: list[Style], blocks: list[Block] | None = None) -> bytes:
     output = (
         baseline + "\n" + "\n".join(f".{ident('style', s.id)}{{{declarations(s)}}}" for s in styles)
     )
+    if list_body_layout:
+        # Body-only displacement belongs to the wrapper; marker typography stays on li.
+        output += "\nli[data-ava-block]{text-indent:0;margin-inline-start:0}"
     lookup = {style.id: style for style in styles}
     for block in blocks or []:
         if isinstance(block, ListItemBlock) and block.marker_style_id is not None:

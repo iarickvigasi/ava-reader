@@ -116,7 +116,7 @@ is preserved, and inline ranges use Unicode code points with an optional canonic
 `Evidence.coordinate_space` distinguishes point coordinates from normalized image crops.
 `Style.observed` distinguishes a measured zero/false from an unspecified editorial default.
 
-Books without an explicit source-page map retain generated EPUB projection
+Historical books without an explicit source-page map use generated EPUB projection
 `ava-epub-canonical-2.1` for unlabelled pages and `2.2` for declared printed page labels. New
 reconstructions capture each page's first retained content observation before paragraph joins, then
 resolve its exact canonical codepoint offset through checked assembly aliases. This makes a page
@@ -138,7 +138,7 @@ with physical-number fallback for missing or blank labels. Styles and semantic l
 text and occurrence identity; a link spanning a page marker remains one focusable anchor. TOC and
 specific passage links retain their separate exact destinations.
 
-`epub_v2.portable.portable_epub` validates all three complete projections against their declared
+`epub_v2.portable.portable_epub` validates every supported projection against its declared
 version. It refuses substitutions between explicit-map and legacy page semantics and does not
 upgrade imported bytes. The old `2.1`/`2.2` deterministic members are regression-checked against
 frozen pre-extension hashes. Canonical data and accepted EPUBs remain fixed. Install matching worker,
@@ -435,10 +435,23 @@ not PDF pages, inferred titles or nested subsections. Logical chapter membership
 text/offset identities and source aliases stay fixed. Lists/items remain whole; a boundary that
 would divide a figure/table from its caption or credit is kept within one file. TOC links,
 notes/returns, text offsets and source-page links use the target block's actual publication file.
-Profiles 2.1–2.3 retain their original single-file-per-chapter projections when explicitly
-selected or reimported; portable validation reproduces the declared profile exactly.
+Current section exports containing semantic lists use `ava-epub-canonical-2.5`. It retains the
+section/link rules and places body indentation on a separate block inside each item; the semantic
+marker keeps its independent font and color. With explicit
+`source_feature_policy: "ava-ocr-source-features-1"`, the pinned worker measures native body glyphs
+after the printed prefix,
+using uniquely owned visible rows and each list/depth/page/column's body baseline. Existing Style
+fields retain real body displacement and nested structure without counting the marker gutter twice.
+Ambiguous geometry and OCR body styles are not reinterpreted. The API's normal reconstruction request
+already selects this policy; package and worker/config fingerprints bind the effective implementation.
+Profiles 2.1–2.4 retain exact historical bytes when explicitly selected or reimported; portable
+validation reproduces the declared profile rather than upgrading an existing EPUB.
 Reconstruction with the historical omitted `source_feature_policy` retains its old chapter
-projection; the current source policy enables section-file partitioning.
+projection and canonical geometry; the current policy enables section files and native list-body
+normalization. The reader's body wrapper preserves existing accepted style values and removes the
+observed marker collision without rewriting content; it cannot prove legacy per-row alignment.
+For a negative declared body start, body-only padding reserves marker clearance while retaining the
+signed first/continuation displacement. This is display safety, not recovered source geometry.
 `conservation_report` describes the default candidate projection unless its `profile` argument
 selects a specific historical projection; it does not infer a supplied EPUB's declared profile.
 [Content checks and limits](../../docs/pdf-conversion-verification.md) distinguish authored-fixture conservation

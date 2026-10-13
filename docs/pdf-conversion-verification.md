@@ -200,6 +200,16 @@ cover Roman numerals, restarted numbers, XML characters and missing/blank labels
 2.1 projection, marker substitution and unknown-version refusal. Blank labels previously caused
 EPUBCheck RSC-005; exact corrected bytes must also pass the installed validator.
 
+List-body regressions distinguish numbered-gutter geometry from body glyphs, compare short and
+wrapped native items, preserve authored first-line/hanging body indentation and nested membership,
+and reject shared rows/glyphs or foreign geometry. Explicit 2.1–2.4 exports and no-policy source
+reconstruction are checked against pre-change hashes. Projection 2.5 retains canonical text, source
+page starts, links and marker typography through exact portable reimport. Static reader checks keep
+legacy values on a separate body wrapper; they establish neither recovered legacy alignment nor
+actual browser layout. Verify the existing fixed book on the newly built reader separately.
+Negative zero/small-inset controls verify body-only marker clearance while retaining signed relative
+indentation; source-normalized bodies already have a nonnegative start and need no safety padding.
+
 API metadata regressions preserve accepted portable title/author claims without changing provenance
 or overriding new-entry edits/clears. PDF source-only metadata filling retains its own regression.
 These checks do not establish source accuracy, actual reader/device behavior or production readiness.

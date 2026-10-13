@@ -13,6 +13,7 @@ from .navigation import navigation
 from .package import package_document
 from .profiles import (
     LEGACY_PROFILE,
+    LIST_BODY_PROFILE,
     SECTION_FILE_PROFILE,
     export_profile,
     validate_profile,
@@ -33,7 +34,10 @@ def export_entries(
     profile = export_profile(book) if profile is None else profile
     exact_pages = validate_profile(book, profile)
     ctx = Context(
-        book, exact_source_pages=exact_pages, split_sections=profile == SECTION_FILE_PROFILE
+        book,
+        exact_source_pages=exact_pages,
+        split_sections=profile in {SECTION_FILE_PROFILE, LIST_BODY_PROFILE},
+        list_body_layout=profile == LIST_BODY_PROFILE,
     )
     entries = {
         "mimetype": b"application/epub+zip",
@@ -44,7 +48,9 @@ def export_entries(
     entries.update(validate_assets(book, assets))
     entries.update(chapter_documents(ctx, printed_page_labels=profile != LEGACY_PROFILE))
     entries["EPUB/nav/nav.xhtml"] = navigation(ctx, printed_page_labels=profile != LEGACY_PROFILE)
-    entries["EPUB/styles/book.css"] = stylesheet(book.styles, book.blocks)
+    entries["EPUB/styles/book.css"] = stylesheet(
+        book.styles, book.blocks, list_body_layout=ctx.list_body_layout
+    )
     entries["EPUB/package.opf"] = package_document(ctx, entries)
     if len(entries) > MAX_ENTRIES or any(len(data) > MAX_ENTRY_BYTES for data in entries.values()):
         raise ValueError("EPUB entry bound exceeded")
