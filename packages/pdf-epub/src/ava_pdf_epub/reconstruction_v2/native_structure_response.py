@@ -7,6 +7,7 @@ from ..contracts.profiles import response_language
 from .list_markers import MARKER, marker_value
 from .native_structure_contract import NativeStructureResponse, NativeStructureTask
 from .native_structure_fields import NativeStructureGroup
+from .native_structure_ornaments import ornamental_separator
 from .native_structure_sizes import validate_grouped_sizes
 
 
@@ -44,12 +45,15 @@ def accept_native_structure(task: NativeStructureTask, response: NativeStructure
         ):
             raise ValueError("Native structure relationship has no preserved source figure")
         first = lines[group.line_ids[0]].text.lstrip()
-        if group.kind == "separator" and any(
-            re.fullmatch(r"[\s*·•—–-]{3,}", lines[ident].text.strip()) is None
-            for ident in group.line_ids
+        if group.kind == "separator" and not ornamental_separator(
+            [lines[ident] for ident in group.line_ids],
+            width=task.page_width_pt,
+            height=task.page_height_pt,
+            other_boxes=[line.box for line in task.lines if line.id not in group.line_ids]
+            + [r.source.box for r in task.regions if r.artifact_id is not None],
+            other_lines=[line for line in task.lines if line.id not in group.line_ids],
         ):
-            # Same ornamental glyph rule as classify_lines._classify. A model
-            # role cannot authorize assemble_blocks to discard ordinary prose.
+            # A model role cannot authorize canonical omission of ordinary ink.
             raise ValueError("Native structure separator has no source ornamental proof")
         if group.kind == "note":
             _printed_note(group, first)
