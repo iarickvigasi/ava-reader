@@ -225,6 +225,21 @@
       "title": "Contact the developers",
       "subtitle": "Have an idea or a question?",
       "message": "Message {name} on Telegram"
+    },
+    "features": {
+      "label": "Here you can",
+      "understand": {
+        "title": "Understand more deeply",
+        "body": "Translate words, ask AI to explain words and sentences, and uncover word origins, hidden meanings, and references — without leaving the book or losing focus."
+      },
+      "languages": {
+        "title": "Read in other languages",
+        "body": "Read the original book alongside a parallel translation in your chosen language. Understand the text and learn languages as you go."
+      },
+      "habit": {
+        "title": "Build your reading habit",
+        "body": "Create collections, follow your daily progress, and save favourite quotes. Read offline any books you choose to download."
+      }
     }
   },
   "reader": {

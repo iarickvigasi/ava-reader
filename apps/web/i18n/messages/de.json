@@ -225,6 +225,21 @@
       "title": "Kontakt zum Entwicklerteam",
       "subtitle": "Hast du eine Idee oder eine Frage?",
       "message": "{name} auf Telegram schreiben"
+    },
+    "features": {
+      "label": "Hier kannst du",
+      "understand": {
+        "title": "Mehr verstehen",
+        "body": "Übersetze Wörter, lass dir Wörter und Sätze von der KI erklären und entdecke Wortherkünfte, verborgene Bedeutungen und Anspielungen — ohne das Buch zu verlassen oder den Fokus zu verlieren."
+      },
+      "languages": {
+        "title": "In anderen Sprachen lesen",
+        "body": "Lies das Original neben einer parallelen Übersetzung in deiner gewählten Sprache. Verstehe den Text und lerne Sprachen beim Lesen."
+      },
+      "habit": {
+        "title": "Eine Leseroutine entwickeln",
+        "body": "Erstelle Sammlungen, verfolge deinen täglichen Fortschritt und speichere Lieblingszitate. Lies alle Bücher, die du herunterladen möchtest, auch offline."
+      }
     }
   },
   "reader": {

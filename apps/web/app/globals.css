@@ -131,10 +131,6 @@
   background: var(--brand-fill);
 }
 
-:root:not([data-theme="dark"]) .connect-feature-icon {
-  background: var(--paper);
-}
-
 :root:not([data-theme="dark"]) .connect-hide-profile-button {
   background: var(--soft-tone-fill);
   box-shadow: var(--shadow-card);

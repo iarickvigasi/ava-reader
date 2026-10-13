@@ -225,6 +225,21 @@
       "title": "Contacter les développeurs",
       "subtitle": "Une idée ou une question ?",
       "message": "Écrire à {name} sur Telegram"
+    },
+    "features": {
+      "label": "Ici, vous pouvez",
+      "understand": {
+        "title": "Comprendre en profondeur",
+        "body": "Traduisez des mots, demandez à l’IA d’expliquer des mots et des phrases, et découvrez l’origine des mots, les sens cachés et les références — sans quitter le livre ni perdre le fil."
+      },
+      "languages": {
+        "title": "Lire dans d’autres langues",
+        "body": "Lisez le livre original à côté d’une traduction parallèle dans la langue de votre choix. Comprenez le texte et apprenez des langues au fil des pages."
+      },
+      "habit": {
+        "title": "Cultiver votre habitude de lecture",
+        "body": "Créez des collections, suivez vos progrès quotidiens et enregistrez vos citations préférées. Lisez hors ligne les livres que vous choisissez de télécharger."
+      }
     }
   },
   "reader": {

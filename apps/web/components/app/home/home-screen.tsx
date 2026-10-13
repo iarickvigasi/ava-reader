@@ -3,6 +3,7 @@ import type { HomePayload } from "@/lib/api-types";
 import { HomeCollectionsWithCache } from "./sections/home-collections-with-cache";
 import { CurrentEngagementSection } from "./sections/current-engagement/current-engagement-section";
 import { DashboardFooter } from "./sections/dashboard-footer";
+import { HomeFeaturesSection } from "./sections/home-features-section";
 import { EmptyHomeState } from "./sections/empty-home-state";
 import { FeaturedBooksSection } from "./sections/featured-books/featured-books-section";
 import { FeedbackSection } from "./sections/feedback/feedback-section";
@@ -29,6 +30,8 @@ export function HomeScreen({ home }: HomeScreenProps) {
         <EmptyHomeState home={home} />
       )}
 
+      {home.state === "EMPTY" ? <HomeFeaturesSection /> : null}
+
       <QuoteSection />
       <FeaturedBooksSection entries={home.featuredCatalog.entries} />
 
@@ -38,6 +41,8 @@ export function HomeScreen({ home }: HomeScreenProps) {
           <RecentAnnotationsPanel annotations={home.recentAnnotations.items} />
         </section>
       ) : null}
+
+      {home.state === "POPULATED" ? <HomeFeaturesSection /> : null}
 
       <div className="grid items-start gap-16 sm:gap-20 lg:grid-cols-2 lg:gap-12 lg:[&>section:only-child]:col-span-2">
         <DevelopersWithCache home={home} />

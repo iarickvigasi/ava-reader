@@ -225,6 +225,21 @@
       "title": "Contato com os desenvolvedores",
       "subtitle": "Tem uma ideia ou uma dúvida?",
       "message": "Enviar mensagem para {name} pelo Telegram"
+    },
+    "features": {
+      "label": "Aqui você pode",
+      "understand": {
+        "title": "Entender mais a fundo",
+        "body": "Traduza palavras, peça à IA explicações de palavras e frases e descubra a origem das palavras, significados ocultos e referências — sem sair do livro nem perder o foco."
+      },
+      "languages": {
+        "title": "Ler em outros idiomas",
+        "body": "Leia o livro original ao lado de uma tradução paralela no idioma escolhido. Entenda o texto e aprenda idiomas durante a leitura."
+      },
+      "habit": {
+        "title": "Criar seu hábito de leitura",
+        "body": "Crie coleções, acompanhe seu progresso diário e salve suas citações favoritas. Leia offline qualquer livro que você escolher baixar."
+      }
     }
   },
   "reader": {
