@@ -47,6 +47,7 @@ function files(directory) {
 const digest = (value) => createHash("sha256").update(value).digest("hex");
 const entries = [
   ...files(web),
+  resolve(web, "public/sw.js"),
   fileURLToPath(import.meta.url),
   resolve(root, "pnpm-lock.yaml"),
 ]

@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import {
   mkdtempSync,
   mkdirSync,
@@ -16,6 +17,8 @@ it("keeps source identity stable across precache builds and binds real source ch
   const script = join(web, "scripts/generate-reader-fingerprint.mjs");
   const source = join(web, "app/page.tsx");
   const precache = join(web, "public/precache-assets.json");
+  const worker = join(web, "public/sw.js");
+  const originalWorker = 'self.addEventListener("fetch", () => {});';
   const manifest = join(root, "manifest.json");
   const put = (path: string, value: string) => {
     mkdirSync(dirname(path), { recursive: true });
@@ -40,6 +43,8 @@ it("keeps source identity stable across precache builds and binds real source ch
     );
     put(join(root, "pnpm-lock.yaml"), "lockfileVersion: 9.0");
     put(source, "export default function Page() { return null; }");
+    put(worker, originalWorker);
+    put(join(web, "e2e/author-control.js"), "// Not application source");
     mkdirSync(join(web, "features/reader/canonical"), { recursive: true });
     const before = generate();
     put(precache, '["/_next/static/first-build.js"]');
@@ -52,6 +57,10 @@ it("keeps source identity stable across precache builds and binds real source ch
       "apps/web/public/precache-assets.json",
     );
     expect(secondBuild.files).toHaveProperty("apps/web/app/page.tsx");
+    expect(secondBuild.files).toHaveProperty("apps/web/public/sw.js");
+    expect(secondBuild.files).not.toHaveProperty(
+      "apps/web/e2e/author-control.js",
+    );
     expect(secondBuild.files).toHaveProperty(
       "apps/web/scripts/generate-reader-fingerprint.mjs",
     );
@@ -76,6 +85,17 @@ it("keeps source identity stable across precache builds and binds real source ch
       });
     expect(() => check("0")).toThrow();
     expect(() => check("1")).not.toThrow();
+    const changedWorker =
+      'self.addEventListener("fetch", () => { /* Auth requires network. */ });';
+    put(worker, changedWorker);
+    expect(() => check("1")).toThrow();
+    const workerBuild = generate("1");
+    expect(workerBuild.fingerprint).not.toBe(instrumented.fingerprint);
+    expect(workerBuild.files["apps/web/public/sw.js"]).toBe(
+      createHash("sha256").update(changedWorker).digest("hex"),
+    );
+    expect(() => check("1")).not.toThrow();
+    put(worker, originalWorker);
     expect(generate().fingerprint).toBe(changed.fingerprint);
     expect(readFileSync(qaFile, "utf8")).toContain("READER_QA_ENABLED = false");
   } finally {
