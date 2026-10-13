@@ -227,18 +227,18 @@
       "message": "{name} auf Telegram schreiben"
     },
     "features": {
-      "label": "Hier kannst du",
+      "label": "Funktionen der Plattform",
       "understand": {
-        "title": "Mehr verstehen",
-        "body": "Übersetze Wörter, lass dir Wörter und Sätze von der KI erklären und entdecke Wortherkünfte, verborgene Bedeutungen und Anspielungen — ohne das Buch zu verlassen oder den Fokus zu verlieren."
+        "title": "Tieferes Verständnis",
+        "body": "Wortübersetzungen, KI-Erklärungen und die Herkunft von Wörtern und Wendungen — alles direkt neben dem Text. Entdecke verborgene Bedeutungen und kulturelle Anspielungen, ohne das Lesen zu unterbrechen."
       },
       "languages": {
-        "title": "In anderen Sprachen lesen",
-        "body": "Lies das Original neben einer parallelen Übersetzung in deiner gewählten Sprache. Verstehe den Text und lerne Sprachen beim Lesen."
+        "title": "Ein Buch, zwei Sprachen",
+        "body": "Original und parallele Übersetzung nebeneinander — um den Text zu verstehen und eine Sprache ganz natürlich im Kontext zu lernen."
       },
       "habit": {
-        "title": "Eine Leseroutine entwickeln",
-        "body": "Erstelle Sammlungen, verfolge deinen täglichen Fortschritt und speichere Lieblingszitate. Lies alle Bücher, die du herunterladen möchtest, auch offline."
+        "title": "Lesen als Teil des Lebens",
+        "body": "Verfolge deinen Fortschritt, sammle Zitate und pflege deine tägliche Leseroutine. Deine Lieblingsbücher sind auch ohne Internetverbindung verfügbar."
       }
     }
   },
@@ -607,6 +607,21 @@
       "eyebrow": "Bibliothek",
       "title": "Deine Sammlungen erscheinen hier, während du deine Lesewelt aufbaust.",
       "body": "Importiere Bücher oder füge sie aus dem öffentlichen Katalog hinzu und ordne sie in persönlichen Sammlungen"
+    },
+    "features": {
+      "label": "Demnächst",
+      "narration": {
+        "title": "Geschichten, die durch Stimmen lebendig werden",
+        "body": "Ausdrucksstarke Lesungen mit eigenen Stimmen für die Figuren sind derzeit in Entwicklung. Mit Sprachsteuerung kannst du die Lesung pausieren und fortsetzen, auch wenn du die Hände voll hast."
+      },
+      "formats": {
+        "title": "Bücher in verschiedenen Formaten",
+        "body": "Unterstützung für EPUB, PDF, FB2 und weitere Formate."
+      },
+      "together": {
+        "title": "Viele weitere Entdeckungen",
+        "body": "Gemeinsames Lesen und Hören desselben Buches als Paar. Schriftstellerinnen können ihre eigenen Bücher veröffentlichen und ihre ersten Leserinnen und Leser erreichen."
+      }
     }
   },
   "insights": {
@@ -761,16 +776,16 @@
     "comingSoon": "Demnächst",
     "features": {
       "people": {
-        "title": "Finde Gleichgesinnte",
-        "body": "Entdecke Menschen, die dieselben Bücher, Autoren und Ideen erkunden und ähnliche Interessen haben."
+        "title": "Ein Kreis gleichgesinnter Leserinnen",
+        "body": "Teile Listen der Bücher, die du liest, mit Freunden. Lerne Leserinnen kennen, die sich für dieselben Bücher, Autoren und Ideen begeistern."
       },
       "share": {
-        "title": "Teile deine Lesewelt",
-        "body": "Veröffentliche Leselisten, Notizen, Erkenntnisse, Rezensionen und Lieblingszitate. Gib deinen Entdeckungen einen Platz auf deiner eigenen Seite."
+        "title": "Ein persönlicher Raum für Ideen",
+        "body": "Leselisten, Notizen, Entdeckungen, Rezensionen und Lieblingszitate auf deiner persönlichen Seite. Erstelle eine Wissenskarte und verbinde Ideen aus verschiedenen Büchern."
       },
       "conversation": {
-        "title": "Bleib im Gespräch",
-        "body": "Diskutiere über das Gelesene, chatte mit anderen Leserinnen und Lesern und lass aus gemeinsamen Interessen neue Freundschaften entstehen."
+        "title": "Bücher, die uns verbinden",
+        "body": "Gedanken zum Gelesenen, Ideenaustausch und Gespräche, aus denen neue Perspektiven und Freundschaften entstehen."
       }
     },
     "privacyTitle": "Deine Lesewelt, deine Entscheidung.",

@@ -18,11 +18,6 @@ soon, not as working features.
 - Home's Daily mastery heading opens the preserved `/app/insights` page.
 - Both routes are precached for offline navigation.
 - The introduction explains the community and shows three Coming soon cards.
-  Their icon circles are lighter than the cards in the day theme; the night
-  theme keeps its existing colors. The shared `FeatureCards` component receives
-  the section label and card IDs, icons, titles, and descriptions from its caller.
-  Connect supplies translated content; the component owns the responsive layout
-  and applies the icon-circle theme fills directly.
 - All Inter eyebrow labels follow the shared size/weight rule in styles.md: bold
   (700), 10.8px below `sm`, and 10px from `sm`, visually matching Home’s
   Currently engaged label.

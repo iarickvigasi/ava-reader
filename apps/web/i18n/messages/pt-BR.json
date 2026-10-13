@@ -227,18 +227,18 @@
       "message": "Enviar mensagem para {name} pelo Telegram"
     },
     "features": {
-      "label": "Aqui você pode",
+      "label": "Recursos da plataforma",
       "understand": {
-        "title": "Entender mais a fundo",
-        "body": "Traduza palavras, peça à IA explicações de palavras e frases e descubra a origem das palavras, significados ocultos e referências — sem sair do livro nem perder o foco."
+        "title": "Uma compreensão mais profunda",
+        "body": "Traduções de palavras, explicações da IA e a origem de palavras e expressões — tudo ao lado do texto. Descubra significados ocultos e referências culturais sem interromper a leitura."
       },
       "languages": {
-        "title": "Ler em outros idiomas",
-        "body": "Leia o livro original ao lado de uma tradução paralela no idioma escolhido. Entenda o texto e aprenda idiomas durante a leitura."
+        "title": "Um livro, dois idiomas",
+        "body": "O original e uma tradução paralela lado a lado — para entender o texto e aprender um idioma naturalmente, em contexto."
       },
       "habit": {
-        "title": "Criar seu hábito de leitura",
-        "body": "Crie coleções, acompanhe seu progresso diário e salve suas citações favoritas. Leia offline qualquer livro que você escolher baixar."
+        "title": "A leitura como parte da vida",
+        "body": "Acompanhe seu progresso, reúna citações e cultive o hábito de ler todos os dias. Seus livros favoritos estão disponíveis sem conexão com a internet."
       }
     }
   },
@@ -607,6 +607,21 @@
       "eyebrow": "Biblioteca",
       "title": "Suas coleções aparecerão aqui à medida que você constrói o seu mundo de leitura.",
       "body": "Importe livros ou adicione-os do catálogo público e organize-os em coleções pessoais"
+    },
+    "features": {
+      "label": "Em breve",
+      "narration": {
+        "title": "Histórias que ganham vida com a voz",
+        "body": "Uma narração expressiva com vozes distintas para os personagens está em desenvolvimento. O controle por voz permitirá pausar e retomar a narração, mesmo quando suas mãos estiverem ocupadas."
+      },
+      "formats": {
+        "title": "Livros em diferentes formatos",
+        "body": "Suporte a EPUB, PDF, FB2 e outros formatos."
+      },
+      "together": {
+        "title": "Muitas outras novidades",
+        "body": "Leitura e escuta compartilhadas do mesmo livro em casal. Escritoras poderão publicar seus próprios livros e encontrar seus primeiros leitores."
+      }
     }
   },
   "insights": {
@@ -761,16 +776,16 @@
     "comingSoon": "Em breve",
     "features": {
       "people": {
-        "title": "Encontre sua turma",
-        "body": "Conheça leitoras que exploram os mesmos livros, autores e ideias e descubra pessoas com interesses parecidos."
+        "title": "Um círculo de leitoras com afinidades",
+        "body": "Compartilhe com amigos listas dos livros que está lendo. Conheça leitoras que se interessam pelos mesmos livros, autores e ideias."
       },
       "share": {
-        "title": "Compartilhe suas leituras",
-        "body": "Publique listas de leitura, notas, reflexões, resenhas e suas citações favoritas. Dê às suas descobertas um espaço na sua própria página."
+        "title": "Um espaço pessoal para ideias",
+        "body": "Listas de leitura, notas, descobertas, resenhas e citações favoritas na sua página pessoal. Crie um mapa de conhecimento e conecte ideias aprendidas em diferentes livros."
       },
       "conversation": {
-        "title": "Continue a conversa",
-        "body": "Converse sobre o que leu, troque mensagens com outras leitoras e transforme interesses em comum em novas amizades."
+        "title": "Livros que nos aproximam",
+        "body": "Reflexões sobre o que você leu, troca de ideias e conversas que dão origem a novas perspectivas e amizades."
       }
     },
     "privacyTitle": "Sua vida de leitura, sua escolha.",

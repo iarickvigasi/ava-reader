@@ -26,7 +26,7 @@ export function ConnectProfileActions({
           type="button"
           variant="soft"
           size="sm"
-          className="connect-hide-profile-button min-h-12! px-8! font-bold! tracking-[0.2em]! bg-soft-fill! hover:bg-soft-fill! hover:text-ink! [[data-theme=light]_&]:hover:bg-soft-tone-fill!"
+          className="connect-hide-profile-button min-h-12! px-8! font-bold! tracking-[0.2em]! bg-soft-fill! hover:bg-soft-fill! hover:text-ink! [[data-theme=light]_&]:hover:bg-soft-tone-fill! [[data-theme=dark]_&]:hover:bg-soft-tone-fill!"
           disabled={model.busy || !model.ready}
           onClick={model.hide}
         >

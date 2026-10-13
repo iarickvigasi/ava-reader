@@ -227,18 +227,18 @@
       "message": "Écrire à {name} sur Telegram"
     },
     "features": {
-      "label": "Ici, vous pouvez",
+      "label": "Fonctionnalités de la plateforme",
       "understand": {
-        "title": "Comprendre en profondeur",
-        "body": "Traduisez des mots, demandez à l’IA d’expliquer des mots et des phrases, et découvrez l’origine des mots, les sens cachés et les références — sans quitter le livre ni perdre le fil."
+        "title": "Une compréhension plus profonde",
+        "body": "Traduction de mots, explications de l’IA et exploration de l’origine des mots et des expressions — tout est à côté du texte. Découvrez les sens cachés et les références culturelles sans interrompre votre lecture."
       },
       "languages": {
-        "title": "Lire dans d’autres langues",
-        "body": "Lisez le livre original à côté d’une traduction parallèle dans la langue de votre choix. Comprenez le texte et apprenez des langues au fil des pages."
+        "title": "Un livre, deux langues",
+        "body": "L’original et une traduction parallèle côte à côte — pour comprendre le texte et apprendre une langue naturellement, en contexte."
       },
       "habit": {
-        "title": "Cultiver votre habitude de lecture",
-        "body": "Créez des collections, suivez vos progrès quotidiens et enregistrez vos citations préférées. Lisez hors ligne les livres que vous choisissez de télécharger."
+        "title": "La lecture au cœur du quotidien",
+        "body": "Suivez vos progrès, recueillez des citations et cultivez l’habitude de lire chaque jour. Vos livres préférés sont disponibles sans connexion internet."
       }
     }
   },
@@ -607,6 +607,21 @@
       "eyebrow": "Bibliothèque",
       "title": "Vos collections apparaîtront ici à mesure que vous construirez votre univers de lecture.",
       "body": "Importez des livres ou ajoutez-les depuis le catalogue public et organisez-les en collections personnelles"
+    },
+    "features": {
+      "label": "Bientôt disponible",
+      "narration": {
+        "title": "Des histoires qui prennent vie en voix",
+        "body": "Une narration expressive avec des voix distinctes pour les personnages est en cours de développement. La commande vocale permettra de mettre la narration en pause et de la reprendre, même lorsque vos mains sont occupées."
+      },
+      "formats": {
+        "title": "Des livres dans différents formats",
+        "body": "Prise en charge des formats EPUB, PDF, FB2 et d’autres formats."
+      },
+      "together": {
+        "title": "Bien d’autres découvertes",
+        "body": "Lecture et écoute partagées d’un même livre en couple. Les autrices pourront publier leurs propres livres et rencontrer leurs premiers lecteurs."
+      }
     }
   },
   "insights": {
@@ -761,16 +776,16 @@
     "comingSoon": "Bientôt disponible",
     "features": {
       "people": {
-        "title": "Trouvez vos affinités",
-        "body": "Rencontrez des lectrices qui explorent les mêmes livres, auteurs et idées, et découvrez des personnes aux intérêts similaires."
+        "title": "Un cercle de lectrices qui vous ressemblent",
+        "body": "Partagez avec vos amis des listes des livres que vous lisez. Rencontrez des lectrices passionnées par les mêmes livres, auteurs et idées."
       },
       "share": {
-        "title": "Partagez vos lectures",
-        "body": "Publiez vos listes de lecture, notes, réflexions, avis et citations préférées. Donnez une place à vos découvertes sur votre propre page."
+        "title": "Un espace personnel pour vos idées",
+        "body": "Listes de lecture, notes, découvertes, avis et citations préférées sur votre page personnelle. Créez une carte des connaissances et reliez les idées tirées de différents livres."
       },
       "conversation": {
-        "title": "Prolongez la conversation",
-        "body": "Discutez de vos lectures, échangez avec d’autres lectrices et faites naître de nouvelles amitiés autour de vos intérêts communs."
+        "title": "Des livres qui nous rapprochent",
+        "body": "Réflexions sur vos lectures, échanges d’idées et conversations qui font naître de nouveaux regards et des amitiés."
       }
     },
     "privacyTitle": "Vos lectures, vos choix.",

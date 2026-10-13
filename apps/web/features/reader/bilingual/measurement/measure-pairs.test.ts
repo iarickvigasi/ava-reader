@@ -20,7 +20,7 @@ describe("paired continuation measurement", () => {
           _start: number,
           _end: number,
           side: number,
-          _fill = false,
+          _fill?: boolean,
           paged = false,
         ) => (paged ? 2 : side === longSide ? 240 : 199),
       );

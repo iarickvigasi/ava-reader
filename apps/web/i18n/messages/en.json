@@ -227,18 +227,18 @@
       "message": "Message {name} on Telegram"
     },
     "features": {
-      "label": "Here you can",
+      "label": "Platform features",
       "understand": {
-        "title": "Understand more deeply",
-        "body": "Translate words, ask AI to explain words and sentences, and uncover word origins, hidden meanings, and references — without leaving the book or losing focus."
+        "title": "Deeper understanding",
+        "body": "Word translations, AI explanations, and the origins of words and phrases — all alongside the text. Discover hidden meanings and cultural references without interrupting your reading."
       },
       "languages": {
-        "title": "Read in other languages",
-        "body": "Read the original book alongside a parallel translation in your chosen language. Understand the text and learn languages as you go."
+        "title": "One book, two languages",
+        "body": "The original and a parallel translation side by side — for understanding the text and learning a language naturally in context."
       },
       "habit": {
-        "title": "Build your reading habit",
-        "body": "Create collections, follow your daily progress, and save favourite quotes. Read offline any books you choose to download."
+        "title": "Reading as part of everyday life",
+        "body": "Track your progress, collect quotes, and build a daily reading habit. Your favourite books are available without an internet connection."
       }
     }
   },
@@ -607,6 +607,21 @@
       "eyebrow": "Library",
       "title": "Your collections will appear here as you build your reading world.",
       "body": "Import books or add them from the public catalog and organize them into personal collections"
+    },
+    "features": {
+      "label": "Coming soon",
+      "narration": {
+        "title": "Stories brought to life through voice",
+        "body": "Expressive narration with distinct voices for characters is currently in development. Voice controls will let you pause and resume narration, even when your hands are busy."
+      },
+      "formats": {
+        "title": "Books in different formats",
+        "body": "Support for EPUB, PDF, FB2, and other formats."
+      },
+      "together": {
+        "title": "Many more things to discover",
+        "body": "Shared reading and listening to the same book as a couple. Writers will be able to publish their own books and reach their first readers."
+      }
     }
   },
   "insights": {
@@ -761,16 +776,16 @@
     "comingSoon": "Coming soon",
     "features": {
       "people": {
-        "title": "Find your people",
-        "body": "Meet readers exploring the same books, authors, and ideas — and discover people with similar interests."
+        "title": "A circle of like-minded readers",
+        "body": "Share lists of the books you’re reading with friends. Meet women readers who share your enthusiasm for the same books, authors, and ideas."
       },
       "share": {
-        "title": "Share your reading world",
-        "body": "Publish reading lists, notes, insights, reviews, and favourite quotes. Give your discoveries a place on your own page."
+        "title": "A personal space for ideas",
+        "body": "Reading lists, notes, discoveries, reviews, and favourite quotes on your personal page. Create a knowledge map and connect ideas you’ve learned from different books."
       },
       "conversation": {
-        "title": "Keep the conversation going",
-        "body": "Discuss what you’ve read, chat with other readers, and turn shared interests into new friendships."
+        "title": "Books that bring us together",
+        "body": "Reflections on what you’ve read, exchanges of ideas, and conversations that inspire new perspectives and friendships."
       }
     },
     "privacyTitle": "Your reading life, your choice.",

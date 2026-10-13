@@ -7,6 +7,7 @@ import {
   CollectionSection,
   CollectionSectionSkeleton,
 } from "@/components/app/library/library-sections/collection-section";
+import { LibraryFeaturesSection } from "./library-sections/library-features-section";
 import { LibraryHeader } from "@/components/app/library/library-sections/library-header";
 import {
   LibraryHeaderBar,
@@ -47,6 +48,7 @@ export function LibraryScreen({ library }: LibraryScreenProps) {
   return (
     <LibraryScreenShell>
       <LibraryHeader hasBooks={summary.booksCount > 0} />
+      <LibraryFeaturesSection />
       <LibraryHeaderBar summary={summary} />
 
       {!isEmpty && (
@@ -67,6 +69,7 @@ export function LibraryScreenSkeleton() {
   return (
     <LibraryScreenShell>
       <LibraryHeader />
+      <LibraryFeaturesSection />
       <LibraryHeaderBarSkeleton />
 
       <div className="space-y-12 md:space-y-14">
