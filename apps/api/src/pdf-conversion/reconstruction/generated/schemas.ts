@@ -12024,6 +12024,2474 @@ export const recognitionSchemas = {
     title: 'RecognitionAnchorContextTask',
     type: 'object',
   },
+  RecognitionGeometryProof: {
+    $defs: {
+      RecognitionBox: {
+        additionalProperties: false,
+        properties: {
+          coordinate_space: {
+            const: 'render_normalized_1000',
+            title: 'Coordinate Space',
+            type: 'string',
+          },
+          x0: {
+            exclusiveMaximum: 1000,
+            minimum: 0,
+            title: 'X0',
+            type: 'number',
+          },
+          x1: {
+            exclusiveMinimum: 0,
+            maximum: 1000,
+            title: 'X1',
+            type: 'number',
+          },
+          y0: {
+            exclusiveMaximum: 1000,
+            minimum: 0,
+            title: 'Y0',
+            type: 'number',
+          },
+          y1: {
+            exclusiveMinimum: 0,
+            maximum: 1000,
+            title: 'Y1',
+            type: 'number',
+          },
+        },
+        required: ['coordinate_space', 'x0', 'y0', 'x1', 'y1'],
+        title: 'RecognitionBox',
+        type: 'object',
+      },
+      RecognitionGeometryPatch: {
+        additionalProperties: false,
+        properties: {
+          box: { $ref: '#/$defs/RecognitionBox' },
+          segment_id: {
+            maxLength: 120,
+            minLength: 1,
+            title: 'Segment Id',
+            type: 'string',
+          },
+        },
+        required: ['segment_id', 'box'],
+        title: 'RecognitionGeometryPatch',
+        type: 'object',
+      },
+      RecognitionGeometryResponse: {
+        additionalProperties: false,
+        properties: {
+          original_response_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Original Response Sha256',
+            type: 'string',
+          },
+          original_task_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Original Task Id',
+            type: 'string',
+          },
+          outcome: {
+            enum: ['corrected', 'unresolved'],
+            title: 'Outcome',
+            type: 'string',
+          },
+          patches: {
+            items: { $ref: '#/$defs/RecognitionGeometryPatch' },
+            maxItems: 32,
+            title: 'Patches',
+            type: 'array',
+          },
+          render_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Render Sha256',
+            type: 'string',
+          },
+          schema_version: {
+            const: 'ava-recognition-geometry-response-1',
+            title: 'Schema Version',
+            type: 'string',
+          },
+          source_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Source Sha256',
+            type: 'string',
+          },
+          task_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Task Id',
+            type: 'string',
+          },
+          unresolved_reason: {
+            anyOf: [
+              {
+                enum: ['IMAGE_UNCLEAR', 'NO_UNIQUE_SOURCE_BOX'],
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Unresolved Reason',
+          },
+        },
+        required: [
+          'schema_version',
+          'task_id',
+          'source_sha256',
+          'original_task_id',
+          'render_sha256',
+          'original_response_sha256',
+          'outcome',
+          'patches',
+        ],
+        title: 'RecognitionGeometryResponse',
+        type: 'object',
+      },
+    },
+    additionalProperties: false,
+    properties: {
+      original_response_json: {
+        maxLength: 8388608,
+        minLength: 2,
+        title: 'Original Response Json',
+        type: 'string',
+      },
+      original_response_sha256: {
+        maxLength: 64,
+        minLength: 64,
+        pattern: '^[0-9a-f]{64}$',
+        title: 'Original Response Sha256',
+        type: 'string',
+      },
+      response: { $ref: '#/$defs/RecognitionGeometryResponse' },
+    },
+    required: [
+      'original_response_json',
+      'original_response_sha256',
+      'response',
+    ],
+    title: 'RecognitionGeometryProof',
+    type: 'object',
+  },
+  RecognitionGeometryReconstructionInput: {
+    $defs: {
+      BibliographicDecision: {
+        additionalProperties: false,
+        properties: {
+          end: {
+            anyOf: [
+              { exclusiveMinimum: 0, maximum: 500, type: 'integer' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'End',
+          },
+          evidence_ids: {
+            items: {
+              maxLength: 120,
+              pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+              type: 'string',
+            },
+            maxItems: 48,
+            minItems: 1,
+            title: 'Evidence Ids',
+            type: 'array',
+          },
+          node_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Node Id',
+            type: 'string',
+          },
+          role: {
+            anyOf: [
+              {
+                enum: [
+                  'author',
+                  'translator',
+                  'editor',
+                  'illustrator',
+                  'subtitle',
+                  'publisher',
+                ],
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            title: 'Role',
+          },
+          start: {
+            anyOf: [
+              { maximum: 500, minimum: 0, type: 'integer' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Start',
+          },
+          text_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Text Sha256',
+            type: 'string',
+          },
+        },
+        required: ['node_id', 'text_sha256', 'evidence_ids', 'role'],
+        title: 'BibliographicDecision',
+        type: 'object',
+      },
+      BookRefinementResponse: {
+        additionalProperties: false,
+        properties: {
+          decisions: {
+            items: {
+              anyOf: [
+                { $ref: '#/$defs/NativeRefinementDecision' },
+                { $ref: '#/$defs/OcrRefinementDecision' },
+              ],
+            },
+            maxItems: 24,
+            title: 'Decisions',
+            type: 'array',
+          },
+          image_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Image Sha256',
+            type: 'string',
+          },
+          joins: {
+            items: { $ref: '#/$defs/RefinementJoin' },
+            maxItems: 16,
+            title: 'Joins',
+            type: 'array',
+          },
+          metadata_decisions: {
+            items: { $ref: '#/$defs/BibliographicDecision' },
+            maxItems: 24,
+            title: 'Metadata Decisions',
+            type: 'array',
+          },
+          observation_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Observation Sha256',
+            type: 'string',
+          },
+          schema_version: {
+            const: 'ava-book-refinement-response-3',
+            title: 'Schema Version',
+            type: 'string',
+          },
+          source_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Source Sha256',
+            type: 'string',
+          },
+          task_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Task Id',
+            type: 'string',
+          },
+          unresolved: {
+            items: { type: 'string' },
+            maxItems: 100,
+            title: 'Unresolved',
+            type: 'array',
+          },
+        },
+        required: [
+          'schema_version',
+          'task_id',
+          'source_sha256',
+          'observation_sha256',
+          'image_sha256',
+          'decisions',
+          'joins',
+          'unresolved',
+        ],
+        title: 'BookRefinementResponse',
+        type: 'object',
+      },
+      LayoutHyphenDisposition: {
+        additionalProperties: false,
+        properties: {
+          candidate_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Candidate Id',
+            type: 'string',
+          },
+          candidate_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Candidate Sha256',
+            type: 'string',
+          },
+          disposition: {
+            enum: ['layout', 'literal', 'unresolved'],
+            title: 'Disposition',
+            type: 'string',
+          },
+        },
+        required: ['candidate_id', 'candidate_sha256', 'disposition'],
+        title: 'LayoutHyphenDisposition',
+        type: 'object',
+      },
+      NativeRefinementDecision: {
+        additionalProperties: false,
+        properties: {
+          chapter_role: {
+            anyOf: [
+              {
+                enum: ['frontmatter', 'bodymatter', 'backmatter'],
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            title: 'Chapter Role',
+          },
+          chapter_start: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            title: 'Chapter Start',
+          },
+          evidence_ids: {
+            items: {
+              maxLength: 120,
+              pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+              type: 'string',
+            },
+            maxItems: 48,
+            minItems: 1,
+            title: 'Evidence Ids',
+            type: 'array',
+          },
+          heading_level: {
+            anyOf: [
+              { maximum: 6, minimum: 1, type: 'integer' },
+              { type: 'null' },
+            ],
+            title: 'Heading Level',
+          },
+          node_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Node Id',
+            type: 'string',
+          },
+          parent_id: {
+            anyOf: [
+              {
+                maxLength: 120,
+                pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            title: 'Parent Id',
+          },
+          role_kind: {
+            enum: ['heading', 'paragraph', 'list_item', 'verse', 'quote'],
+            title: 'Role Kind',
+            type: 'string',
+          },
+          style: { title: 'Style', type: 'null' },
+          text_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Text Sha256',
+            type: 'string',
+          },
+        },
+        required: [
+          'node_id',
+          'text_sha256',
+          'evidence_ids',
+          'heading_level',
+          'parent_id',
+          'chapter_start',
+          'chapter_role',
+          'role_kind',
+          'style',
+        ],
+        title: 'NativeRefinementDecision',
+        type: 'object',
+      },
+      NativeStructureGroup: {
+        additionalProperties: false,
+        properties: {
+          chapter_role: {
+            anyOf: [
+              {
+                enum: ['frontmatter', 'bodymatter', 'backmatter'],
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Chapter Role',
+          },
+          chapter_start: {
+            default: false,
+            title: 'Chapter Start',
+            type: 'boolean',
+          },
+          continues_from_previous: {
+            default: false,
+            title: 'Continues From Previous',
+            type: 'boolean',
+          },
+          continues_to_next: {
+            default: false,
+            title: 'Continues To Next',
+            type: 'boolean',
+          },
+          heading_level: {
+            anyOf: [
+              { maximum: 6, minimum: 1, type: 'integer' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Heading Level',
+          },
+          id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Id',
+            type: 'string',
+          },
+          kind: {
+            enum: [
+              'paragraph',
+              'heading',
+              'quote',
+              'aside',
+              'caption',
+              'credit',
+              'verse',
+              'code',
+              'list_item',
+              'note',
+              'separator',
+              'furniture',
+            ],
+            title: 'Kind',
+            type: 'string',
+          },
+          line_ids: {
+            items: {
+              maxLength: 120,
+              pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+              type: 'string',
+            },
+            maxItems: 10000,
+            minItems: 1,
+            title: 'Line Ids',
+            type: 'array',
+          },
+          list_depth: {
+            anyOf: [
+              { maximum: 3, minimum: 1, type: 'integer' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'List Depth',
+          },
+          list_ordered: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'List Ordered',
+          },
+          list_start: {
+            anyOf: [
+              { maximum: 1000000, minimum: 0, type: 'integer' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'List Start',
+          },
+          note_label: {
+            anyOf: [
+              { maxLength: 100, minLength: 1, type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Note Label',
+          },
+          note_role: {
+            anyOf: [
+              { enum: ['footnote', 'endnote'], type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Note Role',
+          },
+          region_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Region Id',
+            type: 'string',
+          },
+          related_to: {
+            anyOf: [
+              {
+                maxLength: 120,
+                pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Related To',
+          },
+        },
+        required: ['id', 'region_id', 'line_ids', 'kind'],
+        title: 'NativeStructureGroup',
+        type: 'object',
+      },
+      NativeStructureReference: {
+        additionalProperties: false,
+        properties: {
+          role: { const: 'note_callout', title: 'Role', type: 'string' },
+          span_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Span Id',
+            type: 'string',
+          },
+        },
+        required: ['span_id', 'role'],
+        title: 'NativeStructureReference',
+        type: 'object',
+      },
+      NativeStructureResponse: {
+        additionalProperties: false,
+        properties: {
+          boundary_dispositions: {
+            items: { $ref: '#/$defs/LayoutHyphenDisposition' },
+            maxItems: 10000,
+            title: 'Boundary Dispositions',
+            type: 'array',
+          },
+          groups: {
+            items: { $ref: '#/$defs/NativeStructureGroup' },
+            maxItems: 2000,
+            title: 'Groups',
+            type: 'array',
+          },
+          language: {
+            maxLength: 50,
+            minLength: 1,
+            title: 'Language',
+            type: 'string',
+          },
+          observation_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Observation Sha256',
+            type: 'string',
+          },
+          references: {
+            items: { $ref: '#/$defs/NativeStructureReference' },
+            maxItems: 20000,
+            title: 'References',
+            type: 'array',
+          },
+          render_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Render Sha256',
+            type: 'string',
+          },
+          schema_version: {
+            const: 'ava-native-structure-response-1',
+            title: 'Schema Version',
+            type: 'string',
+          },
+          source_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Source Sha256',
+            type: 'string',
+          },
+          task_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Task Id',
+            type: 'string',
+          },
+          unresolved: {
+            items: { type: 'string' },
+            maxItems: 100,
+            title: 'Unresolved',
+            type: 'array',
+          },
+        },
+        required: [
+          'schema_version',
+          'task_id',
+          'source_sha256',
+          'observation_sha256',
+          'render_sha256',
+          'groups',
+          'boundary_dispositions',
+          'references',
+          'unresolved',
+          'language',
+        ],
+        title: 'NativeStructureResponse',
+        type: 'object',
+      },
+      OcrRefinementDecision: {
+        additionalProperties: false,
+        properties: {
+          chapter_role: {
+            anyOf: [
+              {
+                enum: ['frontmatter', 'bodymatter', 'backmatter'],
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            title: 'Chapter Role',
+          },
+          chapter_start: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            title: 'Chapter Start',
+          },
+          evidence_ids: {
+            items: {
+              maxLength: 120,
+              pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+              type: 'string',
+            },
+            maxItems: 48,
+            minItems: 1,
+            title: 'Evidence Ids',
+            type: 'array',
+          },
+          heading_level: {
+            anyOf: [
+              { maximum: 6, minimum: 1, type: 'integer' },
+              { type: 'null' },
+            ],
+            title: 'Heading Level',
+          },
+          node_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Node Id',
+            type: 'string',
+          },
+          parent_id: {
+            anyOf: [
+              {
+                maxLength: 120,
+                pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            title: 'Parent Id',
+          },
+          role_kind: { default: null, title: 'Role Kind', type: 'null' },
+          style: { $ref: '#/$defs/RefinementStyle' },
+          text_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Text Sha256',
+            type: 'string',
+          },
+        },
+        required: [
+          'node_id',
+          'text_sha256',
+          'evidence_ids',
+          'heading_level',
+          'parent_id',
+          'chapter_start',
+          'chapter_role',
+          'style',
+        ],
+        title: 'OcrRefinementDecision',
+        type: 'object',
+      },
+      PrintedTitleDecision: {
+        additionalProperties: false,
+        properties: {
+          evidence_ids: {
+            items: {
+              maxLength: 120,
+              pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+              type: 'string',
+            },
+            maxItems: 2,
+            minItems: 2,
+            title: 'Evidence Ids',
+            type: 'array',
+          },
+          node_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Node Id',
+            type: 'string',
+          },
+          role: {
+            anyOf: [{ const: 'title', type: 'string' }, { type: 'null' }],
+            title: 'Role',
+          },
+          text_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Text Sha256',
+            type: 'string',
+          },
+        },
+        required: ['node_id', 'text_sha256', 'evidence_ids', 'role'],
+        title: 'PrintedTitleDecision',
+        type: 'object',
+      },
+      PrintedTitleResponse: {
+        additionalProperties: false,
+        properties: {
+          decision: { $ref: '#/$defs/PrintedTitleDecision' },
+          image_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Image Sha256',
+            type: 'string',
+          },
+          observation_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Observation Sha256',
+            type: 'string',
+          },
+          schema_version: {
+            const: 'ava-printed-title-response-1',
+            title: 'Schema Version',
+            type: 'string',
+          },
+          source_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Source Sha256',
+            type: 'string',
+          },
+          task_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Task Id',
+            type: 'string',
+          },
+        },
+        required: [
+          'schema_version',
+          'task_id',
+          'source_sha256',
+          'observation_sha256',
+          'image_sha256',
+          'decision',
+        ],
+        title: 'PrintedTitleResponse',
+        type: 'object',
+      },
+      RecognitionBox: {
+        additionalProperties: false,
+        properties: {
+          coordinate_space: {
+            const: 'render_normalized_1000',
+            title: 'Coordinate Space',
+            type: 'string',
+          },
+          x0: {
+            exclusiveMaximum: 1000,
+            minimum: 0,
+            title: 'X0',
+            type: 'number',
+          },
+          x1: {
+            exclusiveMinimum: 0,
+            maximum: 1000,
+            title: 'X1',
+            type: 'number',
+          },
+          y0: {
+            exclusiveMaximum: 1000,
+            minimum: 0,
+            title: 'Y0',
+            type: 'number',
+          },
+          y1: {
+            exclusiveMinimum: 0,
+            maximum: 1000,
+            title: 'Y1',
+            type: 'number',
+          },
+        },
+        required: ['coordinate_space', 'x0', 'y0', 'x1', 'y1'],
+        title: 'RecognitionBox',
+        type: 'object',
+      },
+      RecognitionCell: {
+        additionalProperties: false,
+        properties: {
+          box: {
+            anyOf: [{ $ref: '#/$defs/RecognitionBox' }, { type: 'null' }],
+          },
+          column_span: {
+            default: 1,
+            maximum: 8,
+            minimum: 1,
+            title: 'Column Span',
+            type: 'integer',
+          },
+          header_axis: {
+            anyOf: [
+              { enum: ['row', 'column', 'both'], type: 'string' },
+              { type: 'null' },
+            ],
+            title: 'Header Axis',
+          },
+          row_span: {
+            default: 1,
+            maximum: 20,
+            minimum: 1,
+            title: 'Row Span',
+            type: 'integer',
+          },
+          source_cell_id: {
+            anyOf: [
+              { maxLength: 120, minLength: 1, type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Source Cell Id',
+          },
+          spans: {
+            items: { $ref: '#/$defs/RecognitionSpan' },
+            maxItems: 20000,
+            title: 'Spans',
+            type: 'array',
+          },
+          style: { anyOf: [{ $ref: '#/$defs/Style' }, { type: 'null' }] },
+          text: {
+            description:
+              "Finalize this cell's exact source transcription before quoting any span. Characters and placement are separate: ordinary raised/lowered digits use ordinary text plus vertical_align; intrinsic Unicode stays exact. Every anchor/context quotes this text.",
+            maxLength: 200000,
+            title: 'Text',
+            type: 'string',
+          },
+        },
+        required: ['text', 'box', 'style', 'header_axis', 'spans'],
+        title: 'RecognitionCell',
+        type: 'object',
+      },
+      RecognitionGeometryPatch: {
+        additionalProperties: false,
+        properties: {
+          box: { $ref: '#/$defs/RecognitionBox' },
+          segment_id: {
+            maxLength: 120,
+            minLength: 1,
+            title: 'Segment Id',
+            type: 'string',
+          },
+        },
+        required: ['segment_id', 'box'],
+        title: 'RecognitionGeometryPatch',
+        type: 'object',
+      },
+      RecognitionGeometryProof: {
+        additionalProperties: false,
+        properties: {
+          original_response_json: {
+            maxLength: 8388608,
+            minLength: 2,
+            title: 'Original Response Json',
+            type: 'string',
+          },
+          original_response_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Original Response Sha256',
+            type: 'string',
+          },
+          response: { $ref: '#/$defs/RecognitionGeometryResponse' },
+        },
+        required: [
+          'original_response_json',
+          'original_response_sha256',
+          'response',
+        ],
+        title: 'RecognitionGeometryProof',
+        type: 'object',
+      },
+      RecognitionGeometryResponse: {
+        additionalProperties: false,
+        properties: {
+          original_response_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Original Response Sha256',
+            type: 'string',
+          },
+          original_task_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Original Task Id',
+            type: 'string',
+          },
+          outcome: {
+            enum: ['corrected', 'unresolved'],
+            title: 'Outcome',
+            type: 'string',
+          },
+          patches: {
+            items: { $ref: '#/$defs/RecognitionGeometryPatch' },
+            maxItems: 32,
+            title: 'Patches',
+            type: 'array',
+          },
+          render_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Render Sha256',
+            type: 'string',
+          },
+          schema_version: {
+            const: 'ava-recognition-geometry-response-1',
+            title: 'Schema Version',
+            type: 'string',
+          },
+          source_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Source Sha256',
+            type: 'string',
+          },
+          task_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Task Id',
+            type: 'string',
+          },
+          unresolved_reason: {
+            anyOf: [
+              {
+                enum: ['IMAGE_UNCLEAR', 'NO_UNIQUE_SOURCE_BOX'],
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Unresolved Reason',
+          },
+        },
+        required: [
+          'schema_version',
+          'task_id',
+          'source_sha256',
+          'original_task_id',
+          'render_sha256',
+          'original_response_sha256',
+          'outcome',
+          'patches',
+        ],
+        title: 'RecognitionGeometryResponse',
+        type: 'object',
+      },
+      RecognitionResponse: {
+        additionalProperties: false,
+        properties: {
+          language: {
+            maxLength: 50,
+            minLength: 1,
+            title: 'Language',
+            type: 'string',
+          },
+          render_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Render Sha256',
+            type: 'string',
+          },
+          schema_version: {
+            const: 'ava-recognition-response-2',
+            title: 'Schema Version',
+            type: 'string',
+          },
+          segments: {
+            items: { $ref: '#/$defs/RecognitionSegment' },
+            maxItems: 2000,
+            title: 'Segments',
+            type: 'array',
+          },
+          source_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Source Sha256',
+            type: 'string',
+          },
+          task_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Task Id',
+            type: 'string',
+          },
+          unresolved: {
+            items: { type: 'string' },
+            maxItems: 100,
+            title: 'Unresolved',
+            type: 'array',
+          },
+        },
+        required: [
+          'schema_version',
+          'task_id',
+          'source_sha256',
+          'render_sha256',
+          'segments',
+          'unresolved',
+          'language',
+        ],
+        title: 'RecognitionResponse',
+        type: 'object',
+      },
+      RecognitionSegment: {
+        allOf: [
+          {
+            additionalProperties: false,
+            properties: {
+              alt: {
+                default: '',
+                maxLength: 4000,
+                title: 'Alt',
+                type: 'string',
+              },
+              box: { $ref: '#/$defs/RecognitionBox' },
+              cells: {
+                items: {
+                  items: { $ref: '#/$defs/RecognitionCell' },
+                  type: 'array',
+                },
+                maxItems: 20,
+                title: 'Cells',
+                type: 'array',
+              },
+              chapter_role: {
+                anyOf: [
+                  {
+                    enum: ['frontmatter', 'bodymatter', 'backmatter'],
+                    type: 'string',
+                  },
+                  { type: 'null' },
+                ],
+                default: null,
+                title: 'Chapter Role',
+              },
+              chapter_start: {
+                default: false,
+                title: 'Chapter Start',
+                type: 'boolean',
+              },
+              continues_from_previous: {
+                title: 'Continues From Previous',
+                type: 'boolean',
+              },
+              continues_to_next: {
+                title: 'Continues To Next',
+                type: 'boolean',
+              },
+              heading_level: {
+                anyOf: [
+                  { maximum: 6, minimum: 1, type: 'integer' },
+                  { type: 'null' },
+                ],
+                default: null,
+                title: 'Heading Level',
+              },
+              id: {
+                description: 'Unique within this response; s0001, s0002, ...',
+                maxLength: 120,
+                minLength: 1,
+                title: 'Id',
+                type: 'string',
+              },
+              kind: {
+                enum: [
+                  'paragraph',
+                  'heading',
+                  'quote',
+                  'aside',
+                  'caption',
+                  'credit',
+                  'verse',
+                  'code',
+                  'list_item',
+                  'note',
+                  'figure',
+                  'table',
+                  'separator',
+                  'furniture',
+                  'unsupported',
+                ],
+                title: 'Kind',
+                type: 'string',
+              },
+              list_depth: {
+                anyOf: [
+                  { maximum: 3, minimum: 1, type: 'integer' },
+                  { type: 'null' },
+                ],
+                default: null,
+                title: 'List Depth',
+              },
+              list_ordered: {
+                anyOf: [{ type: 'boolean' }, { type: 'null' }],
+                default: null,
+                title: 'List Ordered',
+              },
+              list_start: {
+                anyOf: [
+                  { maximum: 1000000, minimum: 0, type: 'integer' },
+                  { type: 'null' },
+                ],
+                default: null,
+                title: 'List Start',
+              },
+              method: { const: 'ocr', title: 'Method', type: 'string' },
+              note_label: {
+                anyOf: [{ maxLength: 100, type: 'string' }, { type: 'null' }],
+                default: null,
+                title: 'Note Label',
+              },
+              note_role: {
+                anyOf: [
+                  { enum: ['footnote', 'endnote'], type: 'string' },
+                  { type: 'null' },
+                ],
+                default: null,
+                title: 'Note Role',
+              },
+              page: {
+                maximum: 500,
+                minimum: 1,
+                title: 'Page',
+                type: 'integer',
+              },
+              related_to: {
+                anyOf: [{ maxLength: 120, type: 'string' }, { type: 'null' }],
+                default: null,
+                title: 'Related To',
+              },
+              spans: {
+                items: { $ref: '#/$defs/RecognitionSpan' },
+                maxItems: 20000,
+                title: 'Spans',
+                type: 'array',
+              },
+              style: { anyOf: [{ $ref: '#/$defs/Style' }, { type: 'null' }] },
+              text: {
+                description:
+                  "Finalize this segment's exact source transcription before quoting any span. Characters and placement are separate: ordinary raised/lowered digits use ordinary text plus vertical_align; intrinsic Unicode stays exact. Every anchor/context quotes this text.",
+                maxLength: 200000,
+                title: 'Text',
+                type: 'string',
+              },
+            },
+            required: [
+              'id',
+              'page',
+              'box',
+              'kind',
+              'text',
+              'style',
+              'spans',
+              'method',
+              'continues_from_previous',
+              'continues_to_next',
+            ],
+            title: 'RecognitionSegment',
+            type: 'object',
+          },
+          {
+            anyOf: [
+              {
+                properties: {
+                  cells: { maxItems: 0, type: 'array' },
+                  heading_level: { maximum: 6, minimum: 1, type: 'integer' },
+                  kind: { enum: ['heading'] },
+                },
+                required: ['chapter_start', 'heading_level'],
+                type: 'object',
+              },
+              {
+                properties: {
+                  cells: { maxItems: 0, type: 'array' },
+                  kind: { enum: ['note'] },
+                  note_label: { minLength: 1, type: 'string' },
+                  note_role: { enum: ['footnote', 'endnote'] },
+                },
+                required: ['note_label', 'note_role'],
+                type: 'object',
+              },
+              {
+                properties: {
+                  cells: { maxItems: 0, type: 'array' },
+                  kind: { enum: ['list_item'] },
+                  list_depth: { maximum: 3, minimum: 1, type: 'integer' },
+                  list_ordered: { type: 'boolean' },
+                },
+                required: ['list_depth', 'list_ordered'],
+                type: 'object',
+              },
+              {
+                properties: {
+                  cells: {
+                    items: { maxItems: 8, minItems: 0, type: 'array' },
+                    minItems: 1,
+                    type: 'array',
+                  },
+                  kind: { enum: ['table'] },
+                },
+                required: ['cells'],
+                type: 'object',
+              },
+              {
+                properties: {
+                  cells: { maxItems: 0, type: 'array' },
+                  kind: { enum: ['paragraph'] },
+                },
+                required: [],
+                type: 'object',
+              },
+              {
+                properties: {
+                  cells: { maxItems: 0, type: 'array' },
+                  kind: { enum: ['quote'] },
+                },
+                required: [],
+                type: 'object',
+              },
+              {
+                properties: {
+                  cells: { maxItems: 0, type: 'array' },
+                  kind: { enum: ['aside'] },
+                },
+                required: [],
+                type: 'object',
+              },
+              {
+                properties: {
+                  cells: { maxItems: 0, type: 'array' },
+                  kind: { enum: ['caption'] },
+                },
+                required: ['related_to'],
+                type: 'object',
+              },
+              {
+                properties: {
+                  cells: { maxItems: 0, type: 'array' },
+                  kind: { enum: ['credit'] },
+                },
+                required: ['related_to'],
+                type: 'object',
+              },
+              {
+                properties: {
+                  cells: { maxItems: 0, type: 'array' },
+                  kind: { enum: ['verse'] },
+                },
+                required: [],
+                type: 'object',
+              },
+              {
+                properties: {
+                  cells: { maxItems: 0, type: 'array' },
+                  kind: { enum: ['code'] },
+                },
+                required: [],
+                type: 'object',
+              },
+              {
+                properties: {
+                  cells: { maxItems: 0, type: 'array' },
+                  kind: { enum: ['figure'] },
+                },
+                required: ['alt'],
+                type: 'object',
+              },
+              {
+                properties: {
+                  cells: { maxItems: 0, type: 'array' },
+                  kind: { enum: ['separator'] },
+                },
+                required: [],
+                type: 'object',
+              },
+              {
+                properties: {
+                  cells: { maxItems: 0, type: 'array' },
+                  kind: { enum: ['furniture'] },
+                },
+                required: [],
+                type: 'object',
+              },
+              {
+                properties: {
+                  cells: { maxItems: 0, type: 'array' },
+                  kind: { enum: ['unsupported'] },
+                },
+                required: [],
+                type: 'object',
+              },
+            ],
+          },
+          {
+            anyOf: [
+              {
+                properties: { chapter_start: { const: false } },
+                type: 'object',
+              },
+              {
+                properties: {
+                  chapter_role: {
+                    enum: ['frontmatter', 'bodymatter', 'backmatter'],
+                  },
+                  chapter_start: { const: true },
+                  heading_level: { const: 1 },
+                  kind: { enum: ['heading'] },
+                },
+                required: ['chapter_role', 'chapter_start', 'heading_level'],
+                type: 'object',
+              },
+            ],
+          },
+          {
+            anyOf: [
+              {
+                properties: { list_ordered: { enum: [null, false] } },
+                type: 'object',
+              },
+              {
+                properties: {
+                  kind: { enum: ['list_item'] },
+                  list_ordered: { const: true },
+                  list_start: { maximum: 1000000, minimum: 0, type: 'integer' },
+                },
+                required: ['list_depth', 'list_ordered', 'list_start'],
+                type: 'object',
+              },
+            ],
+          },
+        ],
+      },
+      RecognitionSpan: {
+        additionalProperties: false,
+        properties: {
+          anchor: {
+            anyOf: [
+              { $ref: '#/$defs/RecognitionTextAnchor' },
+              { type: 'null' },
+            ],
+            default: null,
+          },
+          end: {
+            anyOf: [
+              { exclusiveMinimum: 0, maximum: 200000, type: 'integer' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'End',
+          },
+          note_label: {
+            anyOf: [{ maxLength: 100, type: 'string' }, { type: 'null' }],
+            title: 'Note Label',
+          },
+          start: {
+            anyOf: [
+              { maximum: 200000, minimum: 0, type: 'integer' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Start',
+          },
+          style: { anyOf: [{ $ref: '#/$defs/Style' }, { type: 'null' }] },
+          target_text: {
+            anyOf: [{ maxLength: 1000, type: 'string' }, { type: 'null' }],
+            title: 'Target Text',
+          },
+          url: {
+            anyOf: [{ maxLength: 2048, type: 'string' }, { type: 'null' }],
+            title: 'Url',
+          },
+        },
+        required: ['style', 'note_label', 'target_text', 'url'],
+        title: 'RecognitionSpan',
+        type: 'object',
+      },
+      RecognitionTextAnchor: {
+        additionalProperties: false,
+        properties: {
+          after: {
+            default: '',
+            description:
+              'Exact immediately adjacent following context in the same finalized text, including Unicode and spaces. Empty means no following-context constraint.',
+            maxLength: 128,
+            title: 'After',
+            type: 'string',
+          },
+          before: {
+            default: '',
+            description:
+              'Exact immediately adjacent preceding context in the same finalized text, including Unicode and spaces. Empty means no preceding-context constraint.',
+            maxLength: 128,
+            title: 'Before',
+            type: 'string',
+          },
+          exact_text: {
+            description:
+              'Copy verbatim from the finalized owning segment/cell text. Unicode scalars, case and spaces must be identical; an ordinary digit cannot anchor a Unicode script digit. Together with before/after, this quotation must identify exactly one occurrence.',
+            maxLength: 1000,
+            minLength: 1,
+            title: 'Exact Text',
+            type: 'string',
+          },
+        },
+        required: ['exact_text'],
+        title: 'RecognitionTextAnchor',
+        type: 'object',
+      },
+      RefinementJoin: {
+        additionalProperties: false,
+        properties: {
+          edge_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Edge Id',
+            type: 'string',
+          },
+          evidence_ids: {
+            items: {
+              maxLength: 120,
+              pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+              type: 'string',
+            },
+            maxItems: 48,
+            minItems: 2,
+            title: 'Evidence Ids',
+            type: 'array',
+          },
+          join: { title: 'Join', type: 'boolean' },
+        },
+        required: ['edge_id', 'join', 'evidence_ids'],
+        title: 'RefinementJoin',
+        type: 'object',
+      },
+      RefinementStyle: {
+        additionalProperties: false,
+        description:
+          'Sparse source typography with the wire observations required by acceptance.',
+        properties: {
+          align: {
+            anyOf: [
+              {
+                enum: ['start', 'left', 'right', 'center', 'justify'],
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Align',
+          },
+          background_color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Background Color',
+          },
+          block_indent_em: {
+            anyOf: [
+              { maximum: 6, minimum: 0, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Block Indent Em',
+          },
+          bold: { title: 'Bold', type: 'boolean' },
+          color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Color',
+          },
+          decoration_color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Decoration Color',
+          },
+          family: {
+            anyOf: [
+              { enum: ['serif', 'sans-serif', 'monospace'], type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Family',
+          },
+          id: { const: 'observed', title: 'Id', type: 'string' },
+          indent_em: {
+            anyOf: [
+              { maximum: 6, minimum: -3, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Indent Em',
+          },
+          italic: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Italic',
+          },
+          line_height: {
+            anyOf: [
+              { maximum: 3, minimum: 0.5, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Line Height',
+          },
+          relative_size: {
+            maximum: 3,
+            minimum: 0.5,
+            title: 'Relative Size',
+            type: 'number',
+          },
+          small_caps: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Small Caps',
+          },
+          space_after_em: {
+            anyOf: [
+              { maximum: 5, minimum: 0, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Space After Em',
+          },
+          space_before_em: {
+            anyOf: [
+              { maximum: 5, minimum: 0, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Space Before Em',
+          },
+          strike_through: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Strike Through',
+          },
+          underline: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Underline',
+          },
+          vertical_align: {
+            anyOf: [
+              { enum: ['baseline', 'super', 'sub'], type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Vertical Align',
+          },
+        },
+        required: ['id', 'bold', 'relative_size'],
+        title: 'RefinementStyle',
+        type: 'object',
+      },
+      SourceFeatureDecision: {
+        additionalProperties: false,
+        properties: {
+          features: {
+            items: { $ref: '#/$defs/SourceFeatureObservation' },
+            maxItems: 7,
+            minItems: 1,
+            title: 'Features',
+            type: 'array',
+          },
+          node_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Node Id',
+            type: 'string',
+          },
+          text_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Text Sha256',
+            type: 'string',
+          },
+        },
+        required: ['node_id', 'text_sha256', 'features'],
+        title: 'SourceFeatureDecision',
+        type: 'object',
+      },
+      SourceFeatureObservation: {
+        additionalProperties: false,
+        properties: {
+          disposition: {
+            enum: ['observed', 'unknown', 'not_applicable'],
+            title: 'Disposition',
+            type: 'string',
+          },
+          evidence_ids: {
+            items: {
+              maxLength: 120,
+              pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+              type: 'string',
+            },
+            maxItems: 4,
+            minItems: 1,
+            title: 'Evidence Ids',
+            type: 'array',
+          },
+          feature: {
+            enum: [
+              'paragraph_role',
+              'family',
+              'weight',
+              'italic',
+              'first_line_indent',
+              'block_inset',
+              'relative_size',
+            ],
+            title: 'Feature',
+            type: 'string',
+          },
+          reason: {
+            anyOf: [
+              {
+                enum: [
+                  'source_blurred',
+                  'source_clipped',
+                  'source_context_insufficient',
+                  'heading_has_no_prose_first_line',
+                ],
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            title: 'Reason',
+          },
+          value: {
+            anyOf: [
+              {
+                enum: [
+                  'paragraph',
+                  'quote',
+                  'serif',
+                  'sans-serif',
+                  'monospace',
+                ],
+                type: 'string',
+              },
+              { type: 'boolean' },
+              { type: 'number' },
+              { type: 'null' },
+            ],
+            title: 'Value',
+          },
+        },
+        required: ['feature', 'disposition', 'value', 'reason', 'evidence_ids'],
+        title: 'SourceFeatureObservation',
+        type: 'object',
+      },
+      SourceFeatureResponse: {
+        additionalProperties: false,
+        properties: {
+          decisions: {
+            items: { type: 'null' },
+            maxItems: 0,
+            title: 'Decisions',
+            type: 'array',
+          },
+          feature_decisions: {
+            items: { $ref: '#/$defs/SourceFeatureDecision' },
+            maxItems: 24,
+            minItems: 1,
+            title: 'Feature Decisions',
+            type: 'array',
+          },
+          image_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Image Sha256',
+            type: 'string',
+          },
+          joins: {
+            items: { type: 'null' },
+            maxItems: 0,
+            title: 'Joins',
+            type: 'array',
+          },
+          metadata_decisions: {
+            items: { type: 'null' },
+            maxItems: 0,
+            title: 'Metadata Decisions',
+            type: 'array',
+          },
+          observation_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Observation Sha256',
+            type: 'string',
+          },
+          schema_version: {
+            const: 'ava-book-refinement-response-4',
+            title: 'Schema Version',
+            type: 'string',
+          },
+          source_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Source Sha256',
+            type: 'string',
+          },
+          task_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Task Id',
+            type: 'string',
+          },
+          unresolved: {
+            items: { type: 'string' },
+            maxItems: 100,
+            title: 'Unresolved',
+            type: 'array',
+          },
+        },
+        required: [
+          'schema_version',
+          'task_id',
+          'source_sha256',
+          'observation_sha256',
+          'image_sha256',
+          'decisions',
+          'joins',
+          'feature_decisions',
+          'unresolved',
+        ],
+        title: 'SourceFeatureResponse',
+        type: 'object',
+      },
+      Style: {
+        additionalProperties: false,
+        properties: {
+          align: {
+            anyOf: [
+              {
+                enum: ['start', 'left', 'right', 'center', 'justify'],
+                type: 'string',
+              },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Align',
+          },
+          background_color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Background Color',
+          },
+          block_indent_em: {
+            anyOf: [
+              { maximum: 6, minimum: 0, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Block Indent Em',
+          },
+          bold: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Bold',
+          },
+          color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Color',
+          },
+          decoration_color: {
+            anyOf: [
+              { pattern: '^#[0-9a-f]{6}$', type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Decoration Color',
+          },
+          family: {
+            anyOf: [
+              { enum: ['serif', 'sans-serif', 'monospace'], type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Family',
+          },
+          id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Id',
+            type: 'string',
+          },
+          indent_em: {
+            anyOf: [
+              { maximum: 6, minimum: -3, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Indent Em',
+          },
+          italic: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Italic',
+          },
+          line_height: {
+            anyOf: [
+              { maximum: 3, minimum: 0.5, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Line Height',
+          },
+          relative_size: {
+            anyOf: [
+              { maximum: 3, minimum: 0.5, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Relative Size',
+          },
+          small_caps: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Small Caps',
+          },
+          space_after_em: {
+            anyOf: [
+              { maximum: 5, minimum: 0, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Space After Em',
+          },
+          space_before_em: {
+            anyOf: [
+              { maximum: 5, minimum: 0, type: 'number' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Space Before Em',
+          },
+          strike_through: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Strike Through',
+          },
+          underline: {
+            anyOf: [{ type: 'boolean' }, { type: 'null' }],
+            default: null,
+            title: 'Underline',
+          },
+          vertical_align: {
+            anyOf: [
+              { enum: ['baseline', 'super', 'sub'], type: 'string' },
+              { type: 'null' },
+            ],
+            default: null,
+            title: 'Vertical Align',
+          },
+        },
+        required: ['id'],
+        title: 'Style',
+        type: 'object',
+      },
+      WordWrapDecision: {
+        additionalProperties: false,
+        properties: {
+          disposition: {
+            enum: ['layout', 'literal', 'unresolved'],
+            title: 'Disposition',
+            type: 'string',
+          },
+          id: { pattern: '^w[0-9]{5}$', title: 'Id', type: 'string' },
+        },
+        required: ['id', 'disposition'],
+        title: 'WordWrapDecision',
+        type: 'object',
+      },
+      WordWrapResponse: {
+        additionalProperties: false,
+        properties: {
+          catalogue_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Catalogue Sha256',
+            type: 'string',
+          },
+          decisions: {
+            items: { $ref: '#/$defs/WordWrapDecision' },
+            maxItems: 128,
+            minItems: 1,
+            title: 'Decisions',
+            type: 'array',
+          },
+          observation_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Observation Sha256',
+            type: 'string',
+          },
+          schema_version: {
+            const: 'ava-native-word-wrap-response-1',
+            title: 'Schema Version',
+            type: 'string',
+          },
+          source_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Source Sha256',
+            type: 'string',
+          },
+          task_id: {
+            maxLength: 120,
+            pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+            title: 'Task Id',
+            type: 'string',
+          },
+        },
+        required: [
+          'schema_version',
+          'task_id',
+          'catalogue_sha256',
+          'observation_sha256',
+          'source_sha256',
+          'decisions',
+        ],
+        title: 'WordWrapResponse',
+        type: 'object',
+      },
+    },
+    additionalProperties: false,
+    properties: {
+      geometry_corrections: {
+        items: { $ref: '#/$defs/RecognitionGeometryProof' },
+        maxItems: 25000,
+        title: 'Geometry Corrections',
+        type: 'array',
+      },
+      native_structure_responses: {
+        items: { $ref: '#/$defs/NativeStructureResponse' },
+        maxItems: 25000,
+        title: 'Native Structure Responses',
+        type: 'array',
+      },
+      profile_id: {
+        default: 'ava-pdf-prose-en-v2',
+        enum: ['ava-pdf-prose-en-v2', 'ava-pdf-prose-en-uk-v3'],
+        title: 'Profile Id',
+        type: 'string',
+      },
+      recognition_repair_policy: {
+        const: 'ava-recognition-geometry-repair-1',
+        title: 'Recognition Repair Policy',
+        type: 'string',
+      },
+      refinements: {
+        items: {
+          anyOf: [
+            { $ref: '#/$defs/BookRefinementResponse' },
+            { $ref: '#/$defs/SourceFeatureResponse' },
+            { $ref: '#/$defs/PrintedTitleResponse' },
+          ],
+        },
+        maxItems: 32,
+        title: 'Refinements',
+        type: 'array',
+      },
+      responses: {
+        items: { $ref: '#/$defs/RecognitionResponse' },
+        maxItems: 25000,
+        title: 'Responses',
+        type: 'array',
+      },
+      schema_version: {
+        const: 'ava-reconstruct-input-6',
+        title: 'Schema Version',
+        type: 'string',
+      },
+      source_feature_policy: {
+        const: 'ava-ocr-source-features-1',
+        title: 'Source Feature Policy',
+        type: 'string',
+      },
+      source_layout_policy: {
+        const: 'ava-native-layout-1',
+        title: 'Source Layout Policy',
+        type: 'string',
+      },
+      source_normalization_policy: {
+        const: 'ava-native-word-wrap-1',
+        title: 'Source Normalization Policy',
+        type: 'string',
+      },
+      source_sha256: {
+        maxLength: 64,
+        minLength: 64,
+        pattern: '^[0-9a-f]{64}$',
+        title: 'Source Sha256',
+        type: 'string',
+      },
+      source_structure_policy: {
+        const: 'ava-native-structure-1',
+        title: 'Source Structure Policy',
+        type: 'string',
+      },
+      word_wrap_responses: {
+        items: { $ref: '#/$defs/WordWrapResponse' },
+        maxItems: 32,
+        title: 'Word Wrap Responses',
+        type: 'array',
+      },
+    },
+    required: [
+      'schema_version',
+      'source_layout_policy',
+      'source_structure_policy',
+      'source_normalization_policy',
+      'source_sha256',
+      'source_feature_policy',
+      'responses',
+      'native_structure_responses',
+      'word_wrap_responses',
+      'recognition_repair_policy',
+      'geometry_corrections',
+    ],
+    title: 'RecognitionGeometryReconstructionInput',
+    type: 'object',
+  },
+  RecognitionGeometryResponse: {
+    $defs: {
+      RecognitionBox: {
+        additionalProperties: false,
+        properties: {
+          coordinate_space: {
+            const: 'render_normalized_1000',
+            title: 'Coordinate Space',
+            type: 'string',
+          },
+          x0: {
+            exclusiveMaximum: 1000,
+            minimum: 0,
+            title: 'X0',
+            type: 'number',
+          },
+          x1: {
+            exclusiveMinimum: 0,
+            maximum: 1000,
+            title: 'X1',
+            type: 'number',
+          },
+          y0: {
+            exclusiveMaximum: 1000,
+            minimum: 0,
+            title: 'Y0',
+            type: 'number',
+          },
+          y1: {
+            exclusiveMinimum: 0,
+            maximum: 1000,
+            title: 'Y1',
+            type: 'number',
+          },
+        },
+        required: ['coordinate_space', 'x0', 'y0', 'x1', 'y1'],
+        title: 'RecognitionBox',
+        type: 'object',
+      },
+      RecognitionGeometryPatch: {
+        additionalProperties: false,
+        properties: {
+          box: { $ref: '#/$defs/RecognitionBox' },
+          segment_id: {
+            maxLength: 120,
+            minLength: 1,
+            title: 'Segment Id',
+            type: 'string',
+          },
+        },
+        required: ['segment_id', 'box'],
+        title: 'RecognitionGeometryPatch',
+        type: 'object',
+      },
+    },
+    additionalProperties: false,
+    properties: {
+      original_response_sha256: {
+        maxLength: 64,
+        minLength: 64,
+        pattern: '^[0-9a-f]{64}$',
+        title: 'Original Response Sha256',
+        type: 'string',
+      },
+      original_task_id: {
+        maxLength: 120,
+        pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+        title: 'Original Task Id',
+        type: 'string',
+      },
+      outcome: {
+        enum: ['corrected', 'unresolved'],
+        title: 'Outcome',
+        type: 'string',
+      },
+      patches: {
+        items: { $ref: '#/$defs/RecognitionGeometryPatch' },
+        maxItems: 32,
+        title: 'Patches',
+        type: 'array',
+      },
+      render_sha256: {
+        maxLength: 64,
+        minLength: 64,
+        pattern: '^[0-9a-f]{64}$',
+        title: 'Render Sha256',
+        type: 'string',
+      },
+      schema_version: {
+        const: 'ava-recognition-geometry-response-1',
+        title: 'Schema Version',
+        type: 'string',
+      },
+      source_sha256: {
+        maxLength: 64,
+        minLength: 64,
+        pattern: '^[0-9a-f]{64}$',
+        title: 'Source Sha256',
+        type: 'string',
+      },
+      task_id: {
+        maxLength: 120,
+        pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+        title: 'Task Id',
+        type: 'string',
+      },
+      unresolved_reason: {
+        anyOf: [
+          { enum: ['IMAGE_UNCLEAR', 'NO_UNIQUE_SOURCE_BOX'], type: 'string' },
+          { type: 'null' },
+        ],
+        default: null,
+        title: 'Unresolved Reason',
+      },
+    },
+    required: [
+      'schema_version',
+      'task_id',
+      'source_sha256',
+      'original_task_id',
+      'render_sha256',
+      'original_response_sha256',
+      'outcome',
+      'patches',
+    ],
+    title: 'RecognitionGeometryResponse',
+    type: 'object',
+  },
+  RecognitionGeometryTask: {
+    $defs: {
+      RecognitionGeometrySlot: {
+        additionalProperties: false,
+        properties: {
+          context: { maxLength: 256, title: 'Context', type: 'string' },
+          kind: {
+            enum: [
+              'paragraph',
+              'heading',
+              'quote',
+              'aside',
+              'caption',
+              'credit',
+              'verse',
+              'code',
+              'list_item',
+              'note',
+              'figure',
+              'table',
+              'separator',
+              'furniture',
+              'unsupported',
+            ],
+            title: 'Kind',
+            type: 'string',
+          },
+          original_box_json: {
+            maxLength: 4096,
+            minLength: 2,
+            title: 'Original Box Json',
+            type: 'string',
+          },
+          original_box_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Original Box Sha256',
+            type: 'string',
+          },
+          reason: {
+            const: 'EMPTY_OR_REVERSED_BOX',
+            title: 'Reason',
+            type: 'string',
+          },
+          segment_id: {
+            maxLength: 120,
+            minLength: 1,
+            title: 'Segment Id',
+            type: 'string',
+          },
+          segment_index: {
+            maximum: 1999,
+            minimum: 0,
+            title: 'Segment Index',
+            type: 'integer',
+          },
+          segment_text_sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Segment Text Sha256',
+            type: 'string',
+          },
+        },
+        required: [
+          'segment_index',
+          'segment_id',
+          'segment_text_sha256',
+          'original_box_json',
+          'original_box_sha256',
+          'reason',
+          'kind',
+          'context',
+        ],
+        title: 'RecognitionGeometrySlot',
+        type: 'object',
+      },
+      RecognitionImage: {
+        additionalProperties: false,
+        properties: {
+          base64: {
+            maxLength: 22369624,
+            minLength: 4,
+            title: 'Base64',
+            type: 'string',
+          },
+          byte_length: {
+            maximum: 16777216,
+            minimum: 1,
+            title: 'Byte Length',
+            type: 'integer',
+          },
+          height: {
+            maximum: 6000,
+            minimum: 1,
+            title: 'Height',
+            type: 'integer',
+          },
+          media_type: {
+            enum: ['image/png', 'image/jpeg'],
+            title: 'Media Type',
+            type: 'string',
+          },
+          sha256: {
+            maxLength: 64,
+            minLength: 64,
+            pattern: '^[0-9a-f]{64}$',
+            title: 'Sha256',
+            type: 'string',
+          },
+          width: { maximum: 6000, minimum: 1, title: 'Width', type: 'integer' },
+        },
+        required: [
+          'media_type',
+          'sha256',
+          'byte_length',
+          'width',
+          'height',
+          'base64',
+        ],
+        title: 'RecognitionImage',
+        type: 'object',
+      },
+    },
+    additionalProperties: false,
+    properties: {
+      image: { $ref: '#/$defs/RecognitionImage' },
+      native_evidence_sha256: {
+        maxLength: 64,
+        minLength: 64,
+        pattern: '^[0-9a-f]{64}$',
+        title: 'Native Evidence Sha256',
+        type: 'string',
+      },
+      original_response_json: {
+        maxLength: 8388608,
+        minLength: 2,
+        title: 'Original Response Json',
+        type: 'string',
+      },
+      original_response_sha256: {
+        maxLength: 64,
+        minLength: 64,
+        pattern: '^[0-9a-f]{64}$',
+        title: 'Original Response Sha256',
+        type: 'string',
+      },
+      original_task_id: {
+        maxLength: 120,
+        pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+        title: 'Original Task Id',
+        type: 'string',
+      },
+      page_number: {
+        maximum: 500,
+        minimum: 1,
+        title: 'Page Number',
+        type: 'integer',
+      },
+      profile_id: {
+        enum: ['ava-pdf-prose-en-v2', 'ava-pdf-prose-en-uk-v3'],
+        title: 'Profile Id',
+        type: 'string',
+      },
+      prompt_version: {
+        const: 'ava-recognition-geometry-1',
+        title: 'Prompt Version',
+        type: 'string',
+      },
+      purpose: {
+        const: 'repair_recognition_geometry',
+        title: 'Purpose',
+        type: 'string',
+      },
+      render_sha256: {
+        maxLength: 64,
+        minLength: 64,
+        pattern: '^[0-9a-f]{64}$',
+        title: 'Render Sha256',
+        type: 'string',
+      },
+      response_schema_version: {
+        const: 'ava-recognition-geometry-response-1',
+        title: 'Response Schema Version',
+        type: 'string',
+      },
+      schema_version: {
+        const: 'ava-recognition-geometry-task-1',
+        title: 'Schema Version',
+        type: 'string',
+      },
+      slots: {
+        items: { $ref: '#/$defs/RecognitionGeometrySlot' },
+        maxItems: 32,
+        minItems: 1,
+        title: 'Slots',
+        type: 'array',
+      },
+      source_sha256: {
+        maxLength: 64,
+        minLength: 64,
+        pattern: '^[0-9a-f]{64}$',
+        title: 'Source Sha256',
+        type: 'string',
+      },
+      task_id: {
+        maxLength: 120,
+        pattern: '^[A-Za-z][A-Za-z0-9_.-]{0,119}$',
+        title: 'Task Id',
+        type: 'string',
+      },
+    },
+    required: [
+      'schema_version',
+      'task_id',
+      'purpose',
+      'prompt_version',
+      'response_schema_version',
+      'source_sha256',
+      'profile_id',
+      'page_number',
+      'original_task_id',
+      'render_sha256',
+      'native_evidence_sha256',
+      'original_response_json',
+      'original_response_sha256',
+      'image',
+      'slots',
+    ],
+    title: 'RecognitionGeometryTask',
+    type: 'object',
+  },
   RecognitionResponse: {
     $defs: {
       RecognitionBox: {

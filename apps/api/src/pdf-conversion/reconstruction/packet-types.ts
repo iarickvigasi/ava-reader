@@ -1,3 +1,7 @@
+import type { RecognitionGeometryTask } from './generated/RecognitionGeometryTask';
+import type { RecognitionGeometryResponse } from './generated/RecognitionGeometryResponse';
+import type { RecognitionGeometryProof } from './generated/RecognitionGeometryProof';
+import type { RecognitionGeometryReconstructionInput } from './generated/RecognitionGeometryReconstructionInput';
 import type { WordWrapTask } from './generated/WordWrapTask';
 import type { WordWrapResponse } from './generated/WordWrapResponse';
 import type { WordWrapBatch } from './generated/WordWrapBatch';
@@ -27,6 +31,11 @@ import type { NativeStructureTask } from './generated/NativeStructureTask';
 import type { NativeStructureResponse } from './generated/NativeStructureResponse';
 
 export type Packets = {
+  RecognitionGeometryTask: RecognitionGeometryTask;
+  RecognitionGeometryResponse: RecognitionGeometryResponse;
+  RecognitionGeometryProof: RecognitionGeometryProof;
+  RecognitionGeometryReconstructionInput: RecognitionGeometryReconstructionInput;
+
   WordWrapTask: WordWrapTask;
   WordWrapResponse: WordWrapResponse;
   WordWrapBatch: WordWrapBatch;

@@ -1,0 +1,35 @@
+{
+  "schema_version": "ava-recognition-geometry-task-1",
+  "task_id": "recognition-geometry-c3e0425b19742ca5d54f3e359ea41ec32df2a0c5c64372edb26e3e4b5a6dcf2f",
+  "purpose": "repair_recognition_geometry",
+  "prompt_version": "ava-recognition-geometry-1",
+  "response_schema_version": "ava-recognition-geometry-response-1",
+  "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "profile_id": "ava-pdf-prose-en-v2",
+  "page_number": 1,
+  "original_task_id": "recognize-d0d88f56fe9feeea879d112fe201e7025de9b7dc488e617d56eebed8c108a0d1",
+  "render_sha256": "fca62a9f2e757c42b5d1225df44b7f69ac705224b6e70926efec33cda915da36",
+  "native_evidence_sha256": "ed08902016eb1742711bb7cc1fdf4c2757d6d4460163f752a6a71181e79a9564",
+  "original_response_json": "{\"schema_version\":\"ava-recognition-response-2\",\"task_id\":\"recognize-d0d88f56fe9feeea879d112fe201e7025de9b7dc488e617d56eebed8c108a0d1\",\"source_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"render_sha256\":\"fca62a9f2e757c42b5d1225df44b7f69ac705224b6e70926efec33cda915da36\",\"language\":\"en\",\"unresolved\":[],\"segments\":[{\"id\":\"s0\",\"page\":1,\"method\":\"ocr\",\"kind\":\"paragraph\",\"text\":\"Reliable source\",\"box\":{\"coordinate_space\":\"render_normalized_1000\",\"x0\":0,\"y0\":700,\"x1\":1000,\"y1\":600},\"style\":null,\"spans\":[],\"heading_level\":null,\"chapter_start\":false,\"chapter_role\":null,\"note_label\":null,\"note_role\":null,\"list_ordered\":null,\"list_start\":null,\"list_depth\":null,\"continues_from_previous\":false,\"continues_to_next\":false,\"cells\":[],\"related_to\":null,\"alt\":\"\"}]}",
+  "original_response_sha256": "ff622184219c708d8756f481f37617ddeca9c24b1172617be34fe39f5506885a",
+  "image": {
+    "media_type": "image/png",
+    "sha256": "fca62a9f2e757c42b5d1225df44b7f69ac705224b6e70926efec33cda915da36",
+    "byte_length": 77,
+    "width": 4,
+    "height": 8,
+    "base64": "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAICAIAAABRUclSAAAAFElEQVR4nGP8//8/AwwwwVlU5wAANIUDDTHR7/kAAAAASUVORK5CYII="
+  },
+  "slots": [
+    {
+      "segment_index": 0,
+      "segment_id": "s0",
+      "segment_text_sha256": "ce8ebe41f9fbae5fde1176697ccac5bc470bff48c98624ac85527bbb3a795764",
+      "original_box_json": "{\"coordinate_space\":\"render_normalized_1000\",\"x0\":0,\"y0\":700,\"x1\":1000,\"y1\":600}",
+      "original_box_sha256": "c5ff26f408f5074a72d94f79566c67340b942c18c798df717d8fe3fe1fc4e625",
+      "reason": "EMPTY_OR_REVERSED_BOX",
+      "kind": "paragraph",
+      "context": "Reliable source"
+    }
+  ]
+}

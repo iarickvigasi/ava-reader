@@ -1,8 +1,10 @@
+import { validateGeometry } from './validate-geometry';
 import { validateWordWrap } from './validate-word-wrap';
 import type {
   NativeLayoutPolicy,
   NativeStructurePolicy,
   SourceNormalizationPolicy,
+  RecognitionRepairPolicy,
 } from '../../library/pdf-import/admission/profile';
 import { reconstructionRequest } from './reconstruction-request';
 import type { SemanticValidator } from '../contracts/types';
@@ -26,6 +28,7 @@ export async function runAttempt(
     sourceLayoutPolicy?: NativeLayoutPolicy;
     sourceStructurePolicy?: NativeStructurePolicy;
     sourceNormalizationPolicy?: SourceNormalizationPolicy;
+    recognitionRepairPolicy?: RecognitionRepairPolicy;
   },
   semantic: SemanticValidator,
 ) {
@@ -37,6 +40,14 @@ export async function runAttempt(
   const exchanges = attemptExchanges({
     ...input,
     checkActive,
+    validateGeometry: (task, original, signal) =>
+      validateGeometry(
+        task,
+        original,
+        input.deps.sandbox,
+        input.sandboxInput,
+        signal,
+      ),
     validateWordWrap: (task, signal) =>
       validateWordWrap(task, input.deps.sandbox, input.sandboxInput, signal),
     validateAnchorContext: (correction, task, signal) =>

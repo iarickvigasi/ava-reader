@@ -34,6 +34,12 @@ def main() -> None:
         request = json.loads(raw_request)
         if observation is not None:
             observation.start(raw_request, request)
+        if request.get("mode") == "validate_geometry":
+            from .validate_geometry import validate_geometry
+
+            sys.stdout.buffer.write(encode_packet(validate_geometry(raw_request), 1024))
+            sys.stdout.buffer.flush()
+            return
         if request.get("mode") == "validate_anchor_context":
             from .recognition_anchor_context import validate_anchor_context
 

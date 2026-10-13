@@ -1,8 +1,12 @@
+import type { RecognitionGeometryTask } from './generated/RecognitionGeometryTask';
+import { geometryProviderTask } from './geometry-provider-task';
+import { geometryResponse } from './geometry-response';
 import type { WordWrapTask } from './generated/WordWrapTask';
 import type {
   NativeLayoutPolicy,
   NativeStructurePolicy,
   SourceNormalizationPolicy,
+  RecognitionRepairPolicy,
 } from '../../library/pdf-import/admission/profile';
 import type { CoordinatorDependencies } from './coordinator-types';
 import type { RecognitionTask } from './generated/RecognitionTask';
@@ -26,6 +30,12 @@ export type AttemptContext = {
   sourceLayoutPolicy?: NativeLayoutPolicy;
   sourceStructurePolicy?: NativeStructurePolicy;
   sourceNormalizationPolicy?: SourceNormalizationPolicy;
+  recognitionRepairPolicy?: RecognitionRepairPolicy;
+  validateGeometry?: (
+    correction: RecognitionGeometryTask,
+    task: RecognitionTask,
+    signal: AbortSignal,
+  ) => Promise<void>;
   validateWordWrap?: (task: WordWrapTask, signal: AbortSignal) => Promise<void>;
   validateAnchorContext?: (
     correction: RecognitionAnchorContextTask,
@@ -35,7 +45,7 @@ export type AttemptContext = {
   checkActive: (signal: AbortSignal) => void;
 };
 
-export async function recognizeAttemptTask(
+export async function recognizeAttemptReceipt(
   task: RecognitionTask,
   context: AttemptContext,
   signal: AbortSignal,
@@ -46,7 +56,10 @@ export async function recognizeAttemptTask(
     signal,
   );
   context.checkActive(signal);
-  return recognitionResponse(task, receipt.output);
+  return {
+    response: recognitionResponse(task, receipt.output),
+    originalResponseJson: receipt.output,
+  };
 }
 
 export async function refineAttemptTask(
@@ -81,4 +94,33 @@ export async function correctAttemptAnchorContext(
   );
   context.checkActive(signal);
   return anchorContextResponse(task, receipt.output, parent, original);
+}
+
+export async function recognizeAttemptTask(
+  task: RecognitionTask,
+  context: AttemptContext,
+  signal: AbortSignal,
+) {
+  return (await recognizeAttemptReceipt(task, context, signal)).response;
+}
+
+export async function correctAttemptGeometry(
+  task: RecognitionGeometryTask,
+  parent: RecognitionTask,
+  original: RecognitionResponse,
+  raw: string,
+  context: AttemptContext,
+  signal: AbortSignal,
+) {
+  context.checkActive(signal);
+  if (!context.validateGeometry)
+    throw new PdfRuntimeError('DISPATCH_NOT_AUTHORIZED');
+  await context.validateGeometry(task, parent, signal);
+  context.checkActive(signal);
+  const receipt = await context.deps.dispatch(
+    geometryProviderTask(task, parent, original, raw),
+    signal,
+  );
+  context.checkActive(signal);
+  return geometryResponse(task, receipt.output, parent, original);
 }

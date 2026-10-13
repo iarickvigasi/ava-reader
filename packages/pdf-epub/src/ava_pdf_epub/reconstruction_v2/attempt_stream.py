@@ -11,6 +11,7 @@ from .attempt_complete_input import attempt_complete_input as _input
 from .attempt_exchange import ExchangeWriter, json_bytes, write_bytes
 from .attempt_initial_input import InitialInput
 from .attempt_initial_input import initial_input as initial_input
+from .attempt_recognition_geometry import accept_geometry_attempt
 from .attempt_word_wrap import attempt_word_wrap
 from .native_structure_assembly import assemble_native_structure_source
 from .native_structure_contract import NativeStructureResponse, NativeStructureTask
@@ -27,6 +28,7 @@ from .protocol_native_layout import NativeLayoutReconstructionInput
 from .protocol_native_structure import NativeStructureReconstructionInput
 from .protocol_native_word_wrap import NativeWordWrapReconstructionInput
 from .protocol_output import encode_packet
+from .protocol_recognition_geometry import RecognitionGeometryReconstructionInput
 from .qualify_embedded_images import qualify_embedded_images
 from .qualify_native_layout import qualify_native_layout
 from .recognition_anchor_exchange import accept_attempt_recognition
@@ -151,8 +153,11 @@ def _run(
 ) -> None:
     responses: list[Any] = []
     native_responses: list[Any] = []
+    geometry_corrections: list[Any] = []
     response_bytes = (
-        6
+        8
+        if isinstance(request, RecognitionGeometryReconstructionInput)
+        else 6
         if isinstance(request, NativeWordWrapReconstructionInput)
         else 4
         if isinstance(request, NativeStructureReconstructionInput)
@@ -211,20 +216,30 @@ def _run(
                 preparation.check_unchanged()
                 if len(returned) != 1 or len(responses) + len(native_responses) >= 25000:
                     raise ValueError("Recognition task/response coverage differs")
-                response = accept_attempt_recognition(
-                    recognition_task,
-                    returned[0],
-                    writer,
-                    incoming,
-                    isinstance(
-                        request,
-                        (
-                            NativeLayoutReconstructionInput,
-                            NativeStructureReconstructionInput,
-                            NativeWordWrapReconstructionInput,
+                if isinstance(request, RecognitionGeometryReconstructionInput):
+                    response, proof = accept_geometry_attempt(
+                        recognition_task, returned[0], writer, incoming
+                    )
+                    if proof is not None:
+                        response_bytes += len(json_bytes(proof.model_dump(mode="json"))) + (
+                            1 if geometry_corrections else 0
+                        )
+                        geometry_corrections.append(proof.model_dump(mode="json"))
+                else:
+                    response = accept_attempt_recognition(
+                        recognition_task,
+                        returned[0],
+                        writer,
+                        incoming,
+                        isinstance(
+                            request,
+                            (
+                                NativeLayoutReconstructionInput,
+                                NativeStructureReconstructionInput,
+                                NativeWordWrapReconstructionInput,
+                            ),
                         ),
-                    ),
-                )
+                    )
                 # Keep the old individual pair16MiB limit, not a whole-page limit.
                 validate_tasks(
                     json_bytes(
@@ -242,7 +257,12 @@ def _run(
         pages.clear_cache()
         observe("attempt_preparation_reuse")
         batch = prepare_refinement_from_pages(
-            source, scratch, pages, _input(request, responses, [], native_responses)
+            source,
+            scratch,
+            pages,
+            _input(
+                request, responses, [], native_responses, geometry_corrections=geometry_corrections
+            ),
         )
         if batch.source_sha256 != request.source_sha256 or len(
             {task.task_id for task in batch.tasks}
@@ -272,7 +292,13 @@ def _run(
             refinements.append(response)
         word_responses: list[Any] = []
         if isinstance(request, NativeWordWrapReconstructionInput):
-            word_input = _input(request, responses, refinements, native_responses)
+            word_input = _input(
+                request,
+                responses,
+                refinements,
+                native_responses,
+                geometry_corrections=geometry_corrections,
+            )
             assert isinstance(word_input, NativeWordWrapReconstructionInput)
             word_responses = attempt_word_wrap(
                 preparation,
@@ -286,7 +312,9 @@ def _run(
             del word_input
         if incoming.read(1):
             raise ValueError("Attempt received trailing reply bytes")
-        complete = _input(request, responses, refinements, native_responses, word_responses)
+        complete = _input(
+            request, responses, refinements, native_responses, word_responses, geometry_corrections
+        )
         del batch, responses, refinements, native_responses, word_responses
         preparation.verify_inputs()
         pages.verify()

@@ -10,8 +10,10 @@ from .protocol import AnyReconstructionInput
 from .protocol_native_layout import NativeLayoutReconstructionInput
 from .protocol_native_structure import NativeStructureReconstructionInput
 from .protocol_native_word_wrap import NativeWordWrapReconstructionInput
+from .protocol_recognition_geometry import RecognitionGeometryReconstructionInput
 from .reconstruct import ReconstructedBook, reconstruct
 from .report import ReconstructionReport, reconstruction_report
+from .validate_geometry_proofs import validate_geometry_proofs
 
 
 def reconstruct_source(
@@ -59,6 +61,8 @@ def reconstruct_from_pages(
 ) -> tuple[ReconstructedBook, ReconstructionReport]:
     """Create final assembly state afresh from unchanged private source checkpoints."""
     with phase("reconstruct"):
+        if isinstance(request, RecognitionGeometryReconstructionInput):
+            validate_geometry_proofs(prepared, request)
         result = reconstruct(
             source,
             scratch,

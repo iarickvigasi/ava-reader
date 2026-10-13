@@ -21,6 +21,7 @@ COMMANDS = {
     "validate_tasks",
     "validate_refinement",
     "validate_anchor_context",
+    "validate_geometry",
     "validate_word_wrap",
 }
 SAFE_ADMISSION_CODES = {

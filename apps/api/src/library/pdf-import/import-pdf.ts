@@ -75,6 +75,7 @@ async function performImport(
     sourceLayoutPolicy: process.env.AVA_PDF_SOURCE_LAYOUT_POLICY,
     sourceStructurePolicy: process.env.AVA_PDF_SOURCE_STRUCTURE_POLICY,
     sourceNormalizationPolicy: process.env.AVA_PDF_SOURCE_NORMALIZATION_POLICY,
+    recognitionRepairPolicy: process.env.AVA_PDF_RECOGNITION_REPAIR_POLICY,
   });
   // Only the entry-owned snapshot reaches this private helper. Keep one
   // defensive buffer copy rather than retaining a second maximum-size PDF.

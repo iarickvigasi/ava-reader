@@ -855,3 +855,21 @@ Exact offsets establish positioning, not visual accuracy: compare complete empha
 notes and links against rendered source pages before qualifying a model/profile. Installed validators,
 generated API contracts and worker images must be refreshed together. Do not treat schema acceptance
 as proof that the model observed every styled word or that a full book is ready for publication.
+
+### Bounded OCR geometry correction
+
+The server-only `ava-recognition-geometry-repair-1` policy selects closed Input6 on top
+of Layout1, Structure1 and WordWrap1. It retains exact original OCR output and permits
+one correction of empty/reversed segment boxes through a distinct geometry task and
+response. Only the requested boxes may change, within the original source crop; the
+worker replays the original receipt and validates the complete patched response before
+advancing. Geometry and inline-anchor corrections share one correction opportunity.
+Historical Inputs1–5 and source cover qualification remain unchanged. The policy is
+opt-in and requires matching captured configuration, worker and provider authorization.
+
+Input6 OCR replies use private `ava-recognition-attempt-reply-1` to bind the exact original
+provider output before host color-case normalization. Repair controls use
+`ava-recognition-geometry-exchange-1`; the `validate_geometry` command independently
+regenerates eligibility before dispatch. Model requests expose the original image and
+only the requested segment IDs, roles and short contexts. The complete original output
+stays private, and the final input retains a replayable geometry proof.

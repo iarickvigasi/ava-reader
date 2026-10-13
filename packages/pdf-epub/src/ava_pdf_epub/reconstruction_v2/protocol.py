@@ -19,6 +19,7 @@ from .protocol_native_word_wrap import (
     NativeWordWrapPrepareResult,
     NativeWordWrapReconstructionInput,
 )
+from .protocol_recognition_geometry import RecognitionGeometryReconstructionInput
 from .recognition_contract import RecognitionResponse, RecognitionTask
 from .refinement_contract import (
     AnyRefinementResponse,
@@ -74,10 +75,13 @@ AnyReconstructionInput = (
     | NativeLayoutReconstructionInput
     | NativeStructureReconstructionInput
     | NativeWordWrapReconstructionInput
+    | RecognitionGeometryReconstructionInput
 )
 
 
 def reconstruction_input(raw: object) -> AnyReconstructionInput:
+    if isinstance(raw, dict) and raw.get("schema_version") == "ava-reconstruct-input-6":
+        return RecognitionGeometryReconstructionInput.model_validate(raw)
     if isinstance(raw, dict) and raw.get("schema_version") == "ava-reconstruct-input-5":
         return NativeWordWrapReconstructionInput.model_validate(raw)
     if isinstance(raw, dict) and raw.get("schema_version") == "ava-reconstruct-input-4":

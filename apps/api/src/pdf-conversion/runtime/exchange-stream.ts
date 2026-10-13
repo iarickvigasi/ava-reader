@@ -22,18 +22,20 @@ export function exchangeStream(
     source: { sha256: string };
     profile_id: string;
   };
-  const wrap =
-    (
-      exchangeJson(input.auxiliaryBytes!) as {
-        input: { schema_version: string };
-      }
-    ).input.schema_version === 'ava-reconstruct-input-5';
+  const marker = (
+    exchangeJson(input.auxiliaryBytes!) as {
+      input: { schema_version: string };
+    }
+  ).input.schema_version;
+  const geometry = marker === 'ava-reconstruct-input-6';
+  const wrap = marker === 'ava-reconstruct-input-5' || geometry;
   const protocol = exchangeProtocol(
       {
         source_sha256: job.source.sha256,
         profile_id: job.profile_id,
       },
       wrap,
+      geometry,
     ),
     header = Buffer.alloc(4);
   let headerBytes = 0,

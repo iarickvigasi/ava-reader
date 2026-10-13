@@ -1,3 +1,5 @@
+import type { RecognitionGeometryProof } from './generated/RecognitionGeometryProof';
+import { geometryBinding, geometrySha } from './geometry-binding';
 import {
   preparedAttemptPage,
   type PreparedAttemptPage,
@@ -21,7 +23,8 @@ import type { RecognitionTask } from './generated/RecognitionTask';
 import { anchorContextBinding } from './anchor-context-binding';
 import { parseSourceRefusal, type SourceContentError } from './source-refusal';
 import {
-  recognizeAttemptTask,
+  recognizeAttemptReceipt,
+  correctAttemptGeometry,
   refineAttemptTask,
   correctAttemptAnchorContext,
   type AttemptContext,
@@ -36,11 +39,13 @@ export function attemptExchanges(context: AttemptContext) {
       profile_id: context.profileId,
     },
     !!context.sourceNormalizationPolicy,
+    !!context.recognitionRepairPolicy,
   );
   const taskIds = new Set<string>();
   const responses: RecognitionResponse[] = [];
   const nativeStructureResponses: NativeStructureResponse[] = [];
   const refinements: RefinementResponse[] = [];
+  const geometryCorrections: RecognitionGeometryProof[] = [];
   const correctionIds = new Set<string>();
   let correctionUnresolved = false;
   let lastOriginal:
@@ -48,17 +53,20 @@ export function attemptExchanges(context: AttemptContext) {
         task: RecognitionTask;
         response: RecognitionResponse;
         index: number;
+        originalResponseJson: string;
       }
     | undefined;
   let currentPage: PreparedAttemptPage | undefined,
     pages: number | undefined,
     preparedPages = 0,
     pageTaskIndex = 0,
-    responseBytes = context.sourceNormalizationPolicy
-      ? 6
-      : context.sourceStructurePolicy
-        ? 4
-        : 2,
+    responseBytes = context.recognitionRepairPolicy
+      ? 8
+      : context.sourceNormalizationPolicy
+        ? 6
+        : context.sourceStructurePolicy
+          ? 4
+          : 2,
     batch: RefinementBatchPacket | undefined,
     refinementIndex = 0,
     failed = false,
@@ -86,6 +94,7 @@ export function attemptExchanges(context: AttemptContext) {
       batch?.schema_version === 'ava-book-refinement-batch-2',
       nativeStructureResponses,
       wordWrap.responses,
+      geometryCorrections,
     );
   const inputBound = () => {
     if (
@@ -182,13 +191,86 @@ export function attemptExchanges(context: AttemptContext) {
         pageTaskIndex++;
         return [response];
       }
-      const response = await recognizeAttemptTask(task, context, signal);
+      const { response, originalResponseJson } = await recognizeAttemptReceipt(
+        task,
+        context,
+        signal,
+      );
       if (failed) return invalid();
       retainResponse(response);
       responses.push(response);
-      lastOriginal = { task, response, index: responses.length - 1 };
+      lastOriginal = {
+        task,
+        response,
+        index: responses.length - 1,
+        originalResponseJson,
+      };
       pageTaskIndex++;
-      return [response];
+      return context.recognitionRepairPolicy
+        ? [
+            {
+              schema_version: 'ava-recognition-attempt-reply-1',
+              response,
+              original_response_json: originalResponseJson,
+              original_response_sha256: geometrySha(originalResponseJson),
+            },
+          ]
+        : [response];
+    }
+    if (envelope.kind === 'geometry') {
+      if (
+        !lastOriginal ||
+        batch ||
+        context.providerMode === 'native' ||
+        context.recognitionRepairPolicy !== 'ava-recognition-geometry-repair-1'
+      )
+        return invalid();
+      const parent = lastOriginal;
+      const task = geometryBinding(
+        envelope.payload,
+        parent.task,
+        parent.response,
+        parent.originalResponseJson,
+      );
+      if (taskIds.has(task.task_id) || correctionIds.has(task.task_id))
+        return invalid();
+      lastOriginal = undefined;
+      correctionIds.add(task.task_id);
+      const result = await correctAttemptGeometry(
+        task,
+        parent.task,
+        parent.response,
+        parent.originalResponseJson,
+        {
+          ...context,
+          checkActive: (activeSignal) => {
+            if (failed) return invalid();
+            context.checkActive(activeSignal);
+          },
+        },
+        signal,
+      );
+      if (failed) return invalid();
+      if (!result.corrected) {
+        correctionUnresolved = true;
+        return [result.response];
+      }
+      const proof: RecognitionGeometryProof = {
+        original_response_json: parent.originalResponseJson,
+        original_response_sha256: geometrySha(parent.originalResponseJson),
+        response: result.response,
+      };
+      responseBytes +=
+        Buffer.byteLength(JSON.stringify(result.corrected)) -
+        Buffer.byteLength(JSON.stringify(parent.response)) +
+        Buffer.byteLength(JSON.stringify(proof)) +
+        (geometryCorrections.length ? 1 : 0);
+      if (responseBytes > 60 * 1024 ** 2)
+        throw new PdfRuntimeError('RESOURCE_LIMIT');
+      geometryCorrections.push(proof);
+      responses[parent.index] = result.corrected;
+      inputBound();
+      return [result.response];
     }
     if (envelope.kind === 'anchor_context') {
       if (

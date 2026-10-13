@@ -10,6 +10,7 @@ export function validatePdfUpload(input: {
   sourceLayoutPolicy?: string;
   sourceStructurePolicy?: string;
   sourceNormalizationPolicy?: string;
+  recognitionRepairPolicy?: string;
 }) {
   const { file, idempotencyKey, convertToEpub } = input;
   if (convertToEpub !== 'true' && convertToEpub !== true)
@@ -44,6 +45,7 @@ export function validatePdfUpload(input: {
     input.sourceLayoutPolicy,
     input.sourceStructurePolicy,
     input.sourceNormalizationPolicy,
+    input.recognitionRepairPolicy,
   );
   const configSha256 = checksumBuffer(
     Buffer.from(JSON.stringify(configuration)),

@@ -2,7 +2,9 @@ import type {
   NativeLayoutPolicy,
   NativeStructurePolicy,
   SourceNormalizationPolicy,
+  RecognitionRepairPolicy,
 } from '../../library/pdf-import/admission/profile';
+import type { RecognitionGeometryProof } from './generated/RecognitionGeometryProof';
 import type { WordWrapResponse } from './generated/WordWrapResponse';
 import type { NativeStructureResponse } from './generated/NativeStructureResponse';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
@@ -15,23 +17,27 @@ export function reconstructionRequest(
     sourceLayoutPolicy?: NativeLayoutPolicy;
     sourceStructurePolicy?: NativeStructurePolicy;
     sourceNormalizationPolicy?: SourceNormalizationPolicy;
+    recognitionRepairPolicy?: RecognitionRepairPolicy;
   },
   responses: RecognitionResponse[] = [],
   refinements: RefinementResponse[] = [],
   titleScheduled = false,
   nativeStructureResponses: NativeStructureResponse[] = [],
   wordWrapResponses: WordWrapResponse[] = [],
+  geometryCorrections: RecognitionGeometryProof[] = [],
 ) {
   return {
-    schema_version: identity.sourceNormalizationPolicy
-      ? 'ava-reconstruct-input-5'
-      : identity.sourceStructurePolicy
-        ? 'ava-reconstruct-input-4'
-        : identity.sourceLayoutPolicy
-          ? 'ava-reconstruct-input-3'
-          : titleScheduled
-            ? 'ava-reconstruct-input-2'
-            : 'ava-reconstruct-input-1',
+    schema_version: identity.recognitionRepairPolicy
+      ? 'ava-reconstruct-input-6'
+      : identity.sourceNormalizationPolicy
+        ? 'ava-reconstruct-input-5'
+        : identity.sourceStructurePolicy
+          ? 'ava-reconstruct-input-4'
+          : identity.sourceLayoutPolicy
+            ? 'ava-reconstruct-input-3'
+            : titleScheduled
+              ? 'ava-reconstruct-input-2'
+              : 'ava-reconstruct-input-1',
     ...(identity.sourceLayoutPolicy
       ? {
           source_layout_policy: identity.sourceLayoutPolicy,
@@ -47,6 +53,12 @@ export function reconstructionRequest(
       ? {
           source_normalization_policy: identity.sourceNormalizationPolicy,
           word_wrap_responses: wordWrapResponses,
+        }
+      : {}),
+    ...(identity.recognitionRepairPolicy
+      ? {
+          recognition_repair_policy: identity.recognitionRepairPolicy,
+          geometry_corrections: geometryCorrections,
         }
       : {}),
     source_feature_policy: 'ava-ocr-source-features-1',

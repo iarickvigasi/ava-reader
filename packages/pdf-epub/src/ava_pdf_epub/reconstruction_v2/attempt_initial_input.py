@@ -6,6 +6,7 @@ from .protocol import ReconstructionInput
 from .protocol_native_layout import NativeLayoutReconstructionInput
 from .protocol_native_structure import NativeStructureReconstructionInput
 from .protocol_native_word_wrap import NativeWordWrapReconstructionInput
+from .protocol_recognition_geometry import RecognitionGeometryReconstructionInput
 
 REQUEST_BYTES = 64 * 1024 * 1024
 InitialInput = (
@@ -13,6 +14,7 @@ InitialInput = (
     | NativeLayoutReconstructionInput
     | NativeStructureReconstructionInput
     | NativeWordWrapReconstructionInput
+    | RecognitionGeometryReconstructionInput
 )
 
 
@@ -27,7 +29,9 @@ def initial_input(data: bytes) -> InitialInput:
     validate_initial_fields(raw["input"])
     marker = raw["input"].get("schema_version")
     request: InitialInput = (
-        NativeWordWrapReconstructionInput.model_validate(raw["input"])
+        RecognitionGeometryReconstructionInput.model_validate(raw["input"])
+        if marker == "ava-reconstruct-input-6"
+        else NativeWordWrapReconstructionInput.model_validate(raw["input"])
         if marker == "ava-reconstruct-input-5"
         else NativeStructureReconstructionInput.model_validate(raw["input"])
         if marker == "ava-reconstruct-input-4"
@@ -45,6 +49,10 @@ def initial_input(data: bytes) -> InitialInput:
             and request.native_structure_responses
         )
         or (isinstance(request, NativeWordWrapReconstructionInput) and request.word_wrap_responses)
+        or (
+            isinstance(request, RecognitionGeometryReconstructionInput)
+            and request.geometry_corrections
+        )
         or ("source_feature_policy" in raw["input"] and request.source_feature_policy is None)
     ):
         raise ValueError("Attempt cannot consume prior recognition/refinement/word-wrap decisions")

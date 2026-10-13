@@ -1,11 +1,10 @@
 import {
-  capturedSourceLayoutPolicy,
-  capturedSourceStructurePolicy,
-  capturedSourceNormalizationPolicy,
+  RECOGNITION_GEOMETRY_REPAIR_POLICY,
   NATIVE_WORD_WRAP_POLICY,
   NATIVE_LAYOUT_POLICY,
   NATIVE_STRUCTURE_POLICY,
 } from '../../library/pdf-import/admission/profile';
+import { capturedSourcePolicies } from '../../library/pdf-import/admission/captured-source-policies';
 import type { SandboxInput } from './container-arguments';
 import { exchangeJson } from './exchange-json';
 import { PdfRuntimeError } from './runtime-error';
@@ -40,30 +39,30 @@ export function exchangeEntry(input: SandboxInput) {
       job.profile_id !== request.profile_id
     )
       throw new Error('Exchange job binding');
-    const layout = capturedSourceLayoutPolicy(
-      request.profile_id,
-      job.config_sha256,
-    );
-    const native = capturedSourceStructurePolicy(
-      request.profile_id,
-      job.config_sha256,
-    );
-    const wrap = capturedSourceNormalizationPolicy(
-      request.profile_id,
-      job.config_sha256,
-    );
+    const {
+      sourceLayoutPolicy: layout,
+      sourceStructurePolicy: native,
+      sourceNormalizationPolicy: wrap,
+      recognitionRepairPolicy: repair,
+    } = capturedSourcePolicies(request.profile_id, job.config_sha256);
     if (
-      request.schema_version === 'ava-reconstruct-input-5'
+      request.schema_version === 'ava-reconstruct-input-6'
         ? layout !== NATIVE_LAYOUT_POLICY ||
           native !== NATIVE_STRUCTURE_POLICY ||
-          wrap !== NATIVE_WORD_WRAP_POLICY
-        : request.schema_version === 'ava-reconstruct-input-4'
+          wrap !== NATIVE_WORD_WRAP_POLICY ||
+          repair !== RECOGNITION_GEOMETRY_REPAIR_POLICY
+        : request.schema_version === 'ava-reconstruct-input-5'
           ? layout !== NATIVE_LAYOUT_POLICY ||
             native !== NATIVE_STRUCTURE_POLICY ||
-            wrap !== undefined
-          : request.schema_version === 'ava-reconstruct-input-3'
-            ? layout !== NATIVE_LAYOUT_POLICY || native !== undefined
-            : layout !== undefined || native !== undefined
+            wrap !== NATIVE_WORD_WRAP_POLICY ||
+            repair !== undefined
+          : request.schema_version === 'ava-reconstruct-input-4'
+            ? layout !== NATIVE_LAYOUT_POLICY ||
+              native !== NATIVE_STRUCTURE_POLICY ||
+              wrap !== undefined
+            : request.schema_version === 'ava-reconstruct-input-3'
+              ? layout !== NATIVE_LAYOUT_POLICY || native !== undefined
+              : layout !== undefined || native !== undefined
     )
       throw new Error('Exchange policy binding');
     return true;

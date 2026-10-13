@@ -12,13 +12,15 @@ export type ExchangeEnvelope = ExchangeBinding & {
     | 'ava-reconstruction-exchange-1'
     | 'ava-reconstruction-exchange-2'
     | 'ava-recognition-anchor-context-exchange-1'
-    | 'ava-native-structure-exchange-1';
+    | 'ava-native-structure-exchange-1'
+    | 'ava-recognition-geometry-exchange-1';
   sequence: number;
   kind:
     | 'page'
     | 'recognition'
     | 'native_structure'
     | 'anchor_context'
+    | 'geometry'
     | 'word_wrap_batch'
     | 'word_wrap'
     | 'refinement_batch'
@@ -31,6 +33,7 @@ export type ExchangeEnvelope = ExchangeBinding & {
 export function exchangeProtocol(
   binding: ExchangeBinding,
   wordWrapMode = false,
+  geometryMode = false,
 ) {
   let sequence = 0,
     pages = 0,
@@ -51,6 +54,8 @@ export function exchangeProtocol(
       if (bytes.length > MAX_EXCHANGE_FRAME)
         throw new PdfRuntimeError('RESOURCE_LIMIT');
       const value = exchangeJson(bytes) as ExchangeEnvelope;
+      const geometry =
+        value?.schema_version === 'ava-recognition-geometry-exchange-1';
       const correction =
         value?.schema_version === 'ava-recognition-anchor-context-exchange-1';
       const native =
@@ -60,17 +65,20 @@ export function exchangeProtocol(
         Object.keys(value).sort().join() !==
           'kind,payload,profile_id,schema_version,sequence,source_sha256' ||
         (!correction &&
+          !geometry &&
           !native &&
           value.schema_version !==
             (wordWrapMode
               ? 'ava-reconstruction-exchange-2'
               : 'ava-reconstruction-exchange-1')) ||
         correction !== (value.kind === 'anchor_context') ||
+        geometry !== (value.kind === 'geometry') ||
+        (geometry && (!geometryMode || !wordWrapMode)) ||
         native !== (value.kind === 'native_structure') ||
         !Number.isSafeInteger(value.sequence) ||
         value.sequence !== sequence + 1 ||
         value.sequence >
-          (value.schema_version === 'ava-reconstruction-exchange-2'
+          (value.schema_version === 'ava-reconstruction-exchange-2' || geometry
             ? 25600
             : 25534) ||
         terminal ||
@@ -84,6 +92,7 @@ export function exchangeProtocol(
           'recognition',
           'native_structure',
           'anchor_context',
+          ...(geometryMode ? ['geometry'] : []),
           ...(wordWrapMode ? ['word_wrap_batch', 'word_wrap'] : []),
           'refinement_batch',
           'refinement',
@@ -102,7 +111,8 @@ export function exchangeProtocol(
           ? 8 * 1024 ** 2 + 1024
           : value.kind === 'refinement_batch' ||
               value.kind === 'word_wrap_batch' ||
-              correction
+              correction ||
+              geometry
             ? MAX_EXCHANGE_FRAME
             : value.kind === 'recognition' ||
                 value.kind === 'native_structure' ||
@@ -151,7 +161,7 @@ export function exchangeProtocol(
           throw new PdfRuntimeError('INVALID_RESULT');
         pending.shift();
         wraps++;
-      } else if (correction) {
+      } else if (correction || geometry) {
         const task = value.payload as {
           task_id?: unknown;
           original_task_id?: unknown;
@@ -222,6 +232,7 @@ export function exchangeReply(bytes: Buffer, request: ExchangeEnvelope) {
     'word_wrap',
     'refinement',
     'anchor_context',
+    'geometry',
   ].includes(request.kind)
     ? 1
     : 0;
