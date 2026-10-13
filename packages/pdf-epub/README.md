@@ -340,6 +340,13 @@ unknown failures explicitly have incomplete diagnostics. These diagnostics conta
   geometry without rewriting accepted text. Confidence/visibility/ambiguity gates stay intact.
   Arbitrary scripts/chains/additional actions, scanned table-cell links and unqualified coordinate
   destinations remain explicit review/refusal paths. See [navigation policy](../../docs/pdf-conversion.md#source-bound-pdf-navigation).
+  Complete finite `XYZ` viewport origins above or left of an understood unrotated page can
+  project onto its first eligible retained source line. Original coordinates remain unchanged,
+  and the target keeps its unique owner and exact character offset; it is not a generic page-start
+  fallback. This path requires matching page/observation dimensions, full zero-origin CropBox/MediaBox
+  and UserUnit1, and excludes omitted furniture. In-page passage/column behavior stays unchanged;
+  missing/ambiguous ownership, unknown frames/modes, nonfinite values and no eligible line still refuse.
+  Caller glyph/annotation overlap rules remain unchanged.
 - Encrypted or unqualified concealed/clipped/rotated content requires safe source handling. Refusal
   does not mean the PDF is corrupt. No hidden text is deliberately exposed.
 - Scans need an explicitly configured recognizer or reviewed/replayed extraction. Native extraction

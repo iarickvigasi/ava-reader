@@ -1,7 +1,7 @@
 """Read PDF navigation as inert, bounded data. No action is ever executed."""
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 from urllib.parse import urljoin, urlsplit
 
@@ -19,6 +19,8 @@ class NavigationTarget:
     top: float | None = None
     left: float | None = None
     derived_scheme: bool = False
+    # Private projection metadata; existing target-value comparisons stay unchanged.
+    fit: str | None = field(default=None, compare=False, repr=False)
 
 
 def navigation_uri(value: object, base: str | None = None) -> NavigationTarget:
@@ -91,6 +93,7 @@ def pdf_navigation(reader: PdfReader, annotation: Any) -> NavigationTarget:
     top, left = destination.top, destination.left
     return NavigationTarget(
         page=index + 1,
+        fit=str(destination.typ),
         top=float(top) if top is not None and not isinstance(top, NullObject) else None,
         left=float(left) if left is not None and not isinstance(left, NullObject) else None,
     )
