@@ -126,12 +126,12 @@
       "import": {
         "title": "Importez votre premier livre",
         "body": "Apportez votre EPUB dans une bibliothèque privée qui vous suit sur tous vos appareils.",
-        "action": "Téléverser un livre"
+        "action": "Importer un livre"
       },
       "explore": {
-        "title": "Explorer les livres du domaine public",
-        "body": "Commencez par un titre du domaine public sélectionné et ajoutez-le à votre étagère en un geste.",
-        "comingSoon": "Le catalogue des livres du domaine public est en cours de préparation.",
+        "title": "Parcourez les livres du domaine public (en développement)",
+        "body": "Choisissez un livre du domaine public et ajoutez-le à votre bibliothèque en un geste.",
+        "comingSoon": "Le catalogue de livres du domaine public est en cours de développement.",
         "action": "Parcourir le catalogue"
       }
     },

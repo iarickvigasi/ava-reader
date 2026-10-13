@@ -124,15 +124,15 @@
       "welcome": "Welcome to AVA Reader",
       "intro": "Let's start your exploration. Choose a book to dive into and we'll shape the rest of the reader around it.",
       "import": {
-        "title": "Import Your First Book",
+        "title": "Import your first book",
         "body": "Bring your EPUB into a private library that follows you across devices.",
-        "action": "Upload book"
+        "action": "Upload a book"
       },
       "explore": {
-        "title": "Explore Public Domain Books",
-        "body": "Start with a curated public-domain title and add it to your shelf in one tap.",
-        "comingSoon": "Public domain books catalog is in progress.",
-        "action": "Browse Catalog"
+        "title": "Browse public-domain books (in development)",
+        "body": "Choose a public-domain book and add it to your shelf with one tap.",
+        "comingSoon": "The public-domain book catalog is in development.",
+        "action": "Browse the catalog"
       }
     },
     "stats": {

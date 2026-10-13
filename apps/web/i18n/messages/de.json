@@ -126,13 +126,13 @@
       "import": {
         "title": "Importiere dein erstes Buch",
         "body": "Bring deine EPUB-Datei in eine private Bibliothek, die dich auf allen Geräten begleitet.",
-        "action": "Buch hochladen"
+        "action": "Ein Buch hochladen"
       },
       "explore": {
-        "title": "Bücher aus dem Public Domain entdecken",
-        "body": "Beginne mit einem kuratierten Public-Domain-Titel und füge ihn mit einem Tipp deinem Regal hinzu.",
-        "comingSoon": "Der Public-Domain-Katalog ist in Arbeit.",
-        "action": "Katalog durchsuchen"
+        "title": "Entdecke gemeinfreie Bücher (in Entwicklung)",
+        "body": "Wähle ein gemeinfreies Buch und füge es mit einem Tippen deinem Regal hinzu.",
+        "comingSoon": "Der Katalog gemeinfreier Bücher ist in Entwicklung.",
+        "action": "Katalog ansehen"
       }
     },
     "stats": {

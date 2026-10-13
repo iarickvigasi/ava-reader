@@ -126,13 +126,13 @@
       "import": {
         "title": "Importe seu primeiro livro",
         "body": "Leve seu EPUB para uma biblioteca privada que segue você em todos os dispositivos.",
-        "action": "Enviar livro"
+        "action": "Enviar um livro"
       },
       "explore": {
-        "title": "Explorar livros de domínio público",
-        "body": "Comece com um título de domínio público selecionado e adicione-o à sua estante com um toque.",
-        "comingSoon": "O catálogo de livros de domínio público está em andamento.",
-        "action": "Navegar pelo catálogo"
+        "title": "Explore livros de domínio público (em desenvolvimento)",
+        "body": "Escolha um livro de domínio público e adicione-o à sua estante com um toque.",
+        "comingSoon": "O catálogo de livros de domínio público está em desenvolvimento.",
+        "action": "Explorar o catálogo"
       }
     },
     "stats": {
