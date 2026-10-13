@@ -497,6 +497,19 @@ preparation before any host/model exchange. Every private checkpoint and announc
 source identity and exact native text ownership are rechecked during reconstruction; historical
 input1/input2 and page1 packets keep their original no-layout-policy behavior.
 
+The same explicit native-layout policy can retain a private uniform-ink witness for
+complete direct-page text paint. It compares every source painter state with the
+actual annotation-view PDF objects and an independent, strict sampled-tint/ICC
+conversion. Mixed, missing, transparent, clipped, Form, Type3 or unsupported
+paint retains the existing review route. Resolved sRGB populates the existing
+derived glyph colours before the first checkpoint; raw PDF operands remain
+unchanged. Final reconstruction recomputes the source proof against saved raster
+bytes and verifies every glyph/line/segment/span colour overlay, including witness
+erasure. Default policies, public task schemas and existing editions remain unchanged.
+pypdfium2 SDK 5.13.0 is now a direct dependency using the existing locked archives; this
+source capability still needs the installed-runtime and original-source gates.
+
+
 This first deterministic layout policy considers whole-book running furniture before columns,
 preserves qualified isolated ornament rows, and groups source-corresponding Contents labels and
 folios. Grouped lines retain exact codepoint offsets and glyph span styles; printed Contents still

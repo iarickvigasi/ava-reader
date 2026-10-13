@@ -85,6 +85,15 @@ class _PaintAggregator(PDFPageAggregatorWithMarkedContent):
             and graphicstate.dash is None
         )
         super().render_string(textstate, seq, ncs, graphicstate)
+        trace = getattr(self, "native_colour_trace", None)
+        if trace is not None:
+            trace.record(
+                textstate,
+                ncs,
+                graphicstate,
+                self.cur_item._objs[before:],
+                not isinstance(self.cur_item, LTFigure),
+            )
         for obj in self.cur_item._objs[before:]:
             if isinstance(obj, LTChar):
                 obj.native_tag_instance = getattr(self, "_tag_instance", None)  # type: ignore[attr-defined]
@@ -104,10 +113,14 @@ class _PaintAggregator(PDFPageAggregatorWithMarkedContent):
                 obj.native_paint_qualified = mode == 0 or bold  # type: ignore[attr-defined]
 
 
-def painted_chars(page: Any) -> tuple[list[dict[str, Any]], bool]:
+def painted_chars(
+    page: Any, *, colour_trace: Any | None = None
+) -> tuple[list[dict[str, Any]], bool]:
     # One normal layout interpretation, not a second independent text extractor.
     # The pinned pdfplumber page subsequently uses this same layout for tables/graphics.
     device = _PaintAggregator(page.pdf.rsrcmgr, pageno=page.page_number, laparams=page.pdf.laparams)
+    if colour_trace is not None:
+        device.native_colour_trace = colour_trace  # type: ignore[attr-defined]
     PDFPageInterpreter(page.pdf.rsrcmgr, device).process_page(page.page_obj)
     page._layout = device.get_result()
     chars: list[dict[str, Any]] = []

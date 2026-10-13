@@ -37,6 +37,7 @@ class ParsedPage:
     view: Path
     view_reader: PdfReader
     kinds: list[str]
+    original_reader: PdfReader | None = None
 
 
 class SourcePreparation:
@@ -198,4 +199,4 @@ class SourcePreparation:
             self._document = pdfplumber.open(self._view, pages=list(self._numbers))
         assert self._view_reader is not None
         page = self._document.pages[number - self._numbers.start]
-        return ParsedPage(original, page, self._view, self._view_reader, kinds)
+        return ParsedPage(original, page, self._view, self._view_reader, kinds, self._reader)

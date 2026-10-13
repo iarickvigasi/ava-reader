@@ -2,7 +2,7 @@
 
 import hashlib
 from pathlib import Path
-from typing import Any, Literal, cast
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 from PIL import Image
 from pypdf import PdfReader
@@ -18,6 +18,9 @@ from .observe_glyphs import observe_glyphs
 from .source_list_bodies import source_list_bodies
 from .visibility import display_risks
 
+if TYPE_CHECKING:
+    from .native_colour_capture import ColourCapture
+
 
 def observe_page(
     path: Path,
@@ -27,10 +30,15 @@ def observe_page(
     scratch: Path,
     *,
     capture_paint: bool = False,
+    colour_capture: "ColourCapture | None" = None,
+    existing_render: Path | None = None,
 ) -> PageObservation:
     rendered = scratch / "renders" / f"page-{number:04d}.png"
     rendered.parent.mkdir(parents=True, exist_ok=True)
-    render_page(path, number, rendered)
+    if existing_render is None:
+        render_page(path, number, rendered)
+    elif existing_render.resolve() != rendered.resolve() or not rendered.is_file():
+        raise ValueError("Native colour reobservation requires the exact saved page render")
     bounds = tuple(float(v) for v in page.cropbox)
     if len(bounds) != 4:
         raise ValueError("Invalid CropBox")
@@ -40,7 +48,9 @@ def observe_page(
         raw.load()
         image = raw.convert("L")
         paint_image = raw.convert("RGB") if capture_paint else None
-    chars, filled_stroke_qualified = painted_chars(page) if capture_paint else (page.chars, False)
+    chars, filled_stroke_qualified = (
+        painted_chars(page, colour_trace=colour_capture) if capture_paint else (page.chars, False)
+    )
     source_page = reader.pages[number - 1]
     bodies = source_list_bodies(source_page, reader) if capture_paint else set()
     instances: dict[int, set[int | None]] = {}
@@ -90,6 +100,8 @@ def observe_page(
         allow_filled_stroke=filled_stroke_qualified,
         allow_raster_settings=capture_paint,
     )
+    if colour_capture is not None:
+        glyphs = colour_capture.apply(chars, glyphs, risks)
     names = {"/" + str(obj["name"]) for obj in page.images if obj.get("tag") == "Artifact"}
     assets = capture_image_assets(source_page, reader, scratch, names) if capture_paint else {}
     lines = native_lines(glyphs, number)

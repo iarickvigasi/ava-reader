@@ -20,6 +20,7 @@ dependencies = [
     { name = "pillow" },
     { name = "pydantic" },
     { name = "pypdf" },
+    { name = "pypdfium2" },
 ]
 
 [package.optional-dependencies]
@@ -38,6 +39,7 @@ requires-dist = [
     { name = "pillow", specifier = "==12.3.0" },
     { name = "pydantic", specifier = "==2.13.5" },
     { name = "pypdf", specifier = "==6.19.0" },
+    { name = "pypdfium2", specifier = "==5.13.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = "==0.16.9" },
     { name = "setuptools", marker = "extra == 'dev'", specifier = "==80.9.0" },
 ]

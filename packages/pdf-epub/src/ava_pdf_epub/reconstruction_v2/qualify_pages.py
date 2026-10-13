@@ -48,6 +48,10 @@ def qualify_pages(
     if len(lookup) != len(responses) or set(lookup) != {task.task_id for task in tasks}:
         raise ValueError("Recognition task coverage is incomplete or contains unexpected receipts")
     furniture = furniture_ids((p.observation for p in pages), pages[0].profile_id)
+    if policy is not None:
+        from .native_colour_validate import verify_source_colours
+
+        verify_source_colours(source, scratch, pages, furniture)
     output: dict[int, list[Segment]] = {}
     for page in pages:
         render = scratch / page.observation.render_path

@@ -13,7 +13,7 @@ and Debian package inventories under `/usr/share/ava/`.
 | pypdf 6.19.0                                           | BSD-3-Clause                                                   | Bounded PDF inventory/objects                                        |
 | Pillow 12.3.0                                          | MIT-CMU                                                        | Images and crops; wheel contains native libraries                    |
 | pdfplumber 0.11.9, pdfminer.six 20251230               | MIT                                                            | Native PDF geometry/text                                             |
-| pypdfium2 5.13.0                                       | BSD-3-Clause, Apache-2.0 and dependency licenses               | Transitive pdfplumber dependency; bundled PDFium has its own notices |
+| pypdfium2 5.13.0                                       | BSD-3-Clause, Apache-2.0 and dependency licenses               | Direct source-paint proof dependency; bundled PDFium has its own notices |
 | cryptography 50.0.1                                    | Apache-2.0 OR BSD-3-Clause                                     | Transitive PDF dependency; native wheel components                   |
 | cffi 2.1.1 / pycparser 3.0                             | MIT-0 / BSD-3-Clause                                           | Transitive native bindings                                           |
 | annotated-types, charset-normalizer, typing-inspection | MIT                                                            | Transitive support libraries; exact versions in lock                 |
