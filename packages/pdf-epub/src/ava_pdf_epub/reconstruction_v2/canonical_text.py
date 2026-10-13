@@ -27,7 +27,13 @@ def canonical_text(
                 )
             )
     normalization = None
-    if source and source != text:
+    if ident in state.normalization_maps:
+        mapping = state.normalization_maps[ident]
+        if mapping.source_text != source:
+            raise ValueError("Canonical layout normalization belongs to another raw observation")
+        mapping.validate_canonical(text)
+        normalization = mapping.model_dump(mode="json")
+    elif source and source != text:
         normalization = line_wrap_map(source, text)
     return dict(
         text=text,

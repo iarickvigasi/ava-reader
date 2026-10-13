@@ -6,6 +6,7 @@ from pydantic import Field, model_validator
 
 from .blocks import Block
 from .common import Id, Record
+from .layout_normalization import LayoutNormalizationMap
 from .links import Address
 from .metadata import MetadataClaim
 from .profiles import ProfileId
@@ -35,6 +36,16 @@ class CanonicalBookV2(Record):
     @model_validator(mode="after")
     def complete_graph(self) -> Self:
         from .graph import validate_book
+        from .graph_index import index_book
+        from .graph_links import TEXT_NODES
 
         validate_book(self)
+        nodes, _ = index_book(self)
+        if any(
+            isinstance(node, TEXT_NODES)
+            and isinstance(node.content.normalization, LayoutNormalizationMap)
+            and node.content.normalization.source_pdf_sha256 != self.source.sha256
+            for node in nodes.values()
+        ):
+            raise ValueError("Layout normalization belongs to another source PDF")
         return self

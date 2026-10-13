@@ -8,6 +8,7 @@ from .prepare_source import prepare_source
 from .prepared_types import AnyPreparedPage
 from .protocol import AnyReconstructionInput
 from .protocol_native_layout import NativeLayoutReconstructionInput
+from .protocol_native_structure import NativeStructureReconstructionInput
 from .reconstruct import ReconstructedBook, reconstruct
 from .report import ReconstructionReport, reconstruction_report
 
@@ -23,7 +24,14 @@ def reconstruct_source(
         source_feature_policy=request.source_feature_policy,
         source_layout_policy=(
             request.source_layout_policy
-            if isinstance(request, NativeLayoutReconstructionInput)
+            if isinstance(
+                request, (NativeLayoutReconstructionInput, NativeStructureReconstructionInput)
+            )
+            else None
+        ),
+        source_structure_policy=(
+            request.source_structure_policy
+            if isinstance(request, NativeStructureReconstructionInput)
             else None
         ),
     )
@@ -45,9 +53,16 @@ def reconstruct_from_pages(
             request.responses,
             list(request.refinements),
             source_feature_policy=request.source_feature_policy,
+            native_structure_responses=(
+                request.native_structure_responses
+                if isinstance(request, NativeStructureReconstructionInput)
+                else None
+            ),
             source_layout_policy=(
                 request.source_layout_policy
-                if isinstance(request, NativeLayoutReconstructionInput)
+                if isinstance(
+                    request, (NativeLayoutReconstructionInput, NativeStructureReconstructionInput)
+                )
                 else None
             ),
         )

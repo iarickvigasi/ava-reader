@@ -15,6 +15,12 @@ routing exists. Ordinary imports default to native-only execution; the host can 
 normal import route with `AVA_PDF_PROVIDER_ROUTE_ID`. The host then binds a grant to the owned
 source/profile and pins the worker build. Native text needs no recognition call; ambiguous same-font
 chapter/list roles may require bounded structure comparison. Qualified structure remains zero-call.
+New imports may explicitly capture native source-ID structure decisions through server policy
+`ava-native-structure-1` together with `ava-native-layout-1`. Distinct captured hashes select
+private Input4/Prepare3 packets; old Layout1 captures retain Input3 unchanged. Providers return
+only ordered source-line groups, eligible note-callout span IDs and pinned boundary dispositions.
+Literal text, measured styles and spans remain worker-owned. This opt-in requires matching worker,
+host admission and provider authorization; the selector does not activate itself.
 Native-only execution refuses unresolved required comparisons. Route mechanics
 have isolated database evidence. A scoped two-page scanned Underline fixture also completed normal
 signed-in live recognition, automatic publication, Read and owned EPUB export/reimport. Broader book,
@@ -509,15 +515,15 @@ erasure. Default policies, public task schemas and existing editions remain unch
 pypdfium2 SDK 5.13.0 is now a direct dependency using the existing locked archives; this
 source capability still needs the installed-runtime and original-source gates.
 
-
 This first deterministic layout policy considers whole-book running furniture before columns,
 preserves qualified isolated ornament rows, and groups source-corresponding Contents labels and
 folios. Grouped lines retain exact codepoint offsets and glyph span styles; printed Contents still
 must agree with actual source openings and folios. It requires visible, aligned glyphs, known font
 roles and known source ink; missing ink is not assumed black. Unknown styles/colour spaces, hidden
 text, mathematical operators and ambiguous rows keep the existing recognition/review route.
-Per-page preparation cannot opt into this complete-source policy. A future IDs-only model layout
-repair is separate from this deterministic policy; current fallback responses remain unchanged.
+Per-page preparation cannot opt into this complete-source policy. The separate captured
+`ava-native-structure-1` opt-in adds IDs-only structure decisions after exact native qualification;
+unsafe glyphs or source partitions retain the unchanged recognition fallback.
 
 Controls use a four-byte unsigned big-endian length followed by UTF-8 JSON. Every
 `ava-reconstruction-exchange-1` envelope has exactly `schema_version`, increasing `sequence`,
@@ -525,14 +531,23 @@ Controls use a four-byte unsigned big-endian length followed by UTF-8 JSON. Ever
 Only one exchange is outstanding; unknown or duplicate keys, wrong binding/order, oversized
 messages, truncation and unexpected EOF are refused.
 
-| Worker control | Payload | Host reply |
-|---|---|---|
-| `page` | Unchanged `PrepareResult`, including its tasks | `[]` acknowledgement |
-| `recognition` | `{ "task_id": "…" }` from that page, in task order | One existing recognition response in a list |
-| `refinement_batch` | Unchanged `RefinementBatch` | `[]` acknowledgement |
-| `refinement` | `{ "task_id": "…" }` from that batch, in task order | One existing refinement response in a list |
-| `artifacts` | `null` | None; subsequent stdout uses the existing artifact stream |
-| `refusal` | Existing typed source diagnostic or generic reconstruction error | None; worker exits `1` |
+| Worker control     | Payload                                                                 | Host reply                                                |
+| ------------------ | ----------------------------------------------------------------------- | --------------------------------------------------------- |
+| `page`             | Prepare1/Prepare2; captured Input4 uses typed native/OCR Prepare3 tasks | `[]` acknowledgement                                      |
+| `recognition`      | `{ "task_id": "…" }` from that page, in task order                      | One existing recognition response in a list               |
+| `native_structure` | `{ "task_id": "…" }` naming an advertised native task                   | One separate native structure response in a list          |
+| `refinement_batch` | Unchanged `RefinementBatch`                                             | `[]` acknowledgement                                      |
+| `refinement`       | `{ "task_id": "…" }` from that batch, in task order                     | One existing refinement response in a list                |
+| `artifacts`        | `null`                                                                  | None; subsequent stdout uses the existing artifact stream |
+| `refusal`          | Existing typed source diagnostic or generic reconstruction error        | None; worker exits `1`                                    |
+
+Captured Input4 uses `ava-native-structure-exchange-1` only for `native_structure` task controls.
+Page announcements keep Exchange1 and carry Prepare3; its typed native/OCR task order is exact.
+Native responses contain source-line groups, eligible note-callout span IDs and pinned boundary
+dispositions. Replacement text, geometry and styles are forbidden. The model receives a finite
+line/region/callout/boundary view; full measured spans and source snapshots remain private.
+Native and OCR tasks share the existing 50/page, 25,000/attempt and aggregate payload limits.
+Historical page packets and task markers cannot acquire native decision authority.
 
 An opt-in native-layout attempt may emit the distinct
 `ava-recognition-anchor-context-exchange-1` / `anchor_context` control after an otherwise
@@ -549,9 +564,8 @@ or uncertain repeated request cannot authorize another call. Corrections consume
 operation request and funding limits; they do not add a request slot or skip required work.
 The control keeps the existing 8 MiB page bound; provider request/response and aggregate reply
 limits remain unchanged. After a context-only overlay, full original task/response semantics
-run again before the corrected parent enters Input3. Unresolved context remains a typed source
+run again before the corrected parent enters its captured Input3 or Input4. Unresolved context remains a typed source
 refusal. This is part of an active initial conversion; it never retries or replaces a Failed book.
-
 
 The worker admits tasks before announcing them and semantically accepts each response before
 requesting the next dispatch. Task controls do not repeat images. After the last refinement

@@ -1,4 +1,10 @@
 import {
+  preparedAttemptPage,
+  type PreparedAttemptPage,
+} from './prepared-attempt-page';
+import { observeAttemptPage } from './observe-attempt-page';
+import { resolveNativeStructureAttemptTask } from './native-structure-attempt';
+import {
   type RefinementResponse,
   type RefinementBatchPacket,
   validateRefinementBatch,
@@ -6,10 +12,8 @@ import {
 import type { ExchangeEnvelope } from '../runtime/exchange-protocol';
 import { exchangeProtocol } from '../runtime/exchange-protocol';
 import { PdfRuntimeError } from '../runtime/runtime-error';
-import { validatePacket } from './validate-packet';
 import { reconstructionRequest } from './reconstruction-request';
-import type { NativeLayoutPrepareResult } from './generated/NativeLayoutPrepareResult';
-import type { PrepareResult } from './generated/PrepareResult';
+import type { NativeStructureResponse } from './generated/NativeStructureResponse';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
 import type { RecognitionTask } from './generated/RecognitionTask';
 import { anchorContextBinding } from './anchor-context-binding';
@@ -30,6 +34,7 @@ export function attemptExchanges(context: AttemptContext) {
   });
   const taskIds = new Set<string>();
   const responses: RecognitionResponse[] = [];
+  const nativeStructureResponses: NativeStructureResponse[] = [];
   const refinements: RefinementResponse[] = [];
   const correctionIds = new Set<string>();
   let correctionUnresolved = false;
@@ -40,11 +45,11 @@ export function attemptExchanges(context: AttemptContext) {
         index: number;
       }
     | undefined;
-  let currentPage: PrepareResult | NativeLayoutPrepareResult | undefined,
+  let currentPage: PreparedAttemptPage | undefined,
     pages: number | undefined,
     preparedPages = 0,
-    recognitionIndex = 0,
-    responseBytes = 0,
+    pageTaskIndex = 0,
+    responseBytes = context.sourceStructurePolicy ? 4 : 2,
     batch: RefinementBatchPacket | undefined,
     refinementIndex = 0,
     failed = false,
@@ -56,7 +61,7 @@ export function attemptExchanges(context: AttemptContext) {
   };
   const completePage = async (signal: AbortSignal) => {
     if (!currentPage) return;
-    if (recognitionIndex !== currentPage.tasks.length) invalid();
+    if (pageTaskIndex !== currentPage.tasks.length) invalid();
     context.checkActive(signal);
     await context.deps.progress({
       stage: 'EXTRACTION',
@@ -70,11 +75,27 @@ export function attemptExchanges(context: AttemptContext) {
       responses,
       refinements,
       batch?.schema_version === 'ava-book-refinement-batch-2',
+      nativeStructureResponses,
     );
   const inputBound = () => {
     if (
       Buffer.byteLength(JSON.stringify(reconstructionInput())) >
       64 * 1024 ** 2
+    )
+      throw new PdfRuntimeError('RESOURCE_LIMIT');
+  };
+  const retainResponse = (
+    response: RecognitionResponse | NativeStructureResponse,
+  ) => {
+    const priorCount =
+      response.schema_version === 'ava-native-structure-response-1'
+        ? nativeStructureResponses.length
+        : responses.length;
+    responseBytes +=
+      Buffer.byteLength(JSON.stringify(response)) + (priorCount ? 1 : 0);
+    if (
+      responseBytes > 60 * 1024 ** 2 ||
+      responses.length + nativeStructureResponses.length >= 25000
     )
       throw new PdfRuntimeError('RESOURCE_LIMIT');
   };
@@ -85,80 +106,61 @@ export function attemptExchanges(context: AttemptContext) {
     if (correctionUnresolved && envelope.kind !== 'refusal') return invalid();
     if (envelope.kind === 'page') {
       lastOriginal = undefined;
-      const prepared = context.sourceLayoutPolicy
-        ? validatePacket('NativeLayoutPrepareResult', envelope.payload)
-        : validatePacket('PrepareResult', envelope.payload);
-      if (
-        'source_layout_policy' in prepared &&
-        prepared.source_layout_policy !== context.sourceLayoutPolicy
-      )
-        throw new PdfRuntimeError('SOURCE_MISMATCH');
-      if (
-        batch ||
-        prepared.page_number !== preparedPages + 1 ||
-        prepared.source_sha256 !== context.sourceSha256 ||
-        (prepared.profile_id ?? 'ava-pdf-prose-en-v2') !== context.profileId ||
-        prepared.source_page_count > context.pageLimit ||
-        (pages !== undefined && pages !== prepared.source_page_count) ||
-        prepared.tasks.some(
-          (task) =>
-            task.source_sha256 !== context.sourceSha256 ||
-            task.page_number !== prepared.page_number ||
-            task.profile_id !== context.profileId,
-        )
-      )
-        throw new PdfRuntimeError('SOURCE_MISMATCH');
+      const prepared = preparedAttemptPage(envelope.payload, context, {
+        preparedPages,
+        pages,
+        batch: !!batch,
+      });
+      const tasks = prepared.tasks;
       if (prepared.tasks.length && context.providerMode === 'native')
         throw new PdfRuntimeError('DISPATCH_NOT_AUTHORIZED');
-      for (const task of prepared.tasks) {
+      for (const task of tasks) {
         if (taskIds.has(task.task_id)) invalid();
         taskIds.add(task.task_id);
       }
       await completePage(signal);
       pages = prepared.source_page_count;
       currentPage = prepared;
-      recognitionIndex = 0;
+      pageTaskIndex = 0;
       preparedPages++;
-      const native = prepared.native_segment_count;
-      context.deps.observer?.emit(
-        'SOURCE_INSPECTED',
-        'PAGE_ROUTE',
-        context.deps.observer.nextUnit('page-route'),
-        {
-          sourcePages: pages,
-          preparedRoute: {
-            pageNumber: prepared.page_number,
-            route: prepared.tasks.length
-              ? native
-                ? 'HYBRID'
-                : 'RECOGNITION'
-              : native
-                ? 'NATIVE'
-                : 'BLANK',
-            nativeSegments: native,
-            recognitionTasks: prepared.tasks.length,
-          },
-        },
-      );
+      observeAttemptPage(prepared, context, pages);
       return [];
     }
-    if (envelope.kind === 'recognition') {
+    if (
+      envelope.kind === 'recognition' ||
+      envelope.kind === 'native_structure'
+    ) {
       lastOriginal = undefined;
-      const task = currentPage?.tasks[recognitionIndex];
+      const task = currentPage?.tasks[pageTaskIndex];
       if (
         batch ||
         !task ||
         (envelope.payload as { task_id: string }).task_id !== task.task_id
       )
         return invalid();
+      if (
+        (task.schema_version === 'ava-native-structure-task-1') !==
+        (envelope.kind === 'native_structure')
+      )
+        return invalid();
+      if (task.schema_version === 'ava-native-structure-task-1') {
+        const response = await resolveNativeStructureAttemptTask(
+          task,
+          context,
+          signal,
+        );
+        if (failed) return invalid();
+        retainResponse(response);
+        nativeStructureResponses.push(response);
+        pageTaskIndex++;
+        return [response];
+      }
       const response = await recognizeAttemptTask(task, context, signal);
       if (failed) return invalid();
-      responseBytes += Buffer.byteLength(JSON.stringify(response)) + 1;
-      if (responseBytes > 60 * 1024 ** 2)
-        throw new PdfRuntimeError('RESOURCE_LIMIT');
+      retainResponse(response);
       responses.push(response);
       lastOriginal = { task, response, index: responses.length - 1 };
-      recognitionIndex++;
+      pageTaskIndex++;
       return [response];
     }
     if (envelope.kind === 'anchor_context') {

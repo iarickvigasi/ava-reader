@@ -23,6 +23,8 @@ export const PDF_IMPORT_PROFILE_V3 = Object.freeze({
 });
 export const NATIVE_LAYOUT_POLICY = 'ava-native-layout-1' as const;
 export type NativeLayoutPolicy = typeof NATIVE_LAYOUT_POLICY;
+export const NATIVE_STRUCTURE_POLICY = 'ava-native-structure-1' as const;
+export type NativeStructurePolicy = typeof NATIVE_STRUCTURE_POLICY;
 const LAYOUT_LEGACY = Object.freeze({
   ...PDF_IMPORT_PROFILE,
   sourceLayoutPolicy: NATIVE_LAYOUT_POLICY,
@@ -31,18 +33,37 @@ const LAYOUT_V3 = Object.freeze({
   ...PDF_IMPORT_PROFILE_V3,
   sourceLayoutPolicy: NATIVE_LAYOUT_POLICY,
 });
+const STRUCTURE_LEGACY = Object.freeze({
+  ...LAYOUT_LEGACY,
+  sourceStructurePolicy: NATIVE_STRUCTURE_POLICY,
+});
+const STRUCTURE_V3 = Object.freeze({
+  ...LAYOUT_V3,
+  sourceStructurePolicy: NATIVE_STRUCTURE_POLICY,
+});
 export type PdfImportConfiguration =
   | typeof PDF_IMPORT_PROFILE
   | typeof PDF_IMPORT_PROFILE_V3
   | typeof LAYOUT_LEGACY
-  | typeof LAYOUT_V3;
+  | typeof LAYOUT_V3
+  | typeof STRUCTURE_LEGACY
+  | typeof STRUCTURE_V3;
 export function pdfImportConfiguration(
   profileId?: string,
   sourceLayoutPolicy?: unknown,
+  sourceStructurePolicy?: unknown,
 ): PdfImportConfiguration {
   const legacy = !profileId || profileId === PDF_IMPORT_PROFILE.profileId;
   if (!legacy && profileId !== PDF_IMPORT_PROFILE_V3.profileId)
     throw new Error('PDF_IMPORT_PROFILE_INVALID');
+  if (sourceStructurePolicy !== undefined && sourceStructurePolicy !== '') {
+    if (
+      sourceStructurePolicy !== NATIVE_STRUCTURE_POLICY ||
+      sourceLayoutPolicy !== NATIVE_LAYOUT_POLICY
+    )
+      throw new Error('PDF_IMPORT_PROFILE_INVALID');
+    return legacy ? STRUCTURE_LEGACY : STRUCTURE_V3;
+  }
   if (sourceLayoutPolicy === undefined || sourceLayoutPolicy === '')
     return legacy ? PDF_IMPORT_PROFILE : PDF_IMPORT_PROFILE_V3;
   if (sourceLayoutPolicy !== NATIVE_LAYOUT_POLICY)
@@ -56,7 +77,18 @@ export function capturedSourceLayoutPolicy(
   configSha256: unknown,
 ): NativeLayoutPolicy | undefined {
   const current = pdfImportConfiguration(profileId, NATIVE_LAYOUT_POLICY);
-  return checksumBuffer(Buffer.from(JSON.stringify(current))) === configSha256
+  const structure = pdfImportConfiguration(
+    profileId,
+    NATIVE_LAYOUT_POLICY,
+    NATIVE_STRUCTURE_POLICY,
+  );
+  return [current, structure].some(
+    (configuration) =>
+      checksumBuffer(Buffer.from(JSON.stringify(configuration))) ===
+      configSha256,
+  )
     ? NATIVE_LAYOUT_POLICY
     : undefined;
 }
+
+export { capturedSourceStructurePolicy } from './captured-structure-policy';

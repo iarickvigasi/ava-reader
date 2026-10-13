@@ -1,4 +1,7 @@
-import { capturedSourceLayoutPolicy } from '../../library/pdf-import/admission/profile';
+import {
+  capturedSourceStructurePolicy,
+  capturedSourceLayoutPolicy,
+} from '../../library/pdf-import/admission/profile';
 import { validateReconstructionInput } from './validate-input';
 import type { SemanticValidator } from '../contracts/types';
 import { validateCompletion } from '../contracts/validate-completion';
@@ -55,6 +58,10 @@ export async function runReconstruction(
         providerMode: job.provider_mode,
         profileId: job.profile_id,
         sourceLayoutPolicy: capturedSourceLayoutPolicy(
+          job.profile_id,
+          job.config_sha256,
+        ),
+        sourceStructurePolicy: capturedSourceStructurePolicy(
           job.profile_id,
           job.config_sha256,
         ),

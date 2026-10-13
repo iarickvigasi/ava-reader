@@ -1,8 +1,11 @@
 """Join explicit continuation or visibly incomplete prose across column/page boundaries only."""
 
+from typing import Literal
+
 from ..contracts.layout_wrap import compound_wrap
 from .assembly_state import AssemblyState
 from .continuation_boundary import inferred_continuation
+from .layout_hyphen_composition import compose_layout_normalizations
 from .segments import Segment
 
 
@@ -32,7 +35,7 @@ def stream_joins(segments: list[Segment], state: AssemblyState) -> list[Segment]
             and previous.preserve_line_breaks == segment.preserve_line_breaks
             and (inferred or declared)
         ):
-            separator = "\n" if previous.preserve_line_breaks else " "
+            separator: Literal["", " ", "\n"] = "\n" if previous.preserve_line_breaks else " "
             if (
                 not previous.preserve_line_breaks
                 and previous.method == segment.method == "native"
@@ -59,6 +62,21 @@ def stream_joins(segments: list[Segment], state: AssemblyState) -> list[Segment]
                     "continues_to_next": segment.continues_to_next,
                 }
             )
+            left_map = state.normalization_maps.get(previous.id)
+            right_map = state.normalization_maps.get(segment.id)
+            if left_map is not None or right_map is not None:
+                authority = left_map if left_map is not None else right_map
+                assert authority is not None
+                state.normalization_maps[previous.id] = compose_layout_normalizations(
+                    previous.source_text or previous.text,
+                    previous.text,
+                    left_map,
+                    segment.source_text or segment.text,
+                    segment.text,
+                    right_map,
+                    separator=separator,
+                    source_sha256=authority.source_pdf_sha256,
+                )
             state.aliases[segment.id] = (previous.id, offset)
             state.evidence[previous.id] += state.evidence[segment.id]
             state.segments[previous.id] = updated

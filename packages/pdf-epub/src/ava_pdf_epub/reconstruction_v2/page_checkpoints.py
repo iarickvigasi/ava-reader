@@ -15,6 +15,7 @@ from .native_line_offsets import mapped_native_ids, native_line_offsets
 from .page_geometry import PageGeometry, geometry_from
 from .prepared import PreparedPage
 from .prepared_native_layout import NativeLayoutPreparedPage
+from .prepared_native_structure import NativeStructurePreparedPage
 from .prepared_types import AnyPreparedPage, layout_policy
 
 PAGE_BYTES = 32 * 1024 * 1024
@@ -63,8 +64,8 @@ class PageCheckpoints(Sequence[AnyPreparedPage]):
     def qualify(self, index: int, page: AnyPreparedPage) -> None:
         """Replace an internally qualified observation before any host/model exchange."""
         old = self[index]
-        if isinstance(page, NativeLayoutPreparedPage):
-            page = NativeLayoutPreparedPage.model_validate(page.model_dump())
+        if isinstance(page, (NativeLayoutPreparedPage, NativeStructurePreparedPage)):
+            page = type(page).model_validate(page.model_dump())
         if layout_policy(page) != layout_policy(old):
             raise ValueError("Qualified page layout policy differs")
         if (
@@ -150,10 +151,16 @@ class PageCheckpoints(Sequence[AnyPreparedPage]):
             observe("reuse", "checkpoint_decode", True)
             return cached[1]
         observe("reuse", "checkpoint_decode", False)
+        from .attempt_exchange import strict_json
+
+        raw = strict_json(data)
+        marker = raw.get("schema_version") if isinstance(raw, dict) else None
         page: AnyPreparedPage = (
-            NativeLayoutPreparedPage.model_validate_json(data)
+            NativeStructurePreparedPage.model_validate(raw)
+            if marker == "ava-prepared-page-3"
+            else NativeLayoutPreparedPage.model_validate(raw)
             if self.source_layout_policy is not None
-            else PreparedPage.model_validate_json(data)
+            else PreparedPage.model_validate(raw)
         )
         if layout_policy(page) != self.source_layout_policy:
             raise ValueError("Page checkpoint layout policy differs")

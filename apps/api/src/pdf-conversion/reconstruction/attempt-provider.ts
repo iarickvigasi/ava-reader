@@ -1,4 +1,7 @@
-import type { NativeLayoutPolicy } from '../../library/pdf-import/admission/profile';
+import type {
+  NativeLayoutPolicy,
+  NativeStructurePolicy,
+} from '../../library/pdf-import/admission/profile';
 import type { CoordinatorDependencies } from './coordinator-types';
 import type { RecognitionTask } from './generated/RecognitionTask';
 import type { RefinementTask } from './refinement-packets';
@@ -19,6 +22,7 @@ export type AttemptContext = {
   providerMode: string;
   pageLimit: number;
   sourceLayoutPolicy?: NativeLayoutPolicy;
+  sourceStructurePolicy?: NativeStructurePolicy;
   validateAnchorContext?: (
     correction: RecognitionAnchorContextTask,
     task: RecognitionTask,

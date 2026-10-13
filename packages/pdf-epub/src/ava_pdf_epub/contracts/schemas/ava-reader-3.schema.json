@@ -726,6 +726,357 @@
       "title": "InternalTarget",
       "type": "object"
     },
+    "LayoutHyphenCandidate": {
+      "additionalProperties": false,
+      "properties": {
+        "boundary": {
+          "enum": [
+            "line",
+            "column",
+            "page"
+          ],
+          "title": "Boundary",
+          "type": "string"
+        },
+        "consecutive": {
+          "const": true,
+          "title": "Consecutive",
+          "type": "boolean"
+        },
+        "id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "left": {
+          "$ref": "#/$defs/LayoutHyphenLine"
+        },
+        "preserve_line_breaks": {
+          "const": false,
+          "title": "Preserve Line Breaks",
+          "type": "boolean"
+        },
+        "right": {
+          "$ref": "#/$defs/LayoutHyphenLine"
+        },
+        "role": {
+          "enum": [
+            "paragraph",
+            "note",
+            "list_item"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "ava-layout-hyphen-candidate-1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_end": {
+          "exclusiveMinimum": 0,
+          "maximum": 200000,
+          "title": "Source End",
+          "type": "integer"
+        },
+        "source_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "source_start": {
+          "maximum": 200000,
+          "minimum": 0,
+          "title": "Source Start",
+          "type": "integer"
+        },
+        "source_text_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Text Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "id",
+        "source_sha256",
+        "source_text_sha256",
+        "source_start",
+        "source_end",
+        "left",
+        "right",
+        "role",
+        "boundary",
+        "preserve_line_breaks",
+        "consecutive"
+      ],
+      "title": "LayoutHyphenCandidate",
+      "type": "object"
+    },
+    "LayoutHyphenDerivation": {
+      "additionalProperties": false,
+      "properties": {
+        "source_candidate": {
+          "$ref": "#/$defs/LayoutHyphenCandidate"
+        },
+        "source_disposition": {
+          "$ref": "#/$defs/LayoutHyphenDisposition"
+        },
+        "source_offset": {
+          "maximum": 200000,
+          "minimum": 0,
+          "title": "Source Offset",
+          "type": "integer"
+        },
+        "source_text": {
+          "maxLength": 200000,
+          "title": "Source Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_text",
+        "source_candidate",
+        "source_disposition",
+        "source_offset"
+      ],
+      "title": "LayoutHyphenDerivation",
+      "type": "object"
+    },
+    "LayoutHyphenDisposition": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate_id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Candidate Id",
+          "type": "string"
+        },
+        "candidate_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Candidate Sha256",
+          "type": "string"
+        },
+        "disposition": {
+          "enum": [
+            "layout",
+            "literal",
+            "unresolved"
+          ],
+          "title": "Disposition",
+          "type": "string"
+        }
+      },
+      "required": [
+        "candidate_id",
+        "candidate_sha256",
+        "disposition"
+      ],
+      "title": "LayoutHyphenDisposition",
+      "type": "object"
+    },
+    "LayoutHyphenLine": {
+      "additionalProperties": false,
+      "properties": {
+        "box": {
+          "$ref": "#/$defs/Box"
+        },
+        "line_id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Line Id",
+          "type": "string"
+        },
+        "method": {
+          "enum": [
+            "native",
+            "ocr"
+          ],
+          "title": "Method",
+          "type": "string"
+        },
+        "page": {
+          "maximum": 500,
+          "minimum": 1,
+          "title": "Page",
+          "type": "integer"
+        },
+        "region_id": {
+          "maxLength": 120,
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+          "title": "Region Id",
+          "type": "string"
+        },
+        "source_end": {
+          "exclusiveMinimum": 0,
+          "maximum": 200000,
+          "title": "Source End",
+          "type": "integer"
+        },
+        "source_start": {
+          "maximum": 200000,
+          "minimum": 0,
+          "title": "Source Start",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "line_id",
+        "method",
+        "page",
+        "region_id",
+        "box",
+        "source_start",
+        "source_end"
+      ],
+      "title": "LayoutHyphenLine",
+      "type": "object"
+    },
+    "LayoutNormalizationMap": {
+      "additionalProperties": false,
+      "properties": {
+        "candidates": {
+          "items": {
+            "$ref": "#/$defs/LayoutHyphenCandidate"
+          },
+          "maxItems": 10000,
+          "minItems": 1,
+          "title": "Candidates",
+          "type": "array"
+        },
+        "derivations": {
+          "items": {
+            "$ref": "#/$defs/LayoutHyphenDerivation"
+          },
+          "maxItems": 10000,
+          "title": "Derivations",
+          "type": "array"
+        },
+        "dispositions": {
+          "items": {
+            "$ref": "#/$defs/LayoutHyphenDisposition"
+          },
+          "maxItems": 10000,
+          "minItems": 1,
+          "title": "Dispositions",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "ava-source-normalization-2",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "segments": {
+          "items": {
+            "$ref": "#/$defs/LayoutNormalizationSegment"
+          },
+          "maxItems": 200000,
+          "title": "Segments",
+          "type": "array"
+        },
+        "source_pdf_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Pdf Sha256",
+          "type": "string"
+        },
+        "source_sha256": {
+          "maxLength": 64,
+          "minLength": 64,
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "source_text": {
+          "maxLength": 200000,
+          "title": "Source Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "source_text",
+        "source_sha256",
+        "source_pdf_sha256",
+        "candidates",
+        "dispositions",
+        "derivations",
+        "segments"
+      ],
+      "title": "LayoutNormalizationMap",
+      "type": "object"
+    },
+    "LayoutNormalizationSegment": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate_id": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,119}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Candidate Id"
+        },
+        "canonical_end": {
+          "maximum": 200000,
+          "minimum": 0,
+          "title": "Canonical End",
+          "type": "integer"
+        },
+        "canonical_start": {
+          "maximum": 200000,
+          "minimum": 0,
+          "title": "Canonical Start",
+          "type": "integer"
+        },
+        "kind": {
+          "enum": [
+            "identity",
+            "nfc",
+            "ligature",
+            "line_wrap",
+            "layout_hyphen"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "source_end": {
+          "maximum": 200000,
+          "minimum": 0,
+          "title": "Source End",
+          "type": "integer"
+        },
+        "source_start": {
+          "maximum": 200000,
+          "minimum": 0,
+          "title": "Source Start",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "source_start",
+        "source_end",
+        "canonical_start",
+        "canonical_end",
+        "kind"
+      ],
+      "title": "LayoutNormalizationSegment",
+      "type": "object"
+    },
     "ListGroup": {
       "additionalProperties": false,
       "properties": {
@@ -1933,10 +2284,14 @@
               "$ref": "#/$defs/NormalizationMap"
             },
             {
+              "$ref": "#/$defs/LayoutNormalizationMap"
+            },
+            {
               "type": "null"
             }
           ],
-          "default": null
+          "default": null,
+          "title": "Normalization"
         },
         "sha256": {
           "maxLength": 64,

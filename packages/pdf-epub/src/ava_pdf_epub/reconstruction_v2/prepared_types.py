@@ -2,9 +2,14 @@
 
 from .prepared import PreparedPage
 from .prepared_native_layout import NativeLayoutPreparedPage
+from .prepared_native_structure import NativeStructurePreparedPage
 
-AnyPreparedPage = PreparedPage | NativeLayoutPreparedPage
+AnyPreparedPage = PreparedPage | NativeLayoutPreparedPage | NativeStructurePreparedPage
 
 
 def layout_policy(page: AnyPreparedPage) -> str | None:
-    return page.source_layout_policy if isinstance(page, NativeLayoutPreparedPage) else None
+    return (
+        page.source_layout_policy
+        if isinstance(page, (NativeLayoutPreparedPage, NativeStructurePreparedPage))
+        else None
+    )

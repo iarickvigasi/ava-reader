@@ -9,6 +9,7 @@ from .native_colour_reobserve import reobserve_colour_page
 from .native_layout_policy import NATIVE_LAYOUT_POLICY, NativeLayoutPolicy
 from .page_checkpoints import PageCheckpoints
 from .prepared_native_layout import NativeLayoutPreparedPage
+from .prepared_native_structure import NativeStructurePreparedPage
 from .prepared_types import AnyPreparedPage
 from .qualify_embedded_images import qualify_embedded_images
 from .qualify_native_layout import qualify_native_layout
@@ -33,7 +34,7 @@ def verify_source_colours(
     ):
         fresh_pages = PageCheckpoints(Path(directory), policy)
         for page in pages:
-            if not isinstance(page, NativeLayoutPreparedPage):
+            if not isinstance(page, (NativeLayoutPreparedPage, NativeStructurePreparedPage)):
                 raise ValueError("Native colour requires the selected private page version")
             rendered = scratch / page.observation.render_path
             if rendered.resolve().parent != (scratch / "renders").resolve():
@@ -49,10 +50,14 @@ def verify_source_colours(
         # optional tool or witness is missing.
         qualify_embedded_images(fresh_pages, scratch, FEATURE_POLICY)
         qualify_native_layout(fresh_pages, scratch, policy)
+        if isinstance(pages[0], NativeStructurePreparedPage):
+            from .qualify_native_structure import qualify_native_structure
+
+            qualify_native_structure(fresh_pages, scratch, pages[0].source_structure_policy)
         for page, fresh in zip(pages, fresh_pages, strict=True):
-            if not isinstance(page, NativeLayoutPreparedPage) or not isinstance(
-                fresh, NativeLayoutPreparedPage
-            ):
+            if not isinstance(
+                page, (NativeLayoutPreparedPage, NativeStructurePreparedPage)
+            ) or not isinstance(fresh, (NativeLayoutPreparedPage, NativeStructurePreparedPage)):
                 raise ValueError("Native colour recomputation lost source policy")
             if fresh != page:
                 raise ValueError("Native colour source/overlay does not reproduce the saved page")

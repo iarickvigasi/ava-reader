@@ -6,7 +6,7 @@ from pydantic import Field, SerializerFunctionWrapHandler, model_serializer, mod
 
 from .common import Digest, Id, Record, text_digest, unique
 from .links import LinkTarget
-from .normalization import NormalizationMap
+from .normalization import LayoutNormalizationMap, NormalizationMap
 from .offsets import codepoint_to_utf16
 
 
@@ -31,7 +31,7 @@ class TextValue(Record):
     text: str = Field(max_length=200000)
     sha256: Digest
     spans: list[InlineSpan] = Field(default_factory=list, max_length=20000)
-    normalization: NormalizationMap | None = None
+    normalization: NormalizationMap | LayoutNormalizationMap | None = None
     codepoint_utf16: list[int] = Field(min_length=1, max_length=200001)
 
     @model_validator(mode="after")

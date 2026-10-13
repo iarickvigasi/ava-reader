@@ -10,6 +10,7 @@ from .assembly_state import AssemblyState
 from .continuation_margins import continuation_margins
 from .linked_furniture import preserve_linked_furniture
 from .native_layout_policy import NativeLayoutPolicy
+from .native_structure_contract import NativeStructureResponse
 from .ocr_indents import recover_ocr_indents
 from .ocr_running_furniture import corroborate_running_furniture
 from .pdf_links import apply_pdf_links
@@ -28,6 +29,7 @@ def source_segments(
     responses: list[RecognitionResponse],
     *,
     source_layout_policy: NativeLayoutPolicy | None = None,
+    native_structure_responses: list[NativeStructureResponse] | None = None,
 ) -> tuple[list[dict[str, Any]], list[Segment], AssemblyState]:
     state = AssemblyState()
     qualified = qualify_pages(
@@ -37,6 +39,9 @@ def source_segments(
         responses,
         source_layout_policy=source_layout_policy,
         source_line_maps=state.native_line_maps,
+        native_structure_responses=native_structure_responses,
+        native_hyphen_decisions=state.native_hyphen_decisions,
+        native_source_lines=state.native_source_lines,
     )
     qualified = preserve_linked_furniture(source, prepared, qualified, state)
     qualified = corroborate_running_furniture(prepared, qualified, state)

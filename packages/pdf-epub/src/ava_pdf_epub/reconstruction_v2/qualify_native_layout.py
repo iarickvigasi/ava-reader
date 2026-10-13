@@ -12,6 +12,7 @@ from .native_line_offsets import NativeLineOffset, mapped_native_ids, native_lin
 from .native_page import native_page
 from .page_checkpoints import PageCheckpoints
 from .prepared_native_layout import NativeLayoutPreparedPage
+from .prepared_native_structure import NativeStructurePreparedPage
 from .raster_regions import raster_regions
 from .route_native import route_native
 
@@ -25,6 +26,8 @@ def qualify_native_layout(
     furniture = furniture_ids((p.observation for p in pages), pages[0].profile_id)
     for index in range(len(pages)):
         page = pages[index]
+        if isinstance(page, NativeStructurePreparedPage):
+            raise ValueError("Native layout qualification must precede source structure decisions")
         if isinstance(page, NativeLayoutPreparedPage) and page.native_colour_witness is not None:
             result = qualify_colour_page(page, scratch, furniture)
         else:

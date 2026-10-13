@@ -10,8 +10,9 @@ const ajv = new Ajv2020({
 });
 // Pydantic discriminator is an annotation; JSON Schema oneOf remains authoritative.
 ajv.addKeyword({ keyword: 'discriminator', valid: true });
+const schemaRegistry: Record<string, Record<string, unknown>> = contractSchemas;
 const validators = new Map(
-  Object.entries(contractSchemas).map(([name, schema]) => [
+  Object.entries(schemaRegistry).map(([name, schema]) => [
     name,
     ajv.compile(schema),
   ]),
@@ -25,5 +26,5 @@ export function validateStructure<K extends ContractName>(
   const validate = validators.get(name);
   if (!validate) throw new ContractError('UNSUPPORTED_SCHEMA');
   if (!validate(data)) throw new ContractError('INVALID_CONTRACT');
-  return data as unknown as ContractMap[K];
+  return data as ContractMap[K];
 }

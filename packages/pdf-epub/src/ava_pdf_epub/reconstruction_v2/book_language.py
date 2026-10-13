@@ -13,6 +13,7 @@ from ..contracts.profiles import response_language
 from .assembly_state import AssemblyState
 from .language_evidence import RUSSIAN_LETTERS, ukrainian_evidence
 from .language_route import ENGLISH_HINTS
+from .native_structure_contract import NativeStructureResponse
 from .prepared_types import AnyPreparedPage
 from .recognition_contract import RecognitionResponse
 
@@ -29,9 +30,15 @@ def observed_language(text: str) -> Literal["en", "uk"] | None:
 
 
 def primary_language(
-    prepared: Sequence[AnyPreparedPage], responses: list[RecognitionResponse]
+    prepared: Sequence[AnyPreparedPage],
+    responses: list[RecognitionResponse],
+    native_structure_responses: list[NativeStructureResponse] | None = None,
 ) -> tuple[Literal["en", "uk"], set[int]]:
-    lookup = {value.task_id: value for value in responses}
+    receipts: list[RecognitionResponse | NativeStructureResponse] = [
+        *responses,
+        *(native_structure_responses or []),
+    ]
+    lookup = {value.task_id: value for value in receipts}
     votes: Counter[str] = Counter()
     pages: dict[str, set[int]] = {"en": set(), "uk": set()}
     total = 0
@@ -41,6 +48,7 @@ def primary_language(
         text = native or " ".join(
             segment.text + " " + " ".join(cell.text for row in segment.cells for cell in row)
             for receipt in recognized
+            if isinstance(receipt, RecognitionResponse)
             for segment in receipt.segments
             if segment.kind not in {"furniture", "figure"}
         )
@@ -72,8 +80,9 @@ def language_metadata(
     state: AssemblyState,
     prepared: Sequence[AnyPreparedPage],
     responses: list[RecognitionResponse],
+    native_structure_responses: list[NativeStructureResponse] | None = None,
 ) -> list[dict[str, Any]]:
-    language, pages = primary_language(prepared, responses)
+    language, pages = primary_language(prepared, responses, native_structure_responses)
     evidence = next(
         (
             block["evidence"]

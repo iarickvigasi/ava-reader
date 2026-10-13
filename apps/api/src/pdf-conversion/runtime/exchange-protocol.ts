@@ -1,5 +1,6 @@
 import { exchangeJson } from './exchange-json';
 import { PdfRuntimeError } from './runtime-error';
+import { exchangeTasks, type PendingExchangeTask } from './exchange-tasks';
 
 export const MAX_EXCHANGE_FRAME = 24 * 1024 ** 2 + 1024;
 export const MAX_EXCHANGE_REPLY = 64 * 1024 ** 2 + 1024;
@@ -8,11 +9,13 @@ export type ExchangeBinding = { source_sha256: string; profile_id: string };
 export type ExchangeEnvelope = ExchangeBinding & {
   schema_version:
     | 'ava-reconstruction-exchange-1'
-    | 'ava-recognition-anchor-context-exchange-1';
+    | 'ava-recognition-anchor-context-exchange-1'
+    | 'ava-native-structure-exchange-1';
   sequence: number;
   kind:
     | 'page'
     | 'recognition'
+    | 'native_structure'
     | 'anchor_context'
     | 'refinement_batch'
     | 'refinement'
@@ -21,19 +24,6 @@ export type ExchangeEnvelope = ExchangeBinding & {
   payload: unknown;
 };
 
-function taskIds(payload: unknown, maximum: number): string[] {
-  const tasks = (payload as { tasks?: unknown } | null)?.tasks;
-  if (!Array.isArray(tasks) || tasks.length > maximum)
-    throw new PdfRuntimeError('INVALID_RESULT');
-  const ids = tasks.map((task: { task_id?: unknown } | null) => task?.task_id);
-  if (
-    ids.some((id) => typeof id !== 'string' || !id.length) ||
-    new Set(ids).size !== ids.length
-  )
-    throw new PdfRuntimeError('INVALID_RESULT');
-  return ids as string[];
-}
-
 export function exchangeProtocol(binding: ExchangeBinding) {
   let sequence = 0,
     pages = 0,
@@ -41,7 +31,7 @@ export function exchangeProtocol(binding: ExchangeBinding) {
     refinements = 0,
     batch = false,
     terminal = false;
-  let pending: string[] = [];
+  let pending: PendingExchangeTask[] = [];
   let lastRecognition: string | undefined;
   const correctedParents = new Set<string>();
   return {
@@ -54,13 +44,17 @@ export function exchangeProtocol(binding: ExchangeBinding) {
       const value = exchangeJson(bytes) as ExchangeEnvelope;
       const correction =
         value?.schema_version === 'ava-recognition-anchor-context-exchange-1';
+      const native =
+        value?.schema_version === 'ava-native-structure-exchange-1';
       if (
         !value ||
         Object.keys(value).sort().join() !==
           'kind,payload,profile_id,schema_version,sequence,source_sha256' ||
         (!correction &&
+          !native &&
           value.schema_version !== 'ava-reconstruction-exchange-1') ||
         correction !== (value.kind === 'anchor_context') ||
+        native !== (value.kind === 'native_structure') ||
         !Number.isSafeInteger(value.sequence) ||
         value.sequence !== sequence + 1 ||
         value.sequence > 25534 ||
@@ -73,6 +67,7 @@ export function exchangeProtocol(binding: ExchangeBinding) {
         ![
           'page',
           'recognition',
+          'native_structure',
           'anchor_context',
           'refinement_batch',
           'refinement',
@@ -91,20 +86,22 @@ export function exchangeProtocol(binding: ExchangeBinding) {
           ? 8 * 1024 ** 2 + 1024
           : value.kind === 'refinement_batch' || correction
             ? MAX_EXCHANGE_FRAME
-            : value.kind === 'recognition' || value.kind === 'refinement'
+            : value.kind === 'recognition' ||
+                value.kind === 'native_structure' ||
+                value.kind === 'refinement'
               ? 1024
               : 256 * 1024 + 1024;
       if (bytes.length > limit) throw new PdfRuntimeError('RESOURCE_LIMIT');
       if (value.kind === 'page') {
         if (batch || pending.length || pages >= 500)
           throw new PdfRuntimeError('INVALID_RESULT');
-        pending = taskIds(value.payload, 50);
+        pending = exchangeTasks(value.payload, 50);
         lastRecognition = undefined;
         pages++;
       } else if (value.kind === 'refinement_batch') {
         if (batch || !pages || pending.length)
           throw new PdfRuntimeError('INVALID_RESULT');
-        pending = taskIds(value.payload, 32);
+        pending = exchangeTasks(value.payload, 32, true);
         lastRecognition = undefined;
         batch = true;
       } else if (correction) {
@@ -124,15 +121,20 @@ export function exchangeProtocol(binding: ExchangeBinding) {
           throw new PdfRuntimeError('INVALID_RESULT');
         correctedParents.add(lastRecognition);
         lastRecognition = undefined;
-      } else if (value.kind === 'recognition' || value.kind === 'refinement') {
+      } else if (
+        value.kind === 'recognition' ||
+        value.kind === 'native_structure' ||
+        value.kind === 'refinement'
+      ) {
         const task = value.payload as { task_id?: unknown } | null;
         if (
           (value.kind === 'refinement') !== batch ||
           !pending.length ||
           !task ||
           Object.keys(task).join() !== 'task_id' ||
-          task.task_id !== pending[0] ||
-          (value.kind === 'recognition'
+          task.task_id !== pending[0].id ||
+          value.kind !== pending[0].kind ||
+          (value.kind !== 'refinement'
             ? recognitions >= 25000
             : refinements >= 32)
         )
@@ -140,7 +142,7 @@ export function exchangeProtocol(binding: ExchangeBinding) {
         pending.shift();
         lastRecognition =
           value.kind === 'recognition' ? task.task_id : undefined;
-        if (value.kind === 'recognition') recognitions++;
+        if (value.kind !== 'refinement') recognitions++;
         else refinements++;
       } else {
         if (
@@ -164,9 +166,12 @@ export function exchangeReply(bytes: Buffer, request: ExchangeEnvelope) {
   )
     throw new PdfRuntimeError('RESOURCE_LIMIT');
   const value = exchangeJson(bytes) as ExchangeEnvelope;
-  const count = ['recognition', 'refinement', 'anchor_context'].includes(
-    request.kind,
-  )
+  const count = [
+    'recognition',
+    'native_structure',
+    'refinement',
+    'anchor_context',
+  ].includes(request.kind)
     ? 1
     : 0;
   if (

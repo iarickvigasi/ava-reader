@@ -1,3 +1,4 @@
+import { validatePacketAuthority } from './validate-packet-authority';
 import Ajv2020 from 'ajv/dist/2020';
 import { recognitionSchemas } from './generated/schemas';
 import type { NativeLayoutPrepareResult } from './generated/NativeLayoutPrepareResult';
@@ -21,7 +22,16 @@ import type { PrintedTitleReconstructionInput } from './generated/PrintedTitleRe
 import type { RecognitionAnchorContextTask } from './generated/RecognitionAnchorContextTask';
 import type { RecognitionAnchorContextResponse } from './generated/RecognitionAnchorContextResponse';
 
+import type { NativeStructurePrepareResult } from './generated/NativeStructurePrepareResult';
+import type { NativeStructureReconstructionInput } from './generated/NativeStructureReconstructionInput';
+import type { NativeStructureTask } from './generated/NativeStructureTask';
+import type { NativeStructureResponse } from './generated/NativeStructureResponse';
+
 type Packets = {
+  NativeStructurePrepareResult: NativeStructurePrepareResult;
+  NativeStructureReconstructionInput: NativeStructureReconstructionInput;
+  NativeStructureTask: NativeStructureTask;
+  NativeStructureResponse: NativeStructureResponse;
   RecognitionAnchorContextTask: RecognitionAnchorContextTask;
   RecognitionAnchorContextResponse: RecognitionAnchorContextResponse;
   NativeLayoutPrepareResult: NativeLayoutPrepareResult;
@@ -47,8 +57,12 @@ const ajv = new Ajv2020({
   validateFormats: false,
 });
 ajv.addKeyword({ keyword: 'discriminator', valid: true });
+const schemaRegistry: Record<
+  string,
+  Record<string, unknown>
+> = recognitionSchemas;
 const validators = new Map(
-  Object.entries(recognitionSchemas).map(([name, schema]) => [
+  Object.entries(schemaRegistry).map(([name, schema]) => [
     name,
     ajv.compile(schema),
   ]),
@@ -59,35 +73,8 @@ export function validatePacket<K extends keyof Packets>(
 ): Packets[K] {
   if (!validators.get(name)?.(value))
     throw new PdfRuntimeError('INVALID_RESULT');
-  if (name === 'PrintedTitleRefinementBatch') {
-    const packet = value as unknown as PrintedTitleRefinementBatch;
-    if (
-      packet.tasks.filter(
-        (task) => task.schema_version === 'ava-printed-title-task-1',
-      ).length !== 1
-    )
-      throw new PdfRuntimeError('INVALID_RESULT');
-  }
-  if (name === 'NativeLayoutReconstructionInput') {
-    const packet = value as unknown as NativeLayoutReconstructionInput;
-    if (
-      (packet.refinements ?? []).filter(
-        (r) => r.schema_version === 'ava-printed-title-response-1',
-      ).length > 1
-    )
-      throw new PdfRuntimeError('INVALID_RESULT');
-  }
-  if (name === 'PrintedTitleReconstructionInput') {
-    const packet = value as unknown as PrintedTitleReconstructionInput;
-    if (
-      (packet.refinements ?? []).filter(
-        (response) =>
-          response.schema_version === 'ava-printed-title-response-1',
-      ).length !== 1
-    )
-      throw new PdfRuntimeError('INVALID_RESULT');
-  }
-  return value as unknown as Packets[K];
+  validatePacketAuthority(name, value);
+  return value as Packets[K];
 }
 export function parsePacket<K extends keyof Packets>(
   name: K,

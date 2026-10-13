@@ -27,7 +27,9 @@ from .continuation_margins import continuation_margins
 from .findings import Finding
 from .native_layout_policy import NativeLayoutPolicy
 from .native_size_presentation import apply_native_sizes
+from .native_structure_contract import NativeStructureResponse
 from .normalize_list_bodies import capture_list_bodies, normalize_list_bodies
+from .normalize_native_hyphens import normalize_native_hyphens
 from .ocr_font_faces import corroborate_ocr_font_faces
 from .prepare_refinement import prepare_refinement
 from .prepared_types import AnyPreparedPage
@@ -60,9 +62,15 @@ def reconstruct(
     *,
     source_feature_policy: str | None = None,
     source_layout_policy: NativeLayoutPolicy | None = None,
+    native_structure_responses: list[NativeStructureResponse] | None = None,
 ) -> ReconstructedBook:
     pages, segments, state = source_segments(
-        source, scratch, prepared, responses, source_layout_policy=source_layout_policy
+        source,
+        scratch,
+        prepared,
+        responses,
+        source_layout_policy=source_layout_policy,
+        native_structure_responses=native_structure_responses,
     )
     if refinements is not None:
         with phase("prepare_refinement"):
@@ -87,6 +95,7 @@ def reconstruct(
     if source_feature_policy == FEATURE_POLICY:
         capture_list_bodies(segments, prepared, state)
     segments = compact_native_compounds(printed_markers(segments, state), state)
+    segments = normalize_native_hyphens(segments, state)
     for segment in segments:
         state.segments[segment.id] = segment
     continuation_margins(segments, prepared, scratch, state)
@@ -104,7 +113,9 @@ def reconstruct(
     document_id = "pdf-" + digest[:32]
     metadata = assemble_metadata(source, state, document_id)
     if prepared[0].profile_id == BILINGUAL_PROFILE:
-        metadata.extend(language_metadata(source, state, prepared, responses))
+        metadata.extend(
+            language_metadata(source, state, prepared, responses, native_structure_responses)
+        )
     cover = preserve_source_cover(prepared, pages, chapters, metadata, scratch, state)
     addresses = assemble_addresses(state, chapters)
     assemble_page_addresses(page_starts, state, chapters, addresses)

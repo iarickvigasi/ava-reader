@@ -118,6 +118,40 @@ class SupervisorExchangeTests(unittest.TestCase):
                 request, job = layout_packets(profile)
                 self.assertIsNone(self.gate(request=request, job=job))
 
+    def test_native_structure_uses_distinct_captured_configurations(self):
+        hashes = {
+            "ava-pdf-prose-en-v2": (
+                "34b6f1e448f7311d3cd8f6c27b404f6d9e3904b461225895b4151d588c5749d7"
+            ),
+            "ava-pdf-prose-en-uk-v3": (
+                "0b3ad573e34a52e32bd2ebbe67fbb6f573676a262ef31f1c41c9c19929872fb8"
+            ),
+        }
+        for profile, config in hashes.items():
+            request, job = layout_packets(profile)
+            old_config = job["config_sha256"]
+            request["input"].update(
+                schema_version="ava-reconstruct-input-4",
+                source_structure_policy="ava-native-structure-1",
+                native_structure_responses=[],
+            )
+            job["config_sha256"] = config
+            with self.subTest(profile=profile):
+                self.assertIsNone(self.gate(request=request, job=job))
+                with self.assertRaises(ValueError):
+                    self.gate(request=request, job={**job, "config_sha256": old_config})
+                for field, value in (
+                    ("source_structure_policy", None),
+                    ("source_structure_policy", "foreign"),
+                    ("native_structure_responses", [{}]),
+                    ("schema_version", "ava-reconstruct-input-3"),
+                ):
+                    with self.subTest(field=field), self.assertRaises(ValueError):
+                        self.gate(
+                            request={**request, "input": {**request["input"], field: value}},
+                            job=job,
+                        )
+
     def test_layout_policy_and_captured_configuration_cannot_be_crossed(self):
         for field, value in (
             ("source_layout_policy", None),

@@ -7,6 +7,7 @@ from typing import Literal, Self
 from pydantic import Field, model_validator
 
 from .common import Digest, Record, text_digest
+from .layout_normalization import LayoutNormalizationMap as LayoutNormalizationMap
 from .layout_wrap import compound_wrap
 
 LIGATURES = str.maketrans(

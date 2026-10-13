@@ -1,4 +1,7 @@
-import type { NativeLayoutPolicy } from '../../library/pdf-import/admission/profile';
+import type {
+  NativeLayoutPolicy,
+  NativeStructurePolicy,
+} from '../../library/pdf-import/admission/profile';
 import { reconstructionRequest } from './reconstruction-request';
 import type { SemanticValidator } from '../contracts/types';
 import type { SandboxInput } from '../runtime/container-arguments';
@@ -19,6 +22,7 @@ export async function runAttempt(
     providerMode: string;
     profileId: RecognitionTask['profile_id'];
     sourceLayoutPolicy?: NativeLayoutPolicy;
+    sourceStructurePolicy?: NativeStructurePolicy;
   },
   semantic: SemanticValidator,
 ) {

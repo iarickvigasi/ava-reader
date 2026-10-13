@@ -9,6 +9,7 @@ from .prepare_source import prepare_source
 from .prepared_types import AnyPreparedPage
 from .protocol import AnyReconstructionInput
 from .protocol_native_layout import NativeLayoutReconstructionInput
+from .protocol_native_structure import NativeStructureReconstructionInput
 from .refinement_contract import PrintedTitleRefinementBatch, PrintedTitleTask, RefinementBatch
 from .source_segments import source_segments
 
@@ -26,7 +27,14 @@ def prepare_refinement_source(
         source_feature_policy=request.source_feature_policy,
         source_layout_policy=(
             request.source_layout_policy
-            if isinstance(request, NativeLayoutReconstructionInput)
+            if isinstance(
+                request, (NativeLayoutReconstructionInput, NativeStructureReconstructionInput)
+            )
+            else None
+        ),
+        source_structure_policy=(
+            request.source_structure_policy
+            if isinstance(request, NativeStructureReconstructionInput)
             else None
         ),
     )
@@ -48,9 +56,16 @@ def prepare_refinement_from_pages(
             scratch,
             prepared,
             request.responses,
+            native_structure_responses=(
+                request.native_structure_responses
+                if isinstance(request, NativeStructureReconstructionInput)
+                else None
+            ),
             source_layout_policy=(
                 request.source_layout_policy
-                if isinstance(request, NativeLayoutReconstructionInput)
+                if isinstance(
+                    request, (NativeLayoutReconstructionInput, NativeStructureReconstructionInput)
+                )
                 else None
             ),
         )

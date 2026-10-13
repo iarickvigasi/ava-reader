@@ -8,9 +8,13 @@ from typing import Any, BinaryIO
 
 from ..worker_observation import observe, phase
 from .attempt_exchange import ExchangeWriter, json_bytes, strict_json, write_bytes
+from .native_structure_assembly import assemble_native_structure_source
+from .native_structure_contract import NativeStructureResponse, NativeStructureTask
+from .native_structure_exchange import emit_native, reply_native
 from .page_checkpoints import PageCheckpoints
 from .prepare_page import prepare_from_source
 from .prepare_refinement_source import prepare_refinement_from_pages
+from .prepared_native_structure import NativeStructurePreparedPage
 from .protocol import (
     AnyReconstructionInput,
     ReconstructionInput,
@@ -18,6 +22,7 @@ from .protocol import (
     reconstruction_input,
 )
 from .protocol_native_layout import NativeLayoutReconstructionInput
+from .protocol_native_structure import NativeStructureReconstructionInput
 from .protocol_output import encode_packet
 from .qualify_embedded_images import qualify_embedded_images
 from .qualify_native_layout import qualify_native_layout
@@ -43,7 +48,12 @@ class AttemptFailure(ValueError):
         self.cause = cause
 
 
-def initial_input(data: bytes) -> ReconstructionInput | NativeLayoutReconstructionInput:
+InitialInput = (
+    ReconstructionInput | NativeLayoutReconstructionInput | NativeStructureReconstructionInput
+)
+
+
+def initial_input(data: bytes) -> InitialInput:
     if not 0 < len(data) <= REQUEST_BYTES:
         raise ValueError("Attempt request byte bound exceeded")
     raw = strict_json(data)
@@ -52,22 +62,40 @@ def initial_input(data: bytes) -> ReconstructionInput | NativeLayoutReconstructi
     if raw["mode"] != "attempt_stream" or not isinstance(raw["input"], dict):
         raise ValueError("Invalid attempt request mode/input")
     required = {"schema_version", "profile_id", "source_sha256", "responses", "refinements"}
-    layout = raw["input"].get("schema_version") == "ava-reconstruct-input-3"
+    marker = raw["input"].get("schema_version")
+    layout = marker == "ava-reconstruct-input-3"
+    native = marker == "ava-reconstruct-input-4"
     valid = (
-        (required | {"source_feature_policy", "source_layout_policy"},)
+        (
+            required
+            | {
+                "source_feature_policy",
+                "source_layout_policy",
+                "source_structure_policy",
+                "native_structure_responses",
+            },
+        )
+        if native
+        else (required | {"source_feature_policy", "source_layout_policy"},)
         if layout
         else (required, required | {"source_feature_policy"})
     )
     if set(raw["input"]) not in valid:
         raise ValueError("Invalid initial reconstruction input fields")
     request = (
-        NativeLayoutReconstructionInput.model_validate(raw["input"])
+        NativeStructureReconstructionInput.model_validate(raw["input"])
+        if native
+        else NativeLayoutReconstructionInput.model_validate(raw["input"])
         if layout
         else (ReconstructionInput.model_validate(raw["input"]))
     )
     if (
         request.responses
         or request.refinements
+        or (
+            isinstance(request, NativeStructureReconstructionInput)
+            and request.native_structure_responses
+        )
         or ("source_feature_policy" in raw["input"] and request.source_feature_policy is None)
     ):
         raise ValueError("Attempt cannot consume prior recognition/refinement decisions")
@@ -75,14 +103,19 @@ def initial_input(data: bytes) -> ReconstructionInput | NativeLayoutReconstructi
 
 
 def _input(
-    initial: ReconstructionInput | NativeLayoutReconstructionInput,
+    initial: InitialInput,
     responses: list[Any],
     refinements: list[Any],
+    native_responses: list[Any] | None = None,
 ) -> AnyReconstructionInput:
     # Each phase validates new models from raw receipts. No mutable response or
     # assembly object created during comparison is reused for final assembly.
     raw = {**initial.model_dump(mode="json"), "responses": responses, "refinements": refinements}
-    if not isinstance(initial, NativeLayoutReconstructionInput) and any(
+    if isinstance(initial, NativeStructureReconstructionInput):
+        raw["native_structure_responses"] = native_responses or []
+    if not isinstance(
+        initial, (NativeLayoutReconstructionInput, NativeStructureReconstructionInput)
+    ) and any(
         isinstance(r, dict) and r.get("schema_version") == "ava-printed-title-response-1"
         for r in refinements
     ):
@@ -115,7 +148,10 @@ def _prepared_attempt(
                     source_feature_policy=request.source_feature_policy,
                     source_layout_policy=(
                         request.source_layout_policy
-                        if isinstance(request, NativeLayoutReconstructionInput)
+                        if isinstance(
+                            request,
+                            (NativeLayoutReconstructionInput, NativeStructureReconstructionInput),
+                        )
                         else None
                     ),
                 )
@@ -156,6 +192,14 @@ def _prepared_attempt(
                 del page
             qualify_embedded_images(pages, scratch, request.source_feature_policy)
             qualify_native_layout(pages, scratch, preparation.source_layout_policy)
+            if isinstance(request, NativeStructureReconstructionInput):
+                from .qualify_native_structure import qualify_native_structure
+
+                qualify_native_structure(pages, scratch, request.source_structure_policy)
+                for qualified in pages:
+                    encode_packet(
+                        prepared_result(qualified).model_dump(mode="json"), 8 * 1024 * 1024
+                    )
             preparation.verify_inputs()
             preparation.retire_parsers()
         yield preparation, pages
@@ -164,13 +208,14 @@ def _prepared_attempt(
 def _run(
     source: Path,
     scratch: Path,
-    request: ReconstructionInput | NativeLayoutReconstructionInput,
+    request: InitialInput,
     incoming: BinaryIO,
     outgoing: BinaryIO,
     writer: ExchangeWriter,
 ) -> None:
     responses: list[Any] = []
-    response_bytes = 2  # The recognition response array, including separators.
+    native_responses: list[Any] = []
+    response_bytes = 4 if isinstance(request, NativeStructureReconstructionInput) else 2
     scratch.mkdir(parents=True, exist_ok=True)
     with _prepared_attempt(source, scratch, request) as (preparation, pages):
         for page in pages:
@@ -181,17 +226,57 @@ def _run(
             preparation.check_unchanged()
             for recognition_task in page.tasks:
                 task_wire = recognition_task.model_dump(mode="json")
+                if isinstance(recognition_task, NativeStructureTask):
+                    if not isinstance(
+                        request, NativeStructureReconstructionInput
+                    ) or not isinstance(page, NativeStructurePreparedPage):
+                        raise ValueError(
+                            "Native structure task requires its selected input/page versions"
+                        )
+                    packet_native = emit_native(writer, recognition_task.task_id)
+                    response = reply_native(writer, incoming, packet_native)
+                    preparation.check_unchanged()
+                    if len(responses) + len(native_responses) >= 25000:
+                        raise ValueError("Combined native/recognition task coverage exceeds bound")
+                    if (
+                        len(json_bytes({"task": task_wire, "response": response}))
+                        > 16 * 1024 * 1024
+                    ):
+                        raise ValueError("Native structure individual pair byte bound exceeded")
+                    receipt = NativeStructureResponse.model_validate(response)
+                    furniture = {
+                        ident
+                        for r in recognition_task.regions
+                        if r.source.role == "furniture"
+                        for ident in r.line_ids
+                    }
+                    # Validate real source conservation before advertising another paid task.
+                    assemble_native_structure_source(
+                        recognition_task,
+                        receipt,
+                        page.observation,
+                        preserved_segments=page.native_segments,
+                        furniture=furniture,
+                    )
+                    response_bytes += len(json_bytes(response)) + (1 if native_responses else 0)
+                    if response_bytes > RECOGNITION_BYTES:
+                        raise ValueError("Combined native/recognition response byte bound exceeded")
+                    native_responses.append(response)
+                    continue
                 packet = writer.emit("recognition", {"task_id": recognition_task.task_id})
                 returned = writer.reply(incoming, packet)
                 preparation.check_unchanged()
-                if len(returned) != 1 or len(responses) >= 25000:
+                if len(returned) != 1 or len(responses) + len(native_responses) >= 25000:
                     raise ValueError("Recognition task/response coverage differs")
                 response = accept_attempt_recognition(
                     recognition_task,
                     returned[0],
                     writer,
                     incoming,
-                    isinstance(request, NativeLayoutReconstructionInput),
+                    isinstance(
+                        request,
+                        (NativeLayoutReconstructionInput, NativeStructureReconstructionInput),
+                    ),
                 )
                 # Keep the old individual pair16MiB limit, not a whole-page limit.
                 validate_tasks(
@@ -210,7 +295,7 @@ def _run(
         pages.clear_cache()
         observe("attempt_preparation_reuse")
         batch = prepare_refinement_from_pages(
-            source, scratch, pages, _input(request, responses, [])
+            source, scratch, pages, _input(request, responses, [], native_responses)
         )
         if batch.source_sha256 != request.source_sha256 or len(
             {task.task_id for task in batch.tasks}
@@ -240,8 +325,8 @@ def _run(
             refinements.append(response)
         if incoming.read(1):
             raise ValueError("Attempt received trailing reply bytes")
-        complete = _input(request, responses, refinements)
-        del batch, responses, refinements
+        complete = _input(request, responses, refinements, native_responses)
+        del batch, responses, refinements, native_responses
         preparation.verify_inputs()
         pages.verify()
         pages.clear_cache()

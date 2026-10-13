@@ -5,8 +5,10 @@ import json
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
+from ..contracts.layout_normalization import LayoutNormalizationMap
 from ..contracts.styles import Style
 from .findings import Finding
+from .native_hyphen_decisions import NativeHyphenDecision
 from .native_line_offsets import NativeLineOffset
 
 
@@ -25,6 +27,9 @@ class AssemblyState:
     internal_targets: list[tuple[str, int, int, str, int]] = field(default_factory=list)
     aliases: dict[str, tuple[str, int]] = field(default_factory=dict)
     native_line_maps: dict[str, NativeLineOffset] = field(default_factory=dict)
+    native_hyphen_decisions: list[NativeHyphenDecision] = field(default_factory=list)
+    native_source_lines: dict[str, str] = field(default_factory=dict)
+    normalization_maps: dict[str, LayoutNormalizationMap] = field(default_factory=dict)
     placements: dict[str, tuple[int, int, int]] = field(default_factory=dict)
     flush_starts: dict[str, bool] = field(default_factory=dict)
     structure_findings: list[Finding] = field(default_factory=list)
@@ -58,6 +63,9 @@ class AssemblyState:
         self.internal_targets.clear()
         self.aliases.clear()
         self.native_line_maps.clear()
+        self.native_hyphen_decisions.clear()
+        self.native_source_lines.clear()
+        self.normalization_maps.clear()
         self.placements.clear()
         self.flush_starts.clear()
         self.page_labels.clear()

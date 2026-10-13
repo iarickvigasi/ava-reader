@@ -8,12 +8,16 @@ from .accept_response import accept_response
 from .blank_page import blank_page
 from .conservation import native_conservation
 from .furniture import furniture_ids
+from .native_hyphen_decisions import NativeHyphenDecision, retained_hyphen_decisions
 from .native_layout_policy import NativeLayoutPolicy, validate_layout_policy
 from .native_line_offsets import NativeLineOffset
 from .native_page import native_page
+from .native_structure_assembly import assemble_native_structure_source
+from .native_structure_contract import NativeStructureResponse, NativeStructureTask
 from .prepared_native_layout import NativeLayoutPreparedPage
+from .prepared_native_structure import NativeStructurePreparedPage
 from .prepared_types import AnyPreparedPage, layout_policy
-from .recognition_contract import RecognitionResponse
+from .recognition_contract import RecognitionResponse, RecognitionTask
 from .segments import Segment
 
 
@@ -25,6 +29,9 @@ def qualify_pages(
     *,
     source_layout_policy: NativeLayoutPolicy | None = None,
     source_line_maps: dict[str, NativeLineOffset] | None = None,
+    native_structure_responses: list[NativeStructureResponse] | None = None,
+    native_hyphen_decisions: list[NativeHyphenDecision] | None = None,
+    native_source_lines: dict[str, str] | None = None,
 ) -> dict[int, list[Segment]]:
     policy = validate_layout_policy(source_layout_policy)
     if any(layout_policy(page) != policy for page in pages):
@@ -43,10 +50,22 @@ def qualify_pages(
         for p in pages
     ):
         raise ValueError("Prepared pages do not belong to the immutable source")
-    tasks = [task for page in pages for task in page.tasks]
+    tasks = [task for page in pages for task in page.tasks if isinstance(task, RecognitionTask)]
+    native_tasks = [
+        task for page in pages for task in page.tasks if isinstance(task, NativeStructureTask)
+    ]
     lookup = {r.task_id: r for r in responses}
     if len(lookup) != len(responses) or set(lookup) != {task.task_id for task in tasks}:
         raise ValueError("Recognition task coverage is incomplete or contains unexpected receipts")
+    native_responses = native_structure_responses or []
+    native_lookup = {r.task_id: r for r in native_responses}
+    if (
+        len(native_lookup) != len(native_responses)
+        or set(native_lookup) != {task.task_id for task in native_tasks}
+        or native_responses
+        and any(not isinstance(p, NativeStructurePreparedPage) for p in pages)
+    ):
+        raise ValueError("Native structure task coverage differs from selected source checkpoints")
     furniture = furniture_ids((p.observation for p in pages), pages[0].profile_id)
     if policy is not None:
         from .native_colour_validate import verify_source_colours
@@ -62,17 +81,56 @@ def qualify_pages(
         if blank_page(page.observation, scratch):
             output[page.observation.number] = []
             continue
+        if isinstance(page, NativeStructurePreparedPage) and any(
+            isinstance(t, NativeStructureTask) for t in page.tasks
+        ):
+            task = page.tasks[0]
+            assert isinstance(task, NativeStructureTask)
+            assembled = assemble_native_structure_source(
+                task,
+                native_lookup[task.task_id],
+                page.observation,
+                preserved_segments=page.native_segments,
+                furniture=furniture,
+            )
+            if page.layout_hyphen_candidates and (
+                native_hyphen_decisions is None or native_source_lines is None
+            ):
+                raise ValueError("Native layout-hyphen decisions require an assembly owner")
+            if native_hyphen_decisions is not None:
+                native_hyphen_decisions.extend(
+                    retained_hyphen_decisions(
+                        task,
+                        native_lookup[task.task_id],
+                        page.layout_hyphen_candidates,
+                    )
+                )
+            if native_source_lines is not None:
+                for line in task.lines:
+                    if line.id in native_source_lines:
+                        raise ValueError("Native source line crosses page ownership")
+                    native_source_lines[line.id] = line.text
+            if source_line_maps is None and assembled.line_maps:
+                raise ValueError("Native structure line maps require an assembly owner")
+            if source_line_maps is not None:
+                for mapping in assembled.line_maps:
+                    if mapping.line_id in source_line_maps:
+                        raise ValueError("Native structure source line map crosses page ownership")
+                    source_line_maps[mapping.line_id] = mapping
+            output[page.observation.number] = list(assembled.segments)
+            continue
+        recognition_tasks = [t for t in page.tasks if isinstance(t, RecognitionTask)]
         mappings: list[NativeLineOffset] = []
         content = native_page(
             page.observation,
             page.tables,
             furniture,
-            [t.region_box for t in page.tasks],
+            [t.region_box for t in recognition_tasks],
             page.profile_id,
             source_layout_policy=policy,
             source_line_maps=mappings,
         )
-        if isinstance(page, NativeLayoutPreparedPage):
+        if isinstance(page, (NativeLayoutPreparedPage, NativeStructurePreparedPage)):
             if mappings != page.native_line_maps:
                 raise ValueError("Native layout source line map changed after preparation")
             if mappings and source_line_maps is None:
@@ -82,8 +140,8 @@ def qualify_pages(
                     if mapping.line_id in source_line_maps:
                         raise ValueError("Native source line map crosses page ownership")
                     source_line_maps[mapping.line_id] = mapping
-        native_conservation(page.observation, content, [t.region_box for t in page.tasks])
-        for task in page.tasks:
+        native_conservation(page.observation, content, [t.region_box for t in recognition_tasks])
+        for task in recognition_tasks:
             accepted = accept_response(task, lookup[task.task_id])
             names = {
                 s.id: f"page{page.observation.number}-{task.task_id[10:22]}-{i}"

@@ -28,7 +28,9 @@ def source_structure(
     folios = source_folios(prepared, qualified, printer_labels)
     state.page_labels = {page: label for label, page in folios.items()}
     folios = {label.casefold(): page for label, page in folios.items()}
-    printed = printed_contents(segments, native_contents_claims(prepared, segments))
+    printed = printed_contents(
+        segments, native_contents_claims(prepared, segments, state.native_line_maps)
+    )
     claims = [*printed, *outline_claims(source)]
     promoted: dict[str, int] = {}
     ranked: set[str] = set()

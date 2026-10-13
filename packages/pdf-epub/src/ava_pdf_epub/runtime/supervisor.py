@@ -18,6 +18,10 @@ _LAYOUT_CONFIGS = {
     "ava-pdf-prose-en-v2": "937942d4a700d14ac59de24559044e098726fe355173f93680dd4fe0a9929060",
     "ava-pdf-prose-en-uk-v3": "da2d14755d575a3b0fe0c8a0430dfe093996e144e62bf31c2cc04df450a4e315",
 }
+_STRUCTURE_CONFIGS = {
+    "ava-pdf-prose-en-v2": "34b6f1e448f7311d3cd8f6c27b404f6d9e3904b461225895b4151d588c5749d7",
+    "ava-pdf-prose-en-uk-v3": "0b3ad573e34a52e32bd2ebbe67fbb6f573676a262ef31f1c41c9c19929872fb8",
+}
 
 
 def _unique(pairs: list[tuple[str, object]]) -> dict[str, object]:
@@ -55,13 +59,23 @@ def exchange_input(target: str) -> int | None:
     layout = (
         isinstance(request, dict) and request.get("schema_version") == "ava-reconstruct-input-3"
     )
+    native = (
+        isinstance(request, dict) and request.get("schema_version") == "ava-reconstruct-input-4"
+    )
     if (
         not isinstance(request, dict)
         or not required <= set(request)
         or set(request)
         - required
         - (
-            {"source_feature_policy", "source_layout_policy"}
+            {
+                "source_feature_policy",
+                "source_layout_policy",
+                "source_structure_policy",
+                "native_structure_responses",
+            }
+            if native
+            else {"source_feature_policy", "source_layout_policy"}
             if layout
             else {"source_feature_policy"}
         )
@@ -70,6 +84,7 @@ def exchange_input(target: str) -> int | None:
     if request["schema_version"] not in (
         "ava-reconstruct-input-1",
         "ava-reconstruct-input-3",
+        "ava-reconstruct-input-4",
     ) or request["profile_id"] not in (
         "ava-pdf-prose-en-v2",
         "ava-pdf-prose-en-uk-v3",
@@ -78,6 +93,7 @@ def exchange_input(target: str) -> int | None:
     if (
         request["responses"] != []
         or request["refinements"] != []
+        or (native and request.get("native_structure_responses") != [])
         or (
             "source_feature_policy" in request
             and request["source_feature_policy"] != "ava-ocr-source-features-1"
@@ -99,14 +115,16 @@ def exchange_input(target: str) -> int | None:
     ):
         raise ValueError("Exchange job differs")
     config = job.get("config_sha256")
-    if layout:
+    if layout or native:
         if (
             request.get("source_layout_policy") != "ava-native-layout-1"
             or request.get("source_feature_policy") != "ava-ocr-source-features-1"
-            or config != _LAYOUT_CONFIGS[request["profile_id"]]
+            or config != (_STRUCTURE_CONFIGS if native else _LAYOUT_CONFIGS)[request["profile_id"]]
         ):
             raise ValueError("Exchange layout differs from captured configuration")
-    elif config in _LAYOUT_CONFIGS.values():
+        if native and request.get("source_structure_policy") != "ava-native-structure-1":
+            raise ValueError("Exchange native structure differs from captured configuration")
+    elif config in (*_LAYOUT_CONFIGS.values(), *_STRUCTURE_CONFIGS.values()):
         raise ValueError("Captured layout cannot use legacy exchange input")
     return None
 
