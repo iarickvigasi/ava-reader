@@ -418,11 +418,6 @@
       "newCollection": "Neue Sammlung",
       "importBook": "Neues Buch importieren"
     },
-    "empty": {
-      "eyebrow": "Bibliothek",
-      "title": "Deine Sammlungen erscheinen hier, während du deine Lesewelt aufbaust.",
-      "body": "Importiere Bücher oder füge sie aus dem öffentlichen Katalog hinzu, und AVA beginnt, sie in persönliche Sammlungen zu organisieren."
-    },
     "collection": {
       "itemsAndUnread": "{items} Einträge • {unread} ungelesen",
       "viewAll": "Alle ansehen",
@@ -587,6 +582,16 @@
         "create": "Sammlung erstellen",
         "creating": "Wird erstellt…"
       }
+    },
+    "introduction": {
+      "eyebrow": "Bibliothek",
+      "title": "Deine Sammlungen",
+      "body": "Bewahre deine Bücher an einem Ort auf, ordne sie in Sammlungen und finde deine nächste Lektüre."
+    },
+    "empty": {
+      "eyebrow": "Bibliothek",
+      "title": "Deine Sammlungen erscheinen hier, während du deine Lesewelt aufbaust.",
+      "body": "Importiere Bücher oder füge sie aus dem öffentlichen Katalog hinzu und ordne sie in persönlichen Sammlungen"
     }
   },
   "insights": {

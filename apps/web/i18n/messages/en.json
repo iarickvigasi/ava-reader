@@ -418,11 +418,6 @@
       "newCollection": "New collection",
       "importBook": "Import new book"
     },
-    "empty": {
-      "eyebrow": "Library",
-      "title": "Your collections will appear here as you build your reading world.",
-      "body": "Import books or add them from the public catalog and AVA will start organizing them into personal collections."
-    },
     "collection": {
       "itemsAndUnread": "{items} items • {unread} unread",
       "viewAll": "View all",
@@ -587,6 +582,16 @@
         "create": "Create collection",
         "creating": "Creating…"
       }
+    },
+    "introduction": {
+      "eyebrow": "Library",
+      "title": "Your collections",
+      "body": "Keep your books together, organize them into collections, and find your next read."
+    },
+    "empty": {
+      "eyebrow": "Library",
+      "title": "Your collections will appear here as you build your reading world.",
+      "body": "Import books or add them from the public catalog and organize them into personal collections"
     }
   },
   "insights": {
