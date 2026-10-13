@@ -125,7 +125,7 @@
       "intro": "Vamos começar a sua exploração. Escolha um livro para mergulhar e ajustaremos o restante do leitor a ele.",
       "import": {
         "title": "Importe seu primeiro livro",
-        "body": "Leve seu EPUB ou PDF para uma biblioteca privada que segue você em todos os dispositivos.",
+        "body": "Leve seu EPUB para uma biblioteca privada que segue você em todos os dispositivos.",
         "action": "Enviar livro"
       },
       "explore": {

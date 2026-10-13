@@ -10,9 +10,7 @@ import { useReaderUi } from "./reader-ui-context";
 
 export function ReaderMobileNavigation() {
   const { activePanel, togglePanel, isPhone } = useReaderUi();
-  const items = readerNavItems.filter(
-    (item, index) => index < 5 || item.id === "bilingualMode",
-  );
+  const items = readerNavItems;
   const { navRef, measureRef, visibleIds } = useToolbarOverflow(
     items.map((item) => item.id),
   );

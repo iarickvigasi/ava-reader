@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/cn";
 import { useReaderUi, type ReaderPanel } from "./reader-ui-context";
@@ -88,13 +87,5 @@ export function ReaderNavItem({
     );
   }
 
-  if (!item.href) {
-    return <div className={className}>{content}</div>;
-  }
-
-  return (
-    <Link aria-label={label} className={className} href={item.href}>
-      {content}
-    </Link>
-  );
+  return null;
 }
