@@ -252,6 +252,84 @@ it("keeps sign-out precedence and rejects late-success release", async () => {
   expect(f.finish).not.toHaveBeenCalled();
   expect(writeSession).not.toHaveBeenCalled();
 });
+it("preserves a completed report return through the required post-wipe identity reset", async () => {
+  const transition = await vi.importActual<
+    typeof import("./device-transition")
+  >("./device-transition");
+  const target =
+    "/app/admin/pdf-reports?kind=conversionId&reference=pdf-authored&view=export&eventCursor=events-56&costCursor=cost-4";
+  const replace = vi.fn();
+  Object.assign(window.location, {
+    href: `https://ava.invalid/auth/sso-callback?redirect_url=${encodeURIComponent(target)}`,
+    replace,
+  });
+  vi.stubGlobal("sessionStorage", {
+    setItem: vi.fn(),
+    removeItem: vi.fn(),
+    getItem: () => null,
+  });
+  f.auth.userId = "old";
+  render();
+  await effects();
+  expect(render()).toContain("Private account content");
+  f.blocked = true;
+  f.auth.userId = null;
+  f.active = null;
+  render();
+  await effects();
+  f.pathname = "/auth/sso-callback";
+  f.blocked = false;
+  f.auth.userId = "old";
+  f.auth.sessionId = "new-session";
+  f.begin.mockImplementation(() => transition.beginDeviceTransition());
+  writeSession.mockClear();
+  render();
+  await effects();
+  expect(f.begin).toHaveBeenCalledOnce();
+  expect(replace).toHaveBeenCalledExactlyOnceWith(target);
+  expect(f.adopt).not.toHaveBeenCalled();
+  expect(writeSession).not.toHaveBeenCalled();
+  expect(transition.isDeviceTransitionPending()).toBe(true);
+  transition.finishDeviceTransition();
+});
+it.each(["fresh", "refresh"])(
+  "does not invent a Home reset for a %s same-owner callback",
+  async (mode) => {
+    f.active = mode === "fresh" ? null : "old";
+    f.auth.userId = "old";
+    f.adopt.mockImplementation(async (userId) => {
+      f.active = userId;
+    });
+    f.pathname = "/app/admin/pdf-reports";
+    render();
+    await effects();
+    if (mode === "refresh") {
+      f.auth.sessionId = "new-session";
+      render();
+      await effects();
+    }
+    expect(render()).toContain("Private account content");
+    expect(f.begin).not.toHaveBeenCalled();
+    expect(window.location.replace).not.toHaveBeenCalled();
+    expect(f.adopt.mock.calls).toEqual(mode === "fresh" ? [["old"]] : []);
+  },
+);
+it("keeps a different-owner storage event fenced and routed to Home", async () => {
+  f.auth.userId = "old";
+  render();
+  await effects();
+  Object.assign(window.location, {
+    href: "https://ava.invalid/app/admin/pdf-reports?kind=conversionId&reference=pdf-authored",
+  });
+  const event = new Event("storage");
+  Object.defineProperties(event, {
+    key: { value: "active-user" },
+    newValue: { value: "other" },
+  });
+  window.dispatchEvent(event);
+  expect(window.location.replace).toHaveBeenCalledExactlyOnceWith("/app");
+  expect(f.begin).not.toHaveBeenCalled();
+});
 it("keeps public routes open and bounds pending transition waiting for Clerk", async () => {
   f.auth.isLoaded = false;
   f.auth.userId = null;
