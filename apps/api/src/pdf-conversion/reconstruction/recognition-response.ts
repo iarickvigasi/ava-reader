@@ -22,7 +22,7 @@ export function recognitionResponse(task: RecognitionTask, output: string) {
       task,
     );
   }
-  canonicalizeStyleColors(raw);
+  normalizeInlineStyles(raw);
   let response;
   try {
     response = validatePacket('RecognitionResponse', raw);
@@ -50,23 +50,25 @@ export function recognitionResponse(task: RecognitionTask, output: string) {
   return response;
 }
 
-// Hex case carries no visual meaning. Normalize only complete six-digit style
-// colours; never repair prose, identifiers, malformed colours or extra fields.
-function canonicalizeStyleColors(value: unknown): void {
+// Inline style IDs are not references: assembly derives IDs from observed properties.
+// Supply only an omitted bookkeeping ID; preserve explicit IDs and typography.
+// Hex case carries no visual meaning; malformed colours still fail validation.
+function normalizeInlineStyles(value: unknown): void {
   if (!value || typeof value !== 'object') return;
   if (Array.isArray(value)) {
-    value.forEach(canonicalizeStyleColors);
+    value.forEach(normalizeInlineStyles);
     return;
   }
   const object = value as Record<string, unknown>;
   const style = object.style;
   if (style && typeof style === 'object' && !Array.isArray(style)) {
     const properties = style as Record<string, unknown>;
+    if (!Object.hasOwn(properties, 'id')) properties.id = 'observed';
     for (const key of ['color', 'background_color', 'decoration_color']) {
       const color = properties[key];
       if (typeof color === 'string' && /^#[0-9a-fA-F]{6}$/.test(color))
         properties[key] = color.toLowerCase();
     }
   }
-  Object.values(object).forEach(canonicalizeStyleColors);
+  Object.values(object).forEach(normalizeInlineStyles);
 }
