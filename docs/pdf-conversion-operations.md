@@ -403,6 +403,15 @@ and the existing ledger reserves before dispatch. Request limits count distinct 
 reusing an identical persisted request does not allocate twice. Finished or terminal imports cannot
 acquire a new initial grant. Native text remains a zero-provider path within live-capable jobs.
 
+For Gemini NativeTask2, generation array limits derive from the validated task's public source
+inventory: group count and each group's line IDs fit its unique line count, boundary decisions
+fit its candidate count, and references fit its unique eligible callout count. Accepted responses
+still require exact boundary coverage. The canonical
+response schema, closed role branches and host/worker source validation remain authoritative.
+Prepared task and request hashes bind the effective source-specific grammar; historical generation
+grammars and configuration identities stay unchanged. This does not add retries or raise request,
+byte or spend limits. Vendor acceptance still needs a retained source-bound provider result.
+
 Apply `20260930190000_pdf_normal_import_routes` before selecting this route. It permits granted
 live jobs and enforces import worker/profile identity in PostgreSQL. Normal workers exclude authored
 pilot jobs. Unset the route ID to stop selecting live routes for new uploads; revoke a route to deny

@@ -3,6 +3,7 @@ import { jsonHash } from './hash';
 import { geminiRecognitionSchema } from './gemini-schema';
 import { PdfProviderError } from './errors';
 import type { ProviderTask } from './types';
+import { nativeStructureGenerationSchema } from './native-structure-generation-schema';
 // This version changes request hashes, never task identity or accepted response semantics.
 export const GEMINI_GRAMMAR_VERSION = 'ava-gemini-recognition-grammar-3';
 export function providerResponseSchema(modelId: string, task: ProviderTask) {
@@ -33,5 +34,11 @@ export function providerResponseSchema(modelId: string, task: ProviderTask) {
     return task.responseSchema;
   if (jsonHash(task.responseSchema) !== jsonHash(schema))
     throw new PdfProviderError('PDF_PROVIDER_REQUEST_UNAUTHORIZED');
-  return geminiRecognitionSchema(task.responseSchema, task.schemaVersion);
+  const grammar = geminiRecognitionSchema(
+    task.responseSchema,
+    task.schemaVersion,
+  );
+  return task.schemaVersion === 'ava-native-structure-response-2'
+    ? nativeStructureGenerationSchema(grammar, task)
+    : grammar;
 }
