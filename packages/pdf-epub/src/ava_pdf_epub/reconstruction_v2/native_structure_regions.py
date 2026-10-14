@@ -50,7 +50,7 @@ def native_structure_regions(
             and previous.segment.id not in artifacts
             and placement.column == previous.column
             and (placement.column == 0 or placement.band == previous.band)
-            and previous.segment.box.y1 <= placement.segment.box.y0
+            and _follows_source_row(grouped[-1], placement.segment)
         )
         if compatible:
             grouped[-1].append(placement)
@@ -81,6 +81,24 @@ def native_structure_regions(
         regions=[r.source for r in regions],
     )
     return regions
+
+
+def _follows_source_row(group: list[Placement], following: Segment) -> bool:
+    """One physical row may contain separately extracted marker/body fragments."""
+    box = following.box
+    for placement in reversed(group):
+        previous = placement.segment.box
+        if previous.y1 <= box.y0:
+            continue
+        # Every overlapping fragment must share the row, in disjoint horizontal
+        # source order. Checking the whole row prevents accumulating baseline drift.
+        if (
+            abs(previous.y0 - box.y0) > BASELINE_TOLERANCE
+            or abs(previous.y1 - box.y1) > BASELINE_TOLERANCE
+            or previous.x1 > box.x0
+        ):
+            return False
+    return True
 
 
 def _ornament_placements(

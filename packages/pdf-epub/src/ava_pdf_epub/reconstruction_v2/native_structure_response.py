@@ -12,9 +12,9 @@ from .native_structure_decision_view import (
     NativeStructureDecisionView,
     native_structure_decision_view,
 )
-from .native_structure_fields import NativeStructureGroup
+from .native_structure_fields import NativeStructureGroup, NativeStructureLine
 from .native_structure_group_order import source_ordered_native_groups
-from .native_structure_ornaments import ornamental_separator
+from .native_structure_ornaments import BASELINE_TOLERANCE, ornamental_separator
 from .native_structure_sizes import validate_grouped_sizes
 from .native_structure_v2_contract import NativeStructureResponse2, NativeStructureTask2
 from .native_structure_versions import AnyNativeStructureResponse, AnyNativeStructureTask
@@ -107,8 +107,8 @@ def _validate_decisions(
             _printed_note(group, first)
         if group.kind == "list_item":
             following = response.groups[index + 1] if index + 1 < len(response.groups) else None
-            following_text = lines[following.line_ids[0]].text.lstrip() if following else ""
-            _printed_marker(group, first, following_text)
+            following_text = _marker_source_text(following, lines) if following else ""
+            _printed_marker(group, _marker_source_text(group, lines), following_text)
         if group.continues_from_previous and group.line_ids[0] != region.line_ids[0]:
             raise ValueError("Native structure continuation is not at its source region start")
         if group.continues_to_next and group.line_ids[-1] != region.line_ids[-1]:
@@ -161,6 +161,28 @@ def _printed_marker(group: NativeStructureGroup, text: str, following_text: str)
     start = marker_value(marker["marker"], following["marker"] if following else None)
     if group.list_ordered != (start is not None) or group.list_start != start:
         raise ValueError("Native structure list number differs from its printed source")
+
+
+def _marker_source_text(group: NativeStructureGroup, lines: dict[str, NativeStructureLine]) -> str:
+    first = lines[group.line_ids[0]]
+    text = first.text.lstrip()
+    if MARKER.match(text):
+        return text
+    previous = first.box
+    for ident in group.line_ids[1:]:
+        following = lines[ident]
+        box = following.box
+        if (
+            abs(first.box.y0 - box.y0) > BASELINE_TOLERANCE
+            or abs(first.box.y1 - box.y1) > BASELINE_TOLERANCE
+            or previous.x1 > box.x0
+        ):
+            break
+        # Marker proof may use a separately extracted body on the same physical
+        # row; the original text, IDs and spans remain the assembly authority.
+        text += " " + following.text
+        previous = box
+    return text
 
 
 def _boundaries(

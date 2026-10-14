@@ -21,6 +21,42 @@ def line(text, glyphs):
 
 
 class NativeStyleRunsTests(unittest.TestCase):
+    def test_roman_is_a_face_style_and_does_not_establish_a_serif_family(self):
+        for name in ("Roman", "Unknown-Roman", "ABCDEF+Unknown-Roman", "PseudoFrutiger-Roman"):
+            with self.subTest(name=name):
+                self.assertIsNone(font_traits(name).family)
+        for name in ("Times-Roman", "TimesNewRomanPSMT", "ABCDEF+MinionPro-Regular"):
+            with self.subTest(name=name):
+                self.assertEqual("serif", font_traits(name).family)
+
+    def test_known_frutiger_faces_keep_family_and_plain_emphasis_resets(self):
+        for family in ("Frutiger", "FrutigerLT", "FrutigerLTStd"):
+            for subset in ("", "AANLGE+"):
+                with self.subTest(family=family, subset=subset):
+                    plain = font_traits(subset + family + "-Roman")
+                    self.assertEqual("sans-serif", plain.family)
+                    self.assertFalse(plain.bold)
+                    self.assertFalse(plain.italic)
+                    self.assertTrue(font_traits(subset + family + "-Bold").bold)
+                    self.assertTrue(font_traits(subset + family + "-Black").bold)
+        source = line(
+            "ABCD",
+            [
+                glyph("A", "Times-Roman"),
+                glyph("B", "AANLGE+Frutiger-Roman"),
+                glyph("C", "AANLGE+Frutiger-Bold"),
+                glyph("D", "AANLGE+Frutiger-Roman"),
+            ],
+        )
+        spans = line_spans(source)
+        self.assertEqual([(0, 1), (1, 2), (2, 3), (3, 4)], [(s.start, s.end) for s in spans])
+        self.assertEqual(
+            ["serif", "sans-serif", "sans-serif", "sans-serif"], [s.style.family for s in spans]
+        )
+        self.assertEqual([False, False, True, False], [s.style.bold for s in spans])
+        self.assertEqual("ABCD", source.text)
+        self.assertEqual("sans-serif", font_style(source.glyphs[1:], "callout").family)
+
     def test_known_minion_postscript_italic_aliases_are_explicit_not_suffix_guesses(self):
         for name in ("MinionPro-It", "ABCDEF+MinionPro-It", "MinionPro-BoldIt"):
             self.assertTrue(font_traits(name).italic)
