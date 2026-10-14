@@ -8,7 +8,9 @@ export function providerRequestFormat(modelId: string, task: ProviderTask) {
   const schema = providerResponseSchema(modelId, task);
   if (
     !modelId.startsWith('google/gemini-') ||
-    task.schemaVersion !== 'ava-native-structure-response-2'
+    !['ava-native-structure-response-2', 'ava-recognition-response-2'].includes(
+      task.schemaVersion,
+    )
   )
     return {
       messages: task.messages,

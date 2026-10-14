@@ -11,6 +11,7 @@ import { route } from '../../library/pdf-import/providers/test-fixtures';
 import { jsonHash } from '../../library/pdf-import/providers/hash';
 import { checksumBuffer } from '../../shared/blob-utils';
 import { GEMINI_GRAMMAR_VERSION } from '../../library/pdf-import/providers/response-schema';
+import { recognitionRequestGrammar } from './recognition-request-grammar-fixture';
 
 it.each([
   ['ava-prose-region-13', ORDERED_LIST_PROMPT, UNICODE_STYLE_PROMPT],
@@ -40,33 +41,26 @@ it.each([
       },
     };
     const encoded = prepareProviderRequest(configured, provider);
-    const body = JSON.parse(encoded.request.toString()) as {
-      messages: unknown;
-      response_format: {
-        json_schema: {
-          strict: boolean;
-          schema: {
-            properties: {
-              segments: {
-                items: {
-                  anyOf: {
-                    properties: {
-                      kind: { enum: string[] };
-                      list_start: { description: string; anyOf: unknown[] };
-                      list_ordered: { description: string; type: string };
-                    };
-                  }[];
-                };
+    const schema = recognitionRequestGrammar(
+      configured.modelId,
+      provider,
+      encoded.request,
+    ) as {
+      properties: {
+        segments: {
+          items: {
+            anyOf: {
+              properties: {
+                kind: { enum: string[] };
+                list_start: { description: string; anyOf: unknown[] };
+                list_ordered: { description: string; type: string };
               };
-            };
+            }[];
           };
         };
       };
     };
-    expect(body.messages).toEqual(provider.messages);
-    expect(body.response_format.json_schema.strict).toBe(true);
-    const variants =
-      body.response_format.json_schema.schema.properties.segments.items.anyOf;
+    const variants = schema.properties.segments.items.anyOf;
     const properties = variants.find((variant) =>
       variant.properties.kind.enum.includes('list_item'),
     )!.properties;

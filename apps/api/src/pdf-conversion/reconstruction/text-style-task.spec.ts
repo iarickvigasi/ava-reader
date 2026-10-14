@@ -11,6 +11,7 @@ import { route } from '../../library/pdf-import/providers/test-fixtures';
 import { jsonHash } from '../../library/pdf-import/providers/hash';
 import { checksumBuffer } from '../../shared/blob-utils';
 import { GEMINI_GRAMMAR_VERSION } from '../../library/pdf-import/providers/response-schema';
+import { recognitionRequestGrammar } from './recognition-request-grammar-fixture';
 import {
   anchorProperties,
   properties as props,
@@ -51,16 +52,12 @@ it.each([
       },
     };
     const encoded = prepareProviderRequest(configured, provider);
-    const body = JSON.parse(encoded.request.toString()) as {
-      messages: unknown;
-      response_format: {
-        json_schema: { strict: boolean; schema: SchemaShape };
-      };
-    };
-    expect(body.messages).toEqual(provider.messages);
-    expect(body.response_format.json_schema.strict).toBe(true);
-    const segment = props(body.response_format.json_schema.schema).segments
-      .items!;
+    const schema = recognitionRequestGrammar(
+      configured.modelId,
+      provider,
+      encoded.request,
+    ) as SchemaShape;
+    const segment = props(schema).segments.items!;
     const variants = segment.anyOf!;
     expect(variants).toHaveLength(7);
     const table = variants.find(

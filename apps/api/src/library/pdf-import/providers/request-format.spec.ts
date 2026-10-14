@@ -58,7 +58,6 @@ it('preserves non-Gemini Native2 messages and canonical strict schema', () => {
 });
 
 it.each([
-  ['RecognitionResponse', 'ava-recognition-response-2'],
   ['FrontmatterTitleResponse', 'ava-printed-title-response-2'],
   ['BookRefinementResponse', 'ava-book-refinement-response-3'],
   ['PrintedTitleResponse', 'ava-printed-title-response-1'],

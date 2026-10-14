@@ -408,14 +408,16 @@ inventory: group count and each group's line IDs fit its unique line count, boun
 fit its candidate count, and references fit its unique eligible callout count. Accepted responses
 still require exact boundary coverage. The canonical
 response schema, closed role branches and host/worker source validation remain authoritative.
-Only Gemini NativeTask2 requests use OpenRouter `response_format: {type: "json_object"}`: the
-effective source-specific grammar is supplied once as separate host response-contract guidance
-before the unchanged source text and image. This avoids provider-side complex-schema compilation;
+Gemini NativeTask2 and recognition-v2 requests use OpenRouter `response_format: {type: "json_object"}`:
+their exact effective grammar is supplied once as separate host response-contract guidance before
+the unchanged source text and image. NativeTask2 keeps its source-specific limits; recognition
+keeps its complete seven kind groups and required table cells. This avoids complex-schema compilation;
 it does not guarantee schema-conforming output. Strict canonical parsing and exact source checks
 still refuse malformed JSON, foreign role fields or incomplete source coverage without repair.
 Prepared task identity, prompt/schema authorization and configuration hashes stay unchanged; the
-outbound request hash binds the guidance and JSON mode. All other request formats and historical
-grammars stay unchanged. No retries or larger request, byte or spend limits are introduced.
+outbound request hash binds the guidance and JSON mode. Non-Gemini formats and the eight other Gemini
+request formats stay unchanged; all historical grammars remain exact. No retries or larger request,
+byte or spend limits are introduced.
 Vendor acceptance still needs a retained source-bound provider result. See the
 [OpenRouter JSON modes](https://openrouter.ai/docs/api_reference/overview#structured-outputs) and
 [Google JSON-mode limits](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/multimodal/control-generated-output).
