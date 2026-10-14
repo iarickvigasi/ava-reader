@@ -81,3 +81,37 @@ describe("private review evidence", () => {
     expect(fetcher).not.toHaveBeenCalled();
   });
 });
+
+
+it("does not request review evidence without a current client token", async () => {
+  const fetcher = vi.fn();
+  vi.stubGlobal("fetch", fetcher);
+  const request = reviewRequest(
+    async () => null,
+    new AbortController().signal,
+  );
+  await expect(request("/api/admin/pdf-imports/reviews")).rejects.toThrow(
+    "Sign in again to review imports.",
+  );
+  expect(fetcher).not.toHaveBeenCalled();
+});
+
+it("retains the protected API refusal instead of returning review data", async () => {
+  const fetcher = vi.fn(async () => new Response("private", { status: 403 }));
+  vi.stubGlobal("fetch", fetcher);
+  const request = reviewRequest(
+    async () => "authorized-client-token",
+    new AbortController().signal,
+  );
+  await expect(request("/api/admin/pdf-imports/reviews")).rejects.toThrow(
+    "AVA review access is required.",
+  );
+  expect(fetcher).toHaveBeenCalledExactlyOnceWith(
+    expect.stringContaining("/api/admin/pdf-imports/reviews"),
+    expect.objectContaining({
+      cache: "no-store",
+      redirect: "error",
+      headers: { Authorization: "Bearer authorized-client-token" },
+    }),
+  );
+});

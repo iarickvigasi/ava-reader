@@ -9,6 +9,7 @@ import {
 } from "@/features/offline/db";
 import { decideIdentityAction } from "@/features/offline/lifecycle/identity-action";
 import { selectDeviceOwner } from "./select-device-owner";
+import { deviceTransitionTarget } from "./device-transition-target";
 import {
   AUTH_CHANGE,
   clearSignOutIntent,
@@ -53,7 +54,7 @@ export function useDeviceIdentity(serverUserId: string | null) {
         event.newValue &&
         event.newValue !== getActiveUserId()
       )
-        window.location.replace("/app");
+        window.location.replace(deviceTransitionTarget(window.location.href));
       changed();
     };
     window.addEventListener(AUTH_CHANGE, changed);

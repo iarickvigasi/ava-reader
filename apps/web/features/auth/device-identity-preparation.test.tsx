@@ -314,12 +314,12 @@ it.each(["fresh", "refresh"])(
     expect(f.adopt.mock.calls).toEqual(mode === "fresh" ? [["old"]] : []);
   },
 );
-it("keeps a different-owner storage event fenced and routed to Home", async () => {
+it("keeps a different-owner storage event fenced at the validated report", async () => {
   f.auth.userId = "old";
   render();
   await effects();
   Object.assign(window.location, {
-    href: "https://ava.invalid/app/admin/pdf-reports?kind=conversionId&reference=pdf-authored",
+    href: "https://ava.invalid/app/admin/pdf-reports?kind=conversionId&reference=pdf-authored&view=export&eventCursor=events-56",
   });
   const event = new Event("storage");
   Object.defineProperties(event, {
@@ -327,7 +327,9 @@ it("keeps a different-owner storage event fenced and routed to Home", async () =
     newValue: { value: "other" },
   });
   window.dispatchEvent(event);
-  expect(window.location.replace).toHaveBeenCalledExactlyOnceWith("/app");
+  expect(window.location.replace).toHaveBeenCalledExactlyOnceWith(
+    "/app/admin/pdf-reports?kind=conversionId&reference=pdf-authored&view=export&eventCursor=events-56",
+  );
   expect(f.begin).not.toHaveBeenCalled();
 });
 it("keeps public routes open and bounds pending transition waiting for Clerk", async () => {
@@ -483,4 +485,83 @@ it("bounds the whole gate while loaded storage and unresolved server account dif
   expect(render()).toContain("still being prepared");
   expect(render()).not.toContain("Private account content");
   expect(f.adopt).not.toHaveBeenCalled();
+});
+
+
+it("preserves a sign-in report return when another tab adopts the authenticated owner", async () => {
+  const target =
+    "/app/admin/pdf-reports?kind=conversionId&reference=pdf-authored&view=export&eventCursor=events-56&costCursor=cost-4";
+  f.active = "old";
+  f.auth.userId = "old";
+  render();
+  await effects();
+  f.blocked = true;
+  f.auth.userId = null;
+  f.active = null;
+  render();
+  await effects();
+  f.pathname = "/sign-in";
+  f.blocked = false;
+  f.auth.userId = "old";
+  f.auth.sessionId = "new-session";
+  // This tab's pre-login memory is stale while another same-origin tab adopts old.
+  f.active = "anonymous";
+  Object.assign(window.location, {
+    href: `https://ava.invalid/sign-in?redirect_url=${encodeURIComponent(target)}`,
+  });
+  writeSession.mockClear();
+  const event = new Event("storage");
+  Object.defineProperties(event, {
+    key: { value: "active-user" },
+    newValue: { value: "old" },
+  });
+  window.dispatchEvent(event);
+  expect(window.location.replace).toHaveBeenCalledExactlyOnceWith(target);
+  expect(writeSession).not.toHaveBeenCalled();
+  expect(f.adopt).not.toHaveBeenCalled();
+});
+
+it.each([
+  "https://ava.invalid/app/read/book",
+  "https://ava.invalid/sign-in?redirect_url=https://foreign.invalid",
+  "https://ava.invalid/app/admin/pdf-reports?kind=conversionId&reference=sk-private",
+  "https://ava.invalid/app/admin/pdf-reports?kind=conversionId&reference=pdf-authored&unknown=private",
+])("keeps unsafe or other-flow cross-tab reloads at Home (%#)", async (href) => {
+  f.auth.userId = "old";
+  render();
+  await effects();
+  Object.assign(window.location, { href });
+  const event = new Event("storage");
+  Object.defineProperties(event, {
+    key: { value: "active-user" },
+    newValue: { value: "other" },
+  });
+  window.dispatchEvent(event);
+  expect(window.location.replace).toHaveBeenCalledExactlyOnceWith("/app");
+});
+
+it("fences a late adoption result before a cross-tab report reload", async () => {
+  const work = deferred();
+  f.adopt.mockImplementation(async (userId) => {
+    f.active = userId;
+    await work.promise;
+  });
+  render();
+  await effects();
+  const target =
+    "/app/admin/pdf-reports?kind=conversionId&reference=pdf-authored&view=events";
+  Object.assign(window.location, { href: `https://ava.invalid${target}` });
+  const event = new Event("storage");
+  Object.defineProperties(event, {
+    key: { value: "active-user" },
+    newValue: { value: "other" },
+  });
+  window.dispatchEvent(event);
+  expect(window.location.replace).toHaveBeenCalledExactlyOnceWith(target);
+  work.resolve();
+  await flush();
+  expect(f.finish).not.toHaveBeenCalled();
+  expect(f.clearIntent).not.toHaveBeenCalled();
+  expect(writeSession).not.toHaveBeenCalled();
+  expect(render()).not.toContain("Private account content");
 });

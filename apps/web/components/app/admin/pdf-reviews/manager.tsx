@@ -2,9 +2,10 @@
 import { useAuth } from "@clerk/nextjs";
 import { useReview } from "@/features/admin/pdf-reviews/use-review";
 import { ReviewDetail } from "./review-detail";
-export function PdfReviewManager({ ownerId }: { ownerId: string }) {
+export function PdfReviewManager() {
   const auth = useAuth();
-  if (!auth.isLoaded || !auth.isSignedIn || auth.userId !== ownerId)
+  if (!auth.isLoaded) return <p role="status">Checking review session…</p>;
+  if (!auth.isSignedIn || !auth.userId || !auth.sessionId)
     return <p>Sign in with your authorized AVA review account.</p>;
   return (
     <ReviewSession
@@ -43,7 +44,9 @@ function ReviewSession({
           </li>
         ))}
       </ul>
-      {!state.busy && !state.rows.length && <p>No imports awaiting review.</p>}
+      {!state.busy && !state.error && !state.rows.length && (
+        <p>No imports awaiting review.</p>
+      )}
       {state.detail && (
         <ReviewDetail
           key={state.detail.snapshot.validationId}
