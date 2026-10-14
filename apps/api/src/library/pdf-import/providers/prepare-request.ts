@@ -7,7 +7,7 @@ import { PdfProviderError } from './errors';
 import type { ProviderTask } from './types';
 import { tokenCost, usdToNano } from './money';
 import { requirePilotTask } from './pilot-task';
-import { providerResponseSchema } from './response-schema';
+import { providerRequestFormat } from './request-format';
 export function prepareProviderRequest(
   route: PdfProviderRoute,
   task: ProviderTask,
@@ -52,20 +52,14 @@ export function prepareProviderRequest(
     ) +
     tokenCost(usdToNano(tariff.completionPerMillionUsd), maxOutputTokens);
   const effort = config.reasoningEffortByPrompt?.[value.promptVersion];
+  const format = providerRequestFormat(route.modelId, value);
   const request = jsonBytes({
     model: route.modelId,
-    messages: value.messages,
+    messages: format.messages,
     max_tokens: maxOutputTokens,
     ...(effort ? { reasoning: { effort } } : {}),
     stream: false,
-    response_format: {
-      type: 'json_schema',
-      json_schema: {
-        name: 'ava_pdf_result',
-        strict: true,
-        schema: providerResponseSchema(route.modelId, value),
-      },
-    },
+    response_format: format.responseFormat,
     plugins: [],
     transforms: [],
     provider: {

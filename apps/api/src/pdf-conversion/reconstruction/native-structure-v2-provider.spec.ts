@@ -10,6 +10,7 @@ import {
   GEMINI_GRAMMAR_VERSION,
 } from '../../library/pdf-import/providers/response-schema';
 import { jsonHash } from '../../library/pdf-import/providers/hash';
+import type { ProviderMessage } from '../../library/pdf-import/providers/types';
 import {
   route,
   config,
@@ -39,14 +40,15 @@ const captured = {
   configuration,
 };
 
-it('pins the new prompt/canonical schema and sends the actual closed lowered grammar with unchanged request ceiling', () => {
+it('pins prompt/canonical schema and sends closed host-contract guidance in JSON mode with unchanged ceiling', () => {
   const prepared = prepareProviderRequest(captured, task);
   const body = JSON.parse(prepared.request.toString()) as {
     max_tokens: number;
     stream: boolean;
     plugins: unknown[];
     transforms: unknown[];
-    response_format: { json_schema: { strict: boolean; schema: object } };
+    messages: ProviderMessage[];
+    response_format: object;
     provider: { allow_fallbacks: boolean; only: string[] };
   };
   expect(GEMINI_GRAMMAR_VERSION).toBe('ava-gemini-recognition-grammar-3');
@@ -57,13 +59,15 @@ it('pins the new prompt/canonical schema and sends the actual closed lowered gra
     transforms: [],
     provider: { allow_fallbacks: false, only: [route.providerSlug] },
   });
-  expect(body.response_format.json_schema.strict).toBe(true);
-  expect(body.response_format.json_schema.schema).toEqual(
-    providerResponseSchema(captured.modelId, task),
-  );
-  const valid = new Ajv({ strict: false }).compile(
-    body.response_format.json_schema.schema,
-  );
+  expect(body.response_format).toEqual({ type: 'json_object' });
+  expect(body.messages[0]).toEqual(task.messages[0]);
+  const content = body.messages[1].content;
+  if (typeof content === 'string' || content[0].type !== 'text')
+    throw new Error('fixture');
+  expect(content.slice(1)).toEqual(task.messages[1].content);
+  const schema = JSON.parse(content[0].text.split('\n')[1]) as object;
+  expect(schema).toEqual(providerResponseSchema(captured.modelId, task));
+  const valid = new Ajv({ strict: false }).compile(schema);
   expect(valid(nativeResponse2)).toBe(true);
   expect(
     valid({

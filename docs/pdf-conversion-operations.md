@@ -408,9 +408,17 @@ inventory: group count and each group's line IDs fit its unique line count, boun
 fit its candidate count, and references fit its unique eligible callout count. Accepted responses
 still require exact boundary coverage. The canonical
 response schema, closed role branches and host/worker source validation remain authoritative.
-Prepared task and request hashes bind the effective source-specific grammar; historical generation
-grammars and configuration identities stay unchanged. This does not add retries or raise request,
-byte or spend limits. Vendor acceptance still needs a retained source-bound provider result.
+Only Gemini NativeTask2 requests use OpenRouter `response_format: {type: "json_object"}`: the
+effective source-specific grammar is supplied once as separate host response-contract guidance
+before the unchanged source text and image. This avoids provider-side complex-schema compilation;
+it does not guarantee schema-conforming output. Strict canonical parsing and exact source checks
+still refuse malformed JSON, foreign role fields or incomplete source coverage without repair.
+Prepared task identity, prompt/schema authorization and configuration hashes stay unchanged; the
+outbound request hash binds the guidance and JSON mode. All other request formats and historical
+grammars stay unchanged. No retries or larger request, byte or spend limits are introduced.
+Vendor acceptance still needs a retained source-bound provider result. See the
+[OpenRouter JSON modes](https://openrouter.ai/docs/api_reference/overview#structured-outputs) and
+[Google JSON-mode limits](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/multimodal/control-generated-output).
 
 Apply `20260930190000_pdf_normal_import_routes` before selecting this route. It permits granted
 live jobs and enforces import worker/profile identity in PostgreSQL. Normal workers exclude authored
