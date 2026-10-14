@@ -7,11 +7,19 @@ from ..contracts.profiles import response_language
 from .list_markers import MARKER, marker_value
 from .native_structure_contract import NativeStructureResponse, NativeStructureTask
 from .native_structure_fields import NativeStructureGroup
+from .native_structure_group_order import source_ordered_native_groups
 from .native_structure_ornaments import ornamental_separator
 from .native_structure_sizes import validate_grouped_sizes
 
 
 def accept_native_structure(task: NativeStructureTask, response: NativeStructureResponse) -> None:
+    canonical_native_structure_response(task, response)
+
+
+def canonical_native_structure_response(
+    task: NativeStructureTask, response: NativeStructureResponse
+) -> NativeStructureResponse:
+    """Validate a source-ordered clone; retain the caller's receipt for provenance."""
     task = NativeStructureTask.model_validate(task.model_dump())
     response = NativeStructureResponse.model_validate(response.model_dump())
     if (
@@ -28,12 +36,9 @@ def accept_native_structure(task: NativeStructureTask, response: NativeStructure
     if {g.id for g in response.groups}.intersection(a.id for a in task.artifacts):
         raise ValueError("Native structure group collides with a preserved artifact")
     regions = {r.source.id: r for r in task.regions}
-    expected = [
-        (r.source.id, ident) for r in task.regions if r.artifact_id is None for ident in r.line_ids
-    ]
-    observed = [(g.region_id, ident) for g in response.groups for ident in g.line_ids]
-    if expected != observed:
-        raise ValueError("Native structure group source order/coverage/region ownership differs")
+    response = response.model_copy(
+        update={"groups": source_ordered_native_groups(task, response.groups)}
+    )
     lines = {line.id: line for line in task.lines}
     artifacts = {a.id: a for a in task.artifacts}
     for index, group in enumerate(response.groups):
@@ -79,6 +84,7 @@ def accept_native_structure(task: NativeStructureTask, response: NativeStructure
         validate_grouped_sizes([lines[ident] for ident in group.line_ids])
     _boundaries(task, response)
     _references(task, response)
+    return response
 
 
 def _references(task: NativeStructureTask, response: NativeStructureResponse) -> None:

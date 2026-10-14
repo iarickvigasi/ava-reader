@@ -528,6 +528,13 @@ text, mathematical operators and ambiguous rows keep the existing recognition/re
 Per-page preparation cannot opt into this complete-source policy. The separate captured
 `ava-native-structure-1` opt-in adds IDs-only structure decisions after exact native qualification;
 unsafe glyphs or source partitions retain the unchanged recognition fallback.
+NativeTask1/Response1 retain the same schema, prompt and captured policy. Immutable task regions
+and line IDs own reading order. A complete response whose whole groups arrive in another collection
+order is validated through a local source-ordered clone; every group must already contain a
+consecutive source-ordered run within its exact region, and complete unique ownership must match.
+Reversed, missing, duplicate, foreign or nonconsecutive line IDs still refuse. Canonical order also
+feeds assembly, list look-ahead and confirmed continuation checks. Original response objects/bytes
+and classification provenance remain unchanged; no text, group attributes or source IDs are repaired.
 
 Controls use a four-byte unsigned big-endian length followed by UTF-8 JSON. Every
 `ava-reconstruction-exchange-1` envelope has exactly `schema_version`, increasing `sequence`,

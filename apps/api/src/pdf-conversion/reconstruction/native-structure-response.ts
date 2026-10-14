@@ -16,7 +16,27 @@ export function nativeStructureResponse(
       ? region.line_ids.map((id) => [region.source.id, id])
       : [],
   );
-  const observed = response.groups.flatMap((group) =>
+  const ordinals = new Map(
+    expected.map((pair, index) => [JSON.stringify(pair), index]),
+  );
+  if (ordinals.size !== expected.length)
+    throw new PdfRuntimeError('SOURCE_MISMATCH');
+  const groups = response.groups
+    .map((group) => {
+      const positions = group.line_ids.map((id) =>
+        ordinals.get(JSON.stringify([group.region_id, id])),
+      );
+      const first = positions[0];
+      if (
+        first === undefined ||
+        positions.some((position, index) => position !== first + index)
+      )
+        throw new PdfRuntimeError('SOURCE_MISMATCH');
+      return { group, first };
+    })
+    .sort((left, right) => left.first - right.first)
+    .map(({ group }) => group);
+  const observed = groups.flatMap((group) =>
     group.line_ids.map((id) => [group.region_id, id]),
   );
   const artifacts = new Set(task.artifacts.map((artifact) => artifact.id));
@@ -59,5 +79,6 @@ export function nativeStructureResponse(
     throw new PdfRuntimeError('SOURCE_MISMATCH');
   // Essential uncertainty, role relationships and boundary semantics are checked
   // against immutable source by the waiting worker before it can request another task.
+  // Retain provider order for response-digest authority; only the validated view uses source order.
   return response;
 }

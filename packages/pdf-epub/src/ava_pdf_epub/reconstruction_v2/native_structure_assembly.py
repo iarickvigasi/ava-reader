@@ -9,7 +9,7 @@ from .geometry import union
 from .native_line_offsets import NativeLineOffset, mapped_native_ids, native_line_offsets
 from .native_structure_contract import NativeStructureResponse, NativeStructureTask
 from .native_structure_fields import NativeStructureGroup, NativeStructureLine
-from .native_structure_response import accept_native_structure
+from .native_structure_response import canonical_native_structure_response
 from .native_structure_sizes import grouped_span_style
 from .native_structure_source_validation import validate_source_ownership
 from .observations import PageObservation
@@ -32,7 +32,7 @@ def assemble_native_structure_source(
     preserved_segments: Sequence[Segment] = (),
     furniture: set[str] | None = None,
 ) -> NativeStructureSource:
-    accept_native_structure(task, response)
+    response = canonical_native_structure_response(task, response)
     validate_source_ownership(task, page, preserved_segments, furniture=furniture or set())
     lines = {line.id: line for line in task.lines}
     preserved = {s.id: s for s in preserved_segments}
