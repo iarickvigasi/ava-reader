@@ -8,6 +8,7 @@ from ..contracts.common import Digest, Record
 from ..contracts.profiles import LEGACY_PROFILE, ProfileId
 from .prepared_native_layout import NativeLayoutPreparedPage
 from .prepared_native_structure import NativeStructurePreparedPage
+from .prepared_native_structure_v2 import NativeStructure2PreparedPage
 from .prepared_native_word_wrap import NativeWordWrapPreparedPage
 from .prepared_types import AnyPreparedPage
 from .protocol_frontmatter_title import FrontmatterTitleReconstructionInput
@@ -15,6 +16,10 @@ from .protocol_native_layout import NativeLayoutPrepareResult, NativeLayoutRecon
 from .protocol_native_structure import (
     NativeStructurePrepareResult,
     NativeStructureReconstructionInput,
+)
+from .protocol_native_structure_v2 import (
+    NativeStructure2PrepareResult,
+    NativeStructure2ReconstructionInput,
 )
 from .protocol_native_word_wrap import (
     NativeWordWrapPrepareResult,
@@ -78,10 +83,13 @@ AnyReconstructionInput = (
     | NativeWordWrapReconstructionInput
     | RecognitionGeometryReconstructionInput
     | FrontmatterTitleReconstructionInput
+    | NativeStructure2ReconstructionInput
 )
 
 
 def reconstruction_input(raw: object) -> AnyReconstructionInput:
+    if isinstance(raw, dict) and raw.get("schema_version") == "ava-reconstruct-input-8":
+        return NativeStructure2ReconstructionInput.model_validate(raw)
     if isinstance(raw, dict) and raw.get("schema_version") == "ava-reconstruct-input-7":
         return FrontmatterTitleReconstructionInput.model_validate(raw)
     if isinstance(raw, dict) and raw.get("schema_version") == "ava-reconstruct-input-6":
@@ -107,9 +115,24 @@ def prepared_result(
     | NativeLayoutPrepareResult
     | NativeStructurePrepareResult
     | NativeWordWrapPrepareResult
+    | NativeStructure2PrepareResult
 ):
     from ..contracts.common import document_digest
 
+    if isinstance(prepared, NativeStructure2PreparedPage):
+        return NativeStructure2PrepareResult(
+            schema_version="ava-prepare-result-5",
+            source_layout_policy=prepared.source_layout_policy,
+            source_structure_policy=prepared.source_structure_policy,
+            source_normalization_policy=prepared.source_normalization_policy,
+            profile_id=prepared.profile_id,
+            source_sha256=prepared.source_sha256,
+            source_page_count=prepared.source_page_count,
+            page_number=prepared.observation.number,
+            observation_sha256=document_digest(prepared.observation),
+            native_segment_count=len(prepared.native_segments),
+            tasks=prepared.tasks,
+        )
     if isinstance(prepared, NativeWordWrapPreparedPage):
         return NativeWordWrapPrepareResult(
             schema_version="ava-prepare-result-4",

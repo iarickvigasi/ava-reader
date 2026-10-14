@@ -16,18 +16,28 @@ export function exchangeTasks(
   const tasks = packet?.tasks;
   if (!Array.isArray(tasks) || tasks.length > maximum)
     throw new PdfRuntimeError('INVALID_RESULT');
-  const current = ['ava-prepare-result-3', 'ava-prepare-result-4'].includes(
-    String(packet?.schema_version),
-  );
+  const current = [
+    'ava-prepare-result-3',
+    'ava-prepare-result-4',
+    'ava-prepare-result-5',
+  ].includes(String(packet?.schema_version));
+  const nativeMarker =
+    packet?.schema_version === 'ava-prepare-result-5'
+      ? 'ava-native-structure-task-2'
+      : 'ava-native-structure-task-1';
   const pending = tasks.map(
     (task: { task_id?: unknown; schema_version?: unknown } | null) => {
-      const native = task?.schema_version === 'ava-native-structure-task-1';
+      const native = task?.schema_version === nativeMarker;
+      const anyNative = [
+        'ava-native-structure-task-1',
+        'ava-native-structure-task-2',
+      ].includes(String(task?.schema_version));
       if (
         typeof task?.task_id !== 'string' ||
         !task.task_id.length ||
-        (native && (!current || refinement)) ||
+        (anyNative && (!current || refinement)) ||
         (current &&
-          !['ava-native-structure-task-1', 'ava-recognition-task-1'].includes(
+          ![nativeMarker, 'ava-recognition-task-1'].includes(
             String(task.schema_version),
           ))
       )

@@ -27,16 +27,27 @@ class NativeStructureExchange(Record):
     payload: Any
 
 
-def emit_native(writer: ExchangeWriter, task_id: str) -> NativeStructureExchange:
+class NativeStructureExchange2(NativeStructureExchange):
+    schema_version: Literal["ava-native-structure-exchange-2"]  # type: ignore[assignment]
+
+
+def emit_native(
+    writer: ExchangeWriter, task_id: str, *, version: Literal[1, 2] = 1
+) -> NativeStructureExchange | NativeStructureExchange2:
     if writer.terminal:
         raise ValueError("Native structure control follows terminal marker")
-    packet = NativeStructureExchange(
-        schema_version="ava-native-structure-exchange-1",
+    values = dict(
+        schema_version=f"ava-native-structure-exchange-{version}",
         sequence=writer.sequence + 1,
         source_sha256=writer.source_sha256,
         profile_id=writer.profile_id,
         kind="native_structure",
         payload={"task_id": task_id},
+    )
+    packet = (
+        NativeStructureExchange2.model_validate(values)
+        if version == 2
+        else NativeStructureExchange.model_validate(values)
     )
     data = json_bytes(packet.model_dump(mode="json"))
     if len(data) > 1024:
@@ -47,12 +58,19 @@ def emit_native(writer: ExchangeWriter, task_id: str) -> NativeStructureExchange
 
 
 def reply_native(
-    writer: ExchangeWriter, incoming: BinaryIO, request: NativeStructureExchange
+    writer: ExchangeWriter,
+    incoming: BinaryIO,
+    request: NativeStructureExchange | NativeStructureExchange2,
 ) -> Any:
     size = struct.unpack(">I", _exact(incoming, 4))[0]
     if not 0 < size <= min(REPLY_BYTES, TOTAL_REPLY_BYTES - writer._reply_bytes - 4):
         raise ValueError("Native structure reply byte bound exceeded")
-    reply = NativeStructureExchange.model_validate(strict_json(_exact(incoming, size)))
+    raw = strict_json(_exact(incoming, size))
+    reply = (
+        NativeStructureExchange2.model_validate(raw)
+        if isinstance(request, NativeStructureExchange2)
+        else NativeStructureExchange.model_validate(raw)
+    )
     writer._reply_bytes += size + 4
     if (
         reply.sequence != request.sequence

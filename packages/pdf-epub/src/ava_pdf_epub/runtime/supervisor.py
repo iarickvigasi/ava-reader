@@ -36,6 +36,11 @@ _TITLE_CONFIGS = {
     "ava-pdf-prose-en-uk-v3": "5fed6a113e4851d26b843716cf48bbddf954e64155c82fd0655e63607600b8d4",
 }
 
+_NATIVE2_CONFIGS = {
+    "ava-pdf-prose-en-v2": "0fffcc842cce501bbcee910ce653064a702fee9ce5d592e4b39d14c3a693a88e",
+    "ava-pdf-prose-en-uk-v3": "e424ec48dacf225082d3d8c6ebc4438114de1f7151eeb0c30ad311f7cb39307a",
+}
+
 
 def _unique(pairs: list[tuple[str, object]]) -> dict[str, object]:
     result: dict[str, object] = {}
@@ -79,11 +84,19 @@ def exchange_input(target: str) -> int | None:
         "ava-reconstruct-input-5",
         "ava-reconstruct-input-6",
         "ava-reconstruct-input-7",
+        "ava-reconstruct-input-8",
     )
-    title = isinstance(request, dict) and request.get("schema_version") == "ava-reconstruct-input-7"
+    native2 = (
+        isinstance(request, dict) and request.get("schema_version") == "ava-reconstruct-input-8"
+    )
+    title = isinstance(request, dict) and request.get("schema_version") in (
+        "ava-reconstruct-input-7",
+        "ava-reconstruct-input-8",
+    )
     geometry = isinstance(request, dict) and request.get("schema_version") in (
         "ava-reconstruct-input-6",
         "ava-reconstruct-input-7",
+        "ava-reconstruct-input-8",
     )
     if (
         not isinstance(request, dict)
@@ -114,6 +127,7 @@ def exchange_input(target: str) -> int | None:
         "ava-reconstruct-input-5",
         "ava-reconstruct-input-6",
         "ava-reconstruct-input-7",
+        "ava-reconstruct-input-8",
     ) or request["profile_id"] not in (
         "ava-pdf-prose-en-v2",
         "ava-pdf-prose-en-uk-v3",
@@ -152,7 +166,9 @@ def exchange_input(target: str) -> int | None:
             or request.get("source_feature_policy") != "ava-ocr-source-features-1"
             or config
             != (
-                _TITLE_CONFIGS
+                _NATIVE2_CONFIGS
+                if native2
+                else _TITLE_CONFIGS
                 if title
                 else _GEOMETRY_CONFIGS
                 if geometry
@@ -164,9 +180,9 @@ def exchange_input(target: str) -> int | None:
             )[request["profile_id"]]
         ):
             raise ValueError("Exchange layout differs from captured configuration")
-        if (native or word_wrap) and request.get(
-            "source_structure_policy"
-        ) != "ava-native-structure-1":
+        if (native or word_wrap) and request.get("source_structure_policy") != (
+            "ava-native-structure-2" if native2 else "ava-native-structure-1"
+        ):
             raise ValueError("Exchange native structure differs from captured configuration")
         if word_wrap and request.get("source_normalization_policy") != "ava-native-word-wrap-1":
             raise ValueError("Exchange word-wrap differs from captured configuration")
@@ -183,6 +199,7 @@ def exchange_input(target: str) -> int | None:
         *_WORD_WRAP_CONFIGS.values(),
         *_GEOMETRY_CONFIGS.values(),
         *_TITLE_CONFIGS.values(),
+        *_NATIVE2_CONFIGS.values(),
     ):
         raise ValueError("Captured layout cannot use legacy exchange input")
     return None

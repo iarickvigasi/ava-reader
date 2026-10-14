@@ -13,6 +13,7 @@ export type ExchangeEnvelope = ExchangeBinding & {
     | 'ava-reconstruction-exchange-2'
     | 'ava-recognition-anchor-context-exchange-1'
     | 'ava-native-structure-exchange-1'
+    | 'ava-native-structure-exchange-2'
     | 'ava-recognition-geometry-exchange-1';
   sequence: number;
   kind:
@@ -34,7 +35,10 @@ export function exchangeProtocol(
   binding: ExchangeBinding,
   wordWrapMode = false,
   geometryMode = false,
+  native2Mode = false,
 ) {
+  if (native2Mode && (!wordWrapMode || !geometryMode))
+    throw new PdfRuntimeError('DISPATCH_NOT_AUTHORIZED');
   let sequence = 0,
     pages = 0,
     recognitions = 0,
@@ -59,7 +63,10 @@ export function exchangeProtocol(
       const correction =
         value?.schema_version === 'ava-recognition-anchor-context-exchange-1';
       const native =
-        value?.schema_version === 'ava-native-structure-exchange-1';
+        value?.schema_version ===
+        (native2Mode
+          ? 'ava-native-structure-exchange-2'
+          : 'ava-native-structure-exchange-1');
       if (
         !value ||
         Object.keys(value).sort().join() !==
@@ -127,9 +134,12 @@ export function exchangeProtocol(
         const marker = (value.payload as { schema_version?: unknown } | null)
           ?.schema_version;
         if (
-          wordWrapMode
-            ? marker !== 'ava-prepare-result-4'
-            : marker === 'ava-prepare-result-4'
+          native2Mode
+            ? marker !== 'ava-prepare-result-5'
+            : marker === 'ava-prepare-result-5' ||
+              (wordWrapMode
+                ? marker !== 'ava-prepare-result-4'
+                : marker === 'ava-prepare-result-4')
         )
           throw new PdfRuntimeError('INVALID_RESULT');
         pending = exchangeTasks(value.payload, 50);

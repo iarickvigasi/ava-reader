@@ -61,6 +61,13 @@ def reconstruct_from_pages(
     request: AnyReconstructionInput,
 ) -> tuple[ReconstructedBook, ReconstructionReport]:
     """Create final assembly state afresh from unchanged private source checkpoints."""
+    if isinstance(
+        request, (NativeStructureReconstructionInput, NativeWordWrapReconstructionInput)
+    ) and any(
+        getattr(page, "source_structure_policy", None) != request.source_structure_policy
+        for page in prepared
+    ):
+        raise ValueError("Source checkpoint structure policy differs from captured input")
     with phase("reconstruct"):
         if isinstance(request, RecognitionGeometryReconstructionInput):
             validate_geometry_proofs(prepared, request)

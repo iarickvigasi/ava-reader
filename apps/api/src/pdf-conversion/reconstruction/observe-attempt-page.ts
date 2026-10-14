@@ -9,7 +9,9 @@ export function observeAttemptPage(
   const native =
     prepared.native_segment_count ||
     prepared.tasks.some(
-      (task) => task.schema_version === 'ava-native-structure-task-1',
+      (task) =>
+        task.schema_version === 'ava-native-structure-task-1' ||
+        task.schema_version === 'ava-native-structure-task-2',
     );
   const recognitionTasks = prepared.tasks.filter(
     (task) => task.schema_version === 'ava-recognition-task-1',

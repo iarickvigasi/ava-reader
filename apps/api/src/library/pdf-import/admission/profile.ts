@@ -11,7 +11,10 @@ export {
 export const NATIVE_LAYOUT_POLICY = 'ava-native-layout-1' as const;
 export type NativeLayoutPolicy = typeof NATIVE_LAYOUT_POLICY;
 export const NATIVE_STRUCTURE_POLICY = 'ava-native-structure-1' as const;
-export type NativeStructurePolicy = typeof NATIVE_STRUCTURE_POLICY;
+export const NATIVE_STRUCTURE_V2_POLICY = 'ava-native-structure-2' as const;
+export type NativeStructurePolicy =
+  | typeof NATIVE_STRUCTURE_POLICY
+  | typeof NATIVE_STRUCTURE_V2_POLICY;
 const LAYOUT_LEGACY = Object.freeze({
   ...PDF_IMPORT_PROFILE,
   sourceLayoutPolicy: NATIVE_LAYOUT_POLICY,
@@ -52,6 +55,14 @@ const TITLE_V3 = Object.freeze({
   ...GEOMETRY_V3,
   sourceTitlePolicy: FRONTMATTER_TITLE_POLICY,
 });
+const STRUCTURE_V2_LEGACY = Object.freeze({
+  ...TITLE_LEGACY,
+  sourceStructurePolicy: NATIVE_STRUCTURE_V2_POLICY,
+});
+const STRUCTURE_V2_V3 = Object.freeze({
+  ...TITLE_V3,
+  sourceStructurePolicy: NATIVE_STRUCTURE_V2_POLICY,
+});
 export type PdfImportConfiguration =
   | typeof PDF_IMPORT_PROFILE
   | typeof PDF_IMPORT_PROFILE_V3
@@ -64,7 +75,9 @@ export type PdfImportConfiguration =
   | typeof GEOMETRY_LEGACY
   | typeof GEOMETRY_V3
   | typeof TITLE_LEGACY
-  | typeof TITLE_V3;
+  | typeof TITLE_V3
+  | typeof STRUCTURE_V2_LEGACY
+  | typeof STRUCTURE_V2_V3;
 export function pdfImportConfiguration(
   profileId?: string,
   sourceLayoutPolicy?: unknown,
@@ -76,6 +89,16 @@ export function pdfImportConfiguration(
   const legacy = !profileId || profileId === PDF_IMPORT_PROFILE.profileId;
   if (!legacy && profileId !== PDF_IMPORT_PROFILE_V3.profileId)
     throw new Error('PDF_IMPORT_PROFILE_INVALID');
+  if (sourceStructurePolicy === NATIVE_STRUCTURE_V2_POLICY) {
+    if (
+      sourceLayoutPolicy !== NATIVE_LAYOUT_POLICY ||
+      sourceNormalizationPolicy !== NATIVE_WORD_WRAP_POLICY ||
+      recognitionRepairPolicy !== RECOGNITION_GEOMETRY_REPAIR_POLICY ||
+      sourceTitlePolicy !== FRONTMATTER_TITLE_POLICY
+    )
+      throw new Error('PDF_IMPORT_PROFILE_INVALID');
+    return legacy ? STRUCTURE_V2_LEGACY : STRUCTURE_V2_V3;
+  }
   if (sourceTitlePolicy !== undefined && sourceTitlePolicy !== '') {
     if (
       sourceTitlePolicy !== FRONTMATTER_TITLE_POLICY ||
@@ -143,3 +166,5 @@ export {
   FRONTMATTER_TITLE_POLICY,
   type SourceTitlePolicy,
 } from './frontmatter-title-policy';
+
+export { capturedNativeStructureV2Policy } from './captured-native-structure-v2-policy';

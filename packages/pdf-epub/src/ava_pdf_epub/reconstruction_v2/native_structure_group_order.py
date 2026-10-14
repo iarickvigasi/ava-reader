@@ -1,11 +1,11 @@
 """Canonicalize only complete source-owned partitions, never their line membership."""
 
-from .native_structure_contract import NativeStructureTask
 from .native_structure_fields import NativeStructureGroup
+from .native_structure_versions import AnyNativeStructureTask
 
 
 def source_ordered_native_groups(
-    task: NativeStructureTask, groups: list[NativeStructureGroup]
+    task: AnyNativeStructureTask, groups: list[NativeStructureGroup]
 ) -> list[NativeStructureGroup]:
     expected = [
         (region.source.id, ident)

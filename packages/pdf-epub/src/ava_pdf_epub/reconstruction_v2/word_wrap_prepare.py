@@ -53,6 +53,7 @@ def prepare_word_wrap_from_pages(
         or page.source_sha256 != request.source_sha256
         or page.profile_id != request.profile_id
         or page.source_normalization_policy != request.source_normalization_policy
+        or page.source_structure_policy != request.source_structure_policy
         for page in pages
     ):
         raise ValueError("Sparse comparison requires captured source checkpoints")

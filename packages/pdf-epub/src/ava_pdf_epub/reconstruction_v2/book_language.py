@@ -13,7 +13,7 @@ from ..contracts.profiles import response_language
 from .assembly_state import AssemblyState
 from .language_evidence import RUSSIAN_LETTERS, ukrainian_evidence
 from .language_route import ENGLISH_HINTS
-from .native_structure_contract import NativeStructureResponse
+from .native_structure_versions import AnyNativeStructureResponse
 from .prepared_types import AnyPreparedPage
 from .recognition_contract import RecognitionResponse
 
@@ -32,9 +32,9 @@ def observed_language(text: str) -> Literal["en", "uk"] | None:
 def primary_language(
     prepared: Sequence[AnyPreparedPage],
     responses: list[RecognitionResponse],
-    native_structure_responses: list[NativeStructureResponse] | None = None,
+    native_structure_responses: Sequence[AnyNativeStructureResponse] | None = None,
 ) -> tuple[Literal["en", "uk"], set[int]]:
-    receipts: list[RecognitionResponse | NativeStructureResponse] = [
+    receipts: list[RecognitionResponse | AnyNativeStructureResponse] = [
         *responses,
         *(native_structure_responses or []),
     ]
@@ -80,7 +80,7 @@ def language_metadata(
     state: AssemblyState,
     prepared: Sequence[AnyPreparedPage],
     responses: list[RecognitionResponse],
-    native_structure_responses: list[NativeStructureResponse] | None = None,
+    native_structure_responses: Sequence[AnyNativeStructureResponse] | None = None,
 ) -> list[dict[str, Any]]:
     language, pages = primary_language(prepared, responses, native_structure_responses)
     evidence = next(

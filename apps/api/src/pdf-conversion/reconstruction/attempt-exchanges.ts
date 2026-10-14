@@ -1,3 +1,5 @@
+import { NATIVE_STRUCTURE_V2_POLICY } from '../../library/pdf-import/admission/profile';
+import type { NativeStructureResponse2 } from './generated/NativeStructureResponse2';
 import type { RecognitionGeometryProof } from './generated/RecognitionGeometryProof';
 import { geometryBinding, geometrySha } from './geometry-binding';
 import {
@@ -41,10 +43,14 @@ export function attemptExchanges(context: AttemptContext) {
     },
     !!context.sourceNormalizationPolicy,
     !!context.recognitionRepairPolicy,
+    context.sourceStructurePolicy === NATIVE_STRUCTURE_V2_POLICY,
   );
   const taskIds = new Set<string>();
   const responses: RecognitionResponse[] = [];
-  const nativeStructureResponses: NativeStructureResponse[] = [];
+  const nativeStructureResponses: (
+    | NativeStructureResponse
+    | NativeStructureResponse2
+  )[] = [];
   const refinements: RefinementResponse[] = [];
   const geometryCorrections: RecognitionGeometryProof[] = [];
   const correctionIds = new Set<string>();
@@ -105,12 +111,17 @@ export function attemptExchanges(context: AttemptContext) {
       throw new PdfRuntimeError('RESOURCE_LIMIT');
   };
   const retainResponse = (
-    response: RecognitionResponse | NativeStructureResponse | WordWrapResponse,
+    response:
+      | RecognitionResponse
+      | NativeStructureResponse
+      | NativeStructureResponse2
+      | WordWrapResponse,
   ) => {
     const priorCount =
       response.schema_version === 'ava-native-word-wrap-response-1'
         ? wordWrap.responses.length
-        : response.schema_version === 'ava-native-structure-response-1'
+        : response.schema_version === 'ava-native-structure-response-1' ||
+            response.schema_version === 'ava-native-structure-response-2'
           ? nativeStructureResponses.length
           : responses.length;
     responseBytes +=
@@ -176,11 +187,15 @@ export function attemptExchanges(context: AttemptContext) {
       )
         return invalid();
       if (
-        (task.schema_version === 'ava-native-structure-task-1') !==
+        (task.schema_version === 'ava-native-structure-task-1' ||
+          task.schema_version === 'ava-native-structure-task-2') !==
         (envelope.kind === 'native_structure')
       )
         return invalid();
-      if (task.schema_version === 'ava-native-structure-task-1') {
+      if (
+        task.schema_version === 'ava-native-structure-task-1' ||
+        task.schema_version === 'ava-native-structure-task-2'
+      ) {
         const response = await resolveNativeStructureAttemptTask(
           task,
           context,

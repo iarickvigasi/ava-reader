@@ -13,7 +13,7 @@ from .native_layout_policy import NativeLayoutPolicy, validate_layout_policy
 from .native_line_offsets import NativeLineOffset
 from .native_page import native_page
 from .native_structure_assembly import assemble_native_structure_source
-from .native_structure_contract import NativeStructureResponse, NativeStructureTask
+from .native_structure_versions import NATIVE_TASK_TYPES, AnyNativeStructureResponse
 from .prepared_native_layout import NativeLayoutPreparedPage
 from .prepared_native_structure import NativeStructurePreparedPage
 from .prepared_types import AnyPreparedPage, layout_policy
@@ -29,7 +29,7 @@ def qualify_pages(
     *,
     source_layout_policy: NativeLayoutPolicy | None = None,
     source_line_maps: dict[str, NativeLineOffset] | None = None,
-    native_structure_responses: list[NativeStructureResponse] | None = None,
+    native_structure_responses: Sequence[AnyNativeStructureResponse] | None = None,
     native_hyphen_decisions: list[NativeHyphenDecision] | None = None,
     native_source_lines: dict[str, str] | None = None,
 ) -> dict[int, list[Segment]]:
@@ -52,7 +52,7 @@ def qualify_pages(
         raise ValueError("Prepared pages do not belong to the immutable source")
     tasks = [task for page in pages for task in page.tasks if isinstance(task, RecognitionTask)]
     native_tasks = [
-        task for page in pages for task in page.tasks if isinstance(task, NativeStructureTask)
+        task for page in pages for task in page.tasks if isinstance(task, NATIVE_TASK_TYPES)
     ]
     lookup = {r.task_id: r for r in responses}
     if len(lookup) != len(responses) or set(lookup) != {task.task_id for task in tasks}:
@@ -82,10 +82,10 @@ def qualify_pages(
             output[page.observation.number] = []
             continue
         if isinstance(page, NativeStructurePreparedPage) and any(
-            isinstance(t, NativeStructureTask) for t in page.tasks
+            isinstance(t, NATIVE_TASK_TYPES) for t in page.tasks
         ):
             task = page.tasks[0]
-            assert isinstance(task, NativeStructureTask)
+            assert isinstance(task, NATIVE_TASK_TYPES)
             assembled = assemble_native_structure_source(
                 task,
                 native_lookup[task.task_id],

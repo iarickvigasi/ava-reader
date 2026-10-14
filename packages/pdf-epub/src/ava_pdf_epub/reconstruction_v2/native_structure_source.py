@@ -16,6 +16,9 @@ from .native_structure_fields import (
     NativeStructureSpan,
 )
 from .native_structure_identity import native_structure_identifier
+from .native_structure_policy import AnyNativeStructurePolicy, validate_structure_policy
+from .native_structure_v2_contract import NativeStructureTask2
+from .native_structure_versions import AnyNativeStructureTask
 from .observations import PageObservation
 from .recognition_contract import RecognitionImage
 from .segments import Segment
@@ -85,7 +88,10 @@ def prepare_native_structure(
     preserved_segments: Sequence[Segment] = (),
     furniture: set[str] | None = None,
     candidates: Sequence[LayoutHyphenCandidate] = (),
-) -> NativeStructureTask | None:
+    structure_policy: AnyNativeStructurePolicy = "ava-native-structure-1",
+) -> AnyNativeStructureTask | None:
+    selected = validate_structure_policy(structure_policy)
+    version = 2 if selected == "ava-native-structure-2" else 1
     lines = qualified_native_lines(page, profile_id)
     if lines is None:
         return None
@@ -116,7 +122,7 @@ def prepare_native_structure(
         for c in candidates
     ]
     values = dict(
-        schema_version="ava-native-structure-task-1",
+        schema_version=f"ava-native-structure-task-{version}",
         task_id="pending",
         purpose="pdf_native_structure",
         source_sha256=source_sha256,
@@ -131,11 +137,15 @@ def prepare_native_structure(
         artifacts=[a.model_dump() for a in artifacts],
         boundaries=[b.model_dump() for b in boundaries],
         eligible_callouts=[c.model_dump() for c in eligible_native_callouts(page, lines, regions)],
-        prompt_version="ava-native-structure-1",
-        response_schema_version="ava-native-structure-response-1",
+        prompt_version=f"ava-native-structure-{version}",
+        response_schema_version=f"ava-native-structure-response-{version}",
     )
     values["task_id"] = native_structure_identifier(values)
-    task = NativeStructureTask.model_validate(values)
+    task: AnyNativeStructureTask = (
+        NativeStructureTask2.model_validate(values)
+        if version == 2
+        else NativeStructureTask.model_validate(values)
+    )
     validate_source_ownership(task, page, preserved_segments, furniture=furniture or set())
     owners = {ident: r.source.id for r in task.regions for ident in r.line_ids}
     source_lines = {line.id: line for line in task.lines}

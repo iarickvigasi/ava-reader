@@ -7,11 +7,11 @@ from ..contracts.layout_hyphen import LayoutHyphenDisposition
 from .conservation import native_conservation
 from .geometry import union
 from .native_line_offsets import NativeLineOffset, mapped_native_ids, native_line_offsets
-from .native_structure_contract import NativeStructureResponse, NativeStructureTask
 from .native_structure_fields import NativeStructureGroup, NativeStructureLine
 from .native_structure_response import canonical_native_structure_response
 from .native_structure_sizes import grouped_span_style
 from .native_structure_source_validation import validate_source_ownership
+from .native_structure_versions import AnyNativeStructureResponse, AnyNativeStructureTask
 from .observations import PageObservation
 from .segments import ObservedSpan, Segment
 
@@ -25,20 +25,20 @@ class NativeStructureSource:
 
 
 def assemble_native_structure_source(
-    task: NativeStructureTask,
-    response: NativeStructureResponse,
+    task: AnyNativeStructureTask,
+    response: AnyNativeStructureResponse,
     page: PageObservation,
     *,
     preserved_segments: Sequence[Segment] = (),
     furniture: set[str] | None = None,
 ) -> NativeStructureSource:
-    response = canonical_native_structure_response(task, response)
+    decision = canonical_native_structure_response(task, response)
     validate_source_ownership(task, page, preserved_segments, furniture=furniture or set())
     lines = {line.id: line for line in task.lines}
     preserved = {s.id: s for s in preserved_segments}
-    references = {reference.span_id for reference in response.references}
+    references = {reference.span_id for reference in decision.references}
     grouped: dict[str, list[Segment]] = {}
-    for index, group in enumerate(response.groups):
+    for index, group in enumerate(decision.groups):
         segment = _assemble_group(
             task, group, [lines[i] for i in group.line_ids], index, references
         )
@@ -55,15 +55,15 @@ def assemble_native_structure_source(
     return NativeStructureSource(
         segments=tuple(segments),
         line_maps=tuple(mappings),
-        boundary_dispositions=tuple(response.boundary_dispositions),
+        boundary_dispositions=tuple(decision.boundary_dispositions),
         pending_normalization=tuple(
-            d.candidate_id for d in response.boundary_dispositions if d.disposition == "layout"
+            d.candidate_id for d in decision.boundary_dispositions if d.disposition == "layout"
         ),
     )
 
 
 def _assemble_group(
-    task: NativeStructureTask,
+    task: AnyNativeStructureTask,
     group: NativeStructureGroup,
     lines: list[NativeStructureLine],
     index: int,

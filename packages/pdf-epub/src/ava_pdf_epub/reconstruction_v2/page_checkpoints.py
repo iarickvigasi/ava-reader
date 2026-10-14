@@ -16,6 +16,7 @@ from .page_geometry import PageGeometry, geometry_from
 from .prepared import PreparedPage
 from .prepared_native_layout import NativeLayoutPreparedPage
 from .prepared_native_structure import NativeStructurePreparedPage
+from .prepared_native_structure_v2 import NativeStructure2PreparedPage
 from .prepared_native_word_wrap import NativeWordWrapPreparedPage
 from .prepared_types import AnyPreparedPage, layout_policy
 
@@ -157,7 +158,9 @@ class PageCheckpoints(Sequence[AnyPreparedPage]):
         raw = strict_json(data)
         marker = raw.get("schema_version") if isinstance(raw, dict) else None
         page: AnyPreparedPage = (
-            NativeWordWrapPreparedPage.model_validate(raw)
+            NativeStructure2PreparedPage.model_validate(raw)
+            if marker == "ava-prepared-page-5"
+            else NativeWordWrapPreparedPage.model_validate(raw)
             if marker == "ava-prepared-page-4"
             else NativeStructurePreparedPage.model_validate(raw)
             if marker == "ava-prepared-page-3"

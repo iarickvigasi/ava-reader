@@ -6,7 +6,8 @@ export type InitialExchangeInput = {
     | 'ava-reconstruct-input-4'
     | 'ava-reconstruct-input-5'
     | 'ava-reconstruct-input-6'
-    | 'ava-reconstruct-input-7';
+    | 'ava-reconstruct-input-7'
+    | 'ava-reconstruct-input-8';
   profile_id: string;
   source_sha256: string;
   source_feature_policy?: string;
@@ -25,7 +26,9 @@ export type InitialExchangeInput = {
 export function initialExchangeInput(value: unknown): InitialExchangeInput {
   const request = value as InitialExchangeInput | null;
   const layout = request?.schema_version === 'ava-reconstruct-input-3';
-  const title = request?.schema_version === 'ava-reconstruct-input-7';
+  const native2 = request?.schema_version === 'ava-reconstruct-input-8';
+  const title =
+    request?.schema_version === 'ava-reconstruct-input-7' || native2;
   const geometry =
     request?.schema_version === 'ava-reconstruct-input-6' || title;
   const wrap =
@@ -69,7 +72,8 @@ export function initialExchangeInput(value: unknown): InitialExchangeInput {
       (request.source_feature_policy !== 'ava-ocr-source-features-1' ||
         request.source_layout_policy !== 'ava-native-layout-1')) ||
     (native &&
-      (request.source_structure_policy !== 'ava-native-structure-1' ||
+      (request.source_structure_policy !==
+        (native2 ? 'ava-native-structure-2' : 'ava-native-structure-1') ||
         !Array.isArray(request.native_structure_responses) ||
         request.native_structure_responses.length)) ||
     (wrap &&

@@ -27,9 +27,11 @@ export function exchangeStream(
       input: { schema_version: string };
     }
   ).input.schema_version;
+  const native2 = marker === 'ava-reconstruct-input-8';
   const geometry =
     marker === 'ava-reconstruct-input-6' ||
-    marker === 'ava-reconstruct-input-7';
+    marker === 'ava-reconstruct-input-7' ||
+    native2;
   const wrap = marker === 'ava-reconstruct-input-5' || geometry;
   const protocol = exchangeProtocol(
       {
@@ -38,6 +40,7 @@ export function exchangeStream(
       },
       wrap,
       geometry,
+      native2,
     ),
     header = Buffer.alloc(4);
   let headerBytes = 0,

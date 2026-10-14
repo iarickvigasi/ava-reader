@@ -14,12 +14,15 @@ from .attempt_initial_input import initial_input as initial_input
 from .attempt_recognition_geometry import accept_geometry_attempt
 from .attempt_word_wrap import attempt_word_wrap
 from .native_structure_assembly import assemble_native_structure_source
-from .native_structure_contract import NativeStructureResponse, NativeStructureTask
+from .native_structure_contract import NativeStructureResponse
 from .native_structure_exchange import emit_native, reply_native
+from .native_structure_v2_contract import NativeStructureResponse2, NativeStructureTask2
+from .native_structure_versions import NATIVE_TASK_TYPES
 from .page_checkpoints import PageCheckpoints
 from .prepare_page import prepare_from_source
 from .prepare_refinement_source import prepare_refinement_from_pages
 from .prepared_native_structure import NativeStructurePreparedPage
+from .prepared_native_structure_v2 import NativeStructure2PreparedPage
 from .printed_title_v2_contract import FrontmatterTitleTask
 from .protocol import (
     AnyReconstructionInput,
@@ -31,6 +34,7 @@ from .protocol_frontmatter_title import (
 )
 from .protocol_native_layout import NativeLayoutReconstructionInput
 from .protocol_native_structure import NativeStructureReconstructionInput
+from .protocol_native_structure_v2 import NativeStructure2ReconstructionInput
 from .protocol_native_word_wrap import NativeWordWrapReconstructionInput
 from .protocol_output import encode_packet
 from .protocol_recognition_geometry import RecognitionGeometryReconstructionInput
@@ -134,7 +138,16 @@ def _prepared_attempt(
             ):
                 from .qualify_native_structure import qualify_native_structure
 
-                qualify_native_structure(pages, scratch, request.source_structure_policy)
+                qualify_native_structure(
+                    pages,
+                    scratch,
+                    request.source_structure_policy,
+                    source_normalization_policy=(
+                        request.source_normalization_policy
+                        if isinstance(request, NativeWordWrapReconstructionInput)
+                        else None
+                    ),
+                )
                 if isinstance(request, NativeWordWrapReconstructionInput):
                     from .qualify_native_word_wrap import qualify_native_word_wrap
 
@@ -178,7 +191,7 @@ def _run(
             preparation.check_unchanged()
             for recognition_task in page.tasks:
                 task_wire = recognition_task.model_dump(mode="json")
-                if isinstance(recognition_task, NativeStructureTask):
+                if isinstance(recognition_task, NATIVE_TASK_TYPES):
                     if not isinstance(
                         request,
                         (NativeStructureReconstructionInput, NativeWordWrapReconstructionInput),
@@ -186,7 +199,16 @@ def _run(
                         raise ValueError(
                             "Native structure task requires its selected input/page versions"
                         )
-                    packet_native = emit_native(writer, recognition_task.task_id)
+                    native2 = isinstance(recognition_task, NativeStructureTask2)
+                    if native2 != isinstance(
+                        request, NativeStructure2ReconstructionInput
+                    ) or native2 != isinstance(page, NativeStructure2PreparedPage):
+                        raise ValueError(
+                            "Native task version differs from selected input/checkpoint"
+                        )
+                    packet_native = emit_native(
+                        writer, recognition_task.task_id, version=2 if native2 else 1
+                    )
                     response = reply_native(writer, incoming, packet_native)
                     preparation.check_unchanged()
                     if len(responses) + len(native_responses) >= 25000:
@@ -196,7 +218,11 @@ def _run(
                         > 16 * 1024 * 1024
                     ):
                         raise ValueError("Native structure individual pair byte bound exceeded")
-                    receipt = NativeStructureResponse.model_validate(response)
+                    receipt = (
+                        NativeStructureResponse2.model_validate(response)
+                        if native2
+                        else NativeStructureResponse.model_validate(response)
+                    )
                     furniture = {
                         ident
                         for r in recognition_task.regions

@@ -1,3 +1,7 @@
+import type { NativeStructureTask2 } from './generated/NativeStructureTask2';
+import type { NativeStructureResponse2 } from './generated/NativeStructureResponse2';
+import type { NativeStructure2PrepareResult } from './generated/NativeStructure2PrepareResult';
+import type { NativeStructure2ReconstructionInput } from './generated/NativeStructure2ReconstructionInput';
 import type { FrontmatterTitleTask } from './generated/FrontmatterTitleTask';
 import type { FrontmatterTitleResponse } from './generated/FrontmatterTitleResponse';
 import type { FrontmatterTitleRefinementBatch } from './generated/FrontmatterTitleRefinementBatch';
@@ -35,6 +39,11 @@ import type { NativeStructureTask } from './generated/NativeStructureTask';
 import type { NativeStructureResponse } from './generated/NativeStructureResponse';
 
 export type Packets = {
+  NativeStructureTask2: NativeStructureTask2;
+  NativeStructureResponse2: NativeStructureResponse2;
+  NativeStructure2PrepareResult: NativeStructure2PrepareResult;
+  NativeStructure2ReconstructionInput: NativeStructure2ReconstructionInput;
+
   FrontmatterTitleTask: FrontmatterTitleTask;
   FrontmatterTitleResponse: FrontmatterTitleResponse;
   FrontmatterTitleRefinementBatch: FrontmatterTitleRefinementBatch;

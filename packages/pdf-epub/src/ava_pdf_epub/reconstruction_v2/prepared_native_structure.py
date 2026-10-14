@@ -13,6 +13,7 @@ from .native_line_offsets import NativeLineOffset, mapped_native_ids, native_lin
 from .native_structure_contract import NativeStructureTask
 from .native_structure_policy import NativeStructurePolicy
 from .native_structure_source_validation import validate_source_ownership
+from .native_structure_versions import NATIVE_TASK_TYPES
 from .observations import PageObservation
 from .observe_tables import TableObservation
 from .recognition_contract import RecognitionTask
@@ -46,7 +47,7 @@ class NativeStructurePreparedPage(Record):
         )
         if expected != self.native_line_maps:
             raise ValueError("Native structure checkpoint line ownership differs")
-        native = [t for t in self.tasks if isinstance(t, NativeStructureTask)]
+        native = [t for t in self.tasks if isinstance(t, NATIVE_TASK_TYPES)]
         if native and (len(native) != 1 or len(self.tasks) != 1):
             raise ValueError("Native structure task must own its complete page")
         for task in self.tasks:

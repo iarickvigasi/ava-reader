@@ -4,13 +4,13 @@ from collections.abc import Sequence
 
 from ..contracts.common import document_digest
 from .geometry import overlap
-from .native_structure_contract import NativeStructureTask
+from .native_structure_versions import AnyNativeStructureTask
 from .observations import PageObservation
 from .segments import Segment
 
 
 def validate_source_ownership(
-    task: NativeStructureTask,
+    task: AnyNativeStructureTask,
     page: PageObservation,
     preserved_segments: Sequence[Segment],
     *,

@@ -3,6 +3,7 @@
 from .prepared import PreparedPage
 from .prepared_native_layout import NativeLayoutPreparedPage
 from .prepared_native_structure import NativeStructurePreparedPage
+from .prepared_native_structure_v2 import NativeStructure2PreparedPage
 from .prepared_native_word_wrap import NativeWordWrapPreparedPage
 
 AnyPreparedPage = (
@@ -10,6 +11,7 @@ AnyPreparedPage = (
     | NativeLayoutPreparedPage
     | NativeStructurePreparedPage
     | NativeWordWrapPreparedPage
+    | NativeStructure2PreparedPage
 )
 
 

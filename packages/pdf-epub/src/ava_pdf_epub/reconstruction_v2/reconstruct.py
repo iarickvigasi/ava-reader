@@ -24,7 +24,7 @@ from .findings import Finding
 from .legacy_reconstruction_assembly import legacy_reconstruction_assembly
 from .native_layout_policy import NativeLayoutPolicy
 from .native_size_presentation import apply_native_sizes
-from .native_structure_contract import NativeStructureResponse
+from .native_structure_versions import AnyNativeStructureResponse
 from .native_word_wrap_policy import NativeWordWrapPolicy
 from .normalize_list_bodies import normalize_list_bodies
 from .prepared_types import AnyPreparedPage
@@ -56,7 +56,7 @@ def reconstruct(
     *,
     source_feature_policy: str | None = None,
     source_layout_policy: NativeLayoutPolicy | None = None,
-    native_structure_responses: list[NativeStructureResponse] | None = None,
+    native_structure_responses: Sequence[AnyNativeStructureResponse] | None = None,
     source_normalization_policy: NativeWordWrapPolicy | None = None,
     word_wrap_responses: list[WordWrapResponse] | None = None,
     source_title_policy: str | None = None,

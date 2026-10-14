@@ -558,6 +558,30 @@ messages, truncation and unexpected EOF are refused.
 | `artifacts`        | `null`                                                                  | None; subsequent stdout uses the existing artifact stream |
 | `refusal`          | Existing typed source diagnostic or generic reconstruction error        | None; worker exits `1`                                    |
 
+The separately captured `ava-native-structure-2` policy uses closed NativeTask2/Response2,
+Input8 and Prepare5 on the existing full Layout1, WordWrap1, geometry-repair1 and
+complete-title1 feature stack. It requires an explicit server opt-in through the existing
+source-structure selector; historical/builtin Structure1 configuration and all Input1–7,
+Prepare1–4, Native1 schema/prompt objects remain unchanged. No additional model tasks or
+retries are added and every existing request, image, context, output and money bound remains.
+
+Response2 groups are closed role-specific `anyOf` branches. String `heading_role`
+chapter/section and `list_role` ordered/unordered determine applicable metadata: a chapter
+has fixed level1 and a chapter role; a section has only its rank; an ordered item requires a
+printed ordinal; an unordered item cannot supply one. Nonheadings cannot supply chapter
+fields, and note/list/continuation/relationship fields exist only on their applicable roles.
+The pinned semantic validator still checks printed markers, native ownership, source styles,
+ornaments, furniture, boundary adjacency, callouts and complete source coverage. A private
+validated decision view derives those explicit role semantics for assembly without changing
+wire identities or manufacturing Native1 receipts. Normalization classification hashes the
+original typed Response2, including its original group collection order.
+
+Input8 keeps the existing generic exchange2 sequence and byte counters. Its native controls
+use `ava-native-structure-exchange-2` with the unchanged native25534 sequence bound; old native
+exchange1 cannot answer them. Worker checkpoint5 is source-bound and cannot be reopened or
+used as a historical checkpoint. These authored/source-preservation checks do not establish
+an accepted provided-book conversion; the original failed Native1 receipt remains refused.
+
 Captured Input4 uses `ava-native-structure-exchange-1` only for `native_structure` task controls.
 Page announcements keep Exchange1 and carry Prepare3; its typed native/OCR task order is exact.
 Native responses contain source-line groups, eligible note-callout span IDs and pinned boundary

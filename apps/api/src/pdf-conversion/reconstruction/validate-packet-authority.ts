@@ -1,3 +1,4 @@
+import type { NativeStructure2ReconstructionInput } from './generated/NativeStructure2ReconstructionInput';
 import type { FrontmatterTitleReconstructionInput } from './generated/FrontmatterTitleReconstructionInput';
 import type { FrontmatterTitleRefinementBatch } from './generated/FrontmatterTitleRefinementBatch';
 import type { NativeWordWrapReconstructionInput } from './generated/NativeWordWrapReconstructionInput';
@@ -17,8 +18,13 @@ export function validatePacketAuthority(name: string, value: unknown) {
     )
       throw new PdfRuntimeError('INVALID_RESULT');
   }
-  if (name === 'FrontmatterTitleReconstructionInput') {
-    const packet = value as FrontmatterTitleReconstructionInput;
+  if (
+    name === 'FrontmatterTitleReconstructionInput' ||
+    name === 'NativeStructure2ReconstructionInput'
+  ) {
+    const packet = value as
+      | FrontmatterTitleReconstructionInput
+      | NativeStructure2ReconstructionInput;
     const parents = packet.geometry_corrections.map(
       (proof) => proof.response.original_task_id,
     );

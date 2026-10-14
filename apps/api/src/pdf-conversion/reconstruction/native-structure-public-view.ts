@@ -1,7 +1,10 @@
+import type { NativeStructureTask2 } from './generated/NativeStructureTask2';
 import type { NativeStructureTask } from './generated/NativeStructureTask';
 
 // Private measured styles, span offsets and artifact snapshots never enter model messages.
-export function nativeStructurePublicView(task: NativeStructureTask) {
+export function nativeStructurePublicView(
+  task: NativeStructureTask | NativeStructureTask2,
+) {
   return {
     schema_version: task.schema_version,
     task_id: task.task_id,

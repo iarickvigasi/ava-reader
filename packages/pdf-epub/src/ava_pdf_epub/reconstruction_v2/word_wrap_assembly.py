@@ -11,7 +11,7 @@ from .assembly_state import AssemblyState
 from .bind_printed_targets import bind_printed_targets
 from .continuation_margins import continuation_margins
 from .native_layout_policy import NativeLayoutPolicy
-from .native_structure_contract import NativeStructureResponse
+from .native_structure_versions import AnyNativeStructureResponse
 from .normalize_list_bodies import capture_list_bodies
 from .ocr_font_faces import corroborate_ocr_font_faces
 from .prepare_refinement import prepare_refinement
@@ -42,7 +42,7 @@ def word_wrap_assembly(
     prepared: Sequence[AnyPreparedPage],
     responses: list[RecognitionResponse],
     refinements: list[AnyRefinementResponse | FrontmatterTitleResponse],
-    native_structure_responses: list[NativeStructureResponse],
+    native_structure_responses: Sequence[AnyNativeStructureResponse],
     source_layout_policy: NativeLayoutPolicy,
     *,
     source_title_policy: str | None = None,

@@ -8,7 +8,7 @@ from .apply_refinement import apply_refinement
 from .compound_wraps import compact_native_compounds
 from .continuation_margins import continuation_margins
 from .native_layout_policy import NativeLayoutPolicy
-from .native_structure_contract import NativeStructureResponse
+from .native_structure_versions import AnyNativeStructureResponse
 from .normalize_list_bodies import capture_list_bodies
 from .normalize_native_hyphens import normalize_native_hyphens
 from .ocr_font_faces import corroborate_ocr_font_faces
@@ -33,7 +33,7 @@ def legacy_reconstruction_assembly(
     refinements: list[AnyRefinementResponse | FrontmatterTitleResponse] | None,
     source_feature_policy: str | None,
     source_layout_policy: NativeLayoutPolicy | None,
-    native_structure_responses: list[NativeStructureResponse] | None,
+    native_structure_responses: Sequence[AnyNativeStructureResponse] | None,
     *,
     source_title_policy: str | None = None,
 ) -> WordWrapAssembly:

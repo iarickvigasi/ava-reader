@@ -9,7 +9,7 @@ from ..contracts.layout_hyphen import (
     candidate_digest,
 )
 from ..contracts.layout_hyphen_classification_v3 import NativeStructureHyphenClassificationReceipt
-from .native_structure_contract import NativeStructureResponse, NativeStructureTask
+from .native_structure_versions import AnyNativeStructureResponse, AnyNativeStructureTask
 
 
 @dataclass(frozen=True)
@@ -21,8 +21,8 @@ class NativeHyphenDecision:
 
 
 def retained_hyphen_decisions(
-    task: NativeStructureTask,
-    response: NativeStructureResponse,
+    task: AnyNativeStructureTask,
+    response: AnyNativeStructureResponse,
     candidates: list[LayoutHyphenCandidate],
 ) -> list[NativeHyphenDecision]:
     lines = {line.id: line.text for line in task.lines}

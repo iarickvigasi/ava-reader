@@ -67,6 +67,13 @@ def prepare_refinement_from_pages(
     """Use private source checkpoints with a newly created refinement assembly state."""
     if request.refinements:
         raise ValueError("Comparison preparation cannot consume previous refinement decisions")
+    if isinstance(
+        request, (NativeStructureReconstructionInput, NativeWordWrapReconstructionInput)
+    ) and any(
+        getattr(page, "source_structure_policy", None) != request.source_structure_policy
+        for page in prepared
+    ):
+        raise ValueError("Source checkpoint structure policy differs from captured input")
     with phase("prepare_refinement"):
         _, segments, state = source_segments(
             source,

@@ -54,7 +54,16 @@ def verify_source_colours(
         if isinstance(pages[0], NativeStructurePreparedPage):
             from .qualify_native_structure import qualify_native_structure
 
-            qualify_native_structure(fresh_pages, scratch, pages[0].source_structure_policy)
+            qualify_native_structure(
+                fresh_pages,
+                scratch,
+                pages[0].source_structure_policy,
+                source_normalization_policy=(
+                    pages[0].source_normalization_policy
+                    if isinstance(pages[0], NativeWordWrapPreparedPage)
+                    else None
+                ),
+            )
         if isinstance(pages[0], NativeWordWrapPreparedPage):
             from .qualify_native_word_wrap import qualify_native_word_wrap
 

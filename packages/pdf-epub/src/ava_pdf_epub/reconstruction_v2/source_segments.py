@@ -10,7 +10,7 @@ from .assembly_state import AssemblyState
 from .continuation_margins import continuation_margins
 from .linked_furniture import preserve_linked_furniture
 from .native_layout_policy import NativeLayoutPolicy
-from .native_structure_contract import NativeStructureResponse
+from .native_structure_versions import AnyNativeStructureResponse
 from .ocr_indents import recover_ocr_indents
 from .ocr_running_furniture import corroborate_running_furniture
 from .pdf_links import apply_pdf_links
@@ -29,7 +29,7 @@ def source_segments(
     responses: list[RecognitionResponse],
     *,
     source_layout_policy: NativeLayoutPolicy | None = None,
-    native_structure_responses: list[NativeStructureResponse] | None = None,
+    native_structure_responses: Sequence[AnyNativeStructureResponse] | None = None,
     source_title_policy: str | None = None,
 ) -> tuple[list[dict[str, Any]], list[Segment], AssemblyState]:
     if source_title_policy not in {None, "ava-frontmatter-title-1"}:

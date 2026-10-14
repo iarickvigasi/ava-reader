@@ -1,3 +1,5 @@
+import { NATIVE_STRUCTURE_V2_POLICY } from '../../library/pdf-import/admission/profile';
+import type { NativeStructureResponse2 } from './generated/NativeStructureResponse2';
 import type {
   NativeLayoutPolicy,
   NativeStructurePolicy,
@@ -24,24 +26,30 @@ export function reconstructionRequest(
   responses: RecognitionResponse[] = [],
   refinements: RefinementResponse[] = [],
   titleScheduled = false,
-  nativeStructureResponses: NativeStructureResponse[] = [],
+  nativeStructureResponses: (
+    | NativeStructureResponse
+    | NativeStructureResponse2
+  )[] = [],
   wordWrapResponses: WordWrapResponse[] = [],
   geometryCorrections: RecognitionGeometryProof[] = [],
 ) {
   return {
-    schema_version: identity.sourceTitlePolicy
-      ? 'ava-reconstruct-input-7'
-      : identity.recognitionRepairPolicy
-        ? 'ava-reconstruct-input-6'
-        : identity.sourceNormalizationPolicy
-          ? 'ava-reconstruct-input-5'
-          : identity.sourceStructurePolicy
-            ? 'ava-reconstruct-input-4'
-            : identity.sourceLayoutPolicy
-              ? 'ava-reconstruct-input-3'
-              : titleScheduled
-                ? 'ava-reconstruct-input-2'
-                : 'ava-reconstruct-input-1',
+    schema_version:
+      identity.sourceStructurePolicy === NATIVE_STRUCTURE_V2_POLICY
+        ? 'ava-reconstruct-input-8'
+        : identity.sourceTitlePolicy
+          ? 'ava-reconstruct-input-7'
+          : identity.recognitionRepairPolicy
+            ? 'ava-reconstruct-input-6'
+            : identity.sourceNormalizationPolicy
+              ? 'ava-reconstruct-input-5'
+              : identity.sourceStructurePolicy
+                ? 'ava-reconstruct-input-4'
+                : identity.sourceLayoutPolicy
+                  ? 'ava-reconstruct-input-3'
+                  : titleScheduled
+                    ? 'ava-reconstruct-input-2'
+                    : 'ava-reconstruct-input-1',
     ...(identity.sourceLayoutPolicy
       ? {
           source_layout_policy: identity.sourceLayoutPolicy,

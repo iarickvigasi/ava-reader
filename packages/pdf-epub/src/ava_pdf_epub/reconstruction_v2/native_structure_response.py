@@ -1,27 +1,67 @@
 """Validate complete source-ID decisions; malformed or unresolved output refuses."""
 
 import re
+from dataclasses import replace
+from typing import overload
 
 from ..contracts.common import unique
 from ..contracts.profiles import response_language
 from .list_markers import MARKER, marker_value
 from .native_structure_contract import NativeStructureResponse, NativeStructureTask
+from .native_structure_decision_view import (
+    NativeStructureDecisionView,
+    native_structure_decision_view,
+)
 from .native_structure_fields import NativeStructureGroup
 from .native_structure_group_order import source_ordered_native_groups
 from .native_structure_ornaments import ornamental_separator
 from .native_structure_sizes import validate_grouped_sizes
+from .native_structure_v2_contract import NativeStructureResponse2, NativeStructureTask2
+from .native_structure_versions import AnyNativeStructureResponse, AnyNativeStructureTask
 
 
-def accept_native_structure(task: NativeStructureTask, response: NativeStructureResponse) -> None:
+def accept_native_structure(
+    task: AnyNativeStructureTask, response: AnyNativeStructureResponse
+) -> None:
     canonical_native_structure_response(task, response)
 
 
+@overload
 def canonical_native_structure_response(
     task: NativeStructureTask, response: NativeStructureResponse
-) -> NativeStructureResponse:
-    """Validate a source-ordered clone; retain the caller's receipt for provenance."""
-    task = NativeStructureTask.model_validate(task.model_dump())
-    response = NativeStructureResponse.model_validate(response.model_dump())
+) -> NativeStructureResponse: ...
+
+
+@overload
+def canonical_native_structure_response(
+    task: NativeStructureTask2, response: NativeStructureResponse2
+) -> NativeStructureDecisionView: ...
+
+
+@overload
+def canonical_native_structure_response(
+    task: AnyNativeStructureTask, response: AnyNativeStructureResponse
+) -> NativeStructureResponse | NativeStructureDecisionView: ...
+
+
+def canonical_native_structure_response(
+    task: AnyNativeStructureTask, response: AnyNativeStructureResponse
+) -> NativeStructureResponse | NativeStructureDecisionView:
+    """Validate locally; original typed1/2 receipts remain classification authority."""
+    decision: NativeStructureResponse | NativeStructureDecisionView
+    if isinstance(task, NativeStructureTask2):
+        task = NativeStructureTask2.model_validate(task.model_dump())
+        validated = NativeStructureResponse2.model_validate(response.model_dump())
+        decision = native_structure_decision_view(validated)
+    else:
+        task = NativeStructureTask.model_validate(task.model_dump())
+        decision = NativeStructureResponse.model_validate(response.model_dump())
+    return _validate_decisions(task, decision)
+
+
+def _validate_decisions(
+    task: AnyNativeStructureTask, response: NativeStructureResponse | NativeStructureDecisionView
+) -> NativeStructureResponse | NativeStructureDecisionView:
     if (
         response.task_id != task.task_id
         or response.source_sha256 != task.source_sha256
@@ -36,8 +76,11 @@ def canonical_native_structure_response(
     if {g.id for g in response.groups}.intersection(a.id for a in task.artifacts):
         raise ValueError("Native structure group collides with a preserved artifact")
     regions = {r.source.id: r for r in task.regions}
-    response = response.model_copy(
-        update={"groups": source_ordered_native_groups(task, response.groups)}
+    groups = source_ordered_native_groups(task, response.groups)
+    response = (
+        replace(response, groups=groups)
+        if isinstance(response, NativeStructureDecisionView)
+        else response.model_copy(update={"groups": groups})
     )
     lines = {line.id: line for line in task.lines}
     artifacts = {a.id: a for a in task.artifacts}
@@ -87,7 +130,9 @@ def canonical_native_structure_response(
     return response
 
 
-def _references(task: NativeStructureTask, response: NativeStructureResponse) -> None:
+def _references(
+    task: AnyNativeStructureTask, response: NativeStructureResponse | NativeStructureDecisionView
+) -> None:
     unique([r.span_id for r in response.references], "native structure note callout reference")
     eligible = {c.span_id: c for c in task.eligible_callouts}
     owners = {ident: group for group in response.groups for ident in group.line_ids}
@@ -118,7 +163,9 @@ def _printed_marker(group: NativeStructureGroup, text: str, following_text: str)
         raise ValueError("Native structure list number differs from its printed source")
 
 
-def _boundaries(task: NativeStructureTask, response: NativeStructureResponse) -> None:
+def _boundaries(
+    task: AnyNativeStructureTask, response: NativeStructureResponse | NativeStructureDecisionView
+) -> None:
     unique([d.candidate_id for d in response.boundary_dispositions], "native boundary disposition")
     boundaries = {b.candidate_id: b for b in task.boundaries}
     if {d.candidate_id for d in response.boundary_dispositions} != set(boundaries):

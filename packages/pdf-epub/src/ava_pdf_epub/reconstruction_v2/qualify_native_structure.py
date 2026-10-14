@@ -8,23 +8,36 @@ from ..worker_observation import observe
 from .borderless_tables import borderless_tables
 from .furniture import furniture_ids
 from .native_review import NativeReviewRequired
-from .native_structure_contract import NativeStructureTask
 from .native_structure_hyphen_candidates import source_hyphen_candidates
-from .native_structure_policy import validate_structure_policy
+from .native_structure_policy import AnyNativeStructurePolicy, validate_structure_policy
 from .native_structure_regions import native_structure_regions
 from .native_structure_render import native_structure_render
 from .native_structure_source import prepare_native_structure, qualified_native_lines
 from .native_structure_source_validation import graphics_are_preserved
+from .native_structure_versions import AnyNativeStructureTask
+from .native_word_wrap_policy import NativeWordWrapPolicy, validate_word_wrap_policy
 from .page_checkpoints import PageCheckpoints
 from .prepared_native_layout import NativeLayoutPreparedPage
 from .prepared_native_structure import NativeStructurePreparedPage
+from .prepared_native_structure_v2 import NativeStructure2PreparedPage
 from .recognition_contract import RecognitionTask
 
 
-def qualify_native_structure(pages: PageCheckpoints, scratch: Path, policy: str | None) -> None:
+def qualify_native_structure(
+    pages: PageCheckpoints,
+    scratch: Path,
+    policy: str | None,
+    *,
+    source_normalization_policy: NativeWordWrapPolicy | None = None,
+) -> None:
     selected = validate_structure_policy(policy)
     if selected is None:
         return
+    if (
+        selected == "ava-native-structure-2"
+        and validate_word_wrap_policy(source_normalization_policy) is None
+    ):
+        raise ValueError("Native2 qualification requires captured sparse normalization authority")
     if pages.source_layout_policy is None:
         raise ValueError("Native structure qualification requires native layout authority")
     if not pages:
@@ -38,21 +51,33 @@ def qualify_native_structure(pages: PageCheckpoints, scratch: Path, policy: str 
             continue
         if not isinstance(page, NativeLayoutPreparedPage):
             raise ValueError("Native structure qualification requires layout2 checkpoints")
-        replacement = replacement_native_structure_task(page, scratch, furniture)
-        result = NativeStructurePreparedPage.model_validate(
-            {
-                **page.model_dump(),
-                "schema_version": "ava-prepared-page-3",
-                "source_structure_policy": selected,
-                **(
-                    {
-                        "tasks": [replacement[0].model_dump()],
-                        "layout_hyphen_candidates": [c.model_dump() for c in replacement[1]],
-                    }
-                    if replacement is not None
-                    else {}
-                ),
-            }
+        replacement = replacement_native_structure_task(
+            page, scratch, furniture, structure_policy=selected
+        )
+        values = {
+            **page.model_dump(),
+            "schema_version": "ava-prepared-page-5"
+            if selected == "ava-native-structure-2"
+            else "ava-prepared-page-3",
+            **(
+                {"source_normalization_policy": source_normalization_policy}
+                if selected == "ava-native-structure-2"
+                else {}
+            ),
+            "source_structure_policy": selected,
+            **(
+                {
+                    "tasks": [replacement[0].model_dump()],
+                    "layout_hyphen_candidates": [c.model_dump() for c in replacement[1]],
+                }
+                if replacement is not None
+                else {}
+            ),
+        }
+        result = (
+            NativeStructure2PreparedPage.model_validate(values)
+            if selected == "ava-native-structure-2"
+            else NativeStructurePreparedPage.model_validate(values)
         )
         pages.qualify(index, result)
         observe("page", result)
@@ -64,7 +89,8 @@ def replacement_native_structure_task(
     furniture: set[str],
     *,
     candidates: Sequence[LayoutHyphenCandidate] | None = None,
-) -> tuple[NativeStructureTask, list[LayoutHyphenCandidate]] | None:
+    structure_policy: AnyNativeStructurePolicy = "ava-native-structure-1",
+) -> tuple[AnyNativeStructureTask, list[LayoutHyphenCandidate]] | None:
     observation = page.observation
     if len(page.tasks) != 1 or not isinstance(page.tasks[0], RecognitionTask):
         return None
@@ -104,5 +130,6 @@ def replacement_native_structure_task(
         preserved_segments=page.native_segments,
         furniture=furniture,
         candidates=pinned,
+        structure_policy=structure_policy,
     )
     return (task, pinned) if task is not None else None

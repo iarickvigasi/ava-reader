@@ -11,7 +11,7 @@ from ..contracts.common import text_digest, unique
 from ..contracts.source import SourcePage
 
 if TYPE_CHECKING:
-    from .native_structure_contract import NativeStructureTask
+    from .native_structure_versions import AnyNativeStructureTask
 
 
 def native_structure_identifier(values: dict[str, Any]) -> str:
@@ -23,7 +23,7 @@ def native_structure_identifier(values: dict[str, Any]) -> str:
     )
 
 
-def validate_native_structure_task(task: "NativeStructureTask") -> None:
+def validate_native_structure_task(task: "AnyNativeStructureTask") -> None:
     image = base64.b64decode(task.image.base64, validate=True)
     if len(image) != task.image.byte_length or text_digest_bytes(image) != task.image.sha256:
         raise ValueError("Native structure image identity differs")
