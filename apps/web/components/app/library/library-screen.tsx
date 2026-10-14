@@ -9,6 +9,7 @@ import {
 } from "@/components/app/library/library-sections/collection-section";
 import { LibraryFeaturesSection } from "./library-sections/library-features-section";
 import { LibraryHeader } from "@/components/app/library/library-sections/library-header";
+import { LibraryEmptyState } from "./library-sections/library-empty-state";
 import {
   LibraryHeaderBar,
   LibraryHeaderBarSkeleton,
@@ -38,18 +39,16 @@ export function LibraryScreen({ library }: LibraryScreenProps) {
     : library.collections;
   const summary = view?.summary ?? library.summary;
 
-  const hasBooks = collections.some(
-    (collection) => collection.books.length > 0,
-  );
   const isEmpty =
-    !hasBooks &&
+    summary.booksCount === 0 &&
     !collections.some((collection) => collection.kind === "CUSTOM");
 
   return (
     <LibraryScreenShell>
-      <LibraryHeader hasBooks={summary.booksCount > 0} />
+      <LibraryHeader />
       <LibraryFeaturesSection />
       <LibraryHeaderBar summary={summary} />
+      {summary.booksCount === 0 && <LibraryEmptyState />}
 
       {!isEmpty && (
         <div className="space-y-12 md:space-y-14">

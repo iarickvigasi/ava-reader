@@ -604,9 +604,7 @@
       "body": "Bewahre deine Bücher an einem Ort auf, ordne sie in Sammlungen und finde deine nächste Lektüre."
     },
     "empty": {
-      "eyebrow": "Bibliothek",
-      "title": "Deine Sammlungen erscheinen hier, während du deine Lesewelt aufbaust.",
-      "body": "Importiere Bücher oder füge sie aus dem öffentlichen Katalog hinzu und ordne sie in persönlichen Sammlungen"
+      "body": "Füge deine Bücher über „Neues Buch importieren“ hinzu. Sie erscheinen dann hier in deiner Bibliothek."
     },
     "features": {
       "label": "Demnächst",

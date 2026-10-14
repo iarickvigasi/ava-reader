@@ -604,9 +604,7 @@
       "body": "Gardez vos livres ensemble, organisez-les en collections et trouvez votre prochaine lecture."
     },
     "empty": {
-      "eyebrow": "Bibliothèque",
-      "title": "Vos collections apparaîtront ici à mesure que vous construirez votre univers de lecture.",
-      "body": "Importez des livres ou ajoutez-les depuis le catalogue public et organisez-les en collections personnelles"
+      "body": "Utilisez « Importer un nouveau livre » pour ajouter vos livres. Ils apparaîtront ici dans votre bibliothèque."
     },
     "features": {
       "label": "Bientôt disponible",
