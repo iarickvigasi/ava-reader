@@ -47,7 +47,7 @@ export function ReportClient({
   return (
     <>
       {!["signIn", "forbidden", "accessChanged"].includes(result.state) && (
-        <ReportSearchForm />
+        <ReportSearchForm query={requestedQuery} />
       )}
       {result.state !== "ready" ? (
         <ReportStateNotice

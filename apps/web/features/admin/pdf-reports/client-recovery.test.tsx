@@ -21,6 +21,7 @@ vi.mock("@clerk/nextjs", () => ({ useAuth: () => sdk.auth }));
 import { ReportClient } from "@/components/app/admin/pdf-reports/client";
 import { ReportStateNotice } from "@/components/app/admin/pdf-reports/state-notice";
 import { ReportResult } from "@/components/app/admin/pdf-reports/result";
+import { ReportSearchForm } from "@/components/app/admin/pdf-reports/search-form";
 const search = {
   kind: "conversionId",
   reference: "pdf-1",
@@ -170,4 +171,14 @@ it("preserves the report return context while signed out without trying a server
   expect(denied?.query).toEqual(search);
   expect(denied?.onRetry).toBeUndefined();
   expect(request).not.toHaveBeenCalled();
+});
+
+it("passes only the parsed report query to the lookup form after a permitted read", async () => {
+  vi.stubGlobal("fetch", vi.fn<typeof fetch>().mockResolvedValue(ready()));
+  expect(find(render(), ReportSearchForm)).toBeUndefined();
+  await flush();
+  expect(
+    find<ComponentProps<typeof ReportSearchForm>>(render(), ReportSearchForm)
+      ?.query,
+  ).toEqual(search);
 });

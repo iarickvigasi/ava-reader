@@ -1,5 +1,5 @@
 import { PdfProviderError } from './errors';
-import { recognitionTableGrammar } from './recognition-table-grammar';
+import { recognitionSegmentGrammar } from './recognition-segment-grammar';
 type Schema = Record<string, unknown>;
 const fields = new Set([
   'type',
@@ -26,6 +26,7 @@ export function geminiRecognitionSchema(
   const definitions = record(input.$defs);
   function lower(value: unknown, references: string[] = []): Schema {
     let node = record(value);
+    let kindBranches: Schema[] | undefined;
     if (typeof node.$ref === 'string') {
       const name = node.$ref.replace('#/$defs/', '');
       if (node.$ref !== `#/$defs/${name}` || references.includes(name))
@@ -50,6 +51,12 @@ export function geminiRecognitionSchema(
         record(branches[0]).title !== 'RecognitionSegment'
       )
         throw new PdfProviderError('PDF_PROVIDER_REQUEST_INVALID');
+      if (version === 'ava-recognition-response-2') {
+        const kinds = record(branches[1]).anyOf;
+        if (!Array.isArray(kinds) || branches.length !== 4)
+          throw new PdfProviderError('PDF_PROVIDER_REQUEST_INVALID');
+        kindBranches = kinds.map((kind) => lower(kind, references));
+      }
       node = record(branches[0]);
     }
     const output: Schema = {};
@@ -58,8 +65,10 @@ export function geminiRecognitionSchema(
       if (
         !fields.has(key) &&
         !(
-          version === 'ava-native-structure-response-2' &&
-          ['minItems', 'maxItems'].includes(key)
+          [
+            'ava-native-structure-response-2',
+            'ava-recognition-response-2',
+          ].includes(version) && ['minItems', 'maxItems'].includes(key)
         )
       )
         continue;
@@ -86,8 +95,13 @@ export function geminiRecognitionSchema(
         'For list_item: true for decimal, alphabetic or Roman ordered markers; false for bullets. Null for other kinds.';
       record(properties.list_start).description =
         'Every ordered item needs its own observed integer ordinal, including nested and continued items: a/b=1/2, i/ii=1/2, IV/V=4/5. Preserve the printed marker in text. Null for unordered items and other kinds. An unreadable essential marker belongs in unresolved.';
-      if (version === 'ava-recognition-response-2')
-        recognitionTableGrammar(output);
+      if (version === 'ava-recognition-response-2') {
+        record(properties.chapter_start).description =
+          'True only for a heading at level 1 with its observed non-null chapter_role. False for other segments. The host independently enforces this relationship.';
+        if (!kindBranches)
+          throw new PdfProviderError('PDF_PROVIDER_REQUEST_INVALID');
+        return recognitionSegmentGrammar(output, kindBranches);
+      }
     }
     if (typeof node.const === 'string') output.enum = [node.const];
     return output;

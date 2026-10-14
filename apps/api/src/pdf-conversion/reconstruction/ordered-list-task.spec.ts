@@ -49,10 +49,13 @@ it.each([
             properties: {
               segments: {
                 items: {
-                  properties: {
-                    list_start: { description: string; anyOf: unknown[] };
-                    list_ordered: { description: string };
-                  };
+                  anyOf: {
+                    properties: {
+                      kind: { enum: string[] };
+                      list_start: { description: string; anyOf: unknown[] };
+                      list_ordered: { description: string; type: string };
+                    };
+                  }[];
                 };
               };
             };
@@ -62,15 +65,18 @@ it.each([
     };
     expect(body.messages).toEqual(provider.messages);
     expect(body.response_format.json_schema.strict).toBe(true);
-    const properties =
-      body.response_format.json_schema.schema.properties.segments.items
-        .properties;
+    const variants =
+      body.response_format.json_schema.schema.properties.segments.items.anyOf;
+    const properties = variants.find((variant) =>
+      variant.properties.kind.enum.includes('list_item'),
+    )!.properties;
     expect(properties.list_start.description).toContain('a/b=1/2');
     expect(properties.list_start.description).toContain('continued items');
     expect(properties.list_start.anyOf).toContainEqual({ type: 'null' });
     expect(properties.list_ordered.description).toContain('Roman');
+    expect(properties.list_ordered.type).toBe('boolean');
     expect(encoded.taskSha256).toBe(jsonHash(provider));
-    expect(GEMINI_GRAMMAR_VERSION).toBe('ava-gemini-recognition-grammar-4');
+    expect(GEMINI_GRAMMAR_VERSION).toBe('ava-gemini-recognition-grammar-5');
     const stale = {
       ...configured,
       configuration: {

@@ -10,8 +10,17 @@ it('preserves authoritative text and anchor descriptions in Gemini generation gr
   const canonical = recognitionSchemas.RecognitionResponse;
   const retained = JSON.stringify(canonical);
   const lowered = geminiRecognitionSchema(canonical);
-  const segment = properties(lowered).segments.items!;
+  const variants = properties(lowered).segments.items!.anyOf!;
+  const segment = variants.find(
+    (variant) => properties(variant).cells.items?.items,
+  )!;
   const cell = properties(segment).cells.items!.items!;
+  for (const variant of variants) {
+    expect(anchorProperties(variant)).toEqual(anchorProperties(segment));
+    expect(properties(variant).text.description).toBe(
+      canonical.$defs.RecognitionSegment.allOf[0].properties!.text.description,
+    );
+  }
   expect(anchorProperties(segment)).toMatchObject({
     exact_text: {
       description:

@@ -61,8 +61,13 @@ it.each([
     expect(body.response_format.json_schema.strict).toBe(true);
     const segment = props(body.response_format.json_schema.schema).segments
       .items!;
-    const cell = props(segment).cells.items!.items!;
-    for (const owner of [segment, cell]) {
+    const variants = segment.anyOf!;
+    expect(variants).toHaveLength(7);
+    const table = variants.find(
+      (variant) => props(variant).cells.items?.items,
+    )!;
+    const cell = props(table).cells.items!.items!;
+    for (const owner of [...variants, cell]) {
       expect(props(owner).text.description).toContain(
         'before quoting any span',
       );
@@ -81,7 +86,7 @@ it.each([
     }
     expect(encoded.taskSha256).toBe(jsonHash(provider));
     expect(encoded.requestSha256).toBe(checksumBuffer(encoded.request));
-    expect(GEMINI_GRAMMAR_VERSION).toBe('ava-gemini-recognition-grammar-4');
+    expect(GEMINI_GRAMMAR_VERSION).toBe('ava-gemini-recognition-grammar-5');
     const stale = {
       ...configured,
       configuration: {

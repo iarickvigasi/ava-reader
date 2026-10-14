@@ -41,6 +41,16 @@ it.each([
 it.each([
   { kind: 'heading', heading_level: null },
   { kind: 'note', note_label: '1', note_role: null },
+])(
+  'requires kind-specific typed observations before generation %p',
+  (change) => {
+    expect(validate(packet(change))).toBe(false);
+    expect(() => validatePacket('RecognitionResponse', packet(change))).toThrow(
+      'INVALID_RESULT',
+    );
+  },
+);
+it.each([
   { kind: 'list_item', list_ordered: true, list_depth: 1, list_start: null },
   { kind: 'paragraph', chapter_start: true, chapter_role: 'bodymatter' },
 ])('keeps relaxed grammar separate from strict host refusal %p', (change) => {
