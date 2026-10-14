@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import type { PdfConversionEvent } from '@prisma/client';
 import { z } from 'zod';
 import { isProviderEndpointSlug } from '../providers/endpoint-slug';
+import { hostResponseValidationFinding } from '../../../pdf-conversion/reconstruction/response-validation-finding';
 import {
   workerObservationResult,
   workerSourceFinding,
@@ -130,6 +131,7 @@ export const safeEventSchema = z
           .string()
           .regex(/^[A-Z][A-Z0-9_]{0,79}$/)
           .optional(),
+        hostResponseValidation: hostResponseValidationFinding.optional(),
         sourceFindings: z
           .object({
             stage: z.enum(['extraction', 'assembly']),
@@ -224,6 +226,15 @@ export const safeEventSchema = z
       context.addIssue({
         code: 'custom',
         message: 'Invalid observation producer envelope',
+      });
+    if (
+      value.details.hostResponseValidation &&
+      value.details.hostResponseValidation.sourceSha256 !==
+        value.details.sourceSha256
+    )
+      context.addIssue({
+        code: 'custom',
+        message: 'Host response finding source differs',
       });
     for (const finding of value.details.sourceFindings?.findings ?? [])
       if (

@@ -70,7 +70,7 @@ it.each([
     expect(properties.list_start.anyOf).toContainEqual({ type: 'null' });
     expect(properties.list_ordered.description).toContain('Roman');
     expect(encoded.taskSha256).toBe(jsonHash(provider));
-    expect(GEMINI_GRAMMAR_VERSION).toBe('ava-gemini-recognition-grammar-3');
+    expect(GEMINI_GRAMMAR_VERSION).toBe('ava-gemini-recognition-grammar-4');
     const stale = {
       ...configured,
       configuration: {

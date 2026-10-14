@@ -1,3 +1,4 @@
+import { responseValidationDiagnostic } from '../reconstruction/response-validation-error';
 import type { ClaimedPdfJob } from '../../library/pdf-import/jobs';
 import type { SafeConversionEvent } from '../../library/pdf-import/reports/event-contract';
 import type { workerObservationSink } from './worker-observation-sink';
@@ -202,6 +203,11 @@ export function workerObserver(
             error instanceof SourceContentError
           )
             failure.failureCode = error.code;
+          const hostFinding = responseValidationDiagnostic(
+            error,
+            job.source.sha256,
+          );
+          if (hostFinding) failure.hostResponseValidation = hostFinding;
           if (error instanceof SourceContentError) {
             const diagnostic = error.diagnostic();
             if (diagnostic.source_sha256 === job.source.sha256)

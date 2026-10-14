@@ -11,9 +11,10 @@ export function projectResponse(input: unknown) {
     if (typeof value === "number" && Number.isFinite(value) && value >= 0)
       return value;
     if (typeof value === "string") {
+      const schemaDefinitionToken = key === "schemaPath" && value === "$defs";
       if (
         value.length > 1024 ||
-        !/^[A-Za-z0-9_.:/+\-]*$/.test(value) ||
+        (!schemaDefinitionToken && !/^[A-Za-z0-9_.:/+\-]*$/.test(value)) ||
         /^(?:sk[-_]|bearer|https?:|file:)/i.test(value) ||
         (value.startsWith("/") &&
           !["/Popup", "/Parent", "/IRT"].includes(value)) ||

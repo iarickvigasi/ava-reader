@@ -17,7 +17,7 @@ it('inlines refs and removes unsupported composition without mutating the canoni
   expect(geminiRecognitionSchema(canonical)).toEqual(lowered);
   expect(JSON.stringify(canonical)).toBe(before);
   expect(JSON.stringify(lowered)).not.toMatch(
-    /"(?:allOf|\$ref|\$defs|const|maxItems|maxLength|pattern)":/,
+    /"(?:allOf|\$ref|\$defs|const|maxLength|pattern)":/,
   );
 });
 it.each([
@@ -42,7 +42,6 @@ it.each([
   { kind: 'heading', heading_level: null },
   { kind: 'note', note_label: '1', note_role: null },
   { kind: 'list_item', list_ordered: true, list_depth: 1, list_start: null },
-  { kind: 'table', cells: [] },
   { kind: 'paragraph', chapter_start: true, chapter_role: 'bodymatter' },
 ])('keeps relaxed grammar separate from strict host refusal %p', (change) => {
   expect(validate(packet(change))).toBe(true);

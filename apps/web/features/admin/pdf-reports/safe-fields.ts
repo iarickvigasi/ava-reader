@@ -14,6 +14,8 @@ requestAttemptId callId providerEventId validationId validationFence validationV
 purpose pageIndices completed total decision findingCount locations pageNumber regionId
 annotationNumber relationshipPath declaredLanguages detectedLanguages layout annotationCount unitId
 outcome startedAt endedAt timingScope timingStatus workerObservation failureCode sourceFindings
+hostResponseValidation origin category schema checks keyword schemaPath instancePath renderSha256 taskIdSha256
+checksAreAlternatives matchingKindRequiredFields field
 findings region_id block_id page_number region_box box x0 y0 x1 y1 cacheReuse reused preparedRoute
 route nativeSegments recognitionTasks outputInventory chapters blocks resources styles metadataClaims
 figures tables notes languages en uk und unknown links internal note external routeSelection routeId

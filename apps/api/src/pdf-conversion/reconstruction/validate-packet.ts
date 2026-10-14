@@ -3,6 +3,8 @@ import { validatePacketAuthority } from './validate-packet-authority';
 import Ajv2020 from 'ajv/dist/2020';
 import { recognitionSchemas } from './generated/schemas';
 import { PdfRuntimeError } from '../runtime/runtime-error';
+import { ResponseValidationError } from './response-validation-error';
+import { schemaValidationDetails } from './response-validation-finding';
 
 const ajv = new Ajv2020({
   strict: true,
@@ -24,8 +26,14 @@ export function validatePacket<K extends keyof Packets>(
   name: K,
   value: unknown,
 ): Packets[K] {
-  if (!validators.get(name)?.(value))
+  const validator = validators.get(name);
+  if (!validator?.(value)) {
+    if (name === 'RecognitionResponse')
+      throw new ResponseValidationError(
+        schemaValidationDetails(validator?.errors ?? [], value),
+      );
     throw new PdfRuntimeError('INVALID_RESULT');
+  }
   validatePacketAuthority(name, value);
   return value as Packets[K];
 }

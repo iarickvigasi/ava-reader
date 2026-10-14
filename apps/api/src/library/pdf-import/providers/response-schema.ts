@@ -4,8 +4,9 @@ import { geminiRecognitionSchema } from './gemini-schema';
 import { PdfProviderError } from './errors';
 import type { ProviderTask } from './types';
 import { nativeStructureGenerationSchema } from './native-structure-generation-schema';
-// This version changes request hashes, never task identity or accepted response semantics.
-export const GEMINI_GRAMMAR_VERSION = 'ava-gemini-recognition-grammar-3';
+// Records the projection revision; actual schema bytes change request hashes.
+// Canonical task identity and accepted response semantics remain unchanged.
+export const GEMINI_GRAMMAR_VERSION = 'ava-gemini-recognition-grammar-4';
 export function providerResponseSchema(modelId: string, task: ProviderTask) {
   const schema =
     task.schemaVersion === 'ava-native-structure-response-2'

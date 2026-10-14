@@ -1,4 +1,5 @@
 import { PdfProviderError } from './errors';
+import { recognitionTableGrammar } from './recognition-table-grammar';
 type Schema = Record<string, unknown>;
 const fields = new Set([
   'type',
@@ -85,6 +86,8 @@ export function geminiRecognitionSchema(
         'For list_item: true for decimal, alphabetic or Roman ordered markers; false for bullets. Null for other kinds.';
       record(properties.list_start).description =
         'Every ordered item needs its own observed integer ordinal, including nested and continued items: a/b=1/2, i/ii=1/2, IV/V=4/5. Preserve the printed marker in text. Null for unordered items and other kinds. An unreadable essential marker belongs in unresolved.';
+      if (version === 'ava-recognition-response-2')
+        recognitionTableGrammar(output);
     }
     if (typeof node.const === 'string') output.enum = [node.const];
     return output;

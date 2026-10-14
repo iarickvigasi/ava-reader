@@ -2,6 +2,7 @@ import type { RecognitionTask } from './generated/RecognitionTask';
 import { validatePacket } from './validate-packet';
 import { PdfRuntimeError } from '../runtime/runtime-error';
 import { recognitionRefusal } from './recognition-refusal';
+import { ResponseValidationError } from './response-validation-error';
 
 export function recognitionResponse(task: RecognitionTask, output: string) {
   if (Buffer.byteLength(output) > 8 * 1024 ** 2)
@@ -10,10 +11,25 @@ export function recognitionResponse(task: RecognitionTask, output: string) {
   try {
     raw = JSON.parse(output) as unknown;
   } catch {
-    throw new PdfRuntimeError('INVALID_RESULT');
+    throw new ResponseValidationError(
+      {
+        origin: 'HOST_RESPONSE',
+        category: 'JSON_PARSE',
+        schema: 'RecognitionResponse',
+        checks: [],
+        complete: true,
+      },
+      task,
+    );
   }
   canonicalizeStyleColors(raw);
-  const response = validatePacket('RecognitionResponse', raw);
+  let response;
+  try {
+    response = validatePacket('RecognitionResponse', raw);
+  } catch (error) {
+    if (error instanceof ResponseValidationError) throw error.bind(task);
+    throw error;
+  }
   if (
     response.task_id !== task.task_id ||
     response.source_sha256 !== task.source_sha256 ||
