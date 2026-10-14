@@ -35,6 +35,12 @@ export function requireImportBudgets(
   }[],
 ) {
   if (!config.importPolicy) return;
-  if (budgets.some((b) => b.limitNano > b.hardCeilingNano))
+  if (
+    budgets.some(
+      (b) =>
+        b.limitNano > b.hardCeilingNano ||
+        (b.scope === 'MODEL' && b.hardCeilingNano > 10_000_000_000n),
+    )
+  )
     throw new PdfProviderError('PDF_PROVIDER_IMPORT_BUDGET_INVALID');
 }

@@ -367,11 +367,7 @@ Pin verified endpoint evidence and expiry (at most 24h); live diagnostic grants 
 finite owner/operation/source/image/task/render/request inventories. A prior pilot window is not
 a fresh tariff or deployment route. Unknown/dispatching charges stay reserved across timeout,
 restart and account deletion until reconciled; there is no blind resend, assumed refund or cap reset.
-Cumulative limits and hard ceilings are explicit operator inputs, not reader pricing. Ordinary-import
-MODEL budgets can exceed $10 when explicitly authorized; registration still requires
-`limitNano <= hardCeilingNano` and never changes an existing budget's caps, baseline, charges or holds.
-Pilot routes retain their $10 model ceiling; normal imports retain their $10 per-operation ceiling.
-A higher model ceiling does not raise GLOBAL, ACCOUNT or OPERATION limits or release uncertain costs.
+The benchmark's cumulative $10 per exact model is an operator testing constraint, not reader pricing.
 
 ### HTTP failure investigation
 

@@ -22,6 +22,7 @@ export function registerPdfBudget(
     !spec.scopeKey ||
     spec.scopeKey.length > 200 ||
     limit > ceiling ||
+    (spec.scope === 'MODEL' && ceiling > 10000000000n) ||
     !/^[a-f0-9]{64}$/.test(spec.baselineEvidenceSha256)
   )
     throw new PdfProviderError('PDF_PROVIDER_BUDGET_INVALID');
