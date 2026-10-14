@@ -1,15 +1,13 @@
-import { createHash } from 'node:crypto';
-import { task, response } from './test-fixture';
+import { anchorParent } from './anchor-context-fixture';
+import { response } from './test-fixture';
 import { wireSegment } from './wire-segment-fixture';
-const evidence = JSON.stringify({ reliable: false, lines: [] });
-export const authoredTask = {
-  ...task,
-  prompt_version: 'ava-prose-region-15' as const,
-  native_evidence: evidence,
-  native_evidence_sha256: createHash('sha256').update(evidence).digest('hex'),
-};
+// Reuse an authored, independently valid task/image identity for worker controls.
+export const authoredTask = structuredClone(anchorParent);
 export const authoredResponse = {
   ...response,
+  task_id: authoredTask.task_id,
+  source_sha256: authoredTask.source_sha256,
+  render_sha256: authoredTask.image.sha256,
   segments: [
     {
       ...wireSegment,
