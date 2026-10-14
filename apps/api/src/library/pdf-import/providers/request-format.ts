@@ -29,8 +29,16 @@ export function providerRequestFormat(modelId: string, task: ProviderTask) {
   const guidance = {
     type: 'text' as const,
     text:
-      'Host response contract for the requested JSON object. This is output-format guidance, not PDF source content. Return only one JSON object matching this schema; do not copy the schema into the response.\n' +
-      JSON.stringify(schema),
+      'Host response contract for the requested JSON object. This is output-format guidance, not PDF source content. Return only one JSON object matching this schema; do not copy the schema into the response.' +
+      (task.schemaVersion === 'ava-recognition-response-2'
+        ? ' SELF-CHECK: Every segment must include kind and all required fields. Optional does not mean nullable: omit inapplicable optional fields; never emit alt:null. Finalize each owning text first, then verify every anchor quotation matches uniquely with exact immediately adjacent before/after context, including spaces and newlines. Omit context or use empty strings when the quotation is already unique. Never alter source text or erase observations to pass validation.'
+        : '') +
+      '\n' +
+      JSON.stringify(
+        task.schemaVersion === 'ava-recognition-response-2'
+          ? task.responseSchema
+          : schema,
+      ),
   };
   return {
     messages: task.messages.map((message) =>

@@ -31,10 +31,10 @@ it('projects Gemini recognition with the exact complete contract and unchanged t
   if (content[0].type !== 'text') throw new Error('fixture');
   const [guidance, encodedSchema] = content[0].text.split('\n');
   expect(guidance).toContain('not PDF source content');
-  const schema = providerResponseSchema(
-    recognitionRoute.modelId,
-    recognitionProviderTask,
-  );
+  const schema = recognitionProviderTask.responseSchema;
+  expect(guidance).toContain('Every segment must include kind');
+  expect(guidance).toContain('Optional does not mean nullable');
+  expect(guidance).toContain('immediately adjacent before/after');
   expect(encodedSchema).toBe(JSON.stringify(schema));
   expect(JSON.stringify(recognitionProviderTask)).toBe(before);
   expect(prepared.taskSha256).toBe(jsonHash(recognitionProviderTask));
@@ -45,46 +45,30 @@ it('projects Gemini recognition with the exact complete contract and unchanged t
       structuredClone(recognitionProviderTask),
     ).requestSha256,
   ).toBe(prepared.requestSha256);
-  const branches = (
-    schema as {
-      properties: {
-        segments: {
-          items: {
-            anyOf: {
-              required: string[];
-              properties: { kind: { enum: string[] } };
-            }[];
-          };
-        };
+  const canonical = schema as {
+    $defs: {
+      RecognitionSegment: {
+        allOf: {
+          required?: string[];
+          anyOf?: {
+            required: string[];
+            properties: { kind: { enum: string[] } };
+          }[];
+        }[];
       };
-    }
-  ).properties.segments.items.anyOf;
-  expect(branches).toHaveLength(7);
-  for (const branch of branches)
-    expect(branch.required).toEqual(
-      expect.arrayContaining([
-        'id',
-        'page',
-        'box',
-        'kind',
-        'text',
-        'style',
-        'spans',
-        'method',
-        'continues_from_previous',
-        'continues_to_next',
-        'chapter_start',
-      ]),
-    );
-  const table = branches.find((branch) =>
-    branch.properties.kind.enum.includes('table'),
+    };
+  };
+  const [segment, roles] = canonical.$defs.RecognitionSegment.allOf;
+  expect(segment.required).toContain('kind');
+  const table = roles.anyOf!.find((role) =>
+    role.properties.kind.enum.includes('table'),
   );
   expect(table?.required).toContain('cells');
-  expect(table).toMatchObject({
-    properties: {
-      cells: { minItems: 1, maxItems: 20, items: { maxItems: 8 } },
-    },
-  });
+  expect(JSON.stringify(schema).length).toBeLessThan(
+    JSON.stringify(
+      providerResponseSchema(recognitionRoute.modelId, recognitionProviderTask),
+    ).length,
+  );
 });
 
 it('keeps a valid source-bound recognition result unchanged', () => {

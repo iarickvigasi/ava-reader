@@ -13,7 +13,6 @@ import { checksumBuffer } from '../../shared/blob-utils';
 import { GEMINI_GRAMMAR_VERSION } from '../../library/pdf-import/providers/response-schema';
 import { recognitionRequestGrammar } from './recognition-request-grammar-fixture';
 import {
-  anchorProperties,
   properties as props,
   type SchemaShape,
 } from './text-style-schema-fixture';
@@ -56,31 +55,33 @@ it.each([
       configured.modelId,
       provider,
       encoded.request,
-    ) as SchemaShape;
-    const segment = props(schema).segments.items!;
-    const variants = segment.anyOf!;
-    expect(variants).toHaveLength(7);
-    const table = variants.find(
-      (variant) => props(variant).cells.items?.items,
-    )!;
-    const cell = props(table).cells.items!.items!;
-    for (const owner of [...variants, cell]) {
+    ) as {
+      $defs: Record<string, SchemaShape & { allOf: SchemaShape[] }>;
+    };
+    const definitions = schema.$defs;
+    for (const owner of [
+      definitions.RecognitionSegment.allOf[0],
+      definitions.RecognitionCell,
+    ]) {
       expect(props(owner).text.description).toContain(
         'before quoting any span',
       );
       expect(props(owner).text.description).toContain(
         'intrinsic Unicode stays exact',
       );
-      const anchor = anchorProperties(owner);
-      expect(anchor.exact_text.description).toContain('Copy verbatim');
-      expect(anchor.exact_text.description).toContain('exactly one occurrence');
-      expect(anchor.before.description).toContain(
-        'immediately adjacent preceding',
-      );
-      expect(anchor.after.description).toContain(
-        'immediately adjacent following',
-      );
+      expect(props(owner).spans.items).toEqual({
+        $ref: '#/$defs/RecognitionSpan',
+      });
     }
+    const anchor = props(definitions.RecognitionTextAnchor);
+    expect(anchor.exact_text.description).toContain('Copy verbatim');
+    expect(anchor.exact_text.description).toContain('exactly one occurrence');
+    expect(anchor.before.description).toContain(
+      'immediately adjacent preceding',
+    );
+    expect(anchor.after.description).toContain(
+      'immediately adjacent following',
+    );
     expect(encoded.taskSha256).toBe(jsonHash(provider));
     expect(encoded.requestSha256).toBe(checksumBuffer(encoded.request));
     expect(GEMINI_GRAMMAR_VERSION).toBe('ava-gemini-recognition-grammar-5');

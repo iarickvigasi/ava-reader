@@ -46,29 +46,37 @@ it.each([
       provider,
       encoded.request,
     ) as {
-      properties: {
-        segments: {
-          items: {
-            anyOf: {
+      $defs: {
+        RecognitionSegment: {
+          allOf: {
+            properties?: Record<string, unknown>;
+            anyOf?: {
               properties: {
-                kind: { enum: string[] };
-                list_start: { description: string; anyOf: unknown[] };
-                list_ordered: { description: string; type: string };
+                kind?: { enum: string[] };
+                list_ordered?: { type: string };
+                list_start?: { type: string };
               };
+              required?: string[];
             }[];
-          };
+          }[];
         };
       };
     };
-    const variants = schema.properties.segments.items.anyOf;
-    const properties = variants.find((variant) =>
-      variant.properties.kind.enum.includes('list_item'),
-    )!.properties;
-    expect(properties.list_start.description).toContain('a/b=1/2');
-    expect(properties.list_start.description).toContain('continued items');
-    expect(properties.list_start.anyOf).toContainEqual({ type: 'null' });
-    expect(properties.list_ordered.description).toContain('Roman');
-    expect(properties.list_ordered.type).toBe('boolean');
+    const [segment, kinds, , ordered] = schema.$defs.RecognitionSegment.allOf;
+    expect(
+      (segment.properties!.list_start as { anyOf: unknown[] }).anyOf,
+    ).toContainEqual({ type: 'null' });
+    const list = kinds.anyOf!.find((branch) =>
+      branch.properties.kind?.enum.includes('list_item'),
+    )!;
+    expect(list.properties.list_ordered?.type).toBe('boolean');
+    expect(list.required).toEqual(
+      expect.arrayContaining(['list_depth', 'list_ordered']),
+    );
+    expect(ordered.anyOf![1].properties.list_start?.type).toBe('integer');
+    expect(ordered.anyOf![1].required).toContain('list_start');
+    expect(prompt).toContain('including nested items');
+    expect(prompt).toContain('Roman numerals');
     expect(encoded.taskSha256).toBe(jsonHash(provider));
     expect(GEMINI_GRAMMAR_VERSION).toBe('ava-gemini-recognition-grammar-5');
     const stale = {

@@ -25,10 +25,12 @@ export function recognitionRequestGrammar(
     { ...task.messages[1], content: [content[0], ...original] },
   ]);
   expect(content.filter((part) => part.type === 'image_url')).toHaveLength(1);
-  const schema = providerResponseSchema(modelId, task);
-  expect(content[0].text).toBe(
-    'Host response contract for the requested JSON object. This is output-format guidance, not PDF source content. Return only one JSON object matching this schema; do not copy the schema into the response.\n' +
-      JSON.stringify(schema),
-  );
+  providerResponseSchema(modelId, task); // Canonical authorization remains mandatory.
+  const schema = task.responseSchema;
+  const [instructions, encoded] = content[0].text.split('\n');
+  expect(instructions).toContain('not PDF source content');
+  expect(instructions).toContain('Every segment must include kind');
+  expect(instructions).toContain('never emit alt:null');
+  expect(encoded).toBe(JSON.stringify(schema));
   return JSON.parse(content[0].text.split('\n')[1]) as Record<string, unknown>;
 }

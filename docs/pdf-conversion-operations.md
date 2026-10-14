@@ -409,9 +409,11 @@ fit its candidate count, and references fit its unique eligible callout count. A
 still require exact boundary coverage. The canonical
 response schema, closed role branches and host/worker source validation remain authoritative.
 Gemini NativeTask2 and recognition-v2 requests use OpenRouter `response_format: {type: "json_object"}`:
-their exact effective grammar is supplied once as separate host response-contract guidance before
-the unchanged source text and image. NativeTask2 keeps its source-specific limits; recognition
-keeps its complete seven kind groups and required table cells. This avoids complex-schema compilation;
+separate host response-contract guidance precedes the unchanged source text and image.
+NativeTask2 keeps its exact source-bounded grammar. Recognition supplies its unchanged canonical schema
+with shared definitions, plus a short required-field, nullability and exact-anchor self-check; it does
+not expand the compiler grammar's repeated kind groups into the prompt. Role requirements and table
+cells remain in the canonical contract. This avoids complex-schema compilation;
 it does not guarantee schema-conforming output. Strict canonical parsing and exact source checks
 still refuse malformed JSON, foreign role fields or incomplete source coverage without repair.
 Prepared task identity, prompt/schema authorization and configuration hashes stay unchanged; the
