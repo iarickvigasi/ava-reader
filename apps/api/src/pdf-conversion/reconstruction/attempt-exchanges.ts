@@ -23,7 +23,10 @@ import { reconstructionRequest } from './reconstruction-request';
 import type { NativeStructureResponse } from './generated/NativeStructureResponse';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
 import type { RecognitionTask } from './generated/RecognitionTask';
-import { anchorContextBinding } from './anchor-context-binding';
+import {
+  anchorContextBinding,
+  anchorQuoteBinding,
+} from './anchor-context-binding';
 import { parseSourceRefusal, type SourceContentError } from './source-refusal';
 import {
   recognizeAttemptReceipt,
@@ -288,7 +291,10 @@ export function attemptExchanges(context: AttemptContext) {
       inputBound();
       return [result.response];
     }
-    if (envelope.kind === 'anchor_context') {
+    if (
+      envelope.kind === 'anchor_context' ||
+      envelope.kind === 'anchor_quote'
+    ) {
       if (
         !lastOriginal ||
         batch ||
@@ -297,11 +303,11 @@ export function attemptExchanges(context: AttemptContext) {
       )
         return invalid();
       const parent = lastOriginal;
-      const task = anchorContextBinding(
-        envelope.payload,
-        parent.task,
-        parent.response,
-      );
+      const task = (
+        envelope.kind === 'anchor_quote'
+          ? anchorQuoteBinding
+          : anchorContextBinding
+      )(envelope.payload, parent.task, parent.response);
       if (taskIds.has(task.task_id) || correctionIds.has(task.task_id))
         return invalid();
       // Consume the one opportunity before dispatch, including WAIT/uncertain failures.

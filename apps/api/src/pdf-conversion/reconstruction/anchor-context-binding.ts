@@ -1,3 +1,5 @@
+import type { AnchorRepairTask } from './anchor-repair-types';
+import { allowedQuotations, quoteTaskId } from './anchor-quote-candidates';
 import { createHash } from 'node:crypto';
 import type { RecognitionTask } from './generated/RecognitionTask';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
@@ -74,7 +76,7 @@ export function anchorMatches(
   return count;
 }
 
-function invalidSlots(response: RecognitionResponse) {
+function invalidSlots(response: RecognitionResponse, quoteMode = false) {
   const slots = new Map<string, 'AMBIGUOUS_CONTEXT' | 'ABSENT_CONTEXT'>();
   response.segments.forEach((segment, segmentIndex) => {
     for (const row of segment.cells ?? [])
@@ -92,7 +94,9 @@ function invalidSlots(response: RecognitionResponse) {
       if (
         span.start != null ||
         span.end != null ||
-        !segment.text.includes(span.anchor.exact_text)
+        (quoteMode
+          ? !allowedQuotations(segment.text, span).length
+          : !segment.text.includes(span.anchor.exact_text))
       )
         throw new PdfRuntimeError('INVALID_RESULT');
       if (
@@ -122,10 +126,32 @@ export function anchorContextBinding(
     'RecognitionAnchorContextTask',
     structuredClone(input),
   );
+  return bindAnchorRepair(task, parent, original);
+}
+
+export function anchorQuoteBinding(
+  input: unknown,
+  parent: RecognitionTask,
+  original: RecognitionResponse,
+) {
+  const task = validatePacket(
+    'RecognitionAnchorQuoteTask',
+    structuredClone(input),
+  );
+  return bindAnchorRepair(task, parent, original);
+}
+
+function bindAnchorRepair<T extends AnchorRepairTask>(
+  task: T,
+  parent: RecognitionTask,
+  original: RecognitionResponse,
+): T {
+  const quoteMode =
+    task.schema_version === 'ava-recognition-anchor-quote-task-2';
   const wire = JSON.parse(JSON.stringify(original)) as RecognitionResponse;
   if (
     task.task_id === parent.task_id ||
-    task.task_id !== contextTaskId(task) ||
+    task.task_id !== (quoteMode ? quoteTaskId(task) : contextTaskId(task)) ||
     task.original_task_id !== parent.task_id ||
     task.source_sha256 !== parent.source_sha256 ||
     task.profile_id !== parent.profile_id ||
@@ -138,13 +164,20 @@ export function anchorContextBinding(
     !sameJson(exchangeJson(Buffer.from(task.original_response_json)), wire)
   )
     throw new PdfRuntimeError('SOURCE_MISMATCH');
-  const invalid = invalidSlots(wire),
+  const invalid = invalidSlots(wire, quoteMode),
     seen = new Set<string>();
   for (const slot of task.slots) {
     const key = contextSlotKey(slot.segment_index, slot.span_index);
     const segment = wire.segments[slot.segment_index];
     const span = segment?.spans[slot.span_index];
     if (
+      ('allowed_quotations' in slot &&
+        (!span ||
+          !segment ||
+          !sameJson(
+            slot.allowed_quotations,
+            allowedQuotations(segment.text, span),
+          ))) ||
       seen.has(key) ||
       !segment ||
       !span ||

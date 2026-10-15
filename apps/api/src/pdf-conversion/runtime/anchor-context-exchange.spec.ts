@@ -72,3 +72,27 @@ it('keeps source binding, strict sequence and exact one-response acknowledgement
       exchangeReply(encode({ ...request, payload }), request),
     ).toThrow('INVALID_RESULT');
 });
+
+const quoteCorrection = (sequence = 3) => ({
+  ...correction(sequence),
+  schema_version: 'ava-recognition-anchor-quote-exchange-2',
+  kind: 'anchor_quote',
+});
+it('binds quote schema/kind and shares one repair opportunity in both directions', () => {
+  for (const first of [correction(), quoteCorrection()]) {
+    for (const second of [correction(4), quoteCorrection(4)]) {
+      const protocol = pendingParent();
+      const request = protocol.accept(encode(first));
+      const bytes = encode({ ...request, payload: [{}] });
+      expect(exchangeReply(bytes, request).readUInt32BE()).toBe(bytes.length);
+      expect(() => protocol.accept(encode(second))).toThrow('INVALID_RESULT');
+    }
+  }
+  for (const changed of [
+    { ...quoteCorrection(), kind: 'anchor_context' },
+    { ...correction(), kind: 'anchor_quote' },
+  ])
+    expect(() => pendingParent().accept(encode(changed))).toThrow(
+      'INVALID_RESULT',
+    );
+});

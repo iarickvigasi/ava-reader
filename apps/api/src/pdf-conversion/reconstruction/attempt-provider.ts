@@ -20,7 +20,7 @@ import { providerTask } from './provider-task';
 import { refinementProviderTask } from './refinement-provider-task';
 import { recognitionResponse } from './recognition-response';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
-import type { RecognitionAnchorContextTask } from './generated/RecognitionAnchorContextTask';
+import type { AnchorRepairTask } from './anchor-repair-types';
 import { anchorContextProviderTask } from './anchor-context-provider-task';
 import { anchorContextResponse } from './anchor-context-response';
 import { PdfRuntimeError } from '../runtime/runtime-error';
@@ -48,7 +48,7 @@ export type AttemptContext = {
   ) => Promise<void>;
   validateWordWrap?: (task: WordWrapTask, signal: AbortSignal) => Promise<void>;
   validateAnchorContext?: (
-    correction: RecognitionAnchorContextTask,
+    correction: AnchorRepairTask,
     task: RecognitionTask,
     signal: AbortSignal,
   ) => Promise<void>;
@@ -106,7 +106,7 @@ export async function refineAttemptTask(
 }
 
 export async function correctAttemptAnchorContext(
-  task: RecognitionAnchorContextTask,
+  task: AnchorRepairTask,
   parent: RecognitionTask,
   original: RecognitionResponse,
   context: AttemptContext,
@@ -118,7 +118,12 @@ export async function correctAttemptAnchorContext(
   await context.validateAnchorContext(task, parent, signal);
   context.checkActive(signal);
   const receipt = await context.deps.dispatch(
-    anchorContextProviderTask(task, parent, original),
+    anchorContextProviderTask(
+      task,
+      parent,
+      original,
+      task.schema_version === 'ava-recognition-anchor-quote-task-2',
+    ),
     signal,
   );
   context.checkActive(signal);

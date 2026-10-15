@@ -22,15 +22,19 @@ export function providerResponseSchema(modelId: string, task: ProviderTask) {
               : task.schemaVersion === 'ava-recognition-geometry-response-1'
                 ? recognitionSchemas.RecognitionGeometryResponse
                 : task.schemaVersion ===
-                    'ava-recognition-anchor-context-response-1'
-                  ? recognitionSchemas.RecognitionAnchorContextResponse
-                  : task.schemaVersion === 'ava-book-refinement-response-4'
-                    ? recognitionSchemas.SourceFeatureResponse
-                    : task.schemaVersion === 'ava-native-word-wrap-response-1'
-                      ? recognitionSchemas.WordWrapResponse
-                      : task.schemaVersion === 'ava-native-structure-response-1'
-                        ? recognitionSchemas.NativeStructureResponse
-                        : null;
+                    'ava-recognition-anchor-quote-response-2'
+                  ? recognitionSchemas.RecognitionAnchorQuoteResponse
+                  : task.schemaVersion ===
+                      'ava-recognition-anchor-context-response-1'
+                    ? recognitionSchemas.RecognitionAnchorContextResponse
+                    : task.schemaVersion === 'ava-book-refinement-response-4'
+                      ? recognitionSchemas.SourceFeatureResponse
+                      : task.schemaVersion === 'ava-native-word-wrap-response-1'
+                        ? recognitionSchemas.WordWrapResponse
+                        : task.schemaVersion ===
+                            'ava-native-structure-response-1'
+                          ? recognitionSchemas.NativeStructureResponse
+                          : null;
   if (!modelId.startsWith('google/gemini-') || !schema)
     return task.responseSchema;
   if (jsonHash(task.responseSchema) !== jsonHash(schema))

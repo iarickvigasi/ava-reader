@@ -1,16 +1,24 @@
+import { ANCHOR_QUOTE_PROMPT } from './generated/anchor-quote-prompt';
 import type { ProviderTask } from '../../library/pdf-import/providers/types';
 import type { RecognitionTask } from './generated/RecognitionTask';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
 import { ANCHOR_CONTEXT_PROMPT } from './generated/anchor-context-prompt';
 import { recognitionSchemas } from './generated/schemas';
-import { anchorContextBinding, contextSha } from './anchor-context-binding';
+import {
+  anchorContextBinding,
+  anchorQuoteBinding,
+  contextSha,
+} from './anchor-context-binding';
 
 export function anchorContextProviderTask(
   input: unknown,
   parent: RecognitionTask,
   original: RecognitionResponse,
+  quoteMode = false,
 ): ProviderTask {
-  const task = anchorContextBinding(input, parent, original);
+  const task = quoteMode
+    ? anchorQuoteBinding(input, parent, original)
+    : anchorContextBinding(input, parent, original);
   const { image: pixels, ...context } = task;
   return {
     // The stock grant/task ledger enforces one durable opportunity for this parent.
@@ -22,7 +30,10 @@ export function anchorContextProviderTask(
     promptVersion: task.prompt_version,
     schemaVersion: task.response_schema_version,
     messages: [
-      { role: 'system', content: ANCHOR_CONTEXT_PROMPT },
+      {
+        role: 'system',
+        content: quoteMode ? ANCHOR_QUOTE_PROMPT : ANCHOR_CONTEXT_PROMPT,
+      },
       {
         role: 'user',
         content: [
@@ -46,6 +57,8 @@ export function anchorContextProviderTask(
         ],
       },
     ],
-    responseSchema: recognitionSchemas.RecognitionAnchorContextResponse,
+    responseSchema: quoteMode
+      ? recognitionSchemas.RecognitionAnchorQuoteResponse
+      : recognitionSchemas.RecognitionAnchorContextResponse,
   };
 }

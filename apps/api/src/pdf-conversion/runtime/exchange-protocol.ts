@@ -12,6 +12,7 @@ export type ExchangeEnvelope = ExchangeBinding & {
     | 'ava-reconstruction-exchange-1'
     | 'ava-reconstruction-exchange-2'
     | 'ava-recognition-anchor-context-exchange-1'
+    | 'ava-recognition-anchor-quote-exchange-2'
     | 'ava-native-structure-exchange-1'
     | 'ava-native-structure-exchange-2'
     | 'ava-recognition-geometry-exchange-1';
@@ -21,6 +22,7 @@ export type ExchangeEnvelope = ExchangeBinding & {
     | 'recognition'
     | 'native_structure'
     | 'anchor_context'
+    | 'anchor_quote'
     | 'geometry'
     | 'word_wrap_batch'
     | 'word_wrap'
@@ -60,6 +62,8 @@ export function exchangeProtocol(
       const value = exchangeJson(bytes) as ExchangeEnvelope;
       const geometry =
         value?.schema_version === 'ava-recognition-geometry-exchange-1';
+      const quotation =
+        value?.schema_version === 'ava-recognition-anchor-quote-exchange-2';
       const correction =
         value?.schema_version === 'ava-recognition-anchor-context-exchange-1';
       const native =
@@ -71,7 +75,8 @@ export function exchangeProtocol(
         !value ||
         Object.keys(value).sort().join() !==
           'kind,payload,profile_id,schema_version,sequence,source_sha256' ||
-        (!correction &&
+        (!quotation &&
+          !correction &&
           !geometry &&
           !native &&
           value.schema_version !==
@@ -79,6 +84,7 @@ export function exchangeProtocol(
               ? 'ava-reconstruction-exchange-2'
               : 'ava-reconstruction-exchange-1')) ||
         correction !== (value.kind === 'anchor_context') ||
+        quotation !== (value.kind === 'anchor_quote') ||
         geometry !== (value.kind === 'geometry') ||
         (geometry && (!geometryMode || !wordWrapMode)) ||
         native !== (value.kind === 'native_structure') ||
@@ -99,6 +105,7 @@ export function exchangeProtocol(
           'recognition',
           'native_structure',
           'anchor_context',
+          'anchor_quote',
           ...(geometryMode ? ['geometry'] : []),
           ...(wordWrapMode ? ['word_wrap_batch', 'word_wrap'] : []),
           'refinement_batch',
@@ -118,6 +125,7 @@ export function exchangeProtocol(
           ? 8 * 1024 ** 2 + 1024
           : value.kind === 'refinement_batch' ||
               value.kind === 'word_wrap_batch' ||
+              quotation ||
               correction ||
               geometry
             ? MAX_EXCHANGE_FRAME
@@ -171,7 +179,7 @@ export function exchangeProtocol(
           throw new PdfRuntimeError('INVALID_RESULT');
         pending.shift();
         wraps++;
-      } else if (correction || geometry) {
+      } else if (correction || quotation || geometry) {
         const task = value.payload as {
           task_id?: unknown;
           original_task_id?: unknown;
@@ -242,6 +250,7 @@ export function exchangeReply(bytes: Buffer, request: ExchangeEnvelope) {
     'word_wrap',
     'refinement',
     'anchor_context',
+    'anchor_quote',
     'geometry',
   ].includes(request.kind)
     ? 1

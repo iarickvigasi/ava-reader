@@ -23,6 +23,11 @@ from .recognition_anchor_context import (
     apply_anchor_context,
     prepare_anchor_context,
 )
+from .recognition_anchor_quote import apply_anchor_quote, prepare_anchor_quote
+from .recognition_anchor_quote_contract import (
+    RecognitionAnchorQuoteResponse,
+    RecognitionAnchorQuoteTask,
+)
 from .recognition_contract import RecognitionTask
 from .source_refusal import refuse_task
 from .validate_tasks import validate_tasks
@@ -37,23 +42,42 @@ class AnchorContextExchange(Record):
     payload: Any
 
 
+class AnchorQuoteExchange(Record):
+    schema_version: Literal["ava-recognition-anchor-quote-exchange-2"]
+    sequence: int = Field(ge=1, le=25534)
+    source_sha256: Digest
+    profile_id: ProfileId
+    kind: Literal["anchor_quote"]
+    payload: Any
+
+
 def emit_context(
-    writer: ExchangeWriter, task: RecognitionAnchorContextTask
-) -> AnchorContextExchange:
+    writer: ExchangeWriter, task: RecognitionAnchorContextTask | RecognitionAnchorQuoteTask
+) -> AnchorContextExchange | AnchorQuoteExchange:
     parents = writer._anchor_context_parents
     if writer.terminal or task.original_task_id in parents:
         raise ValueError("ANCHOR_CONTEXT_SECOND_PASS_REFUSED")
     parents.add(
         task.original_task_id
     )  # Consume before output; interruption cannot invite a resend.
-    packet = AnchorContextExchange(
-        schema_version="ava-recognition-anchor-context-exchange-1",
-        sequence=writer.sequence + 1,
-        source_sha256=writer.source_sha256,
-        profile_id=writer.profile_id,
-        kind="anchor_context",
-        payload=task.model_dump(mode="json"),
-    )
+    if isinstance(task, RecognitionAnchorQuoteTask):
+        packet: AnchorContextExchange | AnchorQuoteExchange = AnchorQuoteExchange(
+            schema_version="ava-recognition-anchor-quote-exchange-2",
+            sequence=writer.sequence + 1,
+            source_sha256=writer.source_sha256,
+            profile_id=writer.profile_id,
+            kind="anchor_quote",
+            payload=task.model_dump(mode="json"),
+        )
+    else:
+        packet = AnchorContextExchange(
+            schema_version="ava-recognition-anchor-context-exchange-1",
+            sequence=writer.sequence + 1,
+            source_sha256=writer.source_sha256,
+            profile_id=writer.profile_id,
+            kind="anchor_context",
+            payload=task.model_dump(mode="json"),
+        )
     data = json_bytes(packet.model_dump(mode="json"))
     if len(data) > PAGE_CONTROL_BYTES:
         raise ValueError("ANCHOR_CONTEXT_CONTROL_BOUND")
@@ -62,7 +86,9 @@ def emit_context(
     return packet
 
 
-def reply_context(writer: ExchangeWriter, incoming: Any, request: AnchorContextExchange) -> Any:
+def reply_context(
+    writer: ExchangeWriter, incoming: Any, request: AnchorContextExchange | AnchorQuoteExchange
+) -> Any:
     size = struct.unpack(">I", _exact(incoming, 4))[0]
     if (
         not 0
@@ -70,7 +96,7 @@ def reply_context(writer: ExchangeWriter, incoming: Any, request: AnchorContextE
         <= min(1024 * 1024 + 1024, REPLY_BYTES, TOTAL_REPLY_BYTES - writer._reply_bytes - 4)
     ):
         raise ValueError("ANCHOR_CONTEXT_REPLY_BOUND")
-    reply = AnchorContextExchange.model_validate(strict_json(_exact(incoming, size)))
+    reply = type(request).model_validate(strict_json(_exact(incoming, size)))
     writer._reply_bytes += size + 4
     if (
         reply.sequence != request.sequence
@@ -103,6 +129,36 @@ def accept_attempt_recognition(
     except ValidationError:
         if not allow_correction:
             raise
+    # Select the repair before dispatch: quotation repair replaces, never follows, V1.
+    quote_task = prepare_anchor_quote(task, json_bytes(raw_response).decode())
+    if any(
+        any(
+            q != strict_json(s.original_span_json.encode())["anchor"]["exact_text"]
+            for q in s.allowed_quotations
+        )
+        for s in quote_task.slots
+    ):
+        packet = emit_context(writer, quote_task)
+        quote_reply = RecognitionAnchorQuoteResponse.model_validate(
+            reply_context(writer, incoming, packet)
+        )
+        if quote_reply.outcome == "unresolved":
+            if (
+                quote_reply.task_id,
+                quote_reply.source_sha256,
+                quote_reply.original_task_id,
+                quote_reply.render_sha256,
+                quote_reply.original_response_sha256,
+            ) != (
+                quote_task.task_id,
+                quote_task.source_sha256,
+                quote_task.original_task_id,
+                quote_task.render_sha256,
+                quote_task.original_response_sha256,
+            ):
+                raise ValueError("ANCHOR_QUOTE_UNRESOLVED_BINDING_DIFFERS")
+            refuse_task(task, "RECOGNITION_UNRESOLVED")
+        return apply_anchor_quote(task, quote_task, quote_reply)
     # Constructor classifies only finite anchor failures and verifies immutable parent semantics.
     context = prepare_anchor_context(task, json_bytes(raw_response).decode())
     packet = emit_context(writer, context)

@@ -1,4 +1,4 @@
-import type { RecognitionAnchorContextTask } from './generated/RecognitionAnchorContextTask';
+import type { AnchorRepairTask } from './anchor-repair-types';
 import type { RecognitionTask } from './generated/RecognitionTask';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
 import { parsePacket } from './validate-packet';
@@ -7,13 +7,15 @@ import { anchorMatches, contextSlotKey } from './anchor-context-binding';
 import { PdfRuntimeError } from '../runtime/runtime-error';
 
 export function anchorContextResponse(
-  task: RecognitionAnchorContextTask,
+  task: AnchorRepairTask,
   output: string,
   parent: RecognitionTask,
   original: RecognitionResponse,
 ) {
   const response = parsePacket(
-    'RecognitionAnchorContextResponse',
+    task.schema_version === 'ava-recognition-anchor-quote-task-2'
+      ? 'RecognitionAnchorQuoteResponse'
+      : 'RecognitionAnchorContextResponse',
     Buffer.from(output),
     2 * 1024 ** 2,
   );
@@ -51,6 +53,17 @@ export function anchorContextResponse(
       !span?.anchor
     )
       throw new PdfRuntimeError('SOURCE_MISMATCH');
+    if ('exact_text' in patch) {
+      const quoteSlot =
+        task.schema_version === 'ava-recognition-anchor-quote-task-2'
+          ? task.slots.find(
+              (s) => contextSlotKey(s.segment_index, s.span_index) === key,
+            )
+          : undefined;
+      if (!quoteSlot?.allowed_quotations.includes(patch.exact_text))
+        throw new PdfRuntimeError('INVALID_RESULT');
+      span.anchor.exact_text = patch.exact_text;
+    }
     span.anchor.before = patch.before;
     span.anchor.after = patch.after;
     if (anchorMatches(segment.text, span.anchor) !== 1)

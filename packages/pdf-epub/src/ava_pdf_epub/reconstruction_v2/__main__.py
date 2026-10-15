@@ -40,6 +40,12 @@ def main() -> None:
             sys.stdout.buffer.write(encode_packet(validate_geometry(raw_request), 1024))
             sys.stdout.buffer.flush()
             return
+        if request.get("mode") == "validate_anchor_quote":
+            from .recognition_anchor_quote import validate_anchor_quote
+
+            sys.stdout.buffer.write(encode_packet(validate_anchor_quote(raw_request), 1024))
+            sys.stdout.buffer.flush()
+            return
         if request.get("mode") == "validate_anchor_context":
             from .recognition_anchor_context import validate_anchor_context
 

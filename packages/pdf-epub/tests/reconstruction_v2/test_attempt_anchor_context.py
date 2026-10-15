@@ -10,14 +10,25 @@ from unittest.mock import patch
 from ava_pdf_epub.reconstruction_v2 import attempt_stream as worker
 from ava_pdf_epub.reconstruction_v2.attempt_exchange import json_bytes
 from ava_pdf_epub.reconstruction_v2.recognition_anchor_context import RecognitionAnchorContextTask
+from ava_pdf_epub.reconstruction_v2.recognition_anchor_quote_contract import (
+    RecognitionAnchorQuoteTask,
+)
 
 from .attempt_peer import PeerOutput
 from .test_recognition_anchor_context import correction, fixture
+from .test_recognition_anchor_quote import correction as quote_correction
+from .test_recognition_anchor_quote import fixture as quote_fixture
 
 
 class AttemptAnchorContextTests(unittest.TestCase):
     def test_invalid_parent_is_corrected_once_before_refinement_without_text_or_style_loss(self):
-        task, raw = fixture()
+        self.exercise(False)
+
+    def test_script_quotation_uses_one_v2_pass_instead_of_v1_then_v2(self):
+        self.exercise(True)
+
+    def exercise(self, quote):
+        task, raw = quote_fixture() if quote else fixture()
         reached = RuntimeError("AUTHORED_REFINEMENT_REACHED")
         captured = []
         prep = SimpleNamespace(check_unchanged=lambda: None, verify_inputs=lambda: None)
@@ -40,6 +51,13 @@ class AttemptAnchorContextTests(unittest.TestCase):
                 return []
             if packet["kind"] == "recognition":
                 return [raw]
+            if quote:
+                self.assertEqual("anchor_quote", packet["kind"])
+                self.assertEqual(
+                    "ava-recognition-anchor-quote-exchange-2", packet["schema_version"]
+                )
+                context = RecognitionAnchorQuoteTask.model_validate(packet["payload"])
+                return [quote_correction(context).model_dump(mode="json")]
             self.assertEqual("anchor_context", packet["kind"])
             self.assertEqual("ava-recognition-anchor-context-exchange-1", packet["schema_version"])
             context = RecognitionAnchorContextTask.model_validate(packet["payload"])
@@ -82,11 +100,15 @@ class AttemptAnchorContextTests(unittest.TestCase):
                 )
         self.assertIs(reached, caught.exception.cause)
         self.assertEqual(
-            ["page", "recognition", "anchor_context", "refusal"], [p["kind"] for p in peer.controls]
+            ["page", "recognition", "anchor_quote" if quote else "anchor_context", "refusal"],
+            [p["kind"] for p in peer.controls],
         )
         self.assertEqual(1, len(captured))
         self.assertEqual(raw["segments"][0]["text"], captured[0].segments[0].text)
-        self.assertTrue(captured[0].segments[0].spans[0].style.bold)
+        if quote:
+            self.assertEqual("super", captured[0].segments[0].spans[0].style.vertical_align)
+        else:
+            self.assertTrue(captured[0].segments[0].spans[0].style.bold)
 
 
 if __name__ == "__main__":

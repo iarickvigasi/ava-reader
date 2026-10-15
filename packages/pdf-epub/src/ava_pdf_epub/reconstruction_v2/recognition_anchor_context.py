@@ -5,14 +5,21 @@ import copy
 import hashlib
 from typing import Any, Literal, Self, cast
 
-from pydantic import Field, ValidationError, model_validator
+from pydantic import Field, model_validator
 
 from ..contracts.common import Digest, Id, Record
-from ..contracts.profiles import ProfileId, response_language
+from ..contracts.profiles import ProfileId
 from .attempt_exchange import json_bytes, strict_json
+from .recognition_anchor_eligibility import (
+    REASONS as _REASONS,
+)
+from .recognition_anchor_eligibility import (
+    RESPONSE_BYTES,
+    SLOT_LIMIT,
+    eligible_anchor_response,
+)
 from .recognition_anchors import RecognitionTextAnchor, anchored_offsets
-from .recognition_contract import RecognitionImage, RecognitionResponse, RecognitionTask
-from .recognition_versions import ANCHORED_PROMPT_VERSIONS
+from .recognition_contract import RecognitionImage, RecognitionTask
 from .validate_tasks import validate_tasks
 
 ANCHOR_CONTEXT_PROMPT_VERSION = "ava-recognition-anchor-context-1"
@@ -25,12 +32,6 @@ unconstrained, not a start/end assertion. Choose the visibly styled occurrence i
 never choose the first occurrence merely because it is first. Return every requested slot once.
 If the source does not establish the intended occurrence, return unresolved with no patches.
 Never retranscribe, enlarge a quotation, remove a span, or add any other response fields."""
-RESPONSE_BYTES = 8 * 1024 * 1024
-SLOT_LIMIT = 512
-_REASONS: dict[str, Literal["AMBIGUOUS_CONTEXT", "ABSENT_CONTEXT"]] = {
-    "Ambiguous exact inline anchor": "AMBIGUOUS_CONTEXT",
-    "Inline anchor is absent from exact text": "ABSENT_CONTEXT",
-}
 
 
 def digest(data: bytes) -> str:
@@ -171,65 +172,8 @@ def prepare_anchor_context(
     task: RecognitionTask, original_response_json: str
 ) -> RecognitionAnchorContextTask:
     task = RecognitionTask.model_validate(task.model_dump())
-    if task.prompt_version not in ANCHORED_PROMPT_VERSIONS:
-        raise ValueError("ANCHOR_CONTEXT_TASK_NOT_ANCHORED")
+    response, failed_segments = eligible_anchor_response(task, original_response_json)
     raw = original_response_json.encode()
-    if not 0 < len(raw) <= RESPONSE_BYTES:
-        raise ValueError("ANCHOR_CONTEXT_RESPONSE_BOUND")
-    response = strict_json(raw)
-    if not isinstance(response, dict) or (
-        response.get("task_id"),
-        response.get("source_sha256"),
-        response.get("render_sha256"),
-    ) != (task.task_id, task.source_sha256, task.image.sha256):
-        raise ValueError("ANCHOR_CONTEXT_PARENT_DIFFERS")
-    response_language(response.get("language", ""), task.profile_id)
-    if response.get("unresolved") or any(
-        s.get("kind") == "unsupported" for s in response.get("segments", [])
-    ):
-        raise ValueError("ANCHOR_CONTEXT_OTHER_UNRESOLVED")
-    try:
-        RecognitionResponse.model_validate(response)
-    except ValidationError as error:
-        failures = error.errors(include_input=False, include_url=False)
-        if not failures or any(
-            len(f["loc"]) != 2
-            or f["loc"][0] != "segments"
-            or not isinstance(f["loc"][1], int)
-            or str(f.get("ctx", {}).get("error")) not in _REASONS
-            for f in failures
-        ):
-            raise ValueError("ANCHOR_CONTEXT_NOT_ELIGIBLE") from None
-        failed_segments = {int(f["loc"][1]) for f in failures}
-    else:
-        raise ValueError("ANCHOR_CONTEXT_ALREADY_VALID")
-    # Keep every already-resolved span. Only unresolvable pure typography is masked
-    # in this eligibility probe; the immutable original and final output keep it.
-    # References/annotations cannot lose their evidence to make a probe pass.
-    shape = copy.deepcopy(response)
-    for index in failed_segments:
-        retained = []
-        for span in shape["segments"][index]["spans"]:
-            try:
-                anchored_offsets(
-                    shape["segments"][index]["text"],
-                    RecognitionTextAnchor.model_validate(span.get("anchor")),
-                )
-            except ValueError:
-                if any(span.get(key) is not None for key in ("url", "note_label", "target_text")):
-                    raise ValueError("ANCHOR_CONTEXT_REFERENCE_NOT_ELIGIBLE") from None
-            else:
-                retained.append(span)
-        shape["segments"][index]["spans"] = retained
-    validate_tasks(
-        json_bytes(
-            {
-                "mode": "validate_tasks",
-                "tasks": [task.model_dump(mode="json")],
-                "responses": [shape],
-            }
-        )
-    )
     slots = []
     for index in sorted(failed_segments):
         segment = response["segments"][index]

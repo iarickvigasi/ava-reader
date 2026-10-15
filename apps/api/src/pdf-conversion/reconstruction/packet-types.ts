@@ -1,3 +1,5 @@
+import type { RecognitionAnchorQuoteTask } from './generated/RecognitionAnchorQuoteTask';
+import type { RecognitionAnchorQuoteResponse } from './generated/RecognitionAnchorQuoteResponse';
 import type { NativeStructureTask2 } from './generated/NativeStructureTask2';
 import type { NativeStructureResponse2 } from './generated/NativeStructureResponse2';
 import type { NativeStructure2PrepareResult } from './generated/NativeStructure2PrepareResult';
@@ -39,6 +41,8 @@ import type { NativeStructureTask } from './generated/NativeStructureTask';
 import type { NativeStructureResponse } from './generated/NativeStructureResponse';
 
 export type Packets = {
+  RecognitionAnchorQuoteTask: RecognitionAnchorQuoteTask;
+  RecognitionAnchorQuoteResponse: RecognitionAnchorQuoteResponse;
   NativeStructureTask2: NativeStructureTask2;
   NativeStructureResponse2: NativeStructureResponse2;
   NativeStructure2PrepareResult: NativeStructure2PrepareResult;

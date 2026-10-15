@@ -31,6 +31,7 @@ export const workerCommand = z.enum([
   'validate_tasks',
   'validate_refinement',
   'validate_anchor_context',
+  'validate_anchor_quote',
   'validate_geometry',
   'prepare_word_wrap',
   'validate_word_wrap',
