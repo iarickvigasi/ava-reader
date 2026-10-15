@@ -88,5 +88,6 @@ export function prepareProviderRequest(
     request,
     requestSha256,
     taskSha256,
+    decodeOutput: format.decodeOutput,
   };
 }

@@ -65,6 +65,13 @@ exactly and identify one occurrence. Grammar3 carries this guidance; cross-field
 relationships remain strict worker checks, without normalization, response repair or automatic replay.
 Malformed responses fail with retained investigation evidence. This source candidate is not live
 scanned/mixed qualification evidence.
+Gemini recognition uses `ava-recognition-observation-1` only on the provider wire. The model
+returns observations and local segment relationships; it cannot supply task/source/render bindings,
+segment page numbers or inline style IDs. A decoder captured during exact request preparation
+restores dispatch-owned metadata, then applies the unchanged canonical response and worker checks.
+Both fresh and reused receipts use it after charge settlement; private raw responses stay unchanged.
+Generation-only prompt/schema projections leave canonical task identities and other model routes fixed.
+This implementation does not establish live recognition quality or supplied-book acceptance.
 Text ranges use canonical code-point offsets with explicit UTF-16 browser mapping; surrogate splits
 are refused. Image bytes have validated media type, dimensions and hashes.
 Printed list prefixes are separated from body text only after their observed font and color are

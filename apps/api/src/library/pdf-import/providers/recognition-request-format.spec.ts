@@ -5,6 +5,10 @@ import { prepareProviderRequest } from './prepare-request';
 import { providerResponseSchema } from './response-schema';
 import { jsonHash } from './hash';
 import {
+  recognitionObservationSchema,
+  recognitionObservationSystem,
+} from './recognition-observation-contract';
+import {
   recognitionProviderTask,
   recognitionRoute,
   recognitionTask,
@@ -25,13 +29,18 @@ it('projects Gemini recognition with the exact complete contract and unchanged t
   if (typeof original === 'string' || typeof content === 'string')
     throw new Error('fixture');
   expect(body.response_format).toEqual({ type: 'json_object' });
-  expect(body.messages[0]).toEqual(recognitionProviderTask.messages[0]);
+  expect(body.messages[0]).toEqual({
+    ...recognitionProviderTask.messages[0],
+    content: recognitionObservationSystem(
+      recognitionProviderTask.messages[0].content as string,
+    ),
+  });
   expect(content.slice(1)).toEqual(original);
   expect(content.filter((part) => part.type === 'image_url')).toHaveLength(1);
   if (content[0].type !== 'text') throw new Error('fixture');
   const [guidance, encodedSchema] = content[0].text.split('\n');
   expect(guidance).toContain('not PDF source content');
-  const schema = recognitionProviderTask.responseSchema;
+  const schema = recognitionObservationSchema();
   expect(guidance).toContain('Every segment must include kind');
   expect(guidance).toContain('Optional does not mean nullable');
   expect(guidance).toContain('immediately adjacent before/after');

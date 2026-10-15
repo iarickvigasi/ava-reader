@@ -9,6 +9,7 @@ import { loadProviderReceipt } from './load-receipt';
 import { openRouterTransport } from './openrouter-transport';
 import { preserveUnconfirmedReceipt } from './unconfirmed-receipt';
 import { PdfProviderError } from './errors';
+import { decodeProviderReceipt } from './recognition-observation-output';
 import {
   privateTransportReceipt,
   providerFailureDiagnostic,
@@ -24,8 +25,11 @@ export async function dispatchPdfProvider(
     authority,
     input.task,
   );
-  if (call.state === 'SETTLED')
-    return loadProviderReceipt(prisma, authority, call.id);
+  const loadReceipt = () =>
+    loadProviderReceipt(prisma, authority, call.id).then((value) =>
+      decodeProviderReceipt(value, prepared.decodeOutput),
+    );
+  if (call.state === 'SETTLED') return loadReceipt();
   if (
     call.state === 'DISPATCHING' &&
     call.dispatchAttemptId === authority.attemptId
@@ -90,6 +94,6 @@ export async function dispatchPdfProvider(
     'RESPONSE',
     response,
   );
-  const receipt = await loadProviderReceipt(prisma, authority, call.id);
+  const receipt = await loadReceipt();
   return { ...receipt, reused: false };
 }

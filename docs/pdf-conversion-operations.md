@@ -410,19 +410,26 @@ still require exact boundary coverage. The canonical
 response schema, closed role branches and host/worker source validation remain authoritative.
 Gemini NativeTask2 and recognition-v2 requests use OpenRouter `response_format: {type: "json_object"}`:
 separate host response-contract guidance precedes the unchanged source text and image.
-NativeTask2 keeps its exact source-bounded grammar. Recognition supplies its unchanged canonical schema
-with shared definitions, plus a short required-field, nullability and exact-anchor self-check; it does
-not expand the compiler grammar's repeated kind groups into the prompt. Role requirements and table
+NativeTask2 keeps its exact source-bounded grammar. Recognition supplies a shared-definition
+observation schema omitting host-owned task/source/render bindings, segment pages and style IDs,
+plus the required-field, nullability and exact-anchor self-check; canonical authorization stays fixed.
+It does not expand the compiler grammar's repeated kind groups into the prompt. Role requirements and table
 cells remain in the canonical contract. This avoids complex-schema compilation;
 it does not guarantee schema-conforming output. Strict canonical parsing and exact source checks
 still refuse malformed JSON, foreign role fields or incomplete source coverage without repair.
 Prepared task identity, prompt/schema authorization and configuration hashes stay unchanged; the
-outbound request hash binds the guidance and JSON mode. Non-Gemini formats and the eight other Gemini
+outbound request hash binds the wire schema, system projection, guidance and JSON mode. Non-Gemini formats and the eight other Gemini
 request formats stay unchanged; all historical grammars remain exact. No retries or larger request,
 byte or spend limits are introduced.
 Vendor acceptance still needs a retained source-bound provider result. See the
 [OpenRouter JSON modes](https://openrouter.ai/docs/api_reference/overview#structured-outputs) and
 [Google JSON-mode limits](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/multimodal/control-generated-output).
+
+Gemini recognition observation wire `ava-recognition-observation-1` changes outbound request bytes.
+Drain older in-flight recognition jobs before deploying this codec; per-job codec pinning is a future
+upgrade policy. A settled call with the former request hash deliberately fails `REQUEST_CONFLICT`;
+it is never decoded as the new wire format. Raw receipts and accounting remain fixed. Current
+historical QA operations were already closed; this is not a seamless running-job migration claim.
 
 Apply `20260930190000_pdf_normal_import_routes` before selecting this route. It permits granted
 live jobs and enforces import worker/profile identity in PostgreSQL. Normal workers exclude authored

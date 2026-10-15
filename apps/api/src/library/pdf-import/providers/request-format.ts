@@ -1,6 +1,11 @@
 import { PdfProviderError } from './errors';
 import { providerResponseSchema } from './response-schema';
 import type { ProviderTask } from './types';
+import {
+  recognitionObservationSchema,
+  recognitionObservationSystem,
+} from './recognition-observation-contract';
+import { recognitionObservationDecoder } from './recognition-observation-output';
 
 // JSON mode avoids Gemini's provider-side complex-schema compiler. The unchanged
 // canonical schema and source-bound host/worker checks still decide acceptance.
@@ -26,6 +31,10 @@ export function providerRequestFormat(modelId: string, task: ProviderTask) {
   );
   if (images.length !== 1)
     throw new PdfProviderError('PDF_PROVIDER_REQUEST_INVALID');
+  const recognition = task.schemaVersion === 'ava-recognition-response-2';
+  const decodeOutput = recognition
+    ? recognitionObservationDecoder(task)
+    : undefined;
   const guidance = {
     type: 'text' as const,
     text:
@@ -36,15 +45,20 @@ export function providerRequestFormat(modelId: string, task: ProviderTask) {
       '\n' +
       JSON.stringify(
         task.schemaVersion === 'ava-recognition-response-2'
-          ? task.responseSchema
+          ? recognitionObservationSchema()
           : schema,
       ),
   };
   return {
+    decodeOutput,
     messages: task.messages.map((message) =>
-      message.role === 'user' && typeof message.content !== 'string'
-        ? { ...message, content: [guidance, ...message.content] }
-        : message,
+      recognition &&
+      message.role === 'system' &&
+      typeof message.content === 'string'
+        ? { ...message, content: recognitionObservationSystem(message.content) }
+        : message.role === 'user' && typeof message.content !== 'string'
+          ? { ...message, content: [guidance, ...message.content] }
+          : message,
     ),
     responseFormat: { type: 'json_object' },
   };
