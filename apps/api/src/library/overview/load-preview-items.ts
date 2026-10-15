@@ -1,5 +1,6 @@
 import { pdfLibrarySummarySelect } from '../pdf-import/operations/library-summary';
 import type { Prisma } from '@prisma/client';
+import { epubLibrarySummaryInclude } from '../epub-import/library-summary';
 
 export type LibraryPreviewBookRecord = Prisma.LibraryItemGetPayload<{
   select: {
@@ -9,6 +10,9 @@ export type LibraryPreviewBookRecord = Prisma.LibraryItemGetPayload<{
     offlineRequested: true;
     book: {
       select: {
+        canonicalImportPrivate: true;
+        canonicalEpubImport: typeof epubLibrarySummaryInclude.canonicalEpubImport;
+        processingRuns: typeof epubLibrarySummaryInclude.processingRuns;
         authors: true;
         coverBlob: { select: { mimeType: true } };
         files: { select: { format: true; isPrimary: true; kind: true } };
@@ -39,6 +43,8 @@ export async function loadPreviewItems(
       offlineRequested: true,
       book: {
         select: {
+          canonicalImportPrivate: true,
+          ...epubLibrarySummaryInclude,
           authors: true,
           pdfImport: { select: pdfLibrarySummarySelect },
           coverBlob: { select: { mimeType: true } },

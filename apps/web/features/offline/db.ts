@@ -81,6 +81,7 @@ export type LibraryItemRow = LibraryCardBook & {
   detailsFetchedAt?: string;
   // Snapshot whose full details were fetched; cards omit language and page counts.
   pdfDetailsRevision?: string;
+  epubDetailsRevision?: string;
 };
 
 export type CollectionRow = Omit<LibraryCollection, "books"> & {

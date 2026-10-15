@@ -1,3 +1,4 @@
+import { isBookReadable } from "@/features/library/is-book-readable";
 import type { HomePayload } from "@/lib/api-types/home";
 import type { LibraryItemRow } from "../../db";
 import { keepPriorMetadata } from "../library/pdf-imports/metadata/version";
@@ -6,6 +7,13 @@ export function composeHomeMetadata(
   row?: LibraryItemRow,
 ): HomePayload {
   const current = payload.currentEngagement;
+  if (
+    current &&
+    row &&
+    current.libraryItemId === row.libraryItemId &&
+    !isBookReadable(row)
+  )
+    return { ...payload, currentEngagement: null, listening: null };
   if (
     !current ||
     !row ||

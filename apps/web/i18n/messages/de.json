@@ -906,5 +906,10 @@
       "reader": "Leser/Leserin",
       "unavailable": "Verbinde dich mit deinem Konto, um dein Profil zu laden."
     }
+  },
+  "epubImport": {
+    "preparing": "Wird vorbereitet",
+    "failed": "Vorbereitung fehlgeschlagen",
+    "original": "Original-EPUB"
   }
 }

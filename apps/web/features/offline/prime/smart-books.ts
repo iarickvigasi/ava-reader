@@ -1,4 +1,4 @@
-import { isPdfReadable } from "@/features/library/pdf-imports/is-readable";
+import { isBookReadable } from "@/features/library/is-book-readable";
 import type { LibraryBookView, LibraryView } from "../buckets/library";
 
 // Collects the unique books that belong to the default smart collections
@@ -40,7 +40,7 @@ export function collectContentTargets(
   return collectSmartBooks(view).filter(
     (b) =>
       (b.offlineRequested || b.libraryItemId === currentBookId) &&
-      isPdfReadable(b.pdfImport),
+      isBookReadable(b),
   );
 }
 
@@ -49,8 +49,11 @@ export function collectContentTargets(
 export function readyRequestedPdfKey(view: LibraryView | null): string {
   if (!view) return "";
   const targets = collectContentTargets(view, null)
-    .filter((book) => book.pdfImport && !book.savedOffline)
-    .map((book) => [book.libraryItemId, book.pdfImport!.finalContentId])
+    .filter((book) => (book.pdfImport || book.epubImport) && !book.savedOffline)
+    .map((book) => [
+      book.libraryItemId,
+      book.pdfImport?.finalContentId ?? book.epubImport?.finalContentId,
+    ])
     .sort(([a], [b]) => a!.localeCompare(b!));
   return targets.length ? JSON.stringify(targets) : "";
 }

@@ -1,9 +1,11 @@
 "use client";
 
+import { EpubSourceDownload } from "./epub-source-download";
 import { PdfFormats } from "./pdf-formats";
 import { PdfMetadataEditor } from "./pdf-metadata-editor";
 import { PdfImportStatus } from "@/components/app/shared/pdf-import/status";
-import { isPdfReadable } from "@/features/library/pdf-imports/is-readable";
+import { isBookReadable } from "@/features/library/is-book-readable";
+import { EpubImportStatus } from "@/components/app/shared/epub-import-status";
 import type { LibraryBookInfo } from "@/lib/api-types";
 import { useBookInfo } from "@/features/offline/buckets/library";
 import { BackLink } from "./back-link";
@@ -29,7 +31,7 @@ export function LibraryBookInfoScreen({
   book: initial,
 }: LibraryBookInfoScreenProps) {
   const book = useBookInfo(initial.slug, initial);
-  const readable = isPdfReadable(book.pdfImport);
+  const readable = isBookReadable(book);
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col px-5 pb-10 pt-6 sm:px-6 md:pb-14 md:pt-8 lg:px-10">
       <div className="mx-auto w-full max-w-7xl space-y-12 md:space-y-16">
@@ -53,6 +55,13 @@ export function LibraryBookInfoScreen({
             <div className="space-y-8">
               <BookHeader book={book} />
               <PdfImportStatus status={book.pdfImport} details />
+              <EpubImportStatus status={book.epubImport} />
+              {book.epubImport && (
+                <EpubSourceDownload
+                  libraryItemId={book.libraryItemId}
+                  title={book.title}
+                />
+              )}
               {readable && (
                 <BookActions
                   slug={book.slug}
@@ -78,6 +87,7 @@ export function LibraryBookInfoScreen({
             finishedAt={book.finishedAt ?? null}
             libraryItemId={book.libraryItemId}
             pdfImport={book.pdfImport}
+            epubImport={book.epubImport}
           />
         </section>
         <BookAnnotations

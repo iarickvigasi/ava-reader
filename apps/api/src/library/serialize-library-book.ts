@@ -6,8 +6,13 @@ import { BookFileFormat, type BookFileKind } from '@prisma/client';
 import { libraryCoverUrl } from './covers/library-cover-url';
 import { findPrimarySourceFile } from '../shared/primary-book-file';
 
+import {
+  epubLibrarySummary,
+  type EpubLibraryBook,
+} from './epub-import/library-summary';
+
 type LibraryBookItem = {
-  book: {
+  book: EpubLibraryBook & {
     pdfImport?: PdfLibraryRecord | null;
     canonicalImportPrivate?: boolean;
     pdfImportPrivate?: boolean;
@@ -38,6 +43,7 @@ export function serializeLibraryBook(
     authors: item.book.authors,
     metadataEditVersion: item.book.metadataEditVersion,
     pdfImport: pdfLibrarySummary(item.book.pdfImport),
+    epubImport: epubLibrarySummary(item.book),
     completionPercent: engagement.completionPercent,
     finishedAt: item.finishedAt?.toISOString() ?? null,
     coverImageUrl: libraryCoverUrl(item.book, item.id),

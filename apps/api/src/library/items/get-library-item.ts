@@ -1,4 +1,8 @@
 import {
+  epubLibrarySummaryInclude,
+  epubLibrarySummary,
+} from '../epub-import/library-summary';
+import {
   pdfLibrarySummarySelect,
   pdfLibrarySummary,
 } from '../pdf-import/operations/library-summary';
@@ -21,6 +25,7 @@ export async function getLibraryItem(options: {
     include: {
       book: {
         include: {
+          ...epubLibrarySummaryInclude,
           pdfImport: { select: pdfLibrarySummarySelect },
           coverBlob: { select: { mimeType: true } },
           // files.readingProgressIndex is a multi-KB JSON we never render
@@ -61,6 +66,7 @@ export async function getLibraryItem(options: {
       authors: item.book.authors,
       metadataEditVersion: item.book.metadataEditVersion,
       pdfImport: pdfLibrarySummary(item.book.pdfImport),
+      epubImport: epubLibrarySummary(item.book),
       chapterLabel: item.progress?.chapterLabel ?? null,
       collections: sortAndSerializeCollections(item.collectionItems),
       completionPercent: item.progress?.completionPercent ?? 0,

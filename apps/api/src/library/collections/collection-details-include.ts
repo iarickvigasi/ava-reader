@@ -1,3 +1,4 @@
+import { epubLibrarySummaryInclude } from '../epub-import/library-summary';
 import { pdfLibrarySummarySelect } from '../pdf-import/operations/library-summary';
 import type { Prisma } from '@prisma/client';
 
@@ -10,6 +11,7 @@ export const collectionDetailsInclude = {
         include: {
           book: {
             include: {
+              ...epubLibrarySummaryInclude,
               pdfImport: { select: pdfLibrarySummarySelect },
               coverBlob: { select: { mimeType: true } },
               files: { select: { format: true, isPrimary: true, kind: true } },

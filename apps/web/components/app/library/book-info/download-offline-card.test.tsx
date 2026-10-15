@@ -84,6 +84,32 @@ beforeEach(() => {
     return { kind: "saved" };
   });
 });
+it("disables native EPUB saving until ready, then starts a retained request", () => {
+  const epubImport = {
+    status: "PROCESSING" as const,
+    runId: "run",
+    updatedAt: "2026-10-15T10:00:00Z",
+    finalContentId: null,
+  };
+  const renderNative = (ready: boolean) => {
+    const element = effectHost.render(() =>
+      DownloadOfflineCard({
+        libraryItemId: "native",
+        epubImport: ready
+          ? { ...epubImport, status: "READY", finalContentId: "content" }
+          : epubImport,
+      }),
+    );
+    effectHost.flush();
+    return element.props as ComponentProps<typeof ActionCard>;
+  };
+  expect(renderNative(false).disabled).toBe(true);
+  h.requested = true;
+  renderNative(false);
+  expect(h.save).not.toHaveBeenCalled();
+  renderNative(true);
+  expect(h.save).toHaveBeenCalledTimes(1);
+});
 it.each(["QUEUED", "RUNNING", "WAITING", "FAILED", "STOPPED"] as const)(
   "retains the explicit request without starting or retrying a %s PDF download",
   async (status) => {

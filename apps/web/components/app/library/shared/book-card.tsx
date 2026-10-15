@@ -1,3 +1,4 @@
+import { EpubImportStatus } from "@/components/app/shared/epub-import-status";
 import { PdfImportStatus } from "@/components/app/shared/pdf-import/status";
 export { BookCardSkeleton } from "./book-card-skeleton";
 import Link from "next/link";
@@ -61,6 +62,7 @@ export function LibraryBookCard({
           {formatAuthors(book.authors)}
         </p>
         <PdfImportStatus status={book.pdfImport} />
+        <EpubImportStatus status={book.epubImport} />
       </div>
     </Link>
   );

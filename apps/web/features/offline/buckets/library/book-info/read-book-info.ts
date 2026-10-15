@@ -44,6 +44,7 @@ async function readBookInfoSnapshot(
     coverImageUrl: row.coverImageUrl,
     completionPercent: row.completionPercent,
     pdfImport: row.pdfImport,
+    epubImport: row.epubImport,
     primaryFormat: row.primaryFormat,
     addedAt: row.details.addedAt,
     // Rows persisted before this field existed read back as undefined; null

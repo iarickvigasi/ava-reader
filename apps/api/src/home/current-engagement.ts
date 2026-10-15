@@ -1,3 +1,4 @@
+import { epubLibrarySummary } from '../library/epub-import/library-summary';
 import { libraryCoverUrl } from '../library/covers/library-cover-url';
 import {
   compareByEngagementDesc,
@@ -10,8 +11,11 @@ export function createCurrentEngagement(libraryItems: LibraryItemRecord[]) {
   const item = libraryItems
     .filter(
       ({ book }) =>
-        !book.pdfImport ||
-        (book.pdfImport.status === 'READY' && book.pdfImport.finalContentId),
+        (!book.pdfImport ||
+          (book.pdfImport.status === 'READY' &&
+            book.pdfImport.finalContentId)) &&
+        (!book.canonicalImportPrivate ||
+          epubLibrarySummary(book)?.status === 'READY'),
     )
     .sort(compareByEngagementDesc)[0];
   if (!item) return { currentEngagement: null, listening: null };

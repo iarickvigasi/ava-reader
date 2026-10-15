@@ -38,7 +38,12 @@ const fetchMock = vi.fn<typeof fetch>();
 
 beforeEach(() => {
   vi.clearAllMocks();
-  state.db = { libraryItems: { where: () => ({ equals: () => ({ first: async () => undefined }) }), get: async () => undefined } };
+  state.db = {
+    libraryItems: {
+      where: () => ({ equals: () => ({ first: async () => undefined }) }),
+      get: async () => undefined,
+    },
+  };
   state.generation = 0;
   state.completionRevision = 7;
   fetchMock.mockReset();
@@ -70,28 +75,34 @@ describe.each([
     const onNotFound = vi.fn();
     const read = vi.fn().mockResolvedValue(null);
 
-    expect(await readWithRevalidate({
-      isOnline: () => true,
-      read,
-      revalidate: () => revalidate(SLUG, TOKEN, onNotFound),
-    })).toBeNull();
+    expect(
+      await readWithRevalidate({
+        isOnline: () => true,
+        read,
+        revalidate: () => revalidate(SLUG, TOKEN, onNotFound),
+      }),
+    ).toBeNull();
 
     expect(fetchMock).toHaveBeenCalledWith(`http://localhost:4000${path}`, {
       headers: { Authorization: "Bearer token" },
+      signal: expect.any(AbortSignal),
     });
     expect(onNotFound).toHaveBeenCalledTimes(1);
     expect(hydrate).not.toHaveBeenCalled();
   });
 
-  it.each([401, 403, 500])("does not treat HTTP %i as a missing resource", async (status) => {
-    fetchMock.mockResolvedValue(new Response(null, { status }));
-    const onNotFound = vi.fn();
+  it.each([401, 403, 500])(
+    "does not treat HTTP %i as a missing resource",
+    async (status) => {
+      fetchMock.mockResolvedValue(new Response(null, { status }));
+      const onNotFound = vi.fn();
 
-    await revalidate(SLUG, TOKEN, onNotFound);
+      await revalidate(SLUG, TOKEN, onNotFound);
 
-    expect(onNotFound).not.toHaveBeenCalled();
-    expect(hydrate).not.toHaveBeenCalled();
-  });
+      expect(onNotFound).not.toHaveBeenCalled();
+      expect(hydrate).not.toHaveBeenCalled();
+    },
+  );
 
   it("does not treat a network failure as a missing resource", async () => {
     fetchMock.mockRejectedValue(new TypeError("Failed to fetch"));
@@ -106,11 +117,13 @@ describe.each([
   it("does not request or report a missing resource on an offline cache miss", async () => {
     const onNotFound = vi.fn();
 
-    expect(await readWithRevalidate({
-      isOnline: () => false,
-      read: async () => null,
-      revalidate: () => revalidate(SLUG, TOKEN, onNotFound),
-    })).toBeNull();
+    expect(
+      await readWithRevalidate({
+        isOnline: () => false,
+        read: async () => null,
+        revalidate: () => revalidate(SLUG, TOKEN, onNotFound),
+      }),
+    ).toBeNull();
 
     expect(fetchMock).not.toHaveBeenCalled();
     expect(onNotFound).not.toHaveBeenCalled();
@@ -119,11 +132,13 @@ describe.each([
   it("returns cached content without requesting or reporting a missing resource", async () => {
     const onNotFound = vi.fn();
 
-    expect(await readWithRevalidate({
-      isOnline: () => true,
-      read: async () => CACHED,
-      revalidate: () => revalidate(SLUG, TOKEN, onNotFound),
-    })).toEqual(CACHED);
+    expect(
+      await readWithRevalidate({
+        isOnline: () => true,
+        read: async () => CACHED,
+        revalidate: () => revalidate(SLUG, TOKEN, onNotFound),
+      }),
+    ).toEqual(CACHED);
 
     expect(fetchMock).not.toHaveBeenCalled();
     expect(onNotFound).not.toHaveBeenCalled();
@@ -131,7 +146,12 @@ describe.each([
 
   it("ignores a 404 from the previous account", async () => {
     fetchMock.mockImplementation(async () => {
-      state.db = { libraryItems: { where: () => ({ equals: () => ({ first: async () => undefined }) }), get: async () => undefined } };
+      state.db = {
+        libraryItems: {
+          where: () => ({ equals: () => ({ first: async () => undefined }) }),
+          get: async () => undefined,
+        },
+      };
       return new Response(null, { status: 404 });
     });
     const onNotFound = vi.fn();
@@ -171,10 +191,14 @@ describe.each([
     await expect(revalidate(SLUG, TOKEN, onNotFound)).resolves.toBeUndefined();
 
     if (payloadKey === "book") {
-      expect(hydrate).toHaveBeenCalledWith(CACHED, { db: state.db, expectedFinishDateRevision: null });
+      expect(hydrate).toHaveBeenCalledWith(CACHED, {
+        db: state.db,
+        expectedFinishDateRevision: null,
+      });
     } else {
       expect(hydrate).toHaveBeenCalledWith(CACHED, {
-        db: state.db, expectedCompletionRevision: state.completionRevision,
+        db: state.db,
+        expectedCompletionRevision: state.completionRevision,
       });
     }
     expect(onNotFound).not.toHaveBeenCalled();

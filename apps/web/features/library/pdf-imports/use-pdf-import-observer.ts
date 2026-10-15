@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useOfflineAuth } from "@/features/auth/use-offline-auth";
-import { observePdfImports } from "@/features/offline/buckets/library";
+import { observeLibraryImports } from "@/features/offline/buckets/library";
 import { useNetworkState } from "@/features/offline/net/use-network-state";
 
 export function usePdfImportObserver() {
@@ -20,7 +20,7 @@ export function usePdfImportObserver() {
       if (document.visibilityState !== "hidden") {
         running = true;
         try {
-          const active = await observePdfImports(getToken);
+          const active = await observeLibraryImports(getToken);
           delay = active ? 5_000 : 30_000;
         } catch {
           delay = Math.min(delay * 2, 30_000);

@@ -1,3 +1,4 @@
+import { mergeEpubImportStatus } from "../epub-imports/merge-status";
 import { mergePdfImportStatus } from "../pdf-imports/merge-status";
 import { keepPriorMetadata } from "../pdf-imports/metadata/version";
 // The one rule for overwriting a cached LibraryItemRow with a library or
@@ -18,6 +19,12 @@ export function mergeListPayloadItemRow(
   if (!prior) {
     return next;
   }
+  const epubImport = mergeEpubImportStatus(prior.epubImport, next.epubImport);
+  const keepEpubMetadata = Boolean(
+    prior.epubImport &&
+    epubImport === prior.epubImport &&
+    epubImport !== next.epubImport,
+  );
   const finishedAt =
     next.finishedAt !== undefined
       ? next.finishedAt
@@ -26,7 +33,9 @@ export function mergeListPayloadItemRow(
         : prior.details?.finishedAt;
   return {
     ...next,
-    ...(keepPriorMetadata(prior.metadataEditVersion, next.metadataEditVersion)
+    coverImageUrl: keepEpubMetadata ? prior.coverImageUrl : next.coverImageUrl,
+    ...(keepEpubMetadata ||
+    keepPriorMetadata(prior.metadataEditVersion, next.metadataEditVersion)
       ? {
           title: prior.title,
           authors: prior.authors,
@@ -34,6 +43,7 @@ export function mergeListPayloadItemRow(
         }
       : {}),
     pdfImport: mergePdfImportStatus(prior.pdfImport, next.pdfImport),
+    epubImport,
     ...(finishedAt !== undefined ? { finishedAt } : {}),
     coverBlob: prior.coverBlob,
     savedOffline: prior.savedOffline,
@@ -57,5 +67,6 @@ export function mergeListPayloadItemRow(
         : prior.details,
     detailsFetchedAt: prior.detailsFetchedAt,
     pdfDetailsRevision: prior.pdfDetailsRevision,
+    epubDetailsRevision: prior.epubDetailsRevision,
   } satisfies LibraryItemRow;
 }

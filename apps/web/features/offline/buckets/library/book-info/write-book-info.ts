@@ -1,3 +1,7 @@
+import {
+  mergeEpubImportStatus,
+  epubDetailsRevision,
+} from "../epub-imports/merge-status";
 import { pdfDetailsRevision } from "../pdf-imports/details-revision";
 import { mergePdfImportStatus } from "../pdf-imports/merge-status";
 import { keepPriorMetadata } from "../pdf-imports/metadata/version";
@@ -42,15 +46,29 @@ export async function applyBookInfoPayload(
       )
         return;
       const prior = await db.libraryItems.get(book.libraryItemId);
+      const epubImport = mergeEpubImportStatus(
+        prior?.epubImport,
+        book.epubImport,
+      );
+      const keepEpubMetadata = Boolean(
+        prior?.epubImport &&
+        epubImport === prior.epubImport &&
+        epubImport !== book.epubImport,
+      );
       const keepMetadata =
         prior &&
-        keepPriorMetadata(prior.metadataEditVersion, book.metadataEditVersion);
+        (keepEpubMetadata ||
+          keepPriorMetadata(
+            prior.metadataEditVersion,
+            book.metadataEditVersion,
+          ));
       const keepDetails =
         prior?.details &&
-        prior.pdfImport &&
-        prior.pdfDetailsRevision === pdfDetailsRevision(prior) &&
-        mergePdfImportStatus(prior.pdfImport, book.pdfImport) ===
-          prior.pdfImport;
+        (keepEpubMetadata ||
+          (prior.pdfImport &&
+            prior.pdfDetailsRevision === pdfDetailsRevision(prior) &&
+            mergePdfImportStatus(prior.pdfImport, book.pdfImport) ===
+              prior.pdfImport));
       if (options.seedOnly && prior?.details) return;
       const pending = await db.collectionMembershipMutations.get(
         book.libraryItemId,
@@ -71,11 +89,14 @@ export async function applyBookInfoPayload(
         metadataEditVersion: keepMetadata
           ? prior.metadataEditVersion
           : book.metadataEditVersion,
-        coverImageUrl: book.coverImageUrl,
+        coverImageUrl: keepEpubMetadata
+          ? prior!.coverImageUrl
+          : book.coverImageUrl,
         completionPercent: book.completionPercent,
         finishedAt,
         primaryFormat: book.primaryFormat,
         pdfImport: mergePdfImportStatus(prior?.pdfImport, book.pdfImport),
+        epubImport,
         lastReadAt: book.lastReadAt ?? prior?.lastReadAt ?? null,
         coverBlob: prior?.coverBlob ?? null,
         savedOffline: prior?.savedOffline ?? false,
@@ -112,6 +133,9 @@ export async function applyBookInfoPayload(
               source: book.source,
             },
         detailsFetchedAt: nowIso,
+        epubDetailsRevision: keepDetails
+          ? prior.epubDetailsRevision
+          : epubDetailsRevision(book.epubImport),
         pdfDetailsRevision:
           keepMetadata || keepDetails
             ? prior.pdfDetailsRevision

@@ -76,6 +76,7 @@ export function bookToItemRow(
     completionPercent: book.completionPercent,
     ...(book.finishedAt !== undefined ? { finishedAt: book.finishedAt } : {}),
     pdfImport: book.pdfImport,
+    epubImport: book.epubImport,
     primaryFormat: book.primaryFormat,
     lastReadAt: book.lastReadAt ?? null,
     offlineRequested: book.offlineRequested ?? false,

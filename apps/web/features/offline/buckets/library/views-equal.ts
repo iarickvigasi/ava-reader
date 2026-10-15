@@ -24,6 +24,8 @@ export function viewsEqual(
       if (ba.libraryItemId !== bb.libraryItemId) return false;
       if (ba.title !== bb.title || ba.coverImageUrl !== bb.coverImageUrl)
         return false;
+      if (JSON.stringify(ba.epubImport) !== JSON.stringify(bb.epubImport))
+        return false;
       if (JSON.stringify(ba.pdfImport) !== JSON.stringify(bb.pdfImport))
         return false;
       if (ba.completionPercent !== bb.completionPercent) return false;

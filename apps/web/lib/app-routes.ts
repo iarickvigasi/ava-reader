@@ -47,7 +47,7 @@ export function getLibraryBookInfoHref(
     params.set("fromCollection", input.fromCollectionSlug);
   }
   // PDF availability needs the authoritative bucket; incomplete URL snapshots can show Read too early.
-  if (input?.card && !input.card.pdfImport) {
+  if (input?.card && !input.card.pdfImport && !input.card.epubImport) {
     const card = input.card;
     params.set("title", card.title);
     for (const author of card.authors) {

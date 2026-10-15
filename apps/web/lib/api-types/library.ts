@@ -1,3 +1,4 @@
+import type { EpubImportSummary } from "@/lib/api-types/epub-import";
 import type { LibraryBookInfoDetails } from "./library-book-info";
 export type { LibraryBookInfoDetails } from "./library-book-info";
 import type { PdfImportSummary } from "./pdf-import";
@@ -15,6 +16,7 @@ export type CompletionItem = {
 export type LibraryCardBook = {
   metadataEditVersion?: number;
   pdfImport?: PdfImportSummary | null;
+  epubImport?: EpubImportSummary | null;
   authors: string[];
   completionPercent: number;
   // Older list payloads can omit the finish date; null explicitly clears it.

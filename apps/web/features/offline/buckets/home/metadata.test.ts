@@ -10,7 +10,14 @@ beforeEach(async () => {
   __resetDbForTests();
   await getDb().delete();
   __resetDbForTests();
-  await applyBookInfoPayload(book);
+  await applyBookInfoPayload({
+    ...book,
+    pdfImport: {
+      ...book.pdfImport!,
+      status: "READY",
+      finalContentId: "content",
+    },
+  });
 });
 afterEach(() => __resetDbForTests());
 it("a delayed Home payload cannot revert edited Continue reading metadata", async () => {

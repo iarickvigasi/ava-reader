@@ -4,7 +4,8 @@ import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useTranslations } from "next-intl";
 import { type ComponentProps, useCallback, useEffect, useState } from "react";
 
-import { isPdfReadable } from "@/features/library/pdf-imports/is-readable";
+import { isBookReadable } from "@/features/library/is-book-readable";
+import type { EpubImportSummary } from "@/lib/api-types/epub-import";
 import type { PdfImportSummary } from "@/lib/api-types/pdf-import";
 
 import { ReaderDownloadIcon } from "@/components/app/shared/app-icons";
@@ -33,14 +34,16 @@ import { resolveOfflineCard } from "./resolve-offline-card";
 export function DownloadOfflineCard({
   libraryItemId,
   pdfImport,
+  epubImport,
 }: {
   libraryItemId: string;
   pdfImport?: PdfImportSummary | null;
+  epubImport?: EpubImportSummary | null;
 }) {
   const t = useTranslations("library.bookInfo.saveForOffline");
   const { getToken } = useAuth();
   const online = useNetworkState();
-  const readable = isPdfReadable(pdfImport);
+  const readable = isBookReadable({ pdfImport, epubImport });
   const snapshot = useBookSaveStatus(libraryItemId);
   const { save, remove, cancel } = useSaveBook(libraryItemId);
   const {
@@ -157,7 +160,8 @@ export function DownloadOfflineCard({
             readable
               ? "pending.description"
               : pdfImport?.status === "FAILED" ||
-                  pdfImport?.status === "STOPPED"
+                  pdfImport?.status === "STOPPED" ||
+                  epubImport?.status === "FAILED"
                 ? "pending.unavailableDescription"
                 : "pending.preparingDescription",
           ),
@@ -174,9 +178,16 @@ export function DownloadOfflineCard({
         return {
           icon: ReaderDownloadIcon,
           title: t("idle.title"),
-          description: t("idle.description"),
+          description: t(
+            epubImport && !readable
+              ? epubImport.status === "FAILED"
+                ? "pending.unavailableDescription"
+                : "pending.preparingDescription"
+              : "idle.description",
+          ),
           onClick: requestSave,
-          disabled: offlineState === "loading",
+          disabled:
+            offlineState === "loading" || Boolean(epubImport && !readable),
         };
     }
   })();

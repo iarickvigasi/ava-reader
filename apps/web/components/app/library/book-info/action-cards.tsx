@@ -12,6 +12,7 @@ type BookActionCardsProps = {
   finishedAt: string | null;
   libraryItemId: string;
   pdfImport?: LibraryBookInfo["pdfImport"];
+  epubImport?: LibraryBookInfo["epubImport"];
 };
 
 export function BookActionCards({
@@ -19,6 +20,7 @@ export function BookActionCards({
   finishedAt,
   libraryItemId,
   pdfImport,
+  epubImport,
 }: BookActionCardsProps) {
   return (
     <aside className="space-y-4">
@@ -29,6 +31,7 @@ export function BookActionCards({
       <DownloadOfflineCard
         libraryItemId={libraryItemId}
         pdfImport={pdfImport}
+        epubImport={epubImport}
       />
       <FinishedDateCard finishedAt={finishedAt} libraryItemId={libraryItemId} />
       <ManageCollectionsCard

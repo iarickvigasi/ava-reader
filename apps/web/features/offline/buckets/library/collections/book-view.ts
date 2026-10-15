@@ -14,6 +14,7 @@ export function toBookView(row: LibraryItemRow): LibraryBookView {
     completionPercent: row.completionPercent,
     ...(finishedAt !== undefined ? { finishedAt } : {}),
     pdfImport: row.pdfImport,
+    epubImport: row.epubImport,
     primaryFormat: row.primaryFormat,
     lastReadAt: row.lastReadAt,
     savedOffline: row.savedOffline,

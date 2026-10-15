@@ -1,3 +1,4 @@
+import { epubLibrarySummaryInclude } from './epub-import/library-summary';
 import { pdfLibrarySummarySelect } from './pdf-import/operations/library-summary';
 import {
   BadRequestException,
@@ -169,8 +170,10 @@ describe('LibraryService', () => {
         finishedAt: true,
         book: {
           select: {
+            canonicalImportPrivate: true,
             authors: true,
             metadataEditVersion: true,
+            ...epubLibrarySummaryInclude,
             pdfImport: { select: pdfLibrarySummarySelect },
             coverBlob: { select: { mimeType: true } },
             files: { select: { format: true, isPrimary: true, kind: true } },
@@ -608,6 +611,7 @@ describe('LibraryService', () => {
               include: {
                 book: {
                   include: {
+                    ...epubLibrarySummaryInclude,
                     pdfImport: { select: pdfLibrarySummarySelect },
                     coverBlob: { select: { mimeType: true } },
                     files: {
@@ -744,6 +748,7 @@ describe('LibraryService', () => {
       include: {
         book: {
           include: {
+            ...epubLibrarySummaryInclude,
             pdfImport: { select: pdfLibrarySummarySelect },
             coverBlob: { select: { mimeType: true } },
             files: {
@@ -771,6 +776,7 @@ describe('LibraryService', () => {
       book: {
         addedAt: '2026-04-01T10:00:00.000Z',
         pdfImport: null,
+        epubImport: null,
         // Null until the chapter-purpose analysis runs for this book.
         approximateBodyPageCount: null,
         approximatePageCount: 163,

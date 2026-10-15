@@ -31,6 +31,7 @@ export function collectionViewToLibraryCollection(
       // Stored as plain string in Dexie; values were always written from the
       // BookFileFormat union, so the cast is sound.
       pdfImport: book.pdfImport,
+      epubImport: book.epubImport,
       primaryFormat: book.primaryFormat as BookFileFormat,
       lastReadAt: book.lastReadAt ?? "",
     })),

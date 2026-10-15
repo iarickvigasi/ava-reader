@@ -1,3 +1,4 @@
+import type { EpubLibraryBook } from '../library/epub-import/library-summary';
 import type { PdfLibraryRecord } from '../library/pdf-import/operations/library-summary';
 import type { Prisma, User, UserRole } from '@prisma/client';
 
@@ -12,7 +13,7 @@ export type LibraryItemRecord = Prisma.LibraryItemGetPayload<{
     };
     progress: true;
   };
-}> & { book: { pdfImport?: PdfLibraryRecord | null } };
+}> & { book: EpubLibraryBook & { pdfImport?: PdfLibraryRecord | null } };
 
 export type CatalogEntryRecord = Prisma.CatalogEntryGetPayload<{
   include: {
