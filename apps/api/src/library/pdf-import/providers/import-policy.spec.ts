@@ -77,24 +77,24 @@ describe('ordinary import route authority', () => {
       routePolicy({ ...config, authorizedSourceSha256: [] }, tariff),
     ).toThrow();
   });
-  it('keeps the exact-model hard ceiling without resetting ledger balances', () => {
-    expect(() =>
-      requireImportBudgets(valid(), [
-        {
-          scope: 'MODEL',
-          limitNano: 10_000_000_000n,
-          hardCeilingNano: 10_000_000_000n,
-        },
-      ]),
-    ).not.toThrow();
-    expect(() =>
-      requireImportBudgets(valid(), [
-        {
-          scope: 'MODEL',
-          limitNano: 11_000_000_000n,
-          hardCeilingNano: 11_000_000_000n,
-        },
-      ]),
-    ).toThrow();
-  });
+  it.each([
+    [15_000_000_000n, 15_000_000_000n, true],
+    [14_000_000_000n, 15_000_000_000n, true],
+    [15_000_000_001n, 15_000_000_000n, false],
+  ])(
+    'enforces the explicit model limit %s within ceiling %s',
+    (limitNano, hardCeilingNano, allowed) => {
+      const check = () =>
+        requireImportBudgets(valid(), [
+          {
+            scope: 'MODEL',
+            scopeKey: 'google/gemini-3.8-flash',
+            limitNano,
+            hardCeilingNano,
+          },
+        ]);
+      if (allowed) expect(check).not.toThrow();
+      else expect(check).toThrow('PDF_PROVIDER_IMPORT_BUDGET_INVALID');
+    },
+  );
 });

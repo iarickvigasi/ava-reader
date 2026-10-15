@@ -1,6 +1,7 @@
 import type { PrismaService } from '../../../prisma/prisma.service';
 import { costTransaction } from './cost-lock';
 import { nanoValue } from './money';
+import { modelBudgetCeiling } from './model-budget-ceiling';
 import { PdfProviderError } from './errors';
 export function registerPdfBudget(
   prisma: PrismaService,
@@ -22,7 +23,7 @@ export function registerPdfBudget(
     !spec.scopeKey ||
     spec.scopeKey.length > 200 ||
     limit > ceiling ||
-    (spec.scope === 'MODEL' && ceiling > 10000000000n) ||
+    (spec.scope === 'MODEL' && ceiling > modelBudgetCeiling(spec.scopeKey)) ||
     !/^[a-f0-9]{64}$/.test(spec.baselineEvidenceSha256)
   )
     throw new PdfProviderError('PDF_PROVIDER_BUDGET_INVALID');

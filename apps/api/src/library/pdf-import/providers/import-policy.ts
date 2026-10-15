@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import type { RouteConfiguration } from './types';
 import { nanoValue } from './money';
+import { modelBudgetCeiling } from './model-budget-ceiling';
 import { PdfProviderError } from './errors';
 export const importPolicySchema = z
   .object({
@@ -30,6 +31,7 @@ export function requireImportBudgets(
   config: RouteConfiguration,
   budgets: {
     scope: string;
+    scopeKey: string;
     limitNano: bigint;
     hardCeilingNano: bigint;
   }[],
@@ -39,7 +41,8 @@ export function requireImportBudgets(
     budgets.some(
       (b) =>
         b.limitNano > b.hardCeilingNano ||
-        (b.scope === 'MODEL' && b.hardCeilingNano > 10_000_000_000n),
+        (b.scope === 'MODEL' &&
+          b.hardCeilingNano > modelBudgetCeiling(b.scopeKey)),
     )
   )
     throw new PdfProviderError('PDF_PROVIDER_IMPORT_BUDGET_INVALID');

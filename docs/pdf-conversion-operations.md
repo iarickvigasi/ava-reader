@@ -367,7 +367,8 @@ Pin verified endpoint evidence and expiry (at most 24h); live diagnostic grants 
 finite owner/operation/source/image/task/render/request inventories. A prior pilot window is not
 a fresh tariff or deployment route. Unknown/dispatching charges stay reserved across timeout,
 restart and account deletion until reconciled; there is no blind resend, assumed refund or cap reset.
-The benchmark's cumulative $10 per exact model is an operator testing constraint, not reader pricing.
+The benchmark's cumulative model ceilings are operator testing constraints, not reader pricing;
+see [Cumulative model ceiling](#cumulative-model-ceiling) for the exact approved Flash exception.
 
 ### HTTP failure investigation
 
@@ -487,3 +488,15 @@ command end. Language detection is bounded and layout can remain unknown even wi
 The last recorded worker failure code does not replace the public operation outcome or establish
 source fidelity. These reads do not repair historical provider-event mirrors or change any ledger,
 accepted content, conversion state or authority.
+
+## Cumulative model ceiling
+
+Registration, ordinary import admission and PostgreSQL enforce the same cumulative model ceiling:
+$10 by default, with an approved $15 ceiling only for the exact `google/gemini-3.8-flash` model.
+Aliases and other models retain $10. Apply `20261015010000_pdf_operator_model_ceiling` before
+registering a new Flash budget above $10; the application and database both refuse larger values.
+The migration changes only this ceiling constraint. Existing budget limits, baselines, reservations,
+unknown charges and immutable accounting history remain unchanged. A higher ceiling does not raise
+an existing budget or authorize a request. All four budget scopes must still have room, and the
+ordinary per-operation and pilot limits remain unchanged. Externally recorded diagnostic charges
+or holds must be included exactly once in the cumulative baseline before another paid run.
