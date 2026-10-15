@@ -31,6 +31,30 @@ const bytes = (value: unknown) => Buffer.from(JSON.stringify(value));
 const semantic = jest.fn(() => Promise.resolve(true));
 
 describe('reader compatibility', () => {
+  it('refuses literal labels when the reader cannot suppress generated markers', async () => {
+    const reader = parseContractJson(
+      fixtureBytes('ava-reader-3'),
+    ) as ReaderPackageV3;
+    const previous = [...reader.required_capabilities];
+    reader.book.lists[0].marker_style = 'none';
+    reader.required_capabilities.push('literal-list-markers');
+    expect(
+      await negotiateReader(
+        bytes(reader),
+        { versions: [3], capabilities: previous },
+        semantic,
+      ),
+    ).toEqual({ status: 'upgrade_required', version: 3 });
+    expect(
+      (
+        await negotiateReader(
+          bytes(reader),
+          { versions: [3], capabilities: reader.required_capabilities },
+          semantic,
+        )
+      ).status,
+    ).toBe('compatible');
+  });
   it('refuses styled markers without their explicit reader capability', async () => {
     const reader = parseContractJson(
       fixtureBytes('ava-reader-3'),

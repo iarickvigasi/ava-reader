@@ -5,6 +5,7 @@ from collections.abc import Sequence
 from ..contracts.styles import Style
 from .assembly_state import AssemblyState
 from .list_body_geometry import list_body_geometry
+from .literal_label_geometry import literal_label_geometry
 from .native_indent_rows import indent_rows
 from .prepared_types import AnyPreparedPage
 from .segments import Segment
@@ -25,6 +26,9 @@ def capture_list_bodies(
             raise ValueError("List body page observation identity differs")
         proof = indent_rows(page.observation, local_segments[number])
         for segment in local:
+            label = literal_label_geometry(segment, page.observation, proof)
+            if label is not None:
+                state.literal_label_geometry[segment.id] = label
             geometry = list_body_geometry(segment, proof)
             if geometry is not None:
                 state.list_body_geometry[segment.id] = geometry

@@ -37,6 +37,16 @@ export function canonicalChapters(
       return {
         ...block,
         ...(markerPresentation ? { markerPresentation } : {}),
+        ...(source.literal_label
+          ? {
+              literalLabel: {
+                end: source.content.codepoint_utf16[
+                  source.literal_label.prefix_end
+                ],
+                columnEm: source.literal_label.column_em,
+              },
+            }
+          : {}),
         inlines: block.inlines,
         children: (lookup.childLists.get(id) ?? []).map(list),
       };

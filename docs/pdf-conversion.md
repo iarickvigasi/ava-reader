@@ -74,6 +74,21 @@ Generation-only prompt/schema projections leave canonical task identities and ot
 This implementation does not establish live recognition quality or supplied-book acceptance.
 Text ranges use canonical code-point offsets with explicit UTF-16 browser mapping; surrogate splits
 are refused. Image bytes have validated media type, dimensions and hashes.
+Qualified native ordered lists with printed English word ordinals retain those labels as ordinary
+canonical text, including their styles and positions. The finite `none` marker style suppresses
+invented numeric labels and requires `literal-list-markers` reader qualification. It does not classify
+ordinary prose beginning with “First” as a list. Incompatible literal/generated marker modes form
+separate list groups. An optional item-local `literal_label` stores the retained prefix boundary and
+source-measured column width when unique native glyph geometry proves it. EPUB profile2.6 and the
+canonical reader render this column without copying text or changing semantic offsets. Unmeasured
+or conflicting geometry keeps the exact text without inventing a gutter; a final text/link conflict
+emits a layout finding. A covering link remains one occurrence. Bilingual source uses the measured
+column only when its initial sentence unit contains the full prefix; split-prefix units retain exact
+text without that optional column on every page. Translations do not inherit source prefix positions.
+This implementation still requires installed-worker, visual and supplied-book qualification.
+Native2 list/note role decisions retain provisional hyphens literally until the mandatory final-owner
+word-wrap stage obtains fresh authority for changed roles or source-prefix cuts; historical Native1
+role guards and all original response receipts remain unchanged.
 Printed list prefixes are separated from body text only after their observed font and color are
 captured. An optional item `marker_style_id` references the existing finite Style records; it is
 omitted when unknown, preserving earlier canonical hashes and generated EPUB bytes. Marker styles

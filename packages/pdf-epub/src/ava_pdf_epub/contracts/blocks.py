@@ -2,10 +2,11 @@
 
 from typing import Annotated, Literal
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from .common import Id, Record
 from .inline_text import TextValue
+from .literal_label import LiteralLabelLayout, validate_literal_label
 from .source import Evidence
 
 
@@ -38,7 +39,14 @@ class ListItemBlock(BlockBase):
     kind: Literal["list_item"]
     list_id: Id
     marker_style_id: Id | None = Field(default=None, exclude_if=lambda value: value is None)
+    literal_label: LiteralLabelLayout | None = Field(default=None, exclude_if=lambda v: v is None)
     content: TextValue
+
+    @model_validator(mode="after")
+    def label_range(self) -> "ListItemBlock":
+        if self.literal_label is not None:
+            validate_literal_label(self.literal_label, self.content)
+        return self
 
 
 class FigureBlock(BlockBase):

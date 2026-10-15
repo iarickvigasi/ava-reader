@@ -51,7 +51,10 @@ export function ReaderStructuredList({
               data-reader-block-kind="paragraph"
               style={layout.body}
             >
-              <ReaderInlineContent inlines={item.inlines} />
+              <ReaderInlineContent
+                inlines={item.inlines}
+                literalLabel={item.literalLabel}
+              />
             </span>
             {item.children?.map((child) => (
               <ReaderStructuredList

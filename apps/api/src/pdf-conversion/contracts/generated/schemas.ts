@@ -1053,6 +1053,7 @@ export const contractSchemas = {
                   'lower-roman',
                   'upper-roman',
                   'bullet',
+                  'none',
                 ],
                 type: 'string',
               },
@@ -1111,6 +1112,10 @@ export const contractSchemas = {
             title: 'List Id',
             type: 'string',
           },
+          literal_label: {
+            anyOf: [{ $ref: '#/$defs/LiteralLabelLayout' }, { type: 'null' }],
+            default: null,
+          },
           marker_style_id: {
             anyOf: [
               {
@@ -1138,6 +1143,26 @@ export const contractSchemas = {
         },
         required: ['id', 'evidence', 'kind', 'list_id', 'content'],
         title: 'ListItemBlock',
+        type: 'object',
+      },
+      LiteralLabelLayout: {
+        additionalProperties: false,
+        properties: {
+          column_em: {
+            maximum: 6,
+            minimum: 0.5,
+            title: 'Column Em',
+            type: 'number',
+          },
+          prefix_end: {
+            exclusiveMinimum: 0,
+            maximum: 200000,
+            title: 'Prefix End',
+            type: 'integer',
+          },
+        },
+        required: ['prefix_end', 'column_em'],
+        title: 'LiteralLabelLayout',
         type: 'object',
       },
       MetadataClaim: {
@@ -4132,6 +4157,7 @@ export const contractSchemas = {
                   'lower-roman',
                   'upper-roman',
                   'bullet',
+                  'none',
                 ],
                 type: 'string',
               },
@@ -4190,6 +4216,10 @@ export const contractSchemas = {
             title: 'List Id',
             type: 'string',
           },
+          literal_label: {
+            anyOf: [{ $ref: '#/$defs/LiteralLabelLayout' }, { type: 'null' }],
+            default: null,
+          },
           marker_style_id: {
             anyOf: [
               {
@@ -4217,6 +4247,26 @@ export const contractSchemas = {
         },
         required: ['id', 'evidence', 'kind', 'list_id', 'content'],
         title: 'ListItemBlock',
+        type: 'object',
+      },
+      LiteralLabelLayout: {
+        additionalProperties: false,
+        properties: {
+          column_em: {
+            maximum: 6,
+            minimum: 0.5,
+            title: 'Column Em',
+            type: 'number',
+          },
+          prefix_end: {
+            exclusiveMinimum: 0,
+            maximum: 200000,
+            title: 'Prefix End',
+            type: 'integer',
+          },
+        },
+        required: ['prefix_end', 'column_em'],
+        title: 'LiteralLabelLayout',
         type: 'object',
       },
       MetadataClaim: {
@@ -5157,10 +5207,11 @@ export const contractSchemas = {
             'language',
             'source-page-starts',
             'list-marker-styles',
+            'literal-list-markers',
           ],
           type: 'string',
         },
-        maxItems: 12,
+        maxItems: 13,
         minItems: 1,
         title: 'Required Capabilities',
         type: 'array',

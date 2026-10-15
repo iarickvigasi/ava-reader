@@ -29,7 +29,9 @@ class ListGroup(Record):
     # Omit an absent extension from the model dump so existing ava-json-v1
     # content hashes remain valid. Explicit markers participate in the hash.
     marker_style: (
-        Literal["decimal", "lower-alpha", "upper-alpha", "lower-roman", "upper-roman", "bullet"]
+        Literal[
+            "decimal", "lower-alpha", "upper-alpha", "lower-roman", "upper-roman", "bullet", "none"
+        ]
         | None
     ) = Field(default=None, exclude_if=lambda value: value is None)
     start: int | None = Field(default=None, ge=0, le=1000000)

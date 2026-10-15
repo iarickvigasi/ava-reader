@@ -14,6 +14,7 @@ from ..contracts.blocks import (
 from ..contracts.graph_links import TEXT_NODES
 from .context import Context, ident
 from .inline import render_text
+from .list_body import list_body
 from .paths import asset_path
 from .tables import render_table
 from .xml import EPUB, element
@@ -76,26 +77,7 @@ def render_block(block_id: str, ctx: Context) -> ET.Element:
         node.append(element("span", {"data-ava-generated": "note-label"}, block.label + " "))
     text = render_text(block, ctx)
     if isinstance(block, ListItemBlock) and ctx.list_body_layout:
-        body_attrs = {"data-ava-list-body": block.id}
-        style = ctx.styles.get(block.style_id) if block.style_id is not None else None
-        geometry = []
-        if style is not None:
-            for key, css in [
-                ("indent_em", "text-indent"),
-                ("block_indent_em", "margin-inline-start"),
-            ]:
-                value = getattr(style, key)
-                if value is not None:
-                    geometry.append(f"{css}:{value:g}em")
-            clearance = max(0, -((style.indent_em or 0) + (style.block_indent_em or 0)))
-            if clearance:
-                # Display safety only; retain the declared geometry in the fixed sidecar.
-                geometry.append(f"padding-inline-start:{clearance:g}em")
-        if geometry:
-            body_attrs["style"] = ";".join(geometry)
-        body = element("div", body_attrs)
-        body.append(text)
-        node.append(body)
+        node.append(list_body(block, text, ctx))
     else:
         node.append(text)
     if isinstance(block, NoteBlock):

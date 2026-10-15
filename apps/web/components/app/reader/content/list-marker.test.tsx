@@ -9,6 +9,7 @@ it("renders exact ordered marker families without adding text or losing start", 
   );
   if (list?.kind !== "list") throw new Error("Missing authored list");
   for (const markerStyle of [
+    "none",
     "decimal",
     "lower-alpha",
     "upper-alpha",

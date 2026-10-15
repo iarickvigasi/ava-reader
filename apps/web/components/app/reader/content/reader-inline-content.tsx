@@ -8,11 +8,21 @@ import { ReaderInlineScript } from "./reader-inline-script";
 import { ReaderInlineText } from "./reader-inline-text";
 import { groupInlineLinkOccurrences } from "@/features/reader/group-inline-link-occurrences";
 
+import { ReaderLiteralLabel } from "./reader-literal-label";
+
 const LINK_CLASS = "underline decoration-line/60 underline-offset-4";
 
 // Preserve each run's styling/script inside its semantic occurrence's link.
-export function ReaderInlineContent({ inlines }: { inlines: ReaderInline[] }) {
+export function ReaderInlineContent({
+  inlines,
+  literalLabel,
+}: {
+  inlines: ReaderInline[];
+  literalLabel?: { end: number; columnEm: number };
+}) {
   const measurement = useReaderMeasurement();
+  if (literalLabel)
+    return <ReaderLiteralLabel inlines={inlines} label={literalLabel} />;
   return (
     <>
       {groupInlineLinkOccurrences(inlines).map((group) => {

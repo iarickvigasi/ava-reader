@@ -14,6 +14,7 @@ from .package import package_document
 from .profiles import (
     LEGACY_PROFILE,
     LIST_BODY_PROFILE,
+    LITERAL_LABEL_PROFILE,
     SECTION_FILE_PROFILE,
     export_profile,
     validate_profile,
@@ -36,8 +37,8 @@ def export_entries(
     ctx = Context(
         book,
         exact_source_pages=exact_pages,
-        split_sections=profile in {SECTION_FILE_PROFILE, LIST_BODY_PROFILE},
-        list_body_layout=profile == LIST_BODY_PROFILE,
+        split_sections=profile in {SECTION_FILE_PROFILE, LIST_BODY_PROFILE, LITERAL_LABEL_PROFILE},
+        list_body_layout=profile in {LIST_BODY_PROFILE, LITERAL_LABEL_PROFILE},
     )
     entries = {
         "mimetype": b"application/epub+zip",

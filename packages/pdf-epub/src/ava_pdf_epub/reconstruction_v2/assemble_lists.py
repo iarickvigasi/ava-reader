@@ -20,7 +20,12 @@ def assemble_lists(state: AssemblyState, chapters: list[dict[str, Any]]) -> None
             group = stack.get(depth)
             if depth > 1 and depth - 1 not in previous:
                 raise ValueError("Nested list has no source parent")
-            if group is None or group["ordered"] != ordered:
+            if (
+                group is None
+                or group["ordered"] != ordered
+                or (group["marker_style"] == "none")
+                != (state.marker_styles.get(block["id"]) == "none")
+            ):
                 group = dict(
                     id=f"list-{len(state.lists)}",
                     ordered=ordered,

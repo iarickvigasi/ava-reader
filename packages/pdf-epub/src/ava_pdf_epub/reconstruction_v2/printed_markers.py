@@ -8,6 +8,7 @@ from .assembly_state import AssemblyState
 from .list_markers import MARKER, marker_style
 from .marker_typography import marker_typography
 from .segments import Segment
+from .word_list_markers import retain_word_marker
 
 
 def printed_markers(segments: list[Segment], state: AssemblyState) -> list[Segment]:
@@ -15,6 +16,9 @@ def printed_markers(segments: list[Segment], state: AssemblyState) -> list[Segme
     callouts = {m[1] for s in segments for m in re.finditer(r"\[([^]\s]{1,20})\]", s.text)}
     notes_heading = False
     for segment in segments:
+        if retain_word_marker(segment, state):
+            output.append(segment)
+            continue
         if segment.chapter_start:
             notes_heading = bool(re.search(r"\bnotes?\b", segment.text, re.I))
         if segment.kind == "heading" and re.fullmatch(r"(?:end)?notes?", segment.text, re.I):

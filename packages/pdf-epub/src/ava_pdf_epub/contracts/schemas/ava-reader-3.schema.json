@@ -1490,7 +1490,8 @@
                 "upper-alpha",
                 "lower-roman",
                 "upper-roman",
-                "bullet"
+                "bullet",
+                "none"
               ],
               "type": "string"
             },
@@ -1575,6 +1576,17 @@
           "title": "List Id",
           "type": "string"
         },
+        "literal_label": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LiteralLabelLayout"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "marker_style_id": {
           "anyOf": [
             {
@@ -1612,6 +1624,29 @@
         "content"
       ],
       "title": "ListItemBlock",
+      "type": "object"
+    },
+    "LiteralLabelLayout": {
+      "additionalProperties": false,
+      "properties": {
+        "column_em": {
+          "maximum": 6,
+          "minimum": 0.5,
+          "title": "Column Em",
+          "type": "number"
+        },
+        "prefix_end": {
+          "exclusiveMinimum": 0,
+          "maximum": 200000,
+          "title": "Prefix End",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "prefix_end",
+        "column_em"
+      ],
+      "title": "LiteralLabelLayout",
       "type": "object"
     },
     "MetadataClaim": {
@@ -2913,11 +2948,12 @@
           "annotation-styles",
           "language",
           "source-page-starts",
-          "list-marker-styles"
+          "list-marker-styles",
+          "literal-list-markers"
         ],
         "type": "string"
       },
-      "maxItems": 12,
+      "maxItems": 13,
       "minItems": 1,
       "title": "Required Capabilities",
       "type": "array"

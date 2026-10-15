@@ -15,10 +15,10 @@ from .annotation_findings import annotation_findings
 from .assemble_addresses import assemble_addresses
 from .assemble_blocks import assemble_blocks
 from .assemble_chapters import assemble_chapters
-from .assemble_links import assemble_links
 from .assemble_lists import assemble_lists
 from .assemble_metadata import assemble_metadata
 from .assemble_page_addresses import assemble_page_addresses
+from .bind_literal_labels import assemble_links_with_labels
 from .book_language import language_metadata
 from .findings import Finding
 from .legacy_reconstruction_assembly import legacy_reconstruction_assembly
@@ -102,7 +102,7 @@ def reconstruct(
     assemble_lists(state, chapters)
     if source_feature_policy == FEATURE_POLICY:
         normalize_list_bodies(state)
-    assemble_links(state, chapters)
+    assemble_links_with_labels(state, chapters)
     digest = hashlib.sha256(source.read_bytes()).hexdigest()
     document_id = "pdf-" + digest[:32]
     metadata = assemble_metadata(source, state, document_id)

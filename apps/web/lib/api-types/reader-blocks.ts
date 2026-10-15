@@ -21,6 +21,7 @@ export type ReaderBlockBase = {
   preserveWhitespace?: boolean;
   presentation?: Style;
   canonicalText?: TextValue;
+  literalLabel?: { end: number; columnEm: number };
 };
 export type ReaderListItem = ReaderBlockBase & {
   markerPresentation?: Style;

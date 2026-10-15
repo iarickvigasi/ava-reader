@@ -40,7 +40,7 @@ class WordWrapReuseTests(unittest.TestCase):
     def test_changed_final_role_and_marker_cut_request_fresh_source_comparison(self):
         owners, pages, _, _, _ = authored_source([(1, "trans-"), (1, "formation")])
         old = prior(prepare(owners, pages).entries[0])
-        owners[0] = owners[0].model_copy(update={"role": "quote"})
+        owners[0] = owners[0].model_copy(update={"role": "list_item"})
         self.assertEqual(len(prepare(owners, pages, prior_authorities=[old]).tasks), 1)
         owners, pages, _, _, _ = authored_source(
             [(1, "1. trans-"), (1, "formation")],

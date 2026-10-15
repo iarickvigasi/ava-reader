@@ -59,3 +59,12 @@ it('requires independent marker qualification including marker-only colors', () 
   );
   expect(JSON.stringify(item.content)).toBe(body);
 });
+
+it('requires literal-marker qualification without changing the original text', () => {
+  const input = book();
+  const before = JSON.stringify(input.blocks);
+  expect(requiredCapabilities(input)).not.toContain('literal-list-markers');
+  input.lists[0].marker_style = 'none';
+  expect(requiredCapabilities(input)).toContain('literal-list-markers');
+  expect(JSON.stringify(input.blocks)).toBe(before);
+});

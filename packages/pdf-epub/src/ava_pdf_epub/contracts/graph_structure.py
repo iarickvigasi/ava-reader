@@ -48,6 +48,9 @@ def validate_lists(
         items = [nodes.get(id_) for id_ in group.item_ids]
         if any(not isinstance(n, ListItemBlock) or n.list_id != group.id for n in items):
             raise ValueError("List group membership is inconsistent")
+        if any(isinstance(n, ListItemBlock) and n.literal_label is not None for n in items):
+            if group.marker_style != "none":
+                raise ValueError("Literal label layout requires retained text markers")
         if len({owners[id_] for id_ in group.item_ids}) != 1:
             raise ValueError("A list group cannot cross logical chapters")
         if [positions[id_] for id_ in group.item_ids] != sorted(

@@ -1,20 +1,19 @@
 """Validate complete source-ID decisions; malformed or unresolved output refuses."""
 
-import re
 from dataclasses import replace
 from typing import overload
 
 from ..contracts.common import unique
 from ..contracts.profiles import response_language
-from .list_markers import MARKER, marker_value
+from .native_structure_boundaries import validate_native_boundaries
 from .native_structure_contract import NativeStructureResponse, NativeStructureTask
 from .native_structure_decision_view import (
     NativeStructureDecisionView,
     native_structure_decision_view,
 )
-from .native_structure_fields import NativeStructureGroup, NativeStructureLine
 from .native_structure_group_order import source_ordered_native_groups
-from .native_structure_ornaments import BASELINE_TOLERANCE, ornamental_separator
+from .native_structure_markers import _marker_source_text, _printed_marker, _printed_note
+from .native_structure_ornaments import ornamental_separator
 from .native_structure_sizes import validate_grouped_sizes
 from .native_structure_v2_contract import NativeStructureResponse2, NativeStructureTask2
 from .native_structure_versions import AnyNativeStructureResponse, AnyNativeStructureTask
@@ -108,7 +107,12 @@ def _validate_decisions(
         if group.kind == "list_item":
             following = response.groups[index + 1] if index + 1 < len(response.groups) else None
             following_text = _marker_source_text(following, lines) if following else ""
-            _printed_marker(group, _marker_source_text(group, lines), following_text)
+            _printed_marker(
+                group,
+                _marker_source_text(group, lines),
+                following_text,
+                allow_words=isinstance(task, NativeStructureTask2),
+            )
         if group.continues_from_previous and group.line_ids[0] != region.line_ids[0]:
             raise ValueError("Native structure continuation is not at its source region start")
         if group.continues_to_next and group.line_ids[-1] != region.line_ids[-1]:
@@ -125,7 +129,7 @@ def _validate_decisions(
         if any(style != styles[0] for style in styles[1:]):
             raise ValueError("Native structure grouping would discard measured block typography")
         validate_grouped_sizes([lines[ident] for ident in group.line_ids])
-    _boundaries(task, response)
+    validate_native_boundaries(task, response)
     _references(task, response)
     return response
 
@@ -143,80 +147,3 @@ def _references(
         group = owners.get(callout.line_id)
         if group is None or group.kind in {"note", "furniture"}:
             raise ValueError("Native structure note callout has no editable source caller")
-
-
-def _printed_note(group: NativeStructureGroup, text: str) -> None:
-    marker = re.match(r"^\[([^]\s]{1,20})\]\s+", text) or re.match(r"^(\d+)\.\s+", text)
-    if marker:
-        if group.note_label not in {marker[1], marker[0].rstrip()}:
-            raise ValueError("Native structure note label conflicts with the printed source")
-    elif not re.match(re.escape(group.note_label or "") + r"(?:[.)]\s|\s)", text):
-        raise ValueError("Native structure note label is absent from the printed source")
-
-
-def _printed_marker(group: NativeStructureGroup, text: str, following_text: str) -> None:
-    marker, following = MARKER.match(text), MARKER.match(following_text)
-    if marker is None:
-        raise ValueError("Native structure list marker differs from its printed source")
-    start = marker_value(marker["marker"], following["marker"] if following else None)
-    if group.list_ordered != (start is not None) or group.list_start != start:
-        raise ValueError("Native structure list number differs from its printed source")
-
-
-def _marker_source_text(group: NativeStructureGroup, lines: dict[str, NativeStructureLine]) -> str:
-    first = lines[group.line_ids[0]]
-    text = first.text.lstrip()
-    if MARKER.match(text):
-        return text
-    previous = first.box
-    for ident in group.line_ids[1:]:
-        following = lines[ident]
-        box = following.box
-        if (
-            abs(first.box.y0 - box.y0) > BASELINE_TOLERANCE
-            or abs(first.box.y1 - box.y1) > BASELINE_TOLERANCE
-            or previous.x1 > box.x0
-        ):
-            break
-        # Marker proof may use a separately extracted body on the same physical
-        # row; the original text, IDs and spans remain the assembly authority.
-        text += " " + following.text
-        previous = box
-    return text
-
-
-def _boundaries(
-    task: AnyNativeStructureTask, response: NativeStructureResponse | NativeStructureDecisionView
-) -> None:
-    unique([d.candidate_id for d in response.boundary_dispositions], "native boundary disposition")
-    boundaries = {b.candidate_id: b for b in task.boundaries}
-    if {d.candidate_id for d in response.boundary_dispositions} != set(boundaries):
-        raise ValueError("Native structure boundary disposition coverage differs")
-    owners = {ident: group for group in response.groups for ident in group.line_ids}
-    for disposition in response.boundary_dispositions:
-        boundary = boundaries[disposition.candidate_id]
-        if disposition.candidate_sha256 != boundary.candidate_sha256:
-            raise ValueError("Native structure boundary candidate identity differs")
-        if disposition.disposition == "unresolved":
-            raise ValueError("Native structure source boundary is unresolved")
-        if disposition.disposition != "layout":
-            continue
-        left, right = owners.get(boundary.left_line_id), owners.get(boundary.right_line_id)
-        if left is None or right is None or left.kind != right.kind or left.kind != boundary.role:
-            raise ValueError("Native structure layout boundary changes literal/source role")
-        if left is right:
-            index = left.line_ids.index(boundary.left_line_id)
-            if left.line_ids[index + 1 : index + 2] != [boundary.right_line_id]:
-                raise ValueError("Native structure layout boundary is not adjacent source prose")
-        else:
-            position = response.groups.index(left)
-            region_order = [r.source.id for r in task.regions]
-            if not (
-                left.continues_to_next
-                and right.continues_from_previous
-                and response.groups[position + 1 : position + 2] == [right]
-                and left.line_ids[-1] == boundary.left_line_id
-                and right.line_ids[0] == boundary.right_line_id
-                and region_order.index(right.region_id) == region_order.index(left.region_id) + 1
-            ):
-                raise ValueError("Native structure layout boundary requires confirmed continuation")

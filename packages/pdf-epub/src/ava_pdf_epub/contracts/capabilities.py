@@ -9,6 +9,8 @@ from .page_starts import SOURCE_PAGE_CAPABILITY, page_addresses
 
 def required_capabilities(book: CanonicalBookV2) -> set[str]:
     result = {"text"}
+    if any(group.marker_style == "none" for group in book.lists):
+        result.add("literal-list-markers")
     if page_addresses(book):
         result.add(SOURCE_PAGE_CAPABILITY)
     nodes, _ = index_book(book)

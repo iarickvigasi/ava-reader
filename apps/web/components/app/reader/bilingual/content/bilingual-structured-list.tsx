@@ -40,9 +40,26 @@ export function BilingualStructuredList(props: BilingualFlowBlockProps) {
           );
           const children = item.children?.filter(contains) ?? [];
           if (!units.length && !children.length) return null;
-          const leaf = canonicalLeaf(list, item.id)!;
+          // Inspect complete item units so pagination cannot change the layout decision.
+          const first = props.chapter.units.find(
+            (unit) => (unit.itemId ?? unit.blockId) === item.id,
+          );
+          const projected =
+            item.literalLabel &&
+            first?.startOffset === 0 &&
+            first.endOffset >= item.literalLabel.end;
+          const displayItem = projected
+            ? item
+            : { ...item, literalLabel: undefined };
+          const leaf = {
+            ...canonicalLeaf(list, item.id)!,
+            literalLabel: displayItem.literalLabel,
+          };
           const marker = listMarkerProps(item);
-          const layout = listBodyStyle(item);
+          const layout = listBodyStyle(displayItem, {
+            translation: props.side === "translation",
+            continued: !units.length || units[0].unit.startOffset > 0,
+          });
           return (
             <li
               key={item.id}
