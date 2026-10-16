@@ -1,5 +1,7 @@
 "use client";
 
+import { LibraryScreenSkeleton } from "./library-screen";
+
 // Client render path for the library screen when the server fetch failed or
 // auth couldn't be verified (offline). Reads the last-cached library view
 // from Dexie and renders the normal LibraryScreen (mounting LibraryHydrator
@@ -50,9 +52,7 @@ export function LibraryScreenFromCache() {
   }, []);
 
   if (state.status === "loading") {
-    // Brief: Dexie resolves in a tick. Render nothing rather than a skeleton
-    // that would flash before the cached payload arrives.
-    return null;
+    return <LibraryScreenSkeleton />;
   }
   if (state.status === "empty") {
     return <OfflineRouteFallback routeKey="generic" />;

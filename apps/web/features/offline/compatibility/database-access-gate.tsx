@@ -1,13 +1,14 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { AppPageSkeleton } from "@/components/app/core/app-page-skeleton";
 import { Button } from "@/components/ui/button";
 import { useDatabaseAccess } from "./use-database-access";
 
 export function DatabaseAccessGate({ children }: { children: ReactNode }) {
   const state = useDatabaseAccess();
   if (state === "ready") return children;
-  if (state === "opening") return <p role="status">Opening your library…</p>;
+  if (state === "opening") return <AppPageSkeleton />;
   const update = state === "update-required";
   return (
     <main className="mx-auto max-w-lg space-y-4 p-6 text-ink" role="alert">

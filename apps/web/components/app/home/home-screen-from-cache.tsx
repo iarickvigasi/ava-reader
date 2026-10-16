@@ -1,5 +1,7 @@
 "use client";
 
+import { HomeScreenSkeleton } from "./home-screen-skeleton";
+
 // Client render path for the home screen when the server fetch failed
 // (offline). Reads the last-cached home payload from Dexie and renders the
 // normal HomeScreen, or the offline-route fallback when nothing is cached
@@ -10,13 +12,15 @@ import { useHomeFromCache } from "@/features/offline/buckets/home";
 import { OfflineRouteFallback } from "@/components/app/core/offline-route-fallback";
 import { HomeScreen } from "./home-screen";
 
-export function HomeScreenFromCache({ reason = "unavailable" }: { reason?: "apiUnavailable" | "authUnavailable" | "unavailable" }) {
+export function HomeScreenFromCache({
+  reason = "unavailable",
+}: {
+  reason?: "apiUnavailable" | "authUnavailable" | "unavailable";
+}) {
   const state = useHomeFromCache();
 
   if (state.status === "loading") {
-    // Brief: Dexie resolves in a tick. Render nothing rather than a skeleton
-    // that would flash before the cached payload arrives.
-    return null;
+    return <HomeScreenSkeleton />;
   }
 
   if (state.status === "empty") {

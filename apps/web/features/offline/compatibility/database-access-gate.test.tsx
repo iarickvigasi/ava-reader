@@ -3,6 +3,10 @@ import { expect, it, vi } from "vitest";
 import type { DatabaseAccess } from "./database-access";
 import { DatabaseAccessGate } from "./database-access-gate";
 
+vi.mock("@/components/app/core/app-page-skeleton", () => ({
+  AppPageSkeleton: () => <div aria-busy="true">Skeleton</div>,
+}));
+
 const access = vi.hoisted(() => ({ state: "opening" as DatabaseAccess }));
 vi.mock("./use-database-access", () => ({
   useDatabaseAccess: () => access.state,
@@ -20,6 +24,10 @@ it.each(["opening", "update-required", "unavailable"] as const)(
       </DatabaseAccessGate>,
     );
     expect(renderAccount).not.toHaveBeenCalled();
+    if (state === "opening") {
+      expect(html).toContain("aria-busy");
+      expect(html).not.toContain("Opening your library");
+    }
     if (state === "update-required") {
       expect(html).toContain("Please update AVA Reader");
       expect(html).toContain("offline");

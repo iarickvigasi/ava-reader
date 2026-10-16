@@ -17,6 +17,7 @@ The signed-in landing page: resume reading, stats, daily goal, annotations, and 
 ## Behaviour
 
 1. Home loads a cached payload (recents, featured, stats, collections) and renders offline.
+   Route loading and cache hydration show a full-page skeleton matching populated Home.
 2. Stats reconcile local sessions against the cached reading snapshot
    (see [[6-reading-sessions-progress]]).
 3. Current-book card resumes reading at the saved position; cards link into library/reader.
