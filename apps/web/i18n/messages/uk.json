@@ -471,7 +471,9 @@
       "saveForOffline": {
         "idle": {
           "title": "Зберегти для офлайн-читання",
-          "description": "Читайте цю книгу без зв'язку"
+          "description": "Читайте цю книгу без зв'язку",
+          "preparingDescription": "Доступно, коли книжка буде готова",
+          "unavailableDescription": "Книжка недоступна"
         },
         "downloading": {
           "title": "Зберігається офлайн",

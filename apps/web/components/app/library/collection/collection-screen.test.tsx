@@ -1,7 +1,8 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { LibraryCollectionScreen } from "./collection-screen";
 import type { LibraryCollection } from "@/lib/api-types";
+import type { CollectionView } from "@/features/offline/buckets/library/types";
 import { withIntl } from "@/lib/test-utils/intl";
 
 vi.mock("@clerk/nextjs", () => ({
@@ -34,7 +35,50 @@ vi.mock("next/navigation", () => ({
   }),
 }));
 
+
+const bucket = vi.hoisted(() => ({ view: null as CollectionView | null }));
+vi.mock("@/features/offline/buckets/library", async (importOriginal) => ({
+  ...await importOriginal<typeof import("@/features/offline/buckets/library")>(),
+  useCollectionView: () => bucket.view,
+}));
+beforeEach(() => { bucket.view = null; });
+
 describe("library collection detail UI", () => {
+  it.each(["PENDING", "FAILED", "READY"] as const)(
+    "keeps hydrated native EPUB %s status when the initial collection is stale",
+    (status) => {
+      const initial = createCollection();
+      bucket.view = {
+        ...initial,
+        books: [{
+          ...initial.books[0],
+          savedOffline: false,
+          offlineRequested: false,
+          epubImport: { status, runId: "fixture-run", updatedAt: "2026-10-16T00:00:00Z", finalContentId: status === "READY" ? "finished" : null },
+        }],
+      };
+      const markup = renderToStaticMarkup(withIntl(<LibraryCollectionScreen collection={initial} />));
+      if (status === "PENDING") expect(markup).toContain("Preparing");
+      if (status === "FAILED") expect(markup).toContain("Preparation failed");
+      if (status === "READY") {
+        expect(markup).not.toContain("Preparing");
+        expect(markup).not.toContain("Preparation failed");
+      }
+    },
+  );
+  it("keeps failed PDF status on the hydrated collection card", () => {
+    const initial = createCollection();
+    bucket.view = {
+      ...initial,
+      books: [{
+        ...initial.books[0], savedOffline: false, offlineRequested: false,
+        pdfImport: { status: "FAILED", finalContentId: null, operationId: "fixture-op", libraryItemId: "library-1", stage: "VALIDATION", generation: 1, updatedAt: "2026-10-16T00:00:00Z", sourceArtifactId: "fixture-source", failureId: "fixture-failure", investigationRecorded: true, progress: null },
+      }],
+    };
+    const markup = renderToStaticMarkup(withIntl(<LibraryCollectionScreen collection={initial} />));
+    expect(markup).toContain("Failed · Last known status");
+  });
+
   it("renders all books in a collection and back navigation", () => {
     const markup = renderToStaticMarkup(
       withIntl(<LibraryCollectionScreen collection={createCollection()} />),

@@ -103,9 +103,13 @@ it("disables native EPUB saving until ready, then starts a retained request", ()
     effectHost.flush();
     return element.props as ComponentProps<typeof ActionCard>;
   };
-  expect(renderNative(false).disabled).toBe(true);
+  const pending = renderNative(false);
+  expect(pending.disabled).toBe(true);
+  expect(pending.description).toBe("idle.preparingDescription");
   h.requested = true;
-  renderNative(false);
+  const queued = renderNative(false);
+  expect(queued.description).toBe("pending.preparingDescription");
+  expect(queued.disabled).not.toBe(true);
   expect(h.save).not.toHaveBeenCalled();
   renderNative(true);
   expect(h.save).toHaveBeenCalledTimes(1);

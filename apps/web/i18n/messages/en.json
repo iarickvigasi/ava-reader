@@ -471,7 +471,9 @@
       "saveForOffline": {
         "idle": {
           "title": "Save for offline",
-          "description": "Read this book when there is no connection"
+          "description": "Read this book when there is no connection",
+          "preparingDescription": "Available when the book is ready",
+          "unavailableDescription": "This book is unavailable"
         },
         "downloading": {
           "title": "Saving for offline",

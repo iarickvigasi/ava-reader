@@ -181,8 +181,8 @@ export function DownloadOfflineCard({
           description: t(
             epubImport && !readable
               ? epubImport.status === "FAILED"
-                ? "pending.unavailableDescription"
-                : "pending.preparingDescription"
+                ? "idle.unavailableDescription"
+                : "idle.preparingDescription"
               : "idle.description",
           ),
           onClick: requestSave,

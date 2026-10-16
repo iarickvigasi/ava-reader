@@ -471,7 +471,9 @@
       "saveForOffline": {
         "idle": {
           "title": "Enregistrer hors ligne",
-          "description": "Lisez ce livre sans connexion"
+          "description": "Lisez ce livre sans connexion",
+          "preparingDescription": "Disponible quand le livre sera prêt",
+          "unavailableDescription": "Ce livre est indisponible"
         },
         "downloading": {
           "title": "Enregistrement hors ligne",

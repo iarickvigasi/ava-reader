@@ -471,7 +471,9 @@
       "saveForOffline": {
         "idle": {
           "title": "Guardar para leer sin conexión",
-          "description": "Lee este libro cuando no haya conexión"
+          "description": "Lee este libro cuando no haya conexión",
+          "preparingDescription": "Disponible cuando el libro esté listo",
+          "unavailableDescription": "Este libro no está disponible"
         },
         "downloading": {
           "title": "Guardando sin conexión",
