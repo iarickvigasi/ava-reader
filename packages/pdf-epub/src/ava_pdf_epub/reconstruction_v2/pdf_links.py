@@ -14,6 +14,7 @@ from .annotation_words import AnnotationWord, exact_word_offsets
 from .assembly_state import AssemblyState
 from .findings import Finding
 from .geometry import area, overlap
+from .literal_page_label import literal_page_label_range
 from .native_caller_context import ContextCache, NativeCallerLowConfidence, native_caller_ranges
 from .native_line_offsets import NativeLineOffset, mapped_line_offset
 from .native_link_resolution import NativeLinkResolution
@@ -257,42 +258,65 @@ def apply_pdf_links(
                     except ValueError as error:
                         if str(error) != "PDF_LINK_TEXT_MAPPING_REQUIRES_REVIEW" or scratch is None:
                             raise
-                        try:
-                            ranges = native_caller_ranges(
-                                checkpoint.observation,
-                                local,
-                                rect,
-                                scratch,
-                                checkpoint.profile_id,
-                                state.native_line_maps,
-                                native_words,
-                                literal_uri=raw_literal_uri(annotation, target),
-                                findings=state.structure_findings,
-                            )
-                        except NativeCallerLowConfidence:
-                            # A fresh cache prevents reuse of lower-resolution word boxes.
-                            ranges = native_caller_ranges(
-                                resolution.observation(),
-                                local,
-                                rect,
-                                resolution.directory,
-                                checkpoint.profile_id,
-                                state.native_line_maps,
-                                resolution.words,
-                                literal_uri=raw_literal_uri(annotation, target),
-                                findings=state.structure_findings,
-                            )
+                        label_ranges = literal_page_label_range(
+                            reader,
+                            target,
+                            checkpoint.observation,
+                            local,
+                            rect,
+                            state.native_line_maps,
+                            annotation=annotation,
+                        )
+                        if label_ranges is not None:
+                            ranges = label_ranges
                             state.structure_findings.append(
                                 Finding(
-                                    code="PDF_LINK_HIGH_RESOLUTION_CORROBORATED",
+                                    code="PDF_LINK_PAGE_LABEL_CORROBORATED",
                                     severity="information",
                                     page=number,
                                     message=(
-                                        "One higher-resolution source render passed unchanged "
-                                        "text, confidence and geometry checks for this link."
+                                        "An explicit unique PDF page label and qualified native "
+                                        "digits identify the reference; its comma stays unlinked."
                                     ),
                                 )
                             )
+                        else:
+                            try:
+                                ranges = native_caller_ranges(
+                                    checkpoint.observation,
+                                    local,
+                                    rect,
+                                    scratch,
+                                    checkpoint.profile_id,
+                                    state.native_line_maps,
+                                    native_words,
+                                    literal_uri=raw_literal_uri(annotation, target),
+                                    findings=state.structure_findings,
+                                )
+                            except NativeCallerLowConfidence:
+                                # A fresh cache prevents reuse of lower-resolution word boxes.
+                                ranges = native_caller_ranges(
+                                    resolution.observation(),
+                                    local,
+                                    rect,
+                                    resolution.directory,
+                                    checkpoint.profile_id,
+                                    state.native_line_maps,
+                                    resolution.words,
+                                    literal_uri=raw_literal_uri(annotation, target),
+                                    findings=state.structure_findings,
+                                )
+                                state.structure_findings.append(
+                                    Finding(
+                                        code="PDF_LINK_HIGH_RESOLUTION_CORROBORATED",
+                                        severity="information",
+                                        page=number,
+                                        message=(
+                                            "One higher-resolution source render passed unchanged "
+                                            "text, confidence and geometry checks for this link."
+                                        ),
+                                    )
+                                )
                 else:
                     try:
                         ranges = glyph_ranges(

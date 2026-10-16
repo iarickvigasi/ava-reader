@@ -1041,3 +1041,13 @@ frame must match the prepared checkpoint. A separate per-page word cache and tem
 render are released after that page. Render warnings, changed source, unknown frames,
 and a failed second proof remain review failures. No provider call or text rewrite is
 involved; successful recovery adds `PDF_LINK_HIGH_RESOLUTION_CORROBORATED`.
+
+An index reference may instead use an explicit, unique decimal PDF PageLabel as a
+source-text boundary witness. This requires the exact qualified native line map,
+complete visible glyphs, the existing ≥90% coverage for every label digit and only one partially
+intersecting trailing comma whose center is outside the link. The comma stays unlinked.
+Only an unpositioned source destination admitted by the existing navigation parser
+(GoTo/Dest or its fixed inert constant-page-jump grammar) qualifies. Implicit, prefixed,
+repeated or ambiguous labels, other partial glyphs and unsafe/unknown page risks refuse.
+The language heuristic alone can remain uncertain on a qualified native index. This
+adds `PDF_LINK_PAGE_LABEL_CORROBORATED`; it does not relabel failed OCR as a visual pass.
