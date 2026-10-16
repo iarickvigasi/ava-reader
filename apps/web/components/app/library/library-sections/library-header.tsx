@@ -2,10 +2,8 @@ import { useTranslations } from "next-intl";
 import { LibraryNavigationIcon } from "@/components/app/core/library-navigation-icon";
 import { PageHeader } from "@/components/app/shared/page-header";
 
-export function LibraryHeader({ hasBooks = false }: { hasBooks?: boolean }) {
-  const t = useTranslations(
-    hasBooks ? "library.introduction" : "library.empty",
-  );
+export function LibraryHeader() {
+  const t = useTranslations("library.introduction");
   return (
     <section aria-labelledby="library-title">
       <PageHeader

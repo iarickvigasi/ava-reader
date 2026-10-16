@@ -1,9 +1,17 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { LibraryScreen } from "./library-screen";
 import { isAppNavigationItemActive } from "@/lib/app-navigation";
 import type { LibraryPayload } from "@/lib/api-types";
 import { withIntl } from "@/lib/test-utils/intl";
+import type { LibraryView } from "@/features/offline/buckets/library";
+
+const bucket = vi.hoisted(() => ({ view: null as LibraryView | null }));
+vi.mock("@/features/offline/buckets/library", async (importOriginal) => ({
+  ...await importOriginal<typeof import("@/features/offline/buckets/library")>(),
+  useLibraryView: () => bucket.view,
+}));
+beforeEach(() => { bucket.view = null; });
 
 // The header's import action mounts <ImportButton>, which reads Clerk auth and
 // the router for its post-upload refresh. Static markup mounts neither
@@ -39,6 +47,47 @@ vi.mock("next/link", () => ({
 }));
 
 describe("library and navigation UI", () => {
+  it.each(["PENDING", "FAILED", "READY"] as const)(
+    "keeps %s cards visible when the cached book count is stale zero",
+    (status) => {
+      const source = createLibraryPayload();
+      source.summary.booksCount = 0;
+      source.collections = source.collections.filter((c) => c.kind === "SMART");
+      source.collections[0].books = [{
+        ...source.collections[0].books[0],
+        epubImport: { status, runId: "fixture-run", updatedAt: "2026-10-16T00:00:00Z",
+                      finalContentId: status === "READY" ? "finished" : null },
+      }];
+      for (const hydrated of [false, true]) {
+        const initial = hydrated ? { ...source, collections: [] } : source;
+        bucket.view = hydrated ? {
+          ...source,
+          collections: source.collections.map((c) => ({ ...c, books: c.books.map((book) => ({
+            ...book, savedOffline: false, offlineRequested: false,
+          })) })),
+        } : null;
+        const markup = renderToStaticMarkup(withIntl(<LibraryScreen library={initial} />));
+        expect(markup).toContain("Meditations");
+        expect(markup).toContain("fromCollection=imported-books");
+        expect(markup).not.toContain("They’ll appear here in your library.");
+        if (status === "PENDING") expect(markup).toContain("Preparing");
+        if (status === "FAILED") expect(markup).toContain("Preparation failed");
+        expect(source.summary.booksCount).toBe(0);
+      }
+    },
+  );
+
+  it("retains the new guidance for a truly empty default library", () => {
+    const payload = createLibraryPayload();
+    payload.summary.booksCount = 0;
+    payload.collections = payload.collections.filter((c) => c.kind === "SMART").map((c) => ({
+      ...c, books: [], itemCount: 0, unreadCount: 0,
+    }));
+    const markup = renderToStaticMarkup(withIntl(<LibraryScreen library={payload} />));
+    expect(markup).toContain("They’ll appear here in your library.");
+    expect(markup).not.toContain("Meditations");
+  });
+
   it("shows an empty custom collection even when the library has no books", () => {
     const payload = createLibraryPayload();
     payload.collections = payload.collections.filter((collection) => collection.kind === "CUSTOM").map((collection) => ({ ...collection, books: [], itemCount: 0, unreadCount: 0 }));

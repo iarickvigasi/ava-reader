@@ -9,7 +9,7 @@ import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useEffect, useRef, useState } from "react";
 import { useMountedDeviceOwner } from "@/features/offline/lifecycle/device-owner-context";
 
-import LibraryBookInfoLoading from "@/app/app/library/books/[slug]/loading";
+import LibraryBookInfoLoading from "./book-info-skeleton";
 import { OfflineRouteFallback } from "@/components/app/core/offline-route-fallback";
 import { UnavailablePage } from "@/components/app/core/unavailable-page";
 import { LibraryBookInfoScreen } from "@/components/app/library/book-info/book-info-screen";

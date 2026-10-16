@@ -632,9 +632,7 @@
       "body": "Reúne tus libros, organízalos en colecciones y encuentra tu próxima lectura."
     },
     "empty": {
-      "eyebrow": "Biblioteca",
-      "title": "Tus colecciones aparecerán aquí mientras construyes tu mundo de lectura.",
-      "body": "Importa libros o añádelos desde el catálogo público y organízalos en colecciones personales"
+      "body": "Usa «Importar nuevo libro» para añadir tus libros. Aparecerán aquí en tu biblioteca."
     },
     "features": {
       "label": "Próximamente",

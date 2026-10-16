@@ -74,6 +74,9 @@ vi.mock("react", async (original) => ({
 }));
 vi.mock("@clerk/nextjs", () => ({ useAuth: () => f.auth }));
 vi.mock("next/navigation", () => ({ usePathname: () => f.pathname }));
+vi.mock("@/components/app/core/app-page-skeleton", () => ({
+  AppPageSkeleton: () => <main role="status">Loading AVA</main>,
+}));
 vi.mock("@/features/offline/db", () => ({
   ACTIVE_USER_STORAGE_KEY: "active-user",
   getActiveUserId: () => f.active,
@@ -168,7 +171,7 @@ it("shows preparation then bounded waiting without treating blocked cleanup as c
     f.active = userId;
     await work.promise;
   });
-  expect(render()).toContain("Preparing your library");
+  expect(render()).toContain("Loading AVA");
   await effects();
   vi.advanceTimersByTime(15_000);
   expect(render()).toContain("still being prepared");

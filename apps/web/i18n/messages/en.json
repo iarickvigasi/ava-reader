@@ -632,9 +632,7 @@
       "body": "Keep your books together, organize them into collections, and find your next read."
     },
     "empty": {
-      "eyebrow": "Library",
-      "title": "Your collections will appear here as you build your reading world.",
-      "body": "Import books or add them from the public catalog and organize them into personal collections"
+      "body": "Use “Import new book” to add your books. They’ll appear here in your library."
     },
     "features": {
       "label": "Coming soon",

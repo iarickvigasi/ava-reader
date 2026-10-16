@@ -7,15 +7,20 @@ import { useMountedDeviceOwner } from "./device-owner-context";
 const f = vi.hoisted(() => ({
   owner: "reader-a" as string | null | undefined,
   ready: true,
+  preparation: "preparing",
   blocked: false,
   pathname: "/app/books/book/read",
   gate: true,
 }));
 vi.mock("next/navigation", () => ({ usePathname: () => f.pathname }));
+vi.mock("@/components/app/core/app-page-skeleton", () => ({
+  AppPageSkeleton: () => <main role="status">Loading AVA</main>,
+}));
 vi.mock("@/features/auth/use-device-identity", () => ({
   useDeviceIdentity: () => ({
     owner: f.owner,
     ready: f.ready,
+    preparation: f.preparation,
     blocked: f.blocked,
   }),
 }));
@@ -40,6 +45,7 @@ beforeEach(() => {
   f.owner = "reader-a";
   f.ready = f.gate = true;
   f.blocked = false;
+  f.preparation = "preparing";
   f.pathname = "/app/books/book/read";
 });
 it("provides the reconciled mounted owner without requiring a Clerk user", () => {
@@ -47,7 +53,7 @@ it("provides the reconciled mounted owner without requiring a Clerk user", () =>
 });
 it("keeps unready identity, explicit sign-out and database gates ahead of local children", () => {
   f.ready = false;
-  expect(render()).toContain("Preparing your library");
+  expect(render()).toContain("Loading AVA");
   expect(render()).not.toContain("<p>reader-a</p>");
   f.ready = true;
   f.blocked = true;
@@ -69,4 +75,17 @@ it("changes the value with the reconciled account while preserving public-route 
   f.blocked = true;
   f.gate = false;
   expect(render()).toBe("<p>reader-b</p>");
+});
+
+it("keeps bounded waiting and failed preparation visible instead of an endless skeleton", () => {
+  f.ready = false;
+  f.preparation = "waiting";
+  expect(render()).toContain("still being prepared");
+  expect(render()).not.toContain("Loading AVA");
+  expect(render()).not.toContain("<p>reader-a</p>");
+  f.preparation = "failed";
+  expect(render()).toContain('role="alert"');
+  expect(render()).toContain("could not prepare your library");
+  expect(render()).not.toContain("Loading AVA");
+  expect(render()).not.toContain("<p>reader-a</p>");
 });
