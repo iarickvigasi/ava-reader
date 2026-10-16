@@ -544,6 +544,15 @@ Ambiguous/small/body artwork is not auto-classified as a cover. Asset extraction
 normal PDF publication cover binding, reader rendering, or complete supplied-book source fidelity;
 those checks remain pending.
 
+Under the captured continuation and complete-title policies, a positively compared first-page OCR
+cover can share one content coverage region where its title envelope overlaps artwork, author or
+subtitle. This projection runs after refinement identities and before source-page starts, using the
+same source-image qualification. Individual text, styles, resources, evidence boxes/methods and
+semantic placements stay unchanged; only affected region references and coverage parcels change.
+Native regions, real columns, later pages and uncorroborated overlaps retain their existing guards.
+The complete SourcePage and canonical graph validators still apply. Authored and minimal saved-source
+checks establish this repair's scope; full-book EPUB and reader qualification remain separate.
+
 Cover integration follow-up: source artwork uses one explicit first-page cover layer, independent
 of ordered text bands. Updated generated contracts must be deployed/qualified together. A hashed
 validator-owned publication report projects the cover resource ID; first publication binds only

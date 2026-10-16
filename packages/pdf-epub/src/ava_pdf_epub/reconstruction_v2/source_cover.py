@@ -9,6 +9,7 @@ from .assemble_figure import assemble_figure
 from .assembly_state import AssemblyState
 from .findings import Finding
 from .geometry import area, overlap
+from .observations import PageObservation
 from .prepared_types import AnyPreparedPage
 from .segments import Segment
 
@@ -34,18 +35,7 @@ def preserve_source_cover(
     if not title_evidence or any(e["page"] != 1 for e in title_evidence):
         return None
     page = prepared[0].observation
-    candidates = [
-        g
-        for g in page.graphics
-        if g.kind == "image" and area(g.box) >= page.width_pt * page.height_pt * 0.75
-    ]
-    if len(candidates) != 1:
-        return None
-    box = candidates[0].box
-    if any(
-        overlap(Box.model_validate(e["box"]), box) / area(Box.model_validate(e["box"])) < 0.99
-        for e in title_evidence
-    ):
+    if source_cover_graphic(page, title_evidence) is None:
         return None
     # Qualification uses the source image; the cover retains every first-page pixel.
     box = Box(
@@ -74,3 +64,23 @@ def preserve_source_cover(
         )
     )
     return str(cover)
+
+
+def source_cover_graphic(page: PageObservation, evidence: Sequence[dict[str, Any]]) -> Box | None:
+    """Reuse the existing first-page image/printed-title coverage qualification."""
+    if page.number != 1 or not evidence or any(item["page"] != 1 for item in evidence):
+        return None
+    candidates = [
+        graphic
+        for graphic in page.graphics
+        if graphic.kind == "image" and area(graphic.box) >= page.width_pt * page.height_pt * 0.75
+    ]
+    if len(candidates) != 1:
+        return None
+    box = candidates[0].box
+    if any(
+        overlap(Box.model_validate(item["box"]), box) / area(Box.model_validate(item["box"])) < 0.99
+        for item in evidence
+    ):
+        return None
+    return box
