@@ -4,8 +4,7 @@ import type { ReaderInline } from "@/lib/api-types";
 import { cn } from "@/lib/cn";
 import { ReaderInlineImage } from "./reader-inline-image";
 import { ReaderContentLink } from "./reader-content-link";
-import { ReaderInlineScript } from "./reader-inline-script";
-import { ReaderInlineText } from "./reader-inline-text";
+import { ReaderScriptText } from "./reader-script-text";
 import { groupInlineLinkOccurrences } from "@/features/reader/group-inline-link-occurrences";
 
 import { ReaderLiteralLabel } from "./reader-literal-label";
@@ -16,13 +15,17 @@ const LINK_CLASS = "underline decoration-line/60 underline-offset-4";
 export function ReaderInlineContent({
   inlines,
   literalLabel,
+  before,
+  after,
 }: {
   inlines: ReaderInline[];
   literalLabel?: { end: number; columnEm: number };
+  before?: string;
+  after?: string;
 }) {
   const measurement = useReaderMeasurement();
   if (literalLabel)
-    return <ReaderLiteralLabel inlines={inlines} label={literalLabel} />;
+    return <ReaderLiteralLabel inlines={inlines} label={literalLabel} before={before} after={after} />;
   return (
     <>
       {groupInlineLinkOccurrences(inlines).map((group) => {
@@ -37,21 +40,18 @@ export function ReaderInlineContent({
         }
 
         const inline = group.inlines[0];
-        const content = group.inlines.map((run, index) => (
-          <ReaderInlineScript
-            key={index}
-            inheritSize={run.presentation?.relative_size != null}
-            script={
-              run.script ??
-              (run.presentation?.vertical_align === "super" ||
-              run.presentation?.vertical_align === "sub"
-                ? run.presentation.vertical_align
-                : undefined)
-            }
-          >
-            <ReaderInlineText inline={run} />
-          </ReaderInlineScript>
-        ));
+        const content = group.inlines.map((run, index) => {
+          const prior = inlines[group.sourceIndex + index - 1];
+          const next = inlines[group.sourceIndex + index + 1];
+          return (
+            <ReaderScriptText
+              key={index}
+              inline={run}
+              before={prior ? (prior.kind === "text" ? prior.text : "") : before}
+              after={next ? (next.kind === "text" ? next.text : "") : after}
+            />
+          );
+        });
 
         if (inline.target)
           return (

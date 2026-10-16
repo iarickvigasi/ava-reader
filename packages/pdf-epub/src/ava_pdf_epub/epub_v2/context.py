@@ -21,6 +21,7 @@ class Context:
     exact_source_pages: bool = False
     split_sections: bool = False
     list_body_layout: bool = False
+    intrinsic_scripts: bool = False
 
     def __post_init__(self) -> None:
         self.nodes, self.owners = index_book(self.book)

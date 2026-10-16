@@ -8,9 +8,13 @@ type Label = { end: number; columnEm: number };
 export function ReaderLiteralLabel({
   inlines,
   label,
+  before,
+  after,
 }: {
   inlines: ReaderInline[];
   label: Label;
+  before?: string;
+  after?: string;
 }) {
   const first = groupInlineLinkOccurrences(inlines)[0];
   const linked =
@@ -25,24 +29,29 @@ export function ReaderLiteralLabel({
       href: undefined,
       target: undefined,
     }));
+    const remaining = inlines.slice(first.inlines.length);
     return (
       <>
         <ReaderContentLink link={first.inlines[0]}>
-          <LabelContent inlines={content} label={label} />
+          <LabelContent inlines={content} label={label} before={before} after={edgeText(remaining[0], after)} />
         </ReaderContentLink>
-        <ReaderInlineContent inlines={inlines.slice(first.inlines.length)} />
+        <ReaderInlineContent inlines={remaining} before={edgeText(content.at(-1), before)} after={after} />
       </>
     );
   }
-  return <LabelContent inlines={inlines} label={label} />;
+  return <LabelContent inlines={inlines} label={label} before={before} after={after} />;
 }
 
 function LabelContent({
   inlines,
   label,
+  before,
+  after,
 }: {
   inlines: ReaderInline[];
   label: Label;
+  before?: string;
+  after?: string;
 }) {
   const { prefix, body } = splitLiteralPrefix(inlines, label.end);
   return (
@@ -55,9 +64,13 @@ function LabelContent({
           textIndent: 0,
         }}
       >
-        <ReaderInlineContent inlines={prefix} />
+        <ReaderInlineContent inlines={prefix} before={before} after={edgeText(body[0], after)} />
       </span>
-      <ReaderInlineContent inlines={body} />
+      <ReaderInlineContent inlines={body} before={edgeText(prefix.at(-1), before)} after={after} />
     </>
   );
+}
+
+function edgeText(inline: ReaderInline | undefined, fallback?: string) {
+  return inline ? (inline.kind === "text" ? inline.text : "") : fallback;
 }

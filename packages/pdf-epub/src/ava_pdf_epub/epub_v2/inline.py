@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 from ..contracts.graph_links import TextNode
 from ..contracts.links import NoteTarget
 from .context import Context, ident
+from .intrinsic_script import matching_script, script_boundaries
 from .literal_label import LiteralLabelProjection
 from .page_marker import page_marker
 from .xml import EPUB, append_text, element
@@ -28,6 +29,8 @@ def render_text(node: TextNode, ctx: Context) -> ET.Element:
         positions.update([span.start, span.end])
     if label.layout is not None:
         positions.add(label.layout.prefix_end)
+    if ctx.intrinsic_scripts:
+        positions.update(script_boundaries(content.text))
     ordered = sorted(positions)
     link_id: str | None = None
     link_parent = root
@@ -56,9 +59,15 @@ def render_text(node: TextNode, ctx: Context) -> ET.Element:
                 parent.append(element("span", {"id": ident("s", span.id)}))
         if i + 1 == len(ordered):
             continue
+        intrinsic = ctx.intrinsic_scripts and matching_script(
+            content.text, start, active, ctx.styles
+        )
         for span in active:
             if span.style_id is not None:
-                child = element("span", {"class": ident("style", span.style_id)})
+                attrs = {"class": ident("style", span.style_id)}
+                if intrinsic and ctx.styles[span.style_id].vertical_align in {"super", "sub"}:
+                    attrs["style"] = "vertical-align:baseline"
+                child = element("span", attrs)
                 parent.append(child)
                 parent = child
         append_text(parent, content.text[start : ordered[i + 1]])

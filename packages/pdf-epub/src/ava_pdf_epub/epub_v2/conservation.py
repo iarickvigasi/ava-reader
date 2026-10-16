@@ -5,6 +5,7 @@ from ..contracts.common import document_digest
 from ..contracts.graph_links import TEXT_NODES
 from .context import Context, ident
 from .profiles import (
+    INTRINSIC_SCRIPT_PROFILE,
     LIST_BODY_PROFILE,
     LITERAL_LABEL_PROFILE,
     SECTION_FILE_PROFILE,
@@ -19,8 +20,16 @@ def conservation_report(book: CanonicalBookV2, *, profile: str | None = None) ->
     ctx = Context(
         book,
         exact_source_pages=validate_profile(book, profile),
-        split_sections=profile in {SECTION_FILE_PROFILE, LIST_BODY_PROFILE, LITERAL_LABEL_PROFILE},
-        list_body_layout=profile in {LIST_BODY_PROFILE, LITERAL_LABEL_PROFILE},
+        split_sections=profile
+        in {
+            SECTION_FILE_PROFILE,
+            LIST_BODY_PROFILE,
+            LITERAL_LABEL_PROFILE,
+            INTRINSIC_SCRIPT_PROFILE,
+        },
+        list_body_layout=profile
+        in {LIST_BODY_PROFILE, LITERAL_LABEL_PROFILE, INTRINSIC_SCRIPT_PROFILE},
+        intrinsic_scripts=profile == INTRINSIC_SCRIPT_PROFILE,
     )
     mapping = []
     for address in book.addresses:

@@ -470,8 +470,15 @@ using uniquely owned visible rows and each list/depth/page/column's body baselin
 fields retain real body displacement and nested structure without counting the marker gutter twice.
 Ambiguous geometry and OCR body styles are not reinterpreted. The API's normal reconstruction request
 already selects this policy; package and worker/config fingerprints bind the effective implementation.
-Profiles 2.1–2.4 retain exact historical bytes when explicitly selected or reimported; portable
-validation reproduces the declared profile rather than upgrading an existing EPUB.
+Profile `ava-epub-canonical-2.7` projects already raised/lowered Unicode digits without adding
+same-family script placement again. It preserves canonical characters, style records, explicit sizes,
+source coordinates and one link per occurrence. Ordinary digits keep script styling; opposite-family
+or conflicting placement and adjacent combining/joined sequences keep the existing projection.
+Default current-policy exports select 2.7 only when this correction applies; the historical
+`split_sections=False` policy keeps its older projection, including its older script rendering.
+Explicit 2.7 includes the section/list/literal-label projections. Profiles 2.1–2.6 retain exact
+historical bytes when explicitly selected or reimported; portable validation reproduces the declared
+profile rather than upgrading an existing EPUB.
 Reconstruction with the historical omitted `source_feature_policy` retains its old chapter
 projection and canonical geometry; the current policy enables section files and native list-body
 normalization. The reader's body wrapper preserves existing accepted style values and removes the

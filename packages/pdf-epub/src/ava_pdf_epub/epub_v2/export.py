@@ -12,6 +12,7 @@ from .context import Context
 from .navigation import navigation
 from .package import package_document
 from .profiles import (
+    INTRINSIC_SCRIPT_PROFILE,
     LEGACY_PROFILE,
     LIST_BODY_PROFILE,
     LITERAL_LABEL_PROFILE,
@@ -37,8 +38,16 @@ def export_entries(
     ctx = Context(
         book,
         exact_source_pages=exact_pages,
-        split_sections=profile in {SECTION_FILE_PROFILE, LIST_BODY_PROFILE, LITERAL_LABEL_PROFILE},
-        list_body_layout=profile in {LIST_BODY_PROFILE, LITERAL_LABEL_PROFILE},
+        split_sections=profile
+        in {
+            SECTION_FILE_PROFILE,
+            LIST_BODY_PROFILE,
+            LITERAL_LABEL_PROFILE,
+            INTRINSIC_SCRIPT_PROFILE,
+        },
+        list_body_layout=profile
+        in {LIST_BODY_PROFILE, LITERAL_LABEL_PROFILE, INTRINSIC_SCRIPT_PROFILE},
+        intrinsic_scripts=profile == INTRINSIC_SCRIPT_PROFILE,
     )
     entries = {
         "mimetype": b"application/epub+zip",

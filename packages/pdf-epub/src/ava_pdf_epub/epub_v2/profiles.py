@@ -3,6 +3,7 @@
 from ..contracts.blocks import ListItemBlock
 from ..contracts.book import CanonicalBookV2
 from ..contracts.page_starts import page_addresses
+from .intrinsic_script import needs_script_projection
 from .sections import publication_parts
 
 LEGACY_PROFILE = "ava-epub-canonical-2.1"
@@ -11,7 +12,9 @@ SOURCE_PAGE_PROFILE = "ava-epub-canonical-2.3"
 SECTION_FILE_PROFILE = "ava-epub-canonical-2.4"
 LIST_BODY_PROFILE = "ava-epub-canonical-2.5"
 LITERAL_LABEL_PROFILE = "ava-epub-canonical-2.6"
+INTRINSIC_SCRIPT_PROFILE = "ava-epub-canonical-2.7"
 PROFILES = (
+    INTRINSIC_SCRIPT_PROFILE,
     LITERAL_LABEL_PROFILE,
     LEGACY_PROFILE,
     PAGE_LABEL_PROFILE,
@@ -22,6 +25,8 @@ PROFILES = (
 
 
 def export_profile(book: CanonicalBookV2, *, split_sections: bool = True) -> str:
+    if split_sections and needs_script_projection(book):
+        return INTRINSIC_SCRIPT_PROFILE
     if any(isinstance(b, ListItemBlock) and b.literal_label is not None for b in book.blocks):
         return LITERAL_LABEL_PROFILE
     if split_sections:
@@ -46,11 +51,17 @@ def validate_profile(book: CanonicalBookV2, profile: str) -> bool:
     if profile not in PROFILES:
         raise ValueError("Unsupported generated EPUB profile")
     if any(isinstance(b, ListItemBlock) and b.literal_label is not None for b in book.blocks):
-        if profile != LITERAL_LABEL_PROFILE:
+        if profile not in {LITERAL_LABEL_PROFILE, INTRINSIC_SCRIPT_PROFILE}:
             raise ValueError("Literal label columns require their generated EPUB projection")
     exact_pages = bool(page_addresses(book))
     if (
-        profile not in {SECTION_FILE_PROFILE, LIST_BODY_PROFILE, LITERAL_LABEL_PROFILE}
+        profile
+        not in {
+            SECTION_FILE_PROFILE,
+            LIST_BODY_PROFILE,
+            LITERAL_LABEL_PROFILE,
+            INTRINSIC_SCRIPT_PROFILE,
+        }
         and (profile == SOURCE_PAGE_PROFILE) != exact_pages
     ):
         raise ValueError("Generated EPUB profile must match explicit source-page address semantics")
