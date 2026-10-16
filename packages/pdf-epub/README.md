@@ -932,3 +932,14 @@ change typography, chapter roles, selectable text or reading order. The task sha
 the existing 32 refinement slots and provider grant/spend caps. Historical Title1,
 Inputs1–6 and Batch1–2 stay closed. This opt-in requires matching generated contracts,
 worker, semantic validator and provider authorization before corpus/reader qualification.
+
+### Host recognition wire version 2
+
+Gemini JSON-mode recognition now requests `ava-recognition-observation-2`. Its sparse style
+contract prefers `family`; it also accepts the finite spelling `font_family_role` for exactly
+`serif`, `sans-serif` or `monospace`, only when `family` is absent. The host projects that one
+explicit value to canonical `family`, preserving text, anchors, indentation and every other field.
+Both names together, invalid alias values, model-supplied style IDs and other unknown keys remain
+errors. Canonical schemas and the Python worker are unchanged. New prompt/schema bytes change the
+exact request hash; old observation-1 receipts are not reinterpreted or published. This is format
+compatibility, not source verification or permission to change finished content.

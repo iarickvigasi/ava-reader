@@ -1,12 +1,16 @@
 import { recognitionSchemas } from '../../../pdf-conversion/reconstruction/generated/schemas';
 import { PdfProviderError } from './errors';
-export const RECOGNITION_OBSERVATION_WIRE = 'ava-recognition-observation-1';
+import { OBSERVED_FONT_FAMILIES } from './recognition-observation-styles';
+export const RECOGNITION_OBSERVATION_WIRE = 'ava-recognition-observation-2';
 type Shape = { properties: Record<string, unknown>; required: string[] };
 export function recognitionObservationSchema(): Record<string, unknown> {
   const schema = structuredClone(
     recognitionSchemas.RecognitionResponse,
   ) as unknown as Shape & {
-    $defs: { RecognitionSegment: { allOf: Shape[] }; Style: Shape };
+    $defs: {
+      RecognitionSegment: { allOf: Shape[] };
+      Style: Shape & { not?: object };
+    };
   };
   schema.properties.schema_version = {
     const: RECOGNITION_OBSERVATION_WIRE,
@@ -23,6 +27,11 @@ export function recognitionObservationSchema(): Record<string, unknown> {
   schema.$defs.Style.required = schema.$defs.Style.required.filter(
     (name) => name !== 'id',
   );
+  schema.$defs.Style.properties.font_family_role = {
+    type: 'string',
+    enum: [...OBSERVED_FONT_FAMILIES],
+  };
+  schema.$defs.Style.not = { required: ['family', 'font_family_role'] };
   return schema;
 }
 const identity =
@@ -39,17 +48,22 @@ export function recognitionObservationSystem(system: string): string {
       system.split(styleExample).length !== 2)
   )
     throw new PdfProviderError('PDF_PROVIDER_REQUEST_UNAUTHORIZED');
-  return system
-    .replace(
-      identity,
-      `Set schema_version to ${RECOGNITION_OBSERVATION_WIRE} and method to ocr.\nDo not return task_id, source_sha256, render_sha256, segment.page or style.id; the host supplies them.`,
-    )
-    .replace(
-      styleId,
-      'properties in a style object; omitted properties mean unknown, NOT false.',
-    )
-    .replace(
-      styleExample,
-      'Repeat each sparse observed style OBJECT at each occurrence. For example:\n"style":{"bold":false,"italic":false}.',
-    );
+  return (
+    system
+      .replace(
+        identity,
+        `Set schema_version to ${RECOGNITION_OBSERVATION_WIRE} and method to ocr.\nDo not return task_id, source_sha256, render_sha256, segment.page or style.id; the host supplies them.`,
+      )
+      .replace(
+        styleId,
+        'properties in a style object; omitted properties mean unknown, NOT false.',
+      )
+      .replace(
+        styleExample,
+        'Repeat each sparse observed style OBJECT at each occurrence. For example:\n"style":{"family":"serif","bold":false,"italic":false}.',
+      ) +
+    '\nUse style.family for font role: serif, sans-serif or monospace. ' +
+    'Wire version 2 also accepts font_family_role with exactly one of those values, ' +
+    'only when family is absent. Never emit both names or invent other style keys.'
+  );
 }

@@ -4,20 +4,12 @@ import { PdfProviderError } from './errors';
 import { RECOGNITION_OBSERVATION_WIRE } from './recognition-observation-contract';
 import { recognitionObservationTask } from './recognition-observation-task';
 import type { ProviderTask } from './types';
+import { projectObservationStyles } from './recognition-observation-styles';
 const record = (value: unknown): value is Record<string, unknown> =>
   value !== null && typeof value === 'object' && !Array.isArray(value);
 const refuse = (): never => {
   throw new PdfProviderError('PDF_PROVIDER_OUTPUT_INVALID');
 };
-function refuseStyleIds(value: unknown): void {
-  if (Array.isArray(value)) {
-    value.forEach(refuseStyleIds);
-    return;
-  }
-  if (!record(value)) return;
-  if (record(value.style) && Object.hasOwn(value.style, 'id')) refuse();
-  Object.values(value).forEach(refuseStyleIds);
-}
 // A per-preparation closure: route/request reuse fencing happens before it is called.
 export function recognitionObservationDecoder(task: ProviderTask) {
   const trusted = recognitionObservationTask(task);
@@ -44,7 +36,7 @@ export function recognitionObservationDecoder(task: ProviderTask) {
       )
     )
       return refuse();
-    refuseStyleIds(raw);
+    projectObservationStyles(raw);
     const canonical = {
       ...raw,
       schema_version: trusted.response_schema_version,

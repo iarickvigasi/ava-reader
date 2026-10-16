@@ -4,7 +4,7 @@ import {
 } from './recognition-observation-contract';
 import { observationTask } from './recognition-observation-fixture';
 import { recognitionSchemas } from '../../../pdf-conversion/reconstruction/generated/schemas';
-it('projects only host-owned fields out of the canonical contract', () => {
+it('projects host-owned fields and adds only the versioned finite font alias', () => {
   const before = JSON.stringify(recognitionSchemas.RecognitionResponse);
   const schema = recognitionObservationSchema() as {
     properties: Record<string, unknown>;
@@ -37,7 +37,7 @@ it('fails closed on metadata instruction drift without changing canonical system
   expect(projected).not.toContain('Copy the supplied task/source/render');
   expect(projected).not.toContain('with its own ID');
   expect(projected).not.toContain('"id":"body"');
-  expect(projected).toContain('ava-recognition-observation-1');
+  expect(projected).toContain('ava-recognition-observation-2');
   expect(() =>
     recognitionObservationSystem(
       system.replace('Copy the supplied', 'Copy supplied'),
