@@ -75,6 +75,9 @@ def word_wrap_assembly(
     from .cover_region_coverage import cover_region_coverage
 
     pages = cover_region_coverage(pages, segments, prepared, state)
+    from .source_region_coverage import source_region_coverage
+
+    pages = source_region_coverage(pages, state)
     segments = corroborate_ocr_font_faces(source, prepared, segments, state)
     for page in pages:
         page["label"] = state.page_labels.get(page["number"])

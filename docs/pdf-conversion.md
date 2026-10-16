@@ -553,6 +553,17 @@ Native regions, real columns, later pages and uncorroborated overlaps retain the
 The complete SourcePage and canonical graph validators still apply. Authored and minimal saved-source
 checks establish this repair's scope; full-book EPUB and reader qualification remain separate.
 
+The same captured continuation pipeline separately projects overlapping text coverage on later
+pages. Adjacent, source-owned text envelopes may share a region only within one native/OCR route
+and semantic column; real columns also retain their band. Each original owner, native-line ID,
+source box, style and semantic placement stays distinct. Exact evidence membership is required;
+figures, tables, mixed routes, reversed order and cross-column conflicts remain guarded. The whole
+SourcePage validates before affected region references change, before page-start capture and the
+sparse word-wrap catalogue. Region changes can change sparse candidate identity: reuse still
+requires the existing exact comparison, without rebinding older decisions. Focused regression
+checks cover aliases, unique native witnesses and page starts; full installed/book qualification
+remains a separate gate.
+
 Cover integration follow-up: source artwork uses one explicit first-page cover layer, independent
 of ordered text bands. Updated generated contracts must be deployed/qualified together. A hashed
 validator-owned publication report projects the cover resource ID; first publication binds only
