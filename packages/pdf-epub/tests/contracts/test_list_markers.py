@@ -30,3 +30,18 @@ class ListMarkerTests(unittest.TestCase):
             with self.subTest(mutation=mutation), self.assertRaises(ValidationError):
                 ListGroup.model_validate({**raw, **mutation})
         ListGroup.model_validate({**raw, "ordered": False, "start": None, "marker_style": "bullet"})
+
+    def test_literal_labels_allow_unordered_groups_without_changing_old_digests(self):
+        for ordered, start in [(True, 1), (False, None)]:
+            group = ListGroup.model_validate(
+                dict(
+                    id="named",
+                    ordered=ordered,
+                    start=start,
+                    depth=1,
+                    item_ids=["named-item"],
+                    marker_style="none",
+                )
+            )
+            self.assertEqual(group.marker_style, "none")
+            self.assertEqual(group.ordered, ordered)

@@ -83,7 +83,14 @@ Qualified native ordered lists with printed English word ordinals retain those l
 canonical text, including their styles and positions. The finite `none` marker style suppresses
 invented numeric labels and requires `literal-list-markers` reader qualification. It does not classify
 ordinary prose beginning with “First” as a list. Incompatible literal/generated marker modes form
-separate list groups. An optional item-local `literal_label` stores the retained prefix boundary and
+separate list groups. Already-qualified ordered observations with named statement labels also retain
+exact text: one to three ASCII uppercase letters plus baseline digits matching the observed ordinal,
+optionally followed by ASCII suffix digits with explicit, unambiguous superscript style. Final list compilation emits an
+unordered `none` group without counters; labels, spans, links and source positions stay fixed.
+Missing/conflicting ordinal, depth or script proof refuses; reference-bearing suffixes remain outside
+this bounded form; intrinsic Unicode superscript/subscript tokens refuse. Ordinary generated-list continuity and prose classification are unchanged. This
+late representation decision does not change pre-wrap tasks or authorize response/receipt edits.
+An optional item-local `literal_label` stores the retained prefix boundary and
 source-measured column width when unique native glyph geometry proves it. EPUB profile2.6 and the
 canonical reader render this column without copying text or changing semantic offsets. Unmeasured
 or conflicting geometry keeps the exact text without inventing a gutter; a final text/link conflict

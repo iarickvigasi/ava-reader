@@ -41,6 +41,10 @@ class ListGroup(Record):
 
     @model_validator(mode="after")
     def marker_matches_order(self) -> Self:
-        if self.marker_style is not None and (self.marker_style == "bullet") == self.ordered:
+        # Literal labels live in text for either ordinal words or named identifiers.
+        if (
+            self.marker_style not in {None, "none"}
+            and (self.marker_style == "bullet") == self.ordered
+        ):
             raise ValueError("List marker must match ordered or unordered semantics")
         return self

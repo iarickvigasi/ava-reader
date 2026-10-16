@@ -3,6 +3,7 @@
 from typing import Any
 
 from .assembly_state import AssemblyState
+from .named_list_labels import named_list_label
 
 
 def assemble_lists(state: AssemblyState, chapters: list[dict[str, Any]]) -> None:
@@ -16,20 +17,21 @@ def assemble_lists(state: AssemblyState, chapters: list[dict[str, Any]]) -> None
                 continue
             segment = state.segments[block["id"]]
             depth = segment.list_depth or 1
-            ordered = bool(segment.list_ordered)
+            literal = named_list_label(segment)
+            ordered = False if literal else bool(segment.list_ordered)
+            marker = "none" if literal else state.marker_styles.get(block["id"])
             group = stack.get(depth)
             if depth > 1 and depth - 1 not in previous:
                 raise ValueError("Nested list has no source parent")
             if (
                 group is None
                 or group["ordered"] != ordered
-                or (group["marker_style"] == "none")
-                != (state.marker_styles.get(block["id"]) == "none")
+                or (group["marker_style"] == "none") != (marker == "none")
             ):
                 group = dict(
                     id=f"list-{len(state.lists)}",
                     ordered=ordered,
-                    marker_style=state.marker_styles.get(block["id"]),
+                    marker_style=marker,
                     start=(segment.list_start if segment.list_start is not None else 1)
                     if ordered
                     else None,
