@@ -1,3 +1,4 @@
+import { recognitionGenerationSchema } from './recognition-generation-schema';
 import { recognitionSchemas } from '../../../pdf-conversion/reconstruction/generated/schemas';
 import { providerResponseSchema } from './response-schema';
 import { geminiRecognitionSchema } from './gemini-schema';
@@ -20,7 +21,14 @@ it('selects only Gemini recognition v2 while retaining full task identity', () =
   const body = JSON.parse(encoded.request.toString()) as {
     response_format: object;
   };
-  expect(body.response_format).toEqual({ type: 'json_object' });
+  expect(body.response_format).toEqual({
+    type: 'json_schema',
+    json_schema: {
+      name: 'ava_recognition_observation',
+      strict: true,
+      schema: recognitionGenerationSchema(),
+    },
+  });
   expect(providerResponseSchema(recognitionRoute.modelId, recognition)).toEqual(
     geminiRecognitionSchema(recognition.responseSchema),
   );

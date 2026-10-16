@@ -1,3 +1,4 @@
+import { recognitionGenerationSchema } from '../../library/pdf-import/providers/recognition-generation-schema';
 import { providerResponseSchema } from '../../library/pdf-import/providers/response-schema';
 import {
   recognitionObservationSchema,
@@ -23,7 +24,14 @@ export function recognitionRequestGrammar(
     content[0].type !== 'text'
   )
     throw new Error('Missing recognition host guide');
-  expect(body.response_format).toEqual({ type: 'json_object' });
+  expect(body.response_format).toEqual({
+    type: 'json_schema',
+    json_schema: {
+      name: 'ava_recognition_observation',
+      strict: true,
+      schema: recognitionGenerationSchema(),
+    },
+  });
   expect(body.messages).toEqual([
     {
       ...task.messages[0],

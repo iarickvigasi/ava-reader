@@ -1,3 +1,4 @@
+import { recognitionGenerationSchema } from './recognition-generation-schema';
 import { recognitionResponse } from '../../../pdf-conversion/reconstruction/recognition-response';
 import { response } from '../../../pdf-conversion/reconstruction/test-fixture';
 import { wireSegment } from '../../../pdf-conversion/reconstruction/wire-segment-fixture';
@@ -28,7 +29,14 @@ it('projects Gemini recognition with the exact complete contract and unchanged t
     content = body.messages[1].content;
   if (typeof original === 'string' || typeof content === 'string')
     throw new Error('fixture');
-  expect(body.response_format).toEqual({ type: 'json_object' });
+  expect(body.response_format).toEqual({
+    type: 'json_schema',
+    json_schema: {
+      name: 'ava_recognition_observation',
+      strict: true,
+      schema: recognitionGenerationSchema(),
+    },
+  });
   expect(body.messages[0]).toEqual({
     ...recognitionProviderTask.messages[0],
     content: recognitionObservationSystem(

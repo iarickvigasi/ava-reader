@@ -950,7 +950,13 @@ worker, semantic validator and provider authorization before corpus/reader quali
 
 ### Host recognition wire version 2
 
-Gemini JSON-mode recognition now requests `ava-recognition-observation-2`. Its sparse style
+Gemini recognition requests `ava-recognition-observation-2` with a closed, single-shape
+generation schema. Native structure retains its existing JSON mode. The recognition grammar
+requires an explicit `chapter_start` decision on every segment and admits only declared style
+keys. It omits array-size maxima from provider generation because the tested provider rejects
+the complete schema with those maxima; the unchanged host and worker still enforce them.
+The full response contract remains prompt guidance and authoritative acceptance validation;
+provider schema compliance alone does not establish source fidelity. Its sparse style
 contract prefers `family`; it also accepts the finite spelling `font_family_role` for exactly
 `serif`, `sans-serif` or `monospace`, only when `family` is absent. The host projects that one
 explicit value to canonical `family`, preserving text, anchors, indentation and every other field.

@@ -6,9 +6,10 @@ import {
   recognitionObservationSystem,
 } from './recognition-observation-contract';
 import { recognitionObservationDecoder } from './recognition-observation-output';
+import { recognitionGenerationSchema } from './recognition-generation-schema';
 
-// JSON mode avoids Gemini's provider-side complex-schema compiler. The unchanged
-// canonical schema and source-bound host/worker checks still decide acceptance.
+// Native structure retains JSON mode. Recognition uses a closed, single-shape
+// generation grammar; unchanged host/worker checks still decide acceptance.
 export function providerRequestFormat(modelId: string, task: ProviderTask) {
   const schema = providerResponseSchema(modelId, task);
   if (
@@ -60,6 +61,15 @@ export function providerRequestFormat(modelId: string, task: ProviderTask) {
           ? { ...message, content: [guidance, ...message.content] }
           : message,
     ),
-    responseFormat: { type: 'json_object' },
+    responseFormat: recognition
+      ? {
+          type: 'json_schema',
+          json_schema: {
+            name: 'ava_recognition_observation',
+            strict: true,
+            schema: recognitionGenerationSchema(),
+          },
+        }
+      : { type: 'json_object' },
   };
 }
