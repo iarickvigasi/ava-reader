@@ -37,6 +37,11 @@ def _selected_wraps(
         original = source[start:end]
         if text.startswith(original, canonical_at):
             canonical_at += len(original)
+        elif replacement == "" and text.startswith(" ", canonical_at):
+            # A retained internal wrap and a compacted cross-owner wrap may coexist.
+            # Both are witnessed separator changes; printed hyphens stay identity.
+            selected.append((start, end, " "))
+            canonical_at += 1
         elif text.startswith(replacement, canonical_at):
             selected.append((start, end, replacement))
             canonical_at += len(replacement)

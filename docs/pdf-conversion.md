@@ -436,7 +436,10 @@ After source-bound refinement, ordinary native prose may remove the proven layou
 letter-hyphen and letter. The printed hyphen remains. The normalization map accounts for the exact
 deleted whitespace, and span/link/target/alias offsets move together before graph assembly. Inline
 spaces, OCR text and literal verse/code/quotes are not rewritten. Confirmed native page/column joins
-use the actual separator length. This is layout recovery, not spelling correction or dehyphenation.
+use the actual separator length. Each wrap retains its own space, newline or qualified empty
+separator, so internal line wraps can coexist with a compacted page/column boundary. Printed
+hyphens and all other characters remain exact. This is layout recovery, not spelling correction
+or dehyphenation.
 
 ### Source-bound PDF navigation
 
