@@ -2,6 +2,7 @@
 
 from ..contracts.common import document_digest, text_digest
 from .assembly_state import AssemblyState
+from .compound_heading_style_update import compound_style_update
 from .printed_title_v2_contract import FrontmatterTitleResponse, FrontmatterTitleTask
 from .refinement_contract import (
     AnyRefinementResponse,
@@ -146,7 +147,7 @@ def apply_refinement(
                     chapter_start=patch.chapter_start,
                     chapter_role=patch.chapter_role,
                 )
-            segment = Segment.model_validate(values)
+            segment = compound_style_update(Segment.model_validate(values), state)
         result.append(segment)
     try:
         validate_refined_graph(result, parents)
@@ -162,7 +163,11 @@ def apply_refinement(
     result = refined_boundaries(result, edges)
     state.refined_joins.update(edges)
     state.refinement_evidence.extend(evidence)
-    state.structure_findings = [f for f in state.structure_findings if f.block_id not in updates]
+    state.structure_findings = [
+        f
+        for f in state.structure_findings
+        if f.block_id not in updates or f.severity == "information"
+    ]
     from .source_feature_apply import apply_source_features
 
     feature_receipts = {

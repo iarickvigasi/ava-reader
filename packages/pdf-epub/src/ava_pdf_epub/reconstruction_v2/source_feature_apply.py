@@ -6,6 +6,7 @@ from typing import Any
 
 from ..contracts.common import document_digest
 from .assembly_state import AssemblyState
+from .compound_heading_style_update import compound_style_update
 from .refinement_contract import AnyRefinementResponse
 from .segments import Segment
 from .source_feature_response import STYLE_FEATURES
@@ -77,5 +78,5 @@ def apply_source_features(
                 exclude={"kind", "style"}
             ):
                 raise ValueError("Source feature patch changed immutable source content")
-            result[segment.id] = updated
+            result[segment.id] = compound_style_update(updated, state)
     return [result[s.id] for s in segments]

@@ -12,6 +12,7 @@ from ..contracts.styles import Style
 from .findings import Finding
 from .native_hyphen_decisions import NativeHyphenDecision
 from .native_line_offsets import NativeLineOffset
+from .segments import Segment
 
 
 @dataclass
@@ -36,6 +37,7 @@ class AssemblyState:
     normalization_maps: dict[str, LayoutNormalizationMap | LayoutNormalizationMapV3] = field(
         default_factory=dict
     )
+    compound_heading_sources: dict[str, tuple[Segment, ...]] = field(default_factory=dict)
     word_wrap_active: bool = False
     source_prefix_cuts: dict[str, PrefixCutReceipt] = field(default_factory=dict)
     bibliographic_source_ranges: dict[str, tuple[int, int, int, str, str, str]] = field(
@@ -90,6 +92,7 @@ class AssemblyState:
         self.native_hyphen_decisions.clear()
         self.native_source_lines.clear()
         self.normalization_maps.clear()
+        self.compound_heading_sources.clear()
         self.source_prefix_cuts.clear()
         self.bibliographic_source_ranges.clear()
         self.bibliographic_projections.clear()

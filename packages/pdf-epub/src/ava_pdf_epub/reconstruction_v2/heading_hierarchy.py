@@ -1,6 +1,6 @@
 """Rank native section headings against source chapter typography, not page-local body medians."""
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from statistics import median
 
 from .font_style import glyph_size
@@ -17,6 +17,7 @@ def heading_hierarchy(
     prepared: Sequence[AnyPreparedPage],
     corroborated_sections: set[str],
     deferred_native: set[str] | None = None,
+    compound_sources: Mapping[str, tuple[Segment, ...]] | None = None,
 ) -> list[Segment]:
     wanted = {
         key for segment in segments if segment.kind == "heading" for key in segment.native_line_ids
@@ -27,9 +28,15 @@ def heading_hierarchy(
         for line in page.observation.lines
         if line.id in wanted
     }
+    size_sources = [
+        s.model_copy(update={"native_line_ids": compound_sources[s.id][0].native_line_ids})
+        if compound_sources and s.id in compound_sources
+        else s
+        for s in segments
+    ]
     sizes = {
         segment.id: median(lines[key] for key in segment.native_line_ids)
-        for segment in segments
+        for segment in size_sources
         if segment.kind == "heading"
         and segment.method == "native"
         and segment.native_line_ids

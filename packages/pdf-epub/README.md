@@ -327,6 +327,20 @@ without complete source-bound decisions. The global parent validator remains str
 observed heading parent emits `HEADING_PARENT_MISSING` with bounded page/block/geometry provenance;
 unknown failures explicitly have incomplete diagnostics. These diagnostics contain no book text.
 
+Under `ava-frontmatter-title-1`, a contents/bookmark title may corroborate one adjacent,
+same-page group of heading fragments (up to 16 fragments). The complete title must match
+uniquely; grouping never skips body text, crosses columns, mixes native/OCR authority or
+absorbs another detected chapter. Case/whitespace and the existing hyphen/en-dash comparison
+are navigation-only; an explicit `Appendix N` label may use a colon separator in navigation.
+Printed words and punctuation stay unchanged. One resulting heading supplies the complete
+chapter/TOC title, while original source regions, native line hashes, annotations, exact link
+positions and the first source-page destination are retained. Inline font runs keep measured
+size proportions through later typography corrections. Independent line indentation/alignment
+cannot be reproduced by one reflowable heading and is reported as
+`COMPOUND_HEADING_LAYOUT_REFLOWED`, not claimed as print-layout fidelity. Ambiguous groups or
+unrepresentable font runs still require review. A bold, body-sized “Chapter …” label remains
+a provisional subsection; complete source contents/outline evidence can promote it to a chapter.
+
 ## Deliberate unsupported/review paths
 
 - Annotation policy is shared by admission and v2 preparation. Verified empty FreeText is inert;

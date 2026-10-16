@@ -23,6 +23,18 @@ def capture_page_starts(
         if segment.page in starts:
             continue
         evidence = state.evidence.get(segment.id, [])
+        components = state.compound_heading_sources.get(segment.id)
+        if components:
+            first = components[0]
+            if (
+                first.id != segment.id
+                or first.page != segment.page
+                or not segment.text.startswith(first.text + "\n")
+                or len(evidence) != len(components)
+                or evidence[0]["box"] != first.box.model_dump()
+            ):
+                raise ValueError("Compound source-page start lost its first component")
+            segment, evidence = first, evidence[:1]
         if len(evidence) != 1 or evidence[0]["page"] != segment.page:
             raise ValueError("Source-page start requires one prejoin page-owned observation")
         text = None if segment.kind in {"figure", "table", "separator"} else segment.text

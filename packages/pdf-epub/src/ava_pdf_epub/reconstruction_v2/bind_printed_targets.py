@@ -7,7 +7,9 @@ from .observed_table_grid import observed_table_grid
 from .segments import ObservedSpan, Segment
 
 
-def bind_printed_targets(segments: list[Segment], state: AssemblyState) -> list[Segment]:
+def bind_printed_targets(
+    segments: list[Segment], state: AssemblyState, *, defer_missing: bool = False
+) -> list[Segment]:
     targets: dict[str, list[tuple[str, str]]] = defaultdict(list)
     for segment in segments:
         if segment.text and segment.kind not in {"figure", "table", "separator", "furniture"}:
@@ -24,6 +26,11 @@ def bind_printed_targets(segments: list[Segment], state: AssemblyState) -> list[
             matches = [
                 (target, parent) for target, parent in targets[span.target_text] if target != origin
             ]
+            if not matches and defer_missing:
+                # A complete source-authorized compound title may not exist until
+                # heading assembly. The mandatory later pass must resolve it.
+                output.append(span)
+                continue
             if len(matches) != 1:
                 raise ValueError("Printed internal reference is missing or ambiguous in source")
             target, parent = matches[0]

@@ -63,7 +63,12 @@ def _classify(
         labels = (
             r"chapter\b|розділ\b|частина\b" if profile_id == BILINGUAL_PROFILE else r"chapter\b"
         )
-        chapter = bool(re.match(r"^(?:" + labels + r"|[0-9]+[.)]\s|[IVXLCDM]+[.)]?\s)", text, re.I))
+        # A chapter label inside notes/index material is still a subsection when
+        # its measured typography is secondary. Contents/outline can separately
+        # promote same-size genuine chapter headings through whole-book proof.
+        chapter = large and bool(
+            re.match(r"^(?:" + labels + r"|[0-9]+[.)]\s|[IVXLCDM]+[.)]?\s)", text, re.I)
+        )
         return {
             "kind": "heading",
             "heading_level": 1 if large else 2,

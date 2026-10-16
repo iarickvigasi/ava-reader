@@ -51,9 +51,14 @@ def source_structure(
         )
         outline = separate_outline_aliases(outline, printed, first_body_page, state, folios=folios)
     claims = [*printed, *outline]
+    resolved_targets: list[str] | None = None
+    if state.source_title_policy == "ava-frontmatter-title-1":
+        from .compound_heading_claims import resolve_heading_claims
+
+        segments, resolved_targets = resolve_heading_claims(claims, folios, segments, state)
     promoted: dict[str, int] = {}
     ranked: set[str] = set()
-    for claim in claims:
+    for claim_index, claim in enumerate(claims):
         page = (
             claim.pdf_page
             if claim.pdf_page is not None
@@ -66,7 +71,11 @@ def source_structure(
             for s in segments
             if (s.kind == "heading" or s.structure_candidate)
             and s.page == page
-            and title_key(s.text) == title_key(claim.title)
+            and (
+                s.id == resolved_targets[claim_index]
+                if resolved_targets is not None
+                else title_key(s.text) == title_key(claim.title)
+            )
         ]
         if len(matches) != 1:
             raise ValueError("Contents or outline disagrees with a chapter opening")
@@ -160,9 +169,13 @@ def source_structure(
             for s in prefix
         ]
         body = [s for s in result if s.page >= first_body]
-        result = prefix + heading_hierarchy(body, prepared, sections, deferred_native)
+        result = prefix + heading_hierarchy(
+            body, prepared, sections, deferred_native, state.compound_heading_sources
+        )
     else:
-        result = heading_hierarchy(result, prepared, sections, deferred_native)
+        result = heading_hierarchy(
+            result, prepared, sections, deferred_native, state.compound_heading_sources
+        )
     # A source-observed notes heading already establishes the numbered entry role;
     # do not ask a second model to reinterpret those entries as chapters.
     notes = False

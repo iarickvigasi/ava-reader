@@ -33,7 +33,7 @@ def refinement_catalogue(
         if include_bibliography
         else []
     )
-    unranked = {f.block_id for f in state.structure_findings}
+    unranked = {f.block_id for f in state.structure_findings if f.severity != "information"}
     headings = [s for s in segments if s.kind == "heading" or s.structure_candidate]
     prose = [
         s

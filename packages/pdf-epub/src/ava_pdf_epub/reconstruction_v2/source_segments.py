@@ -7,6 +7,7 @@ from typing import Any
 from .annotation_spans import apply_annotation_spans
 from .assemble_pages import assemble_pages
 from .assembly_state import AssemblyState
+from .bind_printed_targets import bind_printed_targets
 from .continuation_margins import continuation_margins
 from .linked_furniture import preserve_linked_furniture
 from .native_layout_policy import NativeLayoutPolicy
@@ -49,10 +50,30 @@ def source_segments(
     qualified = preserve_linked_furniture(source, prepared, qualified, state)
     qualified = corroborate_running_furniture(prepared, qualified, state)
     pages, segments = assemble_pages(prepared, qualified, state)
+    if source_title_policy == "ava-frontmatter-title-1":
+        # Locate annotations and both link ends on unchanged source owners before
+        # compound headings introduce larger boxes or repeated component text.
+        segments = _map_source_links(source, scratch, prepared, segments, state)
+        segments = bind_printed_targets(segments, state, defer_missing=True)
     segments = source_structure(source, prepared, qualified, segments, state)
+    if source_title_policy == "ava-frontmatter-title-1":
+        segments = bind_printed_targets(segments, state)
     segments = recover_native_indents(segments, prepared, state)
     segments = recover_ocr_indents(segments, prepared, scratch, state)
     continuation_margins(segments, prepared, scratch, state)
+    if source_title_policy is None:
+        segments = _map_source_links(source, scratch, prepared, segments, state)
+    state.segments.update({s.id: s for s in segments})
+    return pages, segments, state
+
+
+def _map_source_links(
+    source: Path,
+    scratch: Path,
+    prepared: Sequence[AnyPreparedPage],
+    segments: list[Segment],
+    state: AssemblyState,
+) -> list[Segment]:
     for checkpoint in prepared:
         local = [s for s in segments if s.page == checkpoint.observation.number]
         mapped = {
@@ -64,5 +85,4 @@ def source_segments(
         segments = [mapped.get(s.id, s) for s in segments]
         state.segments.update(mapped)
     segments = apply_pdf_links(source, prepared, segments, state, scratch)
-    state.segments.update({s.id: s for s in segments})
-    return pages, segments, state
+    return segments
