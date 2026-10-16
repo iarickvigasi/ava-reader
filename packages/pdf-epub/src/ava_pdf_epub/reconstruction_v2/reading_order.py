@@ -15,8 +15,11 @@ class Placement:
 
 def reading_order(segments: list[Segment], width: float) -> list[Placement]:
     midpoint = width / 2
-    left = [s for s in segments if s.box.x1 < midpoint]
-    right = [s for s in segments if s.box.x0 > midpoint]
+    # A side illustration beside a credit/title is not evidence of two text columns.
+    # Keep figures in placement; only exclude them as witnesses for column inference.
+    witnesses = [s for s in segments if s.kind != "figure"]
+    left = [s for s in witnesses if s.box.x1 < midpoint]
+    right = [s for s in witnesses if s.box.x0 > midpoint]
     paired = any(a.box.y0 < b.box.y1 and b.box.y0 < a.box.y1 for a in left for b in right)
     if not paired:
         return [Placement(s, index, 0) for index, s in enumerate(sorted(segments, key=_position))]
