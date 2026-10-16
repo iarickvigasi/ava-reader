@@ -200,4 +200,7 @@ def source_structure(
     )
     printer_ids = set(printer_labels) if prepared[0].profile_id == BILINGUAL_PROFILE else None
     source_references(result, folios, state, printer_ids)
+    from .source_nonquote_context import record_contents_context
+
+    record_contents_context(printed, result, state)
     return result

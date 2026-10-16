@@ -34,7 +34,12 @@ The [book-level refinement phase](../../docs/pdf-conversion.md) preserves origin
 observations and accepts only source-bound structure/style/join decisions, never replacement prose.
 The current host policy also requests finite source comparisons for OCR quotations and generic
 block typography, with complete local reference crops. Unknown optional features remain recorded;
-unresolved essential quotation roles refuse conversion. These comparisons preserve text, inline
+unresolved essential quotation roles refuse conversion. Source-correlated contents rows
+and sole centered conventional blank-page notices retain their paragraph role and observed typography;
+italics alone do not turn them into quotations. Contents exemptions require a complete immutable
+row whose printed folio and chapter opening have resolved. A partial row, arbitrary epigraph,
+extra page content or a declared quotation cannot use this exemption. Missing body-reference
+comparisons remain explicitly unknown, without discarding existing styles or inventing relative size. These comparisons preserve text, inline
 ranges and chapter structure. Versioned task 4/response 4 and report 2 keep this authority separate
 from historical refinement contracts; see the [finite comparison boundary](../../docs/pdf-conversion.md#finite-ocr-quotation-and-style-comparisons).
 [Runtime checks](../../docs/pdf-conversion-operations.md) and
