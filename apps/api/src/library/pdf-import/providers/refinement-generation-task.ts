@@ -39,12 +39,15 @@ export function recoveredRefinementGenerationTask(task: ProviderTask) {
       'required_join_evidence',
       'required_metadata_evidence',
       'required_presentation_evidence',
+      'required_feature_evidence',
     ])
       delete fields[key];
     const recovered = validatePacket(
       fields.schema_version === 'ava-book-refinement-task-5'
         ? 'PresentationRefinementTask'
-        : 'BookRefinementTask',
+        : fields.schema_version === 'ava-book-refinement-task-4'
+          ? 'SourceFeatureTask'
+          : 'BookRefinementTask',
       {
         ...fields,
         image: {

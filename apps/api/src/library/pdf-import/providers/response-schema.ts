@@ -1,4 +1,5 @@
 import { continuationGenerationSchema } from './continuation-generation-schema';
+import { sourceFeatureGenerationSchema } from './source-feature-generation-schema';
 import { refinementGenerationSchema } from './refinement-generation-schema';
 import {
   FIGURE_ALT_SCHEMA,
@@ -12,7 +13,7 @@ import type { ProviderTask } from './types';
 import { nativeStructureGenerationSchema } from './native-structure-generation-schema';
 // Records the projection revision; actual schema bytes change request hashes.
 // Canonical task identity and accepted response semantics remain unchanged.
-export const GEMINI_GRAMMAR_VERSION = 'ava-gemini-recognition-grammar-7';
+export const GEMINI_GRAMMAR_VERSION = 'ava-gemini-recognition-grammar-8';
 export function providerResponseSchema(modelId: string, task: ProviderTask) {
   if (
     modelId.startsWith('google/gemini-') &&
@@ -75,6 +76,8 @@ export function providerResponseSchema(modelId: string, task: ProviderTask) {
     return continuationGenerationSchema(grammar, task);
   if (task.schemaVersion === 'ava-book-refinement-response-3')
     return refinementGenerationSchema(grammar, task);
+  if (task.schemaVersion === 'ava-book-refinement-response-4')
+    return sourceFeatureGenerationSchema(grammar, task);
   return task.schemaVersion === 'ava-native-structure-response-2'
     ? nativeStructureGenerationSchema(grammar, task)
     : grammar;

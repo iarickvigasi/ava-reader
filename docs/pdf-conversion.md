@@ -413,6 +413,14 @@ for optional appearances outside the catalogue; an unresolved essential role ref
 A comparison result applies only to its named appearance, never to every paragraph with a similar
 style. Generic font observations do not imply recovery or embedding of the original typeface.
 
+Gemini generation also constrains each feature's observed value to the existing worker Style
+types and numeric bounds. In particular, a column's horizontal position must not become a large
+paragraph inset. A full-width introduction or another column is not a proved margin reference;
+missing local column/em context stays explicitly unknown. Never clamp an observation to a limit
+or invent a smaller value to obtain acceptance. This generation guidance does not repair the
+host's column geometry. Exact per-node feature/evidence coverage and essential role checks remain
+the worker's authority; canonical task/response contracts and historical prompt bytes are unchanged.
+
 These comparisons use task/response versions 4 and prompt 7, separately from the unchanged historical
 task/response versions 3 and prompts 3–6. The API requires reconstruction report 2 for new publication:
 its finite feature ledger must agree with the final canonical block, OCR page/box and exact text

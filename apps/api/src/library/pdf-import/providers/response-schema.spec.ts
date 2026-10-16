@@ -58,7 +58,6 @@ it.each([
     'RecognitionAnchorContextResponse',
     'ava-recognition-anchor-context-response-1',
   ],
-  ['SourceFeatureResponse', 'ava-book-refinement-response-4'],
   ['WordWrapResponse', 'ava-native-word-wrap-response-1'],
   ['NativeStructureResponse', 'ava-native-structure-response-1'],
 ] as const)('preserves historical %s generation bytes', (name, version) => {

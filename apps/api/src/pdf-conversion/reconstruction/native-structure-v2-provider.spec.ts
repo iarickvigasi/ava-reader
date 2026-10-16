@@ -51,7 +51,7 @@ it('pins prompt/canonical schema and sends closed host-contract guidance in JSON
     response_format: object;
     provider: { allow_fallbacks: boolean; only: string[] };
   };
-  expect(GEMINI_GRAMMAR_VERSION).toBe('ava-gemini-recognition-grammar-7');
+  expect(GEMINI_GRAMMAR_VERSION).toBe('ava-gemini-recognition-grammar-8');
   expect(body).toMatchObject({
     max_tokens: configuration.maxOutputTokens,
     stream: false,

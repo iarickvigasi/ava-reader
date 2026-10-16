@@ -1,5 +1,6 @@
 import { refinementProviderTask } from '../../../pdf-conversion/reconstruction/refinement-provider-task';
 import { refinementTask } from '../../../pdf-conversion/reconstruction/refinement-fixture';
+import { featureTask } from '../../../pdf-conversion/reconstruction/source-feature-contract-fixture';
 import { recognitionSchemas } from '../../../pdf-conversion/reconstruction/generated/schemas';
 import { providerRequestFormat } from './request-format';
 import { providerResponseSchema } from './response-schema';
@@ -71,13 +72,16 @@ it.each([
   ['WordWrapResponse', 'ava-native-word-wrap-response-1'],
   ['NativeStructureResponse', 'ava-native-structure-response-1'],
 ] as const)(
-  'retains exact historical %s format and message projection',
+  'retains %s request format and original message projection',
   (name, version) => {
-    const value = {
-      ...task,
-      schemaVersion: version,
-      responseSchema: recognitionSchemas[name],
-    };
+    const value =
+      name === 'SourceFeatureResponse'
+        ? refinementProviderTask(featureTask, featureTask.source_sha256)
+        : {
+            ...task,
+            schemaVersion: version,
+            responseSchema: recognitionSchemas[name],
+          };
     const modelId = 'google/gemini-contract-control';
     const format = providerRequestFormat(modelId, value);
     expect(JSON.stringify(format)).toBe(
