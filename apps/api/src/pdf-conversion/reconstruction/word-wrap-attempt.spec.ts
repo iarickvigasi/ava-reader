@@ -20,8 +20,8 @@ it('dispatches finite wrap chunks only after mixed original tasks and accepted r
     expect(result.payload).toEqual([wrapResponses[wordTask.batch_index]]);
   }
   expect(q.dispatch.mock.calls.slice(2).map(([t]) => t)).toMatchObject([
-    { purpose: 'resolve_structure', maxOutputTokens: 3072 },
-    { purpose: 'resolve_structure', maxOutputTokens: 3072 },
+    { purpose: 'resolve_structure', maxOutputTokens: 16384 },
+    { purpose: 'resolve_structure', maxOutputTokens: 16384 },
   ]);
   expect(
     q.dispatch.mock.calls.every(([, signal]) => signal === q.controller.signal),

@@ -442,6 +442,12 @@ native line-edge spaces and tabs remain identity text while only their newline c
 hyphens and all other characters remain exact. This is layout recovery, not spelling correction
 or dehyphenation.
 
+Sparse word-wrap requests reserve a 16,384-token output ceiling for up to 128 decisions, their
+source/task identities and response formatting. Route reasoning shares that ceiling; a compact
+JSON estimate alone is insufficient. The normal per-request reservation still checks this ceiling
+against every active spending limit before dispatch. A larger ceiling permits a complete response,
+but does not guarantee completion or authorize text changes, automatic retries or higher spending.
+
 ### Source-bound PDF navigation
 
 Link annotations preserve ordinary URI and direct/named GoTo destinations. A narrowly recognized

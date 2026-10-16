@@ -52,7 +52,8 @@ export function wordWrapProviderTask(
     ].sort((a, b) => a - b),
     promptVersion: WORD_WRAP_PROMPT_VERSION,
     schemaVersion: WORD_WRAP_RESPONSE_SCHEMA_VERSION,
-    maxOutputTokens: 3072,
+    // A full 128-decision response must share this ceiling with route reasoning.
+    maxOutputTokens: 16384,
     messages: [
       { role: 'system', content: WORD_WRAP_PROMPT },
       { role: 'user', content: body },
