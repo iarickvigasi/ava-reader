@@ -51,7 +51,12 @@ def validate_refinement_task(task: "HistoricalRefinementTask") -> None:
         and (
             n.kind != "heading"
             or n.observed_level is None
-            or (n.id in task.decision_ids and task.prompt_version != "ava-book-refinement-6")
+            or (
+                n.id in task.decision_ids
+                and task.prompt_version != "ava-book-refinement-6"
+                and (task.schema_version, task.prompt_version)
+                != ("ava-book-refinement-task-5", "ava-book-refinement-8")
+            )
         )
         for n in task.nodes
     ):

@@ -36,6 +36,7 @@ def native_page(
     *,
     source_layout_policy: NativeLayoutPolicy | None = None,
     source_line_maps: list[NativeLineOffset] | None = None,
+    alignment_origins: dict[str, str] | None = None,
 ) -> list[Segment]:
     layout_policy = validate_layout_policy(source_layout_policy)
     if any(
@@ -100,7 +101,9 @@ def native_page(
     )
     complete = (
         native_spacing(
-            page, [p.segment for p in preserve_paired_lines(join_paragraphs(ordered), ordered)]
+            page,
+            [p.segment for p in preserve_paired_lines(join_paragraphs(ordered), ordered)],
+            alignment_origins=alignment_origins,
         )
         + furniture_segments
     )

@@ -10,7 +10,12 @@ from .reading_order import reading_order
 from .segments import Segment
 
 
-def native_spacing(page: PageObservation, segments: list[Segment]) -> list[Segment]:
+def native_spacing(
+    page: PageObservation,
+    segments: list[Segment],
+    *,
+    alignment_origins: dict[str, str] | None = None,
+) -> list[Segment]:
     lookup = {line.id: line for line in page.lines}
     columns = {p.segment.id: (p.band, p.column) for p in reading_order(segments, page.width_pt)}
     output = []
@@ -34,6 +39,14 @@ def native_spacing(page: PageObservation, segments: list[Segment]) -> list[Segme
             if center and segment.box.x1 - segment.box.x0 < page.width_pt * 0.8
             else "start"
         )
+        if alignment_origins is not None:
+            alignment_origins[segment.id] = (
+                "existing"
+                if segment.style.align is not None
+                else "centered_source"
+                if align == "center"
+                else "fallback_start"
+            )
         align = segment.style.align or align
         if align == "center":
             if segment.style.indent_em is None:
