@@ -5,7 +5,6 @@ import {
 } from '../../../pdf-conversion/reconstruction/refinement-fixture';
 import { refinementProviderTask } from '../../../pdf-conversion/reconstruction/refinement-provider-task';
 import { validatePacket } from '../../../pdf-conversion/reconstruction/validate-packet';
-import { geminiRecognitionSchema } from './gemini-schema';
 import { providerResponseSchema } from './response-schema';
 import { jsonHash } from './hash';
 import type { BookRefinementTask } from '../../../pdf-conversion/reconstruction/generated/BookRefinementTask';
@@ -113,7 +112,7 @@ it.each([true, false])(
     expect(accepts(valid)).toBe(false);
   },
 );
-it('uses canonical false default and keeps metadata-only historical generation bytes', () => {
+it('uses canonical false default and requires complete metadata ranges', () => {
   const input = mixed();
   delete input.nodes[0].structure_candidate;
   expect(setup(input).accepts(response())).toBe(true);
@@ -121,9 +120,50 @@ it('uses canonical false default and keeps metadata-only historical generation b
   input.metadata_ids = ['ocr'];
   input.prompt_version = 'ava-book-refinement-4';
   const { schema, task } = setup(input);
-  expect(schema).toEqual(
-    geminiRecognitionSchema(task.responseSchema, task.schemaVersion),
-  );
+  expect(schema).not.toBe(task.responseSchema);
+  const valid = {
+    ...response(),
+    decisions: [],
+    metadata_decisions: [
+      {
+        node_id: 'ocr',
+        text_sha256: input.nodes[0].text_sha256,
+        evidence_ids: ['crop-ocr'],
+        role: 'author',
+        start: 0,
+        end: 5,
+      },
+    ],
+  };
+  const accepts = setup(input).accepts;
+  expect(accepts(valid)).toBe(true);
+  expect(validatePacket('BookRefinementResponse', valid)).toEqual(valid);
+  const missing = structuredClone(valid) as Record<string, unknown>;
+  delete (missing.metadata_decisions as Record<string, unknown>[])[0].end;
+  expect(accepts(missing)).toBe(false);
+  const declined = structuredClone(valid);
+  Object.assign(declined.metadata_decisions[0], {
+    role: null,
+    start: null,
+    end: null,
+  });
+  expect(accepts(declined)).toBe(true);
+  for (const change of [
+    { role: 'author', end: null },
+    { role: null },
+    { node_id: 'context' },
+    { start: -1 },
+    { end: 0 },
+    { end: 501 },
+  ]) {
+    const wrong = structuredClone(valid);
+    Object.assign(wrong.metadata_decisions[0], change);
+    expect({ change, accepted: accepts(wrong) }).toEqual({
+      change,
+      accepted: false,
+    });
+  }
+  expect(providerResponseSchema('other/model', task)).toBe(task.responseSchema);
 });
 it('refuses altered public context, bindings, flags, membership and duplicate IDs', () => {
   const { task } = setup();

@@ -12,7 +12,7 @@ import type { ProviderTask } from './types';
 import { nativeStructureGenerationSchema } from './native-structure-generation-schema';
 // Records the projection revision; actual schema bytes change request hashes.
 // Canonical task identity and accepted response semantics remain unchanged.
-export const GEMINI_GRAMMAR_VERSION = 'ava-gemini-recognition-grammar-6';
+export const GEMINI_GRAMMAR_VERSION = 'ava-gemini-recognition-grammar-7';
 export function providerResponseSchema(modelId: string, task: ProviderTask) {
   if (
     modelId.startsWith('google/gemini-') &&

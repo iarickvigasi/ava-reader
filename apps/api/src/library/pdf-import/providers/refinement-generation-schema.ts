@@ -1,5 +1,6 @@
 import { PdfProviderError } from './errors';
-import { refinementGenerationTask } from './refinement-generation-task';
+import { recoveredRefinementGenerationTask } from './refinement-generation-task';
+import { bibliographicGenerationSchema } from './bibliographic-generation-schema';
 import type { ProviderTask } from './types';
 
 type Schema = Record<string, unknown>;
@@ -14,8 +15,11 @@ export function refinementGenerationSchema(
   schema: Schema,
   task: ProviderTask,
 ): Schema {
-  const nodes = refinementGenerationTask(task);
+  const recovered = recoveredRefinementGenerationTask(task);
+  const byId = new Map(recovered.nodes.map((node) => [node.id, node]));
+  const nodes = recovered.decision_ids.map((id) => byId.get(id)!);
   const output = structuredClone(schema);
+  bibliographicGenerationSchema(output, recovered.metadata_ids ?? []);
   const decisions = record(record(output.properties).decisions);
   const variants = record(decisions.items).anyOf;
   if (!Array.isArray(variants) || variants.length !== 2)
@@ -31,8 +35,8 @@ export function refinementGenerationSchema(
     record(ocrFields.role_kind).type !== 'null'
   )
     throw new PdfProviderError('PDF_PROVIDER_REQUEST_INVALID');
-  // Metadata-only tasks have no role decisions. Retain the historical shape;
-  // installed coverage validation still requires an empty decisions array.
+  // Metadata-only tasks have no structure decisions; keep that array unchanged.
+  // The metadata branches above still require complete selected source ranges.
   if (!nodes.length) return output;
   const branches: Schema[] = [];
   for (const [branch, fields, isNative] of [

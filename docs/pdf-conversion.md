@@ -71,6 +71,11 @@ segment page numbers or inline style IDs. A decoder captured during exact reques
 restores dispatch-owned metadata, then applies the unchanged canonical response and worker checks.
 Both fresh and reused receipts use it after charge settlement; private raw responses stay unchanged.
 Generation-only prompt/schema projections leave canonical task identities and other model routes fixed.
+Bibliographic generation requires both inclusive start and exclusive end code-point offsets for a
+selected role. A declined role has null role/start/end. Omitting an endpoint cannot become an
+accepted metadata choice; exact text bounds, source identity and crop evidence remain worker checks.
+This generation constraint preserves historical canonical contracts and never fills omitted ranges
+in a saved response.
 This implementation does not establish live recognition quality or supplied-book acceptance.
 Text ranges use canonical code-point offsets with explicit UTF-16 browser mapping; surrogate splits
 are refused. Image bytes have validated media type, dimensions and hashes.

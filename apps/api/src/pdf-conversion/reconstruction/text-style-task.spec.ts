@@ -84,7 +84,7 @@ it.each([
     );
     expect(encoded.taskSha256).toBe(jsonHash(provider));
     expect(encoded.requestSha256).toBe(checksumBuffer(encoded.request));
-    expect(GEMINI_GRAMMAR_VERSION).toBe('ava-gemini-recognition-grammar-6');
+    expect(GEMINI_GRAMMAR_VERSION).toBe('ava-gemini-recognition-grammar-7');
     const stale = {
       ...configured,
       configuration: {

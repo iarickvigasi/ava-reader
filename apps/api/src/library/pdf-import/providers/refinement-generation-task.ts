@@ -63,10 +63,13 @@ export function recoveredRefinementGenerationTask(task: ProviderTask) {
     )
       throw new Error();
     const nodes = new Map(recovered.nodes.map((node) => [node.id, node]));
+    const metadataIds = recovered.metadata_ids ?? [];
     if (
       nodes.size !== recovered.nodes.length ||
       new Set(recovered.decision_ids).size !== recovered.decision_ids.length ||
-      recovered.decision_ids.some((id) => !nodes.has(id))
+      recovered.decision_ids.some((id) => !nodes.has(id)) ||
+      new Set(metadataIds).size !== metadataIds.length ||
+      metadataIds.some((id) => !nodes.has(id))
     )
       throw new Error();
     return recovered;
