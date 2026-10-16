@@ -1,3 +1,4 @@
+import type { CellGeometryReconstructionInput } from './generated/CellGeometryReconstructionInput';
 import type { NativeStructure2ReconstructionInput } from './generated/NativeStructure2ReconstructionInput';
 import type { FrontmatterTitleReconstructionInput } from './generated/FrontmatterTitleReconstructionInput';
 import type { FrontmatterTitleRefinementBatch } from './generated/FrontmatterTitleRefinementBatch';
@@ -20,11 +21,13 @@ export function validatePacketAuthority(name: string, value: unknown) {
   }
   if (
     name === 'FrontmatterTitleReconstructionInput' ||
-    name === 'NativeStructure2ReconstructionInput'
+    name === 'NativeStructure2ReconstructionInput' ||
+    name === 'CellGeometryReconstructionInput'
   ) {
     const packet = value as
       | FrontmatterTitleReconstructionInput
-      | NativeStructure2ReconstructionInput;
+      | NativeStructure2ReconstructionInput
+      | CellGeometryReconstructionInput;
     const parents = packet.geometry_corrections.map(
       (proof) => proof.response.original_task_id,
     );

@@ -28,6 +28,7 @@ from .protocol import (
     AnyReconstructionInput,
     prepared_result,
 )
+from .protocol_cell_geometry import CellGeometryReconstructionInput
 from .protocol_frontmatter_title import (
     FrontmatterTitleReconstructionInput,
     FrontmatterTitleRefinementBatch,
@@ -249,7 +250,11 @@ def _run(
                     raise ValueError("Recognition task/response coverage differs")
                 if isinstance(request, RecognitionGeometryReconstructionInput):
                     response, proof = accept_geometry_attempt(
-                        recognition_task, returned[0], writer, incoming
+                        recognition_task,
+                        returned[0],
+                        writer,
+                        incoming,
+                        allow_cells=isinstance(request, CellGeometryReconstructionInput),
                     )
                     if proof is not None:
                         response_bytes += len(json_bytes(proof.model_dump(mode="json"))) + (

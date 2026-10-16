@@ -41,6 +41,11 @@ _NATIVE2_CONFIGS = {
     "ava-pdf-prose-en-uk-v3": "e424ec48dacf225082d3d8c6ebc4438114de1f7151eeb0c30ad311f7cb39307a",
 }
 
+_CELL_GEOMETRY_CONFIGS = {
+    "ava-pdf-prose-en-v2": "715bc6a2a09a67cb428b6c9b831295b5b3a0bb478411ef073adb825db5b52b53",
+    "ava-pdf-prose-en-uk-v3": "65b7b299d373ff163147e38c4e8718a69fafe623f11c4478172f51517045b92d",
+}
+
 
 def _unique(pairs: list[tuple[str, object]]) -> dict[str, object]:
     result: dict[str, object] = {}
@@ -85,18 +90,22 @@ def exchange_input(target: str) -> int | None:
         "ava-reconstruct-input-6",
         "ava-reconstruct-input-7",
         "ava-reconstruct-input-8",
+        "ava-reconstruct-input-9",
     )
-    native2 = (
+    cell = isinstance(request, dict) and request.get("schema_version") == "ava-reconstruct-input-9"
+    native2 = cell or (
         isinstance(request, dict) and request.get("schema_version") == "ava-reconstruct-input-8"
     )
     title = isinstance(request, dict) and request.get("schema_version") in (
         "ava-reconstruct-input-7",
         "ava-reconstruct-input-8",
+        "ava-reconstruct-input-9",
     )
     geometry = isinstance(request, dict) and request.get("schema_version") in (
         "ava-reconstruct-input-6",
         "ava-reconstruct-input-7",
         "ava-reconstruct-input-8",
+        "ava-reconstruct-input-9",
     )
     if (
         not isinstance(request, dict)
@@ -128,6 +137,7 @@ def exchange_input(target: str) -> int | None:
         "ava-reconstruct-input-6",
         "ava-reconstruct-input-7",
         "ava-reconstruct-input-8",
+        "ava-reconstruct-input-9",
     ) or request["profile_id"] not in (
         "ava-pdf-prose-en-v2",
         "ava-pdf-prose-en-uk-v3",
@@ -166,7 +176,9 @@ def exchange_input(target: str) -> int | None:
             or request.get("source_feature_policy") != "ava-ocr-source-features-1"
             or config
             != (
-                _NATIVE2_CONFIGS
+                _CELL_GEOMETRY_CONFIGS
+                if cell
+                else _NATIVE2_CONFIGS
                 if native2
                 else _TITLE_CONFIGS
                 if title
@@ -186,9 +198,8 @@ def exchange_input(target: str) -> int | None:
             raise ValueError("Exchange native structure differs from captured configuration")
         if word_wrap and request.get("source_normalization_policy") != "ava-native-word-wrap-1":
             raise ValueError("Exchange word-wrap differs from captured configuration")
-        if (
-            geometry
-            and request.get("recognition_repair_policy") != "ava-recognition-geometry-repair-1"
+        if geometry and request.get("recognition_repair_policy") != (
+            "ava-recognition-geometry-repair-2" if cell else "ava-recognition-geometry-repair-1"
         ):
             raise ValueError("Exchange geometry repair differs from captured configuration")
         if title and request.get("source_title_policy") != "ava-frontmatter-title-1":
@@ -200,6 +211,7 @@ def exchange_input(target: str) -> int | None:
         *_GEOMETRY_CONFIGS.values(),
         *_TITLE_CONFIGS.values(),
         *_NATIVE2_CONFIGS.values(),
+        *_CELL_GEOMETRY_CONFIGS.values(),
     ):
         raise ValueError("Captured layout cannot use legacy exchange input")
     return None

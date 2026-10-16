@@ -7,7 +7,8 @@ export type InitialExchangeInput = {
     | 'ava-reconstruct-input-5'
     | 'ava-reconstruct-input-6'
     | 'ava-reconstruct-input-7'
-    | 'ava-reconstruct-input-8';
+    | 'ava-reconstruct-input-8'
+    | 'ava-reconstruct-input-9';
   profile_id: string;
   source_sha256: string;
   source_feature_policy?: string;
@@ -26,7 +27,8 @@ export type InitialExchangeInput = {
 export function initialExchangeInput(value: unknown): InitialExchangeInput {
   const request = value as InitialExchangeInput | null;
   const layout = request?.schema_version === 'ava-reconstruct-input-3';
-  const native2 = request?.schema_version === 'ava-reconstruct-input-8';
+  const cell = request?.schema_version === 'ava-reconstruct-input-9';
+  const native2 = request?.schema_version === 'ava-reconstruct-input-8' || cell;
   const title =
     request?.schema_version === 'ava-reconstruct-input-7' || native2;
   const geometry =
@@ -83,7 +85,9 @@ export function initialExchangeInput(value: unknown): InitialExchangeInput {
     (title && request.source_title_policy !== 'ava-frontmatter-title-1') ||
     (geometry &&
       (request.recognition_repair_policy !==
-        'ava-recognition-geometry-repair-1' ||
+        (cell
+          ? 'ava-recognition-geometry-repair-2'
+          : 'ava-recognition-geometry-repair-1') ||
         !Array.isArray(request.geometry_corrections) ||
         request.geometry_corrections.length))
   )

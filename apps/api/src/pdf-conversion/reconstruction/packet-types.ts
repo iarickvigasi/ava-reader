@@ -1,3 +1,7 @@
+import type { RecognitionCellGeometryTask } from './generated/RecognitionCellGeometryTask';
+import type { RecognitionCellGeometryResponse } from './generated/RecognitionCellGeometryResponse';
+import type { RecognitionCellGeometryProof } from './generated/RecognitionCellGeometryProof';
+import type { CellGeometryReconstructionInput } from './generated/CellGeometryReconstructionInput';
 import type { RecognitionAnchorQuoteTask } from './generated/RecognitionAnchorQuoteTask';
 import type { RecognitionAnchorQuoteResponse } from './generated/RecognitionAnchorQuoteResponse';
 import type { NativeStructureTask2 } from './generated/NativeStructureTask2';
@@ -41,6 +45,11 @@ import type { NativeStructureTask } from './generated/NativeStructureTask';
 import type { NativeStructureResponse } from './generated/NativeStructureResponse';
 
 export type Packets = {
+  RecognitionCellGeometryTask: RecognitionCellGeometryTask;
+  RecognitionCellGeometryResponse: RecognitionCellGeometryResponse;
+  RecognitionCellGeometryProof: RecognitionCellGeometryProof;
+  CellGeometryReconstructionInput: CellGeometryReconstructionInput;
+
   RecognitionAnchorQuoteTask: RecognitionAnchorQuoteTask;
   RecognitionAnchorQuoteResponse: RecognitionAnchorQuoteResponse;
   NativeStructureTask2: NativeStructureTask2;

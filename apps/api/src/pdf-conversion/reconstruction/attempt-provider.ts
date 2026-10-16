@@ -1,7 +1,9 @@
 import type { FrontmatterTitleTask } from './generated/FrontmatterTitleTask';
 import type { FrontmatterTitleResponse } from './generated/FrontmatterTitleResponse';
 import { FRONTMATTER_TITLE_POLICY } from '../../library/pdf-import/admission/profile';
-import type { RecognitionGeometryTask } from './generated/RecognitionGeometryTask';
+import type { AnyGeometryTask } from './geometry-types';
+import { cellGeometryProviderTask } from './cell-geometry-provider-task';
+import { cellGeometryResponse } from './cell-geometry-response';
 import { geometryProviderTask } from './geometry-provider-task';
 import { geometryResponse } from './geometry-response';
 import type { WordWrapTask } from './generated/WordWrapTask';
@@ -42,7 +44,7 @@ export type AttemptContext = {
     signal: AbortSignal,
   ) => Promise<void>;
   validateGeometry?: (
-    correction: RecognitionGeometryTask,
+    correction: AnyGeometryTask,
     task: RecognitionTask,
     signal: AbortSignal,
   ) => Promise<void>;
@@ -139,7 +141,7 @@ export async function recognizeAttemptTask(
 }
 
 export async function correctAttemptGeometry(
-  task: RecognitionGeometryTask,
+  task: AnyGeometryTask,
   parent: RecognitionTask,
   original: RecognitionResponse,
   raw: string,
@@ -152,9 +154,13 @@ export async function correctAttemptGeometry(
   await context.validateGeometry(task, parent, signal);
   context.checkActive(signal);
   const receipt = await context.deps.dispatch(
-    geometryProviderTask(task, parent, original, raw),
+    task.schema_version === 'ava-recognition-cell-geometry-task-1'
+      ? cellGeometryProviderTask(task, parent, original, raw)
+      : geometryProviderTask(task, parent, original, raw),
     signal,
   );
   context.checkActive(signal);
-  return geometryResponse(task, receipt.output, parent, original);
+  return task.schema_version === 'ava-recognition-cell-geometry-task-1'
+    ? cellGeometryResponse(task, receipt.output, parent, original)
+    : geometryResponse(task, receipt.output, parent, original);
 }

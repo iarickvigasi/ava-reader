@@ -13,6 +13,7 @@ def validate_initial_fields(raw: dict[str, Any]) -> None:
         "ava-reconstruct-input-6",
         "ava-reconstruct-input-7",
         "ava-reconstruct-input-8",
+        "ava-reconstruct-input-9",
     }:
         required |= {
             "source_feature_policy",
@@ -25,15 +26,21 @@ def validate_initial_fields(raw: dict[str, Any]) -> None:
             "ava-reconstruct-input-6",
             "ava-reconstruct-input-7",
             "ava-reconstruct-input-8",
+            "ava-reconstruct-input-9",
         }:
             required |= {"source_normalization_policy", "word_wrap_responses"}
         if marker in {
             "ava-reconstruct-input-6",
             "ava-reconstruct-input-7",
             "ava-reconstruct-input-8",
+            "ava-reconstruct-input-9",
         }:
             required |= {"recognition_repair_policy", "geometry_corrections"}
-        if marker in {"ava-reconstruct-input-7", "ava-reconstruct-input-8"}:
+        if marker in {
+            "ava-reconstruct-input-7",
+            "ava-reconstruct-input-8",
+            "ava-reconstruct-input-9",
+        }:
             required |= {"source_title_policy"}
         valid = (required,)
     elif marker == "ava-reconstruct-input-3":

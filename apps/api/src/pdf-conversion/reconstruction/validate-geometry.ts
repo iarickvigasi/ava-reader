@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import type { RecognitionGeometryTask } from './generated/RecognitionGeometryTask';
+import type { AnyGeometryTask } from './geometry-types';
 import type { RecognitionTask } from './generated/RecognitionTask';
 import type { CoordinatorDependencies } from './coordinator-types';
 import type { SandboxInput } from '../runtime/container-arguments';
@@ -7,7 +7,7 @@ import { PdfRuntimeError } from '../runtime/runtime-error';
 import { exchangeJson } from '../runtime/exchange-json';
 
 export async function validateGeometry(
-  task: RecognitionGeometryTask,
+  task: AnyGeometryTask,
   original: RecognitionTask,
   sandbox: CoordinatorDependencies['sandbox'],
   sandboxInput: () => SandboxInput,

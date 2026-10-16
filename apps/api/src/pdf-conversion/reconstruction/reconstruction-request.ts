@@ -7,7 +7,7 @@ import type {
   RecognitionRepairPolicy,
   SourceTitlePolicy,
 } from '../../library/pdf-import/admission/profile';
-import type { RecognitionGeometryProof } from './generated/RecognitionGeometryProof';
+import type { AnyGeometryProof } from './geometry-types';
 import type { WordWrapResponse } from './generated/WordWrapResponse';
 import type { NativeStructureResponse } from './generated/NativeStructureResponse';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
@@ -31,25 +31,27 @@ export function reconstructionRequest(
     | NativeStructureResponse2
   )[] = [],
   wordWrapResponses: WordWrapResponse[] = [],
-  geometryCorrections: RecognitionGeometryProof[] = [],
+  geometryCorrections: AnyGeometryProof[] = [],
 ) {
   return {
     schema_version:
-      identity.sourceStructurePolicy === NATIVE_STRUCTURE_V2_POLICY
-        ? 'ava-reconstruct-input-8'
-        : identity.sourceTitlePolicy
-          ? 'ava-reconstruct-input-7'
-          : identity.recognitionRepairPolicy
-            ? 'ava-reconstruct-input-6'
-            : identity.sourceNormalizationPolicy
-              ? 'ava-reconstruct-input-5'
-              : identity.sourceStructurePolicy
-                ? 'ava-reconstruct-input-4'
-                : identity.sourceLayoutPolicy
-                  ? 'ava-reconstruct-input-3'
-                  : titleScheduled
-                    ? 'ava-reconstruct-input-2'
-                    : 'ava-reconstruct-input-1',
+      identity.recognitionRepairPolicy === 'ava-recognition-geometry-repair-2'
+        ? 'ava-reconstruct-input-9'
+        : identity.sourceStructurePolicy === NATIVE_STRUCTURE_V2_POLICY
+          ? 'ava-reconstruct-input-8'
+          : identity.sourceTitlePolicy
+            ? 'ava-reconstruct-input-7'
+            : identity.recognitionRepairPolicy
+              ? 'ava-reconstruct-input-6'
+              : identity.sourceNormalizationPolicy
+                ? 'ava-reconstruct-input-5'
+                : identity.sourceStructurePolicy
+                  ? 'ava-reconstruct-input-4'
+                  : identity.sourceLayoutPolicy
+                    ? 'ava-reconstruct-input-3'
+                    : titleScheduled
+                      ? 'ava-reconstruct-input-2'
+                      : 'ava-reconstruct-input-1',
     ...(identity.sourceLayoutPolicy
       ? {
           source_layout_policy: identity.sourceLayoutPolicy,

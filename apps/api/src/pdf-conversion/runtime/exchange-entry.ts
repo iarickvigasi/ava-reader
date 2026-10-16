@@ -1,5 +1,6 @@
 import {
   RECOGNITION_GEOMETRY_REPAIR_POLICY,
+  RECOGNITION_CELL_GEOMETRY_REPAIR_POLICY,
   FRONTMATTER_TITLE_POLICY,
   NATIVE_WORD_WRAP_POLICY,
   NATIVE_LAYOUT_POLICY,
@@ -49,18 +50,25 @@ export function exchangeEntry(input: SandboxInput) {
       sourceTitlePolicy: title,
     } = capturedSourcePolicies(request.profile_id, job.config_sha256);
     if (
-      !['ava-reconstruct-input-7', 'ava-reconstruct-input-8'].includes(
-        request.schema_version,
-      ) &&
+      ![
+        'ava-reconstruct-input-7',
+        'ava-reconstruct-input-8',
+        'ava-reconstruct-input-9',
+      ].includes(request.schema_version) &&
       title !== undefined
     )
       throw new Error('Exchange title policy binding');
     if (
-      request.schema_version === 'ava-reconstruct-input-8'
+      ['ava-reconstruct-input-8', 'ava-reconstruct-input-9'].includes(
+        request.schema_version,
+      )
         ? layout !== NATIVE_LAYOUT_POLICY ||
           native !== NATIVE_STRUCTURE_V2_POLICY ||
           wrap !== NATIVE_WORD_WRAP_POLICY ||
-          repair !== RECOGNITION_GEOMETRY_REPAIR_POLICY ||
+          repair !==
+            (request.schema_version === 'ava-reconstruct-input-9'
+              ? RECOGNITION_CELL_GEOMETRY_REPAIR_POLICY
+              : RECOGNITION_GEOMETRY_REPAIR_POLICY) ||
           title !== FRONTMATTER_TITLE_POLICY
         : request.schema_version === 'ava-reconstruct-input-7'
           ? layout !== NATIVE_LAYOUT_POLICY ||

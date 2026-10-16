@@ -1,6 +1,8 @@
+import { validatePacket } from './validate-packet';
 import { NATIVE_STRUCTURE_V2_POLICY } from '../../library/pdf-import/admission/profile';
 import type { NativeStructureResponse2 } from './generated/NativeStructureResponse2';
-import type { RecognitionGeometryProof } from './generated/RecognitionGeometryProof';
+import type { AnyGeometryProof } from './geometry-types';
+import { cellGeometryBinding } from './cell-geometry-binding';
 import { geometryBinding, geometrySha } from './geometry-binding';
 import {
   preparedAttemptPage,
@@ -55,7 +57,7 @@ export function attemptExchanges(context: AttemptContext) {
     | NativeStructureResponse2
   )[] = [];
   const refinements: RefinementResponse[] = [];
-  const geometryCorrections: RecognitionGeometryProof[] = [];
+  const geometryCorrections: AnyGeometryProof[] = [];
   const correctionIds = new Set<string>();
   let correctionUnresolved = false;
   let lastOriginal:
@@ -241,11 +243,22 @@ export function attemptExchanges(context: AttemptContext) {
         !lastOriginal ||
         batch ||
         context.providerMode === 'native' ||
-        context.recognitionRepairPolicy !== 'ava-recognition-geometry-repair-1'
+        ![
+          'ava-recognition-geometry-repair-1',
+          'ava-recognition-geometry-repair-2',
+        ].includes(context.recognitionRepairPolicy ?? '')
       )
         return invalid();
       const parent = lastOriginal;
-      const task = geometryBinding(
+      const cell =
+        (envelope.payload as { schema_version?: unknown })?.schema_version ===
+        'ava-recognition-cell-geometry-task-1';
+      if (
+        cell &&
+        context.recognitionRepairPolicy !== 'ava-recognition-geometry-repair-2'
+      )
+        return invalid();
+      const task = (cell ? cellGeometryBinding : geometryBinding)(
         envelope.payload,
         parent.task,
         parent.response,
@@ -274,11 +287,16 @@ export function attemptExchanges(context: AttemptContext) {
         correctionUnresolved = true;
         return [result.response];
       }
-      const proof: RecognitionGeometryProof = {
+      const proofFields = {
         original_response_json: parent.originalResponseJson,
         original_response_sha256: geometrySha(parent.originalResponseJson),
         response: result.response,
       };
+      const proof =
+        result.response.schema_version ===
+        'ava-recognition-cell-geometry-response-1'
+          ? validatePacket('RecognitionCellGeometryProof', proofFields)
+          : validatePacket('RecognitionGeometryProof', proofFields);
       responseBytes +=
         Buffer.byteLength(JSON.stringify(result.corrected)) -
         Buffer.byteLength(JSON.stringify(parent.response)) +

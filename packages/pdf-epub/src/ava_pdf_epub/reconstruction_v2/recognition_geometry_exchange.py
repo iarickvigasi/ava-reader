@@ -16,6 +16,7 @@ from .attempt_exchange import (
     strict_json,
     write_bytes,
 )
+from .recognition_cell_geometry_contract import RecognitionCellGeometryTask
 from .recognition_geometry_contract import RecognitionGeometryTask
 
 
@@ -29,7 +30,7 @@ class RecognitionGeometryExchange(Record):
 
 
 def emit_geometry(
-    writer: ExchangeWriter, task: RecognitionGeometryTask
+    writer: ExchangeWriter, task: RecognitionGeometryTask | RecognitionCellGeometryTask
 ) -> RecognitionGeometryExchange:
     if (
         writer.version != 2

@@ -583,6 +583,21 @@ validated decision view derives those explicit role semantics for assembly witho
 wire identities or manufacturing Native1 receipts. Normalization classification hashes the
 original typed Response2, including its original group collection order.
 
+The separately captured `ava-recognition-geometry-repair-2` policy uses Input9 on that
+same complete feature stack. It retains segment repair and adds one bounded correction for
+empty/reversed, unpinned OCR table-cell boxes. A cell task contains at most32 opaque slots,
+original row/cell array addresses (including merged cells), limited row context and the exact
+source image. Only requested boxes may change, and each must remain inside the original table.
+No endpoint sorting, retranscription, row/span changes or measured-cell replacement is allowed.
+
+Before dispatch, the installed worker rederives eligibility from the original response and
+source task, including complete native/text/table checks. Cell, segment and anchor corrections
+share one parent opportunity and durable billing identity; switching repair types cannot obtain
+another attempt. Unresolved or invalid replies fail the import. Final Input9 proof replay checks
+the original bytes, exact patches and complete corrected page again. The canonical book and EPUB
+contracts remain unchanged; older Input1–8 captures do not acquire cell-repair authority. Source
+and authored test evidence alone does not establish full-book fidelity or release readiness.
+
 Input8 keeps the existing generic exchange2 sequence and byte counters. Its native controls
 use `ava-native-structure-exchange-2` with the unchanged native25534 sequence bound; old native
 exchange1 cannot answer them. Worker checkpoint5 is source-bound and cannot be reopened or

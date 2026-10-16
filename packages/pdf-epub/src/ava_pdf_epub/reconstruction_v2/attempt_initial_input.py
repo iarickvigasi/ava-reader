@@ -3,6 +3,7 @@
 from .attempt_exchange import strict_json
 from .attempt_initial_fields import validate_initial_fields
 from .protocol import ReconstructionInput
+from .protocol_cell_geometry import CellGeometryReconstructionInput
 from .protocol_frontmatter_title import FrontmatterTitleReconstructionInput
 from .protocol_native_layout import NativeLayoutReconstructionInput
 from .protocol_native_structure import NativeStructureReconstructionInput
@@ -19,6 +20,7 @@ InitialInput = (
     | RecognitionGeometryReconstructionInput
     | FrontmatterTitleReconstructionInput
     | NativeStructure2ReconstructionInput
+    | CellGeometryReconstructionInput
 )
 
 
@@ -33,7 +35,9 @@ def initial_input(data: bytes) -> InitialInput:
     validate_initial_fields(raw["input"])
     marker = raw["input"].get("schema_version")
     request: InitialInput = (
-        NativeStructure2ReconstructionInput.model_validate(raw["input"])
+        CellGeometryReconstructionInput.model_validate(raw["input"])
+        if marker == "ava-reconstruct-input-9"
+        else NativeStructure2ReconstructionInput.model_validate(raw["input"])
         if marker == "ava-reconstruct-input-8"
         else FrontmatterTitleReconstructionInput.model_validate(raw["input"])
         if marker == "ava-reconstruct-input-7"

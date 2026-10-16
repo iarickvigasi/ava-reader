@@ -27,7 +27,10 @@ export function exchangeStream(
       input: { schema_version: string };
     }
   ).input.schema_version;
-  const native2 = marker === 'ava-reconstruct-input-8';
+  const native2 = [
+    'ava-reconstruct-input-8',
+    'ava-reconstruct-input-9',
+  ].includes(marker);
   const geometry =
     marker === 'ava-reconstruct-input-6' ||
     marker === 'ava-reconstruct-input-7' ||

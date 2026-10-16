@@ -3,6 +3,14 @@
 from typing import Any
 
 from .attempt_exchange import strict_json
+from .recognition_cell_geometry_contract import (
+    RecognitionCellGeometryResponse,
+    RecognitionCellGeometryTask,
+)
+from .recognition_cell_geometry_repair import (
+    apply_cell_geometry_repair,
+    prepare_cell_geometry_repair,
+)
 from .recognition_contract import RecognitionTask
 from .recognition_geometry_contract import RecognitionGeometryResponse, RecognitionGeometryTask
 from .recognition_geometry_identity import geometry_digest
@@ -20,6 +28,22 @@ def validate_geometry(data: bytes) -> dict[str, Any]:
     ):
         raise ValueError("GEOMETRY_VALIDATION_FIELDS")
     original = RecognitionTask.model_validate(raw["original"])
+    if (
+        isinstance(raw["task"], dict)
+        and raw["task"].get("schema_version") == "ava-recognition-cell-geometry-task-1"
+    ):
+        cell_task = RecognitionCellGeometryTask.model_validate(raw["task"])
+        if cell_task != prepare_cell_geometry_repair(original, cell_task.original_response_json):
+            raise ValueError("CELL_GEOMETRY_VALIDATION_BINDING_DIFFERS")
+        if raw["response"] is not None:
+            apply_cell_geometry_repair(
+                original, cell_task, RecognitionCellGeometryResponse.model_validate(raw["response"])
+            )
+        return {
+            "schema_version": "ava-recognition-geometry-validation-1",
+            "valid": True,
+            "request_sha256": geometry_digest(data),
+        }
     task = RecognitionGeometryTask.model_validate(raw["task"])
     if task != prepare_geometry_repair(original, task.original_response_json):
         raise ValueError("GEOMETRY_VALIDATION_BINDING_DIFFERS")
