@@ -92,3 +92,21 @@ it('uses the trusted zero-based dispatch page, not a model page or later caller 
     ),
   ).toThrow('SOURCE_MISMATCH');
 });
+
+it('supplies only omitted OCR provenance from the trusted recognition task without changing observations', () => {
+  const raw = structuredClone(observationResponse);
+  delete raw.segments[0].method;
+  const before = JSON.stringify(raw);
+  expect(JSON.parse(decode(raw))).toEqual(
+    JSON.parse(decode(observationResponse)),
+  );
+  expect(JSON.stringify(raw)).toBe(before);
+});
+it.each([null, 'native', 'OCR', '', 0, false])(
+  'never replaces conflicting or malformed explicit provenance %p',
+  (method) => {
+    const raw = structuredClone(observationResponse);
+    raw.segments[0].method = method;
+    expect(() => decode(raw)).toThrow('INVALID_RESULT');
+  },
+);

@@ -26,6 +26,12 @@ it('projects host-owned fields and adds only the versioned finite font alias', (
   ).not.toHaveProperty('page');
   expect(schema.$defs.Style.properties).not.toHaveProperty('id');
   expect(schema.$defs.RecognitionSegment.allOf[0].required).toContain('kind');
+  expect(schema.$defs.RecognitionSegment.allOf[0].required).not.toContain(
+    'method',
+  );
+  expect(
+    schema.$defs.RecognitionSegment.allOf[0].properties.method,
+  ).toMatchObject({ const: 'ocr' });
   expect(schema.$defs.RecognitionSegment.allOf[0].properties).toHaveProperty(
     'id',
   );

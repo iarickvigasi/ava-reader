@@ -26,19 +26,35 @@ export const validationKeywords = [
 ] as const;
 const fields = new Set<string>();
 const schemaNames = new Set<string>();
-const requirements = new Map<string, string[]>();
+type RequirementRule = {
+  properties?: Record<
+    string,
+    { [key: string]: unknown; const?: unknown; enum?: unknown[] } | undefined
+  >;
+  required?: string[];
+};
+// Only the segment contract owns these requirements. Recursive collection mixes
+// unconditional kind fields with conditional chapter/list alternatives.
+const segmentContract =
+  recognitionSchemas.RecognitionResponse.$defs.RecognitionSegment;
+const [core, ...conditions] = segmentContract.allOf;
+const rules: RequirementRule[] = [
+  { required: core.required },
+  ...conditions.flatMap<RequirementRule>((condition) => condition.anyOf ?? []),
+];
+function applies(rule: RequirementRule, segment: Record<string, unknown>) {
+  return ['kind', 'chapter_start', 'list_ordered'].every((key) => {
+    const constraint = rule.properties?.[key];
+    if (!constraint) return true;
+    if (!Object.hasOwn(segment, key)) return false;
+    if (Object.hasOwn(constraint, 'const'))
+      return segment[key] === constraint.const;
+    return !constraint.enum || constraint.enum.includes(segment[key]);
+  });
+}
 function collect(value: unknown): void {
   if (!value || typeof value !== 'object') return;
   const node = value as Record<string, unknown>;
-  const properties = node.properties as Record<string, unknown> | undefined;
-  const kind = properties?.kind as { enum?: unknown } | undefined;
-  if (Array.isArray(kind?.enum) && Array.isArray(node.required))
-    for (const name of kind.enum)
-      if (typeof name === 'string')
-        requirements.set(
-          name,
-          node.required.filter((key): key is string => typeof key === 'string'),
-        );
   for (const [key, child] of Object.entries(node)) {
     if (child && typeof child === 'object') {
       if (key === 'properties')
@@ -89,7 +105,12 @@ export function matchingKindRequiredFields(value: unknown) {
     if (!segment || typeof segment !== 'object' || index > 99999) continue;
     const kind = (segment as { kind?: unknown }).kind;
     if (typeof kind !== 'string') continue;
-    for (const field of requirements.get(kind) ?? [])
+    const required = new Set(
+      rules
+        .filter((rule) => applies(rule, segment as Record<string, unknown>))
+        .flatMap((rule) => rule.required ?? []),
+    );
+    for (const field of required)
       if (fields.has(field) && !Object.hasOwn(segment, field)) {
         if (missing.length === 16) return { fields: missing, complete: false };
         missing.push({ instancePath: ['segments', index], field });

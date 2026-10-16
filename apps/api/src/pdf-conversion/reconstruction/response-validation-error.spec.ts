@@ -143,10 +143,66 @@ it.each([16, 17])(
     const details = schemaValidationDetails(
       [{ keyword: 'required', schemaPath: '#/required', instancePath: '' }],
       {
-        segments: Array.from({ length: count }, () => ({ kind: 'table' })),
+        segments: Array.from({ length: count }, () => {
+          const segment: Record<string, unknown> = {
+            ...wireSegment,
+            kind: 'table',
+          };
+          delete segment.cells;
+          return segment;
+        }),
       },
     );
     expect(details.matchingKindRequiredFields).toHaveLength(16);
     expect(details.complete).toBe(count === 16);
+  },
+);
+
+it('reports missing table provenance without requiring a chapter role for a section heading', () => {
+  const table: Record<string, unknown> = {
+    ...wireSegment,
+    kind: 'table',
+    cells: [[]],
+  };
+  delete table.method;
+  const heading = {
+    ...wireSegment,
+    kind: 'heading',
+    heading_level: 2,
+    chapter_start: false,
+  };
+  const finding = schemaValidationDetails([], { segments: [table, heading] });
+  expect(finding.matchingKindRequiredFields).toEqual([
+    { instancePath: ['segments', 0], field: 'method' },
+  ]);
+});
+it.each([false, true])(
+  'applies conditional chapter and ordered-list requirements only when observed: %s',
+  (enabled) => {
+    const heading: Record<string, unknown> = {
+      ...wireSegment,
+      kind: 'heading',
+      heading_level: 1,
+      chapter_start: enabled,
+    };
+    const list: Record<string, unknown> = {
+      ...wireSegment,
+      kind: 'list_item',
+      list_depth: 1,
+      list_ordered: enabled,
+    };
+    delete heading.chapter_role;
+    delete list.list_start;
+    const finding = schemaValidationDetails([], {
+      segments: [heading, list],
+    });
+    expect(finding.matchingKindRequiredFields).toEqual(
+      enabled
+        ? [
+            { instancePath: ['segments', 0], field: 'chapter_role' },
+            { instancePath: ['segments', 1], field: 'list_start' },
+          ]
+        : [],
+    );
   },
 );

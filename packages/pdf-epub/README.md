@@ -944,6 +944,16 @@ errors. Canonical schemas and the Python worker are unchanged. New prompt/schema
 exact request hash; old observation-1 receipts are not reinterpreted or published. This is format
 compatibility, not source verification or permission to change finished content.
 
+Recognition observation-2 also permits omitting segment `method`: OCR provenance is fixed by the
+exact prepared recognition task, so the host supplies only a genuinely absent value. Explicit
+`ocr` is retained; null, conflicting values and malformed values still fail canonical validation.
+This does not fill missing text, geometry, style or semantic roles. Updated generation prompt/schema
+bytes change the request fingerprint; settled receipts cannot be reused under a different request.
+
+Schema failure reports include missing core segment fields and only the applicable conditional
+chapter/list requirements. A section heading does not require `chapter_role`; a true chapter start
+does. These diagnostics remain bounded and exclude book text and untrusted field names.
+
 ### Missing figure descriptions at the provider boundary
 
 Gemini observation-2 has one bounded recovery for genuinely omitted figure `alt` fields.

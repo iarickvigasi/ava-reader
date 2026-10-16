@@ -45,6 +45,10 @@ export function recognitionObservationDecoder(task: ProviderTask) {
       render_sha256: trusted.image.sha256,
       segments: raw.segments.map((segment: Record<string, unknown>) => ({
         ...segment,
+        // This decoder is bound to an exact recognition task. OCR is its fixed
+        // provenance, not a model judgment. Preserve explicit values so conflicts
+        // and null still fail the unchanged canonical contract.
+        method: Object.hasOwn(segment, 'method') ? segment.method : 'ocr',
         page: trusted.page_number,
       })),
     };

@@ -22,7 +22,9 @@ export function recognitionObservationSchema(): Record<string, unknown> {
   }
   const segment = schema.$defs.RecognitionSegment.allOf[0];
   delete segment.properties.page;
-  segment.required = segment.required.filter((name) => name !== 'page');
+  segment.required = segment.required.filter(
+    (name) => !['page', 'method'].includes(name),
+  );
   delete schema.$defs.Style.properties.id;
   schema.$defs.Style.required = schema.$defs.Style.required.filter(
     (name) => name !== 'id',
@@ -52,7 +54,7 @@ export function recognitionObservationSystem(system: string): string {
     system
       .replace(
         identity,
-        `Set schema_version to ${RECOGNITION_OBSERVATION_WIRE} and method to ocr.\nDo not return task_id, source_sha256, render_sha256, segment.page or style.id; the host supplies them.`,
+        `Set schema_version to ${RECOGNITION_OBSERVATION_WIRE} and omit method (the host binds OCR provenance); if supplied, it must be ocr.\nDo not return task_id, source_sha256, render_sha256, segment.page or style.id; the host supplies them.`,
       )
       .replace(
         styleId,
