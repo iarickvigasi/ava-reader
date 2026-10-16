@@ -52,7 +52,6 @@ it('refuses a changed recognition contract and retains original prompt authoriza
 it.each([
   ['RecognitionResponse', 'ava-recognition-response-2'],
   ['FrontmatterTitleResponse', 'ava-printed-title-response-2'],
-  ['BookRefinementResponse', 'ava-book-refinement-response-3'],
   ['PrintedTitleResponse', 'ava-printed-title-response-1'],
   ['RecognitionGeometryResponse', 'ava-recognition-geometry-response-1'],
   [

@@ -1,3 +1,5 @@
+import { refinementProviderTask } from '../../../pdf-conversion/reconstruction/refinement-provider-task';
+import { refinementTask } from '../../../pdf-conversion/reconstruction/refinement-fixture';
 import { recognitionSchemas } from '../../../pdf-conversion/reconstruction/generated/schemas';
 import { providerRequestFormat } from './request-format';
 import { providerResponseSchema } from './response-schema';
@@ -59,7 +61,6 @@ it('preserves non-Gemini Native2 messages and canonical strict schema', () => {
 
 it.each([
   ['FrontmatterTitleResponse', 'ava-printed-title-response-2'],
-  ['BookRefinementResponse', 'ava-book-refinement-response-3'],
   ['PrintedTitleResponse', 'ava-printed-title-response-1'],
   ['RecognitionGeometryResponse', 'ava-recognition-geometry-response-1'],
   [
@@ -94,3 +95,24 @@ it.each([
     );
   },
 );
+
+it('retains real refinement messages and canonical identity while specializing generation', () => {
+  const value = refinementProviderTask(
+    refinementTask,
+    refinementTask.source_sha256,
+  );
+  const before = jsonHash(value),
+    model = 'google/gemini-3.8-flash';
+  expect(providerRequestFormat(model, value)).toEqual({
+    messages: value.messages,
+    responseFormat: {
+      type: 'json_schema',
+      json_schema: {
+        name: 'ava_pdf_result',
+        strict: true,
+        schema: providerResponseSchema(model, value),
+      },
+    },
+  });
+  expect(jsonHash(value)).toBe(before);
+});

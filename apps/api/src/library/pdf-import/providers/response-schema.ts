@@ -1,3 +1,4 @@
+import { refinementGenerationSchema } from './refinement-generation-schema';
 import {
   FIGURE_ALT_SCHEMA,
   FIGURE_ALT_SCHEMA_VERSION,
@@ -66,6 +67,8 @@ export function providerResponseSchema(modelId: string, task: ProviderTask) {
     task.responseSchema,
     task.schemaVersion,
   );
+  if (task.schemaVersion === 'ava-book-refinement-response-3')
+    return refinementGenerationSchema(grammar, task);
   return task.schemaVersion === 'ava-native-structure-response-2'
     ? nativeStructureGenerationSchema(grammar, task)
     : grammar;

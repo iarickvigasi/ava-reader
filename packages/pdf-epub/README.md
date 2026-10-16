@@ -987,6 +987,13 @@ worker, semantic validator and provider authorization before corpus/reader quali
 
 ### Host recognition wire version 2
 
+Gemini book-refinement generation binds the native and OCR decision branches to the exact
+factory-produced task's decision IDs. An OCR heading cannot select the native branch and lose
+its required observed typography; native candidates cannot request replacement styles. Fixed
+context/reference nodes never become decision candidates. Canonical schemas, source text,
+semantic validation and retained receipt acceptance stay unchanged; changed request hashes
+fence reuse of earlier generation requests. Metadata-only tasks retain their empty decision scope.
+
 Gemini recognition requests `ava-recognition-observation-2` with a closed, single-shape
 generation schema. Native structure retains its existing JSON mode. The recognition grammar
 requires an explicit `chapter_start` decision on every segment and admits only declared style
