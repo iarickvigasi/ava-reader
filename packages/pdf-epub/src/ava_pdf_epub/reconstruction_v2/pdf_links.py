@@ -18,6 +18,7 @@ from .native_caller_context import ContextCache, native_caller_ranges
 from .native_ink import ink_envelope_matches
 from .native_line_offsets import NativeLineOffset, mapped_line_offset
 from .observations import PageObservation
+from .ocr_link_context import context_line_offset, repeated_source_context
 from .prepared_types import AnyPreparedPage
 from .segments import ObservedSpan, Segment
 from .source_literal_link import source_literal_link
@@ -63,6 +64,7 @@ def glyph_ranges(
             continue
         owners = [s for s in segments if s.method == "native" and line.id in s.native_line_ids]
         source_text, source_start = line.text, 0
+        visual_offsets: dict[str, int] = {}
         if not owners and corroborate_ocr:
             source_text = line.text.strip()
             source_start = len(line.text) - len(line.text.lstrip())
@@ -75,19 +77,30 @@ def glyph_ranges(
                 "complex_graphics_state",
             } or any(not g.visible for g in line.glyphs if g.text.strip()):
                 raise ValueError("PDF_LINK_TEXT_MAPPING_REQUIRES_REVIEW")
-            owners = [
-                s
-                for s in segments
-                if s.method == "ocr"
-                and s.kind not in {"table", "figure", "furniture", "unsupported"}
-                and ink_envelope_matches(page, line, s)
-                and _corroborates(s.text, source_text)
-            ]
+            owners = []
+            for candidate in segments:
+                if (
+                    candidate.method != "ocr"
+                    or candidate.kind in {"table", "figure", "furniture", "unsupported"}
+                    or not ink_envelope_matches(page, line, candidate)
+                ):
+                    continue
+                visual_at = (
+                    candidate.text.find(source_text)
+                    if _corroborates(candidate.text, source_text)
+                    and not repeated_source_context(page, line, candidate)
+                    else context_line_offset(page, line, candidate)
+                )
+                if visual_at is not None:
+                    owners.append(candidate)
+                    visual_offsets[candidate.id] = visual_at
         if len(owners) != 1:
             raise ValueError("PDF_LINK_TEXT_MAPPING_REQUIRES_REVIEW")
         owner = owners[0]
         mapped = (
-            mapped_line_offset(line, owner, source_line_maps) if owner.method == "native" else None
+            mapped_line_offset(line, owner, source_line_maps)
+            if owner.method == "native"
+            else visual_offsets.get(owner.id)
         )
         at = mapped if mapped is not None else owner.text.find(source_text)
         if mapped is None:
