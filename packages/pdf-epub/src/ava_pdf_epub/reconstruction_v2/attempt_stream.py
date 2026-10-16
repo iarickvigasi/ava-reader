@@ -29,6 +29,7 @@ from .protocol import (
     prepared_result,
 )
 from .protocol_cell_geometry import CellGeometryReconstructionInput
+from .protocol_continuation import ContinuationReconstructionInput, ContinuationRefinementBatch
 from .protocol_frontmatter_title import (
     FrontmatterTitleReconstructionInput,
     FrontmatterTitleRefinementBatch,
@@ -300,6 +301,14 @@ def _run(
                 request, responses, [], native_responses, geometry_corrections=geometry_corrections
             ),
         )
+        if isinstance(request, ContinuationReconstructionInput):
+            if (
+                not isinstance(batch, ContinuationRefinementBatch)
+                or batch.source_continuation_policy != request.source_continuation_policy
+            ):
+                raise ValueError("Continuation batch differs from captured input")
+        elif isinstance(batch, ContinuationRefinementBatch):
+            raise ValueError("Continuation batch requires its captured input")
         if isinstance(request, FrontmatterTitleReconstructionInput):
             if (
                 not isinstance(batch, FrontmatterTitleRefinementBatch)

@@ -33,6 +33,7 @@ def reconstruct_word_wrap_assembly(
     word_wrap_responses: list[WordWrapResponse] | None,
     *,
     source_title_policy: str | None = None,
+    source_continuation_policy: str | None = None,
 ) -> WordWrapAssembly:
     if refinements is None or native_structure_responses is None or word_wrap_responses is None:
         raise ValueError("Sparse lexical reconstruction requires all complete receipt arrays")
@@ -62,6 +63,16 @@ def reconstruct_word_wrap_assembly(
             recognition_repair_policy="ava-recognition-geometry-repair-1",
             geometry_corrections=[],
         )
+    if source_continuation_policy is not None:
+        from .protocol_continuation import ContinuationReconstructionInput
+
+        raw.update(
+            schema_version="ava-reconstruct-input-10",
+            source_continuation_policy=source_continuation_policy,
+            recognition_repair_policy="ava-recognition-geometry-repair-2",
+        )
+        request = ContinuationReconstructionInput.model_validate(raw)
+    elif source_title_policy is not None:
         request = (
             NativeStructure2ReconstructionInput.model_validate(raw)
             if native2

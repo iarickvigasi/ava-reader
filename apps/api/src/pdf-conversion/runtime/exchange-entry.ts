@@ -48,25 +48,38 @@ export function exchangeEntry(input: SandboxInput) {
       sourceNormalizationPolicy: wrap,
       recognitionRepairPolicy: repair,
       sourceTitlePolicy: title,
+      sourceContinuationPolicy: continuation,
     } = capturedSourcePolicies(request.profile_id, job.config_sha256);
+    if (
+      request.schema_version === 'ava-reconstruct-input-10'
+        ? continuation !== request.source_continuation_policy ||
+          continuation === undefined
+        : continuation !== undefined
+    )
+      throw new Error('Exchange continuation policy binding');
     if (
       ![
         'ava-reconstruct-input-7',
         'ava-reconstruct-input-8',
         'ava-reconstruct-input-9',
+        'ava-reconstruct-input-10',
       ].includes(request.schema_version) &&
       title !== undefined
     )
       throw new Error('Exchange title policy binding');
     if (
-      ['ava-reconstruct-input-8', 'ava-reconstruct-input-9'].includes(
-        request.schema_version,
-      )
+      [
+        'ava-reconstruct-input-8',
+        'ava-reconstruct-input-9',
+        'ava-reconstruct-input-10',
+      ].includes(request.schema_version)
         ? layout !== NATIVE_LAYOUT_POLICY ||
           native !== NATIVE_STRUCTURE_V2_POLICY ||
           wrap !== NATIVE_WORD_WRAP_POLICY ||
           repair !==
-            (request.schema_version === 'ava-reconstruct-input-9'
+            (['ava-reconstruct-input-9', 'ava-reconstruct-input-10'].includes(
+              request.schema_version,
+            )
               ? RECOGNITION_CELL_GEOMETRY_REPAIR_POLICY
               : RECOGNITION_GEOMETRY_REPAIR_POLICY) ||
           title !== FRONTMATTER_TITLE_POLICY

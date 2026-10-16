@@ -3,7 +3,7 @@
 import hashlib
 import json
 from dataclasses import dataclass, field
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from ..contracts.layout_normalization import LayoutNormalizationMap
 from ..contracts.layout_normalization_v3 import LayoutNormalizationMapV3
@@ -13,6 +13,9 @@ from .findings import Finding
 from .native_hyphen_decisions import NativeHyphenDecision
 from .native_line_offsets import NativeLineOffset
 from .segments import Segment
+
+if TYPE_CHECKING:
+    from .continuation_application import PresentationSnapshot
 
 
 @dataclass
@@ -63,6 +66,8 @@ class AssemblyState:
         default_factory=dict
     )
     source_outline_targets: dict[tuple[str, int, int], str] = field(default_factory=dict)
+    continuation_presentation: "PresentationSnapshot | None" = None
+    source_continuation_policy: str | None = None
     refined_joins: dict[tuple[str, str], bool] = field(default_factory=dict)
     source_feature_policy: str | None = None
     source_feature_evidence: list[dict[str, Any]] = field(default_factory=list)
@@ -104,6 +109,7 @@ class AssemblyState:
         self.page_labels.clear()
         self.source_linked_furniture_ids.clear()
         self.refined_joins.clear()
+        self.continuation_presentation = None
         self.bibliographic_roles.clear()
         self.printed_title = None
         self.frontmatter_title = None

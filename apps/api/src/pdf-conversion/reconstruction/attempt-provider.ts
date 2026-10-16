@@ -1,3 +1,6 @@
+import type { PresentationRefinementTask } from './generated/PresentationRefinementTask';
+import type { PresentationRefinementResponse } from './generated/PresentationRefinementResponse';
+import { SOURCE_CONTINUATION_POLICY } from '../../library/pdf-import/admission/profile';
 import type { FrontmatterTitleTask } from './generated/FrontmatterTitleTask';
 import type { FrontmatterTitleResponse } from './generated/FrontmatterTitleResponse';
 import { FRONTMATTER_TITLE_POLICY } from '../../library/pdf-import/admission/profile';
@@ -13,6 +16,7 @@ import type {
   SourceNormalizationPolicy,
   RecognitionRepairPolicy,
   SourceTitlePolicy,
+  SourceContinuationPolicy,
 } from '../../library/pdf-import/admission/profile';
 import type { CoordinatorDependencies } from './coordinator-types';
 import type { RecognitionTask } from './generated/RecognitionTask';
@@ -38,6 +42,12 @@ export type AttemptContext = {
   sourceNormalizationPolicy?: SourceNormalizationPolicy;
   recognitionRepairPolicy?: RecognitionRepairPolicy;
   sourceTitlePolicy?: SourceTitlePolicy;
+  sourceContinuationPolicy?: SourceContinuationPolicy;
+  validateContinuation?: (
+    task: PresentationRefinementTask,
+    response: PresentationRefinementResponse | null,
+    signal: AbortSignal,
+  ) => Promise<void>;
   validateFrontmatterTitle?: (
     task: FrontmatterTitleTask,
     response: FrontmatterTitleResponse | null,
@@ -80,6 +90,15 @@ export async function refineAttemptTask(
   signal: AbortSignal,
 ) {
   context.checkActive(signal);
+  if (task.schema_version === 'ava-book-refinement-task-5') {
+    if (
+      context.sourceContinuationPolicy !== SOURCE_CONTINUATION_POLICY ||
+      !context.validateContinuation
+    )
+      throw new PdfRuntimeError('DISPATCH_NOT_AUTHORIZED');
+    await context.validateContinuation(task, null, signal);
+    context.checkActive(signal);
+  }
   if (task.schema_version === 'ava-printed-title-task-2') {
     if (
       context.sourceTitlePolicy !== FRONTMATTER_TITLE_POLICY ||
@@ -95,6 +114,15 @@ export async function refineAttemptTask(
   );
   context.checkActive(signal);
   const response = refinementResponse(task, receipt.output);
+  if (task.schema_version === 'ava-book-refinement-task-5') {
+    if (
+      response.schema_version !== 'ava-book-refinement-response-5' ||
+      !context.validateContinuation
+    )
+      throw new PdfRuntimeError('INVALID_RESULT');
+    await context.validateContinuation(task, response, signal);
+    context.checkActive(signal);
+  }
   if (task.schema_version === 'ava-printed-title-task-2') {
     if (
       response.schema_version !== 'ava-printed-title-response-2' ||

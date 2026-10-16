@@ -158,6 +158,16 @@ replace known native properties. They never replace accepted page text. Groups
 are bounded (256 catalogue nodes, 32 groups, 24 decisions/16 joins/48 crops per task, 2048×2048
 sheet, 4 MiB image). Oversized indivisible context is refused, not silently truncated.
 
+A separately captured continuation-presentation policy provides finite source-derived candidates
+for eligible mixed native/OCR prose pairs. It requires a positive visual comparison of exact source
+crops and preserves known metrics, false/zero values, text, spans and source ownership. Extraction
+alignment defaults carry explicit provenance. Head indentation/before spacing and final-tail after
+spacing have distinct owners. Later contradictory source observations and unwitnessed component
+extensions refuse. Historical requests keep their existing authority. This implementation candidate
+still needs live-model and finished-book qualification; see the
+[worker contract](../packages/pdf-epub/README.md#finite-reconstruction-attempt) and
+[server opt-in](pdf-conversion-operations.md#build-and-configure).
+
 ## PDF annotations
 
 The policy also checks linked popup/parent/reply annotation objects under traversal bounds. Worker

@@ -626,6 +626,22 @@ the original bytes, exact patches and complete corrected page again. The canonic
 contracts remain unchanged; older Input1–8 captures do not acquire cell-repair authority. Source
 and authored test evidence alone does not establish full-book fidelity or release readiness.
 
+The additional server opt-in `ava-source-continuation-presentation-1` requires the complete
+Input9 feature stack and captures distinct Input10/RefinementBatch4 identities. Task5/Response5
+(prompt8) offer exact, source-derived presentation candidates for eligible mixed native/OCR
+paragraph boundaries. A positive visual comparison selects a candidate by ID and exact crop
+references; models never recopy or round source metrics. Known false/zero stay known. Native
+start-alignment defaults are distinguished from measured alignment at extraction time.
+
+Only selected plain-prose pairs can use this authority. The original task/response hashes remain
+the reported authority; separately rehashed private compatibility views do not replace receipts.
+The first fragment owns first-line/before spacing; the final fragment owns after spacing.
+Contradictory known styles or observed source-feature assertions refuse, as do literal-line
+layouts and any extra declared/inferred join touching a selected pair. Longer components need
+explicit composition support. Historical Inputs1–9 retain their rules. Matching worker, host,
+provider prompt/schema authorization and a fresh captured import are required; this source
+implementation alone does not establish live-model, full-book or release acceptance.
+
 Input8 keeps the existing generic exchange2 sequence and byte counters. Its native controls
 use `ava-native-structure-exchange-2` with the unchanged native25534 sequence bound; old native
 exchange1 cannot answer them. Worker checkpoint5 is source-bound and cannot be reopened or

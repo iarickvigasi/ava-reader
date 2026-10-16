@@ -32,6 +32,17 @@ def apply_refinement(
     receipts = {r.task_id: r for r in responses}
     if len(receipts) != len(responses) or set(receipts) != {t.task_id for t in tasks}:
         raise ValueError("Refinement task coverage differs")
+    from .continuation_application import (
+        PresentationSnapshot,
+        finalize_continuation_presentation,
+        prepare_continuation_application,
+    )
+
+    presentation = prepare_continuation_application(
+        segments, tasks, responses, state.source_continuation_policy
+    )
+    tasks, responses = presentation.tasks, presentation.responses
+    receipts = {response.task_id: response for response in responses}
     updates, parents, edges = {}, {}, {}
     evidence = []
     feature_tasks: list[SourceFeatureTask] = []
@@ -95,7 +106,8 @@ def apply_refinement(
             edge = edge_map[join.edge_id]
             edges[(edge.previous_id, edge.next_id)] = join.join
         evidence.append(
-            dict(
+            presentation.evidence.get(task.task_id)
+            or dict(
                 task_sha256=document_digest(task),
                 response_sha256=document_digest(response),
                 observation_sha256=task.observation_sha256,
@@ -110,6 +122,8 @@ def apply_refinement(
             raise ValueError("Selected book title conflicts with a bibliographic role")
     result = []
     for segment in segments:
+        if segment.id in presentation.styles:
+            segment = segment.model_copy(update={"style": presentation.styles[segment.id]})
         patch = updates.get(segment.id)
         if patch:
             if segment.structure_candidate:
@@ -158,7 +172,9 @@ def apply_refinement(
             if isinstance(t, BookRefinementTask) and error.segment.id in t.decision_ids
         ]
         if len(owners) == 1:
-            refuse_heading_parent(owners[0], error.segment)
+            refuse_heading_parent(
+                presentation.originals.get(owners[0].task_id, owners[0]), error.segment
+            )
         raise
     result = refined_boundaries(result, edges)
     state.refined_joins.update(edges)
@@ -176,5 +192,10 @@ def apply_refinement(
         if not isinstance(response, FrontmatterTitleResponse)
     }
     result = apply_source_features(result, feature_tasks, feature_receipts, state)
+    result = finalize_continuation_presentation(result, presentation, state.source_feature_evidence)
+    if presentation.styles:
+        state.continuation_presentation = PresentationSnapshot(
+            presentation.styles, presentation.pairs
+        )
     # A refused join already separated the endpoints; only true joins need a role/style recheck.
     return refined_boundaries(result, {key: value for key, value in edges.items() if value})

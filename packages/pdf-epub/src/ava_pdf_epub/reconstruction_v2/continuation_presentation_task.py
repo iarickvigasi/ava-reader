@@ -17,6 +17,8 @@ def presentation_task(
         endpoints = [segments[edge.previous_id], segments[edge.next_id]]
         if {segment.method for segment in endpoints} != {"native", "ocr"}:
             continue
+        if any(segment.preserve_line_breaks for segment in endpoints):
+            continue  # Literal line layouts need their own join-preservation contract.
         native = next(segment for segment in endpoints if segment.method == "native")
         if native.id in task.decision_ids:
             continue

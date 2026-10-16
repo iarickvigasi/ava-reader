@@ -1,3 +1,5 @@
+import type { ContinuationReconstructionInput } from './generated/ContinuationReconstructionInput';
+import type { ContinuationRefinementBatch } from './generated/ContinuationRefinementBatch';
 import type { CellGeometryReconstructionInput } from './generated/CellGeometryReconstructionInput';
 import type { NativeStructure2ReconstructionInput } from './generated/NativeStructure2ReconstructionInput';
 import type { FrontmatterTitleReconstructionInput } from './generated/FrontmatterTitleReconstructionInput';
@@ -10,8 +12,13 @@ import type { NativeStructureReconstructionInput } from './generated/NativeStruc
 import { PdfRuntimeError } from '../runtime/runtime-error';
 
 export function validatePacketAuthority(name: string, value: unknown) {
-  if (name === 'FrontmatterTitleRefinementBatch') {
-    const packet = value as FrontmatterTitleRefinementBatch;
+  if (
+    name === 'FrontmatterTitleRefinementBatch' ||
+    name === 'ContinuationRefinementBatch'
+  ) {
+    const packet = value as
+      | FrontmatterTitleRefinementBatch
+      | ContinuationRefinementBatch;
     if (
       packet.tasks.filter(
         (task) => task.schema_version === 'ava-printed-title-task-2',
@@ -22,12 +29,14 @@ export function validatePacketAuthority(name: string, value: unknown) {
   if (
     name === 'FrontmatterTitleReconstructionInput' ||
     name === 'NativeStructure2ReconstructionInput' ||
-    name === 'CellGeometryReconstructionInput'
+    name === 'CellGeometryReconstructionInput' ||
+    name === 'ContinuationReconstructionInput'
   ) {
     const packet = value as
       | FrontmatterTitleReconstructionInput
       | NativeStructure2ReconstructionInput
-      | CellGeometryReconstructionInput;
+      | CellGeometryReconstructionInput
+      | ContinuationReconstructionInput;
     const parents = packet.geometry_corrections.map(
       (proof) => proof.response.original_task_id,
     );

@@ -9,6 +9,7 @@ from .book_language import primary_language
 from .normalization_map import line_wrap_map
 from .prepared_native_word_wrap import NativeWordWrapPreparedPage
 from .prepared_types import AnyPreparedPage
+from .protocol_continuation import ContinuationReconstructionInput
 from .protocol_frontmatter_title import FrontmatterTitleReconstructionInput
 from .protocol_native_word_wrap import NativeWordWrapReconstructionInput
 from .refinement_digest import observation_digest
@@ -65,6 +66,11 @@ def prepare_word_wrap_from_pages(
         list(request.refinements),
         request.native_structure_responses,
         request.source_layout_policy,
+        source_continuation_policy=(
+            request.source_continuation_policy
+            if isinstance(request, ContinuationReconstructionInput)
+            else None
+        ),
         source_title_policy=(
             request.source_title_policy
             if isinstance(request, FrontmatterTitleReconstructionInput)

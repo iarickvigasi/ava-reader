@@ -11,6 +11,16 @@ from .segments import Segment
 
 
 def stream_joins(segments: list[Segment], state: AssemblyState) -> list[Segment]:
+    if state.continuation_presentation is not None:
+        adjacent = {(a.id, b.id): (a, b) for a, b in zip(segments, segments[1:], strict=False)}
+        for pair in state.continuation_presentation.pairs:
+            endpoints = adjacent.get(pair)
+            if (
+                endpoints is None
+                or state.refined_joins.get(pair) is not True
+                or any(s.kind != "paragraph" or s.preserve_line_breaks for s in endpoints)
+            ):
+                raise ValueError("Selected continuation cannot form the witnessed paragraph")
     output: list[Segment] = []
     previous_source = None
     for segment in segments:
@@ -36,6 +46,18 @@ def stream_joins(segments: list[Segment], state: AssemblyState) -> list[Segment]
             and previous.preserve_line_breaks == segment.preserve_line_breaks
             and (inferred or declared)
         ):
+            presentation = state.continuation_presentation
+            if (
+                presentation is not None
+                and previous_source is not None
+                and (
+                    previous.id in presentation.styles
+                    or previous_source.id in presentation.styles
+                    or segment.id in presentation.styles
+                )
+                and (previous_source.id, segment.id) not in presentation.pairs
+            ):
+                raise ValueError("Unwitnessed continuation touches a selected presentation")
             separator: Literal["", " ", "\n"] = "\n" if previous.preserve_line_breaks else " "
             if (
                 not previous.preserve_line_breaks

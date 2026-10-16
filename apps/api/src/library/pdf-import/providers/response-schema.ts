@@ -1,3 +1,4 @@
+import { continuationGenerationSchema } from './continuation-generation-schema';
 import { refinementGenerationSchema } from './refinement-generation-schema';
 import {
   FIGURE_ALT_SCHEMA,
@@ -11,7 +12,7 @@ import type { ProviderTask } from './types';
 import { nativeStructureGenerationSchema } from './native-structure-generation-schema';
 // Records the projection revision; actual schema bytes change request hashes.
 // Canonical task identity and accepted response semantics remain unchanged.
-export const GEMINI_GRAMMAR_VERSION = 'ava-gemini-recognition-grammar-5';
+export const GEMINI_GRAMMAR_VERSION = 'ava-gemini-recognition-grammar-6';
 export function providerResponseSchema(modelId: string, task: ProviderTask) {
   if (
     modelId.startsWith('google/gemini-') &&
@@ -35,30 +36,33 @@ export function providerResponseSchema(modelId: string, task: ProviderTask) {
         ? recognitionSchemas.RecognitionResponse
         : task.schemaVersion === 'ava-printed-title-response-2'
           ? recognitionSchemas.FrontmatterTitleResponse
-          : task.schemaVersion === 'ava-book-refinement-response-3'
-            ? recognitionSchemas.BookRefinementResponse
-            : task.schemaVersion === 'ava-printed-title-response-1'
-              ? recognitionSchemas.PrintedTitleResponse
-              : task.schemaVersion ===
-                  'ava-recognition-cell-geometry-response-1'
-                ? recognitionSchemas.RecognitionCellGeometryResponse
-                : task.schemaVersion === 'ava-recognition-geometry-response-1'
-                  ? recognitionSchemas.RecognitionGeometryResponse
-                  : task.schemaVersion ===
-                      'ava-recognition-anchor-quote-response-2'
-                    ? recognitionSchemas.RecognitionAnchorQuoteResponse
+          : task.schemaVersion === 'ava-book-refinement-response-5'
+            ? recognitionSchemas.PresentationRefinementResponse
+            : task.schemaVersion === 'ava-book-refinement-response-3'
+              ? recognitionSchemas.BookRefinementResponse
+              : task.schemaVersion === 'ava-printed-title-response-1'
+                ? recognitionSchemas.PrintedTitleResponse
+                : task.schemaVersion ===
+                    'ava-recognition-cell-geometry-response-1'
+                  ? recognitionSchemas.RecognitionCellGeometryResponse
+                  : task.schemaVersion === 'ava-recognition-geometry-response-1'
+                    ? recognitionSchemas.RecognitionGeometryResponse
                     : task.schemaVersion ===
-                        'ava-recognition-anchor-context-response-1'
-                      ? recognitionSchemas.RecognitionAnchorContextResponse
-                      : task.schemaVersion === 'ava-book-refinement-response-4'
-                        ? recognitionSchemas.SourceFeatureResponse
+                        'ava-recognition-anchor-quote-response-2'
+                      ? recognitionSchemas.RecognitionAnchorQuoteResponse
+                      : task.schemaVersion ===
+                          'ava-recognition-anchor-context-response-1'
+                        ? recognitionSchemas.RecognitionAnchorContextResponse
                         : task.schemaVersion ===
-                            'ava-native-word-wrap-response-1'
-                          ? recognitionSchemas.WordWrapResponse
+                            'ava-book-refinement-response-4'
+                          ? recognitionSchemas.SourceFeatureResponse
                           : task.schemaVersion ===
-                              'ava-native-structure-response-1'
-                            ? recognitionSchemas.NativeStructureResponse
-                            : null;
+                              'ava-native-word-wrap-response-1'
+                            ? recognitionSchemas.WordWrapResponse
+                            : task.schemaVersion ===
+                                'ava-native-structure-response-1'
+                              ? recognitionSchemas.NativeStructureResponse
+                              : null;
   if (!modelId.startsWith('google/gemini-') || !schema)
     return task.responseSchema;
   if (jsonHash(task.responseSchema) !== jsonHash(schema))
@@ -67,6 +71,8 @@ export function providerResponseSchema(modelId: string, task: ProviderTask) {
     task.responseSchema,
     task.schemaVersion,
   );
+  if (task.schemaVersion === 'ava-book-refinement-response-5')
+    return continuationGenerationSchema(grammar, task);
   if (task.schemaVersion === 'ava-book-refinement-response-3')
     return refinementGenerationSchema(grammar, task);
   return task.schemaVersion === 'ava-native-structure-response-2'

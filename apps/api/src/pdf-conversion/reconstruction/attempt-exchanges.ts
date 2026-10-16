@@ -363,10 +363,16 @@ export function attemptExchanges(context: AttemptContext) {
       if (batch || !pages || preparedPages !== pages) return invalid();
       const prepared = validateRefinementBatch(envelope.payload);
       if (
-        context.sourceTitlePolicy
-          ? prepared.schema_version !== 'ava-book-refinement-batch-3' ||
+        context.sourceContinuationPolicy
+          ? prepared.schema_version !== 'ava-book-refinement-batch-4' ||
+            prepared.source_continuation_policy !==
+              context.sourceContinuationPolicy ||
             prepared.source_title_policy !== context.sourceTitlePolicy
-          : prepared.schema_version === 'ava-book-refinement-batch-3'
+          : prepared.schema_version === 'ava-book-refinement-batch-4' ||
+            (context.sourceTitlePolicy
+              ? prepared.schema_version !== 'ava-book-refinement-batch-3' ||
+                prepared.source_title_policy !== context.sourceTitlePolicy
+              : prepared.schema_version === 'ava-book-refinement-batch-3')
       )
         throw new PdfRuntimeError('DISPATCH_NOT_AUTHORIZED');
       const tasks: RefinementTask[] = prepared.tasks;
@@ -448,7 +454,8 @@ export function attemptExchanges(context: AttemptContext) {
         refinements.filter(
           (r) => r.schema_version === 'ava-printed-title-response-2',
         ).length !==
-        (batch.schema_version === 'ava-book-refinement-batch-3'
+        (batch.schema_version === 'ava-book-refinement-batch-3' ||
+        batch.schema_version === 'ava-book-refinement-batch-4'
           ? batch.tasks.filter(
               (task) => task.schema_version === 'ava-printed-title-task-2',
             ).length

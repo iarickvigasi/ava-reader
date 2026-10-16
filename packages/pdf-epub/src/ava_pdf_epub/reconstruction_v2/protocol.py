@@ -12,6 +12,7 @@ from .prepared_native_structure_v2 import NativeStructure2PreparedPage
 from .prepared_native_word_wrap import NativeWordWrapPreparedPage
 from .prepared_types import AnyPreparedPage
 from .protocol_cell_geometry import CellGeometryReconstructionInput
+from .protocol_continuation import ContinuationReconstructionInput
 from .protocol_frontmatter_title import FrontmatterTitleReconstructionInput
 from .protocol_native_layout import NativeLayoutPrepareResult, NativeLayoutReconstructionInput
 from .protocol_native_structure import (
@@ -86,10 +87,13 @@ AnyReconstructionInput = (
     | FrontmatterTitleReconstructionInput
     | NativeStructure2ReconstructionInput
     | CellGeometryReconstructionInput
+    | ContinuationReconstructionInput
 )
 
 
 def reconstruction_input(raw: object) -> AnyReconstructionInput:
+    if isinstance(raw, dict) and raw.get("schema_version") == "ava-reconstruct-input-10":
+        return ContinuationReconstructionInput.model_validate(raw)
     if isinstance(raw, dict) and raw.get("schema_version") == "ava-reconstruct-input-9":
         return CellGeometryReconstructionInput.model_validate(raw)
     if isinstance(raw, dict) and raw.get("schema_version") == "ava-reconstruct-input-8":

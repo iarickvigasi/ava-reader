@@ -30,6 +30,7 @@ export function exchangeStream(
   const native2 = [
     'ava-reconstruct-input-8',
     'ava-reconstruct-input-9',
+    'ava-reconstruct-input-10',
   ].includes(marker);
   const geometry =
     marker === 'ava-reconstruct-input-6' ||

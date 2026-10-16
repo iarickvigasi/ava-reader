@@ -1,3 +1,5 @@
+import { capturedSourceContinuationPolicy } from './captured-continuation-policy';
+import { RECOGNITION_CELL_GEOMETRY_REPAIR_POLICY } from './profile';
 import { capturedCellGeometryPolicy } from './captured-cell-geometry-policy';
 import {
   capturedSourceLayoutPolicy,
@@ -18,6 +20,19 @@ export function capturedSourcePolicies(
   profileId: string,
   configSha256: unknown,
 ) {
+  const sourceContinuationPolicy = capturedSourceContinuationPolicy(
+    profileId,
+    configSha256,
+  );
+  if (sourceContinuationPolicy)
+    return {
+      sourceLayoutPolicy: NATIVE_LAYOUT_POLICY,
+      sourceStructurePolicy: NATIVE_STRUCTURE_V2_POLICY,
+      sourceNormalizationPolicy: NATIVE_WORD_WRAP_POLICY,
+      recognitionRepairPolicy: RECOGNITION_CELL_GEOMETRY_REPAIR_POLICY,
+      sourceTitlePolicy: FRONTMATTER_TITLE_POLICY,
+      sourceContinuationPolicy,
+    };
   const cell = capturedCellGeometryPolicy(profileId, configSha256);
   if (cell)
     return {

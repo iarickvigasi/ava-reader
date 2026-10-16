@@ -37,6 +37,7 @@ def prepare_refinement(
     *,
     source_feature_policy: str | None = None,
     source_title_policy: str | None = None,
+    source_continuation_policy: str | None = None,
 ) -> list[AnyRefinementTask | FrontmatterTitleTask]:
     from .source_feature_contract import FEATURE_POLICY
 
@@ -46,6 +47,16 @@ def prepare_refinement(
         raise ValueError("Unsupported source title policy")
     if source_title_policy is not None and source_feature_policy != FEATURE_POLICY:
         raise ValueError("Complete title requires captured source features")
+    from .continuation_presentation_contract import POLICY
+
+    if source_continuation_policy not in {None, POLICY} or (
+        source_continuation_policy
+        and (
+            source_title_policy is None
+            or getattr(prepared[0], "source_structure_policy", None) != "ava-native-structure-2"
+        )
+    ):
+        raise ValueError("Continuation presentation requires captured current source policies")
     catalogue = refinement_catalogue(
         segments,
         state,
@@ -66,6 +77,15 @@ def prepare_refinement(
     source_sha = hashlib.sha256(source.read_bytes()).hexdigest()
     segment_map, page_map = {s.id: s for s in segments}, PreparedPageMap(prepared)
     tail_ids = {e.previous_id for e in catalogue.edges}
+    alignment_origins: dict[str, str] = {}
+    if source_continuation_policy:
+        from .continuation_alignment_origins import continuation_alignment_origins
+
+        owners = {ident for edge in catalogue.edges for ident in (edge.previous_id, edge.next_id)}
+        alignment_origins = continuation_alignment_origins(
+            prepared,
+            [segment_map[ident] for ident in owners if segment_map[ident].method == "native"],
+        )
     tasks: list[AnyRefinementTask | FrontmatterTitleTask] = []
     groups: list[tuple[list[str], list[str], list[RefinementEdge], list[str]]] = [
         (decisions, crop_ids, edges, [])
@@ -110,7 +130,12 @@ def prepare_refinement(
         if metadata_ids:
             raw["metadata_ids"] = metadata_ids
         raw["task_id"] = refinement_identifier(raw)
-        tasks.append(BookRefinementTask.model_validate(raw))
+        task = BookRefinementTask.model_validate(raw)
+        if source_continuation_policy and edges:
+            from .continuation_presentation_task import presentation_task
+
+            task = presentation_task(task, segment_map, alignment_origins)
+        tasks.append(task)
     if source_feature_policy is not None:
         from .printed_title_task import printed_title_task
         from .source_feature_tasks import source_feature_tasks

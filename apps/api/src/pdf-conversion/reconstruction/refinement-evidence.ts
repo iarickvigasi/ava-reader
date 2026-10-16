@@ -4,6 +4,7 @@ import type { RefinementTask } from './refinement-packets';
 type RefinementEvidenceMaps = {
   required_decision_evidence: Record<string, (string | undefined)[]>;
   required_join_evidence: Record<string, (string | undefined)[]>;
+  required_presentation_evidence?: Record<string, (string | undefined)[]>;
   required_title_evidence?: Record<string, string[]>;
   required_metadata_evidence?: Record<string, (string | undefined)[]>;
   required_feature_evidence?: Record<string, Record<string, string[]>>;
@@ -71,6 +72,20 @@ export function refinementEvidence(
       ? {
           required_metadata_evidence: Object.fromEntries(
             task.metadata_ids.map((id) => [id, [crop(id, 'head')]]),
+          ),
+        }
+      : {}),
+    ...(task.schema_version === 'ava-book-refinement-task-5'
+      ? {
+          required_presentation_evidence: Object.fromEntries(
+            task.join_candidates.map((candidate) => [
+              candidate.edge_id,
+              [
+                crop(candidate.previous_id, 'tail') ??
+                  crop(candidate.previous_id, 'head'),
+                crop(candidate.next_id, 'head'),
+              ],
+            ]),
           ),
         }
       : {}),

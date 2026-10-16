@@ -46,6 +46,7 @@ def word_wrap_assembly(
     source_layout_policy: NativeLayoutPolicy,
     *,
     source_title_policy: str | None = None,
+    source_continuation_policy: str | None = None,
 ) -> WordWrapAssembly:
     pages, segments, state = source_segments(
         source,
@@ -57,6 +58,7 @@ def word_wrap_assembly(
         native_structure_responses=native_structure_responses,
     )
     state.word_wrap_active = True
+    state.source_continuation_policy = source_continuation_policy
     with phase("prepare_refinement"):
         tasks = prepare_refinement(
             source,
@@ -65,6 +67,7 @@ def word_wrap_assembly(
             segments,
             state,
             source_feature_policy=FEATURE_POLICY,
+            source_continuation_policy=source_continuation_policy,
             source_title_policy=source_title_policy,
         )
     segments = apply_refinement(segments, tasks, refinements, state)
@@ -81,5 +84,11 @@ def word_wrap_assembly(
     starts = capture_page_starts(segments, state)
     # Joining is existing source/receipt authority. Sparse decisions may remove a
     # qualified wrap, but cannot combine paragraphs or change reading order.
+    if state.continuation_presentation is not None:
+        from .continuation_application import finalize_continuation_presentation
+
+        segments = finalize_continuation_presentation(
+            segments, state.continuation_presentation, state.source_feature_evidence
+        )
     joined = stream_joins(segments, state)
     return WordWrapAssembly(pages, joined, state, segments, starts)

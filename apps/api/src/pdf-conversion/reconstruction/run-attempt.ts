@@ -7,6 +7,7 @@ import type {
   SourceNormalizationPolicy,
   RecognitionRepairPolicy,
   SourceTitlePolicy,
+  SourceContinuationPolicy,
 } from '../../library/pdf-import/admission/profile';
 import { reconstructionRequest } from './reconstruction-request';
 import type { SemanticValidator } from '../contracts/types';
@@ -32,6 +33,7 @@ export async function runAttempt(
     sourceNormalizationPolicy?: SourceNormalizationPolicy;
     recognitionRepairPolicy?: RecognitionRepairPolicy;
     sourceTitlePolicy?: SourceTitlePolicy;
+    sourceContinuationPolicy?: SourceContinuationPolicy;
   },
   semantic: SemanticValidator,
 ) {
@@ -43,6 +45,14 @@ export async function runAttempt(
   const exchanges = attemptExchanges({
     ...input,
     checkActive,
+    validateContinuation: (task, response, signal) =>
+      validateRefinement(
+        task,
+        response,
+        input.deps.sandbox,
+        input.sandboxInput,
+        signal,
+      ),
     validateFrontmatterTitle: (task, response, signal) =>
       validateRefinement(
         task,

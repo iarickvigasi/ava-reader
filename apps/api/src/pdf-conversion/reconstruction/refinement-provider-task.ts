@@ -2,6 +2,7 @@ import { frontmatterTitleProviderTask } from './frontmatter-title-provider-task'
 import { createHash } from 'node:crypto';
 import type { ProviderTask } from '../../library/pdf-import/providers/types';
 import {
+  CONTINUATION_PROMPT,
   BIBLIOGRAPHIC_PROMPT,
   LEGACY_REFINEMENT_PROMPT,
   MIXED_HIERARCHY_PROMPT,
@@ -58,15 +59,17 @@ export function refinementProviderTask(
         content:
           task.schema_version === 'ava-printed-title-task-1'
             ? PRINTED_TITLE_PROMPT
-            : task.prompt_version === 'ava-book-refinement-7'
-              ? SOURCE_FEATURE_PROMPT
-              : task.prompt_version === 'ava-book-refinement-4'
-                ? BIBLIOGRAPHIC_PROMPT
-                : task.prompt_version === 'ava-book-refinement-3'
-                  ? LEGACY_REFINEMENT_PROMPT
-                  : task.prompt_version === 'ava-book-refinement-6'
-                    ? MIXED_HIERARCHY_PROMPT
-                    : REFINEMENT_PROMPT,
+            : task.prompt_version === 'ava-book-refinement-8'
+              ? CONTINUATION_PROMPT
+              : task.prompt_version === 'ava-book-refinement-7'
+                ? SOURCE_FEATURE_PROMPT
+                : task.prompt_version === 'ava-book-refinement-4'
+                  ? BIBLIOGRAPHIC_PROMPT
+                  : task.prompt_version === 'ava-book-refinement-3'
+                    ? LEGACY_REFINEMENT_PROMPT
+                    : task.prompt_version === 'ava-book-refinement-6'
+                      ? MIXED_HIERARCHY_PROMPT
+                      : REFINEMENT_PROMPT,
       },
       {
         role: 'user',

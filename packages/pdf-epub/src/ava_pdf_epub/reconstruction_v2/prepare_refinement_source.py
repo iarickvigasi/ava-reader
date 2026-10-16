@@ -8,6 +8,7 @@ from .prepare_refinement import prepare_refinement
 from .prepare_source import prepare_source
 from .prepared_types import AnyPreparedPage
 from .protocol import AnyReconstructionInput
+from .protocol_continuation import ContinuationReconstructionInput, ContinuationRefinementBatch
 from .protocol_frontmatter_title import (
     FrontmatterTitleReconstructionInput,
     FrontmatterTitleRefinementBatch,
@@ -112,6 +113,11 @@ def prepare_refinement_from_pages(
             segments,
             state,
             source_feature_policy=request.source_feature_policy,
+            source_continuation_policy=(
+                request.source_continuation_policy
+                if isinstance(request, ContinuationReconstructionInput)
+                else None
+            ),
             source_title_policy=(
                 request.source_title_policy
                 if isinstance(request, FrontmatterTitleReconstructionInput)
@@ -121,6 +127,15 @@ def prepare_refinement_from_pages(
         raw = dict(
             source_sha256=request.source_sha256, tasks=[t.model_dump(mode="json") for t in tasks]
         )
+        if isinstance(request, ContinuationReconstructionInput):
+            return ContinuationRefinementBatch.model_validate(
+                dict(
+                    schema_version="ava-book-refinement-batch-4",
+                    source_title_policy=request.source_title_policy,
+                    source_continuation_policy=request.source_continuation_policy,
+                    **raw,
+                )
+            )
         if isinstance(request, FrontmatterTitleReconstructionInput):
             return FrontmatterTitleRefinementBatch.model_validate(
                 dict(

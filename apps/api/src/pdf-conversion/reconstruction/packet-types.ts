@@ -1,3 +1,7 @@
+import type { ContinuationReconstructionInput } from './generated/ContinuationReconstructionInput';
+import type { ContinuationRefinementBatch } from './generated/ContinuationRefinementBatch';
+import type { PresentationRefinementTask } from './generated/PresentationRefinementTask';
+import type { PresentationRefinementResponse } from './generated/PresentationRefinementResponse';
 import type { RecognitionCellGeometryTask } from './generated/RecognitionCellGeometryTask';
 import type { RecognitionCellGeometryResponse } from './generated/RecognitionCellGeometryResponse';
 import type { RecognitionCellGeometryProof } from './generated/RecognitionCellGeometryProof';
@@ -45,6 +49,11 @@ import type { NativeStructureTask } from './generated/NativeStructureTask';
 import type { NativeStructureResponse } from './generated/NativeStructureResponse';
 
 export type Packets = {
+  ContinuationReconstructionInput: ContinuationReconstructionInput;
+  ContinuationRefinementBatch: ContinuationRefinementBatch;
+  PresentationRefinementTask: PresentationRefinementTask;
+  PresentationRefinementResponse: PresentationRefinementResponse;
+
   RecognitionCellGeometryTask: RecognitionCellGeometryTask;
   RecognitionCellGeometryResponse: RecognitionCellGeometryResponse;
   RecognitionCellGeometryProof: RecognitionCellGeometryProof;

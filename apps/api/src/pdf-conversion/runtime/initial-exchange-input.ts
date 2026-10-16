@@ -8,7 +8,8 @@ export type InitialExchangeInput = {
     | 'ava-reconstruct-input-6'
     | 'ava-reconstruct-input-7'
     | 'ava-reconstruct-input-8'
-    | 'ava-reconstruct-input-9';
+    | 'ava-reconstruct-input-9'
+    | 'ava-reconstruct-input-10';
   profile_id: string;
   source_sha256: string;
   source_feature_policy?: string;
@@ -17,6 +18,7 @@ export type InitialExchangeInput = {
   source_normalization_policy?: string;
   recognition_repair_policy?: string;
   source_title_policy?: string;
+  source_continuation_policy?: string;
   geometry_corrections?: unknown[];
   responses: unknown[];
   native_structure_responses?: unknown[];
@@ -27,7 +29,9 @@ export type InitialExchangeInput = {
 export function initialExchangeInput(value: unknown): InitialExchangeInput {
   const request = value as InitialExchangeInput | null;
   const layout = request?.schema_version === 'ava-reconstruct-input-3';
-  const cell = request?.schema_version === 'ava-reconstruct-input-9';
+  const continuation = request?.schema_version === 'ava-reconstruct-input-10';
+  const cell =
+    request?.schema_version === 'ava-reconstruct-input-9' || continuation;
   const native2 = request?.schema_version === 'ava-reconstruct-input-8' || cell;
   const title =
     request?.schema_version === 'ava-reconstruct-input-7' || native2;
@@ -47,6 +51,7 @@ export function initialExchangeInput(value: unknown): InitialExchangeInput {
     ...(wrap ? ['source_normalization_policy', 'word_wrap_responses'] : []),
     ...(geometry ? ['recognition_repair_policy', 'geometry_corrections'] : []),
     ...(title ? ['source_title_policy'] : []),
+    ...(continuation ? ['source_continuation_policy'] : []),
     ...(native
       ? ['source_structure_policy', 'native_structure_responses']
       : []),
@@ -82,6 +87,9 @@ export function initialExchangeInput(value: unknown): InitialExchangeInput {
       (request.source_normalization_policy !== 'ava-native-word-wrap-1' ||
         !Array.isArray(request.word_wrap_responses) ||
         request.word_wrap_responses.length)) ||
+    (continuation &&
+      request.source_continuation_policy !==
+        'ava-source-continuation-presentation-1') ||
     (title && request.source_title_policy !== 'ava-frontmatter-title-1') ||
     (geometry &&
       (request.recognition_repair_policy !==

@@ -78,7 +78,7 @@ it.each([
     expect(prompt).toContain('including nested items');
     expect(prompt).toContain('Roman numerals');
     expect(encoded.taskSha256).toBe(jsonHash(provider));
-    expect(GEMINI_GRAMMAR_VERSION).toBe('ava-gemini-recognition-grammar-5');
+    expect(GEMINI_GRAMMAR_VERSION).toBe('ava-gemini-recognition-grammar-6');
     const stale = {
       ...configured,
       configuration: {

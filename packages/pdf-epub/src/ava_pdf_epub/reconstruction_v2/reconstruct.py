@@ -60,6 +60,7 @@ def reconstruct(
     source_normalization_policy: NativeWordWrapPolicy | None = None,
     word_wrap_responses: list[WordWrapResponse] | None = None,
     source_title_policy: str | None = None,
+    source_continuation_policy: str | None = None,
 ) -> ReconstructedBook:
     if source_normalization_policy is not None:
         if source_feature_policy != FEATURE_POLICY:
@@ -75,8 +76,13 @@ def reconstruct(
             source_normalization_policy,
             word_wrap_responses,
             source_title_policy=source_title_policy,
+            source_continuation_policy=source_continuation_policy,
         )
     else:
+        if source_continuation_policy is not None:
+            raise ValueError(
+                "Continuation presentation requires lexical/current source reconstruction"
+            )
         if word_wrap_responses is not None:
             raise ValueError("Sparse lexical receipts require their captured policy")
         assembly = legacy_reconstruction_assembly(

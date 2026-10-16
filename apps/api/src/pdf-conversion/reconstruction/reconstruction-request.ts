@@ -6,6 +6,7 @@ import type {
   SourceNormalizationPolicy,
   RecognitionRepairPolicy,
   SourceTitlePolicy,
+  SourceContinuationPolicy,
 } from '../../library/pdf-import/admission/profile';
 import type { AnyGeometryProof } from './geometry-types';
 import type { WordWrapResponse } from './generated/WordWrapResponse';
@@ -22,6 +23,7 @@ export function reconstructionRequest(
     sourceNormalizationPolicy?: SourceNormalizationPolicy;
     recognitionRepairPolicy?: RecognitionRepairPolicy;
     sourceTitlePolicy?: SourceTitlePolicy;
+    sourceContinuationPolicy?: SourceContinuationPolicy;
   },
   responses: RecognitionResponse[] = [],
   refinements: RefinementResponse[] = [],
@@ -34,8 +36,9 @@ export function reconstructionRequest(
   geometryCorrections: AnyGeometryProof[] = [],
 ) {
   return {
-    schema_version:
-      identity.recognitionRepairPolicy === 'ava-recognition-geometry-repair-2'
+    schema_version: identity.sourceContinuationPolicy
+      ? 'ava-reconstruct-input-10'
+      : identity.recognitionRepairPolicy === 'ava-recognition-geometry-repair-2'
         ? 'ava-reconstruct-input-9'
         : identity.sourceStructurePolicy === NATIVE_STRUCTURE_V2_POLICY
           ? 'ava-reconstruct-input-8'
@@ -77,6 +80,9 @@ export function reconstructionRequest(
       : {}),
     ...(identity.sourceTitlePolicy
       ? { source_title_policy: identity.sourceTitlePolicy }
+      : {}),
+    ...(identity.sourceContinuationPolicy
+      ? { source_continuation_policy: identity.sourceContinuationPolicy }
       : {}),
     source_feature_policy: 'ava-ocr-source-features-1',
     profile_id: identity.profileId,

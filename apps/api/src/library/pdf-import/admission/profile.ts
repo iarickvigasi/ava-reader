@@ -1,3 +1,4 @@
+import { SOURCE_CONTINUATION_POLICY } from './source-continuation-policy';
 import { FRONTMATTER_TITLE_POLICY } from './frontmatter-title-policy';
 import {
   RECOGNITION_GEOMETRY_REPAIR_POLICY,
@@ -74,7 +75,17 @@ const CELL_GEOMETRY_V3 = Object.freeze({
   ...STRUCTURE_V2_V3,
   recognitionRepairPolicy: RECOGNITION_CELL_GEOMETRY_REPAIR_POLICY,
 });
+const CONTINUATION_LEGACY = Object.freeze({
+  ...CELL_GEOMETRY_LEGACY,
+  sourceContinuationPolicy: SOURCE_CONTINUATION_POLICY,
+});
+const CONTINUATION_V3 = Object.freeze({
+  ...CELL_GEOMETRY_V3,
+  sourceContinuationPolicy: SOURCE_CONTINUATION_POLICY,
+});
 export type PdfImportConfiguration =
+  | typeof CONTINUATION_LEGACY
+  | typeof CONTINUATION_V3
   | typeof PDF_IMPORT_PROFILE
   | typeof PDF_IMPORT_PROFILE_V3
   | typeof LAYOUT_LEGACY
@@ -98,10 +109,26 @@ export function pdfImportConfiguration(
   sourceNormalizationPolicy?: unknown,
   recognitionRepairPolicy?: unknown,
   sourceTitlePolicy?: unknown,
+  sourceContinuationPolicy?: unknown,
 ): PdfImportConfiguration {
   const legacy = !profileId || profileId === PDF_IMPORT_PROFILE.profileId;
   if (!legacy && profileId !== PDF_IMPORT_PROFILE_V3.profileId)
     throw new Error('PDF_IMPORT_PROFILE_INVALID');
+  if (
+    sourceContinuationPolicy !== undefined &&
+    sourceContinuationPolicy !== ''
+  ) {
+    if (
+      sourceContinuationPolicy !== SOURCE_CONTINUATION_POLICY ||
+      sourceLayoutPolicy !== NATIVE_LAYOUT_POLICY ||
+      sourceStructurePolicy !== NATIVE_STRUCTURE_V2_POLICY ||
+      sourceNormalizationPolicy !== NATIVE_WORD_WRAP_POLICY ||
+      recognitionRepairPolicy !== RECOGNITION_CELL_GEOMETRY_REPAIR_POLICY ||
+      sourceTitlePolicy !== FRONTMATTER_TITLE_POLICY
+    )
+      throw new Error('PDF_IMPORT_PROFILE_INVALID');
+    return legacy ? CONTINUATION_LEGACY : CONTINUATION_V3;
+  }
   if (sourceStructurePolicy === NATIVE_STRUCTURE_V2_POLICY) {
     if (
       sourceLayoutPolicy !== NATIVE_LAYOUT_POLICY ||
@@ -185,3 +212,8 @@ export {
 } from './frontmatter-title-policy';
 
 export { capturedNativeStructureV2Policy } from './captured-native-structure-v2-policy';
+
+export {
+  SOURCE_CONTINUATION_POLICY,
+  type SourceContinuationPolicy,
+} from './source-continuation-policy';

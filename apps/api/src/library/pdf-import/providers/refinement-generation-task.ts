@@ -7,7 +7,7 @@ import type { ProviderTask } from './types';
 
 // Recover the exact factory-produced task; generation constraints cannot trust
 // a loose flag map or model output to decide native versus OCR authority.
-export function refinementGenerationTask(task: ProviderTask) {
+export function recoveredRefinementGenerationTask(task: ProviderTask) {
   try {
     const content = task.messages[1]?.content;
     if (
@@ -38,19 +38,25 @@ export function refinementGenerationTask(task: ProviderTask) {
       'required_decision_evidence',
       'required_join_evidence',
       'required_metadata_evidence',
+      'required_presentation_evidence',
     ])
       delete fields[key];
-    const recovered = validatePacket('BookRefinementTask', {
-      ...fields,
-      image: {
-        width: image.width,
-        height: image.height,
-        media_type: match[1],
-        sha256: checksumBuffer(pixels),
-        byte_length: pixels.length,
-        base64: match[2],
+    const recovered = validatePacket(
+      fields.schema_version === 'ava-book-refinement-task-5'
+        ? 'PresentationRefinementTask'
+        : 'BookRefinementTask',
+      {
+        ...fields,
+        image: {
+          width: image.width,
+          height: image.height,
+          media_type: match[1],
+          sha256: checksumBuffer(pixels),
+          byte_length: pixels.length,
+          base64: match[2],
+        },
       },
-    });
+    );
     if (
       jsonHash(refinementProviderTask(recovered, task.sourceSha256)) !==
       jsonHash(task)
@@ -63,8 +69,14 @@ export function refinementGenerationTask(task: ProviderTask) {
       recovered.decision_ids.some((id) => !nodes.has(id))
     )
       throw new Error();
-    return recovered.decision_ids.map((id) => nodes.get(id)!);
+    return recovered;
   } catch {
     throw new PdfProviderError('PDF_PROVIDER_REQUEST_UNAUTHORIZED');
   }
+}
+
+export function refinementGenerationTask(task: ProviderTask) {
+  const recovered = recoveredRefinementGenerationTask(task);
+  const nodes = new Map(recovered.nodes.map((node) => [node.id, node]));
+  return recovered.decision_ids.map((id) => nodes.get(id)!);
 }

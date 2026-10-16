@@ -265,6 +265,10 @@ exact provider-cost projection. ADMIN lookup/export and trusted report repair ar
 operations guide; the verification guide includes the guarded disposable-database proof. Worker
 measurements, real authenticated operator flows, retention and release qualification remain open.
 
+The optional source-continuation policy adds bounded visual comparison for mixed native/OCR
+paragraph joins; its [capture and activation requirements](docs/pdf-conversion-operations.md)
+remain separate from full-book and release qualification.
+
 - [Product behavior and pipeline](docs/pdf-conversion.md)
 - [Build, worker configuration and operations](docs/pdf-conversion-operations.md)
 - [Verification, normal-app walkthrough and current limitations](docs/pdf-conversion-verification.md)
