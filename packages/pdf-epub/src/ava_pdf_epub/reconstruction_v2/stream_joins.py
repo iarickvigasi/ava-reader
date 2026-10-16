@@ -7,6 +7,7 @@ from ..contracts.layout_wrap import compound_wrap
 from .assembly_state import AssemblyState
 from .continuation_boundary import inferred_continuation
 from .layout_hyphen_composition import compose_layout_normalizations
+from .native_continuation import hinted_native_continuation, native_hint_style
 from .segments import Segment
 
 
@@ -32,6 +33,13 @@ def stream_joins(segments: list[Segment], state: AssemblyState) -> list[Segment]
         if previous_source and (previous_source.id, segment.id) in state.refined_joins:
             inferred = state.refined_joins[(previous_source.id, segment.id)]
             declared = inferred
+        native_hint = (
+            hinted_native_continuation(previous_source, segment, state)
+            if previous_source is not None
+            else None
+        )
+        if native_hint is False:
+            inferred = declared = False  # Neither declaration nor fallback can bypass refusal.
         if (
             previous
             and previous.kind in {"paragraph", "note"}
@@ -68,6 +76,17 @@ def stream_joins(segments: list[Segment], state: AssemblyState) -> list[Segment]
             ):
                 separator = ""
             offset = len(previous.text) + len(separator)
+            joined_style = previous.style
+            if (
+                previous_source is not None
+                and hinted_native_continuation(previous_source, segment, state) is True
+            ):
+                assert previous.style is not None and segment.style is not None
+                joined_style = native_hint_style(previous.style, segment.style)
+                if joined_style is None:
+                    raise ValueError(
+                        "Native continuation conflicts with earlier paragraph typography"
+                    )
             updated = previous.model_copy(
                 update={
                     "text": previous.text + separator + segment.text,
@@ -83,6 +102,7 @@ def stream_joins(segments: list[Segment], state: AssemblyState) -> list[Segment]
                     ],
                     "native_line_ids": [*previous.native_line_ids, *segment.native_line_ids],
                     "continues_to_next": segment.continues_to_next,
+                    "style": joined_style,
                 }
             )
             left_map = state.normalization_maps.get(previous.id)

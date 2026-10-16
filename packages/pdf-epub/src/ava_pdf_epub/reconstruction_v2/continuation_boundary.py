@@ -29,7 +29,14 @@ def inferred_continuation(previous: Segment, current: Segment, state: AssemblySt
         return False
     if previous.structure_candidate or current.structure_candidate:
         return False
-    if re.search(r"[.!?:;][\"'’”)]*$", previous.text.rstrip()) or not current.text[:1].islower():
+    if re.search(r"[.!?:;][\"'’”)]*$", previous.text.rstrip()):
+        return False
+    from .native_continuation import hinted_native_continuation
+
+    hint = hinted_native_continuation(previous, current, state)
+    if hint is not None:
+        return hint  # A refused hint must not re-enter the weaker lowercase heuristic.
+    if not current.text[:1].islower():
         return False
     if previous.method == current.method == "native":
         return previous.page != current.page or (

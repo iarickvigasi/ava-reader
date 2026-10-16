@@ -10,6 +10,7 @@ from ..contracts.layout_normalization_v3 import LayoutNormalizationMapV3
 from ..contracts.layout_prefix_cut_v3 import PrefixCutReceipt
 from ..contracts.styles import Style
 from .findings import Finding
+from .native_continuation import NativeContinuation
 from .native_hyphen_decisions import NativeHyphenDecision
 from .native_line_offsets import NativeLineOffset
 from .segments import Segment
@@ -37,6 +38,7 @@ class AssemblyState:
     aliases: dict[str, tuple[str, int]] = field(default_factory=dict)
     native_line_maps: dict[str, NativeLineOffset] = field(default_factory=dict)
     native_hyphen_decisions: list[NativeHyphenDecision] = field(default_factory=list)
+    native_continuations: dict[str, NativeContinuation] = field(default_factory=dict)
     native_source_lines: dict[str, str] = field(default_factory=dict)
     normalization_maps: dict[str, LayoutNormalizationMap | LayoutNormalizationMapV3] = field(
         default_factory=dict
@@ -97,6 +99,7 @@ class AssemblyState:
         self.aliases.clear()
         self.native_line_maps.clear()
         self.native_hyphen_decisions.clear()
+        self.native_continuations.clear()
         self.native_source_lines.clear()
         self.normalization_maps.clear()
         self.compound_heading_sources.clear()

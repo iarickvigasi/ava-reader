@@ -168,7 +168,18 @@ for eligible mixed native/OCR prose pairs. It requires a positive visual compari
 crops and preserves known metrics, false/zero values, text, spans and source ownership. Extraction
 alignment defaults carry explicit provenance. Head indentation/before spacing and final-tail after
 spacing have distinct owners. Later contradictory source observations and unwitnessed component
-extensions refuse. Historical requests keep their existing authority. This implementation candidate
+extensions refuse. Under this same captured policy, a native paragraph may continue with a
+capitalized word when an accepted Native2 edge hint, exact source-line ownership, a real page/column
+boundary and physically flush source lines agree. Native2 paragraph metrics are measured before
+refinement identities are created; accepted roles and known properties remain fixed. Alignment
+`start` is explicitly a reflow fallback, while centering needs visibly shorter centered lines rather
+than merely equal-width justified lines. The native flush bound is0.15em; measured displacement
+stays unchanged. Joined presentation fills only unknown fields, retains head indent/before spacing
+and tail after spacing, and tolerates binary numeric noise below1e-9em without rounding source
+values. Boolean/string observations and material numeric differences remain exact constraints.
+Assembly retains explicit negative observations separately from ordinary extraction defaults.
+Contradictory or unproved hints cannot fall back to the lowercase heuristic; unresolved continuations
+still stop conversion. No extra model decision is needed for a fully witnessed native boundary. Historical requests keep their existing authority. This implementation candidate
 still needs live-model and finished-book qualification; see the
 [worker contract](../packages/pdf-epub/README.md#finite-reconstruction-attempt) and
 [server opt-in](pdf-conversion-operations.md#build-and-configure).

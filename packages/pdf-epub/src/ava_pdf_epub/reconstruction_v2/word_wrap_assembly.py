@@ -55,6 +55,7 @@ def word_wrap_assembly(
         responses,
         source_layout_policy=source_layout_policy,
         source_title_policy=source_title_policy,
+        source_continuation_policy=source_continuation_policy,
         native_structure_responses=native_structure_responses,
     )
     state.word_wrap_active = True

@@ -15,6 +15,7 @@ def native_spacing(
     segments: list[Segment],
     *,
     alignment_origins: dict[str, str] | None = None,
+    strict_center_evidence: bool = False,
 ) -> list[Segment]:
     lookup = {line.id: line for line in page.lines}
     columns = {p.segment.id: (p.band, p.column) for p in reading_order(segments, page.width_pt)}
@@ -34,6 +35,11 @@ def native_spacing(
         center = not segment.preserve_line_breaks and all(
             abs((line.box.x0 + line.box.x1) / 2 - page.width_pt / 2) < 3 for line in lines
         )
+        if strict_center_evidence and segment.kind == "paragraph":
+            widths = [line.box.x1 - line.box.x0 for line in lines]
+            # Equally wide justified lines also share a centre. A shorter line
+            # visibly centred on its peers is needed to distinguish the layouts.
+            center = center and len(widths) > 1 and max(widths) - min(widths) >= size
         align = (
             "center"
             if center and segment.box.x1 - segment.box.x0 < page.width_pt * 0.8

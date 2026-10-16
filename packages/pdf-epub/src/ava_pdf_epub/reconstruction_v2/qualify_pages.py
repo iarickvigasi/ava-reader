@@ -8,6 +8,7 @@ from .accept_response import accept_response
 from .blank_page import blank_page
 from .conservation import native_conservation
 from .furniture import furniture_ids
+from .native_continuation import NativeContinuation
 from .native_hyphen_decisions import NativeHyphenDecision, retained_hyphen_decisions
 from .native_layout_policy import NativeLayoutPolicy, validate_layout_policy
 from .native_line_offsets import NativeLineOffset
@@ -32,6 +33,8 @@ def qualify_pages(
     native_structure_responses: Sequence[AnyNativeStructureResponse] | None = None,
     native_hyphen_decisions: list[NativeHyphenDecision] | None = None,
     native_source_lines: dict[str, str] | None = None,
+    native_continuations: dict[str, NativeContinuation] | None = None,
+    native_paragraph_layout: bool = False,
 ) -> dict[int, list[Segment]]:
     policy = validate_layout_policy(source_layout_policy)
     if any(layout_policy(page) != policy for page in pages):
@@ -92,7 +95,16 @@ def qualify_pages(
                 page.observation,
                 preserved_segments=page.native_segments,
                 furniture=furniture,
+                paragraph_layout=native_paragraph_layout,
             )
+            if native_continuations is not None:
+                for continuation in assembled.continuations:
+                    if (
+                        continuation.source_sha256 != digest
+                        or continuation.owner_id in native_continuations
+                    ):
+                        raise ValueError("Native continuation crosses source ownership")
+                    native_continuations[continuation.owner_id] = continuation
             if page.layout_hyphen_candidates and (
                 native_hyphen_decisions is None or native_source_lines is None
             ):

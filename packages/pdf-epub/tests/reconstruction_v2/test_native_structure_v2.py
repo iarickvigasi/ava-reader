@@ -2,6 +2,7 @@
 
 import copy
 import unittest
+from dataclasses import replace
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -78,7 +79,14 @@ class NativeStructure2Tests(unittest.TestCase):
         self.assertEqual([m.line_id for m in first.line_maps], [s.id for s in observation.lines])
         reversed_answer = answer.model_copy(update={"groups": list(reversed(answer.groups))})
         second = assemble_native_structure_source(task, reversed_answer, observation)
-        self.assertEqual(first, second)
+        # Semantic source is identical; audit provenance keeps the actual raw receipt.
+        self.assertEqual(first, replace(second, continuations=first.continuations))
+        self.assertEqual(len(first.continuations), 1)
+        self.assertEqual(first.continuations[0].response_sha256, document_digest(answer))
+        self.assertEqual(second.continuations[0].response_sha256, document_digest(reversed_answer))
+        self.assertFalse(first.continuations[0].incoming or first.continuations[0].outgoing)
+        self.assertEqual(first.continuations[0].task_sha256, document_digest(task))
+        self.assertTrue(first.continuations[0].owns(first.segments[0]))
         self.assertEqual(answer.model_dump(), before)
         decision = retained_hyphen_decisions(task, reversed_answer, [candidate])[0]
         self.assertEqual(decision.classification.response_sha256, document_digest(reversed_answer))

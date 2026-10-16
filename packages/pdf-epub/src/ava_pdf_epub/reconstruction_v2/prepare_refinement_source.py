@@ -88,6 +88,11 @@ def prepare_refinement_from_pages(
                 )
                 else None
             ),
+            source_continuation_policy=(
+                request.source_continuation_policy
+                if isinstance(request, ContinuationReconstructionInput)
+                else None
+            ),
             source_title_policy=(
                 request.source_title_policy
                 if isinstance(request, FrontmatterTitleReconstructionInput)

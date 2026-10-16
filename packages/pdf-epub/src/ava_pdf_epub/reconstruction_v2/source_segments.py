@@ -32,10 +32,18 @@ def source_segments(
     source_layout_policy: NativeLayoutPolicy | None = None,
     native_structure_responses: Sequence[AnyNativeStructureResponse] | None = None,
     source_title_policy: str | None = None,
+    source_continuation_policy: str | None = None,
 ) -> tuple[list[dict[str, Any]], list[Segment], AssemblyState]:
     if source_title_policy not in {None, "ava-frontmatter-title-1"}:
         raise ValueError("Unsupported source title policy")
-    state = AssemblyState(source_title_policy=source_title_policy)
+    from .continuation_presentation_contract import POLICY
+
+    if source_continuation_policy not in {None, POLICY}:
+        raise ValueError("Unsupported source continuation policy")
+    state = AssemblyState(
+        source_title_policy=source_title_policy,
+        source_continuation_policy=source_continuation_policy,
+    )
     qualified = qualify_pages(
         source,
         scratch,
@@ -46,6 +54,8 @@ def source_segments(
         native_structure_responses=native_structure_responses,
         native_hyphen_decisions=state.native_hyphen_decisions,
         native_source_lines=state.native_source_lines,
+        native_continuations=state.native_continuations,
+        native_paragraph_layout=source_continuation_policy is not None,
     )
     qualified = preserve_linked_furniture(source, prepared, qualified, state)
     qualified = corroborate_running_furniture(prepared, qualified, state)
