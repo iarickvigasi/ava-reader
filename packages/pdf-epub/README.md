@@ -943,3 +943,29 @@ Both names together, invalid alias values, model-supplied style IDs and other un
 errors. Canonical schemas and the Python worker are unchanged. New prompt/schema bytes change the
 exact request hash; old observation-1 receipts are not reinterpreted or published. This is format
 compatibility, not source verification or permission to change finished content.
+
+### Missing figure descriptions at the provider boundary
+
+Gemini observation-2 has one bounded recovery for genuinely omitted figure `alt` fields.
+After the original call is settled and its raw response saved, the host checks a disposable
+copy with internal placeholders to establish that every other host schema/binding/refusal
+check passes. Placeholders never reach the worker. Null/invalid alt, malformed JSON, duplicate
+segment IDs, unrelated schema errors and unsupported/unresolved content remain failures.
+
+If the route explicitly allowlists `ava-figure-alt-observation-1` and
+`ava-figure-alt-response-1` using the exported prompt/schema in the API provider's
+`figure-alt-contract.ts`, the host may request descriptions for up to eight missing figures
+in one call. It sends the same source image and exact figure boxes/internal labels. The child
+request records the original call ID, request/task/output hashes, source and render hashes.
+Its stable task ID permits reuse of the same settled correction, not another paid opportunity.
+Normal grant, cancellation, request-count, reservation, settlement and uncertain-charge rules
+apply. Routes without these hashes refuse the additional request; no policy is broadened automatically.
+
+A corrected response must cover exactly those IDs in order with nonempty descriptions. The
+host patches only previously absent alt and reruns the full existing decoder and worker checks.
+All other observations and both raw receipts remain fixed; the patched response is a derived
+combination of two observations. The returned receipt retains the original call's cost and
+identifies `repairCallId`; aggregate cost comes from the ledger containing both calls. No
+transport retry, recursive repair, provider fallback or restart of a terminal Failed import is
+introduced. Source fidelity still needs visual verification; schema validity cannot prove a
+correct description. An unresolved or invalid correction remains Failed.

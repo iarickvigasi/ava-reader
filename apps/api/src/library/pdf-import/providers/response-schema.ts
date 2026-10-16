@@ -1,3 +1,7 @@
+import {
+  FIGURE_ALT_SCHEMA,
+  FIGURE_ALT_SCHEMA_VERSION,
+} from './figure-alt-contract';
 import { recognitionSchemas } from '../../../pdf-conversion/reconstruction/generated/schemas';
 import { jsonHash } from './hash';
 import { geminiRecognitionSchema } from './gemini-schema';
@@ -8,6 +12,21 @@ import { nativeStructureGenerationSchema } from './native-structure-generation-s
 // Canonical task identity and accepted response semantics remain unchanged.
 export const GEMINI_GRAMMAR_VERSION = 'ava-gemini-recognition-grammar-5';
 export function providerResponseSchema(modelId: string, task: ProviderTask) {
+  if (
+    modelId.startsWith('google/gemini-') &&
+    task.schemaVersion === FIGURE_ALT_SCHEMA_VERSION
+  ) {
+    if (jsonHash(task.responseSchema) !== jsonHash(FIGURE_ALT_SCHEMA))
+      throw new PdfProviderError('PDF_PROVIDER_REQUEST_UNAUTHORIZED');
+    return {
+      ...geminiRecognitionSchema(
+        { ...FIGURE_ALT_SCHEMA, $defs: {} },
+        FIGURE_ALT_SCHEMA_VERSION,
+      ),
+      description:
+        'AVA bounded figure descriptions. Copy task and parent output identities. Return exactly the requested figure IDs in order with concise factual alt, or unresolved with no patches. Never modify other observations. Full host validation remains authoritative.',
+    };
+  }
   const schema =
     task.schemaVersion === 'ava-native-structure-response-2'
       ? recognitionSchemas.NativeStructureResponse2
