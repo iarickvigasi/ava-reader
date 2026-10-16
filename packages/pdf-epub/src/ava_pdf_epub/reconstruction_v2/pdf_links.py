@@ -16,6 +16,7 @@ from .findings import Finding
 from .geometry import area, overlap
 from .native_caller_context import ContextCache, native_caller_ranges
 from .native_line_offsets import NativeLineOffset, mapped_line_offset
+from .native_literal_uri import raw_literal_uri
 from .observations import PageObservation
 from .ocr_link_offset import visual_line_offset
 from .prepared_types import AnyPreparedPage
@@ -257,6 +258,8 @@ def apply_pdf_links(
                         checkpoint.profile_id,
                         state.native_line_maps,
                         native_words,
+                        literal_uri=raw_literal_uri(annotation, target),
+                        findings=state.structure_findings,
                     )
             else:
                 try:

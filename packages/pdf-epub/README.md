@@ -724,6 +724,15 @@ acceptance authority. Native text, style and method remain unchanged, and target
 qualification is separate. The primary native and scanned-page paths retain their
 existing rules. At most two private contexts are cached per source page.
 
+At the final whole-word/native-character disagreement only, an unchanged absolute HTTP(S)
+`/URI` can corroborate its exact literal boundary. The complete, confident visual word must be
+that exact URI plus one semicolon; the native-selected contiguous substring must be the URI,
+and the semicolon's native glyph must lie wholly outside the caller. All prior source, crop,
+word visibility, confidence and coverage checks still apply. This emits
+`PDF_LINK_LITERAL_URI_CORROBORATED`; it is a source-text boundary proof, not character-level OCR.
+The semicolon remains unchanged and unlinked. Relative/Base-resolved addresses, derived `www`
+schemes, other labels, normalization, overlapping suffixes and other mismatches do not get this path.
+
 Private OCR PNGs preserve measured physical resolution from source page geometry; dropping this
 metadata can cause automatic OCR to omit clearly visible ruled-table words. Pixel content is not
 rescaled by this metadata repair. Scanned table-cell marks use fully contained independent word

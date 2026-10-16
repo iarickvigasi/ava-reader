@@ -8,8 +8,10 @@ from ..contracts.profiles import ProfileId
 from ..contracts.source import Box
 from .annotation_word_ocr import recognize_native_line_words
 from .annotation_words import AnnotationWord, exact_word_offsets
+from .findings import Finding
 from .geometry import area, overlap
 from .native_line_offsets import NativeLineOffset, mapped_line_offset
+from .native_literal_uri import literal_uri_range
 from .observations import NativeLine, PageObservation
 from .segments import Segment
 
@@ -62,6 +64,9 @@ def native_caller_ranges(
     profile_id: ProfileId,
     mappings: Mapping[str, NativeLineOffset] | None,
     cache: ContextCache,
+    *,
+    literal_uri: str | None = None,
+    findings: list[Finding] | None = None,
 ) -> list[tuple[str, int, int]]:
     if (
         page.risks
@@ -116,6 +121,7 @@ def native_caller_ranges(
     offsets = exact_word_offsets(line.text, words)
     selected: set[int] = set()
     ranges: list[tuple[str, int, int]] = []
+    selected_words: list[tuple[int, int]] = []
     for word, (start, end) in zip(words, offsets, strict=True):
         if _fraction(word.box, line.box) < 0.9 or _fraction(word.box, owner.box) < 0.9:
             raise ValueError(ERROR)
@@ -125,6 +131,7 @@ def native_caller_ranges(
         if fraction < 0.9 or word.confidence < 85 or not word.visible:
             raise ValueError(ERROR)
         selected.update(i for i in range(start, end) if not line.text[i].isspace())
+        selected_words.append((start, end))
         start, end = start + at, end + at
         if ranges and owner.text[ranges[-1][2] : start].isspace():
             ranges[-1] = (owner.id, ranges[-1][1], end)
@@ -133,5 +140,22 @@ def native_caller_ranges(
     # A whole OCR word must neither add ignored punctuation nor silently drop a
     # partly intersecting adjacent native glyph. No trimming/center heuristic.
     if not ranges or selected != selected_glyphs:
-        raise ValueError(ERROR)
+        literal = literal_uri_range(
+            line, caller, selected_glyphs, selected, selected_words, literal_uri
+        )
+        if literal is None:
+            raise ValueError(ERROR)
+        if findings is not None:
+            findings.append(
+                Finding(
+                    code="PDF_LINK_LITERAL_URI_CORROBORATED",
+                    severity="information",
+                    page=page.number,
+                    message=(
+                        "Unmodified PDF URI, native selection and complete visual word agree; "
+                        "the source semicolon remains outside the link."
+                    ),
+                )
+            )
+        return [(owner.id, at + literal[0], at + literal[1])]
     return ranges
