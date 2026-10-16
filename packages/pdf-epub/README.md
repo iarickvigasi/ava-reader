@@ -373,7 +373,13 @@ a provisional subsection; complete source contents/outline evidence can promote 
   fallback. This path requires matching page/observation dimensions, full zero-origin CropBox/MediaBox
   and UserUnit1, and excludes omitted furniture. In-page passage/column behavior stays unchanged;
   missing/ambiguous ownership, unknown frames/modes, nonfinite values and no eligible line still refuse.
-  Caller glyph/annotation overlap rules remain unchanged.
+  OCR-owned callers and coordinate destinations use the same exact visible native-line
+  corroboration without acquiring native ownership or changing recognized text. Repeated source
+  text, such as identical chapter and folio digits in a contents row, requires the complete
+  ordered context (at most 64 lines), exact words and within-line spacing, and checked geometry.
+  Only inter-line whitespace may differ. Missing/extra words, hidden context, reversed/overlapping
+  lines and ambiguous owners refuse; a covered but unprovable destination cannot skip to later
+  text. Caller glyph/annotation overlap rules remain unchanged.
 - Encrypted or unqualified concealed/clipped/rotated content requires safe source handling. Refusal
   does not mean the PDF is corrupt. No hidden text is deliberately exposed.
 - Scans need an explicitly configured recognizer or reviewed/replayed extraction. Native extraction

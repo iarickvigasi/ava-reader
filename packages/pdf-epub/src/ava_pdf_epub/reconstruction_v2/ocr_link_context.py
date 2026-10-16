@@ -8,6 +8,20 @@ from .observations import NativeLine, PageObservation
 from .segments import Segment
 
 
+def complete_visible_line(line: NativeLine) -> bool:
+    cursor = 0
+    for glyph in line.glyphs:
+        at = line.text.find(glyph.text, cursor)
+        if (
+            at < cursor
+            or line.text[cursor:at].strip()
+            or (glyph.text.strip() and not glyph.visible)
+        ):
+            return False
+        cursor = at + len(glyph.text)
+    return not line.text[cursor:].strip()
+
+
 def repeated_source_context(page: PageObservation, target: NativeLine, owner: Segment) -> bool:
     text = target.text.strip()
     return bool(text) and any(
@@ -39,17 +53,7 @@ def context_line_offset(page: PageObservation, target: NativeLine, owner: Segmen
     for line in lines:
         if not ink_envelope_matches(page, line, owner):
             return None
-        cursor = 0
-        for glyph in line.glyphs:
-            at = line.text.find(glyph.text, cursor)
-            if (
-                at < cursor
-                or line.text[cursor:at].strip()
-                or (glyph.text.strip() and not glyph.visible)
-            ):
-                return None
-            cursor = at + len(glyph.text)
-        if line.text[cursor:].strip():
+        if not complete_visible_line(line):
             return None
         if previous is not None:
             below = line.box.y0 >= previous.box.y1

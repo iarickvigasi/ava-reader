@@ -15,24 +15,12 @@ from .assembly_state import AssemblyState
 from .findings import Finding
 from .geometry import area, overlap
 from .native_caller_context import ContextCache, native_caller_ranges
-from .native_ink import ink_envelope_matches
 from .native_line_offsets import NativeLineOffset, mapped_line_offset
 from .observations import PageObservation
-from .ocr_link_context import context_line_offset, repeated_source_context
+from .ocr_link_offset import visual_line_offset
 from .prepared_types import AnyPreparedPage
 from .segments import ObservedSpan, Segment
 from .source_literal_link import source_literal_link
-
-
-def _corroborates(text: str, line: str) -> bool:
-    at = text.find(line)
-    if not line or at < 0 or text.find(line, at + 1) >= 0:
-        return False
-    tail = at + len(line)
-    return not (
-        (line[0].isalnum() and at > 0 and (text[at - 1].isalnum() or text[at - 1] == "_"))
-        or (line[-1].isalnum() and tail < len(text) and (text[tail].isalnum() or text[tail] == "_"))
-    )
 
 
 def glyph_ranges(
@@ -68,29 +56,10 @@ def glyph_ranges(
         if not owners and corroborate_ocr:
             source_text = line.text.strip()
             source_start = len(line.text) - len(line.text.lstrip())
-            # Geometry is not transcription authority: accepted visual text must agree
-            # exactly and uniquely inside the same source line envelope.
-            if set(page.risks) & {
-                "unreliable_glyph_mapping",
-                "clipped_glyph",
-                "optional_content",
-                "complex_graphics_state",
-            } or any(not g.visible for g in line.glyphs if g.text.strip()):
-                raise ValueError("PDF_LINK_TEXT_MAPPING_REQUIRES_REVIEW")
+            # Shared caller/destination proof preserves OCR text authority.
             owners = []
             for candidate in segments:
-                if (
-                    candidate.method != "ocr"
-                    or candidate.kind in {"table", "figure", "furniture", "unsupported"}
-                    or not ink_envelope_matches(page, line, candidate)
-                ):
-                    continue
-                visual_at = (
-                    candidate.text.find(source_text)
-                    if _corroborates(candidate.text, source_text)
-                    and not repeated_source_context(page, line, candidate)
-                    else context_line_offset(page, line, candidate)
-                )
+                visual_at = visual_line_offset(page, line, candidate)
                 if visual_at is not None:
                     owners.append(candidate)
                     visual_offsets[candidate.id] = visual_at
@@ -213,7 +182,23 @@ def page_target(
         for line in lines:
             owners = [s for s in local if line.id in s.native_line_ids]
             if not owners:
-                continue
+                visual = [
+                    s
+                    for s in local
+                    if s.method == "ocr"
+                    and s.kind not in {"table", "figure", "furniture", "unsupported"}
+                    and not s.source_marginal_furniture
+                    and any(g.text.strip() and overlap(g.box, s.box) for g in line.glyphs)
+                ]
+                if not visual:
+                    continue
+                # A covered but unprovable line must not redirect to later text.
+                if len(visual) != 1:
+                    raise ValueError("PDF_LINK_TARGET_GEOMETRY_REQUIRES_REVIEW")
+                visual_at = visual_line_offset(observation, line, visual[0])
+                if visual_at is None:
+                    raise ValueError("PDF_LINK_TARGET_GEOMETRY_REQUIRES_REVIEW")
+                return visual[0].id, visual_at
             if len(owners) != 1:
                 raise ValueError("PDF_LINK_TARGET_GEOMETRY_REQUIRES_REVIEW")
             owner = owners[0]
