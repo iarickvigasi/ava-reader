@@ -117,7 +117,7 @@ it("disables native EPUB saving until ready, then starts a retained request", ()
 it.each(["QUEUED", "RUNNING", "WAITING", "FAILED", "STOPPED"] as const)(
   "retains the explicit request without starting or retrying a %s PDF download",
   async (status) => {
-    await render(pdf(status)).onClick!();
+    await render(pdf("WAITING")).onClick!();
     render(pdf(status));
     effectHost.replayMount();
     render(pdf(status));

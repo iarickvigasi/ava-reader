@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { type ComponentProps, useCallback, useEffect, useState } from "react";
 
 import { isBookReadable } from "@/features/library/is-book-readable";
+import { offlineSaveAvailability } from "@/features/library/offline-save-availability";
 import type { EpubImportSummary } from "@/lib/api-types/epub-import";
 import type { PdfImportSummary } from "@/lib/api-types/pdf-import";
 
@@ -174,21 +175,16 @@ export function DownloadOfflineCard({
           description: t("keep.description"),
           onClick: keepOffline,
         };
-      default:
+      default: {
+        const availability = offlineSaveAvailability({ pdfImport, epubImport });
         return {
           icon: ReaderDownloadIcon,
           title: t("idle.title"),
-          description: t(
-            epubImport && !readable
-              ? epubImport.status === "FAILED"
-                ? "idle.unavailableDescription"
-                : "idle.preparingDescription"
-              : "idle.description",
-          ),
-          onClick: requestSave,
-          disabled:
-            offlineState === "loading" || Boolean(epubImport && !readable),
+          description: t(availability.description),
+          onClick: availability.disabled ? undefined : requestSave,
+          disabled: offlineState === "loading" || availability.disabled,
         };
+      }
     }
   })();
 
