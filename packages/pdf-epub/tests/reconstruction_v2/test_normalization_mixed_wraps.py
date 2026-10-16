@@ -58,6 +58,57 @@ class MixedWrapNormalizationTests(unittest.TestCase):
         self.assertEqual(len(left.text), mapping.source_boundary(len(left.source_text) + 1))
         self.assertEqual([*left.native_line_ids, *right.native_line_ids], result.native_line_ids)
 
+    def test_native_edge_whitespace_stays_identity_beside_an_empty_page_join(self):
+        for newline in ("\n", "\r\n", "\r"):
+            for trailing, leading in ((" ", " "), ("\t", "  "), (" \t", "\t ")):
+                with self.subTest(newline=newline, trailing=trailing, leading=leading):
+                    left, right, state = observed_pair()
+                    left = left.model_copy(
+                        update={
+                            "text": f"A😀B café well-{trailing} {leading}known and long-",
+                            "source_text": (
+                                f"A😀B café well-{trailing}{newline}{leading}known and long-"
+                            ),
+                            "spans": [],
+                        }
+                    )
+                    right = right.model_copy(
+                        update={
+                            "text": "term ends.",
+                            "source_text": f"term{newline}ends.",
+                            "spans": [],
+                        }
+                    )
+                    (result,) = stream_joins([left, right], state)
+                    source, text = result.source_text, result.text
+                    self.assertEqual(
+                        f"A😀B café well-{trailing} {leading}known and long-term ends.", text
+                    )
+                    mapping = NormalizationMap.model_validate(line_wrap_map(source, text))
+                    mapping.validate_canonical(text)
+                    self.assertEqual((left.id, len(left.text)), state.aliases[right.id])
+                    self.assertEqual(
+                        len(left.text), mapping.source_boundary(len(left.source_text) + 1)
+                    )
+                    changed = [item for item in mapping.segments if item.kind == "line_wrap"]
+                    self.assertEqual(
+                        [newline, "\n", newline],
+                        [source[item.source_start : item.source_end] for item in changed],
+                    )
+                    for item in mapping.segments:
+                        if item.kind != "identity":
+                            continue
+                        for source_at in range(item.source_start, item.source_end):
+                            self.assertEqual(
+                                source[source_at], text[mapping.source_boundary(source_at)]
+                            )
+                    for compact in (
+                        "A😀B café well- known and long-term ends.",
+                        "A😀B café well-known and long-term ends.",
+                    ):
+                        retained = NormalizationMap.model_validate(line_wrap_map(source, compact))
+                        retained.validate_canonical(compact)
+
     def test_mixed_wrap_support_never_changes_printed_hyphens_glyphs_or_other_gaps(self):
         source = "A😀B café well-\nknown and long-\nterm."
         for text in (

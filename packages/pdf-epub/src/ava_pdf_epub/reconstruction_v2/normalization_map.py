@@ -37,6 +37,15 @@ def _selected_wraps(
         original = source[start:end]
         if text.startswith(original, canonical_at):
             canonical_at += len(original)
+        elif replacement == "" and text.startswith(
+            re.sub(r"\r\n|\r|\n", " ", original), canonical_at
+        ):
+            # Native line edges retain their spaces/tabs as identity; only the
+            # newline changes, independently of a compacted cross-owner wrap.
+            newline = re.search(r"\r\n|\r|\n", original)
+            assert newline is not None
+            selected.append((start + newline.start(), start + newline.end(), " "))
+            canonical_at += len(original) - len(newline[0]) + 1
         elif replacement == "" and text.startswith(" ", canonical_at):
             # A retained internal wrap and a compacted cross-owner wrap may coexist.
             # Both are witnessed separator changes; printed hyphens stay identity.

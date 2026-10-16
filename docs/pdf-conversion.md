@@ -437,7 +437,8 @@ letter-hyphen and letter. The printed hyphen remains. The normalization map acco
 deleted whitespace, and span/link/target/alias offsets move together before graph assembly. Inline
 spaces, OCR text and literal verse/code/quotes are not rewritten. Confirmed native page/column joins
 use the actual separator length. Each wrap retains its own space, newline or qualified empty
-separator, so internal line wraps can coexist with a compacted page/column boundary. Printed
+separator, so internal line wraps can coexist with a compacted page/column boundary. Retained
+native line-edge spaces and tabs remain identity text while only their newline changes. Printed
 hyphens and all other characters remain exact. This is layout recovery, not spelling correction
 or dehyphenation.
 
