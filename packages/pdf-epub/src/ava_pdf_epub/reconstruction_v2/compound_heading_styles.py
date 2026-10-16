@@ -28,6 +28,11 @@ LAYOUT_FIELDS = (
 
 
 def heading_spans(piece: Segment, base: Style | None, offset: int) -> list[ObservedSpan]:
+    # CSS decorations on a heading propagate through descendants: an explicit
+    # false on a component cannot cancel them. Refuse rather than silently extend
+    # a source underline/strike across the title, including after base correction.
+    if base and (base.underline is True or base.strike_through is True):
+        raise ValueError("Compound heading block decoration requires source review")
     style = piece.style
     base_size = base.relative_size if base else None
     size = style.relative_size if style else None

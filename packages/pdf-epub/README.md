@@ -338,7 +338,10 @@ positions and the first source-page destination are retained. Inline font runs k
 size proportions through later typography corrections. Independent line indentation/alignment
 cannot be reproduced by one reflowable heading and is reported as
 `COMPOUND_HEADING_LAYOUT_REFLOWED`, not claimed as print-layout fidelity. Ambiguous groups or
-unrepresentable font runs still require review. A bold, body-sized “Chapter …” label remains
+unrepresentable font runs still require review. A compound base with an underline or
+strikethrough also requires review, including after later style corrections: CSS ancestor
+decoration cannot be cancelled by a child run. Component-only decoration on a neutral base
+remains supported. A bold, body-sized “Chapter …” label remains
 a provisional subsection; complete source contents/outline evidence can promote it to a chapter.
 
 ## Deliberate unsupported/review paths
