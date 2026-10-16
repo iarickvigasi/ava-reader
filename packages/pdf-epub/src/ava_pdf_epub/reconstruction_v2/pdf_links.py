@@ -14,8 +14,9 @@ from .annotation_words import AnnotationWord, exact_word_offsets
 from .assembly_state import AssemblyState
 from .findings import Finding
 from .geometry import area, overlap
-from .native_caller_context import ContextCache, native_caller_ranges
+from .native_caller_context import ContextCache, NativeCallerLowConfidence, native_caller_ranges
 from .native_line_offsets import NativeLineOffset, mapped_line_offset
+from .native_link_resolution import NativeLinkResolution
 from .native_literal_uri import raw_literal_uri
 from .observations import PageObservation
 from .ocr_link_offset import visual_line_offset
@@ -229,118 +230,152 @@ def apply_pdf_links(
         local = [s for s in result if s.page == number]
         words: list[AnnotationWord] | None = None
         native_words: ContextCache = {}
-        for reference in page.get("/Annots", []):
-            annotation = reference.get_object()
-            if annotation.get("/Subtype") != "/Link":
-                continue
-            target = pdf_navigation(reader, annotation)
-            rect = upright_box(page, [float(v) for v in annotation["/Rect"]])
-            native = any(
-                overlap(line.box, rect) and any(line.id in s.native_line_ids for s in local)
-                for line in checkpoint.observation.lines
-            )
-            if native and any(s.method == "ocr" and s.text and overlap(s.box, rect) for s in local):
-                # A native subset cannot stand in for the rest of a mixed-source link.
-                raise ValueError("PDF_LINK_TEXT_MAPPING_REQUIRES_REVIEW")
-            if native:
-                try:
-                    ranges = glyph_ranges(
-                        checkpoint.observation, local, rect, source_line_maps=state.native_line_maps
-                    )
-                except ValueError as error:
-                    if str(error) != "PDF_LINK_TEXT_MAPPING_REQUIRES_REVIEW" or scratch is None:
-                        raise
-                    ranges = native_caller_ranges(
-                        checkpoint.observation,
-                        local,
-                        rect,
-                        scratch,
-                        checkpoint.profile_id,
-                        state.native_line_maps,
-                        native_words,
-                        literal_uri=raw_literal_uri(annotation, target),
-                        findings=state.structure_findings,
-                    )
-            else:
-                try:
-                    ranges = glyph_ranges(
-                        checkpoint.observation,
-                        local,
-                        rect,
-                        corroborate_ocr=True,
-                        source_line_maps=state.native_line_maps,
-                    )
-                except ValueError:
-                    if scratch is None:
-                        raise ValueError("PDF_LINK_TEXT_MAPPING_REQUIRES_REVIEW") from None
-                    if words is None:
-                        words = recognize_annotation_words(
-                            checkpoint.observation, scratch, source, checkpoint.profile_id
-                        )
-                    ranges = scanned_ranges(local, rect, words)
-                else:
-                    state.structure_findings.append(
-                        Finding(
-                            code="PDF_LINK_NATIVE_GEOMETRY_CORROBORATED",
-                            severity="information",
-                            page=number,
-                            message=(
-                                "Accepted visual text exactly matches a unique visible "
-                                "native line; source glyphs locate the link without rewriting text."
-                            ),
-                        )
-                    )
-            if target.derived_scheme:
-                state.structure_findings.append(
-                    Finding(
-                        code="PDF_LINK_SCHEME_DERIVED",
-                        severity="information",
-                        page=number,
-                        message=(
-                            "A bare www host uses the HTTPS export policy; "
-                            "source bytes remain unchanged."
-                        ),
-                    )
+        with NativeLinkResolution(source, checkpoint) as resolution:
+            for reference in page.get("/Annots", []):
+                annotation = reference.get_object()
+                if annotation.get("/Subtype") != "/Link":
+                    continue
+                target = pdf_navigation(reader, annotation)
+                rect = upright_box(page, [float(v) for v in annotation["/Rect"]])
+                native = any(
+                    overlap(line.box, rect) and any(line.id in s.native_line_ids for s in local)
+                    for line in checkpoint.observation.lines
                 )
-            for ident, start, end in ranges:
-                if target.url:
-                    item = result[indexes[ident]]
-                    mark = ObservedSpan(start=start, end=end, url=target.url)
-                    existing = [s for s in item.spans if s.url and s.start < end and s.end > start]
-                    if existing and (
-                        len(existing) != 1
-                        or existing[0].start != start
-                        or existing[0].end != end
-                        or existing[0].url != target.url
-                    ):
-                        resolved = source_literal_link(item, start, end, target.url, existing)
-                        if resolved is None:
-                            raise ValueError("PDF_LINK_TEXT_MAPPING_REQUIRES_REVIEW")
-                        result[indexes[ident]] = item.model_copy(update={"spans": resolved})
+                if native and any(
+                    s.method == "ocr" and s.text and overlap(s.box, rect) for s in local
+                ):
+                    # A native subset cannot stand in for the rest of a mixed-source link.
+                    raise ValueError("PDF_LINK_TEXT_MAPPING_REQUIRES_REVIEW")
+                if native:
+                    try:
+                        ranges = glyph_ranges(
+                            checkpoint.observation,
+                            local,
+                            rect,
+                            source_line_maps=state.native_line_maps,
+                        )
+                    except ValueError as error:
+                        if str(error) != "PDF_LINK_TEXT_MAPPING_REQUIRES_REVIEW" or scratch is None:
+                            raise
+                        try:
+                            ranges = native_caller_ranges(
+                                checkpoint.observation,
+                                local,
+                                rect,
+                                scratch,
+                                checkpoint.profile_id,
+                                state.native_line_maps,
+                                native_words,
+                                literal_uri=raw_literal_uri(annotation, target),
+                                findings=state.structure_findings,
+                            )
+                        except NativeCallerLowConfidence:
+                            # A fresh cache prevents reuse of lower-resolution word boxes.
+                            ranges = native_caller_ranges(
+                                resolution.observation(),
+                                local,
+                                rect,
+                                resolution.directory,
+                                checkpoint.profile_id,
+                                state.native_line_maps,
+                                resolution.words,
+                                literal_uri=raw_literal_uri(annotation, target),
+                                findings=state.structure_findings,
+                            )
+                            state.structure_findings.append(
+                                Finding(
+                                    code="PDF_LINK_HIGH_RESOLUTION_CORROBORATED",
+                                    severity="information",
+                                    page=number,
+                                    message=(
+                                        "One higher-resolution source render passed unchanged "
+                                        "text, confidence and geometry checks for this link."
+                                    ),
+                                )
+                            )
+                else:
+                    try:
+                        ranges = glyph_ranges(
+                            checkpoint.observation,
+                            local,
+                            rect,
+                            corroborate_ocr=True,
+                            source_line_maps=state.native_line_maps,
+                        )
+                    except ValueError:
+                        if scratch is None:
+                            raise ValueError("PDF_LINK_TEXT_MAPPING_REQUIRES_REVIEW") from None
+                        if words is None:
+                            words = recognize_annotation_words(
+                                checkpoint.observation, scratch, source, checkpoint.profile_id
+                            )
+                        ranges = scanned_ranges(local, rect, words)
+                    else:
                         state.structure_findings.append(
                             Finding(
-                                code="PDF_LINK_LITERAL_RANGE_FROM_SOURCE",
+                                code="PDF_LINK_NATIVE_GEOMETRY_CORROBORATED",
                                 severity="information",
                                 page=number,
                                 message=(
-                                    "Source link geometry owns the literal URL range; "
-                                    "style is unchanged."
+                                    "Accepted visual text exactly matches a unique visible "
+                                    "native line; source glyphs locate the link "
+                                    "without rewriting text."
                                 ),
                             )
                         )
-                    if not existing:
-                        result[indexes[ident]] = item.model_copy(
-                            update={"spans": [*item.spans, mark]}
+                if target.derived_scheme:
+                    state.structure_findings.append(
+                        Finding(
+                            code="PDF_LINK_SCHEME_DERIVED",
+                            severity="information",
+                            page=number,
+                            message=(
+                                "A bare www host uses the HTTPS export policy; "
+                                "source bytes remain unchanged."
+                            ),
                         )
-                else:
-                    destination, offset = page_target(
-                        target,
-                        result,
-                        reader,
-                        prepared[(target.page or 0) - 1].observation,
-                        source_line_maps=state.native_line_maps,
                     )
-                    intent = (ident, start, end, destination, offset)
-                    if intent not in state.internal_targets:
-                        state.internal_targets.append(intent)
+                for ident, start, end in ranges:
+                    if target.url:
+                        item = result[indexes[ident]]
+                        mark = ObservedSpan(start=start, end=end, url=target.url)
+                        existing = [
+                            s for s in item.spans if s.url and s.start < end and s.end > start
+                        ]
+                        if existing and (
+                            len(existing) != 1
+                            or existing[0].start != start
+                            or existing[0].end != end
+                            or existing[0].url != target.url
+                        ):
+                            resolved = source_literal_link(item, start, end, target.url, existing)
+                            if resolved is None:
+                                raise ValueError("PDF_LINK_TEXT_MAPPING_REQUIRES_REVIEW")
+                            result[indexes[ident]] = item.model_copy(update={"spans": resolved})
+                            state.structure_findings.append(
+                                Finding(
+                                    code="PDF_LINK_LITERAL_RANGE_FROM_SOURCE",
+                                    severity="information",
+                                    page=number,
+                                    message=(
+                                        "Source link geometry owns the literal URL range; "
+                                        "style is unchanged."
+                                    ),
+                                )
+                            )
+                        if not existing:
+                            result[indexes[ident]] = item.model_copy(
+                                update={"spans": [*item.spans, mark]}
+                            )
+                    else:
+                        destination, offset = page_target(
+                            target,
+                            result,
+                            reader,
+                            prepared[(target.page or 0) - 1].observation,
+                            source_line_maps=state.native_line_maps,
+                        )
+                        intent = (ident, start, end, destination, offset)
+                        if intent not in state.internal_targets:
+                            state.internal_targets.append(intent)
     return result

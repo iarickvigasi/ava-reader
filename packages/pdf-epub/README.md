@@ -1032,3 +1032,12 @@ identifies `repairCallId`; aggregate cost comes from the ledger containing both 
 transport retry, recursive repair, provider fallback or restart of a terminal Failed import is
 introduced. Source fidelity still needs visual verification; schema validity cannot prove a
 correct description. An unresolved or invalid correction remains Failed.
+
+For native link callers, a confidence-only local OCR refusal permits one fixed
+4800-pixel source-page render and one OCR retry per caller. Every original text,
+visibility, ownership, membership and geometry check must already pass; the second
+proof keeps the same confidence threshold. The source hash, byte count and PDF page
+frame must match the prepared checkpoint. A separate per-page word cache and temporary
+render are released after that page. Render warnings, changed source, unknown frames,
+and a failed second proof remain review failures. No provider call or text rewrite is
+involved; successful recovery adds `PDF_LINK_HIGH_RESOLUTION_CORROBORATED`.

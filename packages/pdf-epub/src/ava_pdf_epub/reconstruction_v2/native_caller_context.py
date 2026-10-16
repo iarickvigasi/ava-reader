@@ -19,6 +19,10 @@ ERROR = "PDF_LINK_TEXT_MAPPING_REQUIRES_REVIEW"
 ContextCache = dict[tuple[str, float, float, float, float], list[AnnotationWord]]
 
 
+class NativeCallerLowConfidence(ValueError):
+    """All source/text/geometry gates passed; selected word confidence alone failed."""
+
+
 def _fraction(box: Box, caller: Box) -> float:
     if area(box) <= 0:
         raise ValueError(ERROR)
@@ -122,14 +126,16 @@ def native_caller_ranges(
     selected: set[int] = set()
     ranges: list[tuple[str, int, int]] = []
     selected_words: list[tuple[int, int]] = []
+    low_confidence = False
     for word, (start, end) in zip(words, offsets, strict=True):
         if _fraction(word.box, line.box) < 0.9 or _fraction(word.box, owner.box) < 0.9:
             raise ValueError(ERROR)
         fraction = _fraction(word.box, caller)
         if fraction <= 0.05:
             continue
-        if fraction < 0.9 or word.confidence < 85 or not word.visible:
+        if fraction < 0.9 or not word.visible:
             raise ValueError(ERROR)
+        low_confidence |= word.confidence < 85
         selected.update(i for i in range(start, end) if not line.text[i].isspace())
         selected_words.append((start, end))
         start, end = start + at, end + at
@@ -145,6 +151,8 @@ def native_caller_ranges(
         )
         if literal is None:
             raise ValueError(ERROR)
+        if low_confidence:
+            raise NativeCallerLowConfidence(ERROR)
         if findings is not None:
             findings.append(
                 Finding(
@@ -158,4 +166,6 @@ def native_caller_ranges(
                 )
             )
         return [(owner.id, at + literal[0], at + literal[1])]
+    if low_confidence:
+        raise NativeCallerLowConfidence(ERROR)
     return ranges
