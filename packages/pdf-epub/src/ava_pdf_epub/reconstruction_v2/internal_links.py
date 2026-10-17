@@ -1,5 +1,6 @@
 """Resolve explicit printed-reference text only when one exact target is present."""
 
+from .append_internal_link import append_internal_link
 from .assembly_state import AssemblyState
 from .text_nodes import text_nodes
 
@@ -8,13 +9,16 @@ def internal_links(state: AssemblyState, owners: dict[str, str]) -> None:
     nodes = list(text_nodes(state))
     by_id = {node["id"]: (node, owner) for node, owner, _ in nodes}
     for index, (origin, start, end, target, offset) in enumerate(state.internal_targets):
+        if type(start) is not int or type(end) is not int:
+            raise ValueError("Source internal link range must use exact canonical text integers")
         origin, delta = _resolve(origin, state)
         target, shift = _resolve(target, state)
         container = state.source_reference_containers.get(target, target)
         if origin not in by_id or container not in owners:
             raise ValueError("Source reference anchor disappeared during reconstruction")
         node, _ = by_id[origin]
-        node["content"]["spans"].append(
+        append_internal_link(
+            node["content"],
             dict(
                 id=f"{origin}-source-reference{index}",
                 start=start + delta,
@@ -25,7 +29,9 @@ def internal_links(state: AssemblyState, owners: dict[str, str]) -> None:
                     block_id=target,
                     offset=offset + shift,
                 ),
-            )
+            ),
+            state,
+            origin,
         )
     for node, _parent, spans in nodes:
         for index, span in enumerate(spans):
@@ -40,7 +46,8 @@ def internal_links(state: AssemblyState, owners: dict[str, str]) -> None:
             if len(matches) != 1:
                 raise ValueError("Printed internal reference is missing or ambiguous")
             target_node, container = matches[0]
-            node["content"]["spans"].append(
+            append_internal_link(
+                node["content"],
                 dict(
                     id=f"{node['id']}-internal{index}",
                     start=span.start,
@@ -51,7 +58,9 @@ def internal_links(state: AssemblyState, owners: dict[str, str]) -> None:
                         block_id=target_node["id"],
                         offset=0,
                     ),
-                )
+                ),
+                state,
+                node["id"],
             )
 
 

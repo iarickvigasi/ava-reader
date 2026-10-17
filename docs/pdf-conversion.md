@@ -127,6 +127,10 @@ first-line displacement or applying the padding to nested child lists.
 The reader groups consecutive styled text runs from one semantic link occurrence into one anchor.
 It retains all characters/styles and the exact caller/target offsets; separate callers remain
 separate links even when they share a destination. Accepted EPUB and canonical content stay fixed.
+During final reconstruction, overlapping source internal-link claims are coalesced only for an
+identical resolved chapter/block/offset. The union retains each claimed character and independent
+style spans, and records a source finding. Disjoint/touching callers and conflicting destinations
+are never collapsed. Canonical non-overlap validation remains strict.
 Generated EPUB projection `ava-epub-canonical-2.2` preserves declared printed page labels in
 the page list and pagebreak accessibility names. Targets retain physical page IDs, so Roman numerals
 and restarted numbering cannot collide. Missing or blank labels use the physical page number for
