@@ -1,5 +1,6 @@
 import type { BilingualFlowProps } from "@/features/reader/bilingual/content/flow-types";
 import { groupFlowContent } from "@/features/reader/bilingual/content/group-flow-content";
+import colors from "../../content/reader-color-scheme.module.css";
 import { BilingualFlowBlock } from "./bilingual-flow-block";
 
 const INLINE_IMAGE_MAX_HEIGHT = 128;
@@ -22,7 +23,7 @@ export function BilingualFlowContent({
   return (
     <div
       style={style}
-      className="space-y-5 wrap-break-word [column-fill:auto] sm:space-y-6 md:space-y-7 [&_img]:max-h-(--bilingual-inline-image-height)"
+      className={`${colors.source} space-y-5 wrap-break-word [column-fill:auto] sm:space-y-6 md:space-y-7 [&_img]:max-h-(--bilingual-inline-image-height)`}
     >
       {groupFlowContent(chapter.units, blocks, unitIndexes).map((group) => (
         <div

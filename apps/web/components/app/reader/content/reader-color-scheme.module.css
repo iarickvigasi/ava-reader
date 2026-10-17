@@ -1,0 +1,7 @@
+.source {
+  color-scheme: light;
+}
+
+:global([data-theme="dark"]) .source {
+  color-scheme: dark;
+}

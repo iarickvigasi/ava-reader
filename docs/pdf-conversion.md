@@ -113,8 +113,7 @@ and CSS use item-specific `::marker` rules; complete visible-projection comparis
 rules during ordinary generated-EPUB reimport. The reader projects the same style on normal and
 bilingual list items, including explicit regular font traits, without adding labels to canonical
 text or locator offsets. Styled markers require `list-marker-styles` in addition to their existing
-capabilities; unsupported readers remain ineligible for acceptance. Neutral black follows reader
-ink, while source colors remain unchanged under the existing source-style policy. Authored tests
+capabilities; unsupported readers remain ineligible for acceptance. Source foregrounds follow the reader color projection described below. Authored tests
 do not establish supplied-book fidelity or light/dark reader qualification.
 For new imports, the explicit `ava-ocr-source-features-1` reconstruction policy and pinned worker
 derive native list-body indentation from visible, uniquely owned glyphs after the printed marker.
@@ -325,6 +324,18 @@ location: one-based `page_number`, optional `annotation_number` and a related-ob
 reproducible. Parser exception text and annotation contents are not emitted. The API validates
 the same bounds and preserves the location in its refusal response. This response is not yet a
 durable conversion log; PDF-18 owns persistence and operator investigation.
+
+### Reader color projection
+
+Canonical colors, EPUB bytes and content positions remain fixed. The reader keeps observed
+foreground/decorations in light mode and lifts insufficiently contrasting foregrounds toward its
+night ink in dark mode. The projection is pure; CSS color-scheme selects the branch immediately in
+ordinary and bilingual content, including measurement. Explicit source backgrounds form
+light-scheme islands with their original foreground (including inherited source ink) or a contrasting
+black/white fallback. Source images are unchanged. Already illegible source color pairs are not repaired.
+User highlights paint both the selected theme background and reader ink; AI underlines and link
+hover retain the effective text ink. Markers use the same foreground projection without adding text.
+Unsupported light-dark CSS falls back to inherited reader ink outside source-background islands.
 
 ### Finite annotation style transport
 

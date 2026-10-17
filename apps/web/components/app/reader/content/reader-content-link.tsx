@@ -20,7 +20,7 @@ export function ReaderContentLink({
   return link.href ? (
     <a
       href={measurement ? undefined : link.href}
-      className="underline decoration-line/60 underline-offset-4 hover:text-title"
+      className="underline decoration-current underline-offset-4 hover:decoration-2"
     >
       {children}
     </a>

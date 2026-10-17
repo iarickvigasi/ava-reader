@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import type { ReaderListItem } from "@/lib/api-types/reader-content";
 import { canonicalStyle } from "@/features/reader/canonical/style";
+import { sourceForeground } from "@/features/reader/canonical/source-color";
 import classes from "./list-marker-style.module.css";
 
 export function listMarkerProps(item: ReaderListItem) {
@@ -14,9 +15,7 @@ export function listMarkerProps(item: ReaderListItem) {
     "data-reader-marker-style": marker.id,
     style: {
       "--reader-marker-color":
-        marker.color === "#000000"
-          ? "var(--color-ink)"
-          : (style.color ?? "initial"),
+        marker.color == null ? "initial" : sourceForeground(marker.color),
       "--reader-marker-family": style.fontFamily ?? "initial",
       "--reader-marker-weight": style.fontWeight ?? "initial",
       "--reader-marker-style": style.fontStyle ?? "initial",

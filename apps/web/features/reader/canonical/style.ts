@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { sourceForeground, sourceBackgroundInk } from "./source-color";
 import type { Style } from "@/lib/api-types/canonical-reader.generated";
 
 export function canonicalStyle(style?: Style): CSSProperties {
@@ -10,11 +11,20 @@ export function canonicalStyle(style?: Style): CSSProperties {
   return {
     ...(style.decoration_color == null
       ? {}
-      : { textDecorationColor: style.decoration_color }),
-    ...(style.color == null ? {} : { color: style.color }),
+      : { textDecorationColor: sourceForeground(style.decoration_color) }),
+    ...(style.color == null
+      ? {}
+      : {
+          color: sourceForeground(style.color),
+          "--reader-source-foreground": style.color,
+        }),
     ...(style.background_color == null
       ? {}
-      : { backgroundColor: style.background_color }),
+      : {
+          backgroundColor: style.background_color,
+          colorScheme: "only light",
+          color: `var(--reader-source-foreground, ${sourceBackgroundInk(style.background_color)})`,
+        }),
     ...(style.underline == null && style.strike_through == null
       ? {}
       : { textDecorationLine: decoration || "none" }),

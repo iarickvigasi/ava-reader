@@ -9,7 +9,7 @@ describe("literal bilingual source structures", () => {
         const html = renderLiterals(side, canonical);
         const hr = markupNodes(html, "hr")[0];
         expect(attribute(hr, "style")).toBe(
-          "color:#123456;margin-top:0.2em;margin-bottom:0em",
+          "color:light-dark(#123456, #a8b0b5);--reader-source-foreground:#123456;margin-top:0.2em;margin-bottom:0em",
         );
         const paragraphs = markupNodes(html, "p");
         expect(markupText(paragraphs[0])).toBe(literalBlocks[1].text);

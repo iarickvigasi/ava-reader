@@ -54,7 +54,7 @@ describe("effective canonical renderer styles", () => {
         fontWeight: 400,
         fontStyle: "normal",
         fontFamily: "var(--font-reader), serif",
-        color: "#123456",
+        color: "light-dark(#123456, #a8b0b5)",
       });
       expect(canonicalStyle(block.inlines[0].presentation)).toEqual({});
       const html = renderToStaticMarkup(

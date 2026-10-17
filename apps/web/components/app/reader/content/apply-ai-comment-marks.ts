@@ -51,15 +51,11 @@ export function applyAiCommentMarks(
       mark.style.color = "inherit";
       mark.style.textDecorationLine = "underline";
       mark.style.textDecorationStyle = "solid";
-      // Pull the underline color from the theme so it follows light/dark
-      // mode. `--title` is the warm brown / cream token used elsewhere for
-      // headings. Pending comments fade the underline (color → 50% alpha)
-      // without changing the underlying text color — the user can still
-      // read the source comfortably while a queued / streaming comment
-      // shows up as a softer marker.
+      // Follow source ink and user highlights, including source background islands.
+      // Pending comments soften only their underline, never the text itself.
       mark.style.textDecorationColor = pending
-        ? "color-mix(in srgb, var(--title) 50%, transparent)"
-        : "var(--title)";
+        ? "color-mix(in srgb, currentColor 50%, transparent)"
+        : "currentColor";
       mark.style.textDecorationThickness = "2px";
       mark.style.textUnderlineOffset = "3px";
       mark.style.cursor = "pointer";

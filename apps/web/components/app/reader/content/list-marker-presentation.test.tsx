@@ -51,7 +51,7 @@ describe("source list marker presentation", () => {
     );
     const items = markupNodes(html, "li");
     expect(attribute(items[0], "style")).toContain(
-      "--reader-marker-color:#1f3763",
+      "--reader-marker-color:light-dark(#1f3763, #aaafb8)",
     );
     expect(attribute(items[0], "style")).toContain(
       "--reader-marker-weight:400",
@@ -82,7 +82,7 @@ describe("source list marker presentation", () => {
       );
       const items = markupNodes(html, "li");
       expect(attribute(items[0], "style")).toContain(
-        "--reader-marker-color:#1f3763",
+        "--reader-marker-color:light-dark(#1f3763, #aaafb8)",
       );
       expect(items.map((item) => attribute(item, "value"))).toEqual([
         "3",
@@ -93,7 +93,7 @@ describe("source list marker presentation", () => {
     },
   );
 
-  it("resets unknown child marker variables and maps neutral black to theme ink", () => {
+  it("resets unknown child marker variables and projects neutral black with other source colors", () => {
     const list = canonicalFixture().chapters[0].blocks.find(
       (b) => b.kind === "list",
     ) as ReaderListBlock;
@@ -112,7 +112,7 @@ describe("source list marker presentation", () => {
         ...item,
         markerPresentation: { id: "neutral", color: "#000000" },
       }).style,
-    ).toHaveProperty("--reader-marker-color", "var(--color-ink)");
+    ).toHaveProperty("--reader-marker-color", "light-dark(#000000, #b2aea8)");
   });
   it.each(["source", "translation"] as const)(
     "retains styled markers and continuation numbering in flat bilingual %s flow",
@@ -133,7 +133,7 @@ describe("source list marker presentation", () => {
       );
       const items = markupNodes(html, "li");
       expect(attribute(items[0], "style")).toContain(
-        "--reader-marker-color:#1f3763",
+        "--reader-marker-color:light-dark(#1f3763, #aaafb8)",
       );
       expect(attribute(items[0], "style")).toContain("list-style-type:none");
       expect(items.map((item) => attribute(item, "value"))).toEqual(["1", "2"]);

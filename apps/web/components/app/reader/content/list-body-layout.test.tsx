@@ -10,20 +10,37 @@ import { ordinaryNestedBilingualFixture } from "@/features/reader/bilingual/cont
 
 describe("semantic list body geometry", () => {
   it.each([
-    [-2, 0, "2em"], [-2, 0.5, "1.5em"], [-2, 2, undefined],
-    [0, 0, undefined], [1, 0, undefined], [undefined, undefined, undefined],
-  ] as const)("keeps relative body indent %s/inset %s inside the marker gutter", (indent, inset, padding) => {
-    const item = { id: "body", text: "Authored body", presentation: {
-      id: "declared", indent_em: indent, block_indent_em: inset,
-    }};
-    const before = JSON.stringify(item);
-    const layout = listBodyStyle(item);
-    expect(layout.item.textIndent).toBe("0em");
-    expect(layout.body.paddingInlineStart).toBe(padding);
-    expect(layout.body.textIndent).toBe(indent === undefined ? undefined : `${indent}em`);
-    expect(layout.body.marginInlineStart).toBe(inset === undefined ? undefined : `${inset}em`);
-    expect(JSON.stringify(item)).toBe(before);
-  });
+    [-2, 0, "2em"],
+    [-2, 0.5, "1.5em"],
+    [-2, 2, undefined],
+    [0, 0, undefined],
+    [1, 0, undefined],
+    [undefined, undefined, undefined],
+  ] as const)(
+    "keeps relative body indent %s/inset %s inside the marker gutter",
+    (indent, inset, padding) => {
+      const item = {
+        id: "body",
+        text: "Authored body",
+        presentation: {
+          id: "declared",
+          indent_em: indent,
+          block_indent_em: inset,
+        },
+      };
+      const before = JSON.stringify(item);
+      const layout = listBodyStyle(item);
+      expect(layout.item.textIndent).toBe("0em");
+      expect(layout.body.paddingInlineStart).toBe(padding);
+      expect(layout.body.textIndent).toBe(
+        indent === undefined ? undefined : `${indent}em`,
+      );
+      expect(layout.body.marginInlineStart).toBe(
+        inset === undefined ? undefined : `${inset}em`,
+      );
+      expect(JSON.stringify(item)).toBe(before);
+    },
+  );
   it("separates a legacy marker hang from the marker without changing its data", () => {
     const list = canonicalFixture().chapters[0].blocks.find(
       (b) => b.kind === "list",
@@ -35,7 +52,10 @@ describe("semantic list body geometry", () => {
       bold: true,
     };
     list.items[0].markerPresentation = {
-      id: "blue-number", color: "#1f3763", family: "sans-serif", bold: false,
+      id: "blue-number",
+      color: "#1f3763",
+      family: "sans-serif",
+      bold: false,
     };
     const before = JSON.stringify(list);
     const html = renderToStaticMarkup(
@@ -45,7 +65,9 @@ describe("semantic list body geometry", () => {
     expect(attribute(item, "style")).toContain("text-indent:0em");
     expect(attribute(item, "style")).not.toContain("text-indent:-");
     expect(attribute(item, "style")).not.toContain("margin-inline-start");
-    expect(attribute(item, "style")).toContain("--reader-marker-color:#1f3763");
+    expect(attribute(item, "style")).toContain(
+      "--reader-marker-color:light-dark(#1f3763, #aaafb8)",
+    );
     expect(attribute(item, "style")).toContain("font-weight:700");
     const body = markupNodes(html, "span").find(
       (node) => attribute(node, "data-reader-block-kind") === "paragraph",
@@ -63,16 +85,27 @@ describe("semantic list body geometry", () => {
       list.items[0].textIndent = -0.75;
       const before = JSON.stringify(list);
       const html = renderToStaticMarkup(
-        <BilingualFlowContent chapter={chapter} blocks={source.blocks}
-          unitIndexes={[0, 1, 2]} side={side} pageHeight={600} />,
+        <BilingualFlowContent
+          chapter={chapter}
+          blocks={source.blocks}
+          unitIndexes={[0, 1, 2]}
+          side={side}
+          pageHeight={600}
+        />,
       );
       const items = markupNodes(html, "li");
       expect(attribute(items[0], "style")).toContain("text-indent:0em");
       expect(attribute(items[0], "style")).not.toContain("text-indent:-");
-      expect(markupNodes(html, "div").some((node) =>
-        attribute(node, "style")?.includes("text-indent:-0.75em"),
-      )).toBe(true);
-      expect(items.map((node) => attribute(node, "value"))).toEqual(["3", "2", "4"]);
+      expect(
+        markupNodes(html, "div").some((node) =>
+          attribute(node, "style")?.includes("text-indent:-0.75em"),
+        ),
+      ).toBe(true);
+      expect(items.map((node) => attribute(node, "value"))).toEqual([
+        "3",
+        "2",
+        "4",
+      ]);
       expect(JSON.stringify(list)).toBe(before);
     },
   );

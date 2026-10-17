@@ -33,7 +33,7 @@ describe("ReaderInlineContent", () => {
       },
     ]);
     expect(html).toContain("background-color:#ffff00");
-    expect(html).toContain("color:#000000");
+    expect(html).toContain("color:var(--reader-source-foreground, #000000)");
     expect(html).toContain("text-decoration-line:underline line-through");
     expect(html).toContain("A😀B &lt;source&gt;");
     expect(html).not.toContain("<img");

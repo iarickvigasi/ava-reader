@@ -42,9 +42,8 @@ export function applyHighlightMarks(
       mark.dataset.highlightId = highlight.id;
       mark.dataset.highlightColor = highlight.color;
       mark.style.backgroundColor = backgroundColor;
-      // The default <mark> color is a near-black; force inherit so the
-      // highlight reads as a translucent wash under the body text.
-      mark.style.color = "inherit";
+      // Paint a coherent themed pair even inside a source-colored background.
+      mark.style.color = "var(--color-ink)";
       mark.style.cursor = "pointer";
     });
   }

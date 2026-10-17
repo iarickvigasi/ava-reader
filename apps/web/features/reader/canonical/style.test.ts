@@ -13,9 +13,11 @@ describe("source annotation styles", () => {
         strike_through: true,
       }),
     ).toEqual({
-      color: "#000000",
+      color: "var(--reader-source-foreground, #000000)",
+      "--reader-source-foreground": "#000000",
+      colorScheme: "only light",
       backgroundColor: "#ffff00",
-      textDecorationColor: "#0000ff",
+      textDecorationColor: "light-dark(#0000ff, #aca7ed)",
       textDecorationLine: "underline line-through",
     });
   });
@@ -37,4 +39,21 @@ it("keeps whole-block indentation separate from first-line indentation", () => {
   expect(canonicalStyle({ id: "legacy", indent_em: 2 })).toEqual({
     textIndent: "2em",
   });
+});
+
+it("establishes a source-background island even when source foreground is unknown", () => {
+  expect(canonicalStyle({ id: "light", background_color: "#ffff00" })).toEqual({
+    backgroundColor: "#ffff00",
+    colorScheme: "only light",
+    color: "var(--reader-source-foreground, #000000)",
+  });
+  expect(
+    canonicalStyle({ id: "dark", background_color: "#123456" }).color,
+  ).toBe("var(--reader-source-foreground, #ffffff)");
+  const source = Object.freeze({ id: "ink", color: "#231f20" });
+  expect(canonicalStyle(source)).toEqual({
+    color: "light-dark(#231f20, #b3aea8)",
+    "--reader-source-foreground": "#231f20",
+  });
+  expect(source).toEqual({ id: "ink", color: "#231f20" });
 });

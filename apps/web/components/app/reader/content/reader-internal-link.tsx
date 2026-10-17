@@ -23,7 +23,7 @@ export function ReaderInternalLink({
           : `#reader-${target.chapterId}-${target.blockId}`
       }
       role={target.note ? "doc-noteref" : undefined}
-      className="underline decoration-line/60 underline-offset-4 hover:text-title"
+      className="underline decoration-current underline-offset-4 hover:decoration-2"
       onClick={
         measurement
           ? undefined

@@ -1,7 +1,6 @@
 import { useReaderMeasurement } from "./reader-measurement-context";
 import { ReaderInternalLink } from "./reader-internal-link";
 import type { ReaderInline } from "@/lib/api-types";
-import { cn } from "@/lib/cn";
 import { ReaderInlineImage } from "./reader-inline-image";
 import { ReaderContentLink } from "./reader-content-link";
 import { ReaderScriptText } from "./reader-script-text";
@@ -9,7 +8,8 @@ import { groupInlineLinkOccurrences } from "@/features/reader/group-inline-link-
 
 import { ReaderLiteralLabel } from "./reader-literal-label";
 
-const LINK_CLASS = "underline decoration-line/60 underline-offset-4";
+const LINK_CLASS =
+  "underline decoration-current underline-offset-4 hover:decoration-2";
 
 // Preserve each run's styling/script inside its semantic occurrence's link.
 export function ReaderInlineContent({
@@ -25,7 +25,14 @@ export function ReaderInlineContent({
 }) {
   const measurement = useReaderMeasurement();
   if (literalLabel)
-    return <ReaderLiteralLabel inlines={inlines} label={literalLabel} before={before} after={after} />;
+    return (
+      <ReaderLiteralLabel
+        inlines={inlines}
+        label={literalLabel}
+        before={before}
+        after={after}
+      />
+    );
   return (
     <>
       {groupInlineLinkOccurrences(inlines).map((group) => {
@@ -47,7 +54,9 @@ export function ReaderInlineContent({
             <ReaderScriptText
               key={index}
               inline={run}
-              before={prior ? (prior.kind === "text" ? prior.text : "") : before}
+              before={
+                prior ? (prior.kind === "text" ? prior.text : "") : before
+              }
               after={next ? (next.kind === "text" ? next.text : "") : after}
             />
           );
@@ -67,7 +76,7 @@ export function ReaderInlineContent({
           <a
             key={key}
             href={measurement ? undefined : inline.href}
-            className={cn(LINK_CLASS, "hover:text-title")}
+            className={LINK_CLASS}
           >
             {content}
           </a>
