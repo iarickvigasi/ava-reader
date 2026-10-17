@@ -1,0 +1,74 @@
+"""Segment styles and offsets while keeping each semantic link one focusable anchor."""
+
+import xml.etree.ElementTree as ET
+
+from ..contracts.graph_links import TextNode
+from ..contracts.links import NoteTarget
+from .context import Context, ident
+from .intrinsic_script import matching_script, script_boundaries
+from .literal_label import LiteralLabelProjection
+from .page_marker import page_marker
+from .xml import EPUB, append_text, element
+
+
+def render_text(node: TextNode, ctx: Context) -> ET.Element:
+    content = node.content
+    attrs = {"data-ava-text": node.id}
+    if content.language is not None:
+        attrs.update(
+            {
+                "lang": content.language,
+                "{http://www.w3.org/XML/1998/namespace}lang": content.language,
+            }
+        )
+    root = element("span", attrs)
+    label = LiteralLabelProjection(node, root)
+    page_offsets = ctx.page_offsets.get(node.id, {})
+    positions = {0, len(content.text), *ctx.offsets.get(node.id, set()), *page_offsets}
+    for span in content.spans:
+        positions.update([span.start, span.end])
+    if label.layout is not None:
+        positions.add(label.layout.prefix_end)
+    if ctx.intrinsic_scripts:
+        positions.update(script_boundaries(content.text))
+    ordered = sorted(positions)
+    link_id: str | None = None
+    link_parent = root
+    previous_base = root
+    for i, start in enumerate(ordered):
+        active = [span for span in content.spans if span.start <= start < span.end]
+        link_span = next((span for span in active if span.link is not None), None)
+        current_id = link_span.id if link_span is not None else None
+        base = label.base(start)
+        if current_id != link_id or base is not previous_base:
+            link_id, link_parent = current_id, base
+            if link_span is not None and link_span.link is not None:
+                attrs = {"href": ctx.href(link_span.link)}
+                if isinstance(link_span.link, NoteTarget):
+                    attrs[f"{{{EPUB}}}type"] = "noteref"
+                link_parent = element("a", attrs)
+                base.append(link_parent)
+        previous_base = base
+        parent = label.content_parent(start, link_id, link_parent)
+        for number in page_offsets.get(start, []):
+            parent.append(page_marker(number, ctx))
+        if start in ctx.offsets.get(node.id, set()):
+            parent.append(element("span", {"id": ident("loc", node.id) + f"-{start}"}))
+        for span in content.spans:
+            if span.start == start:
+                parent.append(element("span", {"id": ident("s", span.id)}))
+        if i + 1 == len(ordered):
+            continue
+        intrinsic = ctx.intrinsic_scripts and matching_script(
+            content.text, start, active, ctx.styles
+        )
+        for span in active:
+            if span.style_id is not None:
+                attrs = {"class": ident("style", span.style_id)}
+                if intrinsic and ctx.styles[span.style_id].vertical_align in {"super", "sub"}:
+                    attrs["style"] = "vertical-align:baseline"
+                child = element("span", attrs)
+                parent.append(child)
+                parent = child
+        append_text(parent, content.text[start : ordered[i + 1]])
+    return root

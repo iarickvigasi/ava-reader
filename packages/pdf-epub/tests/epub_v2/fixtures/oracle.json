@@ -1,0 +1,272 @@
+{
+  "fixture_id": "FX-PDF03-INDEPENDENT-CANONICAL",
+  "scope": "Authored canonical graph and real PNG; placeholder source PDF descriptor is not an extraction or actual-PDF proof.",
+  "text_by_id": {
+    "heading-one": "1. Harbour",
+    "body-one": "A😀B café office Line two [1] and again [1].",
+    "style-demo": "Reset Bold italic small H2O x2 <tag> & value.",
+    "caption-one": "Figure 1. A window.",
+    "cell-00": "Location",
+    "cell-01": "Count",
+    "cell-10": "Window",
+    "cell-11": "Four",
+    "list-parent": "First recorded task",
+    "list-child": "Nested detail",
+    "list-next": "Second recorded task",
+    "verse-one": "  Wind at the gate\n    rests.",
+    "code-one": "if ready:\n    open_book()",
+    "heading-two": "2. Return",
+    "body-two": "Return[1] to the opening or visit the site.",
+    "note-two": "A different note numbered one.",
+    "note-one": "The shared harbour note."
+  },
+  "spine": [
+    "chapter-one",
+    "chapter-two"
+  ],
+  "resource_by_chapter": {
+    "chapter-one": "text/chapter-one.xhtml",
+    "chapter-two": "text/chapter-two.xhtml"
+  },
+  "chapter_blocks": {
+    "chapter-one": [
+      "heading-one",
+      "body-one",
+      "style-demo",
+      "caption-one",
+      "figure-one",
+      "table-one",
+      "list-parent",
+      "list-child",
+      "list-next",
+      "verse-one",
+      "code-one"
+    ],
+    "chapter-two": [
+      "heading-two",
+      "body-two",
+      "note-two",
+      "note-one"
+    ]
+  },
+  "table": {
+    "row_count": 2,
+    "column_count": 2,
+    "headers": {
+      "cell-00": {
+        "axis": "both",
+        "ids": []
+      },
+      "cell-01": {
+        "axis": "column",
+        "ids": [
+          "cell-00"
+        ]
+      },
+      "cell-10": {
+        "axis": "row",
+        "ids": [
+          "cell-00"
+        ]
+      },
+      "cell-11": {
+        "axis": null,
+        "ids": [
+          "cell-01",
+          "cell-10"
+        ]
+      }
+    }
+  },
+  "lists": [
+    {
+      "id": "list-main",
+      "tag": "ol",
+      "start": 3,
+      "items": [
+        "list-parent",
+        "list-next"
+      ]
+    },
+    {
+      "id": "list-nested",
+      "tag": "ul",
+      "parent_item": "list-parent",
+      "items": [
+        "list-child"
+      ]
+    }
+  ],
+  "note_targets": {
+    "call-1a": [
+      "chapter-two",
+      "note-one"
+    ],
+    "call-1b": [
+      "chapter-two",
+      "note-one"
+    ],
+    "call-2a": [
+      "chapter-two",
+      "note-two"
+    ]
+  },
+  "note_returns": {
+    "note-one": [
+      "call-1a",
+      "call-1b"
+    ],
+    "note-two": [
+      "call-2a"
+    ]
+  },
+  "internal_target": {
+    "cross-link": [
+      "chapter-one",
+      "body-one",
+      1
+    ]
+  },
+  "external_target": {
+    "external-link": "https://example.invalid/reference"
+  },
+  "styles": [
+    {
+      "id": "normal-reset",
+      "bold": false,
+      "italic": false,
+      "small_caps": false,
+      "indent_em": 0,
+      "space_before_em": 0,
+      "space_after_em": 1.5,
+      "family": "sans-serif"
+    },
+    {
+      "id": "parent-bold",
+      "bold": true,
+      "italic": true,
+      "family": "serif",
+      "align": "left",
+      "relative_size": 1.1,
+      "line_height": 1.3
+    },
+    {
+      "id": "emphasis-bold",
+      "bold": true
+    },
+    {
+      "id": "emphasis-italic",
+      "italic": true
+    },
+    {
+      "id": "small",
+      "small_caps": true
+    },
+    {
+      "id": "sub",
+      "vertical_align": "sub"
+    },
+    {
+      "id": "super",
+      "vertical_align": "super"
+    },
+    {
+      "id": "literal",
+      "family": "monospace",
+      "line_height": 1.2
+    }
+  ],
+  "style_ranges": [
+    {
+      "id": "style-reset",
+      "start": 0,
+      "end": 5,
+      "style_id": "normal-reset"
+    },
+    {
+      "id": "style-bold",
+      "start": 6,
+      "end": 10,
+      "style_id": "emphasis-bold"
+    },
+    {
+      "id": "style-italic",
+      "start": 11,
+      "end": 17,
+      "style_id": "emphasis-italic"
+    },
+    {
+      "id": "style-small",
+      "start": 18,
+      "end": 23,
+      "style_id": "small"
+    },
+    {
+      "id": "style-sub",
+      "start": 25,
+      "end": 26,
+      "style_id": "sub"
+    },
+    {
+      "id": "style-super",
+      "start": 29,
+      "end": 30,
+      "style_id": "super"
+    }
+  ],
+  "figure": {
+    "id": "figure-one",
+    "resource_id": "image-one",
+    "caption_id": "caption-one",
+    "alt": "A blue window.",
+    "decorative": false,
+    "width": 32,
+    "height": 20
+  },
+  "metadata": {
+    "title": "The Independent Harbour",
+    "subtitle": "An authored adapter oracle",
+    "author": "AVA Fixture Studio",
+    "rights": "Original synthetic test content.",
+    "language": "en",
+    "generated_identifier": "urn:ava:fixture:canonical-v2",
+    "nonaccepted_contributor": "Fixture Translator"
+  },
+  "source_order": [
+    "page1-left",
+    "page1-right",
+    "page2-fullwidth"
+  ],
+  "unicode": {
+    "block": "body-one",
+    "emoji_codepoints": [
+      1,
+      2
+    ],
+    "emoji_utf16": [
+      1,
+      3
+    ],
+    "normalization_kinds": [
+      "identity",
+      "nfc",
+      "identity",
+      "ligature",
+      "identity",
+      "line_wrap",
+      "identity"
+    ]
+  },
+  "required_failures": [
+    "missing display paragraph",
+    "changed display text with original sidecar",
+    "changed note href",
+    "changed image bytes",
+    "changed CSS false/zero override",
+    "missing source address",
+    "mismatched canonical digest",
+    "unknown generated profile",
+    "unsafe archive path",
+    "duplicate resource ZIP entry"
+  ]
+}

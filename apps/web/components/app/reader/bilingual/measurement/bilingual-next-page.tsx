@@ -1,3 +1,4 @@
+import { validCanonicalCatalog } from "@/features/reader/bilingual/content/validate-canonical-catalog";
 import { useTranslationChapter } from "@/features/offline/buckets/translations";
 import { usePairMeasurements } from "@/features/reader/bilingual/measurement/use-pair-measurements";
 import { useSentenceDemand } from "@/features/reader/bilingual/demand/use-sentence-demand";
@@ -12,6 +13,7 @@ export function BilingualNextPage({
   enabled,
   size,
   fontScale,
+  expectedContentRevision,
 }: {
   libraryItemId: string;
   source: ReaderChapterPayload | undefined;
@@ -19,12 +21,21 @@ export function BilingualNextPage({
   enabled: boolean;
   size: { width: number; height: number };
   fontScale: number;
+  expectedContentRevision?: string;
 }) {
-  const { chapter } = useTranslationChapter(
+  const { chapter: candidate } = useTranslationChapter(
     libraryItemId,
     enabled ? (source?.chapterId ?? null) : null,
     targetLang,
+    expectedContentRevision,
   );
+  const chapter =
+    candidate &&
+    expectedContentRevision &&
+    source &&
+    !validCanonicalCatalog(candidate, source.blocks, expectedContentRevision)
+      ? null
+      : candidate;
   const { measurementRef, measurement, isMeasuring } = usePairMeasurements(
     chapter,
     size,

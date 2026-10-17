@@ -7,6 +7,7 @@ import { ProviderButton } from "@/components/auth/provider-button";
 type ProviderListProps = {
   children?: ReactNode;
   googleDisabled?: boolean;
+  emailDisabled?: boolean;
   onEmail: () => void;
   onGoogle: () => void;
 };
@@ -54,6 +55,7 @@ function GoogleGlyph() {
 export function ProviderList({
   children,
   googleDisabled,
+  emailDisabled,
   onEmail,
   onGoogle,
 }: ProviderListProps) {
@@ -65,6 +67,7 @@ export function ProviderList({
         label={t("continueWithEmail")}
         variant="soft"
         onClick={onEmail}
+        disabled={emailDisabled}
       />
       <ProviderButton
         icon={<GoogleGlyph />}

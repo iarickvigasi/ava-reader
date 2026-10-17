@@ -10,7 +10,7 @@ import { ReaderCoverContext } from "@/features/reader/reader-cover-context";
 import { ReaderCoverTransition } from "./view/reader-cover-transition";
 
 export function ReaderScreenLoader() {
-  const result = useReaderScreenLoader();
+  const { result, retry } = useReaderScreenLoader();
   const cover = useReaderCover();
   if (!result)
     return (
@@ -21,6 +21,9 @@ export function ReaderScreenLoader() {
       </ReaderCoverContext>
     );
   if (result.kind === "not-found") return <UnavailablePage kind="notFound" />;
+  if (result.kind === "upgrade-required") {
+    return <UnavailablePage kind="readerUpgrade" onRetry={retry} />;
+  }
   if (result.kind === "loaded") {
     return (
       <ReaderCoverContext value={cover}>
@@ -36,5 +39,5 @@ export function ReaderScreenLoader() {
       </ReaderCoverContext>
     );
   }
-  return <OfflineRouteFallback routeKey="generic" />;
+  return <OfflineRouteFallback routeKey="generic" onRetry={retry} />;
 }

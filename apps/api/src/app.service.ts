@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { PrismaService } from './prisma/prisma.service';
 
 @Injectable()
@@ -6,18 +6,21 @@ export class AppService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getHealth() {
-    let database = 'up';
-
     try {
       await this.prisma.$queryRaw`SELECT 1`;
     } catch {
-      database = 'down';
+      throw new ServiceUnavailableException({
+        status: 'degraded',
+        service: 'api',
+        database: 'down',
+        timestamp: new Date().toISOString(),
+      });
     }
 
     return {
-      status: database === 'up' ? 'ok' : 'degraded',
+      status: 'ok',
       service: 'api',
-      database,
+      database: 'up',
       timestamp: new Date().toISOString(),
     };
   }

@@ -1,3 +1,6 @@
+jest.mock('../../reader/canonical/load', () => ({
+  loadCanonicalReader: jest.fn().mockResolvedValue(null),
+}));
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { BookFileKind, ProcessingStatus } from '@prisma/client';
 import type { PrismaService } from '../../prisma/prisma.service';

@@ -1,0 +1,6 @@
+import { READER_SCHEMA, READER_BUILD_FINGERPRINT } from "./build";
+
+export const READER_CAPABILITY_HEADERS = {
+  "X-AVA-Reader-Schema": READER_SCHEMA,
+  "X-AVA-Reader-Build": READER_BUILD_FINGERPRINT,
+};

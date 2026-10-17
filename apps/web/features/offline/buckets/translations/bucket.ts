@@ -22,7 +22,18 @@ export function getTranslationBucket(
   const db = getDb();
   const key = JSON.stringify([db.name, ...translationKey(scope)]);
   const existing = buckets.get(key);
-  if (existing) return existing;
+  if (
+    existing &&
+    (scope.expectedContentRevision === undefined ||
+      existing.scope.expectedContentRevision === scope.expectedContentRevision)
+  )
+    return existing;
+  if (existing) {
+    existing.disposed = true;
+    existing.fetchRun?.controller.abort();
+    existing.generationRun?.controller.abort();
+    existing.alignmentRun?.controller.abort();
+  }
   const bucket: TranslationBucket = {
     scope: { ...scope, targetLang: scope.targetLang.trim() },
     db,

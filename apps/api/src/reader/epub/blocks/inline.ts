@@ -1,194 +1,27 @@
 import type { ReaderInline } from '../../reader-types';
 import type { EpubAsset } from '../archive';
-import {
-  OrderedNode,
-  getNodeTagName,
-  getNodeChildren,
-  getNodeAttributes,
-} from '../xml-utils';
-import { normalizeInlineText } from '../node-utils';
-import { resolveFontWeightFromStyle } from './font-weight';
+import type { OrderedNode } from '../xml-utils';
+import { parseInlineNodes } from './inline-base';
+import { normalizeInlineSequence } from './normalize-inline-sequence';
+import type { InlineOptions } from './inline-options';
 
-type InlineState = {
-  bold?: boolean;
-  fontWeight?: number;
-  href?: string;
-  italic?: boolean;
-  script?: 'super' | 'sub';
-};
-
+export { normalizeInlineSequence } from './normalize-inline-sequence';
 export async function normalizeInlineNodes(
   nodes: OrderedNode[],
-  resolveAsset: (assetPath: string) => Promise<EpubAsset | null>,
-  state: InlineState = {},
+  resolveAsset: (path: string) => Promise<EpubAsset | null>,
+  options: InlineOptions = {},
 ): Promise<ReaderInline[]> {
-  const inlines: ReaderInline[] = [];
-
-  for (const node of nodes) {
-    const tagName = getNodeTagName(node);
-    if (!tagName) {
-      continue;
-    }
-
-    if (tagName === '#text') {
-      const textValue = extractTextValue(node);
-      if (textValue.length > 0) {
-        inlines.push({
-          bold: state.bold,
-          fontWeight: state.fontWeight,
-          href: state.href,
-          italic: state.italic,
-          kind: 'text',
-          script: state.script,
-          text: textValue,
-        });
-      }
-      continue;
-    }
-
-    const nextState = deriveInlineState(node, state);
-
-    if (tagName === 'br') {
-      inlines.push({
-        bold: nextState.bold,
-        fontWeight: nextState.fontWeight,
-        href: nextState.href,
-        italic: nextState.italic,
-        kind: 'text',
-        script: nextState.script,
-        text: '\n',
-      });
-      continue;
-    }
-
-    if (tagName === 'img') {
-      const imageInline = await tryResolveImageInline(
-        node,
-        nextState.href,
-        resolveAsset,
-      );
-      if (imageInline) {
-        inlines.push(imageInline);
-      }
-      continue;
-    }
-
-    inlines.push(
-      ...(await normalizeInlineNodes(
-        getNodeChildren(node),
-        resolveAsset,
-        nextState,
-      )),
-    );
-  }
-
-  return compactInlines(inlines);
-}
-
-function extractTextValue(node: OrderedNode): string {
-  const rawText = node['#text'];
-  if (typeof rawText === 'string' || typeof rawText === 'number') {
-    return normalizeInlineText(String(rawText));
-  }
-  return '';
-}
-
-function deriveInlineState(node: OrderedNode, state: InlineState): InlineState {
-  const tagName = getNodeTagName(node);
-  const attrs = getNodeAttributes(node);
-
-  // An inline `style="font-weight:…"` on this node overrides whatever
-  // weight came from a parent <strong> or earlier wrapper.
-  const inlineFontWeight = resolveFontWeightFromStyle(attrs['@_style']);
-
-  return {
-    bold: state.bold || tagName === 'b' || tagName === 'strong',
-    fontWeight: inlineFontWeight ?? state.fontWeight,
-    href: tagName === 'a' ? (attrs['@_href'] ?? state.href) : state.href,
-    italic: state.italic || tagName === 'em' || tagName === 'i',
-    script: resolveInlineScript(tagName) ?? state.script,
-  };
-}
-
-// <sup>/<sub> place a run above or below the baseline. The nearest ancestor
-// wins, so a <sub> inside a <sup> reads as a subscript — matching how the
-// element's own vertical-align would override its parent's in CSS.
-function resolveInlineScript(tagName: string | undefined) {
-  if (tagName === 'sup') {
-    return 'super' as const;
-  }
-  if (tagName === 'sub') {
-    return 'sub' as const;
-  }
-  return undefined;
-}
-
-async function tryResolveImageInline(
-  node: OrderedNode,
-  href: string | undefined,
-  resolveAsset: (assetPath: string) => Promise<EpubAsset | null>,
-): Promise<ReaderInline | null> {
-  const attrs = getNodeAttributes(node);
-  const src = attrs['@_src'];
-  if (!src) {
-    return null;
-  }
-
-  const resolved = await resolveAsset(src);
-  if (!resolved) {
-    return null;
-  }
-
-  return {
-    alt: attrs['@_alt'] ?? null,
-    href,
-    kind: 'image',
-    naturalWidth: resolved.naturalWidth,
-    src: resolved.src,
-  };
-}
-
-function compactInlines(inlines: ReaderInline[]) {
-  const compacted: ReaderInline[] = [];
-
-  for (const inline of inlines) {
-    if (inline.kind === 'image') {
-      compacted.push(inline);
-      continue;
-    }
-
-    const previous = compacted.at(-1);
-    if (
-      previous &&
-      previous.kind === 'text' &&
-      previous.bold === inline.bold &&
-      previous.fontWeight === inline.fontWeight &&
-      previous.italic === inline.italic &&
-      previous.href === inline.href &&
-      previous.script === inline.script
-    ) {
-      previous.text = `${previous.text}${inline.text}`;
-      continue;
-    }
-
-    compacted.push({ ...inline });
-  }
-
-  return compacted.filter((inline) =>
-    inline.kind === 'image' ? true : inline.text.length > 0,
+  return normalizeInlineSequence(
+    await parseInlineNodes(nodes, resolveAsset, options),
+    options,
   );
 }
-
-export function buildInlineText(inlines: ReaderInline[]) {
-  return inlines
-    .filter(
-      (inline): inline is Extract<ReaderInline, { kind: 'text' }> =>
-        inline.kind === 'text',
-    )
-    .map((inline) => inline.text)
-    .join('')
-    .replace(/[ \t]+\n/g, '\n')
-    .replace(/\n[ \t]+/g, '\n')
-    .replace(/[ \t]{2,}/g, ' ')
-    .trim();
+export function buildInlineText(
+  inlines: ReaderInline[],
+  options: InlineOptions = {},
+) {
+  return normalizeInlineSequence(inlines, options)
+    .filter((i) => i.kind === 'text')
+    .map((i) => i.text)
+    .join('');
 }

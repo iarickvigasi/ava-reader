@@ -19,6 +19,9 @@ export function ReaderOverflowMenu({
         ref={triggerRef}
         type="button"
         popoverTarget={id}
+        data-reader-panel-fallback={items
+          .flatMap((item) => ("panel" in item ? [item.panel] : []))
+          .join(" ")}
         aria-label={t("moreActions")}
         aria-haspopup="menu"
         aria-controls={id}

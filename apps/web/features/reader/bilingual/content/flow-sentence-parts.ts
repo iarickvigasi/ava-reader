@@ -11,9 +11,18 @@ export function flowSentenceParts(
 ) {
   return units.map((entry, index) => {
     const { unit } = entry;
-    if (side === "translation") {
+    if (side === "translation" && unit.kind !== "literal") {
       const text = chapter.translations[unit.id]?.trim() ?? "";
-      const before = index > 0 ? " " : "";
+      const previous = units[index - 1]?.unit;
+      const before =
+        block.kind === "verse"
+          ? (previous
+              ? (previous.text.match(/\s*$/)?.[0] ?? "") +
+                block.text.slice(previous.endOffset, unit.startOffset)
+              : "") + (unit.text.match(/^\s*/)?.[0] ?? "")
+          : index > 0
+            ? " "
+            : "";
       return {
         ...entry,
         before: [{ kind: "text", text: before }] as ReaderInline[],
@@ -29,7 +38,10 @@ export function flowSentenceParts(
         .map((inline) => (inline.kind === "text" ? inline.text : ""))
         .join("") ?? "";
     const gap =
-      previous && source && previous.itemId === unit.itemId
+      previous &&
+      source &&
+      previous.blockId === unit.blockId &&
+      previous.itemId === unit.itemId
         ? sourceText.slice(
             previous.endOffset - source.offset,
             unit.startOffset - source.offset,

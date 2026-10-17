@@ -1,3 +1,4 @@
+import { canonicalLeaf } from "./canonical-leaf";
 import type { BilingualUnit } from "@/lib/api-types/bilingual";
 import type { ReaderBlock, ReaderInline } from "@/lib/api-types/reader";
 
@@ -6,6 +7,7 @@ export function sourceInlinesForUnit(
   unit: BilingualUnit,
   block?: ReaderBlock,
 ): ReaderInline[] {
+  block = block ? canonicalLeaf(block, unit.blockId) : undefined;
   const fallback: ReaderInline[] = [{ kind: "text", text: unit.text }];
   if (!block || block.id !== unit.blockId || block.kind === "image")
     return fallback;
@@ -46,8 +48,9 @@ export function resolveInlineSource(
   block: Exclude<ReaderBlock, { kind: "image" }>,
   itemId?: string,
 ) {
-  if (block.kind !== "list")
+  if ("inlines" in block)
     return { inlines: block.inlines, offset: 0, itemIndex: null };
+  if (block.kind !== "list") return null;
   let offset = 0;
   for (let itemIndex = 0; itemIndex < block.items.length; itemIndex += 1) {
     const item = block.items[itemIndex];

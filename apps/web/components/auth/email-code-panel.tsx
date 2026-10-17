@@ -9,6 +9,8 @@ type EmailCodePanelProps = {
   email: string;
   code: string;
   busy: boolean;
+  disabled?: boolean;
+  interactionLocked?: boolean;
   error?: string;
   notice?: string;
   captchaSlot?: ReactNode;
@@ -26,6 +28,8 @@ export function EmailCodePanel({
   email,
   code,
   busy,
+  disabled = false,
+  interactionLocked = false,
   error,
   notice,
   captchaSlot,
@@ -44,9 +48,7 @@ export function EmailCodePanel({
     <div className="space-y-4 rounded-card bg-surface p-5 text-left">
       <div className="space-y-1">
         <p className="text-sm uppercase tracking-[0.22em] text-muted">
-          {stage === "identifier"
-            ? t("identifierEyebrow")
-            : t("codeEyebrow")}
+          {stage === "identifier" ? t("identifierEyebrow") : t("codeEyebrow")}
         </p>
         <p className="text-base text-copy">
           {stage === "identifier"
@@ -66,6 +68,7 @@ export function EmailCodePanel({
       {stage === "identifier" ? (
         <div className="space-y-4">
           <TextInput
+            disabled={interactionLocked}
             autoComplete="email"
             label={t("emailLabel")}
             placeholder={t("emailPlaceholder")}
@@ -80,13 +83,14 @@ export function EmailCodePanel({
               variant="soft"
               className="flex-1"
               onClick={onBack}
+              disabled={interactionLocked}
             >
               {tCommon("back")}
             </Button>
             <Button
               type="button"
               className="flex-1"
-              disabled={!email || busy}
+              disabled={!email || busy || disabled}
               onClick={onSubmitIdentifier}
             >
               {busy ? t("sending") : t("sendCode")}
@@ -96,6 +100,7 @@ export function EmailCodePanel({
       ) : (
         <div className="space-y-4">
           <TextInput
+            disabled={interactionLocked}
             autoComplete="one-time-code"
             inputClassName="tracking-[0.4em]"
             label={t("codeLabel")}
@@ -109,6 +114,7 @@ export function EmailCodePanel({
               variant="soft"
               className="sm:flex-1"
               onClick={onBack}
+              disabled={interactionLocked}
             >
               {t("changeEmail")}
             </Button>
@@ -116,7 +122,7 @@ export function EmailCodePanel({
               type="button"
               variant="ghost"
               className="sm:flex-1"
-              disabled={busy}
+              disabled={busy || disabled}
               onClick={onResendCode}
             >
               {t("resendCode")}
@@ -124,7 +130,7 @@ export function EmailCodePanel({
             <Button
               type="button"
               className="sm:flex-1"
-              disabled={!code || busy}
+              disabled={!code || busy || disabled}
               onClick={onSubmitCode}
             >
               {busy

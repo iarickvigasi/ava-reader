@@ -33,6 +33,8 @@ export type ReaderMeasurementEntry =
       chapterId: string;
       layoutKey: string;
       pageCount: number;
+      // Bound to the live preloader owner; stale DOM cannot resolve positions.
+      isCurrent?: () => boolean;
       // When the visible reader prepends a single-page previous chapter,
       // the active chapter's first visible spread starts at column 2 of
       // preloader spread 0. Pass `columnOffset: 2` so the search begins at
@@ -80,6 +82,7 @@ export function createReadyReaderMeasurementEntry(input: {
   layoutKey: string;
   pageBox: HTMLElement;
   pageGap: number;
+  isCurrent?: () => boolean;
 }): ReaderMeasurementEntry {
   const metrics = resolvePageMetrics(
     input.pageBox,
@@ -95,6 +98,10 @@ export function createReadyReaderMeasurementEntry(input: {
   }
 
   const pageCount = resolvePageCount(input.article, metrics);
+  const isCurrent = () =>
+    input.article.isConnected &&
+    input.pageBox.isConnected &&
+    (input.isCurrent?.() ?? true);
 
   // The closures below re-call resolvePageMetrics on each invocation rather
   // than capturing `metrics`. `pageBoxLeft` (a viewport-relative coordinate)
@@ -105,7 +112,9 @@ export function createReadyReaderMeasurementEntry(input: {
     chapterId: input.chapterId,
     layoutKey: input.layoutKey,
     pageCount,
+    isCurrent,
     resolveLocator(pageIndex, columnOffset = 1) {
+      if (!isCurrent()) return null;
       return resolveLocatorFromPageIndex({
         article: input.article,
         chapterId: input.chapterId,
@@ -120,6 +129,7 @@ export function createReadyReaderMeasurementEntry(input: {
       });
     },
     resolvePageIndex(locator) {
+      if (!isCurrent()) return { status: "missing-block" };
       return resolvePageIndexFromLocator({
         article: input.article,
         locator,

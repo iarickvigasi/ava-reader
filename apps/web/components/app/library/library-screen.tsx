@@ -39,8 +39,9 @@ export function LibraryScreen({ library }: LibraryScreenProps) {
     : library.collections;
   const summary = view?.summary ?? library.summary;
 
+  const hasBooks = summary.booksCount > 0 || collections.some((c) => c.books.length > 0);
   const isEmpty =
-    summary.booksCount === 0 &&
+    !hasBooks &&
     !collections.some((collection) => collection.kind === "CUSTOM");
 
   return (
@@ -48,7 +49,7 @@ export function LibraryScreen({ library }: LibraryScreenProps) {
       <LibraryHeader />
       <LibraryFeaturesSection />
       <LibraryHeaderBar summary={summary} />
-      {summary.booksCount === 0 && <LibraryEmptyState />}
+      {!hasBooks && <LibraryEmptyState />}
 
       {!isEmpty && (
         <div className="space-y-12 md:space-y-14">

@@ -1,0 +1,69 @@
+{
+  "schema_version": "ava-recognition-cell-geometry-task-1",
+  "task_id": "recognition-cell-geometry-fac9d53bf3073f19607b1263ba6d83ca53ef07428f5fb89db4660916c5f64e38",
+  "purpose": "repair_recognition_cell_geometry",
+  "prompt_version": "ava-recognition-cell-geometry-1",
+  "response_schema_version": "ava-recognition-cell-geometry-response-1",
+  "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "profile_id": "ava-pdf-prose-en-v2",
+  "page_number": 1,
+  "original_task_id": "recognize-d0d88f56fe9feeea879d112fe201e7025de9b7dc488e617d56eebed8c108a0d1",
+  "render_sha256": "fca62a9f2e757c42b5d1225df44b7f69ac705224b6e70926efec33cda915da36",
+  "native_evidence_sha256": "ed08902016eb1742711bb7cc1fdf4c2757d6d4460163f752a6a71181e79a9564",
+  "original_response_json": "{\"schema_version\":\"ava-recognition-response-2\",\"task_id\":\"recognize-d0d88f56fe9feeea879d112fe201e7025de9b7dc488e617d56eebed8c108a0d1\",\"source_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"render_sha256\":\"fca62a9f2e757c42b5d1225df44b7f69ac705224b6e70926efec33cda915da36\",\"language\":\"en\",\"unresolved\":[],\"segments\":[{\"id\":\"s0\",\"page\":1,\"method\":\"ocr\",\"kind\":\"table\",\"text\":\"Same Same\",\"box\":{\"coordinate_space\":\"render_normalized_1000\",\"x0\":0,\"y0\":0,\"x1\":1000,\"y1\":1000},\"style\":null,\"spans\":[],\"heading_level\":null,\"chapter_start\":false,\"chapter_role\":null,\"note_label\":null,\"note_role\":null,\"list_ordered\":null,\"list_start\":null,\"list_depth\":null,\"continues_from_previous\":false,\"continues_to_next\":false,\"cells\":[[{\"text\":\"Same\",\"spans\":[],\"style\":null,\"header_axis\":null,\"box\":{\"coordinate_space\":\"render_normalized_1000\",\"x0\":10,\"x1\":100,\"y0\":100,\"y1\":10}},{\"text\":\"Same\",\"spans\":[],\"style\":null,\"header_axis\":null,\"box\":{\"coordinate_space\":\"render_normalized_1000\",\"x0\":110,\"x1\":200,\"y0\":100,\"y1\":10}}],[{\"text\":\"Same\",\"spans\":[],\"style\":null,\"header_axis\":null,\"box\":{\"coordinate_space\":\"render_normalized_1000\",\"x0\":10,\"x1\":100,\"y0\":110,\"y1\":200}},{\"text\":\"Same\",\"spans\":[],\"style\":null,\"header_axis\":null,\"box\":{\"coordinate_space\":\"render_normalized_1000\",\"x0\":110,\"x1\":200,\"y0\":110,\"y1\":200}}]],\"related_to\":null,\"alt\":\"\"}]}",
+  "original_response_sha256": "67d58fabc0130e67ac0da34666048531bcd090521d49bac687cf9e805df95ed3",
+  "image": {
+    "media_type": "image/png",
+    "sha256": "fca62a9f2e757c42b5d1225df44b7f69ac705224b6e70926efec33cda915da36",
+    "byte_length": 77,
+    "width": 4,
+    "height": 8,
+    "base64": "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAICAIAAABRUclSAAAAFElEQVR4nGP8//8/AwwwwVlU5wAANIUDDTHR7/kAAAAASUVORK5CYII="
+  },
+  "slots": [
+    {
+      "slot_id": "cell-geometry-ae1087d756ad968ea61b03be0ea2c0cd1ae240bc7df0fe80c5496c5142b4abbb",
+      "segment_index": 0,
+      "segment_id": "s0",
+      "row_index": 0,
+      "cell_index": 0,
+      "cell_text_sha256": "2a98b1deb68c7223d1367ad0671045f6835d960785aa24ebf18a69d64900cd42",
+      "original_box_json": "{\"coordinate_space\":\"render_normalized_1000\",\"x0\":10,\"x1\":100,\"y0\":100,\"y1\":10}",
+      "original_box_sha256": "f0b53d39a402203fed4a835e0d1a018d0235876b9eec0c85b0be9167e299926d",
+      "table_box": {
+        "coordinate_space": "render_normalized_1000",
+        "x0": 0.0,
+        "y0": 0.0,
+        "x1": 1000.0,
+        "y1": 1000.0
+      },
+      "context": "Same",
+      "row_context": [
+        "Same",
+        "Same"
+      ]
+    },
+    {
+      "slot_id": "cell-geometry-78d0aada4a7c83297475d37868d5c31ba18b7254f839b21144bdba0f9b5536cc",
+      "segment_index": 0,
+      "segment_id": "s0",
+      "row_index": 0,
+      "cell_index": 1,
+      "cell_text_sha256": "2a98b1deb68c7223d1367ad0671045f6835d960785aa24ebf18a69d64900cd42",
+      "original_box_json": "{\"coordinate_space\":\"render_normalized_1000\",\"x0\":110,\"x1\":200,\"y0\":100,\"y1\":10}",
+      "original_box_sha256": "85067216e44e2c5a00b46b87bce3197ab4b2fff6a2a9ac4bcc2b2b3df260147d",
+      "table_box": {
+        "coordinate_space": "render_normalized_1000",
+        "x0": 0.0,
+        "y0": 0.0,
+        "x1": 1000.0,
+        "y1": 1000.0
+      },
+      "context": "Same",
+      "row_context": [
+        "Same",
+        "Same"
+      ]
+    }
+  ]
+}

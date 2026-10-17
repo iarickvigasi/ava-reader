@@ -2,8 +2,7 @@ import { useEffect } from "react";
 import { isInteractiveTarget } from "../../shared/utils";
 import type { PageStepControls } from "./use-page-stepper";
 
-const KEY_ARROW_LEFT = "ArrowLeft";
-const KEY_ARROW_RIGHT = "ArrowRight";
+import { pageKeyDirection } from "./page-key-direction";
 
 // Arrow-key page turning. ArrowRight → next, ArrowLeft → previous. Ignores
 // keypresses while a panel is open or focus is inside an interactive target
@@ -19,12 +18,13 @@ export function useKeyboardPageNavigation({
         return;
       }
 
-      if (event.key === KEY_ARROW_RIGHT) {
+      const direction = pageKeyDirection(event);
+      if (direction === "next") {
         event.preventDefault();
         goToNextPage();
       }
 
-      if (event.key === KEY_ARROW_LEFT) {
+      if (direction === "previous") {
         event.preventDefault();
         goToPreviousPage();
       }

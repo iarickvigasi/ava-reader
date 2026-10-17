@@ -1,0 +1,223 @@
+"""Private, hash-verified observations with a byte-bounded two-page decode cache."""
+
+import hashlib
+import os
+import tempfile
+from collections import OrderedDict
+from collections.abc import Iterator, Mapping, Sequence
+from pathlib import Path
+from typing import overload
+
+from ..contracts.private_files import snapshot
+from ..worker_observation import observe
+from .native_layout_policy import NativeLayoutPolicy, validate_layout_policy
+from .native_line_offsets import mapped_native_ids, native_line_offsets
+from .page_geometry import PageGeometry, geometry_from
+from .prepared import PreparedPage
+from .prepared_native_layout import NativeLayoutPreparedPage
+from .prepared_native_structure import NativeStructurePreparedPage
+from .prepared_native_structure_v2 import NativeStructure2PreparedPage
+from .prepared_native_word_wrap import NativeWordWrapPreparedPage
+from .prepared_types import AnyPreparedPage, layout_policy
+
+PAGE_BYTES = 32 * 1024 * 1024
+TOTAL_BYTES = 1024 * 1024 * 1024
+
+
+class PageCheckpoints(Sequence[AnyPreparedPage]):
+    def __init__(self, root: Path, source_layout_policy: NativeLayoutPolicy | None = None):
+        self.root = root
+        self.source_layout_policy = validate_layout_policy(source_layout_policy)
+        self._entries: list[tuple[str, str]] = []
+        self._bytes = 0
+        self._geometry: list[PageGeometry] = []
+        self._cached: OrderedDict[int, tuple[int, AnyPreparedPage]] = OrderedDict()
+        self._cache_bytes = 0
+
+    def append(self, page: AnyPreparedPage) -> None:
+        if self.source_layout_policy is not None and isinstance(page, PreparedPage):
+            page = NativeLayoutPreparedPage.model_validate(
+                {
+                    **page.model_dump(),
+                    "schema_version": "ava-prepared-page-2",
+                    "source_layout_policy": self.source_layout_policy,
+                    "native_line_maps": native_line_offsets(
+                        page.observation,
+                        page.native_segments,
+                        mapped_native_ids(page.native_segments),
+                    ),
+                }
+            )
+        if layout_policy(page) != self.source_layout_policy:
+            raise ValueError("Page checkpoint layout policy differs")
+        if page.observation.number != len(self) + 1 or len(self) >= 500:
+            raise ValueError("Page checkpoint order or count differs")
+        geometry = geometry_from(page.observation)
+        data = page.model_dump_json().encode("utf-8")
+        if len(data) > PAGE_BYTES or self._bytes + len(data) > TOTAL_BYTES:
+            raise ValueError("Page checkpoint byte limit exceeded")
+        name = f"page-{len(self) + 1:04d}.json"
+        with (self.root / name).open("xb") as output:
+            output.write(data)
+        self._entries.append((name, hashlib.sha256(data).hexdigest()))
+        self._bytes += len(data)
+        self._geometry.append(geometry)
+
+    def qualify(self, index: int, page: AnyPreparedPage) -> None:
+        """Replace an internally qualified observation before any host/model exchange."""
+        old = self[index]
+        if isinstance(page, (NativeLayoutPreparedPage, NativeStructurePreparedPage)):
+            page = type(page).model_validate(page.model_dump())
+        if layout_policy(page) != layout_policy(old):
+            raise ValueError("Qualified page layout policy differs")
+        if (
+            old.source_sha256,
+            old.source_byte_length,
+            old.source_page_count,
+            old.profile_id,
+            old.observation.number,
+            old.observation.render_sha256,
+        ) != (
+            page.source_sha256,
+            page.source_byte_length,
+            page.source_page_count,
+            page.profile_id,
+            page.observation.number,
+            page.observation.render_sha256,
+        ):
+            raise ValueError("Qualified page identity differs")
+        if (
+            old.observation.model_dump(exclude={"graphics"})
+            != page.observation.model_dump(exclude={"graphics"})
+            or old.tables != page.tables
+            or len(old.observation.graphics) != len(page.observation.graphics)
+        ):
+            raise ValueError("Qualified page changed source observations")
+        for before, after in zip(old.observation.graphics, page.observation.graphics, strict=True):
+            if before.model_dump(exclude={"source_image"}) != after.model_dump(
+                exclude={"source_image"}
+            ):
+                raise ValueError("Qualified graphic changed source geometry")
+            if before.source_image is None:
+                if after.source_image is not None:
+                    raise ValueError("Qualification invented an embedded image")
+            elif after.source_image is None or before.source_image.model_dump(
+                exclude={"qualified"}
+            ) != after.source_image.model_dump(exclude={"qualified"}):
+                raise ValueError("Qualified graphic changed source image")
+        _, prior = self._read(index)
+        data = page.model_dump_json().encode("utf-8")
+        if len(data) > PAGE_BYTES or self._bytes - len(prior) + len(data) > TOTAL_BYTES:
+            raise ValueError("Page checkpoint byte limit exceeded")
+        name, _ = self._entries[index]
+        with tempfile.NamedTemporaryFile(
+            dir=self.root, prefix="qualified-", delete=False
+        ) as output:
+            temporary = Path(output.name)
+            output.write(data)
+        try:
+            os.replace(temporary, self.root / name)
+        finally:
+            temporary.unlink(missing_ok=True)
+        self._entries[index] = (name, hashlib.sha256(data).hexdigest())
+        self._bytes += len(data) - len(prior)
+        self._geometry[index] = geometry_from(page.observation)
+        self.clear_cache()
+
+    def __len__(self) -> int:
+        return len(self._entries)
+
+    def clear_cache(self) -> None:
+        """Drop mutable decoded observations before starting another assembly phase."""
+        self._cached.clear()
+        self._cache_bytes = 0
+
+    def verify(self) -> None:
+        """Recheck every private checkpoint, including pages not presently decoded."""
+        for index in range(len(self)):
+            self._read(index)
+
+    @overload
+    def __getitem__(self, index: int) -> AnyPreparedPage: ...
+
+    @overload
+    def __getitem__(self, index: slice) -> Sequence[AnyPreparedPage]: ...
+
+    def __getitem__(self, index: int | slice) -> AnyPreparedPage | Sequence[AnyPreparedPage]:
+        if isinstance(index, slice):
+            return [self[i] for i in range(*index.indices(len(self)))]
+        index, data = self._read(index)
+        cached = self._cached.get(index)
+        if cached is not None:
+            self._cached.move_to_end(index)
+            observe("reuse", "checkpoint_decode", True)
+            return cached[1]
+        observe("reuse", "checkpoint_decode", False)
+        from .attempt_exchange import strict_json
+
+        raw = strict_json(data)
+        marker = raw.get("schema_version") if isinstance(raw, dict) else None
+        page: AnyPreparedPage = (
+            NativeStructure2PreparedPage.model_validate(raw)
+            if marker == "ava-prepared-page-5"
+            else NativeWordWrapPreparedPage.model_validate(raw)
+            if marker == "ava-prepared-page-4"
+            else NativeStructurePreparedPage.model_validate(raw)
+            if marker == "ava-prepared-page-3"
+            else NativeLayoutPreparedPage.model_validate(raw)
+            if self.source_layout_policy is not None
+            else PreparedPage.model_validate(raw)
+        )
+        if layout_policy(page) != self.source_layout_policy:
+            raise ValueError("Page checkpoint layout policy differs")
+        # Keep the same aggregate serialized bound as the former single-page cache.
+        # Hash verification above still runs on every read, including cache hits.
+        while self._cached and (
+            len(self._cached) >= 2 or self._cache_bytes + len(data) > PAGE_BYTES
+        ):
+            _, (size, _) = self._cached.popitem(last=False)
+            self._cache_bytes -= size
+        self._cached[index] = (len(data), page)
+        self._cache_bytes += len(data)
+        return page
+
+    def _read(self, index: int) -> tuple[int, bytes]:
+        if index < 0:
+            index += len(self)
+        if not 0 <= index < len(self):
+            raise IndexError(index)
+        # Reverify even cached reads: a changed scratch file cannot supply observations.
+        name, digest = self._entries[index]
+        data = snapshot(self.root, name, PAGE_BYTES)
+        if hashlib.sha256(data).hexdigest() != digest:
+            raise ValueError("Page checkpoint content identity changed")
+        return index, data
+
+    def geometry(self, index: int) -> PageGeometry:
+        index, _ = self._read(index)
+        return self._geometry[index]
+
+
+def page_geometry(pages: Sequence[AnyPreparedPage], index: int) -> PageGeometry:
+    if isinstance(pages, PageCheckpoints):
+        return pages.geometry(index)
+    return geometry_from(pages[index].observation)
+
+
+class PreparedPageMap(Mapping[int, AnyPreparedPage]):
+    def __init__(self, pages: Sequence[AnyPreparedPage]):
+        self.pages = pages
+
+    def __len__(self) -> int:
+        return len(self.pages)
+
+    def __iter__(self) -> Iterator[int]:
+        return iter(range(1, len(self.pages) + 1))
+
+    def __getitem__(self, number: int) -> AnyPreparedPage:
+        if not 1 <= number <= len(self.pages):
+            raise KeyError(number)
+        page = self.pages[number - 1]
+        if page.observation.number != number:
+            raise ValueError("Page checkpoint index differs")
+        return page

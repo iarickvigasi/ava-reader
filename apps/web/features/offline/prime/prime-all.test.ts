@@ -199,7 +199,8 @@ describe("primeAllCaches", () => {
     // never downloaded, and it isn't offline-marked) must still reconcile so
     // "continue reading" reads offline. Save-Data off → allowed.
     const h = setup({
-      readLibraryView: async () => view([book("a", { offlineRequested: false })]),
+      readLibraryView: async () =>
+        view([book("a", { offlineRequested: false })]),
       readCurrentBookId: async () => "a",
       hasBookContent: async () => false,
     });
@@ -231,8 +232,14 @@ describe("primeAllCaches", () => {
     const h = setup();
     await primeAllCaches(h.runtime, h.internals);
 
-    expect(h.revalidateCollection).toHaveBeenCalledWith("imported", expect.any(Function));
-    expect(h.revalidateCollection).toHaveBeenCalledWith("faves", expect.any(Function));
+    expect(h.revalidateCollection).toHaveBeenCalledWith(
+      "imported",
+      expect.any(Function),
+    );
+    expect(h.revalidateCollection).toHaveBeenCalledWith(
+      "faves",
+      expect.any(Function),
+    );
   });
 
   it("prunes to the ids a complete pass saw", async () => {
@@ -277,7 +284,10 @@ describe("primeAllCaches", () => {
     expect(h.revalidatePreferences).toHaveBeenCalledTimes(1);
     expect(h.revalidateLibrary).toHaveBeenCalledTimes(1);
     // Each smart collection is hydrated in full before enumerating books.
-    expect(h.revalidateCollection).toHaveBeenCalledWith("imported", expect.any(Function));
+    expect(h.revalidateCollection).toHaveBeenCalledWith(
+      "imported",
+      expect.any(Function),
+    );
     expect(h.revalidateBookInfo).toHaveBeenCalledTimes(2);
     expect(h.saveBook).toHaveBeenCalledWith("a");
     expect(h.saveBook).toHaveBeenCalledWith("b");
@@ -286,7 +296,10 @@ describe("primeAllCaches", () => {
     // Progress is revalidated per offline book too, so a fresh device resumes
     // on the right page (not chapter 1) once the "Ready offline" cue shows.
     expect(h.revalidateProgress).toHaveBeenCalledTimes(2);
-    expect(h.revalidateProgress).toHaveBeenCalledWith("a", expect.any(Function));
+    expect(h.revalidateProgress).toHaveBeenCalledWith(
+      "a",
+      expect.any(Function),
+    );
     expect(h.flags.has(META_KEY_METADATA_DONE)).toBe(true);
     expect(h.flags.has(META_KEY_CONTENT_DONE)).toBe(true);
     expect(h.flags.has(META_KEY_COMPLETED)).toBe(true);
@@ -342,7 +355,10 @@ describe("primeAllCaches", () => {
     );
     // Metadata isn't surfaced; the content tier has nothing to do (total 0),
     // then the run signals ready — the user's "safe to browse offline" cue.
-    expect(ticks).toEqual([{ phase: "content", done: 0, total: 0 }, { phase: "ready" }]);
+    expect(ticks).toEqual([
+      { phase: "content", done: 0, total: 0 },
+      { phase: "ready" },
+    ]);
   });
 
   it("content tier targets only offline-marked books (metadata covers all)", async () => {
@@ -425,7 +441,9 @@ describe("primeAllCaches", () => {
     // Warm device: the current book is outstanding but its auto-save keeps
     // failing. The reconcile pass runs, but "Ready" must not fire until the
     // content is genuinely present.
-    const saveBook = vi.fn(async () => ({ kind: "failed", reason: "x" }) as const);
+    const saveBook = vi.fn(
+      async () => ({ kind: "failed", reason: "x" }) as const,
+    );
     const h = setup({
       readLibraryView: async () =>
         view([book("b", { offlineRequested: false })]),
@@ -565,3 +583,40 @@ describe("primeAllCaches", () => {
     });
   });
 });
+
+it.each(["QUEUED", "RUNNING", "WAITING", "FAILED", "STOPPED"] as const)(
+  "defers requested %s PDFs without blocking readable books or losing intent",
+  async (status) => {
+    const pending = book("pending", { offlineRequested: true });
+    pending.pdfImport = {
+      status,
+      finalContentId: null,
+      operationId: "fixture-op",
+      libraryItemId: "pending",
+      stage: "VALIDATION",
+      generation: 1,
+      updatedAt: "2026-10-13T00:00:00Z",
+      sourceArtifactId: "fixture-source",
+      failureId: null,
+      investigationRecorded: true,
+      progress: null,
+    };
+    const ready = book("ready", { offlineRequested: true });
+    const h = setup({ readLibraryView: async () => view([pending, ready]) });
+    await primeAllCaches(h.runtime, h.internals);
+    expect(h.saveBook).not.toHaveBeenCalledWith("pending");
+    expect(h.saveBook).toHaveBeenCalledWith("ready");
+    expect(pending.offlineRequested).toBe(true);
+    await primeAllCaches(h.runtime, h.internals);
+    expect(h.saveBook).not.toHaveBeenCalledWith("pending");
+    if (status === "FAILED" || status === "STOPPED") return;
+    pending.pdfImport = {
+      ...pending.pdfImport,
+      status: "READY",
+      finalContentId: "fixture-content",
+    };
+    await primeAllCaches(h.runtime, h.internals);
+    expect(h.saveBook).toHaveBeenCalledWith("pending");
+    expect(pending.offlineRequested).toBe(true);
+  },
+);

@@ -5,33 +5,45 @@ import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
-import { revalidateLibrary } from "@/features/offline/buckets/library";
+import {
+  importPdfFile,
+  revalidateLibrary,
+} from "@/features/offline/buckets/library";
+import { useNetworkState } from "@/features/offline/net/use-network-state";
+import { APP_LIBRARY_HREF, getLibraryBookInfoHref } from "@/lib/app-routes";
 import { getPublicApiBaseUrl } from "@/lib/api";
 
 type UseImportUploadOptions = {
   onNoticeAction: (notice: string | null) => void;
 };
 
-// Upload state + side effects behind ImportButton. The transition callback is
-// async and awaited, so `isUploading` spans the whole request — the old inline
-// version fired the promise without awaiting it, ending the transition (and
-// the "Uploading…" label) before the upload had even started. router.refresh()
-// runs inside the same action, extending the pending state into the refresh.
-//
-// router.refresh() alone doesn't show the new book on /app/library: that screen
-// reads the library bucket once hydrated and useHydrateLibrary treats its RSC
-// payload as a one-shot, so a refreshed payload repaints stale cache. Import
-// therefore revalidates the bucket itself (spec 3.1); the router refresh stays
-// for the RSC-only surfaces (home).
 export function useImportUpload({ onNoticeAction }: UseImportUploadOptions) {
   const t = useTranslations("shared.import");
+  const pdf = useTranslations("pdfImport");
   const { getToken, isLoaded, isSignedIn } = useAuth();
   const router = useRouter();
+  const online = useNetworkState();
   const [isUploading, startTransition] = useTransition();
 
   async function uploadFile(file: File) {
+    if (!online) {
+      onNoticeAction(pdf("connect"));
+      return;
+    }
     if (!isLoaded || !isSignedIn) {
       onNoticeAction(t("signIn"));
+      return;
+    }
+
+    if (file.type === "application/pdf" || /\.pdf$/i.test(file.name)) {
+      const result = await importPdfFile(file, getToken);
+      onNoticeAction(pdf(result.state));
+      if (result.libraryItemId)
+        router.push(
+          result.slug
+            ? getLibraryBookInfoHref(encodeURIComponent(result.slug))
+            : APP_LIBRARY_HREF,
+        );
       return;
     }
 
@@ -44,6 +56,7 @@ export function useImportUpload({ onNoticeAction }: UseImportUploadOptions) {
 
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("originalFilename", file.name);
 
     const response = await fetch(
       `${getPublicApiBaseUrl()}/api/library/import`,
@@ -71,7 +84,11 @@ export function useImportUpload({ onNoticeAction }: UseImportUploadOptions) {
 
   function upload(file: File) {
     startTransition(async () => {
-      await uploadFile(file);
+      try {
+        await uploadFile(file);
+      } catch {
+        onNoticeAction(t("uploadFailed"));
+      }
     });
   }
 

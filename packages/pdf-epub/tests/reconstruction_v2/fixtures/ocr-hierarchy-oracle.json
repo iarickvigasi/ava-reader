@@ -1,0 +1,225 @@
+{
+  "fixture_id": "FX-OCR-HIERARCHY-GAP",
+  "authorship": "Independent synthetic source and expected hierarchy authored before any reconstruction output; not a model transcript.",
+  "page_width_pt": 504,
+  "page_height_pt": 720,
+  "raster_scale": 2,
+  "title": "The Tidal Garden: An Authored Hierarchy Probe",
+  "outline": [],
+  "printed_toc": false,
+  "fonts": {
+    "body": {
+      "size_pt": 11,
+      "bold": false,
+      "italic": false
+    },
+    "h1": {
+      "size_pt": 22,
+      "bold": true,
+      "italic": false
+    },
+    "h2": {
+      "size_pt": 16,
+      "bold": true,
+      "italic": false
+    },
+    "h3": {
+      "size_pt": 13,
+      "bold": false,
+      "italic": true
+    }
+  },
+  "pages": [
+    {
+      "number": 1,
+      "blocks": [
+        {
+          "id": "ch1",
+          "kind": "heading",
+          "level": 1,
+          "chapter": true,
+          "style": "h1",
+          "top_pt": 52,
+          "text": "Chapter One: The Tidal Garden"
+        },
+        {
+          "id": "intro1",
+          "kind": "paragraph",
+          "style": "body",
+          "top_pt": 142,
+          "text": "We begin beside a garden where the tide moves through narrow channels. Each channel carries the same water, but each takes a different route among the stones."
+        },
+        {
+          "id": "section1",
+          "kind": "heading",
+          "level": 2,
+          "chapter": false,
+          "style": "h2",
+          "top_pt": 238,
+          "text": "Watching the water"
+        },
+        {
+          "id": "body1",
+          "kind": "paragraph",
+          "style": "body",
+          "top_pt": 278,
+          "text": "The wide entrance fills slowly after dawn. Pale reflections gather along the bank while small insects settle on the reeds."
+        },
+        {
+          "id": "subsection1",
+          "kind": "heading",
+          "level": 3,
+          "chapter": false,
+          "style": "h3",
+          "top_pt": 390,
+          "text": "The first narrow channel"
+        },
+        {
+          "id": "body2",
+          "kind": "paragraph",
+          "style": "body",
+          "top_pt": 428,
+          "text": "A thin stream bends around the first stone. Its quiet motion is one detail within the larger view of the water."
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "blocks": [
+        {
+          "id": "subsection2",
+          "kind": "heading",
+          "level": 3,
+          "chapter": false,
+          "style": "h3",
+          "top_pt": 52,
+          "text": "The eastern narrow channel"
+        },
+        {
+          "id": "body3",
+          "kind": "paragraph",
+          "style": "body",
+          "top_pt": 92,
+          "text": "The eastern stream glints beneath the reeds. A bird waits on a smooth stone, then steps into the shallows as the water slips past its feet."
+        },
+        {
+          "id": "section2",
+          "kind": "heading",
+          "level": 2,
+          "chapter": false,
+          "style": "h2",
+          "top_pt": 238,
+          "text": "Reading the stones"
+        },
+        {
+          "id": "body4",
+          "kind": "paragraph",
+          "style": "body",
+          "top_pt": 280,
+          "text": "The stones hold the warmth of the morning sun. Some are smooth and pale; others carry dark seams that disappear beneath the clear water."
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "blocks": [
+        {
+          "id": "ch2",
+          "kind": "heading",
+          "level": 1,
+          "chapter": true,
+          "style": "h1",
+          "top_pt": 52,
+          "text": "Chapter Two: Walking Inland"
+        },
+        {
+          "id": "intro2",
+          "kind": "paragraph",
+          "style": "body",
+          "top_pt": 142,
+          "text": "The path leaves the shore and turns toward higher ground. We carry the observations from the garden into a different setting."
+        },
+        {
+          "id": "section3",
+          "kind": "heading",
+          "level": 2,
+          "chapter": false,
+          "style": "h2",
+          "top_pt": 238,
+          "text": "Higher ground"
+        },
+        {
+          "id": "body5",
+          "kind": "paragraph",
+          "style": "body",
+          "top_pt": 278,
+          "text": "The open slope offers a broad view of the route. Beyond a stand of young trees, the distant shore fades into the morning haze."
+        },
+        {
+          "id": "subsection3",
+          "kind": "heading",
+          "level": 3,
+          "chapter": false,
+          "style": "h3",
+          "top_pt": 390,
+          "text": "The sheltered path"
+        },
+        {
+          "id": "body6",
+          "kind": "paragraph",
+          "style": "body",
+          "top_pt": 428,
+          "text": "One path follows a low wall through a stand of trees. Fallen leaves soften the ground, and the air grows cooler where the branches meet overhead."
+        }
+      ]
+    }
+  ],
+  "expected_heading_stream": [
+    {
+      "id": "ch1",
+      "level": 1,
+      "parent": null
+    },
+    {
+      "id": "section1",
+      "level": 2,
+      "parent": "ch1"
+    },
+    {
+      "id": "subsection1",
+      "level": 3,
+      "parent": "section1"
+    },
+    {
+      "id": "subsection2",
+      "level": 3,
+      "parent": "section1"
+    },
+    {
+      "id": "section2",
+      "level": 2,
+      "parent": "ch1"
+    },
+    {
+      "id": "ch2",
+      "level": 1,
+      "parent": null
+    },
+    {
+      "id": "section3",
+      "level": 2,
+      "parent": "ch2"
+    },
+    {
+      "id": "subsection3",
+      "level": 3,
+      "parent": "section3"
+    }
+  ],
+  "fault": {
+    "id": "subsection2",
+    "authored_wrong_level": 2,
+    "expected_level": 3,
+    "description": "Deliberately inject a confident page-local H2 for the real cross-page H3. All text, style and geometry remain source-authored. This is not observed model behavior."
+  }
+}

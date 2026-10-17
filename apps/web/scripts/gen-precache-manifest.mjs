@@ -1,7 +1,6 @@
 // Post-build step for route precaching (see docs/specs/4-offline/4.5-route-precaching.md).
-// Globs the built static output and writes a flat list of asset URLs the
-// service worker precaches on activate, so every route's JS/CSS chunks are
-// present offline. Globbing the output dir avoids coupling to any Next-internal
+// Globs built scripts, styles and fonts for the service worker's activation
+// precache. Unused reader font faces must be listed before going offline. Globbing the output dir avoids coupling to any Next-internal
 // manifest shape. Runs from the web package root (cwd = apps/web).
 
 import { existsSync, readdirSync, writeFileSync } from "node:fs";
@@ -16,7 +15,7 @@ if (!existsSync(STATIC_DIR)) {
 }
 
 const urls = readdirSync(STATIC_DIR, { recursive: true, withFileTypes: true })
-  .filter((entry) => entry.isFile() && /\.(js|css)$/.test(entry.name))
+  .filter((entry) => entry.isFile() && /\.(js|css|woff2?)$/.test(entry.name))
   .map((entry) => {
     const dir = entry.parentPath ?? entry.path;
     const rel = join(dir, entry.name).replace(/\\/g, "/");

@@ -1,0 +1,32 @@
+{
+  "schema_version": "ava-recognition-cell-geometry-response-1",
+  "task_id": "recognition-cell-geometry-fac9d53bf3073f19607b1263ba6d83ca53ef07428f5fb89db4660916c5f64e38",
+  "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "original_task_id": "recognize-d0d88f56fe9feeea879d112fe201e7025de9b7dc488e617d56eebed8c108a0d1",
+  "render_sha256": "fca62a9f2e757c42b5d1225df44b7f69ac705224b6e70926efec33cda915da36",
+  "original_response_sha256": "67d58fabc0130e67ac0da34666048531bcd090521d49bac687cf9e805df95ed3",
+  "outcome": "corrected",
+  "patches": [
+    {
+      "slot_id": "cell-geometry-ae1087d756ad968ea61b03be0ea2c0cd1ae240bc7df0fe80c5496c5142b4abbb",
+      "box": {
+        "coordinate_space": "render_normalized_1000",
+        "x0": 10.0,
+        "y0": 10.0,
+        "x1": 100.0,
+        "y1": 100.0
+      }
+    },
+    {
+      "slot_id": "cell-geometry-78d0aada4a7c83297475d37868d5c31ba18b7254f839b21144bdba0f9b5536cc",
+      "box": {
+        "coordinate_space": "render_normalized_1000",
+        "x0": 110.0,
+        "y0": 10.0,
+        "x1": 200.0,
+        "y1": 100.0
+      }
+    }
+  ],
+  "unresolved_reason": null
+}

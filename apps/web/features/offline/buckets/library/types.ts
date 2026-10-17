@@ -1,3 +1,5 @@
+import type { EpubImportSummary } from "@/lib/api-types/epub-import";
+import type { PdfImportSummary } from "@/lib/api-types/pdf-import";
 // Shape consumed by the library + collection screens after hydration. Mirrors
 // the server's LibraryPayload / LibraryCollectionPayload but with one
 // indirection: collections reference book ids (resolved against the
@@ -21,6 +23,9 @@ export type CollectionView = Omit<LibraryCollection, "books"> & {
 // What a card needs to render. Drawn from LibraryItemRow but stripped of
 // blob/offline-management fields the rendering code doesn't care about.
 export type LibraryBookView = {
+  metadataEditVersion?: number;
+  pdfImport?: PdfImportSummary | null;
+  epubImport?: EpubImportSummary | null;
   libraryItemId: string;
   slug: string;
   title: string;

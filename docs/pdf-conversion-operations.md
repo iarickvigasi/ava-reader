@@ -1,0 +1,503 @@
+# PDF conversion operations
+
+[Behavior and pipeline](pdf-conversion.md) · [Checks and release gates](pdf-conversion-verification.md).
+The API owns database/provider authority; the separately launched worker owns bounded execution.
+Ordinary uploads do not enable paid OCR. The PRODUCT reader qualification catalog is currently empty.
+
+## API health and dependency readiness
+
+`GET /api/health` is an uncached public API/database check. A successful `SELECT 1` returns
+HTTP 200 with `service: api`, `status: ok` and `database: up`. A failed query returns HTTP 503
+with `service: api`, `status: degraded` and `database: down`; neither response includes connection
+credentials or exception details. Compose requires the successful HTTP response and all three
+healthy fields before marking the API healthy or starting its dependent web/verification service.
+
+`GET /api/reachability` remains a cheap public uncached marker, `service: ava-reader-api`, without
+a database query. It describes API reachability and supports connectivity checks even when the
+database is unavailable. Neither endpoint qualifies PDF execution, installed validator/worker
+compatibility, provider authority, reader qualification, restore or release readiness. Those remain
+separate gates below; the PRODUCT reader qualification catalog is still empty.
+
+## Worker observations
+
+The current worker can emit one optional content-free `AVA_WORKER_OBSERVATION_V1` packet per
+command. The host binds it to the exact job, attempt, source/profile/build, command/page, fences and
+auxiliary request bytes. That request digest is distinct from the initial import request identity.
+One packet, including its separator, is capped at 6,144 bytes; ordinary stderr remains capped at
+8,192 bytes and total transport at 14,336. Missing, malformed or mismatched observations stay
+unobserved and cannot replace the command's output, failure or authority result.
+
+Reported times are inclusive and may overlap; do not sum nested phases. CPU covers the process
+and reaped children, RSS is a process-lifetime maximum, and scratch is a bounded logical-file scan
+at command end. These are not container peaks. Language is a bounded native-text heuristic;
+applied profile, observed inventory, validated output and process-local reuse remain separate.
+
+For `attempt_stream`, one `prepare_source` phase measures active upfront page preparation and
+excludes host response waits. Whole-command `work_ms` includes those waits; neither measurement
+includes interpreter startup or observation export. Attempt reuse observations describe private
+checkpoints, separately from decoded-cache hits. They do not count PDF opens or establish
+physical I/O, container peak resources or full-book throughput.
+
+Optional journal writes are bounded and freshly fenced. New claims declare expected coordinator
+capture; observations have immutable per-attempt delivery ordinals. The declared producer scope is
+`COORDINATOR_PRE_SETTLEMENT_WORKER_EVENT_DELIVERY`: source loading, reconstruction, staging and
+metadata work before handoff to candidate/failure/wait settlement. Only after tracked work ends
+without abort does the coordinator close that boundary. The existing authenticated lifecycle event
+retains its exact final intended count in the same transaction as settlement. Before closing the
+boundary, the coordinator allows at most one second for queued writes, clipped to its remaining
+lease and interrupted by abort. It adds no diagnostic renewal; the existing lease lifecycle is
+unchanged. A drain timeout can leave pending writes; the seal proves the intended count, not
+successful delivery. Progress events
+retain open known-prefix watermarks. Aborted/outstanding work and killed producers stay unsealed.
+
+The queue holds at most 16 pending writes. Each write uses a freshly fenced transaction with
+100 ms maximum acquisition wait and a 750 ms timeout. Only an explicit busy queue/cost advisory
+lock retries, for at most three attempts with 10/25 ms backoff outside transactions. Revocation,
+invalid binding/schema and unknown transaction outcomes do not retry. Safe warnings classify loss
+and include validated operation/attempt IDs for correlation, without source content or raw errors.
+Queued or newly emitted observations stop once abort is observed; this is not atomic cancellation
+of an already-authorized append. Missing delivery remains visible in report coverage.
+
+Authenticated report snapshots and exports project retained capture at a fixed journal watermark.
+`RECORDED` means all declared producer ordinals through a valid retained seal are present; it proves
+only declared pre-settlement event delivery. Candidate acceptance, final validation, commit and
+publication timing remain outside that scope; a recorded capture does not qualify those measurements.
+Gaps are `PARTIAL`; a missing seal is `UNSEALED`, with the exact
+final count unavailable. Older claims are `HISTORY_UNAVAILABLE`; binding/conflicting journal
+evidence is `INCONSISTENT`. Historical unqualified claims remain unavailable even alongside newer
+complete producers. A bounded scan cannot claim complete coverage. At most 20,000 journal rows,
+16 producers and 20 missing ranges per producer are projected; larger histories remain explicitly
+incomplete. A later read may include writes absent at an earlier watermark. Reported write failures
+and records proven missing from the journal are separate, since a failed delivery acknowledgement
+does not prove the transaction failed to commit.
+
+Closure remains unavailable after abort/interruption, unsuccessful authorized settlement, invalid
+optional metadata or missing retained history. A healthy process alone does not prove complete capture.
+Final validator process readings and historical missing observations remain unobserved. Qualify
+installed transport, SQL contention/loss/restart and normal operator lookup before relying on these
+fields. Deploy compatible API/worker/report readers together; older strict report readers cannot
+parse the new event details. Accepted content and provider receipts remain authoritative separately.
+
+## Build and configure
+
+Use Node 22+, the repository's pinned pnpm, Docker, PostgreSQL and the worker's locked Python
+3.12.14 environment. Install/build instructions and dependency/license inventory are in the
+[worker README](../packages/pdf-epub/README.md). Select an explicit disposable database for tests.
+Never apply fault tests or local pilot identities to production data.
+
+The API Docker image builds the locked, non-editable Python package from the same source
+as its generated contracts and sets `AVA_PDF_CONTRACT_PYTHON` to
+`/opt/ava-contracts/.venv/bin/python`. Its Dockerfile-specific context allowlist excludes
+environment files, private books, output and research; the final image copies compiled API
+files, its dependency closure, Prisma migrations/configuration and the installed Python environment.
+Prisma's CLI remains in that closure because startup still migrates before starting the API;
+this image is not claimed to contain only production-classified Node dependencies. Inspect the
+built image and exercise the actual installed semantic bridge before activation.
+
+The final `api-runtime` target runs as UID10001 and keeps `AVA_PDF_RUNTIME_ENABLED=0` by default.
+`compose.dev.yaml` selects the separate `api-development` target with the existing development
+ownership, source bind and watch entrypoint, so Prisma generation can write its image-local store.
+Packaging the semantic bridge does not qualify the converter runner, dependency readiness, graceful drain,
+serialized production migrations or restore/rollback. No Docker CLI, daemon mount or broader
+worker authority is introduced. Select and qualify that runner boundary separately.
+
+```sh
+pnpm install --frozen-lockfile
+pnpm --filter api db:migrate:deploy
+pnpm --filter api db:generate
+pnpm --filter api build
+docker build -t ava-pdf-epub:local packages/pdf-epub
+docker image inspect ava-pdf-epub:local --format '{{.Id}}'
+```
+
+Update the host semantic validator alongside the worker image and generated API contracts.
+An older installed Python package can reject a valid new EPUB as `INVALID_CONTRACT`, even
+when the image and JSON schemas are current. Install a new isolated environment from the
+same reviewed source and lockfile, then point both the API and processing service at it:
+
+```sh
+UV_PROJECT_ENVIRONMENT=/absolute/path/ava-pdf-contracts uv sync --python 3.12.14 --project packages/pdf-epub --locked --no-dev --no-editable --no-cache --reinstall-package ava-pdf-epub
+/absolute/path/ava-pdf-contracts/bin/python -I -c 'from ava_pdf_epub.contracts.styles import Style; assert "block_indent_em" in Style.model_fields'
+```
+
+For merged-table tasks, also check that the installed `RecognitionTask` prompt literal includes
+`ava-prose-region-4` and `RecognitionCell` includes `source_cell_id`. The package version alone
+is insufficient: cached wheels can retain old code when the local version is unchanged.
+
+The current finite OCR source-feature policy also requires the installed worker and host validator
+to expose task/response versions 4, prompt 7 and reconstruction report 2, matching the generated API
+contracts. Historical task/response versions 3 remain separate. Confirm the selected route and grant
+can authorize prompt 7 when source comparisons require it, alongside that job's recognition and
+structure prompts, before a paid qualification run. Do not activate the current API with an older
+installed package that can emit only report 1. These version checks establish compatibility;
+source-fidelity and normal reader qualification remain separate.
+
+Native semantic-list body normalization uses the same explicit `ava-ocr-source-features-1` request
+authority already selected by the API. It requires the new pinned worker/package implementation and
+matching host validator; an omitted policy retains historical canonical geometry. Current list
+exports with nonzero declared list-body indentation/inset select `ava-epub-canonical-2.5`; neutral or
+unknown list geometry retains the previous default page/section projection. Explicit 2.5 remains
+available, while explicit 2.1–2.4 exports and existing accepted content stay
+fixed. The reader body-wrapper change also changes its source fingerprint: generate and verify the
+new reader build rather than reusing an older qualification as current visual evidence. No new model
+call, provider prompt, canonical field or content replacement is introduced by this geometry repair.
+
+The field check diagnoses this contract revision; it is not full deployment qualification.
+Verify a representative generated EPUB through the actual importer and reader before activation.
+Keep any failed import and its diagnostics; use a fresh test import after correcting deployment,
+without modifying finished content or introducing a reader retry/reconversion action.
+
+Provide `DATABASE_URL` privately. Operator scripts do not automatically load dotenv files.
+Configure these trusted environment values; reader input must never supply paths, image or credentials:
+
+| Variable                              | Value/purpose                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `AVA_PDF_RUNTIME_ENABLED`             | `1` to enable configured isolated execution                                                                                                                                                                                                                                                                                                                                                                                          |
+| `AVA_PDF_DOCKER_BINARY`               | Absolute Docker executable path                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `AVA_PDF_DOCKER_HOST`                 | Absolute local Unix Docker socket URI                                                                                                                                                                                                                                                                                                                                                                                                |
+| `AVA_PDF_WORKER_IMAGE`                | Exact `sha256:` image ID, not a mutable tag                                                                                                                                                                                                                                                                                                                                                                                          |
+| `AVA_PDF_CONTRACT_PYTHON`             | Absolute trusted installed-worker Python interpreter                                                                                                                                                                                                                                                                                                                                                                                 |
+| `AVA_PDF_WORKER_TOKEN`                | Privately injected random worker credential; never put in argv/logs                                                                                                                                                                                                                                                                                                                                                                  |
+| `AVA_PDF_WORKER_PRINCIPAL`            | Registered principal ID returned by registration                                                                                                                                                                                                                                                                                                                                                                                     |
+| `AVA_PDF_WORKER_MODES`                | Admin registration only: comma-separated modes; default `native`; use `native,live` for a configured normal import worker                                                                                                                                                                                                                                                                                                            |
+| `AVA_PDF_IMPORT_PROFILE`              | Server-only admission profile: absent uses `ava-pdf-prose-en-v2`; `ava-pdf-prose-en-uk-v3` opts into the English/Ukrainian candidate. Reader input cannot select profile. Activate only with matching worker/provider/reader qualification; v3 is not product-qualified yet                                                                                                                                                          |
+| `AVA_PDF_SOURCE_LAYOUT_POLICY`        | Server-only opt-in `ava-native-layout-1` for new captured configurations and Input3/Result2, including zero-task preparation. Absent/empty retains historical routing and hashes; execution follows the captured config hash, not the current environment. Use only a matching reviewed worker. Legacy per-page dispatch helpers refuse this policy; no new model task or reader qualification is implied                            |
+| `AVA_PDF_SOURCE_STRUCTURE_POLICY` | Server-only opt-in `ava-native-structure-1` requires captured Layout1 and selects Input4/Prepare3 source-ID native decisions. Exact `ava-native-structure-2` additionally requires WordWrap1, RecognitionRepair1 and FrontmatterTitle1; its distinct configuration hashes select Input8/Prepare5 and closed role-specific NativeTask2/Response2 with the matching prompt/provider grammar. Existing Structure1 configurations and Inputs1–7 remain unchanged; absent/empty preserves historical Layout1/Input3 execution. Match the reviewed worker, prompt/schema authorization and config identities before activation; no stored job is upgraded |
+| `AVA_PDF_SOURCE_NORMALIZATION_POLICY` | Server-only opt-in `ava-native-word-wrap-1`, requiring captured Layout1 and Structure1, or the complete Structure2 feature stack described above. Structure1 configuration hashes select Input5/Prepare4 and finite source-bound word-wrap decisions after accepted refinements. Absent/empty preserves Input1-4 and stored jobs; activate only with matching reviewed worker, prompt/schema authorization and corpus/reader qualification. Existing byte, grant and spend caps remain unchanged |
+| `AVA_PDF_RECOGNITION_REPAIR_POLICY` | Server-only opt-in `ava-recognition-geometry-repair-1`, requiring captured Layout1, Structure1 and WordWrap1, or the complete Structure2 feature stack. Structure1 configuration hashes select Input6 and one source-bound, boxes-only correction for empty/reversed OCR segment boxes. Geometry and anchor-context repairs share one opportunity per OCR task. Absent/empty preserves historical Inputs1–5; activate only with the matching reviewed worker and provider schema/prompt. Original responses remain retained and byte/grant/spend caps remain unchanged |
+| `AVA_PDF_SOURCE_TITLE_POLICY` | Server-only opt-in `ava-frontmatter-title-1`, requiring captured Layout1, WordWrap1 and RecognitionRepair1 with Structure1 or Structure2. Structure1 configuration hashes select closed Input7/RefinementBatch3; Structure2 selects Input8 with the same RefinementBatch3 and one finite whole-source frontmatter title comparison within the existing limit of 32 refinement tasks. Cover corroboration is separately bound to first-page headings/context. Absent/empty preserves Inputs1–6 and stored jobs; activate only with matching reviewed worker and provider prompt/schema. Existing byte, grant and spend caps remain unchanged |
+| `AVA_PDF_SOURCE_CONTINUATION_POLICY` | Server-only opt-in `ava-source-continuation-presentation-1`; requires Layout1, Structure2, WordWrap1, RecognitionRepair2 and FrontmatterTitle1. A distinct captured configuration selects Input10/RefinementBatch4 and Task5/Response5 (prompt8) for eligible uniform mixed-source prose joins. Absent/empty preserves historical captures. Match the reviewed worker, generated host contracts and exact provider authorization before a fresh import; never upgrade stored jobs or overwrite accepted content. All byte, task and spend caps remain unchanged. Live-model/full-book qualification remains required |
+| `AVA_PDF_PROVIDER_ROUTE_ID`           | API import selection: registered active normal import route ID; absent defaults to native-only jobs                                                                                                                                                                                                                                                                                                                                  |
+| `AVA_PDF_READER_QUALIFICATION_ID`     | Valid registered reader/adapter build qualification; test IDs cannot authorize production                                                                                                                                                                                                                                                                                                                                            |
+
+```sh
+pnpm --filter api pdf:jobs:admin register NAME IMAGE_SHA256_HEX
+pnpm --filter api pdf:jobs:admin metrics
+pnpm --filter api pdf:worker once
+pnpm --filter api pdf:worker serve
+pnpm --filter api pdf:jobs:admin stop OPERATION_ID
+pnpm --filter api pdf:jobs:admin revoke PRINCIPAL_ID
+```
+
+The API does not launch this operator. `once` runs one reconstruction tick and one candidate scan;
+`serve` repeats serially. SIGTERM/SIGINT stop active work. Stop/revoke are administrative authority
+changes, not reader cancellation or permission to reopen Failed. Recovery keeps the registered
+image/source/configuration identity. Canonical EPUB processing uses the same sandbox; configuration
+is checked before consuming an attempt. Disabled runtime does not block unrelated legacy EPUB work.
+
+## Offline reading and Search
+
+Complete offline preparation verifies the ordinary EPUB's authoritative spine/revision and every
+required chapter/resource before claiming Saved. Network-interrupted verified work is resumable;
+explicit offline-download Stop discards its partial work and is separate from conversion. Older
+unverified cached windows remain readable without claiming complete offline availability.
+Account, database, deletion and storage-loss fences apply to pending work.
+
+Local Search uses the reconciled mounted device owner when the authentication SDK is unavailable;
+this does not grant network access or change token verification. It requires one complete ordered
+content revision. An unverified legacy cache is explicitly unavailable for whole-book Search;
+legacy qualification/refresh and general requested-target revision fencing remain unfinished.
+New source checks do not establish a fresh browser/offline/account pass or phone support.
+
+## Isolation, limits and artifacts
+
+Accepted PDF reader loads cache successful semantic-validation receipts. Each request still loads
+and hashes the actual accepted/reader bytes, checks structural schemas and rechecks current owned
+publication/capability authority before and after awaited work. Parsed reader graphs are never
+shared by this cache. Worker publication and generated-EPUB reimport validation remain uncached.
+
+Receipt identity includes source/schema/adapter build and the installed validator fingerprint.
+The fingerprint covers AVA Python/JSON files, interpreter, isolated environment configuration and
+dependency installation records; unknown/editable layouts bypass caching. Replacing the validator
+at the same path cannot reuse an old receipt. False/rejected results are not retained.
+
+Receipts expire after five minutes and are bounded to 64 entries / 256 MiB of represented source.
+At most two distinct semantic fills run; every caller, including coalesced waiters, reserves wire
+weight before parsing against a 128 MiB limit. These are admission/coverage limits, not heap or RSS
+guarantees. Byte retrieval, hashing, structural parsing and authority checks still occur on warm
+loads. Cold validation must independently meet supported-book limits; a warm benchmark does not
+establish large-book support or an endpoint SLA. No new environment setting enables this cache.
+
+Defaults: network disabled, read-only root, nonroot UID 10001, dropped capabilities, one CPU,
+2 GiB/no swap and 32 processes. Allowed CPU is 0.25–2 and memory 128 MiB–2 GiB; noexec scratch
+is bounded to 2 GiB and counts toward memory. Containers receive source/frozen input/read-only
+lease control, never provider credentials or a writable host output mount.
+
+Source limit is 50 MiB/500 pages; inspection 30s. Reconstruction stream bounds: 512 MiB aggregate,
+canonical/reader contracts and streamed artifacts 128 MiB, EPUB 256 MiB, report 4 MiB, resources 200 MiB, 1,003 entries and encoded stdout
+704 MiB. Hash-check every retained descriptor. Image edges/pixels/object counts are bounded;
+not every inline/pattern raster is enumerated, so sandbox/render bounds still matter. These are
+refusal ceilings, not demonstrated book/phone capacity.
+
+Generated EPUB import runs EPUBCheck before expanding canonical/reader models, so its Java heap
+does not overlap those models. The fixed limits remain enforced at both Python and API boundaries;
+large capacity does not waive EPUB conformance, provenance, semantic checks or reader qualification.
+
+Default frozen job policy: three attempts, 30s leases, 120 minutes total active execution,
+two simultaneous jobs globally/one per owner and principal, 100 global/10 owner queued-running.
+Two intake slots per API process precede multipart buffering. Candidate staging uses private
+one-hour pins; accepted/review references must remain retained. Human review waiting releases
+execution resources. Fresh publication checks cannot revive an expired worker lease.
+
+A monotonic supervisor observes fresh DB-derived lease duration and kills work on expiry; no host
+clock agreement is assumed. GNU timeout bounds total execution. Normal exit removes container/input;
+startup reaps only marked same-UID private runtime directories after deadline plus two minutes.
+An inactive operator host still needs a deployment janitor. Production private-file cleanup remains
+disabled with no scheduler; do not equate download revocation with physical erasure.
+
+## Upload receipt lookup
+
+`GET /api/library/pdf-imports/requests/:requestKey` checks the authenticated owner's
+accepted operation first. Only a source-bound journal refusal with no operation and no active
+admission returns `410`/`PDF_ADMISSION_REFUSED`, with matching `requestKey`, `sourceSha256`,
+`investigationId` and explicit `operationId: null`. Lookup uses a read-only snapshot and does not
+repair or mutate the journal or costs. Missing, active or unavailable history stays uncertain;
+generic `410` and removed-operation responses are not proof of a pre-admission refusal.
+
+The client confirms that receipt against its current owner/request/source before ending the
+receipt check. It never blindly repeats POST or rotates an uncertain identity. After confirmed
+non-acceptance, the next explicit file selection may create a fresh import request; it does not
+restart a Failed, Stopped, Ready or removed operation or replace finished content. Existing
+source-duplicate and removal policies continue to apply.
+
+## Conversion investigation and cost reports
+
+Authenticated conversion intake requires a durable investigation reference before capacity and
+multipart admission. If journal storage is unavailable, intake is rejected without accepting the
+upload; no durable reference is promised for that unavailable journal. Refused requests need not
+create a Library entry or job. Accepted operations
+reuse that reference; the report retains its operation key when permitted cleanup removes the live
+operation. Finished content and provider accounting remain separate authorities.
+
+The API exposes these ADMIN-only, private/no-store reads under `/api`:
+
+| Route                                                    | Result                                                                                                              |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `GET /admin/pdf-conversion-reports/lookup`               | Exact lookup by one of operationId, bookId, libraryItemId or failureId; at most 20 results with a completeness flag |
+| `GET /admin/pdf-conversion-reports/:conversionId`        | Safe source/profile/status/reference snapshot and explicit evidence gaps                                            |
+| `GET /admin/pdf-conversion-reports/:conversionId/events` | Ordered timeline, bounded limit/cursor and fixed watermark                                                          |
+| `GET /admin/pdf-conversion-reports/:conversionId/cost`   | Separate persisted cost projection, bounded call details and freshness verdict                                      |
+| `GET /admin/pdf-conversion-reports/:conversionId/export` | Bounded JSON investigation/timeline/cost page; not raw document/provider payload export                             |
+
+Use normal authenticated operator access. Possession of an investigation reference does not grant
+access. Fresh ADMIN membership is checked before and after the database snapshot. General events
+and these exports omit book text/images, filenames/paths, prompts, credentials and arbitrary stored
+JSON. Restricted raw diagnostic artifacts retain their own access boundary.
+
+The read-only browser client is `/app/admin/pdf-reports`, linked from the existing admin catalog
+and PDF review pages. It uses normal Clerk sign-in and an existing ADMIN membership; its server
+forwards the Clerk bearer token to the backend API. The data-free page reads a no-store, same-origin
+GET proxy under `/api/admin/pdf-reports`, which both old and current service workers bypass. Direct
+backend API navigation with cookies alone does not authenticate these routes. Search by operation,
+failure, book or Library reference, or enter an
+admission response's `investigationId` as the investigation reference. Timeline and export reads use
+four events per page; the separate cost view reads 25 calls. Timeline and cost cursors are separate.
+Downloaded JSON contains the current safe viewer projection, not the full history;
+unsupported fields are disclosed. The route bypasses service-worker documents and route precache,
+and its visible report is hidden when the signed-in account or session changes. An unavailable
+operator-session check offers an explicit **Retry report** while that account remains signed in;
+it performs another authorized read, without automatically retrying a denial. Sign-in recovery
+preserves the validated report reference, view and both cursors. Only internal, valid report return
+targets are accepted; other sign-in targets retain the ordinary Home return. These controls provide
+no conversion restart or accounting writes. Source checks do not establish a normal operator
+acceptance pass.
+
+Amounts are exact USD nanodollars, represented as decimal strings. Count each provider call once;
+its four enforcement-budget allocations are not four charges. Distinguish settled charges, held
+reservations/dispatch, uncertain exposure and missing historical evidence. A stale or incompatible
+projection cannot claim trustworthy final amounts. Infrastructure cost remains explicitly unmeasured.
+The canonical provider ledger is authoritative; a report mirror is a derived view.
+
+A trusted server operator can refresh a derived report without dispatch, settlement, route activation,
+job restart or content changes. Supply `DATABASE_URL` privately; scripts do not load dotenv:
+
+```sh
+pnpm --filter api exec ts-node --transpile-only src/scripts/pdf-provider-admin.ts refresh-report REFERENCE_ID
+```
+
+The reference may identify an existing investigation, including a pre-job refusal, or the retained
+operation key. This command does not reconstruct missing historical events. Worker work-duration,
+route/reuse/resource/detected-inventory observations, journal-loss visibility, and configured
+retention/backup behavior still need their separate acceptance gates. No cleanup policy or scheduler
+is activated by this reporting implementation.
+
+### Canonical EPUB preparation reports
+
+Initial canonical EPUB imports also use the private ADMIN report interface. Their investigation
+ID is `epub-run-<processing-run-id>`, with coverage `EPUB_PREPARATION` and the real run, owner,
+Library item and source digest. PDF operation/profile/page fields remain null. Older attempts
+are not reconstructed: a first captured snapshot can explicitly report missing earlier history.
+
+Coordinator events retain the first stage/outcome for each attempt fence, capped at 96 events.
+Claim, sandbox execution, semantic validation, storage and activation observations
+remain separate. Durations exclude diagnostic writes and do not measure worker-internal phases or
+container peaks. Overflow, stale-fence evidence and failed writes leave explicit gaps; write failure
+also emits a safe warning. Diagnostics cannot grant publication, change an import outcome or authorize
+another provider call. Journal unavailability can still prevent retaining the warning as a report gap.
+
+Transient validation/activation failures reuse the prepared bytes and are bounded by the existing
+active deadline. A permanently invalid,
+still-unaccepted candidate is terminalized under its current fence, while a bounded rotating scan
+allows later candidates to progress. Missing reader qualification remains a qualification wait;
+it is not evidence of corrupt content. READY/FAILED imports and accepted content stay fixed.
+
+Native EPUB preparation has no PDF provider ledger. Its cost view returns `MISSING` with reason
+`NATIVE_EPUB_PROVIDER_COST_NOT_APPLICABLE` and ledger coverage `NOT_APPLICABLE`; this is not a
+final zero-cost projection. Compute, storage and delivery cost remain unmeasured. The trusted
+report refresh command does not manufacture a provider cost row for these imports.
+
+## Provider accounting
+
+From `apps/api`, use `pnpm exec ts-node src/scripts/pdf-provider-admin.ts` with a command below.
+No administration command itself sends a provider request. Supply credentials privately.
+
+| Command                          | Purpose                                                                                  |
+| -------------------------------- | ---------------------------------------------------------------------------------------- |
+| `metrics`                        | Aggregate budget/reservation states; not a transactional snapshot                        |
+| `register-budget JSON`           | Create/exactly verify immutable cap plus historical known/unknown baseline               |
+| `register-route JSON`            | Pin permitted model/provider, endpoint/privacy evidence, source/tasks, schema and tariff |
+| `settle CALL_ID RECEIPT_JSON`    | Attach an authoritative provider receipt; never invent billing                           |
+| `release-undispatched CALL_ID`   | Only if no dispatch intent committed                                                     |
+| `reactivate-reconciled ROUTE_ID` | Only after every unknown receipt is accounted for                                        |
+| `resume-reconciled OPERATION_ID` | Reconciled nonterminal wait; never Failed                                                |
+| `revoke-route ROUTE_ID`          | Permanently deny future dispatch                                                         |
+
+Strict route/tariff types are in `apps/api/src/library/pdf-import/providers`. Rates use USD per
+million tokens plus explicit request/image fees; reserves include maximum context/output/images.
+Pin verified endpoint evidence and expiry (at most 24h); live diagnostic grants additionally bind
+finite owner/operation/source/image/task/render/request inventories. A prior pilot window is not
+a fresh tariff or deployment route. Unknown/dispatching charges stay reserved across timeout,
+restart and account deletion until reconciled; there is no blind resend, assumed refund or cap reset.
+The benchmark's cumulative model ceilings are operator testing constraints, not reader pricing;
+see [Cumulative model ceiling](#cumulative-model-ceiling) for the exact approved Flash exception.
+
+### HTTP failure investigation
+
+New non-success HTTP receipts retain a bounded private body plus safe status/completeness,
+classification, allowlisted machine limit source and bounded Retry-After seconds when supplied.
+General provider events contain only that safe diagnostic, never raw provider text, IDs or headers.
+Known HTTP failures receive an HTTP status failure code; historical unknown calls are not rewritten.
+A retry hint is operator evidence, not authorization to send again.
+
+These diagnostics do not settle charges, release reservations, resume jobs or replace finished
+content. Complete HTTP errors without authoritative billing still remain uncertain. Keep their
+private receipt/hash, pause the route and use existing reconciliation commands only with valid
+provider evidence. Rate limits from an upstream shared pool are distinct from AVA limits and credits.
+The [OpenRouter error contract](https://openrouter.ai/docs/api_reference/errors-and-debugging)
+distinguishes HTTP rejection from failures inside a started response; a cause alone is not a receipt.
+
+### Normal import route
+
+A live route for ordinary uploads uses `configuration.importPolicy`: version `1`, exact
+`workerFingerprint`, admission `profileId` and `configSha256`, and finite
+`maxRequestsPerOperation` (1–2,000). Set `authorizedSourceSha256` to an empty array and omit
+`pilotInventory`. Only this explicit policy accepts newly uploaded sources through owned import
+admission; diagnostic pilots retain their exact preinventoried source/task restrictions.
+Zero data retention and denied data collection are required. Refresh endpoint/privacy/tariff evidence
+before registration; a synthetic test tariff must never authorize a real paid run.
+
+Set `AVA_PDF_PROVIDER_ROUTE_ID` only after registering the route and cumulative GLOBAL, ACCOUNT
+and exact MODEL budgets with their historical known/unknown exposure. Ordinary import creates its
+OPERATION budget, grant and worker-pinned job in the same transaction as its owned book entry.
+The live worker must be explicitly registered for `live`; registration does not authorize provider
+requests by itself. Grants bind source/owner/profile, requests bind source and approved prompts/schemas,
+and the existing ledger reserves before dispatch. Request limits count distinct reservations;
+reusing an identical persisted request does not allocate twice. Finished or terminal imports cannot
+acquire a new initial grant. Native text remains a zero-provider path within live-capable jobs.
+
+For Gemini NativeTask2, generation array limits derive from the validated task's public source
+inventory: group count and each group's line IDs fit its unique line count, boundary decisions
+fit its candidate count, and references fit its unique eligible callout count. Accepted responses
+still require exact boundary coverage. The canonical
+response schema, closed role branches and host/worker source validation remain authoritative.
+Gemini NativeTask2 and recognition-v2 requests use OpenRouter `response_format: {type: "json_object"}`:
+separate host response-contract guidance precedes the unchanged source text and image.
+NativeTask2 keeps its exact source-bounded grammar. Recognition supplies a shared-definition
+observation schema omitting host-owned task/source/render bindings, segment pages and style IDs,
+plus the required-field, nullability and exact-anchor self-check; canonical authorization stays fixed.
+It does not expand the compiler grammar's repeated kind groups into the prompt. Role requirements and table
+cells remain in the canonical contract. This avoids complex-schema compilation;
+it does not guarantee schema-conforming output. Strict canonical parsing and exact source checks
+still refuse malformed JSON, foreign role fields or incomplete source coverage without repair.
+Prepared task identity, prompt/schema authorization and configuration hashes stay unchanged; the
+outbound request hash binds the wire schema, system projection, guidance and JSON mode. Non-Gemini formats and the eight other Gemini
+request formats stay unchanged; all historical grammars remain exact. No retries or larger request,
+byte or spend limits are introduced.
+Vendor acceptance still needs a retained source-bound provider result. See the
+[OpenRouter JSON modes](https://openrouter.ai/docs/api_reference/overview#structured-outputs) and
+[Google JSON-mode limits](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/multimodal/control-generated-output).
+
+Gemini recognition observation wire `ava-recognition-observation-1` changes outbound request bytes.
+Drain older in-flight recognition jobs before deploying this codec; per-job codec pinning is a future
+upgrade policy. A settled call with the former request hash deliberately fails `REQUEST_CONFLICT`;
+it is never decoded as the new wire format. Raw receipts and accounting remain fixed. Current
+historical QA operations were already closed; this is not a seamless running-job migration claim.
+
+Apply `20260930190000_pdf_normal_import_routes` before selecting this route. It permits granted
+live jobs and enforces import worker/profile identity in PostgreSQL. Normal workers exclude authored
+pilot jobs. Unset the route ID to stop selecting live routes for new uploads; revoke a route to deny
+future dispatch on existing grants. Neither operation restores unknown exposure or replaces content.
+Mechanics have real isolated PostgreSQL/admission-worker tests. A source-bound two-page scanned
+Underline fixture completed normal signed-in live recognition and automatic Ready/Read, with matching
+owned EPUB download and ordinary reimport. The temporary paid route was revoked after the run. This
+is scoped TEST evidence with a retained first-line-indent mismatch, not production qualification.
+Broader source/reader qualification, independent review and deployment/rollback remain open.
+
+## Migrations, rollback and diagnostics
+
+Apply committed additive migrations in order; never edit applied migrations. Fresh-database
+verification must include existing EPUB data, sessions, canonical markers and artifact ownership.
+Before deployment, verify backup/restore and gates. Once canonical records exist, prefer code
+rollback with additive schema and private cover/pin protections retained. Disable new admission;
+do not automatically drop tables, erase sources or run older incompatible GC/label maintenance.
+Actual rollback and production activation still require qualification.
+
+Only development canaries may set `AVA_PDF_RUNTIME_FAULT=deadline|memory|scratch|output|cpu`
+with `AVA_PDF_FAULT_ACK=AVA_PDF_RUNTIME_FAULTS_V1`; production rejects them and reconstruction
+refuses fault mode before claim. Test-only provider pilots are separate from ordinary upload.
+Retain operation/fence/source/configuration, safe stage/error code and actual/reserved/unknown cost;
+never log book text, model payloads or credentials. Do not reset Failed to repair environment setup.
+
+### Reader source identity and build output
+
+The web `build` command runs `scripts/generate-reader-fingerprint.mjs` before compilation.
+For a source freeze without a build, run `node apps/web/scripts/generate-reader-fingerprint.mjs`
+before registering its consumer qualification. Run the same command with `--check` after a production
+build. The fingerprint binds application source, fonts, dependency lockfile and generator; it excludes
+the generated precache asset list, whose chunk hashes would otherwise invalidate the build's own
+source identity. A regression verifies that precache changes are ignored while source changes bind
+a new identity. A stable fingerprint is not qualification or independent review.
+
+The generated QA configuration is also bound to the fingerprint. Normal builds reset it to disabled.
+An explicitly instrumented local test build uses `NEXT_PUBLIC_AVA_READER_QA=1` at build and start;
+its distinct identity must have a TEST-only consumer record. The operator page `/dev/reader-qa`
+exchanges scoped commands with the real signed-in reader over `BroadcastChannel`, and the reader
+accepts them only on a loopback hostname with both the compiled gate and environment flag enabled.
+It can hold or fail one exact jump/restore, observe session history, cancel pending work, or inject
+a foreign-scope history entry to exercise normal Back refusal. It cannot create books, bypass
+authentication, change accepted content, or grant PRODUCT qualification. The operator page is
+excluded with other development routes from the reader manifest; bind its separate source hashes
+in the private runtime receipt. After QA, build again without the flag before preparing release
+evidence. Never treat the instrumented test identity as the default product build.
+
+Snapshot and Export derive `workerMeasurements` from validated, source/job/attempt-bound packets at
+the same retained timeline watermark. Available command timing, reuse, resource and inventory fields
+replace absence labels with explicit scope gaps. Delivery completeness remains separate. Command
+wall time excludes interpreter startup and observation export; nested phases are not summable. CPU
+covers the worker and reaped children, RSS is worker lifetime maximum, and scratch is logical bytes at
+command end. Language detection is bounded and layout can remain unknown even with a full inventory.
+The last recorded worker failure code does not replace the public operation outcome or establish
+source fidelity. These reads do not repair historical provider-event mirrors or change any ledger,
+accepted content, conversion state or authority.
+
+## Cumulative model ceiling
+
+Registration, ordinary import admission and PostgreSQL enforce the same cumulative model ceiling:
+$10 by default, with an approved $15 ceiling only for the exact `google/gemini-3.8-flash` model.
+Aliases and other models retain $10. Apply `20261015010000_pdf_operator_model_ceiling` before
+registering a new Flash budget above $10; the application and database both refuse larger values.
+The migration changes only this ceiling constraint. Existing budget limits, baselines, reservations,
+unknown charges and immutable accounting history remain unchanged. A higher ceiling does not raise
+an existing budget or authorize a request. All four budget scopes must still have room, and the
+ordinary per-operation and pilot limits remain unchanged. Externally recorded diagnostic charges
+or holds must be included exactly once in the cumulative baseline before another paid run.

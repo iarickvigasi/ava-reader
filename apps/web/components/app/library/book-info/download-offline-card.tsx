@@ -4,6 +4,11 @@ import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useTranslations } from "next-intl";
 import { type ComponentProps, useCallback, useEffect, useState } from "react";
 
+import { isBookReadable } from "@/features/library/is-book-readable";
+import { offlineSaveAvailability } from "@/features/library/offline-save-availability";
+import type { EpubImportSummary } from "@/lib/api-types/epub-import";
+import type { PdfImportSummary } from "@/lib/api-types/pdf-import";
+
 import { ReaderDownloadIcon } from "@/components/app/shared/app-icons";
 import {
   useBookOfflineState,
@@ -29,12 +34,17 @@ import { resolveOfflineCard } from "./resolve-offline-card";
 // on reconnect (see specs/4-offline/4.2-save-sync, specs/4-offline/4.3-save-button).
 export function DownloadOfflineCard({
   libraryItemId,
+  pdfImport,
+  epubImport,
 }: {
   libraryItemId: string;
+  pdfImport?: PdfImportSummary | null;
+  epubImport?: EpubImportSummary | null;
 }) {
   const t = useTranslations("library.bookInfo.saveForOffline");
   const { getToken } = useAuth();
   const online = useNetworkState();
+  const readable = isBookReadable({ pdfImport, epubImport });
   const snapshot = useBookSaveStatus(libraryItemId);
   const { save, remove, cancel } = useSaveBook(libraryItemId);
   const {
@@ -100,7 +110,7 @@ export function DownloadOfflineCard({
   // A queued request downloads as soon as we're online and on this page; the
   // background primer is the page-independent safety net for when we are not.
   useEffect(() => {
-    if (kind !== "queued" || !online) {
+    if (kind !== "queued" || !online || !readable) {
       return;
     }
     void save("explicit").then((outcome) => {
@@ -108,7 +118,7 @@ export function DownloadOfflineCard({
         refresh();
       }
     });
-  }, [kind, online, save, refresh]);
+  }, [kind, online, readable, save, refresh]);
 
   const props = ((): ComponentProps<typeof ActionCard> => {
     switch (kind) {
@@ -147,7 +157,15 @@ export function DownloadOfflineCard({
         return {
           icon: ReaderDownloadIcon,
           title: t("pending.title"),
-          description: t("pending.description"),
+          description: t(
+            readable
+              ? "pending.description"
+              : pdfImport?.status === "FAILED" ||
+                  pdfImport?.status === "STOPPED" ||
+                  epubImport?.status === "FAILED"
+                ? "pending.unavailableDescription"
+                : "pending.preparingDescription",
+          ),
           onClick: cancelSave,
         };
       case "keep":
@@ -157,14 +175,16 @@ export function DownloadOfflineCard({
           description: t("keep.description"),
           onClick: keepOffline,
         };
-      default:
+      default: {
+        const availability = offlineSaveAvailability({ pdfImport, epubImport });
         return {
           icon: ReaderDownloadIcon,
           title: t("idle.title"),
-          description: t("idle.description"),
-          onClick: requestSave,
-          disabled: offlineState === "loading",
+          description: t(availability.description),
+          onClick: availability.disabled ? undefined : requestSave,
+          disabled: offlineState === "loading" || availability.disabled,
         };
+      }
     }
   })();
 

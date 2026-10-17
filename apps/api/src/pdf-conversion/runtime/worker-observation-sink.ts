@@ -1,0 +1,158 @@
+import { Logger } from '@nestjs/common';
+import { setTimeout as delay } from 'node:timers/promises';
+import { JobAuthorityError } from '../../library/pdf-import/jobs/errors';
+import type { PrismaService } from '../../prisma/prisma.service';
+import type { ClaimedPdfJob } from '../../library/pdf-import/jobs';
+import { requireAttempt } from '../../library/pdf-import/jobs/authority';
+import { tryQueueLock } from '../../library/pdf-import/jobs/transaction';
+import { tryCostLock } from '../../library/pdf-import/providers/cost-lock';
+import { recordOperationEvent } from '../../library/pdf-import/reports/operation-event';
+import {
+  safeEventSchema,
+  reportId,
+  type SafeConversionEvent,
+} from '../../library/pdf-import/reports/event-contract';
+
+const logger = new Logger('PdfWorkerObservation');
+class ObservationBusy extends Error {}
+class ObservationAborted extends Error {}
+type LossReason =
+  | 'SCHEMA'
+  | 'BINDING'
+  | 'QUEUE_FULL'
+  | 'ABORTED'
+  | 'LOCK_BUSY'
+  | 'AUTHORITY'
+  | 'TRANSACTION';
+// Source/provider work never awaits this optional queue; observations do not renew authority.
+// A bounded queue and short transaction bound their independent resource cost.
+export function workerObservationSink(
+  prisma: PrismaService,
+  claim: ClaimedPdfJob,
+  signal?: AbortSignal,
+) {
+  const authority = { ...claim.authority },
+    job = structuredClone(claim.job),
+    jobId = claim.jobId;
+  let tail = Promise.resolve(),
+    pending = 0,
+    lost = 0,
+    ordinal = 0;
+  const captureContext = {
+    operationId: reportId.safeParse(job.operation_id).success
+      ? job.operation_id
+      : null,
+    attemptId: reportId.safeParse(authority.attemptId).success
+      ? authority.attemptId
+      : null,
+  };
+  const drop = (reason: LossReason) => {
+    lost++;
+    try {
+      logger.warn({
+        code: 'PDF_WORKER_OBSERVATION_NOT_RECORDED',
+        reason,
+        ...captureContext,
+      });
+    } catch {
+      /* Optional logging cannot replace work. */
+    }
+  };
+  const summary = () => ({
+    pending,
+    lost,
+    state: lost
+      ? ('PARTIAL' as const)
+      : pending
+        ? ('PENDING' as const)
+        : ('RECORDED' as const),
+  });
+  return {
+    summary,
+    whenSettled: () => tail,
+    emit(event: SafeConversionEvent) {
+      const parsed = safeEventSchema.safeParse(event);
+      if (
+        !parsed.success ||
+        (parsed.data.details.observationDelivery &&
+          (parsed.data.details.observationDelivery.producerId !==
+            authority.attemptId ||
+            parsed.data.attemptId !== authority.attemptId ||
+            parsed.data.attemptFence !== job.attempt_fence ||
+            parsed.data.generation !== job.generation ||
+            parsed.data.cancellationEpoch !== job.cancellation_epoch ||
+            parsed.data.details.jobId !== jobId ||
+            parsed.data.details.sourceSha256 !== job.source.sha256 ||
+            parsed.data.details.configSha256 !== job.config_sha256 ||
+            parsed.data.details.profileId !== job.profile_id ||
+            parsed.data.details.workerFingerprint !== job.worker_fingerprint))
+      ) {
+        drop(parsed.success ? 'BINDING' : 'SCHEMA');
+        return;
+      }
+      if (signal?.aborted) return drop('ABORTED');
+      if (pending >= 16) return drop('QUEUE_FULL');
+      const unit = parsed.data.details.unitId ?? `capture-${++ordinal}`;
+      const delivery = parsed.data.details.observationDelivery;
+      const key = delivery
+        ? `worker-observation:${authority.attemptId}:${delivery.ordinal}`
+        : `worker-observation:${authority.attemptId}:${unit}:${parsed.data.stage}:${parsed.data.kind}`;
+      pending++;
+      tail = tail.then(async () => {
+        try {
+          for (let attempt = 0; attempt < 3; attempt++) {
+            if (signal?.aborted) return drop('ABORTED');
+            try {
+              await prisma.$transaction(
+                async (tx) => {
+                  if (signal?.aborted) throw new ObservationAborted();
+                  if (!(await tryQueueLock(tx)) || !(await tryCostLock(tx)))
+                    throw new ObservationBusy();
+                  const scope = await requireAttempt(tx, authority, true);
+                  if (
+                    scope.job.operation_id !== job.operation_id ||
+                    scope.job.source.sha256 !== job.source.sha256 ||
+                    scope.job.config_sha256 !== job.config_sha256 ||
+                    scope.job.profile_id !== job.profile_id ||
+                    scope.job.worker_fingerprint !== job.worker_fingerprint ||
+                    scope.job.generation !== job.generation ||
+                    scope.job.attempt_fence !== job.attempt_fence ||
+                    scope.job.cancellation_epoch !== job.cancellation_epoch ||
+                    (jobId && scope.attempt.jobId !== jobId)
+                  )
+                    throw new JobAuthorityError();
+                  if (signal?.aborted) throw new ObservationAborted();
+                  await recordOperationEvent(
+                    tx,
+                    job.operation_id,
+                    key,
+                    parsed.data,
+                  );
+                },
+                { maxWait: 100, timeout: 750 },
+              );
+              return;
+            } catch (error) {
+              if (error instanceof ObservationAborted) return drop('ABORTED');
+              if (!(error instanceof ObservationBusy))
+                return drop(
+                  error instanceof JobAuthorityError
+                    ? 'AUTHORITY'
+                    : 'TRANSACTION',
+                );
+              if (attempt === 2) return drop('LOCK_BUSY');
+              // The failed transaction has released every lock before backoff.
+              try {
+                await delay(attempt === 0 ? 100 : 250, undefined, { signal });
+              } catch {
+                return drop('ABORTED');
+              }
+            }
+          }
+        } finally {
+          pending--;
+        }
+      });
+    },
+  };
+}

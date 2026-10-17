@@ -18,12 +18,23 @@ export function applyTranslationChapter(
   replaceAlignmentIds: string[] = [],
 ): void {
   if (!isCurrentTranslationBucket(bucket)) return;
+  validateTranslationChapter(chapter, bucket.scope);
   const current = bucket.snapshot.chapter;
+  const allowed = new Set(
+    chapter.units
+      .filter((unit) => unit.kind === "sentence")
+      .map((unit) => unit.id),
+  );
   const merged =
     current && sameTranslationIdentity(current, chapter)
       ? {
           ...chapter,
-          translations: { ...current.translations, ...chapter.translations },
+          translations: Object.fromEntries(
+            Object.entries({
+              ...current.translations,
+              ...chapter.translations,
+            }).filter(([id]) => allowed.has(id)),
+          ),
         }
       : chapter;
   if (current?.alignments || chapter.alignments) {

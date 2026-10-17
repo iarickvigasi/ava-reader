@@ -52,6 +52,7 @@ function AiToolboxBackdrop({ onClose }: { onClose: () => void }) {
   return (
     <button
       type="button"
+      tabIndex={-1}
       aria-label="Close AI toolbox panel"
       className="pointer-events-auto absolute inset-0 bg-transparent md:right-94"
       onClick={onClose}

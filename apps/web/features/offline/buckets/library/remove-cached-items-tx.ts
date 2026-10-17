@@ -1,4 +1,5 @@
 import Dexie from "dexie";
+import { prunePdfNotices } from "./pdf-imports/notifications/prune";
 import { createReaderResumeStorageKey } from "@/features/reader/resume";
 import { abortSaveAndWait, setStatus } from "../book/bucket";
 import { getDb, type AvaReaderDB } from "../../db";
@@ -7,6 +8,7 @@ import {
   COMPLETION_CHANGE_PREFIX,
 } from "../../completion/state";
 import { DELETED_ITEM_PREFIX } from "./deleted-items";
+import { downloadCoverageKey } from "../book/download-coverage";
 
 import { removeCachedHomeItems } from "./remove-cached-home-items";
 
@@ -51,6 +53,7 @@ export async function removeCachedItemsTx(db: AvaReaderDB, ids: string[]) {
     ids.flatMap((id) => [
       `${COMPLETION_CHANGE_PREFIX}${id}`,
       `finish-date-failure:${id}`,
+      downloadCoverageKey(id),
     ]),
   );
   for (const table of [
@@ -74,6 +77,7 @@ export async function removeCachedItemsTx(db: AvaReaderDB, ids: string[]) {
   for (const table of [db.highlightMutations, db.aiCommentMutations]) {
     await table.where("scopeId").anyOf(ids).delete();
   }
+  await prunePdfNotices(db, removed);
   await removeCachedHomeItems(db, removed, highlightIds);
   await bumpCompletionRevision(db);
 }

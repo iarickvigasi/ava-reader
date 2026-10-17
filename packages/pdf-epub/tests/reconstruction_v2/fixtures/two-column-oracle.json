@@ -1,0 +1,412 @@
+{
+  "schema": "ava.two-column-source-oracle.v1",
+  "version": "1.0.0",
+  "rights": "Original synthetic AVA test prose. Reuses the original authored four-blue-squares image; no private book content.",
+  "metadata": {
+    "title": "The Two-Column Log",
+    "author": "AVA Fixture Studio",
+    "language": "en",
+    "date": "2026-09-28",
+    "identifier": "urn:ava:fixture:two-column-log:1"
+  },
+  "scope": "Ordinary English prose printed in two columns. The canonical book is one ordered reflowable reading stream. This is not parallel editions, interlinear text, facing-page scan splitting, or arbitrary newspaper layout support.",
+  "reading_rule": "Within each two-column band read the complete left column from top to bottom, then the complete right column. A full-width heading or figure closes the preceding band and precedes the next band. Join the declared fragments with one space. Read pages in order. Note bodies are separate reference targets; preserve each callout and return identity.",
+  "native_stream_order": "The PDF deliberately emits right-column text objects before left-column text objects within each band. Geometry and the authored band order define reading order, not the PDF content-stream sequence.",
+  "chapters": [
+    {
+      "id": "tc-ch1",
+      "title": "1. Across the Harbour",
+      "resource": "chapter-1.xhtml",
+      "pages": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "tc-ch2",
+      "title": "2. Back to the Gate",
+      "resource": "chapter-2.xhtml",
+      "pages": [
+        3
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "tc-ch1",
+      "chapter": "tc-ch1",
+      "kind": "h1",
+      "text": "1. Across the Harbour"
+    },
+    {
+      "id": "tc-open",
+      "chapter": "tc-ch1",
+      "kind": "paragraph",
+      "text": "Mira opens the harbour log before sunrise. The printed page has two columns, but her account follows one journey. She reads every line on the left before moving to the right."
+    },
+    {
+      "id": "tc-column-join",
+      "chapter": "tc-ch1",
+      "kind": "paragraph",
+      "text": "The folded chart begins beside the first window and continues across the narrow gutter into the right column, where the keeper has drawn a small circle around the safe landing.",
+      "fragments": [
+        {
+          "id": "tc-column-left",
+          "text": "The folded chart begins beside the first window and continues across the narrow gutter"
+        },
+        {
+          "id": "tc-column-right",
+          "text": "into the right column, where the keeper has drawn a small circle around the safe landing."
+        }
+      ]
+    },
+    {
+      "id": "tc-ref-first",
+      "chapter": "tc-ch1",
+      "kind": "callout",
+      "text": "The keeper calls the marked route a passage[1]. Its explanation appears beneath the illustration on the next page.",
+      "callout_id": "tc-call-1a",
+      "note_id": "tc-note-1",
+      "label": "[1]"
+    },
+    {
+      "id": "tc-watch",
+      "chapter": "tc-ch1",
+      "kind": "paragraph",
+      "text": "A bell ends the first watch. This sentence belongs after the marked route, even if the PDF stores its letters earlier."
+    },
+    {
+      "id": "tc-band-break",
+      "chapter": "tc-ch1",
+      "kind": "h2",
+      "text": "Across the full-width heading"
+    },
+    {
+      "id": "tc-after-heading",
+      "chapter": "tc-ch1",
+      "kind": "paragraph",
+      "text": "The heading spans both columns and begins a new reading band. Mira finishes this left-hand paragraph before she crosses to the paragraph at its right. The earlier right column must not be interleaved with it."
+    },
+    {
+      "id": "tc-page-join",
+      "chapter": "tc-ch1",
+      "kind": "paragraph",
+      "text": "The last entry on this page describes a letter carried over the harbour wall and follows it onto the next printed page, where Mira places the letter beside the lamp and checks that every sentence is still present.",
+      "fragments": [
+        {
+          "id": "tc-page-end",
+          "text": "The last entry on this page describes a letter carried over the harbour wall and follows it"
+        },
+        {
+          "id": "tc-page-start",
+          "text": "onto the next printed page, where Mira places the letter beside the lamp and checks that every sentence is still present."
+        }
+      ]
+    },
+    {
+      "id": "tc-ref-second",
+      "chapter": "tc-ch1",
+      "kind": "callout",
+      "text": "She marks the passage[1] again. This second callout returns to a different place in the same chapter.",
+      "callout_id": "tc-call-1b",
+      "note_id": "tc-note-1",
+      "label": "[1]"
+    },
+    {
+      "id": "tc-before-figure",
+      "chapter": "tc-ch1",
+      "kind": "paragraph",
+      "text": "The right column completes the approach to the windows. Only after this paragraph does the wide figure enter the reading order. The figure and its caption belong together."
+    },
+    {
+      "id": "tc-figure-heading",
+      "chapter": "tc-ch1",
+      "kind": "h2",
+      "text": "A map between the columns"
+    },
+    {
+      "id": "tc-figure",
+      "chapter": "tc-ch1",
+      "kind": "figure",
+      "asset": "four-blue-squares.png",
+      "caption_id": "tc-caption",
+      "alt": "Four blue squares arranged as four harbour windows."
+    },
+    {
+      "id": "tc-caption",
+      "chapter": "tc-ch1",
+      "kind": "caption",
+      "text": "Figure D1. Four windows across the harbour."
+    },
+    {
+      "id": "tc-after-figure-left",
+      "chapter": "tc-ch1",
+      "kind": "paragraph",
+      "text": "Below the caption, the prose returns to the left column. The first blue window marks the beginning of the landing."
+    },
+    {
+      "id": "tc-after-figure-right",
+      "chapter": "tc-ch1",
+      "kind": "paragraph",
+      "text": "The lower right paragraph follows the lower left paragraph. Mira then reads the shared note before closing the harbour chapter."
+    },
+    {
+      "id": "tc-note-1",
+      "chapter": "tc-ch1",
+      "kind": "note",
+      "label": "[1]",
+      "text": "A passage is the safe route across the water in this invented account. Both harbour callouts refer to this one explanation.",
+      "backlinks": [
+        "tc-call-1a",
+        "tc-call-1b"
+      ]
+    },
+    {
+      "id": "tc-ch2",
+      "chapter": "tc-ch2",
+      "kind": "h1",
+      "text": "2. Back to the Gate"
+    },
+    {
+      "id": "tc-return-open",
+      "chapter": "tc-ch2",
+      "kind": "paragraph",
+      "text": "The next chapter begins with ordinary English prose in two columns. Its note numbering starts again, while the note identity remains separate from the harbour explanation."
+    },
+    {
+      "id": "tc-ref-restarted",
+      "chapter": "tc-ch2",
+      "kind": "callout",
+      "text": "At the gate, a second keeper records the return[1]. This callout belongs to chapter two, not to the earlier passage note.",
+      "callout_id": "tc-call-2a",
+      "note_id": "tc-note-2",
+      "label": "[1]"
+    },
+    {
+      "id": "tc-return-right",
+      "chapter": "tc-ch2",
+      "kind": "paragraph",
+      "text": "The upper right column confirms the order of events. Mira reached the landing, crossed the town, and finally arrived at the gate. A mixed source still contains this complete paragraph."
+    },
+    {
+      "id": "tc-return-heading",
+      "chapter": "tc-ch2",
+      "kind": "h2",
+      "text": "The return journey"
+    },
+    {
+      "id": "tc-return-left",
+      "chapter": "tc-ch2",
+      "kind": "paragraph",
+      "text": "After the spanning heading, the reading stream starts again at the left edge. All words remain in their original order when the book reflows onto a narrow screen."
+    },
+    {
+      "id": "tc-return-end",
+      "chapter": "tc-ch2",
+      "kind": "paragraph",
+      "text": "The last right-hand paragraph ends the journey. A finished EPUB needs no artificial newspaper columns to preserve this sequence."
+    },
+    {
+      "id": "tc-note-2",
+      "chapter": "tc-ch2",
+      "kind": "note",
+      "label": "[1]",
+      "text": "The return means the keeper has reached the gate again. This chapter-local note must never merge with the earlier note also numbered one.",
+      "backlinks": [
+        "tc-call-2a"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "number": 1,
+      "frames": [
+        {
+          "kind": "heading",
+          "node": "tc-ch1",
+          "top": 97,
+          "size": 18
+        },
+        {
+          "kind": "columns",
+          "id": "p1-upper",
+          "top": 154,
+          "bottom": 350,
+          "left": [
+            "tc-open",
+            "tc-column-left"
+          ],
+          "right": [
+            "tc-column-right",
+            "tc-ref-first",
+            "tc-watch"
+          ]
+        },
+        {
+          "kind": "heading",
+          "node": "tc-band-break",
+          "top": 373,
+          "size": 14
+        },
+        {
+          "kind": "columns",
+          "id": "p1-lower",
+          "top": 420,
+          "bottom": 658,
+          "left": [
+            "tc-after-heading"
+          ],
+          "right": [
+            "tc-page-end"
+          ]
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "frames": [
+        {
+          "kind": "columns",
+          "id": "p2-upper",
+          "top": 62,
+          "bottom": 207,
+          "left": [
+            "tc-page-start",
+            "tc-ref-second"
+          ],
+          "right": [
+            "tc-before-figure"
+          ]
+        },
+        {
+          "kind": "heading",
+          "node": "tc-figure-heading",
+          "top": 219,
+          "size": 14
+        },
+        {
+          "kind": "figure",
+          "node": "tc-figure",
+          "top": 255,
+          "width": 224,
+          "height": 140
+        },
+        {
+          "kind": "caption",
+          "node": "tc-caption",
+          "top": 413
+        },
+        {
+          "kind": "columns",
+          "id": "p2-lower",
+          "top": 458,
+          "bottom": 579,
+          "left": [
+            "tc-after-figure-left"
+          ],
+          "right": [
+            "tc-after-figure-right"
+          ]
+        },
+        {
+          "kind": "note",
+          "node": "tc-note-1",
+          "top": 620
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "frames": [
+        {
+          "kind": "heading",
+          "node": "tc-ch2",
+          "top": 55,
+          "size": 20
+        },
+        {
+          "kind": "columns",
+          "id": "p3-upper",
+          "top": 121,
+          "bottom": 335,
+          "left": [
+            "tc-return-open",
+            "tc-ref-restarted"
+          ],
+          "right": [
+            "tc-return-right"
+          ]
+        },
+        {
+          "kind": "heading",
+          "node": "tc-return-heading",
+          "top": 363,
+          "size": 14
+        },
+        {
+          "kind": "columns",
+          "id": "p3-lower",
+          "top": 411,
+          "bottom": 578,
+          "left": [
+            "tc-return-left"
+          ],
+          "right": [
+            "tc-return-end"
+          ]
+        },
+        {
+          "kind": "note",
+          "node": "tc-note-2",
+          "top": 620
+        }
+      ]
+    }
+  ],
+  "columns": {
+    "left_x": 48,
+    "right_x": 264,
+    "width": 192,
+    "font_size": 10,
+    "line_height": 14.5,
+    "paragraph_gap": 10
+  },
+  "asset": {
+    "source": "../assets/four-blue-squares.png",
+    "width": 320,
+    "height": 200,
+    "caption": "Figure D1. Four windows across the harbour."
+  },
+  "routes": {
+    "FX-TWO-COLUMN-NATIVE": "All3pages use selectable text and original figure resource; no annotations or hidden OCR layer.",
+    "FX-TWO-COLUMN-SCAN": "All3pages are image-only, with zero extractable text.",
+    "FX-TWO-COLUMN-MIXED": {
+      "1": "native",
+      "2": "image-only",
+      "3": {
+        "native": "all content except upper-right paragraph",
+        "raster_region": {
+          "node": "tc-return-right",
+          "bbox_top_left_pt": [
+            264,
+            121,
+            456,
+            335
+          ]
+        }
+      }
+    }
+  },
+  "furniture": {
+    "running_header": "THE TWO-COLUMN LOG / SYNTHETIC SOURCE",
+    "footer_prefix": "Two-column print page ",
+    "exclude_from_canonical_body": true
+  },
+  "normalization": {
+    "joins": "Declared cross-column and cross-page fragments join with exactly one U+0020.",
+    "case": "Case is significant.",
+    "ordinary_paragraphs": "Source line wraps reflow; paragraph identity and exact words/punctuation stay fixed.",
+    "caption": "Preserve one figure and one associated caption, not one duplicate for each source column."
+  },
+  "evidence_limit": "Source/oracle correctness only. No OCR, current worker support, final reader rendering or application flow is established by this fixture pack."
+}

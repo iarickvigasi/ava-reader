@@ -1,0 +1,81 @@
+import type { Prisma } from '@prisma/client';
+import type { WorkerResultV1 } from '../../../pdf-conversion/contracts/generated/ava-pdf-worker-result-1';
+import type { AttemptRecord, Tx } from './types';
+import { terminalFailure } from './terminal-failure';
+import { costLock } from '../providers/cost-lock';
+import { recordOperationEvent } from '../reports/operation-event';
+import { observationWatermarkDetails } from '../reports/observation-contract';
+export async function acceptResult(
+  tx: Tx,
+  attempt: AttemptRecord,
+  result: WorkerResultV1,
+  resultSha256: string,
+  artifactMap: Record<string, string>,
+  now: Date,
+  observationWatermark?: unknown,
+) {
+  await costLock(tx);
+  await tx.pdfJobAttempt.update({
+    where: { id: attempt.id },
+    data: {
+      resultSha256,
+      result: result as unknown as Prisma.InputJsonValue,
+      artifactMap,
+    },
+  });
+  if (result.outcome.status !== 'candidate')
+    return terminalFailure(tx, {
+      job: attempt.job,
+      operation: attempt.job.operation,
+      attemptId: attempt.id,
+      code:
+        result.outcome.status === 'unsupported'
+          ? 'UNSUPPORTED_PDF'
+          : 'CONVERSION_FAILED',
+      now,
+      observationWatermark,
+    });
+  await tx.pdfJobAttempt.update({
+    where: { id: attempt.id },
+    data: { status: 'CANDIDATE', finishedAt: now },
+  });
+  await tx.pdfConversionJob.update({
+    where: { id: attempt.jobId },
+    data: { state: 'WAITING', waitReason: 'REVIEW' },
+  });
+  await tx.pdfImportOperation.update({
+    where: { id: attempt.job.operationId },
+    data: { status: 'WAITING', stage: 'VALIDATION' },
+  });
+  await recordOperationEvent(
+    tx,
+    attempt.job.operationId,
+    `candidate:${attempt.id}:${resultSha256}`,
+    {
+      kind: 'VALIDATION',
+      stage: 'VALIDATION',
+      severity: 'INFO',
+      attemptId: attempt.id,
+      attemptFence: attempt.fence,
+      generation: attempt.job.operation.generation,
+      cancellationEpoch: attempt.job.operation.cancellationEpoch,
+      details: observationWatermarkDetails(
+        observationWatermark,
+        attempt.id,
+        () => ({
+          jobId: attempt.jobId,
+          sourceSha256: attempt.job.operation.sourceSha256,
+          configSha256: attempt.job.operation.configSha256,
+          profileId: attempt.job.operation.profileId,
+          workerFingerprint: attempt.job.workerFingerprint,
+        }),
+        true,
+      ),
+    },
+    { status: 'WAITING', stage: 'VALIDATION' },
+  );
+  return {
+    status: 'WAITING' as const,
+    candidateId: result.outcome.candidate_id,
+  };
+}

@@ -39,7 +39,7 @@ describe("bilingual list and image flow", () => {
     for (const side of ["source", "translation"] as const) {
       const items = markupNodes(render([4, 5], side), "li");
       expect(attribute(items[0], "style")).toContain("list-style-type:none");
-      expect(attribute(items[1], "style")).toBeUndefined();
+      expect(attribute(items[1], "style")).toBe("text-indent:0em");
       expect(attribute(items[1], "value")).toBe("2");
     }
   });

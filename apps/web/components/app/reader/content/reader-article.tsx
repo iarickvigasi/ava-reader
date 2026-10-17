@@ -13,6 +13,7 @@ import {
   applyHighlightMarks,
   unwrapAllHighlightMarks,
 } from "./apply-highlight-marks";
+import colors from "./reader-color-scheme.module.css";
 import { ReaderBlockView } from "./reader-block-view";
 
 export function ReaderArticle({
@@ -158,7 +159,7 @@ export function ReaderArticle({
       // injected <mark>, and anything added later: a line can never outgrow
       // its column, and a column is a page. Without it an unbreakable token
       // paints across the gap onto the next page (see 1.1-content-rendering).
-      className="h-full space-y-5 break-words [column-fill:auto] sm:space-y-6 md:space-y-7"
+      className={`${colors.source} h-full space-y-5 break-words [column-fill:auto] sm:space-y-6 md:space-y-7`}
       style={style}
     >
       {prefixBlocks?.map((block) => (

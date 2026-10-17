@@ -1,3 +1,4 @@
+import { withUploadedFilename } from '../shared/uploaded-filename';
 import {
   Body,
   Controller,
@@ -18,6 +19,7 @@ import type { Response } from 'express';
 import type { AuthenticatedRequest } from '../auth/authenticated-request';
 import { ClerkAuthGuard } from '../auth/clerk-auth.guard';
 import { LibraryService } from './library.service';
+import { sendOwnedBlob } from './pdf-import/artifacts/send-owned-blob';
 
 @Controller('library')
 export class LibraryController {
@@ -41,10 +43,9 @@ export class LibraryController {
     );
   }
 
-  // Public read endpoint. Covers are not sensitive (often marketing artwork),
-  // bookIds are unpredictable CUIDs, and skipping auth lets `<img>` tags load
-  // without juggling Clerk tokens. The long-lived Cache-Control header lets
-  // the browser skip repeat downloads as the user scrolls a collection.
+  // Legacy cover route. PDF-import books are explicitly denied by the service;
+  // their covers require the owned route. Broader legacy EPUB cover delivery
+  // remains a separate authenticated-client migration.
   @Get('covers/:bookId')
   async getBookCover(
     @Param('bookId') bookId: string,
@@ -82,6 +83,24 @@ export class LibraryController {
       request.auth.clerkUserId,
       libraryItemId,
       body.requested,
+    );
+  }
+
+  @Get(':libraryItemId/formats/:format')
+  @UseGuards(ClerkAuthGuard)
+  async downloadFormat(
+    @Req() request: AuthenticatedRequest,
+    @Param('libraryItemId') ref: string,
+    @Param('format') format: string,
+    @Res() response: Response,
+  ) {
+    sendOwnedBlob(
+      response,
+      await this.libraryService.getLibraryFormat(
+        request.auth.clerkUserId,
+        ref,
+        format,
+      ),
     );
   }
 
@@ -152,7 +171,11 @@ export class LibraryController {
   importBook(
     @Req() request: AuthenticatedRequest,
     @UploadedFile() file: Express.Multer.File,
+    @Body() body: { originalFilename?: unknown } = {},
   ) {
-    return this.libraryService.importBook(request.auth.clerkUserId, file);
+    return this.libraryService.importBook(
+      request.auth.clerkUserId,
+      withUploadedFilename(file, body.originalFilename),
+    );
   }
 }

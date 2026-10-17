@@ -1,3 +1,4 @@
+import { toBookView } from "./book-view";
 // Rows → CollectionView: what the library and collection screens render. Both
 // read paths (read-library.ts) map through here so the Offline Books special
 // case, the membership ordering and the counts have one definition. They keep
@@ -59,23 +60,6 @@ export function buildMembershipCollectionView(
     }
   }
   return collectionRowToView(collection, books);
-}
-
-function toBookView(row: LibraryItemRow): LibraryBookView {
-  const finishedAt = row.finishedAt !== undefined ? row.finishedAt : row.details?.finishedAt;
-  return {
-    libraryItemId: row.libraryItemId,
-    slug: row.slug,
-    title: row.title,
-    authors: row.authors,
-    coverImageUrl: row.coverImageUrl,
-    completionPercent: row.completionPercent,
-    ...(finishedAt !== undefined ? { finishedAt } : {}),
-    primaryFormat: row.primaryFormat,
-    lastReadAt: row.lastReadAt,
-    savedOffline: row.savedOffline,
-    offlineRequested: row.offlineRequested ?? false,
-  };
 }
 
 function collectionRowToView(

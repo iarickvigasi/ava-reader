@@ -34,6 +34,7 @@ export async function savePackage(
         blobId: file.blobId,
         updatedAt: file.updatedAt,
         isPrimary: true,
+        book: { pdfImportPrivate: false, canonicalImportPrivate: false },
       },
       data: { blobId: blob.id, readingProgressIndex: index ?? Prisma.DbNull },
     });

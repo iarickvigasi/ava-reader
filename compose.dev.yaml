@@ -1,5 +1,7 @@
 services:
   api:
+    build:
+      target: api-development
     environment:
       NODE_ENV: development
       CHOKIDAR_USEPOLLING: "true"

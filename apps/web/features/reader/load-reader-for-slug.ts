@@ -12,6 +12,7 @@ export type ReaderLoadResult =
   // Offline and the content isn't in Dexie. `libraryItemId` is null when the
   // slug isn't even in the cached library (deep link to an unknown book).
   | { kind: "missing-offline"; libraryItemId: string | null }
+  | { kind: "upgrade-required"; libraryItemId: string | null }
   | { kind: "not-found" }
   | { kind: "error" };
 
@@ -45,8 +46,16 @@ export async function loadReaderForSlug(
       libraryItemId: payload.book.libraryItemId,
     };
   } catch (error) {
-    if (error instanceof ReaderPayloadError && error.status === 404) {
-      return { kind: "not-found" };
+    if (error instanceof ReaderPayloadError) {
+      if (error.status === 404) return { kind: "not-found" };
+      if (
+        error.status === 409 &&
+        error.code === "PDF_READER_UPGRADE_REQUIRED"
+      ) {
+        return { kind: "upgrade-required", libraryItemId };
+      }
+      // The server answered: this is not a missing offline download.
+      return { kind: "error" };
     }
     // A failed fetch for a book we know locally means its content just isn't
     // available right now (offline that navigator.onLine failed to report,

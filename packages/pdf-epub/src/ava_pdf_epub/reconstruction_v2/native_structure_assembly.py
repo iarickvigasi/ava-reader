@@ -1,0 +1,169 @@
+"""Literal source assembly is provisional until any named normalization is applied."""
+
+from collections.abc import Sequence
+from dataclasses import dataclass
+
+from ..contracts.common import document_digest
+from ..contracts.layout_hyphen import LayoutHyphenDisposition
+from .conservation import native_conservation
+from .geometry import union
+from .native_continuation import NativeContinuation
+from .native_line_offsets import NativeLineOffset, mapped_native_ids, native_line_offsets
+from .native_spacing import native_spacing
+from .native_structure_fields import NativeStructureGroup, NativeStructureLine
+from .native_structure_response import canonical_native_structure_response
+from .native_structure_sizes import grouped_span_style
+from .native_structure_source_validation import validate_source_ownership
+from .native_structure_v2_contract import NativeStructureTask2
+from .native_structure_versions import AnyNativeStructureResponse, AnyNativeStructureTask
+from .observations import PageObservation
+from .segments import ObservedSpan, Segment
+
+
+@dataclass(frozen=True)
+class NativeStructureSource:
+    segments: tuple[Segment, ...]
+    line_maps: tuple[NativeLineOffset, ...]
+    boundary_dispositions: tuple[LayoutHyphenDisposition, ...]
+    pending_normalization: tuple[str, ...]
+    continuations: tuple[NativeContinuation, ...] = ()
+
+
+def assemble_native_structure_source(
+    task: AnyNativeStructureTask,
+    response: AnyNativeStructureResponse,
+    page: PageObservation,
+    *,
+    preserved_segments: Sequence[Segment] = (),
+    furniture: set[str] | None = None,
+    paragraph_layout: bool = False,
+) -> NativeStructureSource:
+    decision = canonical_native_structure_response(task, response)
+    validate_source_ownership(task, page, preserved_segments, furniture=furniture or set())
+    lines = {line.id: line for line in task.lines}
+    preserved = {s.id: s for s in preserved_segments}
+    references = {reference.span_id for reference in decision.references}
+    grouped: dict[str, list[Segment]] = {}
+    for index, group in enumerate(decision.groups):
+        segment = _assemble_group(
+            task, group, [lines[i] for i in group.line_ids], index, references
+        )
+        grouped.setdefault(group.region_id, []).append(segment)
+    segments = []
+    for region in task.regions:
+        if region.artifact_id is not None:
+            original = preserved[region.artifact_id]
+            segments.append(Segment.model_validate(original.model_dump()))
+        else:
+            segments.extend(grouped[region.source.id])
+    origins: dict[str, str] = {}
+    if paragraph_layout:
+        if not isinstance(task, NativeStructureTask2):
+            raise ValueError("Current native paragraph layout requires Native2 authority")
+        measured = native_spacing(
+            page, segments, alignment_origins=origins, strict_center_evidence=True
+        )
+        layout_fields = {
+            "align",
+            "indent_em",
+            "block_indent_em",
+            "line_height",
+            "space_before_em",
+            "space_after_em",
+        }
+        segments = [
+            original.model_copy(
+                update={
+                    "style": original.style.model_copy(
+                        update={
+                            key: getattr(observed.style, key)
+                            for key in layout_fields
+                            if getattr(original.style, key) is None
+                        }
+                    )
+                }
+            )
+            if original.style is not None and observed.style is not None
+            else original
+            for original, observed in zip(segments, measured, strict=True)
+        ]
+    native_conservation(page, segments, [])
+    mappings = native_line_offsets(page, segments, mapped_native_ids(segments))
+    task_sha, response_sha = document_digest(task), document_digest(response)
+    return NativeStructureSource(
+        segments=tuple(segments),
+        line_maps=tuple(mappings),
+        boundary_dispositions=tuple(decision.boundary_dispositions),
+        pending_normalization=tuple(
+            d.candidate_id for d in decision.boundary_dispositions if d.disposition == "layout"
+        ),
+        continuations=tuple(
+            NativeContinuation(
+                owner_id=segment.id,
+                page=segment.page,
+                line_ids=tuple(segment.native_line_ids),
+                incoming=segment.continues_from_previous,
+                outgoing=segment.continues_to_next,
+                source_sha256=task.source_sha256,
+                task_sha256=task_sha,
+                response_sha256=response_sha,
+                first_line_flush=(
+                    abs(segment.style.indent_em) <= 0.15
+                    and segment.style.align in {"start", "left", "justify"}
+                    if paragraph_layout
+                    and segment.style is not None
+                    and segment.style.indent_em is not None
+                    else None
+                ),
+                alignment_origin=origins.get(segment.id, "unproved"),
+            )
+            for segment in segments
+            if isinstance(task, NativeStructureTask2) and segment.kind == "paragraph"
+        ),
+    )
+
+
+def _assemble_group(
+    task: AnyNativeStructureTask,
+    group: NativeStructureGroup,
+    lines: list[NativeStructureLine],
+    index: int,
+    references: set[str],
+) -> Segment:
+    separator = "\n" if group.kind in {"verse", "code", "quote"} else " "
+    text = ""
+    spans: list[ObservedSpan] = []
+    for line in lines:
+        if text:
+            text += separator
+        offset = len(text)
+        text += line.text
+        spans.extend(
+            ObservedSpan.model_validate(
+                {
+                    **span.model_dump(exclude={"id"}),
+                    "start": span.start + offset,
+                    "end": span.end + offset,
+                    "style": grouped_span_style(line, span, lines[0].style),
+                    "note_label": line.text[span.start : span.end]
+                    if span.id in references
+                    else span.note_label,
+                }
+            )
+            for span in line.spans
+        )
+    values = group.model_dump(exclude={"id", "region_id", "line_ids"})
+    return Segment.model_validate(
+        {
+            **values,
+            "id": f"p{task.page_number}-native-{task.task_id[-12:]}-{index}",
+            "page": task.page_number,
+            "box": union([line.box for line in lines]).model_dump(),
+            "method": "native",
+            "text": text,
+            "source_text": "\n".join(line.text for line in lines),
+            "style": lines[0].style.model_dump(),
+            "spans": [s.model_dump() for s in spans],
+            "native_line_ids": group.line_ids,
+        }
+    )

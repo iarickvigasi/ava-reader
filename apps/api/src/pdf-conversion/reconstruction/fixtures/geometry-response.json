@@ -1,0 +1,22 @@
+{
+  "schema_version": "ava-recognition-geometry-response-1",
+  "task_id": "recognition-geometry-c3e0425b19742ca5d54f3e359ea41ec32df2a0c5c64372edb26e3e4b5a6dcf2f",
+  "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "original_task_id": "recognize-d0d88f56fe9feeea879d112fe201e7025de9b7dc488e617d56eebed8c108a0d1",
+  "render_sha256": "fca62a9f2e757c42b5d1225df44b7f69ac705224b6e70926efec33cda915da36",
+  "original_response_sha256": "ff622184219c708d8756f481f37617ddeca9c24b1172617be34fe39f5506885a",
+  "outcome": "corrected",
+  "patches": [
+    {
+      "segment_id": "s0",
+      "box": {
+        "coordinate_space": "render_normalized_1000",
+        "x0": 0.0,
+        "y0": 0.0,
+        "x1": 1000.0,
+        "y1": 1000.0
+      }
+    }
+  ],
+  "unresolved_reason": null
+}

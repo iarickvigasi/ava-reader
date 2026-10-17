@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { ReaderBlockView } from "@/components/app/reader/content/reader-block-view";
+import colors from "../../content/reader-color-scheme.module.css";
 import { BilingualFlowContent } from "./bilingual-flow-content";
 import {
   attribute,
@@ -84,3 +85,31 @@ describe("bilingual paragraph flow", () => {
     expect(html).not.toContain("margin-top:");
   });
 });
+
+it.each(["source", "translation"] as const)(
+  "scopes copied source colors in %s content and measurements",
+  (side) => {
+    const before = JSON.stringify(flowBlocks);
+    const blocks = structuredClone(flowBlocks);
+    blocks[0].presentation = { id: "print-ink", color: "#231f20" };
+    const html = renderToStaticMarkup(
+      <BilingualFlowContent
+        chapter={flowChapter}
+        blocks={blocks}
+        unitIndexes={[0, 1]}
+        side={side}
+        pageHeight={400}
+      />,
+    );
+    expect(attribute(markupNodes(html, "div")[0], "class")).toContain(
+      colors.source,
+    );
+    expect(attribute(markupNodes(html, "p")[0], "style")).toContain(
+      "color:light-dark(#231f20, #b3aea8)",
+    );
+    expect(markupText(markupNodes(html, "p")[0])).toBe(
+      side === "source" ? "One. Two." : "Uno. Dos.",
+    );
+    expect(JSON.stringify(flowBlocks)).toBe(before);
+  },
+);

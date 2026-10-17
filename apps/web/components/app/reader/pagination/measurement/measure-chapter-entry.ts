@@ -16,6 +16,7 @@ export function measureChapterEntry(input: {
   layoutKey: string;
   columnCount: 1 | 2;
   pageGap: number;
+  isCurrent?: () => boolean;
 }): ReaderMeasurementEntry {
   const { chapterId, layoutKey } = input;
 
@@ -31,6 +32,7 @@ export function measureChapterEntry(input: {
       layoutKey,
       pageBox: input.pageBox,
       pageGap: input.pageGap,
+      isCurrent: input.isCurrent,
     });
   } catch {
     return createFailedReaderMeasurementEntry({ chapterId, layoutKey });

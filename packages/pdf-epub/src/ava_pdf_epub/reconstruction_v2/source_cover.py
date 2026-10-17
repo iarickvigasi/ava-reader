@@ -1,0 +1,86 @@
+"""Keep source cover pixels independently of the OCR transcript of its printed words."""
+
+from collections.abc import Sequence
+from pathlib import Path
+from typing import Any
+
+from ..contracts.source import Box
+from .assemble_figure import assemble_figure
+from .assembly_state import AssemblyState
+from .findings import Finding
+from .geometry import area, overlap
+from .observations import PageObservation
+from .prepared_types import AnyPreparedPage
+from .segments import Segment
+
+
+def preserve_source_cover(
+    prepared: Sequence[AnyPreparedPage],
+    pages: list[dict[str, Any]],
+    chapters: list[dict[str, Any]],
+    metadata: list[dict[str, Any]],
+    scratch: Path,
+    state: AssemblyState,
+) -> str | None:
+    if not prepared or not chapters or chapters[0]["role"] != "frontmatter":
+        return None
+    titles = [m for m in metadata if m["field"] == "title" and m["status"] == "accepted"]
+    if len(titles) != 1:
+        return None
+    title_evidence = titles[0].get("evidence", [])
+    if state.source_title_policy == "ava-frontmatter-title-1":
+        from .frontmatter_title_apply import corroborated_cover_evidence
+
+        title_evidence = corroborated_cover_evidence(state)
+    if not title_evidence or any(e["page"] != 1 for e in title_evidence):
+        return None
+    page = prepared[0].observation
+    if source_cover_graphic(page, title_evidence) is None:
+        return None
+    # Qualification uses the source image; the cover retains every first-page pixel.
+    box = Box(
+        coordinate_space="page_points_top_left",
+        x0=0,
+        y0=0,
+        x1=page.width_pt,
+        y1=page.height_pt,
+    )
+    region_id = "page1-source-cover"
+    evidence = [dict(page=1, region_id=region_id, method="render", box=box.model_dump())]
+    state.evidence[region_id] = evidence
+    segment = Segment(id=region_id, page=1, kind="figure", box=box, method="render")
+    cover = assemble_figure(segment, prepared[0], scratch, state)["resource_id"]
+    pages[0]["regions"].append(
+        dict(id=region_id, box=box.model_dump(), band=0, column=0, role="cover", route="render")
+    )
+    state.structure_findings.append(
+        Finding(
+            code="SOURCE_COVER_PIXELS_PRESERVED",
+            severity="information",
+            page=1,
+            message=(
+                "Source cover pixels preserved separately from unchanged selectable title text."
+            ),
+        )
+    )
+    return str(cover)
+
+
+def source_cover_graphic(page: PageObservation, evidence: Sequence[dict[str, Any]]) -> Box | None:
+    """Reuse the existing first-page image/printed-title coverage qualification."""
+    if page.number != 1 or not evidence or any(item["page"] != 1 for item in evidence):
+        return None
+    candidates = [
+        graphic
+        for graphic in page.graphics
+        if graphic.kind == "image" and area(graphic.box) >= page.width_pt * page.height_pt * 0.75
+    ]
+    if len(candidates) != 1:
+        return None
+    box = candidates[0].box
+    if any(
+        overlap(Box.model_validate(item["box"]), box) / area(Box.model_validate(item["box"])) < 0.99
+        for item in evidence
+    ):
+        return None
+    return box

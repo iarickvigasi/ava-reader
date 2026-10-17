@@ -1,44 +1,82 @@
+import { useReaderMeasurement } from "./reader-measurement-context";
+import { ReaderInternalLink } from "./reader-internal-link";
 import type { ReaderInline } from "@/lib/api-types";
-import { cn } from "@/lib/cn";
 import { ReaderInlineImage } from "./reader-inline-image";
-import { ReaderInlineScript } from "./reader-inline-script";
-import { ReaderInlineText } from "./reader-inline-text";
+import { ReaderContentLink } from "./reader-content-link";
+import { ReaderScriptText } from "./reader-script-text";
+import { groupInlineLinkOccurrences } from "@/features/reader/group-inline-link-occurrences";
 
-const READER_INLINE_KIND_IMAGE = "image";
+import { ReaderLiteralLabel } from "./reader-literal-label";
 
-const LINK_CLASS = "underline decoration-line/60 underline-offset-4";
+const LINK_CLASS =
+  "underline decoration-current underline-offset-4 hover:decoration-2";
 
-// Dispatches each run to the component for its text type. A run's styling
-// nests outwards: text, then its vertical script, then the link wrapper.
-export function ReaderInlineContent({ inlines }: { inlines: ReaderInline[] }) {
+// Preserve each run's styling/script inside its semantic occurrence's link.
+export function ReaderInlineContent({
+  inlines,
+  literalLabel,
+  before,
+  after,
+}: {
+  inlines: ReaderInline[];
+  literalLabel?: { end: number; columnEm: number };
+  before?: string;
+  after?: string;
+}) {
+  const measurement = useReaderMeasurement();
+  if (literalLabel)
+    return (
+      <ReaderLiteralLabel
+        inlines={inlines}
+        label={literalLabel}
+        before={before}
+        after={after}
+      />
+    );
   return (
     <>
-      {inlines.map((inline, index) => {
-        const key = `${inline.kind}-${index}`;
+      {groupInlineLinkOccurrences(inlines).map((group) => {
+        const key = `${group.kind}-${group.sourceIndex}`;
 
-        if (inline.kind === READER_INLINE_KIND_IMAGE) {
-          return inline.href ? (
-            <a key={key} href={inline.href} className={LINK_CLASS}>
-              <ReaderInlineImage inline={inline} />
-            </a>
-          ) : (
-            <span key={key}>
-              <ReaderInlineImage inline={inline} />
-            </span>
+        if (group.kind === "image") {
+          return (
+            <ReaderContentLink key={key} link={group.inline}>
+              <ReaderInlineImage inline={group.inline} />
+            </ReaderContentLink>
           );
         }
 
-        const content = (
-          <ReaderInlineScript script={inline.script}>
-            <ReaderInlineText inline={inline} />
-          </ReaderInlineScript>
-        );
+        const inline = group.inlines[0];
+        const content = group.inlines.map((run, index) => {
+          const prior = inlines[group.sourceIndex + index - 1];
+          const next = inlines[group.sourceIndex + index + 1];
+          return (
+            <ReaderScriptText
+              key={index}
+              inline={run}
+              before={
+                prior ? (prior.kind === "text" ? prior.text : "") : before
+              }
+              after={next ? (next.kind === "text" ? next.text : "") : after}
+            />
+          );
+        });
 
+        if (inline.target)
+          return (
+            <ReaderInternalLink
+              key={key}
+              target={inline.target}
+              sourceOffset={inline.sourceOffset}
+            >
+              {content}
+            </ReaderInternalLink>
+          );
         return inline.href ? (
           <a
             key={key}
-            href={inline.href}
-            className={cn(LINK_CLASS, "hover:text-title")}
+            href={measurement ? undefined : inline.href}
+            className={LINK_CLASS}
           >
             {content}
           </a>

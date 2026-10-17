@@ -12,7 +12,7 @@ export function measurePairs(
   const flow = createFlowMeasurer(root, chapter, width, height, cache);
   const units: MeasuredBilingualUnit[] = chapter.units.map((unit, index) => {
     const translated =
-      unit.kind === "image" || chapter.translations[unit.id] !== undefined;
+      unit.kind !== "sentence" || chapter.translations[unit.id] !== undefined;
     const needsColumns = () =>
       flow.measure(index, index + 1, 0) > height ||
       (translated && flow.measure(index, index + 1, 1) > height);

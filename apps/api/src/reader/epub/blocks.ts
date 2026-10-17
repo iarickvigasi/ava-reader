@@ -9,6 +9,7 @@ export async function normalizeBlocksFromNodes(
   chapterId: string,
   resolveAsset: (assetPath: string) => Promise<EpubAsset | null>,
   stylesheetHints?: StylesheetHintMap,
+  language?: string,
 ) {
   let blockIndex = 0;
   const blocks: ReaderBlock[] = [];
@@ -18,12 +19,14 @@ export async function normalizeBlocksFromNodes(
     return `${chapterId}::b${blockIndex}`;
   };
 
-  for (const node of nodes) {
+  for (const [nodeIndex, node] of nodes.entries()) {
     const normalized = await normalizeBlockNode(node, {
       chapterId,
       createBlockId,
       resolveAsset,
       stylesheetHints,
+      inheritedHints: { language },
+      sourcePath: [nodeIndex],
     });
 
     if (Array.isArray(normalized)) {

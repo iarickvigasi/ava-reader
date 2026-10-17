@@ -1,6 +1,7 @@
 import type { RefObject } from "react";
 import type { BilingualChapter } from "@/lib/api-types/bilingual";
 import type { ReaderBlock } from "@/lib/api-types";
+import { ReaderMeasurementContext } from "../../content/reader-measurement-context";
 import { BilingualFlowContent } from "../content/bilingual-flow-content";
 
 export function BilingualMeasurements({
@@ -23,17 +24,19 @@ export function BilingualMeasurements({
       className="pointer-events-none invisible fixed"
       style={{ left: -100000, top: 0, width: size.width }}
     >
-      {(["source", "translation"] as const).map((side) => (
-        <div key={side} data-natural={side}>
-          <BilingualFlowContent
-            chapter={chapter}
-            blocks={blocks}
-            unitIndexes={unitIndexes}
-            side={side}
-            pageHeight={size.height}
-          />
-        </div>
-      ))}
+      <ReaderMeasurementContext value={true}>
+        {(["source", "translation"] as const).map((side) => (
+          <div key={side} data-natural={side}>
+            <BilingualFlowContent
+              chapter={chapter}
+              blocks={blocks}
+              unitIndexes={unitIndexes}
+              side={side}
+              pageHeight={size.height}
+            />
+          </div>
+        ))}
+      </ReaderMeasurementContext>
       <div data-flow-probe />
     </div>
   );

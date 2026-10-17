@@ -12,16 +12,26 @@ type InlineScript = Extract<ReaderInline, { kind: "text" }>["script"];
 export function ReaderInlineScript({
   children,
   script,
+  inheritSize = false,
 }: {
   children: ReactNode;
   script: InlineScript;
+  inheritSize?: boolean;
 }) {
   if (script === "super") {
-    return <sup>{children}</sup>;
+    return (
+      <sup style={inheritSize ? { fontSize: "inherit" } : undefined}>
+        {children}
+      </sup>
+    );
   }
 
   if (script === "sub") {
-    return <sub>{children}</sub>;
+    return (
+      <sub style={inheritSize ? { fontSize: "inherit" } : undefined}>
+        {children}
+      </sub>
+    );
   }
 
   return <>{children}</>;

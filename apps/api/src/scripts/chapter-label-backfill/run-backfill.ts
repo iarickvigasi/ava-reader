@@ -17,6 +17,9 @@ export async function runBackfill(prisma: PrismaClient, apply: boolean) {
         isPrimary: true,
         processingStatus: 'READY',
         book: {
+          // Accepted PDF/generated-EPUB packages have immutable content identities.
+          pdfImportPrivate: false,
+          canonicalImportPrivate: false,
           libraryItems: { some: {} },
           files: { some: { kind: 'SOURCE', format: 'EPUB', isPrimary: true } },
         },

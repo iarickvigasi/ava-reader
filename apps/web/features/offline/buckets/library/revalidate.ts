@@ -1,4 +1,8 @@
-import { cachedLibraryItemIds, removalTables, removeCachedLibraryItems } from "./remove-cached-items";
+import {
+  cachedLibraryItemIds,
+  removalTables,
+  removeCachedLibraryItems,
+} from "./remove-cached-items";
 // Client-side revalidation of the library / a single collection. Used by the
 // client islands on /app/library and /app/library/collections/[slug] to
 // refresh the offline cache once the page has hydrated, and on every
@@ -40,6 +44,7 @@ async function fetchJson<T>(
   try {
     const response = await fetch(`${getPublicApiBaseUrl()}${path}`, {
       headers: { Authorization: `Bearer ${token}` },
+      signal: AbortSignal.timeout(15_000),
     });
     if (!response.ok) {
       // A cache miss alone cannot distinguish an unknown URL from offline.
@@ -55,8 +60,11 @@ async function fetchJson<T>(
       return null;
     }
     const payload = (await response.json()) as T;
-    return db === getDb() && generation === membershipGeneration() &&
-      finishGeneration === finishDateGeneration() ? payload : null;
+    return db === getDb() &&
+      generation === membershipGeneration() &&
+      finishGeneration === finishDateGeneration()
+      ? payload
+      : null;
   } catch {
     // Network blip → caller already has whatever Dexie cached. The next
     // online/visibility tick will try again.
@@ -67,12 +75,18 @@ async function fetchJson<T>(
 export async function revalidateLibrary(getToken: GetToken): Promise<void> {
   const db = getDb();
   const expectedCompletionRevision = await readCompletionRevision(db);
-  const removalCandidates = await db.transaction("r", removalTables(db), () => cachedLibraryItemIds(db));
+  const removalCandidates = await db.transaction("r", removalTables(db), () =>
+    cachedLibraryItemIds(db),
+  );
   const payload = await fetchJson<LibraryPayload>("/api/library", getToken);
   if (!payload) {
     return;
   }
-  await hydrateFromPayload(payload, { db, expectedCompletionRevision, removalCandidates });
+  await hydrateFromPayload(payload, {
+    db,
+    expectedCompletionRevision,
+    removalCandidates,
+  });
 }
 
 export async function revalidateCollection(
@@ -90,7 +104,10 @@ export async function revalidateCollection(
   if (!payload) {
     return;
   }
-  await hydrateCollection(payload.collection, { db, expectedCompletionRevision });
+  await hydrateCollection(payload.collection, {
+    db,
+    expectedCompletionRevision,
+  });
 }
 
 export async function revalidateBookInfo(
@@ -101,8 +118,9 @@ export async function revalidateBookInfo(
   const db = getDb();
   const expectedFinishDateRevision = await readFinishDateRevision(db);
   // Bind absence to the item requested, not a new book that later reuses its slug.
-  const cached = await db.libraryItems.where("slug").equals(slug).first()
-    ?? await db.libraryItems.get(slug);
+  const cached =
+    (await db.libraryItems.where("slug").equals(slug).first()) ??
+    (await db.libraryItems.get(slug));
   const payload = await fetchJson<LibraryBookInfoPayload>(
     `/api/library/${encodeURIComponent(slug)}`,
     getToken,

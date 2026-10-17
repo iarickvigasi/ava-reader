@@ -1,0 +1,295 @@
+{
+  "language": "en",
+  "render_sha256": "bdde746006f87b45b3ee40a69407eee9588ab3fe8fcf34d215c6e2c8c3cf7bc1",
+  "schema_version": "ava-recognition-response-2",
+  "segments": [
+    {
+      "box": {
+        "coordinate_space": "render_normalized_1000",
+        "x0": 318,
+        "x1": 682,
+        "y0": 40,
+        "y1": 62
+      },
+      "chapter_role": "frontmatter",
+      "chapter_start": true,
+      "continues_from_previous": false,
+      "continues_to_next": false,
+      "heading_level": 1,
+      "id": "s0001",
+      "kind": "heading",
+      "method": "ocr",
+      "page": 1,
+      "spans": [],
+      "style": {
+        "align": "center",
+        "family": "sans-serif",
+        "id": "st0"
+      },
+      "text": "The Two-Column Log"
+    },
+    {
+      "box": {
+        "coordinate_space": "render_normalized_1000",
+        "x0": 353,
+        "x1": 647,
+        "y0": 88,
+        "y1": 100
+      },
+      "continues_from_previous": false,
+      "continues_to_next": false,
+      "id": "s0002",
+      "kind": "paragraph",
+      "method": "ocr",
+      "page": 1,
+      "spans": [],
+      "style": {
+        "align": "center",
+        "family": "sans-serif",
+        "id": "st1"
+      },
+      "text": "AVA Fixture Studio / English / 2026-09-28"
+    },
+    {
+      "box": {
+        "coordinate_space": "render_normalized_1000",
+        "x0": 326,
+        "x1": 674,
+        "y0": 139,
+        "y1": 161
+      },
+      "chapter_role": "bodymatter",
+      "chapter_start": true,
+      "continues_from_previous": false,
+      "continues_to_next": false,
+      "heading_level": 1,
+      "id": "s0003",
+      "kind": "heading",
+      "method": "ocr",
+      "page": 1,
+      "spans": [],
+      "style": {
+        "align": "center",
+        "family": "sans-serif",
+        "id": "st2"
+      },
+      "text": "1. Across the Harbour"
+    },
+    {
+      "box": {
+        "coordinate_space": "render_normalized_1000",
+        "x0": 95,
+        "x1": 472,
+        "y0": 216,
+        "y1": 310
+      },
+      "continues_from_previous": false,
+      "continues_to_next": false,
+      "id": "s0004",
+      "kind": "paragraph",
+      "method": "ocr",
+      "page": 1,
+      "spans": [],
+      "style": {
+        "align": "left",
+        "family": "sans-serif",
+        "id": "st3"
+      },
+      "text": "Mira opens the harbour log before sunrise. The printed page has two columns, but her account follows one journey. She reads every line on the left before moving to the right."
+    },
+    {
+      "box": {
+        "coordinate_space": "render_normalized_1000",
+        "x0": 95,
+        "x1": 454,
+        "y0": 328,
+        "y1": 368
+      },
+      "continues_from_previous": false,
+      "continues_to_next": false,
+      "id": "s0005",
+      "kind": "paragraph",
+      "method": "ocr",
+      "page": 1,
+      "spans": [],
+      "style": {
+        "align": "left",
+        "family": "sans-serif",
+        "id": "st3"
+      },
+      "text": "The folded chart begins beside the first window and continues across the narrow gutter"
+    },
+    {
+      "box": {
+        "coordinate_space": "render_normalized_1000",
+        "x0": 523,
+        "x1": 904,
+        "y0": 216,
+        "y1": 268
+      },
+      "continues_from_previous": false,
+      "continues_to_next": false,
+      "id": "s0006",
+      "kind": "paragraph",
+      "method": "ocr",
+      "page": 1,
+      "spans": [],
+      "style": {
+        "align": "left",
+        "family": "sans-serif",
+        "id": "st3"
+      },
+      "text": "into the right column, where the keeper has drawn a small circle around the safe landing."
+    },
+    {
+      "box": {
+        "coordinate_space": "render_normalized_1000",
+        "x0": 523,
+        "x1": 883,
+        "y0": 287,
+        "y1": 338
+      },
+      "continues_from_previous": false,
+      "continues_to_next": false,
+      "id": "s0007",
+      "kind": "paragraph",
+      "method": "ocr",
+      "page": 1,
+      "spans": [
+        {
+          "end": 46,
+          "note_label": "1",
+          "start": 43,
+          "style": {
+            "id": "sp0",
+            "vertical_align": "super"
+          },
+          "target_text": null,
+          "url": null
+        }
+      ],
+      "style": {
+        "align": "left",
+        "family": "sans-serif",
+        "id": "st3"
+      },
+      "text": "The keeper calls the marked route a passage[1]. Its explanation appears beneath the illustration on the next page."
+    },
+    {
+      "box": {
+        "coordinate_space": "render_normalized_1000",
+        "x0": 523,
+        "x1": 897,
+        "y0": 358,
+        "y1": 410
+      },
+      "continues_from_previous": false,
+      "continues_to_next": false,
+      "id": "s0008",
+      "kind": "paragraph",
+      "method": "ocr",
+      "page": 1,
+      "spans": [],
+      "style": {
+        "align": "left",
+        "family": "sans-serif",
+        "id": "st3"
+      },
+      "text": "A bell ends the first watch. This sentence belongs after the marked route, even if the PDF stores its letters earlier."
+    },
+    {
+      "box": {
+        "coordinate_space": "render_normalized_1000",
+        "x0": 323,
+        "x1": 677,
+        "y0": 510,
+        "y1": 532
+      },
+      "chapter_role": null,
+      "chapter_start": false,
+      "continues_from_previous": false,
+      "continues_to_next": false,
+      "heading_level": 2,
+      "id": "s0009",
+      "kind": "heading",
+      "method": "ocr",
+      "page": 1,
+      "spans": [],
+      "style": {
+        "align": "center",
+        "family": "sans-serif",
+        "id": "st4"
+      },
+      "text": "Across the full-width heading"
+    },
+    {
+      "box": {
+        "coordinate_space": "render_normalized_1000",
+        "x0": 95,
+        "x1": 476,
+        "y0": 587,
+        "y1": 699
+      },
+      "continues_from_previous": false,
+      "continues_to_next": false,
+      "id": "s0010",
+      "kind": "paragraph",
+      "method": "ocr",
+      "page": 1,
+      "spans": [],
+      "style": {
+        "align": "left",
+        "family": "sans-serif",
+        "id": "st3"
+      },
+      "text": "The heading spans both columns and begins a new reading band. Mira finishes this left-hand paragraph before she crosses to the paragraph at its right. The earlier right column must not be interleaved with it."
+    },
+    {
+      "box": {
+        "coordinate_space": "render_normalized_1000",
+        "x0": 523,
+        "x1": 866,
+        "y0": 587,
+        "y1": 627
+      },
+      "continues_from_previous": false,
+      "continues_to_next": true,
+      "id": "s0011",
+      "kind": "paragraph",
+      "method": "ocr",
+      "page": 1,
+      "spans": [],
+      "style": {
+        "align": "left",
+        "family": "sans-serif",
+        "id": "st3"
+      },
+      "text": "The last entry on this page describes a letter carried over the harbour wall and follows it"
+    },
+    {
+      "box": {
+        "coordinate_space": "render_normalized_1000",
+        "x0": 412,
+        "x1": 588,
+        "y0": 950,
+        "y1": 965
+      },
+      "continues_from_previous": false,
+      "continues_to_next": false,
+      "id": "s0012",
+      "kind": "furniture",
+      "method": "ocr",
+      "page": 1,
+      "spans": [],
+      "style": {
+        "align": "center",
+        "family": "sans-serif",
+        "id": "st5"
+      },
+      "text": "Two-column print page 1"
+    }
+  ],
+  "source_sha256": "ead57e233d0159460a7a8b63b15fe8ad8c9888be7a1989885a9536696c2d363b",
+  "task_id": "recognize-cfc1b6021eea23a766f4c1144076fa55896cfa8535474134a50650edc1fc3e6b",
+  "unresolved": []
+}

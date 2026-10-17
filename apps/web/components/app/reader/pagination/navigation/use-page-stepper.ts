@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { useReaderNavigationActions } from "../../state/reader-navigation-context";
 import type { ReaderChapterPayload } from "@/lib/api-types";
 import type { ReaderNavigationTarget } from "@/features/reader/navigation";
 import {
@@ -38,8 +39,12 @@ export function usePageStepper({
   activeChapter: ReaderChapterPayload;
   onSelectChapter: (chapterId: string, target?: ReaderNavigationTarget) => void;
 }): PageStepControls {
+  const navigation = useReaderNavigationActions();
+  const pending = navigation?.pending;
+  const leavePassage = navigation?.leavePassage;
   const stepPage = useCallback(
     (direction: PaginationPageDirection) => {
+      if (pending) return;
       const pageStepOutcome = resolvePageStepOutcome({
         currentPageIndex,
         direction,
@@ -50,6 +55,7 @@ export function usePageStepper({
       });
 
       if (pageStepOutcome.kind === "step-page") {
+        leavePassage?.();
         setCurrentPageIndex((current) =>
           clamp(current + direction, 0, pageCount - 1),
         );
@@ -57,6 +63,7 @@ export function usePageStepper({
       }
 
       if (pageStepOutcome.kind === "select-chapter") {
+        leavePassage?.();
         onSelectChapter(pageStepOutcome.nextChapterId, {
           edge:
             pageStepOutcome.edge === "start"
@@ -70,6 +77,8 @@ export function usePageStepper({
       activeChapter.previousChapterId,
       currentPageIndex,
       isLoadingChapter,
+      pending,
+      leavePassage,
       onSelectChapter,
       pageCount,
       setCurrentPageIndex,

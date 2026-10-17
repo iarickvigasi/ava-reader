@@ -1,0 +1,540 @@
+[
+  {
+    "schema_version": "ava-native-word-wrap-response-1",
+    "task_id": "native-word-wrap-e11c5dd7aabdd3be8598e0abaac879ba1945c015a848c6a9bece3c2adb1e6edc",
+    "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "observation_sha256": "50173904b9ed3d66b396e3a3abad4fc4512e91336702fe4d304c0abbc1fdb04e",
+    "catalogue_sha256": "9e8a0c4c86df6ba59fa563ec14ea7967713665c8fc4117e3d757593805c51dd4",
+    "decisions": [
+      {
+        "id": "w00001",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00002",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00003",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00004",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00005",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00006",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00007",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00008",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00009",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00010",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00011",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00012",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00013",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00014",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00015",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00016",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00017",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00018",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00019",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00020",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00021",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00022",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00023",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00024",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00025",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00026",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00027",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00028",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00029",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00030",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00031",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00032",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00033",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00034",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00035",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00036",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00037",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00038",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00039",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00040",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00041",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00042",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00043",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00044",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00045",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00046",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00047",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00048",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00049",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00050",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00051",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00052",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00053",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00054",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00055",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00056",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00057",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00058",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00059",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00060",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00061",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00062",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00063",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00064",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00065",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00066",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00067",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00068",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00069",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00070",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00071",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00072",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00073",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00074",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00075",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00076",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00077",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00078",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00079",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00080",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00081",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00082",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00083",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00084",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00085",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00086",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00087",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00088",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00089",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00090",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00091",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00092",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00093",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00094",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00095",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00096",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00097",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00098",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00099",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00100",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00101",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00102",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00103",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00104",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00105",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00106",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00107",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00108",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00109",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00110",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00111",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00112",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00113",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00114",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00115",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00116",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00117",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00118",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00119",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00120",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00121",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00122",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00123",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00124",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00125",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00126",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00127",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00128",
+        "disposition": "literal"
+      }
+    ]
+  },
+  {
+    "schema_version": "ava-native-word-wrap-response-1",
+    "task_id": "native-word-wrap-59014b711b5c3ecfc74396ce8c3fed967db995fdb7e1e2aca2b15b92b34a205f",
+    "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "observation_sha256": "50173904b9ed3d66b396e3a3abad4fc4512e91336702fe4d304c0abbc1fdb04e",
+    "catalogue_sha256": "9e8a0c4c86df6ba59fa563ec14ea7967713665c8fc4117e3d757593805c51dd4",
+    "decisions": [
+      {
+        "id": "w00129",
+        "disposition": "literal"
+      },
+      {
+        "id": "w00130",
+        "disposition": "literal"
+      }
+    ]
+  }
+]

@@ -1,0 +1,148 @@
+{
+  "version": "1.0.0",
+  "furniture": {
+    "footer_prefix": "Supplement print page ",
+    "exclude_from_body": true
+  },
+  "rights": "Original synthetic AVA test material. No private book content.",
+  "small_caps": {
+    "source_page": 1,
+    "display": "The QUIET light returns.",
+    "text": "The quiet light returns.",
+    "span": "quiet",
+    "style": "small-caps",
+    "PDF_bounds_top_left_pt": [
+      48,
+      280,
+      250,
+      301
+    ],
+    "font_treatment": "Lowercase q/u/i/e/t map to uppercase glyph outlines at9pt; ToUnicode preserves lowercase source scalars."
+  },
+  "continued_list": {
+    "source_pages": [
+      1,
+      2
+    ],
+    "labels": [
+      3,
+      4,
+      5,
+      6
+    ],
+    "epub_start_attributes": [
+      3,
+      5
+    ],
+    "items": [
+      "Count the third window.",
+      "Count the fourth window.",
+      "Count the fifth window.",
+      "Close the register."
+    ]
+  },
+  "notes": [
+    {
+      "id": "supp-note-1",
+      "chapter": "supp-ch1",
+      "label": "1",
+      "callout": "supp-call-1",
+      "source_parts": [
+        {
+          "page": 1,
+          "text": "The first note begins here and continues across the printed page boundary"
+        },
+        {
+          "page": 2,
+          "text": "without becoming a new note or losing its original callout."
+        }
+      ],
+      "joined_text": "The first note begins here and continues across the printed page boundary without becoming a new note or losing its original callout."
+    },
+    {
+      "id": "supp-note-2",
+      "chapter": "supp-ch2",
+      "label": "1",
+      "callout": "supp-call-2",
+      "source_parts": [
+        {
+          "page": 3,
+          "text": "The second chapter restarts at note one; its meaning is a different local explanation."
+        }
+      ],
+      "joined_text": "The second chapter restarts at note one; its meaning is a different local explanation."
+    }
+  ],
+  "figure": {
+    "id": "supp-fig",
+    "source_page": 2,
+    "crop_top_left_pt": [
+      58,
+      268,
+      414,
+      412
+    ],
+    "components": [
+      "embedded raster squares",
+      "vector arrow",
+      "vector circle",
+      "HOME text"
+    ],
+    "caption": "Figure S1. The windows point home.",
+    "expected": "One figure with complete components; original PNG alone is incomplete. Crop/vector handling is a required future worker test."
+  },
+  "metadata_claims": {
+    "title": {
+      "printed": "Atlas Supplements",
+      "pdf": "Noisy metadata title"
+    },
+    "author": {
+      "printed": "AVA Fixture Studio",
+      "pdf": "Noisy metadata author"
+    },
+    "contributors": [
+      {
+        "name": "F. Sample",
+        "role": "translator",
+        "source": "page 1 printed byline"
+      },
+      {
+        "name": "E. Example",
+        "role": "editor",
+        "source": "page 1 printed byline"
+      }
+    ],
+    "publisher": {
+      "value": "AVA Synthetic Press",
+      "source": "page 3"
+    },
+    "edition": {
+      "value": "fixture edition 1",
+      "source": "page 3"
+    },
+    "date": {
+      "value": "2026-09-28",
+      "source": "page 3 publication date"
+    },
+    "isbn": {
+      "printed": "9780000000002",
+      "pdf_subject": "9780000000019",
+      "scope": "checksum-valid synthetic test strings; no actual assignment claim",
+      "expected": "Retain both claims/provenance; prefer printed evidence under declared policy; no external lookup assertion."
+    }
+  },
+  "files": {
+    "FX-SUPPLEMENT.pdf": {
+      "sha256": "3d173094b60ad7ffe1d270bd4e428963f1e1e7fe446eecbed07472483950c8cf",
+      "bytes": 69103
+    },
+    "FX-SUPPLEMENT.epub": {
+      "sha256": "8b7c9015be6ec3f8353f8c69b39ac1c2c51b927db492d0483d6f69a44605077b",
+      "bytes": 4037
+    }
+  },
+  "generator_sha256": "4f50024e0ce0d701a7f7be90c034b5f661c0b2d0ea697530f4dfe7f98cc9f124",
+  "base_generator_sha256": "8a6f1b8b9e618af6fbbf6f762ac7a9f83375dba2ad71f0ae04f6f250c5f0e3b2",
+  "render_dpi": 100,
+  "expected_reading_order": "Chapter 1 main text and figure; note body joined from source pages 1-2, with a backlink to chapter 1; chapter 2 distinct local note and backlink. The same visible label never merges the two note identities."
+}

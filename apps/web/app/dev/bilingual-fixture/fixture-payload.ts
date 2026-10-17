@@ -65,6 +65,7 @@ export function fixtureTranslation(targetLang: string): BilingualChapter {
       ];
     if (block.kind !== "list") return sentences(block.text, block.id);
     let offset = 0;
+    if (block.kind !== "list") return [];
     return block.items
       .map((item) => {
         const units = sentences(item.text, block.id, offset, item.id);

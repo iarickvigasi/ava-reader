@@ -73,7 +73,7 @@ export function resolveTocNavigationTarget(
   if (node.blockId) {
     return {
       blockId: node.blockId,
-      textOffset: 0,
+      textOffset: node.textOffset ?? 0,
     };
   }
 
@@ -94,7 +94,11 @@ function findMatchingTocPathIds(
       return nextPath;
     }
 
-    const nestedMatch = findMatchingTocPathIds(node.children, predicate, nextPath);
+    const nestedMatch = findMatchingTocPathIds(
+      node.children,
+      predicate,
+      nextPath,
+    );
     if (nestedMatch) {
       return nestedMatch;
     }

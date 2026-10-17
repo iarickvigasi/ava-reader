@@ -1,3 +1,4 @@
+import { remapBlockIds } from './remap-block-ids';
 import { labelImageOnlyChapters } from './label-image-only-chapters';
 import type { ReaderBlock, ReaderChapter } from '../reader-types';
 import { normalizeHrefForLookup } from './archive';
@@ -48,12 +49,7 @@ export function buildReaderChapters(input: {
         spineIndex,
       });
       chapters.push({
-        // Keep IDs stable: each TOC segment numbers its blocks from one.
-        blocks: segment.blocks.map((block, index) =>
-          block.id.startsWith('temp-id')
-            ? { ...block, id: `${chapterId}::b${index + 1}` }
-            : block,
-        ),
+        blocks: remapBlockIds(segment.blocks, chapterId),
         chapterId,
         href: segment.leadingAnchorId
           ? `${raw.href}#${segment.leadingAnchorId}`

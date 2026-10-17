@@ -14,10 +14,19 @@ describe('buildStylesheetHintMap', () => {
       `,
     ]);
 
-    expect(map.tagHints.get('p')).toEqual({ textIndent: 1 });
-    expect(map.classHints.get('nonindent')).toEqual({ textIndent: 0 });
-    expect(map.classHints.get('indent')).toEqual({ textIndent: 1 });
-    expect(map.classHints.get('center01')).toEqual({
+    expect(map.tagHints.get('p')).toMatchObject({
+      textIndent: 1,
+      presentation: { indent_em: 1 },
+    });
+    expect(map.classHints.get('nonindent')).toMatchObject({
+      textIndent: 0,
+      presentation: { indent_em: 0 },
+    });
+    expect(map.classHints.get('indent')).toMatchObject({
+      textIndent: 1,
+      presentation: { indent_em: 1 },
+    });
+    expect(map.classHints.get('center01')).toMatchObject({
       align: 'center',
       fontSizeScale: 0.85,
     });
@@ -28,17 +37,20 @@ describe('buildStylesheetHintMap', () => {
       `.foo { text-align: left; font-size: 1em; }`,
       `.foo { text-align: center; }`,
     ]);
-    // text-align overridden, font-size kept (not redeclared) — but
-    // font-size: 1em is the "no-op" default and gets normalized away
-    // by resolveFontSizeScale, so the final hint is just align.
-    expect(map.classHints.get('foo')).toEqual({ align: 'center' });
+    // An explicit default still resets an inherited size.
+    expect(map.classHints.get('foo')).toMatchObject({
+      align: 'center',
+      fontSizeScale: 1,
+    });
   });
 
   it("skips properties we don't care about", () => {
     const map = buildStylesheetHintMap([
       `.foo { color: red; margin: 0; line-height: 1.4; }`,
     ]);
-    expect(map.classHints.get('foo')).toBeUndefined();
+    expect(map.classHints.get('foo')).toEqual({
+      presentation: { id: 'epub-presentation', line_height: 1.4 },
+    });
   });
 });
 

@@ -29,7 +29,7 @@ export function RowCard({
   useDismissOnOutsideClick(rowRef, isMenuOpen, onMenuClose);
 
   const handleKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
-    if (!onSelect) {
+    if (!onSelect || event.target !== event.currentTarget) {
       return;
     }
     if (event.key === "Enter" || event.key === " ") {

@@ -19,6 +19,8 @@ export function validateTranslationChapter(
     chapter.targetLang !== scope.targetLang ||
     chapter.translationVersion !== BILINGUAL_TRANSLATION_VERSION ||
     typeof chapter.contentRevision !== "string" ||
+    (scope.expectedContentRevision !== undefined &&
+      chapter.contentRevision !== scope.expectedContentRevision) ||
     !Array.isArray(chapter.units)
   )
     invalid();
@@ -39,7 +41,9 @@ export function validateTranslationChapter(
       !Number.isInteger(unit.endOffset) ||
       unit.startOffset < 0 ||
       unit.endOffset < unit.startOffset ||
-      (unit.kind !== "sentence" && unit.kind !== "image")
+      (unit.kind !== "sentence" &&
+        unit.kind !== "image" &&
+        unit.kind !== "literal")
     )
       invalid();
     seen.add(unit.id);

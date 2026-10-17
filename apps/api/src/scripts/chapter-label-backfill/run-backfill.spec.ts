@@ -38,6 +38,8 @@ it('dry-runs all users without writes, pages, and continues after bad packages',
           isPrimary: true,
           processingStatus: 'READY',
           book: {
+            pdfImportPrivate: false,
+            canonicalImportPrivate: false,
             libraryItems: { some: {} },
             files: {
               some: { kind: 'SOURCE', format: 'EPUB', isPrimary: true },

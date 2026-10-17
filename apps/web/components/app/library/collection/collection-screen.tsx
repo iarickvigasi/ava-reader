@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import type { LibraryCollection } from "@/lib/api-types";
-import { useCollectionView } from "@/features/offline/buckets/library";
+import { collectionViewToLibraryCollection, useCollectionView } from "@/features/offline/buckets/library";
 import { LibraryCollectionActions } from "./collection-actions/collection-actions";
 import { useCollectionDisplay } from "../shared/collection-display";
 import { LibraryBookCard } from "../shared/book-card";
@@ -27,7 +27,7 @@ export function LibraryCollectionScreen({
   // the server rendered.
   const fromBucket = useCollectionView(collection.slug);
   const effective = fromBucket
-    ? toLibraryCollection(fromBucket, collection)
+    ? collectionViewToLibraryCollection(fromBucket)
     : collection;
 
   const displayName = collectionDisplay.name(effective);
@@ -103,37 +103,4 @@ export function LibraryCollectionScreen({
       </div>
     </div>
   );
-}
-
-// Bridge bucket view → server payload shape. The downstream LibraryBookCard
-// only reads `LibraryCardBook` fields, all of which the bucket preserves.
-// Description/itemCount/etc. come straight off the bucket row.
-function toLibraryCollection(
-  view: ReturnType<typeof useCollectionView> & {},
-  initial: LibraryCollection,
-): LibraryCollection {
-  return {
-    ...initial,
-    id: view.id,
-    slug: view.slug,
-    kind: view.kind,
-    name: view.name,
-    description: view.description,
-    smartKey: view.smartKey,
-    itemCount: view.itemCount,
-    unreadCount: view.unreadCount,
-    books: view.books.map((book) => ({
-      libraryItemId: book.libraryItemId,
-      slug: book.slug,
-      title: book.title,
-      authors: book.authors,
-      coverImageUrl: book.coverImageUrl,
-      completionPercent: book.completionPercent,
-      // The bucket trims primaryFormat to string for storage; cast back to
-      // the BookFileFormat union. Values stored were always one of the
-      // valid enum members so the runtime is sound.
-      primaryFormat: book.primaryFormat as LibraryCollection["books"][number]["primaryFormat"],
-      lastReadAt: book.lastReadAt ?? "",
-    })),
-  };
 }

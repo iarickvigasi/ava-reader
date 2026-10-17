@@ -9,9 +9,11 @@ import {
 } from "react";
 import type { ReaderStatusPayload } from "@/lib/api-types";
 import { fetchReaderPayload } from "../../../data/reader-client";
-import type { ReaderControllerAuth, ReadyReaderPayload } from "../../../shared/types";
+import type {
+  ReaderControllerAuth,
+  ReadyReaderPayload,
+} from "../../../shared/types";
 import {
-  isAbortError,
   isReadyReaderPayload,
   normalizeReaderStatusPayload,
 } from "../../../shared/utils";
@@ -38,7 +40,6 @@ export function useBackgroundChapterRefresh({
   isSignedIn,
   libraryItemId,
   mergeReadyPayload,
-  setPayload,
 }: UseBackgroundChapterRefreshInput) {
   const [backgroundChapterId, setBackgroundChapterId] = useState<string | null>(
     null,
@@ -96,13 +97,11 @@ export function useBackgroundChapterRefresh({
             return;
           }
 
-          setPayload(normalizedPayload);
+          // Prefetch cannot replace the book already being read with a
+          // transient processing/error response. Explicit navigation reports
+          // unavailable targets through the foreground request instead.
         })
-        .catch((error: unknown) => {
-          if (!isAbortError(error)) {
-            throw error;
-          }
-        })
+        .catch(() => undefined)
         .finally(() => {
           if (
             shouldFinalizeNavigationRequest({
@@ -119,7 +118,14 @@ export function useBackgroundChapterRefresh({
           }
         });
     },
-    [activeReadyChapterIdRef, getToken, isLoaded, isSignedIn, libraryItemId, mergeReadyPayload, setPayload],
+    [
+      activeReadyChapterIdRef,
+      getToken,
+      isLoaded,
+      isSignedIn,
+      libraryItemId,
+      mergeReadyPayload,
+    ],
   );
 
   return { backgroundChapterId, cancelBackgroundRefresh, refreshChapterWindow };
