@@ -70,41 +70,10 @@ def assemble_metadata(source: Path, state: AssemblyState, document_id: str) -> l
                 evidence=state.blocks[0]["evidence"],
             )
         )
-    for claim in claims:
-        if claim["field"] in {"title", "contributor"} and any(
-            p["status"] == "accepted"
-            and p["field"] == claim["field"]
-            and _comparison_value(p) != _comparison_value(claim)
-            and p.get("contributor_role") == claim.get("contributor_role")
-            for p in printed
-        ):
-            claim["status"] = "conflict"
-    for value in printed:
-        existing = next(
-            (
-                c
-                for c in claims
-                if c["field"] == value["field"]
-                and _comparison_value(c) == _comparison_value(value)
-                and c.get("contributor_role") == value.get("contributor_role")
-                and c.get("scope") == value.get("scope")
-                and c.get("identifier_scheme") == value.get("identifier_scheme")
-            ),
-            None,
-        )
-        if existing is None:
-            claims.append(dict(id=f"metadata-printed-{len(claims)}", **value))
-        elif value["status"] == "accepted" and existing["status"] not in {"accepted", "conflict"}:
-            existing.update(value)
-        else:
-            # New source evidence strengthens provenance without promoting uncertain facts.
-            evidence = [*existing.get("evidence", []), *value.get("evidence", [])]
-            existing["evidence"] = [
-                item for i, item in enumerate(evidence) if item not in evidence[:i]
-            ]
-    return claims
+    from .compile_metadata import compile_metadata
+    from .merge_metadata import merge_metadata
 
-
-def _comparison_value(claim: dict[str, Any]) -> str:
-    text = str(claim["value"])
-    return " ".join(text.split()) if claim["field"] == "contributor" else text
+    current = state.source_title_policy == "ava-frontmatter-title-1"
+    return merge_metadata(
+        claims, compile_metadata(printed, state) if current else printed, keep_uncertain=current
+    )

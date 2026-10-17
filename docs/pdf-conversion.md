@@ -160,6 +160,14 @@ replace accepted content.
 
 Printed title/copyright evidence may confirm metadata; body headings, quoted labels and unsupported
 PDF Info claims remain candidates. A print ISBN is not the generated EPUB identifier.
+New complete-title reconstruction compiles equivalent accepted source title, subtitle, contributor
+and publisher claims once, retaining their source evidence and the literal title-page spelling when
+available. Only whitespace and one-character case variants qualify; roles, scopes, uncertain claims,
+identifiers, punctuation and accents remain distinct. Separately selected whole native subtitle lines
+can compose only with exact range provenance, adjacent same-style/page/column geometry and an
+independent accepted complete subtitle on another page. Missing or ambiguous proof retains the
+separate claims. This late metadata projection changes neither source content nor paid task inputs;
+it does not rewrite accepted editions or the historical EPUB exporter.
 
 Book-level refinement compares bounded common-scale source crops and an ordered catalogue. Tasks
 are bound to source, observations, images and exact IDs; they can propose heading/parent/chapter,
