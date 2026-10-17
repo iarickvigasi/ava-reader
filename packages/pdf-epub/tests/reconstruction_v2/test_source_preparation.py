@@ -98,7 +98,9 @@ class SourcePreparationTests(unittest.TestCase):
                 lambda: prepare_page(source, root, 1),
                 lambda: prepare_source(source, root, digest),
             ):
-                with patch("ava_pdf_epub.reconstruction_v2.prepare_page.observe_page") as render:
+                with patch(
+                    "ava_pdf_epub.reconstruction_v2.observe_source_page.observe_page"
+                ) as render:
                     with self.assertRaises(AdmissionError) as caught:
                         action()
                     findings.append(caught.exception.refusal())
@@ -220,7 +222,7 @@ class SourcePreparationTests(unittest.TestCase):
                     if fail:
                         with (
                             patch(
-                                "ava_pdf_epub.reconstruction_v2.prepare_page.observe_page",
+                                "ava_pdf_epub.reconstruction_v2.observe_source_page.observe_page",
                                 side_effect=ValueError("render failed"),
                             ),
                             self.assertRaisesRegex(ValueError, "render failed"),

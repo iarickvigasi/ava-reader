@@ -1,6 +1,6 @@
 """Private source observations, separate from accepted book content and provider messages."""
 
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import Field, model_validator
 
@@ -33,6 +33,9 @@ class NativeLine(Record):
     text: str = Field(max_length=200000)
     glyphs: list[Glyph] = Field(max_length=200000)
     style: Style
+    inserted_space_offsets: list[Annotated[int, Field(ge=1, le=200000)]] = Field(
+        default_factory=list, max_length=20000, exclude_if=lambda v: not v
+    )
 
 
 class Graphic(Record):
