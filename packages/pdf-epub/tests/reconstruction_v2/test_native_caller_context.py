@@ -420,7 +420,7 @@ class NativeCallerContextTests(unittest.TestCase):
         root, source, checkpoint, owner, _ = self.fixture()
         with (
             patch(
-                "ava_pdf_epub.reconstruction_v2.pdf_links.glyph_ranges",
+                "ava_pdf_epub.reconstruction_v2.pdf_link_application.glyph_ranges",
                 side_effect=ValueError("OTHER_REFUSAL"),
             ),
             patch("ava_pdf_epub.reconstruction_v2.annotation_word_ocr._run_ocr") as run,

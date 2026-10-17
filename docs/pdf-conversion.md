@@ -501,6 +501,19 @@ for; letters, internal whitespace and accepted text stay unchanged. Unreliable g
 clipped glyphs, optional-content and complex-state observations cannot qualify this alternative.
 The text remains an OCR segment and still requires its dispatched recognition receipt. A content-free
 information finding records corroborated geometry; native geometry cannot authorize transcription.
+The current continuation policy may additionally derive a complete source-glyph/codepoint bijection
+for a uniquely owned OCR entry before structure joins. All visible source ink in its envelope must
+belong to one column; its complete non-whitespace Unicode sequence must exactly match accepted text.
+Repeated positive gaps between distinct paired native lines veto a crossing owner without a
+minimum font-relative gutter width; aligned letter or word gaps alone supply no column authority. Wide unsupported gaps are also refused; these conservative filters may reject legitimate
+spacing and do not infer a new reading order. Only accepted whitespace may differ. Source glyphs
+stay whole, including multi-codepoint glyphs;
+partial callers, competing owners, unsafe source state and unknown risks refuse this alternative.
+This map supplies offsets only; it does not change OCR text, typography, ownership or receipts.
+Coordinate targets select the first relevant source fragment before mapping; an unprovable first
+fragment cannot redirect to later text. Explicit PageLabels/comma corroboration retains its separate
+source-action, unique-label, digit-coverage and punctuation guards before translating proved digits.
+Historical link behavior is unchanged. Source tests are not a rebuilt-book or reader qualification.
 Other scanned link rectangles use bounded local word OCR, cached per linked page, with exact
 transcription alignment and unique geometry ownership.
 Low-confidence, clipped, hidden or ambiguous words require review. Scanned table-cell links and

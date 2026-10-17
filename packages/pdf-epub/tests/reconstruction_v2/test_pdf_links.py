@@ -141,7 +141,7 @@ class PdfLinkTests(unittest.TestCase):
             words = [AnnotationWord((1, 1, 1), 1, "Visit", 95, box(10, 20, 90, 30))]
             original = segment("scan", "Visit")
             with patch(
-                "ava_pdf_epub.reconstruction_v2.pdf_links.recognize_annotation_words",
+                "ava_pdf_epub.reconstruction_v2.pdf_ocr_caller.recognize_annotation_words",
                 return_value=words,
             ) as recognize:
                 result = apply_pdf_links(
@@ -165,7 +165,7 @@ class PdfLinkTests(unittest.TestCase):
                 }
             )
             with patch(
-                "ava_pdf_epub.reconstruction_v2.pdf_links.recognize_annotation_words",
+                "ava_pdf_epub.reconstruction_v2.pdf_ocr_caller.recognize_annotation_words",
                 return_value=words,
             ):
                 retained = apply_pdf_links(
