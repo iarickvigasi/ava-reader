@@ -8,6 +8,7 @@ from ..contracts.profiles import BILINGUAL_PROFILE
 from .assemble_figure import assemble_figure
 from .assemble_table import assemble_table
 from .assembly_state import AssemblyState
+from .assert_index_indents import assert_index_indents
 from .associate_figures import associate_figures
 from .associate_table_captions import associate_table_captions
 from .canonical_text import canonical_text
@@ -23,6 +24,7 @@ def assemble_blocks(
     scratch: Path,
     state: AssemblyState,
 ) -> None:
+    assert_index_indents(segments, state)
     pages = PreparedPageMap(prepared)
     source_tables = bool(prepared) and prepared[0].profile_id == BILINGUAL_PROFILE
     for segment in segments:

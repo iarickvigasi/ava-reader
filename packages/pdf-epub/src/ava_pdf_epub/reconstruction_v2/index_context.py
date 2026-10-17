@@ -5,6 +5,7 @@ from collections.abc import Sequence
 
 from .assembly_state import AssemblyState
 from .continuation_presentation_contract import POLICY
+from .index_entry_receipt import IndexEntryReceipt
 from .index_entry_source import source_index_entry
 from .index_layout import INDEX_LAYOUT_RISK, index_rows
 from .index_prompt import INDEX_PROMPT_VERSION
@@ -58,13 +59,17 @@ def record_index_context(
                 continue
             proof = prove_glyph_map(page, owner, owners, POLICY)
             if proof is not None and source_index_entry(page, owner, proof):
-                state.source_index_entries[owner.id] = source_context_identity(owner)
+                state.source_index_entries[owner.id] = IndexEntryReceipt(
+                    source_context_identity(owner)
+                )
 
 
 def independent_index_entry(segment: Segment, state: AssemblyState) -> bool:
+    receipt = state.source_index_entries.get(segment.id)
     return (
         state.source_continuation_policy == POLICY
         and segment.method == "ocr"
         and not segment.native_line_ids
-        and state.source_index_entries.get(segment.id) == source_context_identity(segment)
+        and receipt is not None
+        and receipt.owner_identity == source_context_identity(segment)
     )

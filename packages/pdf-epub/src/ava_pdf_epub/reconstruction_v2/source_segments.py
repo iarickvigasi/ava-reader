@@ -4,18 +4,18 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
-from .annotation_spans import apply_annotation_spans
 from .assemble_pages import assemble_pages
 from .assembly_state import AssemblyState
 from .bind_printed_targets import bind_printed_targets
 from .continuation_margins import continuation_margins
 from .index_context import record_index_context
+from .index_indents import recover_index_indents
 from .linked_furniture import preserve_linked_furniture
+from .map_source_links import map_source_links
 from .native_layout_policy import NativeLayoutPolicy
 from .native_structure_versions import AnyNativeStructureResponse
 from .ocr_indents import recover_ocr_indents
 from .ocr_running_furniture import corroborate_running_furniture
-from .pdf_links import apply_pdf_links
 from .prepared_types import AnyPreparedPage
 from .qualify_pages import qualify_pages
 from .recognition_contract import RecognitionResponse
@@ -64,7 +64,7 @@ def source_segments(
     if source_title_policy == "ava-frontmatter-title-1":
         # Locate annotations and both link ends on unchanged source owners before
         # compound headings introduce larger boxes or repeated component text.
-        segments = _map_source_links(source, scratch, prepared, segments, state)
+        segments = map_source_links(source, scratch, prepared, segments, state)
         segments = bind_printed_targets(segments, state, defer_missing=True)
     segments = source_structure(source, prepared, qualified, segments, state)
     if source_title_policy == "ava-frontmatter-title-1":
@@ -73,28 +73,8 @@ def source_segments(
     segments = recover_ocr_indents(segments, prepared, scratch, state)
     continuation_margins(segments, prepared, scratch, state)
     if source_title_policy is None:
-        segments = _map_source_links(source, scratch, prepared, segments, state)
+        segments = map_source_links(source, scratch, prepared, segments, state)
     record_index_context(prepared, segments, state)
+    segments = recover_index_indents(prepared, segments, state)
     state.segments.update({s.id: s for s in segments})
     return pages, segments, state
-
-
-def _map_source_links(
-    source: Path,
-    scratch: Path,
-    prepared: Sequence[AnyPreparedPage],
-    segments: list[Segment],
-    state: AssemblyState,
-) -> list[Segment]:
-    for checkpoint in prepared:
-        local = [s for s in segments if s.page == checkpoint.observation.number]
-        mapped = {
-            s.id: s
-            for s in apply_annotation_spans(
-                checkpoint.observation, local, scratch, source, checkpoint.profile_id
-            )
-        }
-        segments = [mapped.get(s.id, s) for s in segments]
-        state.segments.update(mapped)
-    segments = apply_pdf_links(source, prepared, segments, state, scratch)
-    return segments

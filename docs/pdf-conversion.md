@@ -68,7 +68,7 @@ exactly and identify one occurrence. Grammar3 carries this guidance; cross-field
 relationships remain strict worker checks, without normalization, response repair or automatic replay.
 Malformed responses fail with retained investigation evidence. This source candidate is not live
 scanned/mixed qualification evidence.
-Gemini recognition uses `ava-recognition-observation-1` only on the provider wire. The model
+Gemini recognition uses `ava-recognition-observation-2` only on the provider wire. The model
 returns observations and local segment relationships; it cannot supply task/source/render bindings,
 segment page numbers or inline style IDs. A decoder captured during exact request preparation
 restores dispatch-owned metadata, then applies the unchanged canonical response and worker checks.
@@ -506,6 +506,19 @@ The receipt binds its exact text, box, page, role and false continuation declara
 lowercase cross-column join heuristics and interpreting index indentation/italics as a quotation;
 it cannot approve typography, change recognition output or exempt unrelated introductory prose.
 Declared continuations and uncorroborated entries retain ordinary review/refusal rules.
+Separately, a complete source-glyph proof and at least three matching entry margins in the same
+physical column can establish index indentation. A single-row subentry uses a whole-block inset,
+not a prose first-line indent. Complete numeric wraps use their observed continuation margin and
+a negative first-line displacement. This measured assembly step changes only the two indentation
+properties; original recognition observations, text, styles on words, links and positions remain
+fixed. Column calibration includes the full source rows rather than just the accepted subset,
+requires repeated observed flush starts with the same source start font/size and differentiated margins, and does not promote an
+all-displaced cohort to a new root. A single complete numeric continuation supplies its own margin;
+multiple continuation rows must agree. Missing, conflicting, out-of-range or unproved source geometry
+retains the observation with an information finding rather than inventing a hierarchy. The final
+assembly refuses a later owner/style conflict with a measured receipt. Recognition alone is not
+typography proof. New comparison-task identities reflect the measured styles; old responses are
+reused only when their complete normal task/request identities still match.
 
 Link annotations preserve ordinary URI and direct/named GoTo destinations. A narrowly recognized
 literal `this.zoom=100;this.pageNum=N` link is interpreted as a source-page target; no JavaScript is
