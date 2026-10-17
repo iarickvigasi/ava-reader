@@ -42,6 +42,7 @@ import type { PrintedTitleResponse } from './generated/PrintedTitleResponse';
 import type { PrintedTitleRefinementBatch } from './generated/PrintedTitleRefinementBatch';
 import type { PrintedTitleReconstructionInput } from './generated/PrintedTitleReconstructionInput';
 import type { RecognitionAnchorContextTask } from './generated/RecognitionAnchorContextTask';
+import type { RecognitionOverflowContextTask } from './generated/RecognitionOverflowContextTask';
 import type { RecognitionAnchorContextResponse } from './generated/RecognitionAnchorContextResponse';
 import type { NativeStructurePrepareResult } from './generated/NativeStructurePrepareResult';
 import type { NativeStructureReconstructionInput } from './generated/NativeStructureReconstructionInput';
@@ -49,6 +50,7 @@ import type { NativeStructureTask } from './generated/NativeStructureTask';
 import type { NativeStructureResponse } from './generated/NativeStructureResponse';
 
 export type Packets = {
+  RecognitionOverflowContextTask: RecognitionOverflowContextTask;
   ContinuationReconstructionInput: ContinuationReconstructionInput;
   ContinuationRefinementBatch: ContinuationRefinementBatch;
   PresentationRefinementTask: PresentationRefinementTask;

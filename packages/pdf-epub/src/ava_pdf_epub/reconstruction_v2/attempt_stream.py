@@ -256,6 +256,7 @@ def _run(
                         writer,
                         incoming,
                         allow_cells=isinstance(request, CellGeometryReconstructionInput),
+                        allow_overflow=isinstance(request, ContinuationReconstructionInput),
                     )
                     if proof is not None:
                         response_bytes += len(json_bytes(proof.model_dump(mode="json"))) + (

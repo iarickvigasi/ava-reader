@@ -20,6 +20,7 @@ from .prepared_types import AnyPreparedPage
 from .qualify_pages import qualify_pages
 from .recognition_contract import RecognitionResponse
 from .recover_native_indents import recover_native_indents
+from .recover_source_quotes import recover_source_quotes
 from .segments import Segment
 from .source_structure import source_structure
 
@@ -61,6 +62,7 @@ def source_segments(
     qualified = preserve_linked_furniture(source, prepared, qualified, state)
     qualified = corroborate_running_furniture(prepared, qualified, state)
     pages, segments = assemble_pages(prepared, qualified, state)
+    segments = recover_source_quotes(prepared, segments, state)
     if source_title_policy == "ava-frontmatter-title-1":
         # Locate annotations and both link ends on unchanged source owners before
         # compound headings introduce larger boxes or repeated component text.

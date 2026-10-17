@@ -17,6 +17,7 @@ from .attempt_exchange import (
     strict_json,
     write_bytes,
 )
+from .overflow_context_contract import RecognitionOverflowContextTask
 from .recognition_anchor_context import (
     RecognitionAnchorContextResponse,
     RecognitionAnchorContextTask,
@@ -52,7 +53,10 @@ class AnchorQuoteExchange(Record):
 
 
 def emit_context(
-    writer: ExchangeWriter, task: RecognitionAnchorContextTask | RecognitionAnchorQuoteTask
+    writer: ExchangeWriter,
+    task: RecognitionAnchorContextTask
+    | RecognitionAnchorQuoteTask
+    | RecognitionOverflowContextTask,
 ) -> AnchorContextExchange | AnchorQuoteExchange:
     parents = writer._anchor_context_parents
     if writer.terminal or task.original_task_id in parents:
@@ -115,6 +119,7 @@ def accept_attempt_recognition(
     writer: ExchangeWriter,
     incoming: Any,
     allow_correction: bool,
+    allow_overflow: bool = False,
 ) -> Any:
     data = json_bytes(
         {
@@ -129,6 +134,16 @@ def accept_attempt_recognition(
     except ValidationError:
         if not allow_correction:
             raise
+    if allow_overflow:
+        from .overflow_context_exchange import accept_overflow_context
+        from .overflow_context_prepare import prepare_overflow_context
+
+        try:
+            overflow = prepare_overflow_context(task, json_bytes(raw_response).decode())
+        except ValueError:
+            overflow = None
+        if overflow is not None:
+            return accept_overflow_context(task, overflow, writer, incoming)
     # Select the repair before dispatch: quotation repair replaces, never follows, V1.
     quote_task = prepare_anchor_quote(task, json_bytes(raw_response).decode())
     if any(

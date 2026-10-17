@@ -44,7 +44,9 @@ export async function validateAnchorContext(
     value.schema_version !==
       (quoteMode
         ? 'ava-anchor-quote-checked-2'
-        : 'ava-anchor-context-checked-1') ||
+        : correction.schema_version === 'ava-recognition-anchor-context-task-2'
+          ? 'ava-anchor-context-checked-2'
+          : 'ava-anchor-context-checked-1') ||
     value.task_id !== correction.task_id ||
     value.request_sha256 !==
       createHash('sha256').update(auxiliaryBytes).digest('hex')

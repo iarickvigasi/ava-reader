@@ -1,5 +1,5 @@
 import { exchangeJson } from '../../../pdf-conversion/runtime/exchange-json';
-import { recognitionResponse } from '../../../pdf-conversion/reconstruction/recognition-response';
+import { recognitionDecodedOutput } from '../../../pdf-conversion/reconstruction/recognition-decoded-output';
 import { PdfProviderError } from './errors';
 import { RECOGNITION_OBSERVATION_WIRE } from './recognition-observation-contract';
 import { recognitionObservationTask } from './recognition-observation-task';
@@ -52,9 +52,7 @@ export function recognitionObservationDecoder(task: ProviderTask) {
         page: trusted.page_number,
       })),
     };
-    return JSON.stringify(
-      recognitionResponse(trusted, JSON.stringify(canonical)),
-    );
+    return recognitionDecodedOutput(trusted, JSON.stringify(canonical));
   };
 }
 export function decodeProviderReceipt<T extends { output: string }>(

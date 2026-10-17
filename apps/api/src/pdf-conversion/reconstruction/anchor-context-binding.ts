@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import type { RecognitionTask } from './generated/RecognitionTask';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
 import type { RecognitionAnchorContextTask } from './generated/RecognitionAnchorContextTask';
+import type { RecognitionOverflowContextTask } from './generated/RecognitionOverflowContextTask';
 import { exchangeJson } from '../runtime/exchange-json';
 import { PdfRuntimeError } from '../runtime/runtime-error';
 import { validatePacket } from './validate-packet';
@@ -12,7 +13,9 @@ export const contextSha = (value: string) =>
   createHash('sha256').update(value).digest('hex');
 export const contextSlotKey = (segment: number, span: number) =>
   `${segment}:${span}`;
-export function contextTaskId(task: RecognitionAnchorContextTask) {
+export function contextTaskId(
+  task: RecognitionAnchorContextTask | RecognitionOverflowContextTask,
+) {
   return (
     'anchor-context-' +
     contextSha(
@@ -56,6 +59,7 @@ function sameJson(left: unknown, right: unknown): boolean {
     keys.every((key) => Object.hasOwn(b, key) && sameJson(a[key], b[key]))
   );
 }
+export const sameContextJson = sameJson;
 export function anchorMatches(
   text: string,
   anchor: NonNullable<Span['anchor']>,

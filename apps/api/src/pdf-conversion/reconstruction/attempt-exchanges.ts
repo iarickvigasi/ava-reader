@@ -1,5 +1,8 @@
 import { validatePacket } from './validate-packet';
-import { NATIVE_STRUCTURE_V2_POLICY } from '../../library/pdf-import/admission/profile';
+import {
+  NATIVE_STRUCTURE_V2_POLICY,
+  SOURCE_CONTINUATION_POLICY,
+} from '../../library/pdf-import/admission/profile';
 import type { NativeStructureResponse2 } from './generated/NativeStructureResponse2';
 import type { AnyGeometryProof } from './geometry-types';
 import { cellGeometryBinding } from './cell-geometry-binding';
@@ -25,10 +28,8 @@ import { reconstructionRequest } from './reconstruction-request';
 import type { NativeStructureResponse } from './generated/NativeStructureResponse';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
 import type { RecognitionTask } from './generated/RecognitionTask';
-import {
-  anchorContextBinding,
-  anchorQuoteBinding,
-} from './anchor-context-binding';
+import { anchorQuoteBinding } from './anchor-context-binding';
+import { anchorRepairBinding } from './anchor-repair-binding';
 import { parseSourceRefusal, type SourceContentError } from './source-refusal';
 import {
   recognizeAttemptReceipt,
@@ -60,6 +61,7 @@ export function attemptExchanges(context: AttemptContext) {
   const geometryCorrections: AnyGeometryProof[] = [];
   const correctionIds = new Set<string>();
   let correctionUnresolved = false;
+  let pendingOverflow = false;
   let lastOriginal:
     | {
         task: RecognitionTask;
@@ -157,6 +159,11 @@ export function attemptExchanges(context: AttemptContext) {
     signal: AbortSignal,
   ): Promise<unknown[]> {
     if (correctionUnresolved && envelope.kind !== 'refusal') return invalid();
+    if (
+      pendingOverflow &&
+      !['anchor_context', 'refusal'].includes(envelope.kind)
+    )
+      return invalid();
     if (envelope.kind === 'page') {
       lastOriginal = undefined;
       const prepared = preparedAttemptPage(envelope.payload, context, {
@@ -212,11 +219,9 @@ export function attemptExchanges(context: AttemptContext) {
         pageTaskIndex++;
         return [response];
       }
-      const { response, originalResponseJson } = await recognizeAttemptReceipt(
-        task,
-        context,
-        signal,
-      );
+      const receipt = await recognizeAttemptReceipt(task, context, signal);
+      const { response, originalResponseJson } = receipt;
+      pendingOverflow = receipt.pendingOverflow;
       if (failed) return invalid();
       retainResponse(response);
       responses.push(response);
@@ -321,11 +326,24 @@ export function attemptExchanges(context: AttemptContext) {
       )
         return invalid();
       const parent = lastOriginal;
+      if (
+        pendingOverflow &&
+        (envelope.payload as { schema_version?: unknown })?.schema_version !==
+          'ava-recognition-anchor-context-task-2'
+      )
+        return invalid();
       const task = (
         envelope.kind === 'anchor_quote'
           ? anchorQuoteBinding
-          : anchorContextBinding
+          : anchorRepairBinding
       )(envelope.payload, parent.task, parent.response);
+      if (
+        task.schema_version === 'ava-recognition-anchor-context-task-2' &&
+        (context.recognitionRepairPolicy !==
+          'ava-recognition-geometry-repair-2' ||
+          context.sourceContinuationPolicy !== SOURCE_CONTINUATION_POLICY)
+      )
+        return invalid();
       if (taskIds.has(task.task_id) || correctionIds.has(task.task_id))
         return invalid();
       // Consume the one opportunity before dispatch, including WAIT/uncertain failures.
@@ -355,6 +373,7 @@ export function attemptExchanges(context: AttemptContext) {
       if (responseBytes > 60 * 1024 ** 2)
         throw new PdfRuntimeError('RESOURCE_LIMIT');
       responses[parent.index] = result.corrected;
+      pendingOverflow = false;
       inputBound();
       return [result.response];
     }
@@ -524,6 +543,7 @@ export function attemptExchanges(context: AttemptContext) {
       }
       if (
         exitCode !== 0 ||
+        pendingOverflow ||
         !terminal ||
         !batch ||
         !pages ||

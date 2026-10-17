@@ -282,6 +282,13 @@ def validate_anchor_context(data: bytes) -> dict[str, object]:
         or value["mode"] != "validate_anchor_context"
     ):
         raise ValueError("ANCHOR_CONTEXT_VALIDATION_FIELDS")
+    if (
+        isinstance(value["correction"], dict)
+        and value["correction"].get("schema_version") == "ava-recognition-anchor-context-task-2"
+    ):
+        from .validate_overflow_context import validate_overflow_context
+
+        return validate_overflow_context(data)
     original = RecognitionTask.model_validate(value["task"])
     correction = RecognitionAnchorContextTask.model_validate(value["correction"])
     if prepare_anchor_context(original, correction.original_response_json) != correction:

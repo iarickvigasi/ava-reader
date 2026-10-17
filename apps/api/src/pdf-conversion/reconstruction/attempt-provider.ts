@@ -24,7 +24,7 @@ import type { RefinementTask } from './refinement-packets';
 import { refinementResponse } from './refinement-response';
 import { providerTask } from './provider-task';
 import { refinementProviderTask } from './refinement-provider-task';
-import { recognitionResponse } from './recognition-response';
+import { recognitionAttemptResult } from './recognition-attempt-result';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
 import type { AnchorRepairTask } from './anchor-repair-types';
 import { anchorContextProviderTask } from './anchor-context-provider-task';
@@ -78,10 +78,12 @@ export async function recognizeAttemptReceipt(
     signal,
   );
   context.checkActive(signal);
-  return {
-    response: recognitionResponse(task, receipt.output),
-    originalResponseJson: receipt.output,
-  };
+  return recognitionAttemptResult(
+    task,
+    receipt.output,
+    context.recognitionRepairPolicy === 'ava-recognition-geometry-repair-2' &&
+      context.sourceContinuationPolicy === SOURCE_CONTINUATION_POLICY,
+  );
 }
 
 export async function refineAttemptTask(

@@ -1,14 +1,12 @@
 import { ANCHOR_QUOTE_PROMPT } from './generated/anchor-quote-prompt';
+import { OVERFLOW_CONTEXT_PROMPT } from './generated/prompt';
+import { anchorRepairBinding } from './anchor-repair-binding';
 import type { ProviderTask } from '../../library/pdf-import/providers/types';
 import type { RecognitionTask } from './generated/RecognitionTask';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
 import { ANCHOR_CONTEXT_PROMPT } from './generated/anchor-context-prompt';
 import { recognitionSchemas } from './generated/schemas';
-import {
-  anchorContextBinding,
-  anchorQuoteBinding,
-  contextSha,
-} from './anchor-context-binding';
+import { contextSha } from './anchor-context-binding';
 
 export function anchorContextProviderTask(
   input: unknown,
@@ -16,9 +14,7 @@ export function anchorContextProviderTask(
   original: RecognitionResponse,
   quoteMode = false,
 ): ProviderTask {
-  const task = quoteMode
-    ? anchorQuoteBinding(input, parent, original)
-    : anchorContextBinding(input, parent, original);
+  const task = anchorRepairBinding(input, parent, original, quoteMode);
   const { image: pixels, ...context } = task;
   return {
     // The stock grant/task ledger enforces one durable opportunity for this parent.
@@ -32,7 +28,11 @@ export function anchorContextProviderTask(
     messages: [
       {
         role: 'system',
-        content: quoteMode ? ANCHOR_QUOTE_PROMPT : ANCHOR_CONTEXT_PROMPT,
+        content: quoteMode
+          ? ANCHOR_QUOTE_PROMPT
+          : task.schema_version === 'ava-recognition-anchor-context-task-2'
+            ? OVERFLOW_CONTEXT_PROMPT
+            : ANCHOR_CONTEXT_PROMPT,
       },
       {
         role: 'user',

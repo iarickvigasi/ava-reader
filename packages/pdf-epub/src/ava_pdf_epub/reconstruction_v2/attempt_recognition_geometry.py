@@ -41,6 +41,7 @@ def accept_geometry_attempt(
     writer: ExchangeWriter,
     incoming: Any,
     allow_cells: bool = False,
+    allow_overflow: bool = False,
 ) -> tuple[Any, RecognitionGeometryProof | RecognitionCellGeometryProof | None]:
     reply = RecognitionAttemptReply.model_validate(raw_reply)
     parent = canonical_geometry_parent(reply.original_response_json)
@@ -96,7 +97,9 @@ def accept_geometry_attempt(
     try:
         correction = prepare_geometry_repair(task, reply.original_response_json)
     except ValueError:
-        return accept_attempt_recognition(task, parent, writer, incoming, True), None
+        return accept_attempt_recognition(
+            task, parent, writer, incoming, True, allow_overflow
+        ), None
     packet = emit_geometry(writer, correction)
     response = RecognitionGeometryResponse.model_validate(reply_geometry(writer, incoming, packet))
     if response.outcome == "unresolved":

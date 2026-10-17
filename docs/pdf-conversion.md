@@ -65,7 +65,7 @@ quoting style, note and link spans from each owning segment/cell's final text. R
 exact; ordinary raised/lowered digits use ordinary text and explicit placement styles. Intrinsic
 Unicode shape alone does not authorize another vertical shift. Supplied adjacent contexts must match
 exactly and identify one occurrence. Grammar3 carries this guidance; cross-field text/anchor
-relationships remain strict worker checks, without normalization, response repair or automatic replay.
+relationships remain strict worker checks, without text normalization or automatic request replay.
 Malformed responses fail with retained investigation evidence. This source candidate is not live
 scanned/mixed qualification evidence.
 Gemini recognition uses `ava-recognition-observation-2` only on the provider wire. The model
@@ -74,6 +74,17 @@ segment page numbers or inline style IDs. A decoder captured during exact reques
 restores dispatch-owned metadata, then applies the unchanged canonical response and worker checks.
 Both fresh and reused receipts use it after charge settlement; private raw responses stay unchanged.
 Generation-only prompt/schema projections leave canonical task identities and other model routes fixed.
+
+Current Input10 attempts with captured continuation policy and repair-policy2 can retain an explicit `ava-recognition-overflow-candidate-1`
+control when only before/after anchor contexts exceed128characters (bounded by4096each). This is
+not a canonical response; ordinary and historical consumers refuse it. A separate version2 context
+task requires full source/shape checks, separately valid pure-typography spans, complete slot coverage
+and exact immutable parent/image/text/style bindings before one paid correction. Its output still
+uses the canonical128-character bounds and normal worker acceptance. References, numeric offsets,
+missing quotations and unrelated faults remain ineligible. The probe never truncates accepted text
+or drops a span from final content. Known charges and the original reply survive every refusal.
+Until that correction succeeds, the host permits only its bound version2 context task or terminal
+refusal; no later page, paid task, refinement or artifact may advance past the invalid candidate.
 Bibliographic generation requires both inclusive start and exclusive end code-point offsets for a
 selected role. A declined role has null role/start/end. Omitting an endpoint cannot become an
 accepted metadata choice; exact text bounds, source identity and crop evidence remain worker checks.
@@ -553,6 +564,13 @@ spacing and do not infer a new reading order. Only accepted whitespace may diffe
 stay whole, including multi-codepoint glyphs;
 partial callers, competing owners, unsafe source state and unknown risks refuse this alternative.
 This map supplies offsets only; it does not change OCR text, typography, ownership or receipts.
+
+A separate current-policy assembly pass can restore a source U+2019 apostrophe that recognition
+replaced with U+0027. Every other non-whitespace character must already match the complete visible
+owner, and the unchanged strict glyph proof must pass after this single-codepoint substitution.
+Whitespace, offsets, IDs, styles and raw replies remain fixed; referenced spans cannot borrow this
+recovery. Information findings retain typed original/derived text hashes, observation identity and
+exact glyph substitutions before links, joins and fresh refinement identities are compiled.
 Coordinate targets select the first relevant source fragment before mapping; an unprovable first
 fragment cannot redirect to later text. Explicit PageLabels/comma corroboration retains its separate
 source-action, unique-label, digit-coverage and punctuation guards before translating proved digits.
