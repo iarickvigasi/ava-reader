@@ -47,7 +47,10 @@ for fresh refinement and final assembly state. The host acknowledges each page/b
 one advertised task at a time and waits for worker semantic acceptance before the next request.
 Provider authority, budgets and receipts remain on the host; session cancellation also fences
 dispatch and artifact staging. Current source-feature coverage is required before returning a
-candidate. Standalone entrypoints remain available. See the
+candidate. Artifact transfer permits a 4 MiB report/manifest header and 400 KiB subsequent records,
+matching the existing host parser; 256 KiB decoded chunks, artifact/aggregate bounds and hashes stay
+enforced. The whole header is bounded, so a report plus manifest can still exceed that limit.
+Standalone entrypoints remain available. See the
 [finite attempt protocol](../packages/pdf-epub/README.md#finite-reconstruction-attempt).
 This source implementation does not establish full-book performance or scanned/mixed release qualification.
 

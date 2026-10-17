@@ -35,7 +35,9 @@ def stream_artifacts(result: ReconstructedBook, report: ReconstructionReport) ->
             schema_version="ava-reconstruct-stream-1",
             report=report.model_dump(mode="json"),
             artifacts=manifest,
-        )
+        ),
+        # The host already permits a larger report/manifest header, not larger chunks.
+        max_bytes=4 * 1024 * 1024,
     )
     for path, data in artifacts.items():
         for offset in range(0, len(data), CHUNK_BYTES):
@@ -49,8 +51,8 @@ def stream_artifacts(result: ReconstructedBook, report: ReconstructionReport) ->
     yield _line(dict(complete=True))
 
 
-def _line(value: dict[str, object]) -> bytes:
+def _line(value: dict[str, object], *, max_bytes: int = 400 * 1024) -> bytes:
     data = json.dumps(value, ensure_ascii=False, separators=(",", ":")).encode() + b"\n"
-    if len(data) > 400 * 1024:
+    if len(data) > max_bytes:
         raise ValueError("Stream record byte bound exceeded")
     return data
