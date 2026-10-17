@@ -435,7 +435,12 @@ the worker's authority; canonical task/response contracts and historical prompt 
 These comparisons use task/response versions 4 and prompt 7, separately from the unchanged historical
 task/response versions 3 and prompts 3–6. The API requires reconstruction report 2 for new publication:
 its finite feature ledger must agree with the final canonical block, OCR page/box and exact text
-range, plus the source/task/response/crop bindings. A successful zero-selection run still records
+range, plus the source/task/response/crop bindings. A joined OCR heading retains a private binding
+to its exact ordered component boxes and text ranges before the source workspace is released. Its
+feature envelope must equal those original components, with every component still present in the
+canonical heading; no synthetic source region or enclosing-box fallback is permitted. This also
+applies to explicitly uninspected optional features. Ordinary appearances still require their exact
+single OCR box. A successful zero-selection run still records
 complete zero coverage. Historical omitted-policy reconstruction and report 1 remain available for
 compatibility and diagnostics; they do not satisfy the new API publication gate. Source and contract
 tests establish these bounded rules. Installed-worker, actual provider, source-fidelity and reader

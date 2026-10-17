@@ -5,6 +5,7 @@ from typing import Any
 from ..contracts.book import CanonicalBookV2
 from ..contracts.common import text_digest
 from .assembly_state import AssemblyState
+from .source_feature_box_binding import source_feature_geometry_matches
 from .source_feature_contract import FEATURE_POLICY
 from .source_feature_coverage_contract import SourceFeatureCoverage
 from .source_feature_response import STYLE_FEATURES
@@ -42,9 +43,8 @@ def source_feature_coverage(state: AssemblyState, book: CanonicalBookV2) -> dict
         if (
             page is None
             or not evidence.box.within(page.width_pt, page.height_pt)
-            or not any(
-                item.method == "ocr" and item.page == evidence.page and item.box == evidence.box
-                for item in block.evidence
+            or not source_feature_geometry_matches(
+                evidence, block, state.compound_feature_sources.get(evidence.node_id)
             )
         ):
             raise ValueError("Source feature lacks exact canonical OCR page/box evidence")

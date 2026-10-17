@@ -1,6 +1,7 @@
 """Bind each source appearance to its exact immutable range in the finished canonical block."""
 
 from .assembly_state import AssemblyState
+from .compound_feature_source import capture_compound_feature_source
 
 
 def bind_source_features(state: AssemblyState) -> None:
@@ -13,3 +14,4 @@ def bind_source_features(state: AssemblyState) -> None:
             ident, shift = state.aliases[ident]
             offset += shift
         evidence.update(canonical_block_id=ident, canonical_start=offset)
+        capture_compound_feature_source(evidence, state)

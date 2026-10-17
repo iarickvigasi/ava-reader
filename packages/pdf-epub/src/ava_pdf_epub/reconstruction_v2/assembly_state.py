@@ -16,6 +16,7 @@ from .native_line_offsets import NativeLineOffset
 from .segments import Segment
 
 if TYPE_CHECKING:
+    from .compound_feature_source import CompoundFeatureSource
     from .continuation_application import PresentationSnapshot
 
 
@@ -73,6 +74,7 @@ class AssemblyState:
     refined_joins: dict[tuple[str, str], bool] = field(default_factory=dict)
     source_feature_policy: str | None = None
     source_feature_evidence: list[dict[str, Any]] = field(default_factory=list)
+    compound_feature_sources: dict[str, "CompoundFeatureSource"] = field(default_factory=dict)
     requested_source_features: int = 0
     unrequested_optional_features: int = 0
 
@@ -86,45 +88,11 @@ class AssemblyState:
         return ident
 
     def release_observations(self) -> None:
-        """After relationships/addresses are compiled, raw observations are no longer used."""
-        self.evidence.clear()
-        self.marker_styles.clear()
-        self.marker_presentations.clear()
-        self.list_body_geometry.clear()
-        self.literal_label_geometry.clear()
-        self.segments.clear()
-        self.internal_targets.clear()
-        self.source_contents_rows.clear()
-        self.source_reference_containers.clear()
-        self.aliases.clear()
-        self.native_line_maps.clear()
-        self.native_hyphen_decisions.clear()
-        self.native_continuations.clear()
-        self.native_source_lines.clear()
-        self.normalization_maps.clear()
-        self.compound_heading_sources.clear()
-        self.source_prefix_cuts.clear()
-        self.bibliographic_source_ranges.clear()
-        self.bibliographic_projections.clear()
-        self.bibliographic_claim_owners.clear()
-        self.placements.clear()
-        self.flush_starts.clear()
-        self.page_labels.clear()
-        self.source_linked_furniture_ids.clear()
-        self.refined_joins.clear()
-        self.continuation_presentation = None
-        self.bibliographic_roles.clear()
-        self.printed_title = None
-        self.frontmatter_title = None
-        self.frontmatter_cover.clear()
-        self.source_outline_aliases.clear()
-        self.source_outline_alias_parents.clear()
-        self.source_outline_targets.clear()
+        from .release_observations import release_observations
+
+        release_observations(self)
 
     def release_source_workspace(self) -> None:
-        """After canonical validation, retain only assets and report evidence for export."""
-        self.blocks.clear()
-        self.styles.clear()
-        self.resources.clear()
-        self.lists.clear()
-        self.release_observations()
+        from .release_observations import release_source_workspace
+
+        release_source_workspace(self)
