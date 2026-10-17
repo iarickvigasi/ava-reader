@@ -4,22 +4,9 @@ import re
 
 from .geometry import overlap
 from .native_ink import ink_envelope_matches
+from .native_line_visibility import complete_visible_line as complete_visible_line
 from .observations import NativeLine, PageObservation
 from .segments import Segment
-
-
-def complete_visible_line(line: NativeLine) -> bool:
-    cursor = 0
-    for glyph in line.glyphs:
-        at = line.text.find(glyph.text, cursor)
-        if (
-            at < cursor
-            or line.text[cursor:at].strip()
-            or (glyph.text.strip() and not glyph.visible)
-        ):
-            return False
-        cursor = at + len(glyph.text)
-    return not line.text[cursor:].strip()
 
 
 def repeated_source_context(page: PageObservation, target: NativeLine, owner: Segment) -> bool:

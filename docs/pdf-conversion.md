@@ -557,6 +557,15 @@ this opt-in proof does not relax whole-page native routing. Existing links/range
 stay unchanged; the new spans own only family/bold/italic. Whitespace bridges matching faces or stays
 plain. Unknown/ambiguous/concealed observations remain unqualified.
 
+Under current continuation authority only, a regional mapping proof may corroborate typography when
+actual unmapped CID/replacement glyphs are wholly outside the selected OCR envelope. Complete visible
+nonartifact local lines must reproduce the OCR characters with unique ownership and no foreign ink.
+This exception is restricted to direct Type1 resources without font matrices, positive finite axis
+text/graphics transforms and ordinary positive text scaling/size; forms, unknown risks and unsupported
+writing systems remain refused. Region visibility/frame checks still apply. Explicitly disabled
+stroke adjustment and finite smooth-shading accuracy may reuse the existing inert raster-state
+policy. Historical defaults and whole-page native text routing remain unchanged.
+
 Type3 fonts qualify only in a finite uncolored-outline subset: known descriptor roles consistent
 with italic flags, a Unicode map, bounded diagonal matrix/widths/character procedures and initial d1
 metrics followed solely by numeric path construction and fills. Images/forms/nested text/colors/

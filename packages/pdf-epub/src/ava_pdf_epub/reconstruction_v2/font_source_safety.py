@@ -9,7 +9,13 @@ from .outline_type3 import outline_type3_safe
 from .visibility_state import inert_graphics_state
 
 
-def font_source_safe(page: Any, reader: PdfReader, *, allow_outline_type3: bool = False) -> bool:
+def font_source_safe(
+    page: Any,
+    reader: PdfReader,
+    *,
+    allow_outline_type3: bool = False,
+    allow_raster_settings: bool = False,
+) -> bool:
     resources = page.get("/Resources", {})
     for font in resources.get("/Font", {}).values():
         if font.get_object().get("/Subtype") == "/Type3" and (
@@ -26,7 +32,10 @@ def font_source_safe(page: Any, reader: PdfReader, *, allow_outline_type3: bool 
         if operator == b"Tr" and (len(values) != 1 or int(values[0]) not in {0, 2}):
             return False
         if operator == b"gs" and (
-            len(values) != 1 or not inert_graphics_state(resources, values[0])
+            len(values) != 1
+            or not inert_graphics_state(
+                resources, values[0], allow_raster_settings=allow_raster_settings
+            )
         ):
             return False
         if operator == b"BDC" and values and str(values[0]) == "/OC":

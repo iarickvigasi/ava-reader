@@ -9,7 +9,12 @@ from .visibility import display_risks
 
 
 def font_region_safe(
-    source_page: Any, reader: PdfReader, page: PageObservation, lines: list[NativeLine]
+    source_page: Any,
+    reader: PdfReader,
+    page: PageObservation,
+    lines: list[NativeLine],
+    *,
+    allow_raster_settings: bool = False,
 ) -> bool:
     crop = source_page.cropbox
     if (
@@ -33,6 +38,10 @@ def font_region_safe(
     )
     # The caller separately checks actual text rendering mode/font/opacity safety.
     risks = display_risks(
-        source_page, reader, glyph_bounds=bounds, allow_transformed_rectangles=True
+        source_page,
+        reader,
+        glyph_bounds=bounds,
+        allow_transformed_rectangles=True,
+        allow_raster_settings=allow_raster_settings,
     )
     return not (set(risks) - {"nonstandard_text_rendering"})
