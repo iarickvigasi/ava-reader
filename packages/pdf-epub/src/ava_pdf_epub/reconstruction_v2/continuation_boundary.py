@@ -3,6 +3,7 @@
 import re
 
 from .assembly_state import AssemblyState
+from .index_context import independent_index_entry
 from .segments import Segment
 
 JOIN_STYLE = {
@@ -25,6 +26,8 @@ JOIN_STYLE = {
 
 
 def inferred_continuation(previous: Segment, current: Segment, state: AssemblyState) -> bool:
+    if independent_index_entry(previous, state) or independent_index_entry(current, state):
+        return False
     if previous.preserve_line_breaks != current.preserve_line_breaks:
         return False
     if previous.structure_candidate or current.structure_candidate:

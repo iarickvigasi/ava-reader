@@ -18,6 +18,7 @@ RecognitionPromptVersion = Literal[
     "ava-prose-region-14",
     "ava-prose-region-15",
     "ava-prose-region-16",
+    "ava-prose-region-17",
 ]
 
 ANCHORED_PROMPT_VERSIONS = frozenset(
@@ -32,6 +33,7 @@ ANCHORED_PROMPT_VERSIONS = frozenset(
         "ava-prose-region-14",
         "ava-prose-region-15",
         "ava-prose-region-16",
+        "ava-prose-region-17",
     }
 )
 PINNED_PROMPT_VERSIONS = frozenset(

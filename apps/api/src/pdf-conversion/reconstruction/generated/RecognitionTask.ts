@@ -27,7 +27,8 @@ export type PromptVersion =
   | 'ava-prose-region-13'
   | 'ava-prose-region-14'
   | 'ava-prose-region-15'
-  | 'ava-prose-region-16';
+  | 'ava-prose-region-16'
+  | 'ava-prose-region-17';
 export type Purpose = 'pdf_region_recognition' | 'pdf_structure_repair';
 export type CoordinateSpace = 'page_points_top_left' | 'normalized_top_left';
 export type X0 = number;

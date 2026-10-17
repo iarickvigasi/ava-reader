@@ -1,13 +1,14 @@
 """Send ambiguous native structure for source-bound review; known excluded grids stop early."""
 
 from pathlib import Path
-from typing import Literal
 
 from ..contracts.profiles import LEGACY_PROFILE, ProfileId
 from ..contracts.source import Box
 from ..worker_observation import observe
 from .geometry import rectangle
 from .graphic_recognition_regions import graphic_recognition_regions
+from .index_layout import INDEX_LAYOUT_RISK
+from .index_prompt import INDEX_PROMPT_VERSION
 from .make_task import make_task
 from .native_layout_policy import NativeLayoutPolicy
 from .native_line_offsets import NativeLineOffset
@@ -16,8 +17,9 @@ from .native_review import NativeReviewRequired
 from .observations import PageObservation
 from .observe_tables import TableObservation
 from .recognition_contract import RecognitionTask
+from .recognition_versions import RecognitionPromptVersion
 from .segments import Segment
-from .table_grid import measured_table_grid
+from .table_recognition_evidence import table_recognition_evidence
 
 
 def route_native(
@@ -32,39 +34,15 @@ def route_native(
     source_layout_policy: NativeLayoutPolicy | None = None,
     source_line_maps: list[NativeLineOffset] | None = None,
 ) -> tuple[list[Segment], list[RecognitionTask]]:
-    try:
-        grids = [measured_table_grid(table) for table in tables]
-    except ValueError:
-        raise ValueError("Essential table exceeds the supported grid profile") from None
-    prompt_version: Literal["ava-prose-region-15", "ava-prose-region-16"] = (
-        "ava-prose-region-16"
-        if any(c.row_span > 1 or c.column_span > 1 for grid in grids for c in grid)
-        else "ava-prose-region-15"
-    )
-    table_evidence = (
-        [
-            {
-                "box": table.box.model_dump(),
-                "cells": [
-                    {
-                        "source_cell_id": f"p{page.number}-table{index}-cell{c.row}-{c.column}",
-                        "row": c.row,
-                        "column": c.column,
-                        "row_span": c.row_span,
-                        "column_span": c.column_span,
-                        "box": c.box.model_dump(),
-                    }
-                    for c in grid
-                ],
-            }
-            for index, (table, grid) in enumerate(zip(tables, grids, strict=True))
-        ]
-        if prompt_version == "ava-prose-region-16"
-        else None
-    )
+    table_prompt, table_evidence = table_recognition_evidence(page.number, tables)
+    prompt_version: RecognitionPromptVersion = table_prompt
+    if INDEX_LAYOUT_RISK in page.risks and table_evidence is None:
+        prompt_version = INDEX_PROMPT_VERSION
     try:
         from .geometry import overlap
 
+        if INDEX_LAYOUT_RISK in page.risks:
+            raise NativeReviewRequired("Index entry boundaries require visual structure review")
         regions = graphic_recognition_regions(page, tables, regions)
         if table_evidence and any(overlap(t.box, r) > 0 for t in tables for r in regions):
             raise NativeReviewRequired("Visual recognition must contain the complete merged table")

@@ -16,6 +16,7 @@ const instructions: Record<RecognitionTask['prompt_version'], string> = {
   'ava-prose-region-14': prompts.PINNED_ORDERED_LIST_PROMPT,
   'ava-prose-region-15': prompts.TEXT_STYLE_PROMPT,
   'ava-prose-region-16': prompts.PINNED_TEXT_STYLE_PROMPT,
+  'ava-prose-region-17': prompts.INDEX_PROMPT,
 };
 export function recognitionSystemPrompt(
   version: RecognitionTask['prompt_version'],

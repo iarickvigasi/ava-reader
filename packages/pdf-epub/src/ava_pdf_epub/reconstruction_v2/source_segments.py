@@ -9,6 +9,7 @@ from .assemble_pages import assemble_pages
 from .assembly_state import AssemblyState
 from .bind_printed_targets import bind_printed_targets
 from .continuation_margins import continuation_margins
+from .index_context import record_index_context
 from .linked_furniture import preserve_linked_furniture
 from .native_layout_policy import NativeLayoutPolicy
 from .native_structure_versions import AnyNativeStructureResponse
@@ -73,6 +74,7 @@ def source_segments(
     continuation_margins(segments, prepared, scratch, state)
     if source_title_policy is None:
         segments = _map_source_links(source, scratch, prepared, segments, state)
+    record_index_context(prepared, segments, state)
     state.segments.update({s.id: s for s in segments})
     return pages, segments, state
 

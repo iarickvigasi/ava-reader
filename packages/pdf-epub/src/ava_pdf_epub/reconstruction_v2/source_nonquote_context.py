@@ -1,34 +1,15 @@
 """Positive source context distinguishes contents and pagination notices from quotations."""
 
-import hashlib
-import json
 import re
 from collections.abc import Sequence
 
 from .assembly_state import AssemblyState
+from .index_context import independent_index_entry
 from .page_checkpoints import PreparedPageMap
 from .recognition_contract import RecognitionTask
 from .segments import Segment
+from .source_context_identity import source_context_identity as contents_owner_identity
 from .structure_claims import StructureClaim
-
-
-def contents_owner_identity(segment: Segment) -> str:
-    # Later indentation recovery may change style, but never these source-owned fields.
-    value = segment.model_dump(
-        mode="json",
-        include={
-            "id",
-            "page",
-            "box",
-            "text",
-            "source_text",
-            "kind",
-            "continues_from_previous",
-            "continues_to_next",
-            "related_to",
-        },
-    )
-    return hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()
 
 
 def record_contents_context(
@@ -56,6 +37,8 @@ def nonquote_context(
     if segment.kind != "paragraph" or segment.structure_candidate:
         return False
     if state.source_contents_rows.get(segment.id) == contents_owner_identity(segment):
+        return True
+    if independent_index_entry(segment, state):
         return True
     if segment.method != "ocr":
         return False

@@ -3,6 +3,7 @@
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from .index_layout import mark_index_layout
 from .observations import PageObservation
 from .observe_page import observe_page
 from .source_preparation import ParsedPage, SourcePreparation
@@ -52,4 +53,6 @@ def observe_source_page(
     )
     if preparation.source_layout_policy is not None and not has_visible:
         observation = qualify_page_spaces(parsed.view, parsed.page, parsed.view_reader, observation)
+    if preparation.source_layout_policy is not None:
+        observation = mark_index_layout(observation)
     return observation, capture

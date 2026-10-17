@@ -5,6 +5,7 @@ import re
 
 from .assembly_state import AssemblyState
 from .continuation_boundary import inferred_continuation
+from .index_context import independent_index_entry
 from .refinement_contract import RefinementEdge
 from .segments import Segment
 
@@ -12,6 +13,8 @@ from .segments import Segment
 def refinement_edges(segments: list[Segment], state: AssemblyState) -> list[RefinementEdge]:
     edges = []
     for previous, current in zip(segments, segments[1:], strict=False):
+        if independent_index_entry(previous, state) or independent_index_entry(current, state):
+            continue
         a, b = state.placements[previous.id], state.placements[current.id]
         boundary = (a[:2] == b[:2] and a[2:] == (1,) and b[2:] == (2,)) or b[0] == a[0] + 1
         if (

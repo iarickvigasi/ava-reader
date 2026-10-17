@@ -488,6 +488,25 @@ but does not guarantee completion or authorize text changes, automatic retries o
 
 ### Source-bound PDF navigation
 
+Under the current native-layout policy, an explicit index heading or running title plus dense
+term/folio rows and paired columns routes that page to full-page visual structure repair. This
+is an ambiguity signal, not authority to split immutable native lines or infer entry hierarchy.
+The source observation retains the reason; unreliable fused rows do not become transcription
+authority. Recognition uses a distinct, source-bound prompt for logical index entries: preserve
+subentries, wrapped references, supported indentation and emphasis, without invented bullets or
+cross-column interleaving. Historical policy-absent routing and prompt bytes remain unchanged.
+Fresh task identities and normal receipts are required. Routing alone does not establish index
+fidelity, complete link coverage or whole-book qualification.
+Under the current continuation policy, an independent recognized entry can retain a source-context
+receipt only after complete-owner Unicode/glyph, geometry and unique ownership corroboration.
+Its first fragment must cover a complete source entry row in one column; further fragments must
+be complete, indented numeric-reference continuations. Arbitrary interleaved prose, cropped suffixes
+and uncertain term/see wraps receive no exemption from ordinary role review.
+The receipt binds its exact text, box, page, role and false continuation declarations. It prevents
+lowercase cross-column join heuristics and interpreting index indentation/italics as a quotation;
+it cannot approve typography, change recognition output or exempt unrelated introductory prose.
+Declared continuations and uncorroborated entries retain ordinary review/refusal rules.
+
 Link annotations preserve ordinary URI and direct/named GoTo destinations. A narrowly recognized
 literal `this.zoom=100;this.pageNum=N` link is interpreted as a source-page target; no JavaScript is
 executed. Other scripts, chained actions and additional actions remain refused. Bare `www.` hosts

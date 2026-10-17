@@ -32,7 +32,7 @@ from ava_pdf_epub.reconstruction_v2.native_structure_v2_prompt import NATIVE_STR
 from ava_pdf_epub.reconstruction_v2.native_structure_prompt import NATIVE_STRUCTURE_PROMPT, NATIVE_STRUCTURE_PROMPT_VERSION
 from ava_pdf_epub.reconstruction_v2.recognition_anchor_quote_contract import RecognitionAnchorQuoteTask, RecognitionAnchorQuoteResponse, ANCHOR_QUOTE_PROMPT, ANCHOR_QUOTE_PROMPT_VERSION
 from ava_pdf_epub.reconstruction_v2.recognition_anchor_context import RecognitionAnchorContextTask, RecognitionAnchorContextResponse, ANCHOR_CONTEXT_PROMPT, ANCHOR_CONTEXT_PROMPT_VERSION
-from ava_pdf_epub.reconstruction_v2 import recognition_prompt, ordered_list_prompt, text_style_prompt
+from ava_pdf_epub.reconstruction_v2 import recognition_prompt, ordered_list_prompt, text_style_prompt, index_prompt
 from ava_pdf_epub.reconstruction_v2.report import ReconstructionReport
 from ava_pdf_epub.reconstruction_v2.refinement_contract import BookRefinementTask, BookRefinementResponse, RefinementBatch, PrintedTitleRefinementBatch
 from ava_pdf_epub.reconstruction_v2.printed_title_contract import PrintedTitleTask, PrintedTitleResponse
@@ -53,6 +53,8 @@ for name in ("ORDERED_LIST_PROMPT", "ORDERED_LIST_PROMPT_VERSION", "PINNED_ORDER
     prompts.append((name, getattr(ordered_list_prompt, name)))
 for name in ("TEXT_STYLE_PROMPT", "TEXT_STYLE_PROMPT_VERSION", "PINNED_TEXT_STYLE_PROMPT", "PINNED_TEXT_STYLE_PROMPT_VERSION"):
     prompts.append((name, getattr(text_style_prompt, name)))
+for name in ("INDEX_PROMPT", "INDEX_PROMPT_VERSION"):
+    prompts.append((name, getattr(index_prompt, name)))
 print(json.dumps(dict(schemas={c.__name__: c.model_json_schema() for c in classes}, prompts=prompts, continuationPrompt=CONTINUATION_PROMPT, continuationPromptVersion=CONTINUATION_PROMPT_VERSION, legacyRefinementPrompt=LEGACY_REFINEMENT_PROMPT, refinementPrompt=REFINEMENT_PROMPT, refinementPromptVersion=REFINEMENT_PROMPT_VERSION, bibliographicPrompt=BIBLIOGRAPHIC_PROMPT, mixedHierarchyPrompt=MIXED_HIERARCHY_PROMPT, mixedHierarchyPromptVersion=MIXED_HIERARCHY_PROMPT_VERSION, sourceFeaturePrompt=SOURCE_FEATURE_PROMPT, sourceFeaturePromptVersion=SOURCE_FEATURE_PROMPT_VERSION, printedTitlePrompt=PRINTED_TITLE_PROMPT, printedTitlePromptVersion=PRINTED_TITLE_PROMPT_VERSION, nativeStructureV2Prompt=NATIVE_STRUCTURE_V2_PROMPT, nativeStructureV2PromptVersion=NATIVE_STRUCTURE_V2_PROMPT_VERSION, nativeStructurePrompt=NATIVE_STRUCTURE_PROMPT, nativeStructurePromptVersion=NATIVE_STRUCTURE_PROMPT_VERSION, wordWrapPrompt=WORD_WRAP_PROMPT, wordWrapPromptVersion=WORD_WRAP_PROMPT_VERSION, wordWrapResponseSchemaVersion=WORD_WRAP_RESPONSE_SCHEMA_VERSION, anchorQuotePrompt=ANCHOR_QUOTE_PROMPT, anchorQuotePromptVersion=ANCHOR_QUOTE_PROMPT_VERSION, anchorContextPrompt=ANCHOR_CONTEXT_PROMPT, anchorContextPromptVersion=ANCHOR_CONTEXT_PROMPT_VERSION, geometryPrompt=GEOMETRY_PROMPT, geometryPromptVersion=GEOMETRY_PROMPT_VERSION, printedTitleV2Prompt=PRINTED_TITLE_V2_PROMPT, printedTitleV2PromptVersion=PRINTED_TITLE_V2_PROMPT_VERSION),sort_keys=True,separators=(',',':')))
 `;
 async function emit(name, content) {

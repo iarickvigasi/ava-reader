@@ -11,6 +11,8 @@ from ava_pdf_epub.reconstruction_v2.line_spans import line_spans
 from ava_pdf_epub.reconstruction_v2.observations import Glyph, NativeLine
 from ava_pdf_epub.reconstruction_v2.route_native import route_native
 
+from .test_pdf_links import observation
+
 
 class WhitespaceSpans(unittest.TestCase):
     def test_low_size_whitespace_has_no_word_style_and_keeps_exact_source_text(self):
@@ -44,5 +46,5 @@ class WhitespaceSpans(unittest.TestCase):
             patch("ava_pdf_epub.reconstruction_v2.route_native.make_task") as task,
         ):
             with self.assertRaises(StatisticsError):
-                route_native(None, [], [], "0" * 64, Path("/unused"))
+                route_native(observation(), [], [], "0" * 64, Path("/unused"))
             task.assert_not_called()
