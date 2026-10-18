@@ -78,7 +78,8 @@ chapter authority. Missing or conflicting source evidence remains a conversion f
 
 Before joining chapter-title fragments under the current policies, a missing OCR font family may
 be filled by the existing uniform visible-source font proof. Selection limits updates, while all
-original peers remain in the ownership check. Unproved or mixed early results keep the strict review
+original peers remain in the ownership check. Selected pages are decoded one at a time within the
+existing bounded checkpoint cache. Unproved or mixed early results keep the strict review
 failure; known fields, raw recognition and the later global font verification retain their rules.
 
 Worker contracts and API types are generated from the locked Python package. Unknown fields,

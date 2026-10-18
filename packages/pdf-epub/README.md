@@ -397,6 +397,7 @@ unknown may first use the existing uniform source-font proof. Only that selected
 family/bold/italic fields may change; proof still receives every original peer and checks exact
 visible text, unique ownership, source frame, resources and region safety. This runs before compound
 joining in the shared preparation/assembly path, so the strict unknown-style guard remains intact.
+Selected checkpoints are consumed one at a time, retaining the existing bounded decode cache.
 Known families and historical paths stay unchanged. Mixed or unproved early results stay unknown
 and require review; the existing later global font recheck and mixed-run support remain unchanged.
 

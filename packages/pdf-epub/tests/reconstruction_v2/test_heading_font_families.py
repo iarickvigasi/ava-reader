@@ -31,6 +31,39 @@ class HeadingFontFamiliesTests(unittest.TestCase):
             self.source, [prepared or self.prepared], items or self.items, self.state
         )
 
+    def test_selected_checkpoints_are_fetched_only_as_the_proof_consumes_them(self):
+        from types import SimpleNamespace
+
+        events = []
+        second = self.items[2].model_copy(update={"id": "second-page", "page": 2})
+        peers = [*self.items, second]
+
+        class Pages:
+            def __getitem__(self, number):
+                events.append(("fetch", number))
+                return SimpleNamespace(observation=SimpleNamespace(number=number))
+
+        def consume(source, prepared, items, state, **kwargs):
+            # This is a lifetime/iteration contract, not a substitute font proof.
+            self.assertEqual([], events)
+            self.assertIs(peers, items)
+            for page in prepared:
+                events.append(("consume", page.observation.number))
+            return items
+
+        with (
+            patch(
+                "ava_pdf_epub.reconstruction_v2.heading_font_families.PreparedPageMap",
+                return_value=Pages(),
+            ),
+            patch(
+                "ava_pdf_epub.reconstruction_v2.heading_font_families.corroborate_ocr_font_faces",
+                side_effect=consume,
+            ),
+        ):
+            self.assertIs(peers, corroborate_heading_families(self.source, [], peers, self.state))
+        self.assertEqual([("fetch", 1), ("consume", 1), ("fetch", 2), ("consume", 2)], events)
+
     def test_uniform_source_proof_precedes_join_and_keeps_known_style_corrections(self):
         before = [s.model_dump_json() for s in self.items]
         checkpoint = self.prepared.model_dump_json()

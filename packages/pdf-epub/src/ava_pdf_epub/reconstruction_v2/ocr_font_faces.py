@@ -1,6 +1,6 @@
 """Corroborate declared font roles without making native text transcription authority."""
 
-from collections.abc import Sequence
+from collections.abc import Iterable
 from pathlib import Path
 
 from pypdf import PdfReader
@@ -23,7 +23,7 @@ BLOCKERS = {
 
 def corroborate_ocr_font_faces(
     source: Path,
-    prepared: Sequence[AnyPreparedPage],
+    prepared: Iterable[AnyPreparedPage],
     segments: list[Segment],
     state: AssemblyState,
     *,

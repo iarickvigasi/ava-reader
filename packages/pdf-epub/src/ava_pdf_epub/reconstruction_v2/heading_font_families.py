@@ -32,7 +32,9 @@ def corroborate_heading_families(
     if not selected:
         return segments
     pages = PreparedPageMap(prepared)
-    checkpoints = [pages[number] for number in sorted({s.page for s in selected})]
+    # Decode one selected checkpoint at a time; do not retain pages beyond the
+    # existing byte-bounded checkpoint cache on books with many OCR headings.
+    checkpoints = (pages[number] for number in sorted({s.page for s in selected}))
     # Selection limits updates, never the peer list used to prove unique ownership.
     # Mixed font runs remain on the existing later path; strict joining still
     # refuses an unknown component rather than repeatedly appending derived runs.
