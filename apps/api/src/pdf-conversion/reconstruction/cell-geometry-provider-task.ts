@@ -43,6 +43,10 @@ export function cellGeometryProviderTask(
                 table_box: s.table_box,
                 context: s.context,
                 row_context: s.row_context,
+                original_box_untrusted_hint:
+                  original.segments[s.segment_index].cells![s.row_index][
+                    s.cell_index
+                  ].box,
               })),
               image: {
                 width: task.image.width,

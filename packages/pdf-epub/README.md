@@ -660,8 +660,11 @@ original table. The worker and API select the same complete ordered cell set, in
 empty/outside cases. A full contained-shape probe exposes every other source/schema defect;
 its temporary boxes are never accepted content. A cell task contains at most32 opaque slots,
 original row/cell array addresses (including merged cells), limited row context and the exact
-source image. Only requested boxes may change, and each must remain inside the original table.
-No endpoint sorting, retranscription, row/span changes or measured-cell replacement is allowed.
+source image. Provider context also includes each selected cell's original invalid box as an
+untrusted location hint, bound to the original response; it is not a proposed correction. The model
+must locate the cell in the source image. Only requested boxes may change, and each must remain
+inside the original table. No endpoint sorting, clamp, retranscription, row/span changes or
+measured-cell replacement is allowed. The hint does not add repair attempts or change validation.
 
 Before dispatch, the installed worker rederives eligibility from the original response and
 source task, including complete native/text/table checks. Cell, segment and anchor corrections
@@ -1250,7 +1253,6 @@ In extended current appearance groups, a context node can also be a decision in 
 Its derived body-reference pointer is omitted only when that body is absent locally. Required
 decision pointers cannot be hidden, included body pointers remain intact, and explicit request
 references/source crops and immutable observations stay unchanged.
-
 
 ### Source-corroborated continuation leading
 
