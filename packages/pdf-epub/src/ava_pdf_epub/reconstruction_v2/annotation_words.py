@@ -1,12 +1,12 @@
 """Independent OCR geometry; never an authority to rewrite accepted book text."""
 
 import csv
-import io
 import math
 import re
 from dataclasses import dataclass
 
 from ..contracts.source import Box
+from .annotation_tsv_rows import annotation_tsv_rows
 from .observations import PageObservation
 
 ERROR = "PDF_ANNOTATION_WORD_GEOMETRY_REQUIRES_REVIEW"
@@ -74,6 +74,7 @@ class AnnotationWord:
     confidence: float
     box: Box
     visible: bool = True
+    mappable: bool = True
 
 
 def parse_words(
@@ -83,7 +84,7 @@ def parse_words(
     if len(payload) > MAX_BYTES:
         raise ValueError(ERROR)
     try:
-        rows = csv.reader(io.StringIO(payload.decode("utf-8", errors="strict")), delimiter="\t")
+        rows = annotation_tsv_rows(payload)
         if tuple(next(rows)) != HEADER:
             raise ValueError(ERROR)
         words: list[AnnotationWord] = []
@@ -114,7 +115,6 @@ def parse_words(
                 or not math.isfinite(confidence)
                 or not 0 <= confidence <= 100
                 or len(text) > 500
-                or (bool(text.strip()) and any(char.isspace() for char in text))
                 or any(ord(char) < 32 or ord(char) == 127 for char in text)
                 or len(words) >= MAX_WORDS
             ):
@@ -132,6 +132,7 @@ def parse_words(
                     text=text,
                     confidence=confidence,
                     box=_word_box(page, left, top, width, height),
+                    mappable=not any(char.isspace() for char in text),
                 )
             )
         return words
@@ -146,7 +147,7 @@ def exact_word_offsets(text: str, words: list[AnnotationWord]) -> list[tuple[int
     Offsets refer to the unchanged accepted string. Repeated identical lines,
     missing/extra words, punctuation changes and lookalikes require review.
     """
-    if not words or len({word.line for word in words}) != 1:
+    if not words or len({word.line for word in words}) != 1 or any(not w.mappable for w in words):
         raise ValueError(ERROR)
     if len(text) > 200000:
         raise ValueError(ERROR)

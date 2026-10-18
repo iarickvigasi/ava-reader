@@ -36,6 +36,8 @@ def scanned_marks(
             selected.append(ordinal)
         if not selected:
             continue
+        if any(not word.mappable for word in line):
+            raise ValueError(ERROR)
         line_box = union([word.box for word in line])
         candidates: dict[int, list[tuple[AnnotationTarget, tuple[int, int]]]] = {
             ordinal: [] for ordinal in selected

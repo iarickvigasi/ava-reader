@@ -57,7 +57,6 @@ class AnnotationWordsTests(unittest.TestCase):
             dict(conf=-1),
             dict(page_num=2),
             dict(word_num=0),
-            dict(text="two words"),
             dict(text="private\x00text"),
         ]:
             with (

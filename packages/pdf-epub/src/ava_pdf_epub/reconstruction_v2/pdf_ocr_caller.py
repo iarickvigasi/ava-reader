@@ -10,10 +10,8 @@ from ..pdf_navigation import NavigationTarget
 from .annotation_word_ocr import recognize_annotation_words
 from .assembly_state import AssemblyState
 from .continuation_presentation_contract import POLICY
+from .corroborated_caller_ranges import corroborated_caller_ranges
 from .findings import Finding
-from .ocr_glyph_frame import glyph_frame_safe
-from .ocr_glyph_ranges import ocr_glyph_ranges
-from .ocr_page_label import ocr_page_label_range
 from .pdf_glyph_ranges import glyph_ranges
 from .pdf_link_page import LinkPage
 from .pdf_scanned_ranges import scanned_ranges
@@ -31,36 +29,12 @@ def ocr_pdf_caller(
 ) -> list[tuple[str, int, int]]:
     checkpoint, owners = context.checkpoint, context.owners
     page = checkpoint.observation
+    policy = state.source_continuation_policy
     try:
-        if state.source_continuation_policy == POLICY:
-            if not glyph_frame_safe(reader.pages[page.number - 1], page):
-                raise ValueError("PDF_LINK_TEXT_MAPPING_REQUIRES_REVIEW")
-            ranges = ocr_glyph_ranges(page, owners, caller, state.source_continuation_policy)
-            if ranges is None:
-                from .ocr_toc_caller import ocr_toc_caller
-
-                ranges = ocr_toc_caller(
-                    reader,
-                    target,
-                    annotation,
-                    page,
-                    owners,
-                    caller,
-                    state.source_continuation_policy,
-                    source,
-                )
-            if ranges is None:
-                ranges = ocr_page_label_range(
-                    reader,
-                    target,
-                    page,
-                    owners,
-                    caller,
-                    annotation,
-                    state.source_continuation_policy,
-                )
-            if ranges is None:
-                raise ValueError("PDF_LINK_TEXT_MAPPING_REQUIRES_REVIEW")
+        if policy == POLICY:
+            ranges = corroborated_caller_ranges(
+                reader, target, annotation, caller, context, policy, source
+            )
             message = (
                 "Accepted OCR characters exactly match the complete visible source entry; "
                 "whole source glyphs locate the link without changing accepted whitespace."

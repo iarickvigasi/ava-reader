@@ -1091,7 +1091,7 @@ complete glyph coverage and a safe page frame. Accepted text, whitespace, styles
 change. A missing or ambiguous witness retains the existing local-OCR fallback and review refusal.
 The native index's separate decimal/unpositioned PageLabel rules remain unchanged.
 
-A current-policy coordinate destination may separately corroborate a numbered chapter heading with
+Current-policy source mapping may separately corroborate a numbered chapter heading with
 a standalone decimal ordinal beside its title. This requires complete literal source ownership,
 matching visible source face/size/baseline, one bounded ordinal tab, normal title stream/gutter
 checks and exactly one complete original outline title/page and eligible source heading window.
@@ -1108,9 +1108,20 @@ body, ordinal and folio exactly partition complete source coverage. Digits retai
 and order checks. A merged folio needs the same original action, explicit label, complete outline
 and repeated aligned column witnesses as a detached folio. No synthetic source line is introduced.
 
-For current-policy coordinate destinations only, an unrelated `glyph_without_visible_ink` risk
+For current-policy source mapping, an unrelated `glyph_without_visible_ink` risk
 may be isolated to its recorded source region. Every invisible nonspace glyph and its whole source
 line envelope must lie outside the selected owner's font-padded region; a missing witness or any
 additional unknown risk refuses. The source frame, complete visible selected lines, ordinary stream,
 gutter, literal text and competing-owner/region checks still apply. Page risks remain recorded,
-ordinary/caller proofs stay strict, and hidden destination text cannot borrow a visible later owner.
+generic proofs stay strict, and hidden destination text cannot borrow a visible later owner.
+
+The same intrinsic complete heading and regional-ink proofs can locate an original internal link's
+caller, after validating its unchanged action and source frame. A heading backlink retains its
+actual destination; the caller is never substituted for that destination. Generic glyph/peer and
+whole-character coverage checks remain unchanged, and unsupported callers retain local OCR/failure.
+
+Local annotation OCR reads Tesseract TSV quotes literally. A structurally valid word field that
+contains internal whitespace remains an unmappable token with its original text, geometry and line
+identity. It blocks its complete OCR line, including table-cell subsets; an unrelated complete line
+can still qualify. Invalid TSV structure, ordering, bounds or geometry rejects the whole payload.
+Neither path rewrites accepted book text, styles or source positions.
