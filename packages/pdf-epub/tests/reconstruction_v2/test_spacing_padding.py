@@ -1,5 +1,6 @@
 """Only explicit zero-ink generated boundary padding of a complete unchanged line is ignored."""
 
+import math
 import unittest
 from types import SimpleNamespace
 
@@ -101,4 +102,19 @@ class SpacingPaddingTests(unittest.TestCase):
             glyphs = [line.glyphs[0].model_copy(update={"visible": visible}), *line.glyphs[1:]]
             changed = line.model_copy(update={"glyphs": glyphs})
             obs.lines = [changed]
+            self.assertEqual([value], qualify_decoder_padding([value], obs, text, raw))
+
+    def test_generated_zero_ink_padding_may_belong_to_an_exact_outer_glyph_boundary(self):
+        for value, first in (("30 ", False), (" 30", True)):
+            line, value, obs, text, raw = padding_fixture(value)
+            g = line.glyphs[0 if first else -1].box
+            x = g.x0 if first else g.x1
+            text.get_charbox = lambda *_, x=x: (x, 275.0, x, 275.0)
+            self.assertEqual([line.text], qualify_decoder_padding([value], obs, text, raw))
+
+    def test_touching_peer_glyph_and_any_outside_padding_point_remain_ambiguous(self):
+        line, value, obs, text, raw = padding_fixture()
+        last = line.glyphs[-1].box
+        for x in (last.x0, math.nextafter(last.x1, math.inf)):
+            text.get_charbox = lambda *_, x=x: (x, 275.0, x, 275.0)
             self.assertEqual([value], qualify_decoder_padding([value], obs, text, raw))

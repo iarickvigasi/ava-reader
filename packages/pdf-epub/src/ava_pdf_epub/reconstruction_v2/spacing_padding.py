@@ -7,8 +7,8 @@ from .native_line_visibility import complete_visible_line
 from .observations import Glyph, NativeLine, PageObservation
 
 
-def _inside(glyph: Glyph, x: float, y: float) -> bool:
-    return glyph.box.x0 < x < glyph.box.x1 and glyph.box.y0 < y < glyph.box.y1
+def _owns_point(glyph: Glyph, x: float, y: float) -> bool:
+    return glyph.box.x0 <= x <= glyph.box.x1 and glyph.box.y0 <= y <= glyph.box.y1
 
 
 def _padding(
@@ -30,8 +30,8 @@ def _padding(
         return False
     x, y = left, observation.height_pt - top
     return (
-        _inside(glyph, x, y)
-        and sum(_inside(g, x, y) for g in line.glyphs) == 1
+        _owns_point(glyph, x, y)
+        and sum(_owns_point(g, x, y) for g in line.glyphs) == 1
         and not any(
             other.id != line.id
             and other.box.x0 <= x <= other.box.x1

@@ -348,8 +348,8 @@ tracking, local-contrast and word-gap checks still qualify every added space. No
 hyphen is deleted or global spacing threshold lowered. Boundary ASCII padding can be ignored
 only when the remaining complete string already equals the source line and every removed
 character is an explicit generated, nonhyphen, finite zero-area raw character anchored uniquely
-inside the corresponding first/last source glyph. Interior and actual source whitespace stay
-exact; raw index/match bounds and competing owners fail closed. See the [PDFium text API](https://pdfium.googlesource.com/pdfium/+/refs/heads/main/public/fpdf_text.h) for the explicit marker predicate.
+within or on the exact boundary of the corresponding first/last source glyph. Interior and actual
+source whitespace stay exact; raw index/match bounds and competing owners fail closed. See the [PDFium text API](https://pdfium.googlesource.com/pdfium/+/refs/heads/main/public/fpdf_text.h) for the explicit marker predicate.
 
 A strict refinement join typography conflict retains its existing refusal and generic public
 code. Its optional bounded worker observation identifies the refinement stage, both physical
