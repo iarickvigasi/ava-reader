@@ -322,7 +322,9 @@ def _run(
             {task.task_id for task in batch.tasks}
         ) != len(batch.tasks):
             raise ValueError("Refinement batch source/task identity differs")
-        encode_packet(batch.model_dump(mode="json"), 24 * 1024 * 1024)
+        # Current batches are bounded by atomic private spooling in the writer.
+        if not isinstance(request, ContinuationReconstructionInput):
+            encode_packet(batch.model_dump(mode="json"), 24 * 1024 * 1024)
         for refinement_task in batch.tasks:
             if (
                 refinement_task.source_sha256 != request.source_sha256
@@ -405,6 +407,7 @@ def attempt_stream(
         request.source_sha256,
         request.profile_id,
         version=2 if isinstance(request, NativeWordWrapReconstructionInput) else 1,
+        current_refinement=isinstance(request, ContinuationReconstructionInput),
     )
     try:
         _run(source, scratch, request, incoming, outgoing, writer)

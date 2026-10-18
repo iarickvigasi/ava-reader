@@ -14,6 +14,7 @@ from .protocol import prepared_result, reconstruction_input
 from .protocol_native_word_wrap import NativeWordWrapReconstructionInput
 from .protocol_output import candidate_packet, encode_packet
 from .reconstruct_source import reconstruct_source
+from .refinement_transport import refinement_payload_limit
 from .source_refusal import SourceContentRefusal
 from .stream_output import stream_artifacts
 from .validate_refinement import validate_refinement
@@ -92,7 +93,7 @@ def main() -> None:
         elif request.get("mode") == "prepare_refinement" and set(request) == {"mode", "input"}:
             parsed = reconstruction_input(request["input"])
             batch = prepare_refinement_source(source, root, parsed)
-            output = encode_packet(batch.model_dump(mode="json"), 24 * 1024 * 1024)
+            output = encode_packet(batch.model_dump(mode="json"), refinement_payload_limit(parsed))
         elif request.get("mode") == "prepare_word_wrap" and set(request) == {"mode", "input"}:
             parsed = reconstruction_input(request["input"])
             if not isinstance(parsed, NativeWordWrapReconstructionInput):

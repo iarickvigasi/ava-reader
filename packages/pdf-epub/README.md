@@ -54,6 +54,13 @@ accessibility, offline/account journeys or production readiness.
 accuracy, print-style fidelity, accessibility and actual reader behavior. A produced file is a
 reviewable EPUB, not a declaration that the whole product is production-ready.
 
+Current captured continuation imports allow one source-validated refinement batch up to 64 MiB
+(plus the existing 1 KiB exchange envelope). The worker privately serializes the complete bounded
+frame before emitting its prefix; the host admits the larger frame only for Input10 and batch4.
+Historical refinement batches remain at 24 MiB. Page, other control, reply, per-task and 32-task
+bounds stay unchanged. The direct diagnostic command uses the same captured-input payload limit.
+This transport allowance does not establish complete-book fidelity or production qualification.
+
 ## Install and run
 
 The commands below are the **legacy standalone diagnostic interface** (`ava-book-1`). They remain

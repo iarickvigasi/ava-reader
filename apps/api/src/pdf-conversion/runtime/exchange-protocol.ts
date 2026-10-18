@@ -1,3 +1,8 @@
+import {
+  MAX_CURRENT_REFINEMENT_FRAME,
+  MAX_CURRENT_REFINEMENT_PAYLOAD,
+  currentRefinementPayload,
+} from './refinement-frame-budget';
 import { wordWrapExchangeTasks } from './word-wrap-exchange-tasks';
 import { exchangeJson } from './exchange-json';
 import { PdfRuntimeError } from './runtime-error';
@@ -38,7 +43,10 @@ export function exchangeProtocol(
   wordWrapMode = false,
   geometryMode = false,
   native2Mode = false,
+  continuationMode = false,
 ) {
+  if (continuationMode && !native2Mode)
+    throw new PdfRuntimeError('DISPATCH_NOT_AUTHORIZED');
   if (native2Mode && (!wordWrapMode || !geometryMode))
     throw new PdfRuntimeError('DISPATCH_NOT_AUTHORIZED');
   let sequence = 0,
@@ -57,7 +65,10 @@ export function exchangeProtocol(
       return (wordWrapMode ? wrapBatch : batch) && pending.length === 0;
     },
     accept(bytes: Buffer): ExchangeEnvelope {
-      if (bytes.length > MAX_EXCHANGE_FRAME)
+      if (
+        bytes.length >
+        (continuationMode ? MAX_CURRENT_REFINEMENT_FRAME : MAX_EXCHANGE_FRAME)
+      )
         throw new PdfRuntimeError('RESOURCE_LIMIT');
       const value = exchangeJson(bytes) as ExchangeEnvelope;
       const geometry =
@@ -123,19 +134,31 @@ export function exchangeProtocol(
       const limit =
         value.kind === 'page'
           ? 8 * 1024 ** 2 + 1024
-          : value.kind === 'refinement_batch' ||
-              value.kind === 'word_wrap_batch' ||
-              quotation ||
-              correction ||
-              geometry
-            ? MAX_EXCHANGE_FRAME
-            : value.kind === 'recognition' ||
-                value.kind === 'native_structure' ||
-                value.kind === 'refinement' ||
-                value.kind === 'word_wrap'
-              ? 1024
-              : 256 * 1024 + 1024;
+          : continuationMode &&
+              value.kind === 'refinement_batch' &&
+              currentRefinementPayload(value.payload)
+            ? MAX_CURRENT_REFINEMENT_FRAME
+            : value.kind === 'refinement_batch' ||
+                value.kind === 'word_wrap_batch' ||
+                quotation ||
+                correction ||
+                geometry
+              ? MAX_EXCHANGE_FRAME
+              : value.kind === 'recognition' ||
+                  value.kind === 'native_structure' ||
+                  value.kind === 'refinement' ||
+                  value.kind === 'word_wrap'
+                ? 1024
+                : 256 * 1024 + 1024;
       if (bytes.length > limit) throw new PdfRuntimeError('RESOURCE_LIMIT');
+      if (
+        continuationMode &&
+        value.kind === 'refinement_batch' &&
+        currentRefinementPayload(value.payload) &&
+        Buffer.byteLength(JSON.stringify(value.payload)) >
+          MAX_CURRENT_REFINEMENT_PAYLOAD
+      )
+        throw new PdfRuntimeError('RESOURCE_LIMIT');
       if (value.kind === 'page') {
         if (batch || pending.length || pages >= 500)
           throw new PdfRuntimeError('INVALID_RESULT');

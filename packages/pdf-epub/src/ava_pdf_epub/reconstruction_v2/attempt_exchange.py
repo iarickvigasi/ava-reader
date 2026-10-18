@@ -8,6 +8,7 @@ from pydantic import Field
 
 from ..contracts.common import Digest, Record
 from ..contracts.profiles import ProfileId
+from .refinement_transport import CURRENT_REFINEMENT_BYTES, current_batch, write_json_frame
 
 PAGE_CONTROL_BYTES = 8 * 1024 * 1024 + 1024
 REFINEMENT_CONTROL_BYTES = 24 * 1024 * 1024 + 1024
@@ -105,9 +106,13 @@ class ExchangeWriter:
         profile_id: ProfileId,
         *,
         version: Literal[1, 2] = 1,
+        current_refinement: bool = False,
     ):
         if type(version) is not int or version not in {1, 2}:
             raise ValueError("Unknown attempt exchange version")
+        if type(current_refinement) is not bool or (current_refinement and version != 2):
+            raise ValueError("Current refinement requires captured continuation exchange")
+        self.current_refinement: bool = current_refinement
         self.stream: BinaryIO = stream
         self.source_sha256: str = source_sha256
         self.profile_id: ProfileId = profile_id
@@ -133,6 +138,16 @@ class ExchangeWriter:
                 payload=payload,
             )
         )
+        if self.current_refinement and kind == "refinement_batch" and current_batch(payload):
+            write_json_frame(
+                self.stream,
+                packet.model_dump(mode="json"),
+                CURRENT_REFINEMENT_BYTES + 1024,
+                write_bytes,
+                payload_bound=CURRENT_REFINEMENT_BYTES,
+            )
+            self.sequence = packet.sequence
+            return packet
         data = json_bytes(packet.model_dump(mode="json"))
         bound = (
             PAGE_CONTROL_BYTES

@@ -1,3 +1,4 @@
+import { MAX_CURRENT_REFINEMENT_FRAME } from './refinement-frame-budget';
 import type { SandboxInput } from './container-arguments';
 import { ExchangeFailure } from './exchange-failure';
 import { exchangeEntry } from './exchange-entry';
@@ -27,6 +28,10 @@ export function exchangeStream(
       input: { schema_version: string };
     }
   ).input.schema_version;
+  const continuation = marker === 'ava-reconstruct-input-10';
+  const frameLimit = continuation
+    ? MAX_CURRENT_REFINEMENT_FRAME
+    : MAX_EXCHANGE_FRAME;
   const native2 = [
     'ava-reconstruct-input-8',
     'ava-reconstruct-input-9',
@@ -45,6 +50,7 @@ export function exchangeStream(
       wrap,
       geometry,
       native2,
+      continuation,
     ),
     header = Buffer.alloc(4);
   let headerBytes = 0,
@@ -87,7 +93,7 @@ export function exchangeStream(
         headerBytes += copied;
         if (headerBytes < 4) return;
         const length = header.readUInt32BE();
-        if (length < 1 || length > MAX_EXCHANGE_FRAME)
+        if (length < 1 || length > frameLimit)
           throw new PdfRuntimeError('RESOURCE_LIMIT');
         body = Buffer.alloc(length);
       }

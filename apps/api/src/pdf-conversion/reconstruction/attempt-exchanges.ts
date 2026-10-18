@@ -1,3 +1,4 @@
+import { currentRefinementMode } from '../runtime/refinement-frame-budget';
 import { requiresContinuation } from './anchor-quote-types';
 import { validatePacket } from './validate-packet';
 import {
@@ -51,6 +52,7 @@ export function attemptExchanges(context: AttemptContext) {
     !!context.sourceNormalizationPolicy,
     !!context.recognitionRepairPolicy,
     context.sourceStructurePolicy === NATIVE_STRUCTURE_V2_POLICY,
+    currentRefinementMode(context),
   );
   const taskIds = new Set<string>();
   const responses: RecognitionResponse[] = [];
