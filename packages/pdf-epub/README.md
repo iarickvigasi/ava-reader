@@ -1215,6 +1215,14 @@ caller, after validating its unchanged action and source frame. A heading backli
 actual destination; the caller is never substituted for that destination. Generic glyph/peer and
 whole-character coverage checks remain unchanged, and unsupported callers retain local OCR/failure.
 
+Current full-page index tasks may carry `untrusted_index_candidates`: the complete original header
+and two arrays of literal physical-row strings. This optional view requires complete visible source
+glyph coverage and a bounded, unambiguous column partition. It preserves original Unicode and space
+counts, stays separate from `reliable:false`/`lines:[]`, and never claims entry boundaries or native
+transcription authority. Unsafe, incomplete or oversized views are omitted. Prompt/schema/acceptance
+remain unchanged; the evidence hash creates a new task identity and invalidates old response reuse.
+Image recognition must still pass ordinary source-index and link checks without response rewriting.
+
 Current full-page index recognition can derive paragraph geometry from the original source before
 assembly. A positive index header and repeated source-column rows must establish an empty central
 gutter; every body glyph must belong to a complete visible row. Each unchanged OCR paragraph must

@@ -38,10 +38,15 @@ class IndexSourceTests(unittest.TestCase):
                             self.assertEqual(1, len(page.tasks))
                             self.assertEqual("ava-prose-region-17", page.tasks[0].prompt_version)
                             self.assertEqual("pdf_structure_repair", page.tasks[0].purpose)
-                            self.assertEqual(
-                                {"reliable": False, "lines": []},
-                                json.loads(page.tasks[0].native_evidence),
-                            )
+                            evidence = json.loads(page.tasks[0].native_evidence)
+                            self.assertFalse(evidence["reliable"])
+                            self.assertEqual([], evidence["lines"])
+                            self.assertEqual(number == 2, "untrusted_index_candidates" in evidence)
+                            if number == 2:
+                                candidate = evidence["untrusted_index_candidates"]
+                                self.assertEqual("216 General index", candidate["header"])
+                                self.assertEqual([8, 8], [len(c) for c in candidate["columns"]])
+                                self.assertEqual("unverified_pdf_text", candidate["basis"])
                         else:
                             self.assertFalse(
                                 any(t.prompt_version == "ava-prose-region-17" for t in page.tasks)

@@ -555,6 +555,14 @@ subentries, wrapped references, supported indentation and emphasis, without inve
 cross-column interleaving. Historical policy-absent routing and prompt bytes remain unchanged.
 Fresh task identities and normal receipts are required. Routing alone does not establish index
 fidelity, complete link coverage or whole-book qualification.
+A complete visible two-column source partition may additionally supply compact physical-row
+transcription candidates. They remain explicitly untrusted, with `reliable:false` and no authoritative
+native lines. Original spelling, Unicode and space counts stay literal; candidates are rows, not
+logical entries. Unknown risks, graphics, annotations, incomplete partitions and oversized evidence
+omit the whole hint. The unchanged image prompt and acceptance checks still decide the result;
+candidates cannot rewrite a response or waive source/index/link proof. New evidence changes the
+task/request identity, so an earlier receipt cannot be rebound. This does not qualify a native-index
+route or establish supplied-book accuracy.
 Under the current continuation policy, an independent recognized entry can retain a source-context
 receipt only after complete-owner Unicode/glyph, geometry and unique ownership corroboration.
 Its first fragment must cover a complete source entry row in one column; further fragments must

@@ -11,9 +11,9 @@ from PIL import Image
 
 from ..contracts.profiles import LEGACY_PROFILE, ProfileId
 from ..contracts.source import Box
-from .geometry import overlap
 from .observations import PageObservation
 from .recognition_contract import RecognitionTask
+from .recognition_native_evidence import recognition_native_evidence
 from .recognition_versions import RecognitionPromptVersion
 from .task_identity import task_identifier
 
@@ -41,43 +41,15 @@ def make_task(
         buffer = io.BytesIO()
         crop.save(buffer, format="PNG")
     data = buffer.getvalue()
-    reliable = not (set(page.risks) - {"language_uncertain", "visible_annotation"}) and not any(
-        g.kind == "image" and any(overlap(g.box, line.box) > 0 for line in page.lines)
-        for g in page.graphics
-    )
-    lines = [
-        line
-        for line in page.lines
-        if region.x0 <= line.box.x0
-        and line.box.x1 <= region.x1
-        and region.y0 <= line.box.y0
-        and line.box.y1 <= region.y1
-        and not any(
-            required.kind != "inline_style" and overlap(line.box, required.box) > 0
-            for required in page.required_regions
-        )
-    ]
-    table_evidence = [
-        item
-        for item in (table_evidence or [])
-        if region.x0 <= item["box"]["x0"] < item["box"]["x1"] <= region.x1
-        and region.y0 <= item["box"]["y0"] < item["box"]["y1"] <= region.y1
-    ]
     evidence = json.dumps(
-        {
-            **(
-                {"required_regions": [r.model_dump() for r in page.required_regions]}
-                if page.required_regions
-                else {}
-            ),
-            **({"ruled_tables": table_evidence} if table_evidence else {}),
-            "reliable": reliable and bool(lines),
-            "lines": [
-                {"id": line.id, "box": line.box.model_dump(), "text": line.text}
-                for line in lines
-                if reliable
-            ],
-        },
+        recognition_native_evidence(
+            page,
+            region,
+            profile_id,
+            purpose=purpose,
+            prompt_version=prompt_version,
+            table_evidence=table_evidence,
+        ),
         ensure_ascii=False,
         separators=(",", ":"),
     )
