@@ -1079,3 +1079,14 @@ Only an unpositioned source destination admitted by the existing navigation pars
 repeated or ambiguous labels, other partial glyphs and unsafe/unknown page risks refuse.
 The language heuristic alone can remain uncertain on a qualified native index. This
 adds `PDF_LINK_PAGE_LABEL_CORROBORATED`; it does not relabel failed OCR as a visual pass.
+
+Current-policy OCR link callers can separately corroborate a printed Contents row whose leading
+ordinal and detached right-aligned folio use tab stops. This requires one visible Contents header,
+at least three aligned original linked folios with distinct destinations, an explicit unique finite
+decimal/Roman PageLabel and one complete matching original outline title/destination. Positioned
+XYZ actions retain their exact source destination. Only the witnessed ordinal/title and terminal
+folio slots are exempt from ordinary spacing checks; the title itself retains stream/gutter guards.
+The whole owner must still match every visible source character exactly, with unique ownership,
+complete glyph coverage and a safe page frame. Accepted text, whitespace, styles and geometry never
+change. A missing or ambiguous witness retains the existing local-OCR fallback and review refusal.
+The native index's separate decimal/unpositioned PageLabel rules remain unchanged.

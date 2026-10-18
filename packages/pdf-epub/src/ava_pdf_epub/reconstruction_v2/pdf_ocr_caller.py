@@ -37,6 +37,19 @@ def ocr_pdf_caller(
                 raise ValueError("PDF_LINK_TEXT_MAPPING_REQUIRES_REVIEW")
             ranges = ocr_glyph_ranges(page, owners, caller, state.source_continuation_policy)
             if ranges is None:
+                from .ocr_toc_caller import ocr_toc_caller
+
+                ranges = ocr_toc_caller(
+                    reader,
+                    target,
+                    annotation,
+                    page,
+                    owners,
+                    caller,
+                    state.source_continuation_policy,
+                    source,
+                )
+            if ranges is None:
                 ranges = ocr_page_label_range(
                     reader,
                     target,
