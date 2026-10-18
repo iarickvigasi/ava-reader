@@ -50,6 +50,9 @@ dispatch and artifact staging. Current source-feature coverage is required befor
 candidate. Artifact transfer permits a 4 MiB report/manifest header and 400 KiB subsequent records,
 matching the existing host parser; 256 KiB decoded chunks, artifact/aggregate bounds and hashes stay
 enforced. The whole header is bounded, so a report plus manifest can still exceed that limit.
+Both API and worker-supervisor entry guards require the exact captured configuration for Input10,
+including its continuation, native2, word-wrap, cell-geometry and title policies with empty initial
+responses. Historical captures keep their own versions and cannot borrow continuation authority.
 Standalone entrypoints remain available. See the
 [finite attempt protocol](../packages/pdf-epub/README.md#finite-reconstruction-attempt).
 This source implementation does not establish full-book performance or scanned/mixed release qualification.
