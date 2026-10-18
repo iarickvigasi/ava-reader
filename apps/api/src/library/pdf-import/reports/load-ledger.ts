@@ -26,7 +26,11 @@ export async function loadConversionProjection(
       take: 250,
       include: {
         events: {
-          where: { kind: { in: ['RESERVED', 'SETTLED', 'BOUND_EXCEEDED'] } },
+          where: {
+            kind: {
+              in: ['RESERVED', 'SETTLED', 'BOUND_EXCEEDED', 'BOUND_UNVERIFIED'],
+            },
+          },
           orderBy: { createdAt: 'asc' },
           take: 100,
         },
@@ -35,8 +39,9 @@ export async function loadConversionProjection(
     for (const call of calls) {
       const settled = call.events.filter(
         (event) =>
-          ['SETTLED', 'BOUND_EXCEEDED'].includes(event.kind) &&
-          event.evidenceSha256 === call.receiptSha256,
+          ['SETTLED', 'BOUND_EXCEEDED', 'BOUND_UNVERIFIED'].includes(
+            event.kind,
+          ) && event.evidenceSha256 === call.receiptSha256,
       );
       const usage =
         settled.length === 1 &&

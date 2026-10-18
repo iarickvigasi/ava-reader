@@ -99,3 +99,70 @@ it('keeps known charges but leaves a non-string historical purpose unknown inste
     calls: [expect.objectContaining({ purpose: null })],
   });
 });
+
+it.each(['SETTLED', 'BOUND_EXCEEDED', 'BOUND_UNVERIFIED'])(
+  'retains receipt-bound known usage for %s accounting',
+  async (kind) => {
+    const receiptSha256 = 'd'.repeat(64);
+    const tx = {
+      pdfProviderGrant: {
+        findUnique: jest.fn().mockResolvedValue({
+          id: 'grant',
+          routeId: 'route',
+          route: {
+            modelId: 'model',
+            providerSlug: 'provider',
+            tariffSha256: 'a'.repeat(64),
+            configurationSha256: 'b'.repeat(64),
+          },
+        }),
+      },
+      pdfProviderCall: {
+        findMany: jest
+          .fn()
+          .mockImplementation(
+            (input: {
+              include: { events: { where: { kind: { in: string[] } } } };
+            }) =>
+              Promise.resolve([
+                {
+                  id: 'call',
+                  state: 'SETTLED',
+                  reservedNano: 10n,
+                  actualNano: 3n,
+                  requestSha256: 'c'.repeat(64),
+                  receiptSha256,
+                  providerGenerationId: 'gen',
+                  events: input.include.events.where.kind.in.includes(kind)
+                    ? [
+                        {
+                          kind,
+                          evidenceSha256: receiptSha256,
+                          details: { promptTokens: 100, completionTokens: 10 },
+                        },
+                      ]
+                    : [],
+                },
+              ]),
+          ),
+      },
+    };
+    const result = await loadConversionProjection(
+      tx as unknown as Tx,
+      'operation',
+      true,
+      { offset: 0, limit: 10 },
+    );
+    expect(result).toMatchObject({
+      state: 'FINAL',
+      knownActualNano: '3',
+      calls: [
+        expect.objectContaining({
+          receiptSha256,
+          promptTokens: 100,
+          completionTokens: 10,
+        }),
+      ],
+    });
+  },
+);

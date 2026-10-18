@@ -234,6 +234,24 @@ still needs live-model and finished-book qualification; see the
 [worker contract](../packages/pdf-epub/README.md#finite-reconstruction-attempt) and
 [server opt-in](pdf-conversion-operations.md#build-and-configure).
 
+### Output capacity and known charges
+
+A provider route may opt into `maxOutputTokensByPrompt` for its explicitly admitted prompt IDs.
+Every prompt limit must be a positive integer within the route's global output ceiling. An explicit
+task limit may narrow that prompt ceiling; an excessive limit refuses before dispatch. Without the
+map, existing route defaults remain unchanged. Requests and reservations use the actual selected
+limit. To give dense index recognition more capacity without repeating unrelated work, configure
+its prompt separately and retain each other admitted prompt's former limit; exact request/receipt
+bindings still control reuse. Changing a limit is not permission to reopen a terminal import.
+
+Incomplete responses remain unusable even when their provider charge is known. Settlement records
+every verified charge. The retained request's owner/call/hash/bytes and output limit establish its
+completion bound; missing legacy payloads retain the declared route fallback. A new opt-in route
+with missing request proof, or a corrupted retained request, records `PROVIDER_OUTPUT_BOUND_UNVERIFIED`,
+withholds output and pauses that route while keeping known accounting settled. It does not turn a
+known charge into an unknown reservation or a refund. These checks do not establish complete-book
+source or reader fidelity.
+
 ## PDF annotations
 
 The policy also checks linked popup/parent/reply annotation objects under traversal bounds. Worker

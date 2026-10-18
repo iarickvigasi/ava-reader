@@ -37,6 +37,7 @@ export type RouteConfiguration = {
   version: 1;
   maxContextTokens: number;
   maxOutputTokens: number;
+  maxOutputTokensByPrompt?: Record<string, number>;
   maxRequestBytes: number;
   maxResponseBytes: number;
   maxImages: number;

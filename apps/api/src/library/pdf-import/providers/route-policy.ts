@@ -12,6 +12,9 @@ const configSchema = z
     version: z.literal(1),
     maxContextTokens: z.number().int().min(1).max(4_000_000),
     maxOutputTokens: z.number().int().min(1).max(65536),
+    maxOutputTokensByPrompt: z
+      .record(z.string().min(1).max(100), z.number().int().min(1).max(65536))
+      .optional(),
     maxRequestBytes: z
       .number()
       .int()
@@ -60,6 +63,11 @@ export function routePolicy(
     c.data.maxOutputTokens > c.data.maxContextTokens ||
     !Object.keys(c.data.promptHashes).length ||
     !Object.keys(c.data.schemaHashes).length ||
+    Object.entries(c.data.maxOutputTokensByPrompt ?? {}).some(
+      ([prompt, limit]) =>
+        !Object.hasOwn(c.data.promptHashes, prompt) ||
+        limit > c.data.maxOutputTokens,
+    ) ||
     Object.keys(c.data.reasoningEffortByPrompt ?? {}).some(
       (prompt) => !Object.hasOwn(c.data.promptHashes, prompt),
     )

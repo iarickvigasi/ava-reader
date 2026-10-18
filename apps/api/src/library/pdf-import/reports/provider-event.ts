@@ -9,6 +9,7 @@ const kinds: Record<string, SafeConversionEvent['kind']> = {
   DISPATCH_INTENT: 'PROVIDER_DISPATCH',
   SETTLED: 'PROVIDER_SETTLED',
   BOUND_EXCEEDED: 'PROVIDER_SETTLED',
+  BOUND_UNVERIFIED: 'PROVIDER_SETTLED',
   RELEASED_BEFORE_DISPATCH: 'PROVIDER_RELEASED',
   OUTCOME_UNKNOWN: 'PROVIDER_UNCERTAIN',
   ABANDONED_DISPATCH: 'PROVIDER_UNCERTAIN',
@@ -46,7 +47,9 @@ export async function recordPdfProviderEvent(
       kind: kinds[event.kind] ?? 'PROVIDER_UNCERTAIN',
       stage: 'PROVIDER',
       severity:
-        event.kind === 'OUTCOME_UNKNOWN' || event.kind === 'BOUND_EXCEEDED'
+        event.kind === 'OUTCOME_UNKNOWN' ||
+        event.kind === 'BOUND_EXCEEDED' ||
+        event.kind === 'BOUND_UNVERIFIED'
           ? 'WARN'
           : 'INFO',
       observedAt: event.createdAt.toISOString(),

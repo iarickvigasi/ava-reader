@@ -8,6 +8,7 @@ import type { ProviderTask } from './types';
 import { tokenCost, usdToNano } from './money';
 import { requirePilotTask } from './pilot-task';
 import { providerRequestFormat } from './request-format';
+import { outputTokenLimit } from './output-token-limit';
 export function prepareProviderRequest(
   route: PdfProviderRoute,
   task: ProviderTask,
@@ -38,12 +39,11 @@ export function prepareProviderRequest(
     config.schemaHashes[value.schemaVersion] !== jsonHash(value.responseSchema)
   )
     throw new PdfProviderError('PDF_PROVIDER_REQUEST_UNAUTHORIZED');
-  if (
-    value.maxOutputTokens !== undefined &&
-    value.maxOutputTokens > config.maxOutputTokens
-  )
-    throw new PdfProviderError('PDF_PROVIDER_REQUEST_LIMIT');
-  const maxOutputTokens = value.maxOutputTokens ?? config.maxOutputTokens;
+  const maxOutputTokens = outputTokenLimit(
+    config,
+    value.promptVersion,
+    value.maxOutputTokens,
+  );
   const maximumNano =
     policy.maximumNano -
     tokenCost(

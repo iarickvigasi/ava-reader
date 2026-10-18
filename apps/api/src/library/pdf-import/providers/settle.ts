@@ -4,6 +4,7 @@ import { costTransaction } from './cost-lock';
 import { parseProviderReceipt } from './receipt';
 import { PdfProviderError } from './errors';
 import { routePolicy } from './route-policy';
+import { dispatchedOutputLimit } from './dispatched-output-limit';
 import { recordPdfProviderEvent } from '../reports/provider-event';
 export async function settlePdfProvider(
   prisma: PrismaService,
@@ -16,7 +17,11 @@ export async function settlePdfProvider(
   return costTransaction(prisma, async (tx) => {
     const call = await tx.pdfProviderCall.findUniqueOrThrow({
       where: { id: callId },
-      include: { grant: { include: { route: true } }, allocations: true },
+      include: {
+        grant: { include: { route: true } },
+        allocations: true,
+        payloads: { where: { kind: 'REQUEST' }, include: { blob: true } },
+      },
     });
     const receipt = parseProviderReceipt(bytes, call.grant.route.modelId),
       now = await databaseNow(tx);
@@ -30,6 +35,8 @@ export async function settlePdfProvider(
       return {
         ...receipt,
         overage: call.failureCode === 'PROVIDER_BOUND_EXCEEDED',
+        boundUnverified:
+          call.failureCode === 'PROVIDER_OUTPUT_BOUND_UNVERIFIED',
       };
     }
     if (!['DISPATCHING', 'UNCERTAIN'].includes(call.state))
@@ -53,10 +60,12 @@ export async function settlePdfProvider(
       call.grant.route.configuration,
       call.grant.route.tariff,
     );
+    const outputBound = dispatchedOutputLimit(call, policy.config);
+    const boundUnverified = outputBound.status === 'UNVERIFIED';
     const overage =
       receipt.actualNano > call.reservedNano ||
       receipt.promptTokens > policy.config.maxContextTokens ||
-      receipt.completionTokens > policy.config.maxOutputTokens;
+      receipt.completionTokens > outputBound.limit;
     await tx.pdfProviderCall.update({
       where: { id: call.id },
       data: {
@@ -65,27 +74,37 @@ export async function settlePdfProvider(
         providerGenerationId: receipt.generationId,
         receiptSha256: receipt.receiptSha256,
         settledAt: now,
-        failureCode: overage ? 'PROVIDER_BOUND_EXCEEDED' : null,
+        failureCode: overage
+          ? 'PROVIDER_BOUND_EXCEEDED'
+          : boundUnverified
+            ? 'PROVIDER_OUTPUT_BOUND_UNVERIFIED'
+            : null,
       },
     });
     await recordPdfProviderEvent(tx, {
       data: {
         callId: call.id,
-        kind: overage ? 'BOUND_EXCEEDED' : 'SETTLED',
+        kind: overage
+          ? 'BOUND_EXCEEDED'
+          : boundUnverified
+            ? 'BOUND_UNVERIFIED'
+            : 'SETTLED',
         evidenceSha256: receipt.receiptSha256,
         details: {
           generationId: receipt.generationId,
           actualNano: receipt.actualNano.toString(),
           promptTokens: receipt.promptTokens,
           completionTokens: receipt.completionTokens,
+          outputLimit: outputBound.limit,
+          outputLimitProof: outputBound.status,
         },
       },
     });
-    if (overage)
+    if (overage || boundUnverified)
       await tx.pdfProviderRoute.update({
         where: { id: call.grant.routeId },
-        data: { state: 'PAUSED_OVERAGE' },
+        data: { state: overage ? 'PAUSED_OVERAGE' : 'PAUSED_BOUND_UNVERIFIED' },
       });
-    return { ...receipt, overage };
+    return { ...receipt, overage, boundUnverified };
   });
 }
