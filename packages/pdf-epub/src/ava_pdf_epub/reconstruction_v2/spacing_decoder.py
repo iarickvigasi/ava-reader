@@ -5,11 +5,19 @@ from contextlib import ExitStack
 from pathlib import Path
 
 from .observations import PageObservation
+from .spacing_capture import MetricKey
 from .spacing_hyphen import corroborate_terminal_hyphen, hyphen_markers
+from .spacing_hyphen_source import HyphenSourceContext
+from .spacing_metric import SpacingMetric
 from .spacing_padding import qualify_decoder_padding
 
 
-def spacing_proposals(source: Path, observation: PageObservation) -> list[str]:
+def spacing_proposals(
+    source: Path,
+    observation: PageObservation,
+    *,
+    metrics: dict[MetricKey, SpacingMetric | None] | None = None,
+) -> list[str]:
     pdfium = importlib.import_module("pypdfium2")
     with ExitStack() as resources:
         document = pdfium.PdfDocument(source)
@@ -35,8 +43,26 @@ def spacing_proposals(source: Path, observation: PageObservation) -> list[str]:
             proposals = qualify_decoder_padding(proposals, observation, text, pdfium.raw)
         if not any(value.endswith("\x02") for value in proposals):
             return proposals
-        markers = hyphen_markers(text, pdfium.raw, observation.height_pt)
+        raw_indices: dict[tuple[float, float, float, float], list[int]] = {}
+        markers = hyphen_markers(text, pdfium.raw, observation.height_pt, indices=raw_indices)
+        source_context = (
+            HyphenSourceContext(
+                text,
+                pdfium.raw,
+                metrics,
+                text.count_chars(),
+                {box: tuple(values) for box, values in raw_indices.items()},
+            )
+            if metrics is not None
+            else None
+        )
         return [
-            corroborate_terminal_hyphen(line, value, markers, observation)
+            corroborate_terminal_hyphen(
+                line,
+                value,
+                markers,
+                observation,
+                source_context=source_context,
+            )
             for line, value in zip(observation.lines, proposals, strict=True)
         ]

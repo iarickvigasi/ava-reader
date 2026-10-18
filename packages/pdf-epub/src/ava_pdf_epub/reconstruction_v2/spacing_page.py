@@ -34,7 +34,7 @@ def qualify_page_spaces(
         metrics = capture_spacing(page)
         lines = []
         unresolved = False
-        proposals = spacing_proposals(source, observation)
+        proposals = spacing_proposals(source, observation, metrics=metrics)
         for line, proposed in zip(observation.lines, proposals, strict=True):
             changed, ambiguous = qualify_line_spaces(line, proposed, metrics)
             lines.append(changed)

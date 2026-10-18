@@ -5,6 +5,7 @@ from typing import Any
 
 from .native_line_visibility import complete_visible_line
 from .observations import Glyph, NativeLine, PageObservation
+from .spacing_raw_run import generated_padding, source_owned_run
 
 
 def _owns_point(glyph: Glyph, x: float, y: float) -> bool:
@@ -83,10 +84,19 @@ def qualify_decoder_padding(
             if seen > 64:
                 matches = []
                 break
-            if all(
+            old_owner = all(
                 _padding(text, raw, start + j, glyph, line, observation) for j, glyph in positions
+            )
+            run_owner = not old_owner and source_owned_run(
+                text, raw, start + leading, line, observation
+            )
+            if old_owner or (
+                run_owner
+                and all(generated_padding(text, raw, start + j, observation) for j, _ in positions)
             ):
                 matches.append(start)
+                if len(matches) > 1:
+                    break  # Additional occurrences cannot restore unique ownership.
             cursor = start + 1
         if len(matches) == 1:
             result[i] = line.text

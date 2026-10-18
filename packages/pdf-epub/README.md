@@ -351,6 +351,21 @@ character is an explicit generated, nonhyphen, finite zero-area raw character an
 within or on the exact boundary of the corresponding first/last source glyph. Interior and actual
 source whitespace stay exact; raw index/match bounds and competing owners fail closed. See the [PDFium text API](https://pdfium.googlesource.com/pdfium/+/refs/heads/main/public/fpdf_text.h) for the explicit marker predicate.
 
+A generated boundary separator whose synthetic point belongs to a following item needs a
+complete one-to-one raw ink run of at most 64 glyphs instead: unchanged nonspace single-scalar
+source glyphs, exact
+Unicode/raw indices, explicit nongenerated real characters, full ink containment and exclusive
+glyph ownership. Only separately explicit generated, zero-area boundary spaces can then be
+ignored. Actual/interior spaces, ligature expansion, incomplete or competing runs stay unresolved.
+
+A terminal hyphen whose ink overhangs its logical advance box can additionally be corroborated
+by its original Type1 resource/state and ordered source-origin cell. A page-local bounded marker
+catalogue is reused, with current raw count, selected index, flags and geometry rechecked. This needs known source
+origins, one explicit raw marker, exclusive positive ink ownership, matching base font and nominal
+font size, 100% horizontal text scaling and exact source-to-binary32 linear-matrix representation.
+Kerning is handled by ordered origins rather than overlapping advance rectangles. No coordinate
+epsilon, model-rounded metric, source hyphen deletion or typography change is authorized.
+
 A strict refinement join typography conflict retains its existing refusal and generic public
 code. Its optional bounded worker observation identifies the refinement stage, both physical
 pages, hashed original task/edge/owner identities and finite conflicting field names. Its

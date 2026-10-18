@@ -1,14 +1,23 @@
 """Qualify PDFium's terminal hyphen marker against the original literal source glyph."""
 
 import math
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from .spacing_hyphen_source import HyphenSourceContext
 
 from .geometry import overlap
 from .native_line_visibility import complete_visible_line
 from .observations import NativeLine, PageObservation
 
 
-def hyphen_markers(text: Any, raw: Any, height: float) -> list[tuple[float, float, float, float]]:
+def hyphen_markers(
+    text: Any,
+    raw: Any,
+    height: float,
+    *,
+    indices: dict[tuple[float, float, float, float], list[int]] | None = None,
+) -> list[tuple[float, float, float, float]]:
     count = text.count_chars()
     if type(count) is not int or not 0 <= count <= 200000:
         raise RuntimeError("Second-decoder character bound exceeded")
@@ -20,6 +29,8 @@ def hyphen_markers(text: Any, raw: Any, height: float) -> list[tuple[float, floa
         box = (left, height - top, right, height - bottom)
         if all(math.isfinite(v) for v in box) and box[0] < box[2] and box[1] < box[3]:
             markers.append(box)
+            if indices is not None:
+                indices.setdefault(box, []).append(index)
     return markers
 
 
@@ -28,6 +39,8 @@ def corroborate_terminal_hyphen(
     proposed: str,
     markers: list[tuple[float, float, float, float]],
     observation: PageObservation,
+    *,
+    source_context: "HyphenSourceContext | None" = None,
 ) -> str:
     if (
         not proposed.endswith("\x02")
@@ -52,13 +65,19 @@ def corroborate_terminal_hyphen(
     if len(inside) != 1:
         return proposed
     box, glyph = inside[0], line.glyphs[-1]
-    if (
-        not (
-            glyph.box.x0 <= box.x0 < box.x1 <= glyph.box.x1
-            and glyph.box.y0 <= box.y0 < box.y1 <= glyph.box.y1
-        )
-        or any(overlap(box, peer.box) for peer in line.glyphs[:-1])
-        or any(other.id != line.id and overlap(box, other.box) for other in observation.lines)
+    contained = (
+        glyph.box.x0 <= box.x0 < box.x1 <= glyph.box.x1
+        and glyph.box.y0 <= box.y0 < box.y1 <= glyph.box.y1
+    )
+    if not contained:
+        from .spacing_hyphen_source import source_owned_marker
+
+        if source_context is None or not source_owned_marker(
+            line, box, observation, source_context
+        ):
+            return proposed
+    if any(overlap(box, peer.box) for peer in line.glyphs[:-1]) or any(
+        other.id != line.id and overlap(box, other.box) for other in observation.lines
     ):
         return proposed
     # Only the corroborator's explicit marker changes. The original literal

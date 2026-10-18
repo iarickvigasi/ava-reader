@@ -1,7 +1,7 @@
 """Physical advance metrics tied to one actual interpreted font resource and text state."""
 
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from pdfminer.pdffont import PDFType1Font
@@ -14,6 +14,8 @@ class SpacingMetric:
     em: float
     character_spacing: float
     state: tuple[float, ...] = ()
+    # Per-glyph provenance must not split the shared advance state used by spacing pairs.
+    source_origin: tuple[float, float] | None = field(default=None, compare=False)
 
 
 def spacing_metric(state: Any, char: Any) -> SpacingMetric | None:
@@ -55,4 +57,5 @@ def spacing_metric(state: Any, char: Any) -> SpacingMetric | None:
         em,
         tracking,
         (state.fontsize, state.scaling, matrix[0], matrix[3]),
+        (matrix[4], matrix[5]),
     )
