@@ -34,7 +34,10 @@ def toc_source_rows(reader: PdfReader, page: PageObservation) -> set[str]:
                 (line, target)
                 for line, target in candidates
                 if abs(line.box.x1 - anchor.box.x1)
-                <= min(g.size for g in [*line.glyphs, *anchor.glyphs]) / 2
+                <= min(
+                    g.size for g in [*(g for _, g in line.glyphs), *(g for _, g in anchor.glyphs)]
+                )
+                / 2
             ],
             key=lambda item: item[0].box.y0,
         )

@@ -1,22 +1,22 @@
-"""Original admitted actions corroborate complete detached source-folio lines."""
+"""Original admitted actions corroborate complete original terminal folio slices."""
 
 from pypdf import PdfReader
 
 from ..pdf_navigation import pdf_navigation
 from .annotation_regions import upright_box
 from .geometry import area, overlap
-from .native_line_visibility import complete_visible_line
-from .observations import NativeLine, PageObservation
+from .observations import PageObservation
 from .page_label_semantics import source_destination
+from .toc_folio_tail import TocFolio, toc_folio_tail
 from .toc_page_label import toc_page_label
 
 
-def toc_link_folios(reader: PdfReader, page: PageObservation) -> dict[str, tuple[NativeLine, int]]:
+def toc_link_folios(reader: PdfReader, page: PageObservation) -> dict[str, tuple[TocFolio, int]]:
     annotations = reader.pages[page.number - 1].get("/Annots", [])
     annotations = annotations.get_object() if hasattr(annotations, "get_object") else annotations
     if not isinstance(annotations, list) or len(annotations) > 256:
         return {}
-    rows: dict[str, tuple[NativeLine, int]] = {}
+    rows: dict[str, tuple[TocFolio, int]] = {}
     for reference in annotations:
         annotation = reference.get_object()
         if annotation.get("/Subtype") != "/Link":
@@ -31,24 +31,22 @@ def toc_link_folios(reader: PdfReader, page: PageObservation) -> dict[str, tuple
         if not caller.within(page.width_pt, page.height_pt):
             continue
         for line in page.lines:
-            glyphs = [g for g in line.glyphs if g.text.strip()]
+            folio = toc_folio_tail(line, label)
+            if folio is None:
+                continue
             if (
-                line.text.strip() != label
-                or not glyphs
-                or not complete_visible_line(line)
-                or "".join(g.text for g in glyphs) != label
-                or any(
+                any(
                     g.source_artifact
                     or area(g.box) <= 0
                     or overlap(g.box, caller) / area(g.box) < 0.9
-                    for g in glyphs
+                    for _, g in folio.glyphs
                 )
-                or any(overlap(g.box, line.box) for g in page.graphics)
-                or any(overlap(r.box, line.box) for r in page.required_regions)
+                or any(overlap(g.box, folio.box) for g in page.graphics)
+                or any(overlap(r.box, folio.box) for r in page.required_regions)
             ):
                 continue
             previous = rows.get(line.id)
-            if previous is not None and previous[1] != target.page:
+            if previous is not None and previous != (folio, target.page):
                 return {}
-            rows[line.id] = (line, target.page)
+            rows[line.id] = (folio, target.page)
     return rows

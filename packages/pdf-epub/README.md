@@ -1081,7 +1081,7 @@ The language heuristic alone can remain uncertain on a qualified native index. T
 adds `PDF_LINK_PAGE_LABEL_CORROBORATED`; it does not relabel failed OCR as a visual pass.
 
 Current-policy OCR link callers can separately corroborate a printed Contents row whose leading
-ordinal and detached right-aligned folio use tab stops. This requires one visible Contents header,
+ordinal and right-aligned terminal folio use tab stops. This requires one visible Contents header,
 at least three aligned original linked folios with distinct destinations, an explicit unique finite
 decimal/Roman PageLabel and one complete matching original outline title/destination. Positioned
 XYZ actions retain their exact source destination. Only the witnessed ordinal/title and terminal
@@ -1101,3 +1101,16 @@ fragment still owns the destination. Number/title/subtitle text, styles, whitesp
 fixed. Missing original-source context retains the strict generic proof. The original bounded
 outline traversal is shared with the already-open source reader; historical policy behavior stays
 unchanged.
+
+A Contents folio may be a separate source line or the whitespace-delimited suffix of its title
+line. The proof retains the original line and glyph ordinals, consuming whole glyph units only;
+body, ordinal and folio exactly partition complete source coverage. Digits retain ordinary spacing
+and order checks. A merged folio needs the same original action, explicit label, complete outline
+and repeated aligned column witnesses as a detached folio. No synthetic source line is introduced.
+
+For current-policy coordinate destinations only, an unrelated `glyph_without_visible_ink` risk
+may be isolated to its recorded source region. Every invisible nonspace glyph and its whole source
+line envelope must lie outside the selected owner's font-padded region; a missing witness or any
+additional unknown risk refuses. The source frame, complete visible selected lines, ordinary stream,
+gutter, literal text and competing-owner/region checks still apply. Page risks remain recorded,
+ordinary/caller proofs stay strict, and hidden destination text cannot borrow a visible later owner.
