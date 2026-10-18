@@ -53,6 +53,9 @@ enforced. The whole header is bounded, so a report plus manifest can still excee
 Both API and worker-supervisor entry guards require the exact captured configuration for Input10,
 including its continuation, native2, word-wrap, cell-geometry and title policies with empty initial
 responses. Historical captures keep their own versions and cannot borrow continuation authority.
+Current Input10 may use a distinct quotation task for a lowercase small-caps marker whose literal
+uppercase token exists in unchanged text. It rechecks the selected whole-token range, preserves all
+other observations and shares the one repair opportunity; historical quotation rules stay fixed.
 Standalone entrypoints remain available. See the
 [finite attempt protocol](../packages/pdf-epub/README.md#finite-reconstruction-attempt).
 This source implementation does not establish full-book performance or scanned/mixed release qualification.

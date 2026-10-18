@@ -1,3 +1,4 @@
+import { isQuoteRepair } from './anchor-quote-types';
 import { createHash } from 'node:crypto';
 import type { AnchorRepairTask } from './anchor-repair-types';
 import type { RecognitionTask } from './generated/RecognitionTask';
@@ -14,8 +15,7 @@ export async function validateAnchorContext(
   sandboxInput: () => SandboxInput,
   signal: AbortSignal,
 ) {
-  const quoteMode =
-    correction.schema_version === 'ava-recognition-anchor-quote-task-2';
+  const quoteMode = isQuoteRepair(correction);
   const mode = quoteMode ? 'validate_anchor_quote' : 'validate_anchor_context';
   const auxiliaryBytes = Buffer.from(
     JSON.stringify({ mode, task, correction }),

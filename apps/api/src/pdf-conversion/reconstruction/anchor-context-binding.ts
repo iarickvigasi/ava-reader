@@ -1,3 +1,5 @@
+import { isQuoteRepair } from './anchor-quote-types';
+import { smallCapsQuotations } from './small-caps-quote-candidates';
 import type { AnchorRepairTask } from './anchor-repair-types';
 import { allowedQuotations, quoteTaskId } from './anchor-quote-candidates';
 import { createHash } from 'node:crypto';
@@ -80,7 +82,11 @@ export function anchorMatches(
   return count;
 }
 
-function invalidSlots(response: RecognitionResponse, quoteMode = false) {
+function invalidSlots(
+  response: RecognitionResponse,
+  quoteMode = false,
+  smallCaps = false,
+) {
   const slots = new Map<string, 'AMBIGUOUS_CONTEXT' | 'ABSENT_CONTEXT'>();
   response.segments.forEach((segment, segmentIndex) => {
     for (const row of segment.cells ?? [])
@@ -99,7 +105,10 @@ function invalidSlots(response: RecognitionResponse, quoteMode = false) {
         span.start != null ||
         span.end != null ||
         (quoteMode
-          ? !allowedQuotations(segment.text, span).length
+          ? !(smallCaps ? smallCapsQuotations : allowedQuotations)(
+              segment.text,
+              span,
+            ).length
           : !segment.text.includes(span.anchor.exact_text))
       )
         throw new PdfRuntimeError('INVALID_RESULT');
@@ -139,7 +148,10 @@ export function anchorQuoteBinding(
   original: RecognitionResponse,
 ) {
   const task = validatePacket(
-    'RecognitionAnchorQuoteTask',
+    (input as { schema_version?: unknown })?.schema_version ===
+      'ava-recognition-anchor-quote-task-3'
+      ? 'RecognitionSmallCapsQuoteTask'
+      : 'RecognitionAnchorQuoteTask',
     structuredClone(input),
   );
   return bindAnchorRepair(task, parent, original);
@@ -150,8 +162,10 @@ function bindAnchorRepair<T extends AnchorRepairTask>(
   parent: RecognitionTask,
   original: RecognitionResponse,
 ): T {
-  const quoteMode =
-    task.schema_version === 'ava-recognition-anchor-quote-task-2';
+  const quoteMode = isQuoteRepair(task);
+  const smallCaps =
+    task.schema_version === 'ava-recognition-anchor-quote-task-3';
+  const candidatesFor = smallCaps ? smallCapsQuotations : allowedQuotations;
   const wire = JSON.parse(JSON.stringify(original)) as RecognitionResponse;
   if (
     task.task_id === parent.task_id ||
@@ -168,7 +182,7 @@ function bindAnchorRepair<T extends AnchorRepairTask>(
     !sameJson(exchangeJson(Buffer.from(task.original_response_json)), wire)
   )
     throw new PdfRuntimeError('SOURCE_MISMATCH');
-  const invalid = invalidSlots(wire, quoteMode),
+  const invalid = invalidSlots(wire, quoteMode, smallCaps),
     seen = new Set<string>();
   for (const slot of task.slots) {
     const key = contextSlotKey(slot.segment_index, slot.span_index);
@@ -180,7 +194,7 @@ function bindAnchorRepair<T extends AnchorRepairTask>(
           !segment ||
           !sameJson(
             slot.allowed_quotations,
-            allowedQuotations(segment.text, span),
+            candidatesFor(segment.text, span),
           ))) ||
       seen.has(key) ||
       !segment ||
@@ -194,6 +208,15 @@ function bindAnchorRepair<T extends AnchorRepairTask>(
       throw new PdfRuntimeError('SOURCE_MISMATCH');
     seen.add(key);
   }
+  if (
+    smallCaps &&
+    !task.slots.some((slot) => {
+      const owner = wire.segments[slot.segment_index];
+      return !allowedQuotations(owner.text, owner.spans[slot.span_index])
+        .length;
+    })
+  )
+    throw new PdfRuntimeError('INVALID_RESULT');
   if (!invalid.size || seen.size !== invalid.size)
     throw new PdfRuntimeError('INVALID_RESULT');
   return task;

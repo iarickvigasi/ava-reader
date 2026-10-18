@@ -1,5 +1,5 @@
 import type { RecognitionResponse } from './generated/RecognitionResponse';
-import type { RecognitionAnchorQuoteTask } from './generated/RecognitionAnchorQuoteTask';
+import type { QuoteRepairTask } from './anchor-quote-types';
 import { createHash } from 'node:crypto';
 
 type Span = RecognitionResponse['segments'][number]['spans'][number];
@@ -30,7 +30,7 @@ export function allowedQuotations(text: string, span: Span): string[] {
   }
   return result;
 }
-export function quoteTaskId(task: RecognitionAnchorQuoteTask) {
+export function quoteTaskId(task: QuoteRepairTask) {
   return (
     'anchor-quote-' +
     createHash('sha256')

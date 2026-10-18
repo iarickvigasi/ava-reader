@@ -30,6 +30,7 @@ from .recognition_anchor_quote_contract import (
     RecognitionAnchorQuoteTask,
 )
 from .recognition_contract import RecognitionTask
+from .small_caps_quote_contract import RecognitionSmallCapsQuoteTask
 from .source_refusal import refuse_task
 from .validate_tasks import validate_tasks
 
@@ -56,7 +57,8 @@ def emit_context(
     writer: ExchangeWriter,
     task: RecognitionAnchorContextTask
     | RecognitionAnchorQuoteTask
-    | RecognitionOverflowContextTask,
+    | RecognitionOverflowContextTask
+    | RecognitionSmallCapsQuoteTask,
 ) -> AnchorContextExchange | AnchorQuoteExchange:
     parents = writer._anchor_context_parents
     if writer.terminal or task.original_task_id in parents:
@@ -64,7 +66,7 @@ def emit_context(
     parents.add(
         task.original_task_id
     )  # Consume before output; interruption cannot invite a resend.
-    if isinstance(task, RecognitionAnchorQuoteTask):
+    if isinstance(task, (RecognitionAnchorQuoteTask, RecognitionSmallCapsQuoteTask)):
         packet: AnchorContextExchange | AnchorQuoteExchange = AnchorQuoteExchange(
             schema_version="ava-recognition-anchor-quote-exchange-2",
             sequence=writer.sequence + 1,
@@ -145,7 +147,12 @@ def accept_attempt_recognition(
         if overflow is not None:
             return accept_overflow_context(task, overflow, writer, incoming)
     # Select the repair before dispatch: quotation repair replaces, never follows, V1.
-    quote_task = prepare_anchor_quote(task, json_bytes(raw_response).decode())
+    try:
+        quote_task = prepare_anchor_quote(task, json_bytes(raw_response).decode())
+    except ValueError:
+        if not allow_overflow:  # Only captured Input10 reaches the current-only repair.
+            raise
+        quote_task = prepare_anchor_quote(task, json_bytes(raw_response).decode(), small_caps=True)
     if any(
         any(
             q != strict_json(s.original_span_json.encode())["anchor"]["exact_text"]

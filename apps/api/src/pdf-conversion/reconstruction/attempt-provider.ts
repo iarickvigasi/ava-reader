@@ -1,3 +1,4 @@
+import { isQuoteRepair } from './anchor-quote-types';
 import type { PresentationRefinementTask } from './generated/PresentationRefinementTask';
 import type { PresentationRefinementResponse } from './generated/PresentationRefinementResponse';
 import { SOURCE_CONTINUATION_POLICY } from '../../library/pdf-import/admission/profile';
@@ -150,12 +151,7 @@ export async function correctAttemptAnchorContext(
   await context.validateAnchorContext(task, parent, signal);
   context.checkActive(signal);
   const receipt = await context.deps.dispatch(
-    anchorContextProviderTask(
-      task,
-      parent,
-      original,
-      task.schema_version === 'ava-recognition-anchor-quote-task-2',
-    ),
+    anchorContextProviderTask(task, parent, original, isQuoteRepair(task)),
     signal,
   );
   context.checkActive(signal);

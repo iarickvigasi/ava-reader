@@ -1,3 +1,4 @@
+import { SMALL_CAPS_QUOTE_PROMPT } from './generated/prompt';
 import { ANCHOR_QUOTE_PROMPT } from './generated/anchor-quote-prompt';
 import { OVERFLOW_CONTEXT_PROMPT } from './generated/prompt';
 import { anchorRepairBinding } from './anchor-repair-binding';
@@ -29,7 +30,9 @@ export function anchorContextProviderTask(
       {
         role: 'system',
         content: quoteMode
-          ? ANCHOR_QUOTE_PROMPT
+          ? task.schema_version === 'ava-recognition-anchor-quote-task-3'
+            ? SMALL_CAPS_QUOTE_PROMPT
+            : ANCHOR_QUOTE_PROMPT
           : task.schema_version === 'ava-recognition-anchor-context-task-2'
             ? OVERFLOW_CONTEXT_PROMPT
             : ANCHOR_CONTEXT_PROMPT,

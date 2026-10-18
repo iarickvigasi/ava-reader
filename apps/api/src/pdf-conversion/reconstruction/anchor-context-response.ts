@@ -1,3 +1,5 @@
+import { validateSmallCapsRange } from './validate-small-caps-range';
+import { isQuoteRepair } from './anchor-quote-types';
 import type { AnchorRepairTask } from './anchor-repair-types';
 import type { RecognitionTask } from './generated/RecognitionTask';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
@@ -13,7 +15,7 @@ export function anchorContextResponse(
   original: RecognitionResponse,
 ) {
   const response = parsePacket(
-    task.schema_version === 'ava-recognition-anchor-quote-task-2'
+    isQuoteRepair(task)
       ? 'RecognitionAnchorQuoteResponse'
       : 'RecognitionAnchorContextResponse',
     Buffer.from(output),
@@ -54,12 +56,11 @@ export function anchorContextResponse(
     )
       throw new PdfRuntimeError('SOURCE_MISMATCH');
     if ('exact_text' in patch) {
-      const quoteSlot =
-        task.schema_version === 'ava-recognition-anchor-quote-task-2'
-          ? task.slots.find(
-              (s) => contextSlotKey(s.segment_index, s.span_index) === key,
-            )
-          : undefined;
+      const quoteSlot = isQuoteRepair(task)
+        ? task.slots.find(
+            (s) => contextSlotKey(s.segment_index, s.span_index) === key,
+          )
+        : undefined;
       if (!quoteSlot?.allowed_quotations.includes(patch.exact_text))
         throw new PdfRuntimeError('INVALID_RESULT');
       span.anchor.exact_text = patch.exact_text;
@@ -68,6 +69,7 @@ export function anchorContextResponse(
     span.anchor.after = patch.after;
     if (anchorMatches(segment.text, span.anchor) !== 1)
       throw new PdfRuntimeError('INVALID_RESULT');
+    validateSmallCapsRange(task, patch, original, segment, span);
     seen.add(key);
   }
   // The worker still performs its full Python semantic/source acceptance before advancing.

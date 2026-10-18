@@ -1,3 +1,4 @@
+import { requiresContinuation } from './anchor-quote-types';
 import { validatePacket } from './validate-packet';
 import {
   NATIVE_STRUCTURE_V2_POLICY,
@@ -338,7 +339,7 @@ export function attemptExchanges(context: AttemptContext) {
           : anchorRepairBinding
       )(envelope.payload, parent.task, parent.response);
       if (
-        task.schema_version === 'ava-recognition-anchor-context-task-2' &&
+        requiresContinuation(task) &&
         (context.recognitionRepairPolicy !==
           'ava-recognition-geometry-repair-2' ||
           context.sourceContinuationPolicy !== SOURCE_CONTINUATION_POLICY)

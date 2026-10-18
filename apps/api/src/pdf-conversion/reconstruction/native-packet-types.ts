@@ -1,0 +1,33 @@
+import type { NativeStructureTask2 } from './generated/NativeStructureTask2';
+import type { NativeStructureResponse2 } from './generated/NativeStructureResponse2';
+import type { NativeStructure2PrepareResult } from './generated/NativeStructure2PrepareResult';
+import type { NativeStructure2ReconstructionInput } from './generated/NativeStructure2ReconstructionInput';
+import type { WordWrapTask } from './generated/WordWrapTask';
+import type { WordWrapResponse } from './generated/WordWrapResponse';
+import type { WordWrapBatch } from './generated/WordWrapBatch';
+import type { NativeWordWrapPrepareResult } from './generated/NativeWordWrapPrepareResult';
+import type { NativeWordWrapReconstructionInput } from './generated/NativeWordWrapReconstructionInput';
+import type { NativeLayoutPrepareResult } from './generated/NativeLayoutPrepareResult';
+import type { NativeLayoutReconstructionInput } from './generated/NativeLayoutReconstructionInput';
+import type { NativeStructurePrepareResult } from './generated/NativeStructurePrepareResult';
+import type { NativeStructureReconstructionInput } from './generated/NativeStructureReconstructionInput';
+import type { NativeStructureTask } from './generated/NativeStructureTask';
+import type { NativeStructureResponse } from './generated/NativeStructureResponse';
+
+export type NativePackets = {
+  NativeStructureTask2: NativeStructureTask2;
+  NativeStructureResponse2: NativeStructureResponse2;
+  NativeStructure2PrepareResult: NativeStructure2PrepareResult;
+  NativeStructure2ReconstructionInput: NativeStructure2ReconstructionInput;
+  WordWrapTask: WordWrapTask;
+  WordWrapResponse: WordWrapResponse;
+  WordWrapBatch: WordWrapBatch;
+  NativeWordWrapPrepareResult: NativeWordWrapPrepareResult;
+  NativeWordWrapReconstructionInput: NativeWordWrapReconstructionInput;
+  NativeLayoutPrepareResult: NativeLayoutPrepareResult;
+  NativeLayoutReconstructionInput: NativeLayoutReconstructionInput;
+  NativeStructurePrepareResult: NativeStructurePrepareResult;
+  NativeStructureReconstructionInput: NativeStructureReconstructionInput;
+  NativeStructureTask: NativeStructureTask;
+  NativeStructureResponse: NativeStructureResponse;
+};

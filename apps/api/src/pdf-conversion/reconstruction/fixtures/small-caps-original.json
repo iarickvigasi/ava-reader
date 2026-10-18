@@ -1,0 +1,54 @@
+{
+  "schema_version": "ava-recognition-response-2",
+  "task_id": "recognize-da244b97791a35a369b910e27cd5a6700047f386cb77bb7835ae52e293106895",
+  "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "render_sha256": "fca62a9f2e757c42b5d1225df44b7f69ac705224b6e70926efec33cda915da36",
+  "language": "en",
+  "unresolved": [],
+  "segments": [
+    {
+      "id": "s0",
+      "page": 1,
+      "method": "ocr",
+      "kind": "paragraph",
+      "text": "A😀 BC and ABCD.",
+      "box": {
+        "coordinate_space": "render_normalized_1000",
+        "x0": 0,
+        "y0": 0,
+        "x1": 1000,
+        "y1": 1000
+      },
+      "style": null,
+      "spans": [
+        {
+          "anchor": {
+            "exact_text": "bc"
+          },
+          "start": null,
+          "end": null,
+          "style": {
+            "id": "observed",
+            "small_caps": true
+          },
+          "note_label": null,
+          "target_text": null,
+          "url": null
+        }
+      ],
+      "heading_level": null,
+      "chapter_start": false,
+      "chapter_role": null,
+      "note_label": null,
+      "note_role": null,
+      "list_ordered": null,
+      "list_start": null,
+      "list_depth": null,
+      "continues_from_previous": false,
+      "continues_to_next": false,
+      "cells": [],
+      "related_to": null,
+      "alt": ""
+    }
+  ]
+}

@@ -1,3 +1,5 @@
+import type { NativePackets } from './native-packet-types';
+import type { RecognitionSmallCapsQuoteTask } from './generated/RecognitionSmallCapsQuoteTask';
 import type { ContinuationReconstructionInput } from './generated/ContinuationReconstructionInput';
 import type { ContinuationRefinementBatch } from './generated/ContinuationRefinementBatch';
 import type { PresentationRefinementTask } from './generated/PresentationRefinementTask';
@@ -8,10 +10,6 @@ import type { RecognitionCellGeometryProof } from './generated/RecognitionCellGe
 import type { CellGeometryReconstructionInput } from './generated/CellGeometryReconstructionInput';
 import type { RecognitionAnchorQuoteTask } from './generated/RecognitionAnchorQuoteTask';
 import type { RecognitionAnchorQuoteResponse } from './generated/RecognitionAnchorQuoteResponse';
-import type { NativeStructureTask2 } from './generated/NativeStructureTask2';
-import type { NativeStructureResponse2 } from './generated/NativeStructureResponse2';
-import type { NativeStructure2PrepareResult } from './generated/NativeStructure2PrepareResult';
-import type { NativeStructure2ReconstructionInput } from './generated/NativeStructure2ReconstructionInput';
 import type { FrontmatterTitleTask } from './generated/FrontmatterTitleTask';
 import type { FrontmatterTitleResponse } from './generated/FrontmatterTitleResponse';
 import type { FrontmatterTitleRefinementBatch } from './generated/FrontmatterTitleRefinementBatch';
@@ -20,13 +18,6 @@ import type { RecognitionGeometryTask } from './generated/RecognitionGeometryTas
 import type { RecognitionGeometryResponse } from './generated/RecognitionGeometryResponse';
 import type { RecognitionGeometryProof } from './generated/RecognitionGeometryProof';
 import type { RecognitionGeometryReconstructionInput } from './generated/RecognitionGeometryReconstructionInput';
-import type { WordWrapTask } from './generated/WordWrapTask';
-import type { WordWrapResponse } from './generated/WordWrapResponse';
-import type { WordWrapBatch } from './generated/WordWrapBatch';
-import type { NativeWordWrapPrepareResult } from './generated/NativeWordWrapPrepareResult';
-import type { NativeWordWrapReconstructionInput } from './generated/NativeWordWrapReconstructionInput';
-import type { NativeLayoutPrepareResult } from './generated/NativeLayoutPrepareResult';
-import type { NativeLayoutReconstructionInput } from './generated/NativeLayoutReconstructionInput';
 import type { PrepareResult } from './generated/PrepareResult';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
 import type { RecognitionTask } from './generated/RecognitionTask';
@@ -44,12 +35,9 @@ import type { PrintedTitleReconstructionInput } from './generated/PrintedTitleRe
 import type { RecognitionAnchorContextTask } from './generated/RecognitionAnchorContextTask';
 import type { RecognitionOverflowContextTask } from './generated/RecognitionOverflowContextTask';
 import type { RecognitionAnchorContextResponse } from './generated/RecognitionAnchorContextResponse';
-import type { NativeStructurePrepareResult } from './generated/NativeStructurePrepareResult';
-import type { NativeStructureReconstructionInput } from './generated/NativeStructureReconstructionInput';
-import type { NativeStructureTask } from './generated/NativeStructureTask';
-import type { NativeStructureResponse } from './generated/NativeStructureResponse';
 
-export type Packets = {
+export type Packets = NativePackets & {
+  RecognitionSmallCapsQuoteTask: RecognitionSmallCapsQuoteTask;
   RecognitionOverflowContextTask: RecognitionOverflowContextTask;
   ContinuationReconstructionInput: ContinuationReconstructionInput;
   ContinuationRefinementBatch: ContinuationRefinementBatch;
@@ -63,10 +51,6 @@ export type Packets = {
 
   RecognitionAnchorQuoteTask: RecognitionAnchorQuoteTask;
   RecognitionAnchorQuoteResponse: RecognitionAnchorQuoteResponse;
-  NativeStructureTask2: NativeStructureTask2;
-  NativeStructureResponse2: NativeStructureResponse2;
-  NativeStructure2PrepareResult: NativeStructure2PrepareResult;
-  NativeStructure2ReconstructionInput: NativeStructure2ReconstructionInput;
 
   FrontmatterTitleTask: FrontmatterTitleTask;
   FrontmatterTitleResponse: FrontmatterTitleResponse;
@@ -78,20 +62,8 @@ export type Packets = {
   RecognitionGeometryProof: RecognitionGeometryProof;
   RecognitionGeometryReconstructionInput: RecognitionGeometryReconstructionInput;
 
-  WordWrapTask: WordWrapTask;
-  WordWrapResponse: WordWrapResponse;
-  WordWrapBatch: WordWrapBatch;
-  NativeWordWrapPrepareResult: NativeWordWrapPrepareResult;
-  NativeWordWrapReconstructionInput: NativeWordWrapReconstructionInput;
-
-  NativeStructurePrepareResult: NativeStructurePrepareResult;
-  NativeStructureReconstructionInput: NativeStructureReconstructionInput;
-  NativeStructureTask: NativeStructureTask;
-  NativeStructureResponse: NativeStructureResponse;
   RecognitionAnchorContextTask: RecognitionAnchorContextTask;
   RecognitionAnchorContextResponse: RecognitionAnchorContextResponse;
-  NativeLayoutPrepareResult: NativeLayoutPrepareResult;
-  NativeLayoutReconstructionInput: NativeLayoutReconstructionInput;
   PrintedTitleTask: PrintedTitleTask;
   PrintedTitleResponse: PrintedTitleResponse;
   PrintedTitleRefinementBatch: PrintedTitleRefinementBatch;
