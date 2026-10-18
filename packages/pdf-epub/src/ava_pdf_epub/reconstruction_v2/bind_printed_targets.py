@@ -4,6 +4,7 @@ from collections import defaultdict
 
 from .assembly_state import AssemblyState
 from .observed_table_grid import observed_table_grid
+from .printed_chapter_reference import printed_chapter_reference
 from .segments import ObservedSpan, Segment
 
 
@@ -31,6 +32,8 @@ def bind_printed_targets(
                 # heading assembly. The mandatory later pass must resolve it.
                 output.append(span)
                 continue
+            if not matches:
+                matches = printed_chapter_reference(origin, span, segments, state)
             if len(matches) != 1:
                 raise ValueError("Printed internal reference is missing or ambiguous in source")
             target, parent = matches[0]

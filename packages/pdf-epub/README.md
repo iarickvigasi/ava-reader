@@ -1168,3 +1168,15 @@ its blocking hierarchy finding stays pending. A separate opaque barrier defers a
 rank comparisons without inventing or clearing ancestor depth. Native, corroborated and missing
 rank declarations keep the strict ancestry checks; complete explicit source-backed decisions and
 the final global parent validation are still required before reconstruction can finish.
+
+Current source-title/continuation preparation also resolves an explicit printed `Chapter N`
+reference when no complete target-text match exists. The paragraph caller must reproduce the literal
+label with positive same-book context and no range, foreign-work cue or competing destination.
+The target must be one source-corroborated body chapter with a native compound title whose
+separate first source component prints that exact number; complete same-page, depth-zero
+outline-title authority and the unchanged rehomed native ordinal map are required. Full
+navigation normalization is used only for that complete source-title comparison. No number
+comes from chapter order or an inferred title. The first binding pass remains deferred; exact
+matching, ambiguous matches and historical/default behavior remain strict. Roman numerals,
+noncompound or OCR-only numbered openings and unproven references remain outside this fallback.
+Binding preserves text and styles and uses the ordinary internal-link position compiler.
