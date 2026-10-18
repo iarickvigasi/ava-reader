@@ -1212,3 +1212,29 @@ In extended current appearance groups, a context node can also be a decision in 
 Its derived body-reference pointer is omitted only when that body is absent locally. Required
 decision pointers cannot be hidden, included body pointers remain intact, and explicit request
 references/source crops and immutable observations stay unchanged.
+
+
+### Source-corroborated continuation leading
+
+The current continuation policy may replace an OCR leading estimate before book review only
+when the original PDF independently proves the same leading as a fixed native paragraph.
+Both parsers read the same immutable source-byte snapshot. Complete exclusive source rows must
+match unchanged endpoint text, share the actual resolved font resource, effective matrix and
+source size, and pass frame, visibility, ownership and gutter checks. A physical terminal wrap
+hyphen may be absent from OCR only for this metric comparison; every skipped glyph is still
+visible, owned and font-checked. This creates no transcription, link-offset or text-fidelity proof.
+
+Every raw baseline gap must be positive and unclamped, each row must have one baseline, and the
+full gap spread must stay within 0.001 em. Independently measured medians must agree within an
+error bound propagated from source-coordinate floating-point resolution and bbox-derived size.
+The stored native metric must equal its exact remeasurement. OCR/model decimal proximity grants
+no authority. Unknown risks and mixed inline appearances decline; language uncertainty and
+unavailable/unresolved native whitespace may remain because this path proves only a metric.
+Original page/response records, text, spans, geometry and other style values stay unchanged.
+
+A frozen private receipt binds original segments/styles, source observations, resource, gap
+vectors and skipped hyphen identities. It is written by digest under the private worker scratch
+space; an informational reconstruction finding records the digest and bounded explanation.
+These receipts follow scratch-artifact retention, not a promise of permanent raw-artifact storage.
+The existing finite comparison still needs both source crops and an explicit model choice before
+joining. Task5/Response5 semantics, exact join guards and historical/default behavior are unchanged.

@@ -16,6 +16,7 @@ from .segments import Segment
 if TYPE_CHECKING:
     from .compound_feature_source import CompoundFeatureSource
     from .continuation_application import PresentationSnapshot
+    from .continuation_metrics import SourceMetricProof
     from .index_entry_receipt import IndexEntryReceipt
     from .index_projection_types import IndexPageProjection
     from .uri_group_types import PendingUriLink
@@ -73,6 +74,7 @@ class AssemblyState:
         default_factory=dict
     )
     source_outline_targets: dict[tuple[str, int, int], str] = field(default_factory=dict)
+    continuation_metric_proofs: dict[str, "SourceMetricProof"] = field(default_factory=dict)
     continuation_presentation: "PresentationSnapshot | None" = None
     source_continuation_policy: str | None = None
     refined_joins: dict[tuple[str, str], bool] = field(default_factory=dict)

@@ -82,5 +82,8 @@ def source_segments(
         segments = map_source_links(source, scratch, prepared, segments, state)
     record_index_context(prepared, segments, state)
     segments = recover_index_indents(prepared, segments, state)
+    from .continuation_metrics import corroborate_continuation_metrics
+
+    segments = corroborate_continuation_metrics(source, scratch, prepared, segments, state)
     state.segments.update({s.id: s for s in segments})
     return pages, segments, state

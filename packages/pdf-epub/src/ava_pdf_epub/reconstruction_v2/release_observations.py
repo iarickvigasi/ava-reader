@@ -35,6 +35,7 @@ def release_observations(state: "AssemblyState") -> None:
     state.page_labels.clear()
     state.source_linked_furniture_ids.clear()
     state.refined_joins.clear()
+    state.continuation_metric_proofs.clear()
     state.continuation_presentation = None
     state.bibliographic_roles.clear()
     state.printed_title = None
