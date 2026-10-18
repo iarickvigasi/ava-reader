@@ -386,6 +386,12 @@ URL, book text or source path enters the report. Strict API validation and the o
 export preserve this bounded evidence. Findings identify a failed action; they do not claim all
 links were checked or change content acceptance, retries, publication or accounting.
 
+Under `ava-frontmatter-title-1`, plain OCR Contents rows may be paragraphs or list items.
+Both roles require the same unique complete outline title and independently observed printed folio
+pointing to that source page. A list marker is not chapter authority. Multiline labels, exact title
+ranges, list fields, text, styles and boxes stay unchanged; absent, duplicate or conflicting witnesses
+refuse. The ordinary opening, annotation-conflict and chapter/link checks still apply.
+
 Under `ava-frontmatter-title-1`, a contents/bookmark title may corroborate one adjacent,
 same-page group of heading fragments (up to 16 fragments). The complete title must match
 uniquely; grouping never skips body text, crosses columns, mixes native/OCR authority or

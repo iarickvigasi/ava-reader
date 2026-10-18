@@ -71,6 +71,11 @@ its actual destination, including a different source page. Generic literal/URI p
 policies and separate local-OCR confidence stay fixed; final source-action and reader qualification
 remain separate gates.
 
+Plain OCR Contents entries may be prose or list items. Chapter claims still require one matching
+complete source bookmark, an independently observed printed page label and the actual opening.
+The row keeps its text, list presentation and exact link range; its model-assigned role supplies no
+chapter authority. Missing or conflicting source evidence remains a conversion failure.
+
 Worker contracts and API types are generated from the locked Python package. Unknown fields,
 stale source/task hashes, invented nodes/styles, missing text/resources or unresolved required
 structure fail closed. Historical recognition prompts 13/14 require each decimal, alphabetic or Roman ordered

@@ -18,9 +18,10 @@ def plain_contents_claims(
     claims = []
     identities: set[tuple[str, int]] = set()
     for segment in segments:
+        # A model may label a TOC row as prose or a list item; neither proves its target.
         if (
             segment.method != "ocr"
-            or segment.kind != "paragraph"
+            or segment.kind not in {"paragraph", "list_item"}
             or re.search(r"\.{2,}", segment.text)
         ):
             continue
