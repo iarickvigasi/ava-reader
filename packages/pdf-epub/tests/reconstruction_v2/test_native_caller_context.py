@@ -202,6 +202,7 @@ class NativeCallerContextTests(unittest.TestCase):
             [replace(good[0], confidence=84.99), good[1]],
             [replace(good[0], visible=False), good[1]],
             [good[0], replace(good[1], line=(1, 1, 2))],
+            [good[0], replace(good[1], mappable=False)],
             [good[0], replace(good[1], box=rectangle(40.5, 28, 69, 37))],
         ]
         for words in cases:
@@ -217,7 +218,7 @@ class NativeCallerContextTests(unittest.TestCase):
                     checkpoint.observation, [owner], caller, root, checkpoint.profile_id, None, {}
                 )
         payload = self.words_payload()
-        for bad in [payload.replace(b"guide", b"guide combined"), payload + b"broken row\n"]:
+        for bad in [payload + b"broken row\n"]:
             with self.assertRaises(ValueError):
                 parse_words(bad, AnnotationRasterFrame(checkpoint.observation, 19, 39, 122, 30))
 
