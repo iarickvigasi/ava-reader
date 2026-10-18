@@ -1,5 +1,9 @@
 import { z } from 'zod';
 import { joinTypographyFinding } from './join-typography-finding';
+import {
+  sourceLinkFinding,
+  validateFailureFindings,
+} from './source-link-finding';
 
 export const WORKER_OBSERVATION_PREFIX = 'AVA_WORKER_OBSERVATION_V1 ';
 export const WORKER_OBSERVATION_BYTES = 6144;
@@ -248,7 +252,12 @@ export const workerObservationPacket = z
       .strict(),
     findings: z
       .array(
-        z.union([workerSourceFinding, admissionFinding, joinTypographyFinding]),
+        z.union([
+          workerSourceFinding,
+          admissionFinding,
+          joinTypographyFinding,
+          sourceLinkFinding,
+        ]),
       )
       .max(2),
     findings_complete: z.boolean(),
@@ -256,24 +265,7 @@ export const workerObservationPacket = z
   .strict()
   .superRefine((value, context) => {
     const attempt = value.command === 'attempt_stream';
-    if (
-      value.findings.some((finding) => finding.kind === 'refinement') &&
-      (![
-        'validate_refinement',
-        'prepare_refinement',
-        'reconstruct',
-        'reconstruct_stream',
-        'attempt_stream',
-      ].includes(value.command) ||
-        value.outcome !== 'failed' ||
-        value.failure_code !== 'RECONSTRUCTION_REVIEW_REQUIRED' ||
-        value.findings.length !== 1 ||
-        !value.findings_complete)
-    )
-      context.addIssue({
-        code: 'custom',
-        message: 'Join conflict requires a complete refinement failure',
-      });
+    validateFailureFindings(value, context);
     if (
       (value.failure_code === 'HEADING_PARENT_MISSING' ||
         value.findings.some(

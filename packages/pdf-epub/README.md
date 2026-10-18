@@ -378,6 +378,14 @@ exports no paragraph text, model payload or style values. A Task5 compatibility 
 keeps the original provider task identity. The existing operator timeline/export preserves
 this observation; missing or invalid diagnostics never authorize a join or publication.
 
+A refused original PDF link also retains the generic public refusal. Its optional `source_link`
+finding names the physical page, **one-based original annotation number** (including preceding
+non-link annotations), `navigation`/`caller`/`application` step, finite cause code, observation digest
+and page-render digest. Unexpected causes use `SOURCE_LINK_UNEXPECTED_FAILURE`; no raw message,
+URL, book text or source path enters the report. Strict API validation and the operator timeline/
+export preserve this bounded evidence. Findings identify a failed action; they do not claim all
+links were checked or change content acceptance, retries, publication or accounting.
+
 Under `ava-frontmatter-title-1`, a contents/bookmark title may corroborate one adjacent,
 same-page group of heading fragments (up to 16 fragments). The complete title must match
 uniquely; grouping never skips body text, crosses columns, mixes native/OCR authority or
