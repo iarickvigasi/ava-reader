@@ -3,6 +3,7 @@
 from collections.abc import Callable
 
 from .refinement_catalogue import RefinementCatalogue
+from .refinement_catalogue_limits import TASK_DECISION_LIMIT
 from .refinement_contract import RefinementEdge
 from .refinement_group import refinement_group
 
@@ -14,7 +15,7 @@ def packed_refinement_groups(
     groups: list[tuple[list[str], list[str], list[RefinementEdge]]] = []
     offset = 0
     while offset < len(catalogue.decisions):
-        for size in range(min(8, len(catalogue.decisions) - offset), 0, -1):
+        for size in range(min(TASK_DECISION_LIMIT, len(catalogue.decisions) - offset), 0, -1):
             group = refinement_group(
                 catalogue, catalogue.decisions[offset : offset + size], assigned
             )

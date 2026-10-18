@@ -5,6 +5,7 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from .assembly_state import AssemblyState
+from .feature_group_nodes import feature_group_nodes
 from .page_checkpoints import PreparedPageMap
 from .prepared_types import AnyPreparedPage
 from .refinement_digest import observation_digest
@@ -24,6 +25,8 @@ def source_feature_tasks(
     segments: list[Segment],
     state: AssemblyState,
     existing_tasks: int,
+    *,
+    decision_limit: int = MAX_FEATURE_DECISIONS,
 ) -> list[SourceFeatureTask]:
     state.source_feature_policy = FEATURE_POLICY
     pages, segment_map = PreparedPageMap(prepared), {s.id: s for s in segments}
@@ -48,7 +51,7 @@ def source_feature_tasks(
     current: list[SourceFeatureRequest] = []
     for index, request in enumerate(requests):
         can_fit = feature_sheet_fits([request], segment_map, pages)
-        if index >= MAX_FEATURE_DECISIONS or not can_fit:
+        if index >= decision_limit or not can_fit:
             if request.allowed_roles:
                 from .source_refusal import refuse_segment
 
@@ -74,7 +77,6 @@ def source_feature_tasks(
                 )
             continue
         crops, image = source_feature_sheet(group, segment_map, pages, scratch)
-        ids = {q.node_id for q in group} | {i for q in group for i in q.reference_ids}
         raw = dict(
             schema_version="ava-book-refinement-task-4",
             source_sha256=source_sha,
@@ -82,7 +84,7 @@ def source_feature_tasks(
             profile_id=prepared[0].profile_id,
             prompt_version="ava-book-refinement-7",
             response_schema_version="ava-book-refinement-response-4",
-            nodes=[n.model_dump(mode="json") for n in nodes.values() if n.id in ids],
+            nodes=feature_group_nodes(group, nodes, decision_limit),
             pixels_per_point=2,
             decision_ids=[],
             edges=[],

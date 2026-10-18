@@ -1188,7 +1188,20 @@ heading/candidate context, its decisions, boundary endpoints, crops and required
 closure. Remote headings omit a body-reference pointer only when that body is outside the request;
 pointers to included bodies stay intact for baseline-style validation. Immutable observations and
 the full-book digest remain unchanged. Missing dependencies or heading/required context that
-cannot fit still refuse. Large current catalogues pack the largest ordered prefix of up to eight decisions that fits the
+cannot fit still refuse. Large current catalogues pack the largest ordered prefix of up to 24 decisions that fits the
 unchanged readable sheet geometry, retaining the same neighbor and body-reference crops. No crop
 is shrunk or discarded to fit. Smaller catalogues and historical policies keep their existing request
 bytes and identities. Crop, image, decision, response and 32-task book bounds remain unchanged.
+
+Current title/continuation books allocate appearance comparisons against the existing 256-item
+feature catalogue, rather than applying a single request's 24-decision bound to the whole book.
+Essential paragraph/quotation roles retain priority and cannot be skipped. The actual title task
+reserves one slot (zero if absent) before optional appearance groups use the remaining 32-task
+budget. Uninspected optional appearances remain explicitly unknown with source evidence; singleton
+geometry and every public task/crop/image/response bound remain strict. Historical policies keep
+their 24-comparison cap and task bytes when the existing limits suffice.
+
+In extended current appearance groups, a context node can also be a decision in another group.
+Its derived body-reference pointer is omitted only when that body is absent locally. Required
+decision pointers cannot be hidden, included body pointers remain intact, and explicit request
+references/source crops and immutable observations stay unchanged.

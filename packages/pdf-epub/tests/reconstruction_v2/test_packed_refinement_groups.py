@@ -34,7 +34,7 @@ class PackedRefinementGroupsTests(unittest.TestCase):
             self.assertTrue({i for e in edges for i in (e.previous_id, e.next_id)} <= set(crops))
             self.assertLessEqual(len(crops), 10)
         self.assertEqual(
-            refinement_groups(values), packed_refinement_groups(values, lambda _: True)
+            [16] * 5, [len(g[0]) for g in packed_refinement_groups(values, lambda _: True)]
         )
 
     def test_unsplittable_context_and_more_than_32_groups_still_refuse(self):
@@ -45,3 +45,10 @@ class PackedRefinementGroupsTests(unittest.TestCase):
         values = RefinementCatalogue(nodes, [n.id for n in nodes], [])
         with self.assertRaisesRegex(ValueError, "exceed supported bound"):
             packed_refinement_groups(values, lambda ids: len(ids) == 1)
+
+    def test_full_existing_wire_decision_bound_can_fill_a_readable_sheet(self):
+        nodes = [node(f"p{i}") for i in range(25)]
+        values = RefinementCatalogue(nodes, [n.id for n in nodes], [])
+        packed = packed_refinement_groups(values, lambda _: True)
+        self.assertEqual([24, 1], [len(g[0]) for g in packed])
+        self.assertEqual(values.decisions, [i for g in packed for i in g[0]])

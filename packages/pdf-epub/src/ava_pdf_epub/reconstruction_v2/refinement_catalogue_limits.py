@@ -2,6 +2,7 @@
 
 from .assembly_state import AssemblyState
 
+TASK_DECISION_LIMIT = 24  # Existing public BookRefinementTask decision bound.
 TASK_NODE_LIMIT = 256
 BOOK_NODE_LIMIT = 20_000  # Matches the canonical book block/graph bound.
 

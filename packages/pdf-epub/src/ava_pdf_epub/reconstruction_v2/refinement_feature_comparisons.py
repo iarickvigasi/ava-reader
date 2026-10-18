@@ -8,6 +8,7 @@ from .assembly_state import AssemblyState
 from .page_checkpoints import PreparedPageMap
 from .prepared_types import AnyPreparedPage
 from .printed_title_v2_contract import FrontmatterTitleTask
+from .refinement_catalogue_limits import TASK_NODE_LIMIT, catalogue_limit
 from .refinement_contract import AnyRefinementTask, PrintedTitleTask
 from .refinement_digest import observation_digest
 from .segments import Segment
@@ -25,6 +26,10 @@ def feature_comparisons(
 ) -> list[AnyRefinementTask | FrontmatterTitleTask]:
     if source_feature_policy is None:
         return []
+    if catalogue_limit(state, source_title_policy) > TASK_NODE_LIMIT:
+        from .current_feature_comparisons import current_feature_comparisons
+
+        return current_feature_comparisons(source, scratch, prepared, segments, state, prior_tasks)
     tasks: list[AnyRefinementTask | FrontmatterTitleTask] = []
     page_map = PreparedPageMap(prepared)
     digest = hashlib.sha256(source.read_bytes()).hexdigest()
