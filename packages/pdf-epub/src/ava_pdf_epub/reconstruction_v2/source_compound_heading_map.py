@@ -1,4 +1,4 @@
-"""Whole-owner, whole-outline authority for a compound numbered chapter destination only."""
+"""Intrinsic whole-owner and original-outline authority for a compound chapter heading."""
 
 from pypdf import PdfReader
 
@@ -14,7 +14,7 @@ from .target_heading_layout import target_heading_layout
 from .target_ligature_map import target_ligature_map
 
 
-def compound_heading_target_map(
+def source_compound_heading_map(
     reader: PdfReader,
     page: PageObservation,
     owner: Segment,

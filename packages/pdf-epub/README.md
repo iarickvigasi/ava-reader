@@ -1178,10 +1178,15 @@ fixed. Missing original-source context retains the strict generic proof. The ori
 outline traversal is shared with the already-open source reader; historical policy behavior stays
 unchanged. Internal destinations also admit a complete same-owner title with consecutive smaller
 bold-italic subtitle rows, bounded gaps and aligned wraps. The full title must match one original
-depth-zero outline claim/page and one eligible source window. A target-only atomic map permits the
+depth-zero outline claim/page and one eligible source window. An atomic source map permits the
 seven typographic ligatures U+FB00–U+FB06 to expand to their literal letters (U+FB05 retains long s).
 Every original glyph, scalar range and peer/frame guard is preserved; no other Unicode normalization
-is allowed. Generic, caller and URI proofs remain unchanged. This component does not establish
+is allowed. An original internal link caller may use the same intrinsic heading proof only after
+its unchanged source action is validated. Every selected original glyph retains the existing ≥90%
+rectangle coverage and maps to its whole accepted scalar expansion. The backlink keeps its actual
+destination, including a different page; no synthetic target is used to qualify its caller. Generic
+literal, URI and historical proofs remain unchanged. Local OCR confidence stays85 when that separate
+fallback is needed. This component does not establish
 whole-book link, EPUB or reader qualification.
 
 A Contents folio may be a separate source line or the whitespace-delimited suffix of its title

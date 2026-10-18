@@ -3,10 +3,10 @@
 from pypdf import PdfReader
 
 from ..pdf_navigation import NavigationTarget
-from .compound_heading_target_map import compound_heading_target_map
 from .observations import PageObservation
 from .ocr_glyph_types import GlyphMap
 from .segments import Segment
+from .source_compound_heading_map import source_compound_heading_map
 from .source_numbered_heading_map import source_numbered_heading_map
 
 
@@ -22,4 +22,4 @@ def numbered_heading_map(
         return None
     return source_numbered_heading_map(
         reader, page, owner, owners, policy
-    ) or compound_heading_target_map(reader, page, owner, owners, policy)
+    ) or source_compound_heading_map(reader, page, owner, owners, policy)

@@ -64,8 +64,12 @@ Internal link destinations retain their original source page and first covered f
 numbered chapter title may use a separately witnessed smaller bold-italic subtitle and atomic
 printed ligature expansion; the full original outline, visible glyph ownership and exact accepted
 offsets remain required. The [worker source-mapping contract](../packages/pdf-epub/README.md) owns
-these checks. Generic caller/URI proofs and historical policies stay fixed; final source-action and
-reader qualification remain separate gates.
+these checks. Original internal backlinks may use that same complete intrinsic heading proof after
+validating their unchanged source action and whole selected glyph coverage. A ligature retains one
+original glyph and its complete accepted scalar range; partial coverage refuses. The caller retains
+its actual destination, including a different source page. Generic literal/URI proofs, historical
+policies and separate local-OCR confidence stay fixed; final source-action and reader qualification
+remain separate gates.
 
 Worker contracts and API types are generated from the locked Python package. Unknown fields,
 stale source/task hashes, invented nodes/styles, missing text/resources or unresolved required

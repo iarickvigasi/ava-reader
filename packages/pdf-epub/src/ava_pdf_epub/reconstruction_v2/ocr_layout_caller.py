@@ -14,6 +14,7 @@ from .ocr_glyph_frame import glyph_frame_safe
 from .ocr_glyph_map import prove_glyph_map
 from .page_label_semantics import source_destination
 from .segments import Segment
+from .source_compound_heading_map import source_compound_heading_map
 from .source_numbered_heading_map import source_numbered_heading_map
 from .source_visible_glyph_map import source_visible_glyph_map
 
@@ -52,6 +53,8 @@ def ocr_layout_caller(
         proof = prove_glyph_map(page, owner, owners, policy)
         if proof is None:
             proof = source_numbered_heading_map(reader, page, owner, owners, policy)
+        if proof is None:
+            proof = source_compound_heading_map(reader, page, owner, owners, policy)
         if proof is None:
             proof = source_visible_glyph_map(reader, page, owner, owners, policy)
         if proof is not None:
