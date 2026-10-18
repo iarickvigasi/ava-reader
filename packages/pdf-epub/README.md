@@ -339,6 +339,14 @@ without complete source-bound decisions. The global parent validator remains str
 observed heading parent emits `HEADING_PARENT_MISSING` with bounded page/block/geometry provenance;
 unknown failures explicitly have incomplete diagnostics. These diagnostics contain no book text.
 
+A strict refinement join typography conflict retains its existing refusal and generic public
+code. Its optional bounded worker observation identifies the refinement stage, both physical
+pages, hashed original task/edge/owner identities and finite conflicting field names. Its
+`render_sha256` identifies the task contact-sheet image, not an individual page render. It
+exports no paragraph text, model payload or style values. A Task5 compatibility projection
+keeps the original provider task identity. The existing operator timeline/export preserves
+this observation; missing or invalid diagnostics never authorize a join or publication.
+
 Under `ava-frontmatter-title-1`, a contents/bookmark title may corroborate one adjacent,
 same-page group of heading fragments (up to 16 fragments). The complete title must match
 uniquely; grouping never skips body text, crosses columns, mixes native/OCR authority or

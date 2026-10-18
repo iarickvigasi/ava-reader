@@ -39,6 +39,7 @@ native recognition hybrid blank annotation_counts link empty personal visible fl
 locations_complete language_method language_character_limit layout_method annotation_scope
 reuse source_preparation checkpoint_decode annotation_view hits misses findings_complete
 coordinate_space page segment_id_sha256 task_id render_sha256 annotation_number relationship_path
+task_id_sha256 edge_id_sha256 previous_id_sha256 next_id_sha256 observation_sha256 previous_page next_page conflicting_fields
 `
     .trim()
     .split(/\s+/),

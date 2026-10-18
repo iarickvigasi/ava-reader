@@ -131,9 +131,14 @@ def presentation_projection(
         decisions=projected_decisions,
     )
     view_response = BookRefinementResponse.model_validate(response_raw)
+    from .join_typography_refusal import JoinTypographyRefusal
     from .refinement_response import accept_refinement
 
-    accept_refinement(view_task, view_response)
+    try:
+        accept_refinement(view_task, view_response)
+    except JoinTypographyRefusal as error:
+        error.bind_task(task)
+        raise
     return PresentationProjection(
         view_task,
         view_response,

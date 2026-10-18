@@ -3,6 +3,7 @@
 from ..contracts.common import unique
 from ..contracts.styles import Style
 from .continuation_boundary import JOIN_STYLE
+from .join_typography_refusal import JoinTypographyRefusal
 from .printed_title_contract import PrintedTitleResponse, PrintedTitleTask
 from .printed_title_v2_contract import FrontmatterTitleResponse, FrontmatterTitleTask
 from .refinement_contract import AnyRefinementResponse, AnyRefinementTask, BookRefinementResponse
@@ -178,4 +179,4 @@ def accept_refinement(
                 or previous.model_dump(include=JOIN_STYLE)
                 != following.model_dump(include=JOIN_STYLE)
             ):
-                raise ValueError("Refined join would discard fragment typography")
+                raise JoinTypographyRefusal(task, edge, previous, following)
