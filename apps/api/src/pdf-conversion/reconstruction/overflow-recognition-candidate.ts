@@ -1,3 +1,4 @@
+import { requireJsonScalars } from '../runtime/json-scalars';
 import type { RecognitionTask } from './generated/RecognitionTask';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
 import { exchangeJson } from '../runtime/exchange-json';
@@ -10,11 +11,11 @@ export function overflowRecognitionCandidate(
   task: RecognitionTask,
   output: string,
 ): RecognitionResponse {
-  requireScalars(output);
+  requireJsonScalars(output);
   if (Buffer.byteLength(output) > 8 * 1024 ** 2)
     throw new PdfRuntimeError('RESOURCE_LIMIT');
   const raw = exchangeJson(Buffer.from(output)) as RecognitionResponse;
-  requireScalars(raw);
+  requireJsonScalars(raw);
   if (!raw || !Array.isArray(raw.segments))
     throw new PdfRuntimeError('INVALID_RESULT');
   const probe = structuredClone(raw),
@@ -55,18 +56,4 @@ export function overflowRecognitionCandidate(
     candidate.segments[item.segment].spans[item.span].anchor![item.key] =
       item.value;
   return candidate;
-}
-
-function requireScalars(value: unknown): void {
-  if (typeof value === 'string') {
-    if (
-      /[\ud800-\udfff\ufffe\uffff]/u.test(value) ||
-      Array.from(value).some((char) => {
-        const code = char.codePointAt(0)!;
-        return code < 32 && code !== 9 && code !== 10 && code !== 13;
-      })
-    )
-      throw new PdfRuntimeError('INVALID_RESULT');
-  } else if (value && typeof value === 'object')
-    Object.values(value).forEach(requireScalars);
 }

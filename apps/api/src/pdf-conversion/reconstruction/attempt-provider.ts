@@ -1,3 +1,4 @@
+import { observeAnchorContextProjection } from './observe-anchor-context-projection';
 import { assertLocalCellGeometryPolicy } from './local-cell-geometry-policy';
 import {
   LOCAL_CELL_OCR_POLICY,
@@ -169,7 +170,13 @@ export async function correctAttemptAnchorContext(
     signal,
   );
   context.checkActive(signal);
-  return anchorContextResponse(task, receipt.output, parent, original);
+  const result = anchorContextResponse(task, receipt.output, parent, original);
+  observeAnchorContextProjection(
+    task,
+    'projection' in result ? result.projection : undefined,
+    context,
+  );
+  return result;
 }
 
 export async function recognizeAttemptTask(

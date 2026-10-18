@@ -1,3 +1,4 @@
+import { anchorContextProjectionEvidence } from '../../../pdf-conversion/reconstruction/anchor-context-projection-evidence';
 import { createHash } from 'node:crypto';
 import type { PdfConversionEvent } from '@prisma/client';
 import { z } from 'zod';
@@ -140,6 +141,7 @@ export const safeEventSchema = z
           })
           .strict()
           .optional(),
+        anchorContextProjection: anchorContextProjectionEvidence.optional(),
         localCellGeometry: z
           .object({
             origin: z.literal('LOCAL_OCR'),

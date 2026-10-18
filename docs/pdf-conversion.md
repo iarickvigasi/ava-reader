@@ -91,6 +91,18 @@ missing quotations and unrelated faults remain ineligible. The probe never trunc
 or drops a span from final content. Known charges and the original reply survive every refusal.
 Until that correction succeeds, the host permits only its bound version2 context task or terminal
 refusal; no later page, paid task, refinement or artifact may advance past the invalid candidate.
+Context-task1 replies have a deterministic host locator adapter. When string-valued before/after
+metadata exceeds128 Unicode scalars (at most4096), the host retains the original raw receipt and
+checks its complete closed response shape, exact task/source/original-span bindings and literal
+full two-sided locator. Only if the full locator and its before-suffix/after-prefix of at most128
+scalars identify the same single original occurrence may a derived reply proceed through ordinary
+host and unchanged worker validation. Contradictory discarded context, ambiguity, malformed JSON,
+duplicate keys, invalid scalars and any unrelated fault still fail. Book text, quotations, styles,
+geometry and destinations never change. Overflow task2, quote tasks and unresolved responses do
+not receive this projection. Safe conversion events retain raw/derived/parent hashes and bounded
+per-slot lengths plus code-point positions; raw source content is excluded from reports. This
+adapter does not add a provider call, correction opportunity or later reconversion.
+
 Bibliographic generation requires both inclusive start and exclusive end code-point offsets for a
 selected role. A declined role has null role/start/end. Omitting an endpoint cannot become an
 accepted metadata choice; exact text bounds, source identity and crop evidence remain worker checks.

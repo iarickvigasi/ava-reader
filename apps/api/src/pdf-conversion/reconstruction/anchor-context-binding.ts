@@ -1,3 +1,4 @@
+import { anchorPositions } from './anchor-positions';
 import { isQuoteRepair } from './anchor-quote-types';
 import { smallCapsQuotations } from './small-caps-quote-candidates';
 import type { AnchorRepairTask } from './anchor-repair-types';
@@ -66,20 +67,7 @@ export function anchorMatches(
   text: string,
   anchor: NonNullable<Span['anchor']>,
 ) {
-  let count = 0;
-  for (
-    let at = text.indexOf(anchor.exact_text);
-    at >= 0;
-    at = text.indexOf(anchor.exact_text, at + 1)
-  ) {
-    const end = at + anchor.exact_text.length;
-    if (
-      text.slice(0, at).endsWith(anchor.before ?? '') &&
-      text.slice(end).startsWith(anchor.after ?? '')
-    )
-      if (++count > 1) break;
-  }
-  return count;
+  return anchorPositions(text, anchor).length;
 }
 
 function invalidSlots(

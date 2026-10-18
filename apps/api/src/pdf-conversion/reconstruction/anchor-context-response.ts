@@ -3,6 +3,7 @@ import { isQuoteRepair } from './anchor-quote-types';
 import type { AnchorRepairTask } from './anchor-repair-types';
 import type { RecognitionTask } from './generated/RecognitionTask';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
+import { boundedAnchorContextPacket } from './bounded-anchor-context-packet';
 import { parsePacket } from './validate-packet';
 import { recognitionResponse } from './recognition-response';
 import { anchorMatches, contextSlotKey } from './anchor-context-binding';
@@ -14,13 +15,19 @@ export function anchorContextResponse(
   parent: RecognitionTask,
   original: RecognitionResponse,
 ) {
-  const response = parsePacket(
-    isQuoteRepair(task)
-      ? 'RecognitionAnchorQuoteResponse'
-      : 'RecognitionAnchorContextResponse',
-    Buffer.from(output),
-    2 * 1024 ** 2,
-  );
+  const packet =
+    task.schema_version === 'ava-recognition-anchor-context-task-1'
+      ? boundedAnchorContextPacket(task, output, parent, original)
+      : {
+          response: parsePacket(
+            isQuoteRepair(task)
+              ? 'RecognitionAnchorQuoteResponse'
+              : 'RecognitionAnchorContextResponse',
+            Buffer.from(output),
+            2 * 1024 ** 2,
+          ),
+        };
+  const { response } = packet;
   if (
     response.task_id !== task.task_id ||
     response.source_sha256 !== task.source_sha256 ||
@@ -74,7 +81,7 @@ export function anchorContextResponse(
   }
   // The worker still performs its full Python semantic/source acceptance before advancing.
   return {
-    response,
+    ...packet,
     corrected: recognitionResponse(parent, JSON.stringify(corrected)),
   };
 }

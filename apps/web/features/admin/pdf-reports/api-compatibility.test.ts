@@ -160,3 +160,50 @@ it.each(["PROVED", "NO_PROOF"] as const)(
     expect(projected.value.events).toEqual(response.events);
   },
 );
+
+it("preserves content-free verified locator projections while omitting raw content", () => {
+  const projection = {
+    method: "ava-anchor-context-bounds-1",
+    rawResponseSha256: "a".repeat(64),
+    derivedResponseSha256: "b".repeat(64),
+    originalResponseSha256: "c".repeat(64),
+    slots: [
+      {
+        segmentIndex: 2,
+        spanIndex: 1,
+        codePointStart: 33,
+        originalBefore: 33,
+        originalAfter: 229,
+        finalBefore: 33,
+        finalAfter: 128,
+      },
+    ],
+  };
+  const event = safeEventSchema.parse({
+    kind: "VALIDATION",
+    stage: "ANCHOR_CONTEXT_PROJECTION",
+    details: { anchorContextProjection: projection },
+  });
+  const response = {
+    schemaVersion: 1,
+    conversionId: "pdf-1",
+    watermark: 1,
+    events: [{ sequence: 1, recordedAt: "2026-10-18T14:00:00.000Z", ...event }],
+    nextCursor: null,
+  };
+  const query = {
+    kind: "conversionId",
+    reference: "pdf-1",
+    view: "events",
+  } as const;
+  expect(parseReportResponse(response, query)).toMatchObject({
+    omittedFields: 0,
+    value: { events: response.events },
+  });
+  Object.assign(response.events[0].details.anchorContextProjection!, {
+    rawResponse: "private source canary",
+  });
+  const parsed = parseReportResponse(response, query);
+  expect(parsed.omittedFields).toBe(1);
+  expect(JSON.stringify(parsed.value)).not.toContain("private source");
+});
