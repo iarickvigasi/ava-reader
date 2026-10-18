@@ -8,6 +8,7 @@ from .assemble_pages import assemble_pages
 from .assembly_state import AssemblyState
 from .bind_printed_targets import bind_printed_targets
 from .continuation_margins import continuation_margins
+from .corroborate_index_headers import corroborate_index_headers
 from .index_context import record_index_context
 from .index_indents import recover_index_indents
 from .linked_furniture import preserve_linked_furniture
@@ -60,6 +61,7 @@ def source_segments(
         native_continuations=state.native_continuations,
         native_paragraph_layout=source_continuation_policy is not None,
     )
+    qualified = corroborate_index_headers(source, prepared, qualified, state)
     qualified = preserve_linked_furniture(source, prepared, qualified, state)
     qualified = corroborate_running_furniture(prepared, qualified, state)
     qualified = project_index_pages(source, prepared, qualified, state)

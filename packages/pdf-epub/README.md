@@ -1152,3 +1152,19 @@ model URL range while retaining its original style as a separate span. A bare-ww
 existing derived-scheme rule; explicit HTTP/HTTPS values are never treated as interchangeable.
 Partial, extended, conflicting, multiple or note-bearing model links refuse. This witness certifies
 only the URI subspan, adds no provider call and never rewrites surrounding paragraph text.
+
+Current full-page source-index headers can receive a furniture role before preservation. At least
+three distinct same-parity pages must agree on exact complete visible source text, small source
+font, original frame and repeated source geometry; one independently observed furniture peer is
+required. The source digest and current index task/policies must agree. Chapter starts, large
+source titles, semantic spans, competing owners and incomplete/hidden source lines stay unchanged.
+Text, styles, spans and original recognition receipts are preserved. Existing annotation handling
+retains a linked header as a credit before omission; this classification adds no model request.
+
+With the existing explicit source-review context, an uncorroborated OCR heading's provisional rank
+can reach source-crop refinement even when it skips a parent during preparation. This repairs the
+premature preparation refusal across existing profiles; standalone/default hierarchy calls stay strict. Its observed level, text and typography remain unchanged, and
+its blocking hierarchy finding stays pending. A separate opaque barrier defers affected native
+rank comparisons without inventing or clearing ancestor depth. Native, corroborated and missing
+rank declarations keep the strict ancestry checks; complete explicit source-backed decisions and
+the final global parent validation are still required before reconstruction can finish.

@@ -4,12 +4,10 @@ from collections.abc import Mapping, Sequence
 from statistics import median
 
 from .font_style import glyph_size
+from .heading_ancestry import MixedHeadingReviewRequired
+from .heading_ancestry import section_level as section_level
 from .prepared_types import AnyPreparedPage
 from .segments import Segment
-
-
-class MixedHeadingReviewRequired(ValueError):
-    """Native size cannot establish ancestry through an unmeasured OCR heading."""
 
 
 def heading_hierarchy(
@@ -47,20 +45,34 @@ def heading_hierarchy(
         return segments
     first_chapter = min(i for i, s in enumerate(segments) if s.chapter_start)
     ranks: list[float | None] = []
-    first_on_page: dict[int, str] = {}
-    for item in segments:
-        first_on_page.setdefault(item.page, item.id)
+    opaque_ocr = False
+    first_on_page = {item.page: item.id for item in reversed(segments)}
     result = []
     for index, segment in enumerate(segments):
         if segment.chapter_start:
             ranks.clear()
+            opaque_ocr = False
         if (
             index >= first_chapter
             and segment.kind == "heading"
             and not segment.chapter_start
             and segment.id not in sizes
         ):
-            section_level(None, ranks, segment.heading_level)
+            try:
+                section_level(None, ranks, segment.heading_level)
+            except ValueError:
+                if (
+                    deferred_native is None
+                    or segment.method != "ocr"
+                    or segment.id in corroborated_sections
+                    or segment.heading_level is None
+                ):
+                    raise
+                # Pending OCR cannot create a missing parent or reset ancestry.
+                opaque_ocr = True
+            else:
+                if segment.id in corroborated_sections and segment.heading_level == 2:
+                    opaque_ocr = False
         if index >= first_chapter and segment.id in sizes and not segment.chapter_start:
             if (
                 segment.page > segments[first_chapter].page
@@ -71,42 +83,18 @@ def heading_hierarchy(
                 raise ValueError("Chapter-sized opening needs whole-book source corroboration")
             declared = segment.heading_level if segment.id in corroborated_sections else None
             try:
+                if opaque_ocr and declared is None:
+                    raise MixedHeadingReviewRequired("Unranked OCR ancestry requires review")
                 level = section_level(sizes[segment.id], ranks, declared)
+                if declared == 2:
+                    opaque_ocr = False
             except MixedHeadingReviewRequired:
                 if deferred_native is None:
                     raise
-                # Keep the unknown ancestor until a corroborated rank/chapter resets it.
-                # The page-local rank remains an observation, never an accepted hierarchy.
+                # Source review must resolve unknown ancestry before any rank is accepted.
                 deferred_native.add(segment.id)
                 segment = segment.model_copy(update={"structure_candidate": True})
             else:
                 segment = segment.model_copy(update={"heading_level": level})
         result.append(segment)
     return result
-
-
-def section_level(
-    size: float | None, ancestors: list[float | None], declared: int | None = None
-) -> int:
-    """Infer only observed chapter-local ancestry; later large siblings cannot skip an H2."""
-    if declared is not None:
-        if declared < 2 or declared > len(ancestors) + 2:
-            raise ValueError("Declared heading skips an unobserved parent")
-        del ancestors[declared - 2 :]
-    else:
-        if size is None:
-            raise ValueError("A heading without source size requires a declared level")
-        while ancestors:
-            previous = ancestors[-1]
-            if previous is None:
-                raise MixedHeadingReviewRequired(
-                    "Mixed heading hierarchy requires source corroboration"
-                )
-            if size < previous - 0.5:
-                break
-            ancestors.pop()
-    level = len(ancestors) + 2
-    if level > 6:
-        raise ValueError("Native heading hierarchy exceeds the supported depth")
-    ancestors.append(size)
-    return level
