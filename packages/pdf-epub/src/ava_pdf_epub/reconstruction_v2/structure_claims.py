@@ -3,7 +3,6 @@
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
 
 from pypdf import PdfReader
 
@@ -43,22 +42,6 @@ def printed_contents(
 
 
 def outline_claims(source: Path) -> list[StructureClaim]:
-    reader = PdfReader(source)
-    claims: list[StructureClaim] = []
+    from .reader_outline_claims import reader_outline_claims
 
-    def visit(items: list[Any], depth: int) -> None:
-        if depth > 5:
-            raise ValueError("Source outline nesting requires review")
-        for item in items:
-            if isinstance(item, list):
-                visit(item, depth + 1)
-            else:
-                if len(claims) >= 10000:
-                    raise ValueError("Source outline item bound exceeded")
-                page = reader.get_destination_page_number(item)
-                if page is None or page < 0:
-                    raise ValueError("Source outline has unresolved destination")
-                claims.append(StructureClaim(str(item.title), None, pdf_page=page + 1, depth=depth))
-
-    visit(reader.outline, 0)
-    return claims
+    return reader_outline_claims(PdfReader(source))

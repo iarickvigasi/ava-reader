@@ -45,6 +45,8 @@ def page_target(
                         left,
                         top,
                         source_continuation_policy,
+                        reader=reader,
+                        source_target=target,
                         excluded_ids=frozenset(
                             s.id
                             for s in segments

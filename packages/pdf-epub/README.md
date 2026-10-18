@@ -1090,3 +1090,14 @@ The whole owner must still match every visible source character exactly, with un
 complete glyph coverage and a safe page frame. Accepted text, whitespace, styles and geometry never
 change. A missing or ambiguous witness retains the existing local-OCR fallback and review refusal.
 The native index's separate decimal/unpositioned PageLabel rules remain unchanged.
+
+A current-policy coordinate destination may separately corroborate a numbered chapter heading with
+a standalone decimal ordinal beside its title. This requires complete literal source ownership,
+matching visible source face/size/baseline, one bounded ordinal tab, normal title stream/gutter
+checks and exactly one complete original outline title/page and eligible source heading window.
+Only an immediately adjacent independently proved subtitle may complete that title; no body text
+or intervening owner is skipped, and a title prefix alone is insufficient. The first covered
+fragment still owns the destination. Number/title/subtitle text, styles, whitespace and offsets stay
+fixed. Missing original-source context retains the strict generic proof. The original bounded
+outline traversal is shared with the already-open source reader; historical policy behavior stays
+unchanged.
