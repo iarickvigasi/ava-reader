@@ -1120,6 +1120,18 @@ caller, after validating its unchanged action and source frame. A heading backli
 actual destination; the caller is never substituted for that destination. Generic glyph/peer and
 whole-character coverage checks remain unchanged, and unsupported callers retain local OCR/failure.
 
+Current full-page index recognition can derive paragraph geometry from the original source before
+assembly. A positive index header and repeated source-column rows must establish an empty central
+gutter; every body glyph must belong to a complete visible row. Each unchanged OCR paragraph must
+match exactly one complete same-column row group, and the accepted order must partition every body
+row exactly once. Missing, duplicated, ambiguous or full-width body content declines this projection.
+Only boxes change: raw OCR boxes and identity, source glyph ordinals and derived character offsets
+stay in private receipts. Source regions, placements, review crops and links then share the same
+derived geometry. Receipt reuse checks the complete page and current owner identities, allowing only
+original furniture to be omitted. Geometry proof alone gives no prose/quotation exemption: independent
+entry roles still require the existing entry and indented numeric-continuation grammar. Unsupported
+pages retain the existing proof and local-OCR paths. This adds no provider request.
+
 Local annotation OCR reads Tesseract TSV quotes literally. A structurally valid word field that
 contains internal whitespace remains an unmappable token with its original text, geometry and line
 identity. It blocks its complete OCR line, including table-cell subsets; an unrelated complete line

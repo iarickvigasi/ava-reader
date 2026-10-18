@@ -5,6 +5,7 @@ from itertools import groupby
 from statistics import median
 
 from .index_layout import ENTRY_END, FOLIO, index_rows
+from .index_projection_types import IndexSourceRow
 from .observations import PageObservation
 from .ocr_glyph_types import GlyphMap
 from .segments import Segment
@@ -12,9 +13,28 @@ from .segments import Segment
 NUMERIC_WRAP = re.compile(rf"{FOLIO}(?:\s*[,;]\s*{FOLIO})*(?:\s+passim)?[.,;]?", re.I)
 
 
-def source_index_entry(page: PageObservation, owner: Segment, proof: GlyphMap) -> bool:
+def source_index_entry(
+    page: PageObservation,
+    owner: Segment,
+    proof: GlyphMap,
+    source_rows: tuple[IndexSourceRow, ...] = (),
+) -> bool:
     fragments = [list(values) for _, values in groupby(proof.glyphs, key=lambda item: item.line_id)]
-    if not fragments or fragments[0][0].line_id not in {row.id for row in index_rows(page)}:
+    if not fragments:
+        return False
+    if source_rows:
+        if (
+            len(fragments) != len(source_rows)
+            or any(
+                [(g.line_id, g.ordinal) for g in fragment]
+                != [(row.line.id, i) for i, _ in row.values]
+                for fragment, row in zip(fragments, source_rows, strict=True)
+            )
+            or not ENTRY_END.search(source_rows[0].text)
+            or not any(c.isalpha() for c in source_rows[0].text)
+        ):
+            return False
+    elif fragments[0][0].line_id not in {row.id for row in index_rows(page)}:
         return False
     source = {row.id: row for row in page.lines}
     first = fragments[0]

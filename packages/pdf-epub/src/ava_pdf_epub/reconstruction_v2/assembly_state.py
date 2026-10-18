@@ -1,7 +1,5 @@
 """Small mutable assembly workspace, validated as a complete canonical graph at the boundary."""
 
-import hashlib
-import json
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Literal
 
@@ -19,6 +17,7 @@ if TYPE_CHECKING:
     from .compound_feature_source import CompoundFeatureSource
     from .continuation_application import PresentationSnapshot
     from .index_entry_receipt import IndexEntryReceipt
+    from .index_projection_types import IndexPageProjection
 
 
 @dataclass
@@ -36,6 +35,7 @@ class AssemblyState:
     segments: dict[str, Any] = field(default_factory=dict)
     internal_targets: list[tuple[str, int, int, str, int]] = field(default_factory=list)
     source_contents_rows: dict[str, str] = field(default_factory=dict)
+    source_index_projections: dict[int, "IndexPageProjection"] = field(default_factory=dict)
     source_index_entries: dict[str, "IndexEntryReceipt"] = field(default_factory=dict)
     source_reference_containers: dict[str, str] = field(default_factory=dict)
     aliases: dict[str, tuple[str, int]] = field(default_factory=dict)
@@ -81,13 +81,9 @@ class AssemblyState:
     unrequested_optional_features: int = 0
 
     def style_id(self, style: Style | None) -> str | None:
-        if style is None:
-            return None
-        value = style.model_dump(exclude={"id"})
-        digest = hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()[:24]
-        ident = "style-" + digest
-        self.styles[ident] = {"id": ident, **value}
-        return ident
+        from .observed_style_id import observed_style_id
+
+        return observed_style_id(self.styles, style)
 
     def release_observations(self) -> None:
         from .release_observations import release_observations

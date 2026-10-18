@@ -33,7 +33,7 @@ def ocr_pdf_caller(
     try:
         if policy == POLICY:
             ranges = corroborated_caller_ranges(
-                reader, target, annotation, caller, context, policy, source
+                reader, target, annotation, caller, context, policy, source, state
             )
             message = (
                 "Accepted OCR characters exactly match the complete visible source entry; "

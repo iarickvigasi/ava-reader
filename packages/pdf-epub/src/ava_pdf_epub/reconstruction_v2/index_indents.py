@@ -13,6 +13,7 @@ from .index_indent_geometry import (
     measured_index_indents,
 )
 from .prepared_types import AnyPreparedPage
+from .projected_index_maps import verified_index_projection
 from .segments import Segment
 
 
@@ -23,12 +24,19 @@ def recover_index_indents(
     for checkpoint in prepared:
         owners = [s for s in segments if s.page == checkpoint.observation.number]
         selected = [s for s in owners if independent_index_entry(s, state)]
+        projection = verified_index_projection(checkpoint, owners, state)
+        mapped = {e.proof.owner_id: e for e in projection.entries} if projection else {}
         measured = [
             geometry
             for owner in selected
             if (
                 geometry := index_indent_geometry(
-                    checkpoint.observation, owner, owners, state.source_continuation_policy
+                    checkpoint.observation,
+                    owner,
+                    owners,
+                    state.source_continuation_policy,
+                    mapped[owner.id].proof if owner.id in mapped else None,
+                    mapped[owner.id].rows if owner.id in mapped else (),
                 )
             )
             is not None

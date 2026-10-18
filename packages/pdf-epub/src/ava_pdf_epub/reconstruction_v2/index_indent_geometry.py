@@ -1,31 +1,29 @@
 """Only complete source-owned index rows can supply physical-column indentation."""
 
-from dataclasses import dataclass
 from itertools import groupby
 from math import isfinite
 from statistics import median
 
 from .index_entry_source import source_index_entry
+from .index_indent_types import IndexIndentGeometry
 from .index_layout import index_rows
+from .index_projection_types import IndexSourceRow
 from .observations import PageObservation
 from .ocr_glyph_map import prove_glyph_map
+from .ocr_glyph_types import GlyphMap
 from .segments import Segment
 
 
-@dataclass(frozen=True)
-class IndexIndentGeometry:
-    owner: Segment
-    column: int
-    size: float
-    margins: tuple[float, ...]
-    font: str
-
-
 def index_indent_geometry(
-    page: PageObservation, owner: Segment, owners: list[Segment], policy: str | None
+    page: PageObservation,
+    owner: Segment,
+    owners: list[Segment],
+    policy: str | None,
+    proof: GlyphMap | None = None,
+    source_rows: tuple[IndexSourceRow, ...] = (),
 ) -> IndexIndentGeometry | None:
-    proof = prove_glyph_map(page, owner, owners, policy)
-    if proof is None or not source_index_entry(page, owner, proof):
+    proof = proof or prove_glyph_map(page, owner, owners, policy)
+    if proof is None or not source_index_entry(page, owner, proof, source_rows):
         return None
     fragments = [list(values) for _, values in groupby(proof.glyphs, key=lambda g: g.line_id)]
     size = median(item.glyph.size for item in proof.glyphs)

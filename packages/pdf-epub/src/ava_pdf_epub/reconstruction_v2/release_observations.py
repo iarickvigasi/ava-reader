@@ -16,6 +16,7 @@ def release_observations(state: "AssemblyState") -> None:
     state.internal_targets.clear()
     state.source_contents_rows.clear()
     state.source_index_entries.clear()
+    state.source_index_projections.clear()
     state.source_reference_containers.clear()
     state.aliases.clear()
     state.native_line_maps.clear()

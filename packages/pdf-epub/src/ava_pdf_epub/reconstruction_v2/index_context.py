@@ -12,6 +12,7 @@ from .index_prompt import INDEX_PROMPT_VERSION
 from .native_layout_policy import NATIVE_LAYOUT_POLICY
 from .ocr_glyph_map import prove_glyph_map
 from .prepared_types import AnyPreparedPage, layout_policy
+from .projected_index_maps import verified_index_projection
 from .recognition_contract import RecognitionTask
 from .segments import Segment
 from .source_context_identity import source_context_identity
@@ -44,6 +45,8 @@ def record_index_context(
         ):
             continue
         owners = [s for s in segments if s.page == page.number]
+        projection = verified_index_projection(checkpoint, owners, state)
+        mapped = {e.proof.owner_id: e for e in projection.entries} if projection else {}
         for owner in owners:
             if (
                 owner.kind != "paragraph"
@@ -57,8 +60,11 @@ def record_index_context(
                 )
             ):
                 continue
-            proof = prove_glyph_map(page, owner, owners, POLICY)
-            if proof is not None and source_index_entry(page, owner, proof):
+            entry = mapped.get(owner.id)
+            proof = entry.proof if entry else prove_glyph_map(page, owner, owners, POLICY)
+            if proof is not None and source_index_entry(
+                page, owner, proof, entry.rows if entry else ()
+            ):
                 state.source_index_entries[owner.id] = IndexEntryReceipt(
                     source_context_identity(owner)
                 )
