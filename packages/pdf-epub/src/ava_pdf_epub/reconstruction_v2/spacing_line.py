@@ -18,6 +18,8 @@ def qualify_line_spaces(
     line: NativeLine, proposed: str, metrics: dict[MetricKey, SpacingMetric | None]
 ) -> tuple[NativeLine, bool]:
     additions = space_insertions(line.text, proposed)
+    if additions is None:
+        return line, True  # Decoder disagreement is uncertainty, not proof of correct spacing.
     if not additions:
         return line, False
     if (

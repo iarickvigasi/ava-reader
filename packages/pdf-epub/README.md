@@ -339,6 +339,18 @@ without complete source-bound decisions. The global parent validator remains str
 observed heading parent emits `HEADING_PARENT_MISSING` with bounded page/block/geometry provenance;
 unknown failures explicitly have incomplete diagnostics. These diagnostics contain no book text.
 
+Current native spacing distinguishes an unchanged decoder result from unresolved character
+disagreement; the latter keeps recognition routing. PDFium’s explicit terminal hyphen marker
+can be interpreted as the original literal ASCII hyphen only when its ink box has one complete
+visible source-glyph/line owner in the safe page frame. Other controls, punctuation, missing or
+competing geometry remain unresolved. The full-row insertion-only and independent font,
+tracking, local-contrast and word-gap checks still qualify every added space. No source
+hyphen is deleted or global spacing threshold lowered. Boundary ASCII padding can be ignored
+only when the remaining complete string already equals the source line and every removed
+character is an explicit generated, nonhyphen, finite zero-area raw character anchored uniquely
+inside the corresponding first/last source glyph. Interior and actual source whitespace stay
+exact; raw index/match bounds and competing owners fail closed. See the [PDFium text API](https://pdfium.googlesource.com/pdfium/+/refs/heads/main/public/fpdf_text.h) for the explicit marker predicate.
+
 A strict refinement join typography conflict retains its existing refusal and generic public
 code. Its optional bounded worker observation identifies the refinement stage, both physical
 pages, hashed original task/edge/owner identities and finite conflicting field names. Its

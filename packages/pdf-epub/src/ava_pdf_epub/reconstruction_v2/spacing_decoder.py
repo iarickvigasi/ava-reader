@@ -5,6 +5,8 @@ from contextlib import ExitStack
 from pathlib import Path
 
 from .observations import PageObservation
+from .spacing_hyphen import corroborate_terminal_hyphen, hyphen_markers
+from .spacing_padding import qualify_decoder_padding
 
 
 def spacing_proposals(source: Path, observation: PageObservation) -> list[str]:
@@ -16,7 +18,7 @@ def spacing_proposals(source: Path, observation: PageObservation) -> list[str]:
         resources.callback(page.close)
         text = page.get_textpage()
         resources.callback(text.close)
-        return [
+        proposals = [
             text.get_text_bounded(
                 errors="strict",
                 left=line.box.x0,
@@ -25,4 +27,16 @@ def spacing_proposals(source: Path, observation: PageObservation) -> list[str]:
                 top=observation.height_pt - line.box.y0,
             )
             for line in observation.lines
+        ]
+        if any(
+            value != line.text and value.strip(" ") == line.text
+            for line, value in zip(observation.lines, proposals, strict=True)
+        ):
+            proposals = qualify_decoder_padding(proposals, observation, text, pdfium.raw)
+        if not any(value.endswith("\x02") for value in proposals):
+            return proposals
+        markers = hyphen_markers(text, pdfium.raw, observation.height_pt)
+        return [
+            corroborate_terminal_hyphen(line, value, markers, observation)
+            for line, value in zip(observation.lines, proposals, strict=True)
         ]
