@@ -1,3 +1,4 @@
+import { PdfRuntimeError } from '../runtime/runtime-error';
 import type { RecognitionTask } from './generated/RecognitionTask';
 import { recognitionResponse } from './recognition-response';
 import { ResponseValidationError } from './response-validation-error';
@@ -14,9 +15,20 @@ export function recognitionDecodedOutput(
     return JSON.stringify(recognitionResponse(task, output));
   } catch (error) {
     if (!(error instanceof ResponseValidationError)) throw error;
-    return overflowCandidatePacket(
-      task,
-      overflowRecognitionCandidate(task, output),
-    );
+    try {
+      return overflowCandidatePacket(
+        task,
+        overflowRecognitionCandidate(task, output),
+      );
+    } catch (recoveryError) {
+      // An ineligible overflow probe must not erase the original safe finding.
+      // Preserve stronger source/resource failures discovered by the probe.
+      if (
+        recoveryError instanceof PdfRuntimeError &&
+        recoveryError.code === 'INVALID_RESULT'
+      )
+        throw error;
+      throw recoveryError;
+    }
   }
 }

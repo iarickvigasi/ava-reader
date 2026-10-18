@@ -87,10 +87,16 @@ export function recognitionGenerationSchema(): Schema {
         // This observation is meaningful for every segment. Never guess a
         // missing chapter decision in the decoder after generation.
         result.required = [
-          ...new Set([...(node.required as string[]), 'chapter_start']),
+          ...new Set([
+            ...(node.required as string[]),
+            'chapter_start',
+            'chapter_role',
+          ]),
         ];
         record(record(result.properties).chapter_start).description =
           'Required explicit decision: true only for a level 1 logical chapter heading with its observed chapter_role. False for section or inset headings and all non-heading segments.';
+        record(record(result.properties).chapter_role).description =
+          'Required explicit observation: frontmatter, bodymatter or backmatter for a true chapter_start at heading level 1; null for section/inset headings and non-heading segments. Never omit the field or guess a missing role in the decoder.';
       }
     }
     if (node.items) result.items = lower(node.items, seen);

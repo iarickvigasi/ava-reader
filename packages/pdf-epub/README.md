@@ -1082,8 +1082,11 @@ fence reuse of earlier generation requests. Metadata-only tasks retain their emp
 
 Gemini recognition requests `ava-recognition-observation-2` with a closed, single-shape
 generation schema. Native structure retains its existing JSON mode. The recognition grammar
-requires an explicit `chapter_start` decision on every segment and admits only declared style
-keys. It omits array-size maxima from provider generation because the tested provider rejects
+requires explicit `chapter_start` and `chapter_role` decisions on every segment and admits only
+declared style keys. A chapter start must observe `frontmatter`, `bodymatter` or `backmatter`;
+other segments return a null role. The unchanged full host/worker contract still rejects a
+true chapter start with a null or missing role. The decoder never supplies a semantic role.
+Changed generation bytes change request fingerprints; older receipts are not rebound to them. It omits array-size maxima from provider generation because the tested provider rejects
 the complete schema with those maxima; the unchanged host and worker still enforce them.
 The full response contract remains prompt guidance and authoritative acceptance validation;
 provider schema compliance alone does not establish source fidelity. Its sparse style
@@ -1104,6 +1107,9 @@ bytes change the request fingerprint; settled receipts cannot be reused under a 
 Schema failure reports include missing core segment fields and only the applicable conditional
 chapter/list requirements. A section heading does not require `chapter_role`; a true chapter start
 does. These diagnostics remain bounded and exclude book text and untrusted field names.
+When the narrow overlong-anchor probe cannot recover a schema failure, decoding retains that
+original safe validation finding instead of replacing it with a generic `INVALID_RESULT`.
+Supported overflow recovery is unchanged, and stronger source/resource failures still propagate.
 
 ### Missing figure descriptions at the provider boundary
 

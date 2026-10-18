@@ -199,3 +199,41 @@ it('requires an explicit chapter decision without guessing it in the decoder', (
   expect(check(raw)).toBe(true);
   expect(() => decode(JSON.stringify(raw))).not.toThrow();
 });
+
+it.each(['frontmatter', 'bodymatter', 'backmatter'])(
+  'requires a model-supplied chapter role and preserves the observed %s decision',
+  (role) => {
+    const raw = packet(null);
+    const segment = raw.segments[0];
+    segment.kind = 'heading';
+    segment.heading_level = 1;
+    segment.chapter_start = true;
+    delete segment.chapter_role;
+    expect(check(raw)).toBe(false);
+    expect(() => decode(JSON.stringify(raw))).toThrow('INVALID_RESULT');
+    segment.chapter_role = role;
+    expect(check(raw)).toBe(true);
+    const canonical = JSON.parse(decode(JSON.stringify(raw))) as {
+      segments: { chapter_start: boolean; chapter_role: string }[];
+    };
+    expect(canonical.segments[0]).toMatchObject({
+      chapter_start: true,
+      chapter_role: role,
+    });
+  },
+);
+it('requires explicit null when a role is inapplicable but never accepts a null chapter role', () => {
+  const raw = packet(null);
+  delete raw.segments[0].chapter_role;
+  expect(check(raw)).toBe(false);
+  raw.segments[0].chapter_role = null;
+  expect(check(raw)).toBe(true);
+  expect(() => decode(JSON.stringify(raw))).not.toThrow();
+  Object.assign(raw.segments[0], {
+    kind: 'heading',
+    heading_level: 1,
+    chapter_start: true,
+  });
+  expect(check(raw)).toBe(true);
+  expect(() => decode(JSON.stringify(raw))).toThrow('INVALID_RESULT');
+});
