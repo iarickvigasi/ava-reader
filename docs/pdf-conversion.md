@@ -60,6 +60,13 @@ Standalone entrypoints remain available. See the
 [finite attempt protocol](../packages/pdf-epub/README.md#finite-reconstruction-attempt).
 This source implementation does not establish full-book performance or scanned/mixed release qualification.
 
+Internal link destinations retain their original source page and first covered fragment. A complete
+numbered chapter title may use a separately witnessed smaller bold-italic subtitle and atomic
+printed ligature expansion; the full original outline, visible glyph ownership and exact accepted
+offsets remain required. The [worker source-mapping contract](../packages/pdf-epub/README.md) owns
+these checks. Generic caller/URI proofs and historical policies stay fixed; final source-action and
+reader qualification remain separate gates.
+
 Worker contracts and API types are generated from the locked Python package. Unknown fields,
 stale source/task hashes, invented nodes/styles, missing text/resources or unresolved required
 structure fail closed. Historical recognition prompts 13/14 require each decimal, alphabetic or Roman ordered

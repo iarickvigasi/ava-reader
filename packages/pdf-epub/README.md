@@ -1176,7 +1176,13 @@ or intervening owner is skipped, and a title prefix alone is insufficient. The f
 fragment still owns the destination. Number/title/subtitle text, styles, whitespace and offsets stay
 fixed. Missing original-source context retains the strict generic proof. The original bounded
 outline traversal is shared with the already-open source reader; historical policy behavior stays
-unchanged.
+unchanged. Internal destinations also admit a complete same-owner title with consecutive smaller
+bold-italic subtitle rows, bounded gaps and aligned wraps. The full title must match one original
+depth-zero outline claim/page and one eligible source window. A target-only atomic map permits the
+seven typographic ligatures U+FB00–U+FB06 to expand to their literal letters (U+FB05 retains long s).
+Every original glyph, scalar range and peer/frame guard is preserved; no other Unicode normalization
+is allowed. Generic, caller and URI proofs remain unchanged. This component does not establish
+whole-book link, EPUB or reader qualification.
 
 A Contents folio may be a separate source line or the whitespace-delimited suffix of its title
 line. The proof retains the original line and glyph ordinals, consuming whole glyph units only;
