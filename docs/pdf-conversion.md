@@ -797,3 +797,16 @@ is its only finding. Supported primary language is still established by the whol
 unknown passage language staysund. Other source risks retain recognition. This source candidate
 has authored regression evidence but awaits installed/full-book qualification; it is not a
 production activation or a repair/reconversion of existing failed entries.
+
+### Source-proved Contents geometry
+
+Current native-layout full-page recognition may replace estimated Contents owner boxes before
+assembly, using a complete original source partition: unique visible header, every internal Link,
+whole original glyphs, explicit folios and unique matching outline targets. All current owners and
+visible source ink must be accounted for in order; furniture cannot exempt ink or an owner.
+Only boxes change. All non-box fields and raw recognition/task observations remain unchanged.
+Ordinary full-peer glyph validation runs before accepting the atomic page projection; downstream
+regions, evidence and review crops use those source boxes. A bounded private scratch receipt binds
+raw/derived identities and original action/glyph provenance; it grants no later acceptance authority.
+Historical/default tasks, scans without complete native glyphs and unsupported/ambiguous pages keep
+the existing mapping/failure path. No provider call, text normalization or confidence change is added.

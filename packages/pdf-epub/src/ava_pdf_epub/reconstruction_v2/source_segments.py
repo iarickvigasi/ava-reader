@@ -19,6 +19,7 @@ from .ocr_indents import recover_ocr_indents
 from .ocr_running_furniture import corroborate_running_furniture
 from .prepared_types import AnyPreparedPage
 from .project_index_pages import project_index_pages
+from .project_toc_pages import project_toc_pages
 from .qualify_pages import qualify_pages
 from .recognition_contract import RecognitionResponse
 from .recover_native_indents import recover_native_indents
@@ -65,6 +66,7 @@ def source_segments(
     qualified = preserve_linked_furniture(source, prepared, qualified, state)
     qualified = corroborate_running_furniture(prepared, qualified, state)
     qualified = project_index_pages(source, prepared, qualified, state)
+    qualified = project_toc_pages(source, scratch, prepared, qualified, state)
     pages, segments = assemble_pages(prepared, qualified, state)
     segments = recover_source_quotes(prepared, segments, state)
     if source_title_policy == "ava-frontmatter-title-1":

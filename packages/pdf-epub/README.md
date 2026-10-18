@@ -1227,6 +1227,16 @@ original furniture to be omitted. Geometry proof alone gives no prose/quotation 
 entry roles still require the existing entry and indented numeric-continuation grammar. Unsupported
 pages retain the existing proof and local-OCR paths. This adds no provider request.
 
+Current full-page Contents recognition can similarly derive source boxes before assembly, but
+requires an exact whole-page partition including the header and every owner, with no furniture
+exemption. Original internal actions must select whole visible glyphs and agree with explicit
+folios and unique complete outline targets. Only boxes change; unchanged ordinary literal and
+complete-peer guards run on the entire projected owner list before accepting any page update.
+Canonical regions, evidence and review crops use the same source geometry. Bounded private scratch
+provenance binds original/derived owner hashes, boxes, action ordinals and glyph identities; it
+provides no later link authority. Historical/default tasks or any ambiguity retain ordinary
+mapping/failure. Raw recognition and every non-box field stay unchanged; no provider call is added.
+
 Local annotation OCR reads Tesseract TSV quotes literally. A structurally valid word field that
 contains internal whitespace remains an unmappable token with its original text, geometry and line
 identity. It blocks its complete OCR line, including table-cell subsets; an unrelated complete line
