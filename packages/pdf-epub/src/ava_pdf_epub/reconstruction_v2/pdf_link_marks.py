@@ -5,6 +5,7 @@ from collections.abc import Sequence
 from pypdf import PdfReader
 
 from ..pdf_navigation import NavigationTarget
+from .apply_pending_uri_link import apply_pending_uri_link
 from .assembly_state import AssemblyState
 from .findings import Finding
 from .pdf_link_target import page_target
@@ -22,6 +23,9 @@ def apply_link_marks(
     prepared: Sequence[AnyPreparedPage],
     state: AssemblyState,
 ) -> None:
+    if state.pending_uri_link is not None:
+        apply_pending_uri_link(ranges, target, result, indexes, reader, prepared, state)
+        return
     for ident, start, end in ranges:
         if target.url:
             item = result[indexes[ident]]

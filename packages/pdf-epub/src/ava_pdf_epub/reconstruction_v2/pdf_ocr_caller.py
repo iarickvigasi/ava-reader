@@ -15,6 +15,7 @@ from .findings import Finding
 from .pdf_glyph_ranges import glyph_ranges
 from .pdf_link_page import LinkPage
 from .pdf_scanned_ranges import scanned_ranges
+from .source_uri_caller import source_uri_caller
 
 
 def ocr_pdf_caller(
@@ -48,6 +49,10 @@ def ocr_pdf_caller(
                 "source glyphs locate the link without rewriting text."
             )
     except ValueError:
+        if policy == POLICY:
+            uri = source_uri_caller(reader, target, annotation, caller, context, state)
+            if uri is not None:
+                return uri
         if scratch is None:
             raise ValueError("PDF_LINK_TEXT_MAPPING_REQUIRES_REVIEW") from None
         if context.words is None:

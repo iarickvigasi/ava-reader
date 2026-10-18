@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from .continuation_application import PresentationSnapshot
     from .index_entry_receipt import IndexEntryReceipt
     from .index_projection_types import IndexPageProjection
+    from .uri_group_types import PendingUriLink
 
 
 @dataclass
@@ -35,6 +36,7 @@ class AssemblyState:
     segments: dict[str, Any] = field(default_factory=dict)
     internal_targets: list[tuple[str, int, int, str, int]] = field(default_factory=list)
     source_contents_rows: dict[str, str] = field(default_factory=dict)
+    pending_uri_link: "PendingUriLink | None" = None
     source_index_projections: dict[int, "IndexPageProjection"] = field(default_factory=dict)
     source_index_entries: dict[str, "IndexEntryReceipt"] = field(default_factory=dict)
     source_reference_containers: dict[str, str] = field(default_factory=dict)

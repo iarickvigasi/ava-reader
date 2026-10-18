@@ -1137,3 +1137,18 @@ contains internal whitespace remains an unmappable token with its original text,
 identity. It blocks its complete OCR line, including table-cell subsets; an unrelated complete line
 can still qualify. Invalid TSV structure, ordering, bounds or geometry rejects the whole payload.
 Neither path rewrites accepted book text, styles or source positions.
+
+For current-policy OCR text, an original URI can separately prove a terminal link subspan even when
+unrelated paragraph normalization prevents a whole-paragraph glyph match. All same-page original
+annotations with that exact raw URI must reproduce one complete visible address. Wrapped fragments
+must occupy consecutive source row ends/starts, retain whole glyph coverage and bounded row gaps,
+and pass the existing source-gutter veto before matching one unique eligible OCR span with
+source/accepted endpoint delimiters. A competing original page destination refuses the URI group. Only source row
+breaks permit accepted layout whitespace. Each caller still returns only its original fragment.
+A single-use pending receipt binds that fragment to the complete original URI group and current
+reader, checkpoint, owner and peer identities. Before ordinary mark handling, the receipt is consumed
+and rechecked; it may install one complete canonical group link or reconcile one exactly matching
+model URL range while retaining its original style as a separate span. A bare-www source can use the
+existing derived-scheme rule; explicit HTTP/HTTPS values are never treated as interchangeable.
+Partial, extended, conflicting, multiple or note-bearing model links refuse. This witness certifies
+only the URI subspan, adds no provider call and never rewrites surrounding paragraph text.

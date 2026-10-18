@@ -17,6 +17,7 @@ def release_observations(state: "AssemblyState") -> None:
     state.source_contents_rows.clear()
     state.source_index_entries.clear()
     state.source_index_projections.clear()
+    state.pending_uri_link = None
     state.source_reference_containers.clear()
     state.aliases.clear()
     state.native_line_maps.clear()
