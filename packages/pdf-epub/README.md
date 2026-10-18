@@ -1180,3 +1180,15 @@ comes from chapter order or an inferred title. The first binding pass remains de
 matching, ambiguous matches and historical/default behavior remain strict. Roman numerals,
 noncompound or OCR-only numbered openings and unproven references remain outside this fallback.
 Binding preserves text and styles and uses the ordinary internal-link position compiler.
+
+Current title/continuation preparation separates the internal book catalogue (at most 20,000
+nodes, matching the canonical graph bound) from each model request's unchanged 256-node limit.
+Only an oversized current catalogue is projected: every request retains the complete ordered
+heading/candidate context, its decisions, boundary endpoints, crops and required body-reference
+closure. Remote headings omit a body-reference pointer only when that body is outside the request;
+pointers to included bodies stay intact for baseline-style validation. Immutable observations and
+the full-book digest remain unchanged. Missing dependencies or heading/required context that
+cannot fit still refuse. Large current catalogues pack the largest ordered prefix of up to eight decisions that fits the
+unchanged readable sheet geometry, retaining the same neighbor and body-reference crops. No crop
+is shrunk or discarded to fit. Smaller catalogues and historical policies keep their existing request
+bytes and identities. Crop, image, decision, response and 32-task book bounds remain unchanged.
