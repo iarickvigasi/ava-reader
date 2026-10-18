@@ -104,3 +104,59 @@ it("preserves bounded worker measurement availability with its scope limits and 
   expect(parsed.value.coverage).toBe("API_LIFECYCLE");
   expect(parsed.value.status).toBe("FAILED");
 });
+
+it.each(["PROVED", "NO_PROOF"] as const)(
+  "preserves content-free local OCR %s evidence in report projections",
+  (status) => {
+    const local = {
+      origin: "LOCAL_OCR",
+      method: "ava-cell-exact-line-ocr-1",
+      taskId: "recognition-cell-geometry-" + "a".repeat(64),
+      requestSha256: "b".repeat(64),
+      languages: "eng+ukr",
+      renderSha256: "c".repeat(64),
+      originalResponseSha256: "d".repeat(64),
+      proofSha256: "e".repeat(64),
+      tsvSha256: "f".repeat(64),
+      responseSha256: status === "PROVED" ? "a".repeat(64) : null,
+      binarySha256: "b".repeat(64),
+      traineddataSha256: ["c".repeat(64), "d".repeat(64)],
+      status,
+      reason: status === "PROVED" ? null : "NO_UNIQUE_SOURCE_LINE",
+      slotCount: 1,
+      providerCalls: 0,
+      providerCostNano: "0",
+    };
+    const event = safeEventSchema.parse({
+      kind: "VALIDATION",
+      stage: "LOCAL_CELL_GEOMETRY",
+      details: { localCellGeometry: local },
+    });
+    const response = {
+      schemaVersion: 1,
+      conversionId: "pdf-1",
+      watermark: 1,
+      events: [
+        { sequence: 1, recordedAt: "2026-10-18T12:00:00.000Z", ...event },
+      ],
+      nextCursor: null,
+    };
+    const query = {
+      kind: "conversionId",
+      reference: "pdf-1",
+      view: "events",
+    } as const;
+    const parsed = parseReportResponse(response, query);
+    expect(parsed.omittedFields).toBe(0);
+    expect(parsed.value.events).toEqual(response.events);
+    const unsafe = structuredClone(response);
+    Object.assign(unsafe.events[0].details!.localCellGeometry!, {
+      tsv_base64: "private OCR canary",
+      response_json: "private response canary",
+    });
+    const projected = parseReportResponse(unsafe, query);
+    expect(projected.omittedFields).toBe(2);
+    expect(JSON.stringify(projected.value)).not.toContain("private");
+    expect(projected.value.events).toEqual(response.events);
+  },
+);

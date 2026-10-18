@@ -125,8 +125,12 @@ from pathlib import Path
 from ava_pdf_epub.pipeline import run_conversion
 
 result = run_conversion(
-    source=Path("/input/book.json"), mode="book", asset_root=Path("/input/assets"),
-    work_dir=Path("/private/jobs"), owner="reader-123", request_key="import-123",
+    source=Path("/input/book.json"),
+    mode="book",
+    asset_root=Path("/input/assets"),
+    work_dir=Path("/private/jobs"),
+    owner="reader-123",
+    request_key="import-123",
     epubcheck_jar=Path("/tools/epubcheck.jar"),
 )
 ```
@@ -665,6 +669,24 @@ untrusted location hint, bound to the original response; it is not a proposed co
 must locate the cell in the source image. Only requested boxes may change, and each must remain
 inside the original table. No endpoint sorting, clamp, retranscription, row/span changes or
 measured-cell replacement is allowed. The hint does not add repair attempts or change validation.
+
+The server opt-in `AVA_PDF_LOCAL_CELL_GEOMETRY_POLICY=ava-cell-exact-line-ocr-1`
+requires the complete Input10 source-continuation stack. It captures distinct configuration
+hashes for new imports; existing captures and canonical proof schemas remain unchanged.
+For eligible cell-only failures, the installed worker first tries bounded Tesseract on the exact
+encoded task image (`eng` or `eng+ukr`). It requires one complete exact text line, confidence95
+or higher, left-to-right nonoverlapping words with a common vertical band, and a source-derived
+outward-rounded box inside the original table and clear of neighboring ink/cells. Duplicate,
+multiline, uncertain or unknown pinned-neighbor geometry produces internal `NO_PROOF`; the
+single existing model opportunity may then proceed. Corrupt bindings or malformed evidence fail
+instead of falling back. No fuzzy matching, text normalization or box clamping is allowed.
+
+A positive local proposal passes complete source validation, then travels the same host/worker
+acknowledgement and final semantic replay as a model proposal. It consumes that parent's one
+geometry opportunity and never creates a provider receipt or charge. The typed private report
+retains method, engine/trained-data/evidence hashes, disposition and zero provider cost; raw TSV
+is excluded from general logs. Local proof is a producer proposal, not authority to skip final
+validation. Installed-command, normal-flow and full-book qualification remain separate gates.
 
 Before dispatch, the installed worker rederives eligibility from the original response and
 source task, including complete native/text/table checks. Cell, segment and anchor corrections

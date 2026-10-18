@@ -34,6 +34,7 @@ export const workerCommand = z.enum([
   'validate_anchor_context',
   'validate_anchor_quote',
   'validate_geometry',
+  'localize_cell_geometry',
   'prepare_word_wrap',
   'validate_word_wrap',
 ]);

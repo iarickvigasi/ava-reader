@@ -1,3 +1,4 @@
+import { LOCAL_CELL_OCR_POLICY } from './cell-ocr-policy';
 import { SOURCE_CONTINUATION_POLICY } from './source-continuation-policy';
 import { FRONTMATTER_TITLE_POLICY } from './frontmatter-title-policy';
 import {
@@ -83,7 +84,17 @@ const CONTINUATION_V3 = Object.freeze({
   ...CELL_GEOMETRY_V3,
   sourceContinuationPolicy: SOURCE_CONTINUATION_POLICY,
 });
+const CELL_OCR_LEGACY = Object.freeze({
+  ...CONTINUATION_LEGACY,
+  localCellGeometryPolicy: LOCAL_CELL_OCR_POLICY,
+});
+const CELL_OCR_V3 = Object.freeze({
+  ...CONTINUATION_V3,
+  localCellGeometryPolicy: LOCAL_CELL_OCR_POLICY,
+});
 export type PdfImportConfiguration =
+  | typeof CELL_OCR_LEGACY
+  | typeof CELL_OCR_V3
   | typeof CONTINUATION_LEGACY
   | typeof CONTINUATION_V3
   | typeof PDF_IMPORT_PROFILE
@@ -110,10 +121,29 @@ export function pdfImportConfiguration(
   recognitionRepairPolicy?: unknown,
   sourceTitlePolicy?: unknown,
   sourceContinuationPolicy?: unknown,
+  localCellGeometryPolicy?: unknown,
 ): PdfImportConfiguration {
   const legacy = !profileId || profileId === PDF_IMPORT_PROFILE.profileId;
   if (!legacy && profileId !== PDF_IMPORT_PROFILE_V3.profileId)
     throw new Error('PDF_IMPORT_PROFILE_INVALID');
+  if (localCellGeometryPolicy !== undefined && localCellGeometryPolicy !== '') {
+    if (
+      localCellGeometryPolicy !== LOCAL_CELL_OCR_POLICY ||
+      sourceContinuationPolicy !== SOURCE_CONTINUATION_POLICY
+    )
+      throw new Error('PDF_IMPORT_PROFILE_INVALID');
+    // Validate the complete current stack; the recursive call carries no local selector.
+    pdfImportConfiguration(
+      profileId,
+      sourceLayoutPolicy,
+      sourceStructurePolicy,
+      sourceNormalizationPolicy,
+      recognitionRepairPolicy,
+      sourceTitlePolicy,
+      sourceContinuationPolicy,
+    );
+    return legacy ? CELL_OCR_LEGACY : CELL_OCR_V3;
+  }
   if (
     sourceContinuationPolicy !== undefined &&
     sourceContinuationPolicy !== ''
@@ -217,3 +247,8 @@ export {
   SOURCE_CONTINUATION_POLICY,
   type SourceContinuationPolicy,
 } from './source-continuation-policy';
+
+export {
+  LOCAL_CELL_OCR_POLICY,
+  type LocalCellOcrPolicy,
+} from './cell-ocr-policy';

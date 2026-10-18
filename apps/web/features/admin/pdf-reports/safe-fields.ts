@@ -40,6 +40,7 @@ locations_complete language_method language_character_limit layout_method annota
 reuse source_preparation checkpoint_decode annotation_view hits misses findings_complete
 coordinate_space page segment_id_sha256 task_id render_sha256 annotation_number relationship_path
 task_id_sha256 edge_id_sha256 previous_id_sha256 next_id_sha256 observation_sha256 previous_page next_page conflicting_fields
+localCellGeometry taskId originalResponseSha256 proofSha256 tsvSha256 responseSha256 binarySha256 traineddataSha256 slotCount providerCalls providerCostNano
 `
     .trim()
     .split(/\s+/),

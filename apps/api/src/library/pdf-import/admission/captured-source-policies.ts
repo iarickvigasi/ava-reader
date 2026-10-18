@@ -1,3 +1,4 @@
+import { capturedCellOcrPolicy } from './captured-cell-ocr-policy';
 import { capturedSourceContinuationPolicy } from './captured-continuation-policy';
 import { RECOGNITION_CELL_GEOMETRY_REPAIR_POLICY } from './profile';
 import { capturedCellGeometryPolicy } from './captured-cell-geometry-policy';
@@ -20,6 +21,21 @@ export function capturedSourcePolicies(
   profileId: string,
   configSha256: unknown,
 ) {
+  const localCellGeometryPolicy = capturedCellOcrPolicy(
+    profileId,
+    configSha256,
+  );
+  if (localCellGeometryPolicy)
+    return {
+      sourceLayoutPolicy: NATIVE_LAYOUT_POLICY,
+      sourceStructurePolicy: NATIVE_STRUCTURE_V2_POLICY,
+      sourceNormalizationPolicy: NATIVE_WORD_WRAP_POLICY,
+      recognitionRepairPolicy: RECOGNITION_CELL_GEOMETRY_REPAIR_POLICY,
+      sourceTitlePolicy: FRONTMATTER_TITLE_POLICY,
+      sourceContinuationPolicy:
+        'ava-source-continuation-presentation-1' as const,
+      localCellGeometryPolicy,
+    };
   const sourceContinuationPolicy = capturedSourceContinuationPolicy(
     profileId,
     configSha256,

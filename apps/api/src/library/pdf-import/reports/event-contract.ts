@@ -140,6 +140,45 @@ export const safeEventSchema = z
           })
           .strict()
           .optional(),
+        localCellGeometry: z
+          .object({
+            origin: z.literal('LOCAL_OCR'),
+            method: z.literal('ava-cell-exact-line-ocr-1'),
+            taskId: reportId,
+            requestSha256: digest,
+            languages: z.enum(['eng', 'eng+ukr']),
+            renderSha256: digest,
+            originalResponseSha256: digest,
+            proofSha256: digest,
+            tsvSha256: digest,
+            responseSha256: digest.nullable(),
+            binarySha256: digest,
+            traineddataSha256: z.array(digest).min(1).max(2),
+            status: z.enum(['PROVED', 'NO_PROOF']),
+            reason: z
+              .enum([
+                'NO_UNIQUE_SOURCE_LINE',
+                'OCR_UNAVAILABLE',
+                'OCR_EVIDENCE_BOUND',
+              ])
+              .nullable(),
+            slotCount: z.number().int().min(1).max(32),
+            providerCalls: z.literal(0),
+            providerCostNano: z.literal('0'),
+          })
+          .strict()
+          .superRefine((value, context) => {
+            if (
+              !(value.status === 'PROVED'
+                ? value.responseSha256 !== null && value.reason === null
+                : value.responseSha256 === null && value.reason !== null)
+            )
+              context.addIssue({
+                code: 'custom',
+                message: 'Local proof disposition differs',
+              });
+          })
+          .optional(),
         cacheReuse: z
           .object({
             kind: z.literal('PROVIDER_RECEIPT'),

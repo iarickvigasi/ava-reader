@@ -1,3 +1,6 @@
+import { assertLocalCellGeometryPolicy } from './local-cell-geometry-policy';
+import { localizeCellGeometry } from './local-cell-geometry';
+import type { LocalCellOcrPolicy } from '../../library/pdf-import/admission/cell-ocr-policy';
 import { validateRefinement } from './validate-refinement';
 import { validateGeometry } from './validate-geometry';
 import { validateWordWrap } from './validate-word-wrap';
@@ -34,9 +37,11 @@ export async function runAttempt(
     recognitionRepairPolicy?: RecognitionRepairPolicy;
     sourceTitlePolicy?: SourceTitlePolicy;
     sourceContinuationPolicy?: SourceContinuationPolicy;
+    localCellGeometryPolicy?: LocalCellOcrPolicy;
   },
   semantic: SemanticValidator,
 ) {
+  assertLocalCellGeometryPolicy(input);
   let runtimeSignal: AbortSignal | undefined;
   const checkActive = (signal = runtimeSignal) => {
     input.sandboxInput();
@@ -57,6 +62,14 @@ export async function runAttempt(
       validateRefinement(
         task,
         response,
+        input.deps.sandbox,
+        input.sandboxInput,
+        signal,
+      ),
+    localizeCellGeometry: (task, original, signal) =>
+      localizeCellGeometry(
+        task,
+        original,
         input.deps.sandbox,
         input.sandboxInput,
         signal,

@@ -39,3 +39,9 @@ _CONTINUATION_CONFIGS = {
     "ava-pdf-prose-en-v2": "3c974d2ba01a10df95ee8dc58406d9a87529462f2cc9aa5566cd6399750fab2a",
     "ava-pdf-prose-en-uk-v3": "11480edd876d3e5c41ae9a24af13ee33e797e6ea5176fcd3d2e68d46acf050bb",
 }
+
+
+_LOCAL_CELL_OCR_CONFIGS = {
+    "ava-pdf-prose-en-v2": "273eefcecac9abfa1f3674d5dccb1bdbf475a8bd8b72981c1f1b94a44e73cc4f",
+    "ava-pdf-prose-en-uk-v3": "ac0d1c6c0e92d30c528a3441ed83b2458cc47f245a4139ac6ed41263b1a2f1ec",
+}

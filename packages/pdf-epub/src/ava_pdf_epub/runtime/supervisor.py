@@ -16,6 +16,7 @@ from .supervisor_exchange_configs import (
     _CONTINUATION_CONFIGS,
     _GEOMETRY_CONFIGS,
     _LAYOUT_CONFIGS,
+    _LOCAL_CELL_OCR_CONFIGS,
     _NATIVE2_CONFIGS,
     _STRUCTURE_CONFIGS,
     _TITLE_CONFIGS,
@@ -162,7 +163,9 @@ def exchange_input(target: str) -> int | None:
             or request.get("source_feature_policy") != "ava-ocr-source-features-1"
             or config
             != (
-                _CONTINUATION_CONFIGS
+                _LOCAL_CELL_OCR_CONFIGS
+                if continuation and config == _LOCAL_CELL_OCR_CONFIGS[request["profile_id"]]
+                else _CONTINUATION_CONFIGS
                 if continuation
                 else _CELL_GEOMETRY_CONFIGS
                 if cell
@@ -207,6 +210,7 @@ def exchange_input(target: str) -> int | None:
         *_NATIVE2_CONFIGS.values(),
         *_CELL_GEOMETRY_CONFIGS.values(),
         *_CONTINUATION_CONFIGS.values(),
+        *_LOCAL_CELL_OCR_CONFIGS.values(),
     ):
         raise ValueError("Captured layout cannot use legacy exchange input")
     return None

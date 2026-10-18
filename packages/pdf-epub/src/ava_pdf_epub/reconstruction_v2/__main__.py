@@ -35,6 +35,12 @@ def main() -> None:
         request = json.loads(raw_request)
         if observation is not None:
             observation.start(raw_request, request)
+        if request.get("mode") == "localize_cell_geometry":
+            from .localize_cell_geometry import localize_cell_geometry
+
+            sys.stdout.buffer.write(encode_packet(localize_cell_geometry(raw_request), 512 * 1024))
+            sys.stdout.buffer.flush()
+            return
         if request.get("mode") == "validate_geometry":
             from .validate_geometry import validate_geometry
 

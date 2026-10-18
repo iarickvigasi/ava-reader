@@ -24,6 +24,7 @@ COMMANDS = {
     "validate_anchor_context",
     "validate_anchor_quote",
     "validate_geometry",
+    "localize_cell_geometry",
     "validate_word_wrap",
 }
 SAFE_ADMISSION_CODES = {

@@ -1,3 +1,11 @@
+import { assertLocalCellGeometryPolicy } from './local-cell-geometry-policy';
+import {
+  LOCAL_CELL_OCR_POLICY,
+  type LocalCellOcrPolicy,
+} from '../../library/pdf-import/admission/cell-ocr-policy';
+import type { localizeCellGeometry } from './local-cell-geometry';
+import { observeLocalCellGeometry } from './observe-local-cell-geometry';
+import type { RecognitionCellGeometryTask } from './generated/RecognitionCellGeometryTask';
 import { isQuoteRepair } from './anchor-quote-types';
 import type { PresentationRefinementTask } from './generated/PresentationRefinementTask';
 import type { PresentationRefinementResponse } from './generated/PresentationRefinementResponse';
@@ -44,6 +52,12 @@ export type AttemptContext = {
   recognitionRepairPolicy?: RecognitionRepairPolicy;
   sourceTitlePolicy?: SourceTitlePolicy;
   sourceContinuationPolicy?: SourceContinuationPolicy;
+  localCellGeometryPolicy?: LocalCellOcrPolicy;
+  localizeCellGeometry?: (
+    task: RecognitionCellGeometryTask,
+    original: RecognitionTask,
+    signal: AbortSignal,
+  ) => ReturnType<typeof localizeCellGeometry>;
   validateContinuation?: (
     task: PresentationRefinementTask,
     response: PresentationRefinementResponse | null,
@@ -175,16 +189,40 @@ export async function correctAttemptGeometry(
   signal: AbortSignal,
 ) {
   context.checkActive(signal);
+  assertLocalCellGeometryPolicy(context);
   if (!context.validateGeometry)
     throw new PdfRuntimeError('DISPATCH_NOT_AUTHORIZED');
   await context.validateGeometry(task, parent, signal);
   context.checkActive(signal);
-  const receipt = await context.deps.dispatch(
+  const provider =
     task.schema_version === 'ava-recognition-cell-geometry-task-1'
       ? cellGeometryProviderTask(task, parent, original, raw)
-      : geometryProviderTask(task, parent, original, raw),
-    signal,
-  );
+      : geometryProviderTask(task, parent, original, raw);
+  if (
+    task.schema_version === 'ava-recognition-cell-geometry-task-1' &&
+    context.localCellGeometryPolicy
+  ) {
+    if (
+      context.localCellGeometryPolicy !== LOCAL_CELL_OCR_POLICY ||
+      !context.localizeCellGeometry
+    )
+      throw new PdfRuntimeError('DISPATCH_NOT_AUTHORIZED');
+    const local = await context.localizeCellGeometry(task, parent, signal);
+    context.checkActive(signal);
+    if (local.status === 'PROVED') {
+      const corrected = cellGeometryResponse(
+        task,
+        local.response_json,
+        parent,
+        original,
+      );
+      if (!corrected.corrected) throw new PdfRuntimeError('INVALID_RESULT');
+      observeLocalCellGeometry(task, local, context);
+      return corrected;
+    }
+    observeLocalCellGeometry(task, local, context);
+  }
+  const receipt = await context.deps.dispatch(provider, signal);
   context.checkActive(signal);
   return task.schema_version === 'ava-recognition-cell-geometry-task-1'
     ? cellGeometryResponse(task, receipt.output, parent, original)
