@@ -655,7 +655,10 @@ original typed Response2, including its original group collection order.
 
 The separately captured `ava-recognition-geometry-repair-2` policy uses Input9 on that
 same complete feature stack. It retains segment repair and adds one bounded correction for
-empty/reversed, unpinned OCR table-cell boxes. A cell task contains at most32 opaque slots,
+empty/reversed unpinned OCR table-cell boxes or positive in-image cells outside their valid
+original table. The worker and API select the same complete ordered cell set, including mixed
+empty/outside cases. A full contained-shape probe exposes every other source/schema defect;
+its temporary boxes are never accepted content. A cell task contains at most32 opaque slots,
 original row/cell array addresses (including merged cells), limited row context and the exact
 source image. Only requested boxes may change, and each must remain inside the original table.
 No endpoint sorting, retranscription, row/span changes or measured-cell replacement is allowed.

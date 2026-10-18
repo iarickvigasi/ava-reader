@@ -3,6 +3,7 @@ import type { RecognitionCellGeometryTask } from './generated/RecognitionCellGeo
 import type { RecognitionTask } from './generated/RecognitionTask';
 import type { RecognitionResponse } from './generated/RecognitionResponse';
 import { geometrySha } from './geometry-binding';
+import { cellGeometryAddresses } from './cell-geometry-addresses';
 import { recognitionResponse } from './recognition-response';
 import { validatePacket } from './validate-packet';
 import { exchangeJson } from '../runtime/exchange-json';
@@ -53,15 +54,7 @@ export function cellGeometryBinding(
     throw new PdfRuntimeError('RESOURCE_LIMIT');
   exchangeJson(Buffer.from(raw));
   const bound = recognitionResponse(parent, raw);
-  const addresses: number[][] = [];
-  original.segments.forEach((segment, i) =>
-    segment.cells?.forEach((row, r) =>
-      row.forEach((cell, c) => {
-        const b = cell.box;
-        if (b && (b.x0 >= b.x1 || b.y0 >= b.y1)) addresses.push([i, r, c]);
-      }),
-    ),
-  );
+  const addresses = cellGeometryAddresses(original);
   if (
     task.task_id !== cellGeometryTaskId(task) ||
     task.source_sha256 !== parent.source_sha256 ||

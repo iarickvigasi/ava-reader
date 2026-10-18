@@ -1,11 +1,12 @@
 """Only unpinned cell box failures qualify; probes never replace source observations."""
 
 import copy
-from typing import Any, cast
+from typing import Any
 
 from pydantic import ValidationError
 
 from .attempt_exchange import json_bytes
+from .recognition_cell_geometry_addresses import cell_geometry_addresses
 from .recognition_cell_geometry_contract import RecognitionCellGeometrySlot
 from .recognition_contract import RecognitionResponse, RecognitionTask
 from .recognition_fields import RecognitionBox
@@ -21,20 +22,7 @@ def cell_geometry_slots(parent: dict[str, Any]) -> list[RecognitionCellGeometryS
         failures = error.errors(include_url=False)
     else:
         raise ValueError("CELL_GEOMETRY_ALREADY_VALID")
-    addresses: set[tuple[int, int, int]] = set()
-    for failure in failures:
-        loc = failure["loc"]
-        if (
-            failure["type"] != "value_error"
-            or len(loc) != 6
-            or loc[0] != "segments"
-            or loc[2] != "cells"
-            or loc[5] != "box"
-            or any(type(loc[i]) is not int for i in (1, 3, 4))
-            or str(failure.get("ctx", {}).get("error")) != "Empty or reversed recognition box"
-        ):
-            raise ValueError("CELL_GEOMETRY_NOT_ELIGIBLE")
-        addresses.add((cast(int, loc[1]), cast(int, loc[3]), cast(int, loc[4])))
+    addresses = cell_geometry_addresses(parent, failures)
     if not 0 < len(addresses) <= GEOMETRY_SLOT_LIMIT:
         raise ValueError("CELL_GEOMETRY_SLOT_BOUND")
     slots = []
