@@ -22,7 +22,12 @@ BLOCKERS = {
 
 
 def corroborate_ocr_font_faces(
-    source: Path, prepared: Sequence[AnyPreparedPage], segments: list[Segment], state: AssemblyState
+    source: Path,
+    prepared: Sequence[AnyPreparedPage],
+    segments: list[Segment],
+    state: AssemblyState,
+    *,
+    uniform_owner_ids: frozenset[str] | None = None,
 ) -> list[Segment]:
     reader = PdfReader(source, strict=True)
     updates = {}
@@ -41,6 +46,8 @@ def corroborate_ocr_font_faces(
             for f in source_page.get("/Resources", {}).get("/Font", {}).values()
         )
         for segment in segments:
+            if uniform_owner_ids is not None and segment.id not in uniform_owner_ids:
+                continue
             if segment.page != page.number or segment.method != "ocr" or not segment.text:
                 continue
             proof = corroborated_font_region(
@@ -56,6 +63,8 @@ def corroborate_ocr_font_faces(
             if proof is None:
                 continue
             qualified, code = proof
+            if uniform_owner_ids is not None and code != "OCR_DECLARED_FONT_FACE_CORROBORATED":
+                continue
             updates[segment.id] = qualified
             message = (
                 "Fully visible source glyphs corroborate exact mixed font runs; "
@@ -76,7 +85,7 @@ def corroborate_ocr_font_faces(
                         if mapping
                         else ""
                     ),
-                    block_id=segment.id if mapping else None,
+                    block_id=segment.id if mapping or uniform_owner_ids is not None else None,
                     box=segment.box if mapping else None,
                 )
             )

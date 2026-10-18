@@ -9,6 +9,7 @@ from .assembly_state import AssemblyState
 from .bind_printed_targets import bind_printed_targets
 from .continuation_margins import continuation_margins
 from .corroborate_index_headers import corroborate_index_headers
+from .heading_font_families import corroborate_heading_families
 from .index_context import record_index_context
 from .index_indents import recover_index_indents
 from .linked_furniture import preserve_linked_furniture
@@ -74,6 +75,7 @@ def source_segments(
         # compound headings introduce larger boxes or repeated component text.
         segments = map_source_links(source, scratch, prepared, segments, state)
         segments = bind_printed_targets(segments, state, defer_missing=True)
+    segments = corroborate_heading_families(source, prepared, segments, state)
     segments = source_structure(source, prepared, qualified, segments, state)
     if source_title_policy == "ava-frontmatter-title-1":
         segments = bind_printed_targets(segments, state)
