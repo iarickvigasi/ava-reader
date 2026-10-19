@@ -192,9 +192,7 @@ class ContinuationPresentationTest(unittest.TestCase):
         for direction in (True, False):
             left, right, native, edge = pair(direction, unknown_leading=True)
             before = [document_digest(value) for value in (left, right)]
-            candidate = uniform_candidate(
-                edge, left, right, native, native_alignment_fallback=True
-            )
+            candidate = uniform_candidate(edge, left, right, native, native_alignment_fallback=True)
             self.assertIsNotNone(candidate)
             self.assertIsNone(candidate.previous_style.line_height)
             self.assertIsNone(candidate.next_style.line_height)
@@ -205,17 +203,13 @@ class ContinuationPresentationTest(unittest.TestCase):
                 changed = [
                     node.model_copy(
                         update={
-                            "observed_style": node.observed_style.model_copy(
-                                update={field: None}
-                            )
+                            "observed_style": node.observed_style.model_copy(update={field: None})
                         }
                     )
                     for node in (left, right)
                 ]
                 self.assertIsNone(
-                    uniform_candidate(
-                        edge, *changed, native, native_alignment_fallback=True
-                    ),
+                    uniform_candidate(edge, *changed, native, native_alignment_fallback=True),
                     field,
                 )
 
@@ -238,9 +232,7 @@ class ContinuationPresentationTest(unittest.TestCase):
                 "line_height": 1.21,
             }
             with self.assertRaisesRegex(ValueError, "unmeasured"):
-                presentation_projection(
-                    task, PresentationRefinementResponse.model_validate(raw)
-                )
+                presentation_projection(task, PresentationRefinementResponse.model_validate(raw))
 
     def test_explicit_origin_and_known_conflicts(self):
         left, right, native, edge = pair()
