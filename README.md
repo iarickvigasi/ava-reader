@@ -146,6 +146,9 @@ without application secrets or a database. A separate job builds the pinned PDF 
 installed package/test bytes with the checkout, requires the complete unskipped converter suite in a
 network-disabled container, and runs the authored native CLI smoke with EPUBCheck. Only those authored
 check outputs and logs are uploaded for seven days; no deployed service or provider is exercised.
+A third job applies the complete SQL migration chain in a disposable, network-disabled PostgreSQL
+container and checks PDF review authority and immutability. Run it locally with
+`apps/api/scripts/check-pdf-review-role-guard.sh`; it does not connect to your configured database.
 See [PDF verification](docs/pdf-conversion-verification.md#pull-request-ci) for commands and limits.
 
 ## Notes

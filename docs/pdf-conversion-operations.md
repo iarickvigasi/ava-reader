@@ -466,6 +466,12 @@ rollback with additive schema and private cover/pin protections retained. Disabl
 do not automatically drop tables, erase sources or run older incompatible GC/label maintenance.
 Actual rollback and production activation still require qualification.
 
+`20261019060000_pdf_review_role_memberships` updates the review trigger to check current ADMIN
+membership after `User.role` was removed. Without it, a valid approval fails with a missing-column
+error and the API returns HTTP 503. The forward migration preserves review immutability, WAITING and
+non-deleted operation requirements, hard blocks and the exact required finding set. It grants no
+roles and changes no book, review decision or accounting row. Historical migrations remain intact.
+
 Only development canaries may set `AVA_PDF_RUNTIME_FAULT=deadline|memory|scratch|output|cpu`
 with `AVA_PDF_FAULT_ACK=AVA_PDF_RUNTIME_FAULTS_V1`; production rejects them and reconstruction
 refuses fault mode before claim. Test-only provider pilots are separate from ordinary upload.

@@ -15,7 +15,8 @@ defaults:
   run:
     shell: bash
 
-# No repository/environment secrets, privileged PR triggers, shared caches or live services.
+# No repository/environment secrets, privileged PR triggers or shared caches.
+# Database checks use only a disposable PostgreSQL container without networking.
 env:
   CI: "true"
   NODE_ENV: test
@@ -88,6 +89,17 @@ jobs:
           .venv/bin/python -m ruff format --check src tests scripts
           .venv/bin/python -m mypy src/ava_pdf_epub
           .venv/bin/python -m unittest discover -s scripts -p test_ci_installed.py -v
+
+  database-review-guard:
+    name: Database review authority
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Apply fresh migrations and exercise the actual PostgreSQL review guard
+        run: apps/api/scripts/check-pdf-review-role-guard.sh
 
   installed-converter:
     name: Installed converter

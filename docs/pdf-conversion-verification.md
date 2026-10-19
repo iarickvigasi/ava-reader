@@ -47,6 +47,14 @@ Its database URL is a deliberately unreachable placeholder for Prisma generation
 authentication service, provider dispatch or poller is started. The web build uses its normal
 unconfigured-auth behavior. Shared dependency/build caches are disabled.
 
+The separate database job runs `apps/api/scripts/check-pdf-review-role-guard.sh`. Its pinned public
+PostgreSQL image is started without network, ports or host data volumes, receives every migration
+in order, then executes the actual migrated review trigger against temporary synthetic fixtures.
+The checks cover current ADMIN membership, ordinary/developer/revoked denial, exact findings,
+hard blocks, operation state/deletion and immutable retained decisions. A different SQL error
+cannot satisfy an expected refusal. The container is removed on exit. This is a database guard
+regression, not full authenticated publication, source fidelity or browser qualification.
+
 The installed job builds the stock digest-pinned worker Dockerfile, with its pinned native dependency
 snapshot and checksum-verified EPUBCheck. Dependency installation and the web build's font fetching
 require network access and fail if upstream artifacts are unavailable; this is not an offline or
