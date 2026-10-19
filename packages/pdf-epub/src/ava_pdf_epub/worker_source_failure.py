@@ -2,6 +2,10 @@
 
 from .contracts.common import Digest
 from .reconstruction_v2.join_typography_refusal import JoinTypographyFinding, JoinTypographyRefusal
+from .reconstruction_v2.refinement_validation_refusal import (
+    RefinementValidationFinding,
+    RefinementValidationRefusal,
+)
 from .reconstruction_v2.source_link_refusal import SourceLinkFinding, SourceLinkRefusal
 from .reconstruction_v2.source_refusal import SourceContentRefusal
 
@@ -16,6 +20,11 @@ def source_failure(
         model = SourceLinkFinding if isinstance(error, SourceLinkRefusal) else JoinTypographyFinding
         finding = model.model_validate(error.finding.model_dump(mode="json"))
         return "RECONSTRUCTION_REVIEW_REQUIRED", [finding.model_dump(mode="json")], True
+    if isinstance(error, RefinementValidationRefusal) and error.source_sha256 == source_sha256:
+        semantic_finding = RefinementValidationFinding.model_validate(
+            error.finding.model_dump(mode="json")
+        )
+        return "RECONSTRUCTION_REVIEW_REQUIRED", [semantic_finding.model_dump(mode="json")], True
     if isinstance(error, SourceContentRefusal) and error.diagnostic.source_sha256 == source_sha256:
         return (
             error.diagnostic.findings[0].code,

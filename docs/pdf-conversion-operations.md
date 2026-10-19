@@ -27,6 +27,15 @@ One packet, including its separator, is capped at 6,144 bytes; ordinary stderr r
 8,192 bytes and total transport at 14,336. Missing, malformed or mismatched observations stay
 unobserved and cannot replace the command's output, failure or authority result.
 
+Known non-heading ancestry and body-reference size-baseline refusals can retain one finite
+`REFINEMENT_ROLE_BASELINE_INVALID` finding in that bound observation. It names only the failed
+check, page and hashed task/node/observation/render provenance; no source text, observed size or
+arbitrary exception message is included. A private continuation view must rebind to its original
+source/task before export. The command still refuses with its generic public packet and the host
+keeps `INVALID_RESULT`; this diagnostic is not an unsupported-source classification or acceptance
+exception. Unrelated/foreign failures remain generic and diagnostically incomplete. Historical
+packets remain valid; new finding support requires the matching host and worker build.
+
 Reported times are inclusive and may overlap; do not sum nested phases. CPU covers the process
 and reaped children, RSS is a process-lifetime maximum, and scratch is a bounded logical-file scan
 at command end. These are not container peaks. Language is a bounded native-text heuristic;

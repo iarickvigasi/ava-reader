@@ -66,6 +66,13 @@ private-content filtering and retention after fixture deletion are checked separ
 Clerk/HTTP login, paid billing, OCR or browser qualification in this regression. Only its new container
 is removed on exit; it never reads configured credentials or an existing application database.
 
+Known semantic-guard diagnostics have separate controls: invalid body-reference size and
+non-heading ancestry remain refused, valid comparisons remain accepted, original private-view task
+identity survives, and foreign/unknown errors stay generic. The bounded finding is parsed through
+the host observation contract and safe report export; raw values, invented fields, bad locations,
+wrong outcome/command and mismatched bindings are rejected. These diagnostic checks do not qualify
+source fidelity or change the existing publication gates.
+
 The installed job builds the stock digest-pinned worker Dockerfile, with its pinned native dependency
 snapshot and checksum-verified EPUBCheck. Dependency installation and the web build's font fetching
 require network access and fail if upstream artifacts are unavailable; this is not an offline or

@@ -99,11 +99,11 @@ function fixture(
   );
   return {
     tx,
-    exported: () =>
+    exported: (after = 0) =>
       controller.export(
         { auth: { clerkUserId: 'synthetic-admin' } } as AuthenticatedRequest,
         scope.id,
-        eventPageCursor(scope.id, 3, 0),
+        eventPageCursor(scope.id, 3, after),
         '1',
       ),
     snapshot: () =>
@@ -473,3 +473,31 @@ it.each([undefined, 'WORKER_CRASH', 'SOURCE_MISMATCH'])(
     });
   },
 );
+
+it('exports a stored finite refinement guard finding without changing terminal classification', async () => {
+  const finding = {
+    kind: 'refinement' as const,
+    code: 'REFINEMENT_ROLE_BASELINE_INVALID' as const,
+    stage: 'refinement' as const,
+    check: 'body_reference_size_baseline' as const,
+    task_id_sha256: '1'.repeat(64),
+    node_id_sha256: '2'.repeat(64),
+    observation_sha256: '3'.repeat(64),
+    render_sha256: '4'.repeat(64),
+    page: 43,
+  };
+  const f = fixture((events) => {
+    observedPacket(events).findings = [finding];
+  });
+  const exported = await f.exported(1);
+  expect(exported.investigation.status).toBe('FAILED');
+  expect(exported.investigation.workerMeasurements?.failureCode).toBe(
+    'RECONSTRUCTION_REVIEW_REQUIRED',
+  );
+  expect(exported.timeline.events[0].details.workerObservation).toMatchObject({
+    status: 'OBSERVED',
+    packet: { findings: [finding], findings_complete: true },
+  });
+  expect(f.tx.pdfConversionInvestigation.findUnique).toHaveBeenCalled();
+  expect(JSON.stringify(exported)).not.toContain('relative_size');
+});

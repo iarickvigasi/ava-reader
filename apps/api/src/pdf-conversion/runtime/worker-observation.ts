@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { joinTypographyFinding } from './join-typography-finding';
+import { refinementValidationFinding } from './refinement-validation-finding';
 import {
   sourceLinkFinding,
   validateFailureFindings,
@@ -256,6 +257,7 @@ export const workerObservationPacket = z
           workerSourceFinding,
           admissionFinding,
           joinTypographyFinding,
+          refinementValidationFinding,
           sourceLinkFinding,
         ]),
       )

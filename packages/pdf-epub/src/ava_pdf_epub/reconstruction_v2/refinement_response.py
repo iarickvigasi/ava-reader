@@ -7,6 +7,7 @@ from .join_typography_refusal import JoinTypographyRefusal
 from .printed_title_contract import PrintedTitleResponse, PrintedTitleTask
 from .printed_title_v2_contract import FrontmatterTitleResponse, FrontmatterTitleTask
 from .refinement_contract import AnyRefinementResponse, AnyRefinementTask, BookRefinementResponse
+from .refinement_validation_refusal import RefinementValidationRefusal
 from .source_feature_task_contract import SourceFeatureResponse, SourceFeatureTask
 from .source_role_contract import SourceRoleResponse, SourceRoleTask
 
@@ -125,7 +126,7 @@ def accept_refinement(
             raise ValueError("Refinement needs observed relative size and explicit weight")
         effective_kind = decision.role_kind if node.structure_candidate else node.kind
         if effective_kind != "heading":
-            if any(
+            ancestry_invalid = any(
                 v is not None
                 for v in (
                     decision.heading_level,
@@ -133,13 +134,19 @@ def accept_refinement(
                     decision.chapter_start,
                     decision.chapter_role,
                 )
-            ) or (
+            )
+            baseline_invalid = (
                 not node.structure_candidate
                 and node.id in body_references
                 and decision.style is not None
                 and decision.style.relative_size != 1
-            ):
-                raise ValueError("Body reference cannot become a heading or change size baseline")
+            )
+            if ancestry_invalid or baseline_invalid:
+                raise RefinementValidationRefusal(
+                    task,
+                    node,
+                    "non_heading_ancestry" if ancestry_invalid else "body_reference_size_baseline",
+                )
         else:
             if decision.heading_level is None or decision.chapter_start is None:
                 raise ValueError("Heading decision incomplete")
