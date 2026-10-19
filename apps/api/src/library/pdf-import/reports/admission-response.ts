@@ -10,9 +10,11 @@ export function admissionRefusalResponse(
   const code =
     typeof body.code === 'string' && /^[A-Z][A-Z0-9_]{0,79}$/.test(body.code)
       ? body.code
-      : error.getStatus() === 413
-        ? 'PDF_UPLOAD_TOO_LARGE'
-        : 'PDF_UPLOAD_INVALID';
+      : error.getStatus() >= 500
+        ? 'PDF_ADMISSION_UNAVAILABLE'
+        : error.getStatus() === 413
+          ? 'PDF_UPLOAD_TOO_LARGE'
+          : 'PDF_UPLOAD_INVALID';
   const reference = (value: unknown) =>
     reportId.safeParse(value).success ? (value as string) : undefined;
   return {
