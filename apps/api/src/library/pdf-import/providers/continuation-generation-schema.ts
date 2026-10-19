@@ -1,3 +1,7 @@
+import {
+  bodyReferenceGenerationBranches,
+  ocrBodyReferenceIds,
+} from './body-reference-generation';
 import { PdfProviderError } from './errors';
 import { recoveredRefinementGenerationTask } from './refinement-generation-task';
 import { geminiRecognitionSchema } from './gemini-schema';
@@ -37,6 +41,7 @@ export function continuationGenerationSchema(
       .filter((id) => !nativeEndpoints.has(id)),
   );
   const nodes = new Map(source.nodes.map((n) => [n.id, n]));
+  const bodyReferences = ocrBodyReferenceIds(source.nodes);
   const branches: Schema[] = [];
   for (const mode of ['native', 'ocr', 'delegated'] as const) {
     const ids = source.decision_ids.filter((id) => {
@@ -49,15 +54,22 @@ export function continuationGenerationSchema(
     const branch = structuredClone(record(variants[mode === 'native' ? 0 : 1]));
     const fields = record(branch.properties);
     record(fields.node_id).enum = ids;
-    if (mode === 'delegated')
-      fields.style = { anyOf: [fields.style, { type: 'null' }] };
     branch.description =
       mode === 'native'
         ? 'Only listed native role candidates: keep measured style null.'
         : mode === 'delegated'
           ? 'Listed OCR endpoints: role_kind null; style null only with the matching selected, fully evidenced uniform presentation candidate and join true. Otherwise return observed source style.'
           : 'Listed OCR decisions: role_kind null and observed source style required.';
-    branches.push(branch);
+    const group =
+      mode === 'native'
+        ? [branch]
+        : bodyReferenceGenerationBranches(branch, ids, bodyReferences);
+    for (const variant of group) {
+      const properties = record(variant.properties);
+      if (mode === 'delegated')
+        properties.style = { anyOf: [properties.style, { type: 'null' }] };
+      branches.push(variant);
+    }
   }
   const fields = record(output.properties);
   if (branches.length)

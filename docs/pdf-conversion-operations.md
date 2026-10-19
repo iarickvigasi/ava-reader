@@ -411,6 +411,14 @@ and the existing ledger reserves before dispatch. Request limits count distinct 
 reusing an identical persisted request does not allocate twice. Finished or terminal imports cannot
 acquire a new initial grant. Native text remains a zero-provider path within live-capable jobs.
 
+Gemini book-refinement generation grammar9 fixes explicit OCR body-reference paragraph sizes to
+1, using only the exact factory-recovered source catalogue. It preserves native styles, unrelated
+heading ratios and nullable delegation to a selected source-derived continuation candidate.
+Canonical response schemas and installed semantic checks stay unchanged. Actual outbound request
+bytes remain the cache/receipt identity: reuse unaffected exact requests, and reserve a new call
+for a changed grammar. No paid reply is edited, replayed under a different request or treated as
+source-quality acceptance. This correction requires current provider/corpus verification.
+
 For Gemini NativeTask2, generation array limits derive from the validated task's public source
 inventory: group count and each group's line IDs fit its unique line count, boundary decisions
 fit its candidate count, and references fit its unique eligible callout count. Accepted responses

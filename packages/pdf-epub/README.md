@@ -1107,9 +1107,14 @@ worker, semantic validator and provider authorization before corpus/reader quali
 Gemini book-refinement generation binds the native and OCR decision branches to the exact
 factory-produced task's decision IDs. An OCR heading cannot select the native branch and lose
 its required observed typography; native candidates cannot request replacement styles. Fixed
-context/reference nodes never become decision candidates. Canonical schemas, source text,
-semantic validation and retained receipt acceptance stay unchanged; changed request hashes
-fence reuse of earlier generation requests. Metadata-only tasks retain their empty decision scope.
+context nodes never become decision candidates merely because they appear in the catalogue. An
+explicitly selected OCR paragraph can also be a local body reference. Gemini generation grammar9
+requires its explicit relative_size to be exactly1, the defined local baseline; other heading
+sizes and native typography stay unchanged. Selected continuation endpoints can still delegate
+to their exact source-derived candidate styles. This generation constraint does not rewrite a
+returned response or relax canonical/installed validation. Canonical schemas and task identities
+stay unchanged; actual changed request hashes fence reuse, while byte-identical requests remain
+reusable. Metadata-only tasks retain their empty decision scope.
 
 Gemini recognition requests `ava-recognition-observation-2` with a closed, single-shape
 generation schema. Native structure retains its existing JSON mode. The recognition grammar

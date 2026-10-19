@@ -1,3 +1,7 @@
+import {
+  bodyReferenceGenerationBranches,
+  ocrBodyReferenceIds,
+} from './body-reference-generation';
 import { PdfProviderError } from './errors';
 import { recoveredRefinementGenerationTask } from './refinement-generation-task';
 import { bibliographicGenerationSchema } from './bibliographic-generation-schema';
@@ -38,6 +42,7 @@ export function refinementGenerationSchema(
   // Metadata-only tasks have no structure decisions; keep that array unchanged.
   // The metadata branches above still require complete selected source ranges.
   if (!nodes.length) return output;
+  const bodyReferences = ocrBodyReferenceIds(recovered.nodes);
   const branches: Schema[] = [];
   for (const [branch, fields, isNative] of [
     [native, nativeFields, true],
@@ -51,7 +56,11 @@ export function refinementGenerationSchema(
     branch.description = isNative
       ? 'Only the listed native structure candidates: classify role_kind, keep style null and measured source typography unchanged.'
       : 'Only the listed OCR decisions: role_kind is null; style requires id observed, relative_size and explicit bold from source pixels.';
-    branches.push(branch);
+    branches.push(
+      ...(isNative
+        ? [branch]
+        : bodyReferenceGenerationBranches(branch, ids, bodyReferences)),
+    );
   }
   decisions.items = branches.length === 1 ? branches[0] : { anyOf: branches };
   return output;

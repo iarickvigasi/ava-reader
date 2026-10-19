@@ -16,6 +16,10 @@ Supported content includes chapters, nested Contents, ordinary typography, illus
 notes/references, simple lists/tables and short verse/code. Reflow preserves meaningful styles and
 reading order, rather than reproducing print-page geometry or promising exact fonts.
 
+For Gemini, source-defined typography is constrained before model generation: a selected local body-reference
+paragraph has unit relative size. A conflicting answer is refused; it is not silently normalized.
+Heading sizes and visible font differences still require source evidence.
+
 ## Pipeline and responsibilities
 
 | Stage                 | Responsibility and checks                                                                                                                                                                                       | Source                                                                        |
