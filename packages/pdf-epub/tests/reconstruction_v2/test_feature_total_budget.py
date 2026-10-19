@@ -1,4 +1,4 @@
-"""Real source crops retain every required role while title and optional work share the current64 slots."""
+"""Required roles, titles and optional work share the current 64-task limit."""
 
 import tempfile
 import unittest
