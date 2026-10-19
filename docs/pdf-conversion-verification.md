@@ -43,8 +43,9 @@ the checkout to `PYTHONPATH`; that would replace installed-package evidence with
 token, pinned action commits and no application secrets. The application job installs locked pnpm/uv
 dependencies, checks both generated contract families, runs complete API/web unit suites, types and
 lint, builds both applications and exercises the compiled semantic bridge with non-editable Python.
-Its database URL is a deliberately unreachable placeholder for Prisma generation; no database,
-authentication service, provider dispatch or poller is started. The web build uses its normal
+Its default database URL is a deliberately unreachable placeholder for Prisma generation. The
+separate provider regression command creates its own disposable database after the API build;
+no authentication service, live provider dispatch or poller is started. The web build uses its normal
 unconfigured-auth behavior. Shared dependency/build caches are disabled.
 
 The separate database job runs `apps/api/scripts/check-pdf-review-role-guard.sh`. Its pinned public
@@ -54,6 +55,16 @@ The checks cover current ADMIN membership, ordinary/developer/revoked denial, ex
 hard blocks, operation state/deletion and immutable retained decisions. A different SQL error
 cannot satisfy an expected refusal. The container is removed on exit. This is a database guard
 regression, not full authenticated publication, source fidelity or browser qualification.
+
+The application job also runs `apps/api/scripts/check-pdf-provider-database.sh` after the API build.
+It uses the same pinned PostgreSQL image with a random **127.0.0.1-only** port and constant test-only
+credentials, applies the complete migration chain, then invokes the compiled stock services from
+real child processes. One child exits after committing dispatch intent; lease recovery must preserve
+all uncertain exposure and prevent resending. Two other processes race for one remaining account
+reservation. Late settlement, fresh-process controller cost export, role checks, zero-cost denial,
+private-content filtering and retention after fixture deletion are checked separately. There is no
+Clerk/HTTP login, paid billing, OCR or browser qualification in this regression. Only its new container
+is removed on exit; it never reads configured credentials or an existing application database.
 
 The installed job builds the stock digest-pinned worker Dockerfile, with its pinned native dependency
 snapshot and checksum-verified EPUBCheck. Dependency installation and the web build's font fetching

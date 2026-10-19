@@ -16,7 +16,7 @@ defaults:
     shell: bash
 
 # No repository/environment secrets, privileged PR triggers or shared caches.
-# Database checks use only a disposable PostgreSQL container without networking.
+# Review SQL uses a network-disabled database; provider process checks use a disposable loopback-only database.
 env:
   CI: "true"
   NODE_ENV: test
@@ -75,6 +75,8 @@ jobs:
         run: |
           pnpm --filter api build
           pnpm --filter api pdf:contracts:smoke
+      - name: Real process/database provider journal and cap regression
+        run: apps/api/scripts/check-pdf-provider-database.sh
       - name: Build the web app without auth or API credentials
         env:
           NODE_ENV: production
