@@ -1,3 +1,5 @@
+import { Prisma } from '@prisma/client';
+import { assertCanonicalTranslationAuthority } from '../source/assert-canonical-authority';
 import type { PrismaService } from '../../prisma/prisma.service';
 import type { BilingualUnit, TranslationContext } from '../types';
 import { translationVersionIdentity } from '../version-identity';
@@ -11,6 +13,12 @@ export async function persistTranslations(args: {
   regenerate?: boolean;
 }): Promise<void> {
   await args.prisma.$transaction(async (tx) => {
+    if (args.context.canonicalAuthority) {
+      await tx.$executeRaw(
+        Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${args.context.libraryItemId}, 0))`,
+      );
+      await assertCanonicalTranslationAuthority(tx, args.context);
+    }
     const identity = translationVersionIdentity(args.context);
     const version = await tx.bookTranslation.upsert({
       where: { versionIdentity: identity },
@@ -44,5 +52,6 @@ export async function persistTranslations(args: {
         modelId: args.modelId,
       })),
     });
+    await assertCanonicalTranslationAuthority(tx, args.context);
   });
 }

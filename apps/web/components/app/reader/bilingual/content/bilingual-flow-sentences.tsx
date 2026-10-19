@@ -36,7 +36,17 @@ export function BilingualFlowSentences({
         {part.missing ? (
           <BilingualSentenceSkeleton text={part.unit.text} />
         ) : (
-          <ReaderInlineContent inlines={part.inlines} />
+          <ReaderInlineContent
+            inlines={part.inlines}
+            literalLabel={
+              side === "source" &&
+              part.unit.startOffset === 0 &&
+              block.literalLabel &&
+              part.unit.endOffset >= block.literalLabel.end
+                ? block.literalLabel
+                : undefined
+            }
+          />
         )}
       </span>
     );

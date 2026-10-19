@@ -1,7 +1,5 @@
-import type {
-  ReaderLocator,
-  ReaderProgressPayload,
-} from "@/lib/api-types";
+import { READER_CAPABILITY_HEADERS } from "@/features/reader/canonical/headers";
+import type { ReaderLocator, ReaderProgressPayload } from "@/lib/api-types";
 import { loadReaderPayloadFromCache } from "@/features/offline/buckets/book";
 import { type ReaderAuthInput, resolveReaderAuthToken } from "./reader-auth";
 import { fetchReaderPayloadFromNetwork } from "./reader-payload-network";
@@ -81,7 +79,10 @@ export async function persistReaderProgress(
     buildReaderUrl(input.libraryItemId, "progress").toString(),
     {
       method: HTTP_METHOD_PATCH,
-      headers: withAuthHeader(token, jsonContentTypeHeader()),
+      headers: withAuthHeader(token, {
+        ...jsonContentTypeHeader(),
+        ...READER_CAPABILITY_HEADERS,
+      }),
       keepalive: input.keepalive,
       body: JSON.stringify({
         locator: input.locator,

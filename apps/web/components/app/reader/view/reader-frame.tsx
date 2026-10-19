@@ -1,3 +1,4 @@
+import { ReaderJumpControls } from "./reader-jump-controls";
 import type { ReactNode, RefObject } from "react";
 import { useReaderUi } from "@/components/app/core/reader-ui-context";
 import { cn } from "@/lib/cn";
@@ -65,6 +66,7 @@ export function ReaderFrame({
             !embedded && !isPhone && "sm:mt-8 sm:gap-4",
           )}
         >
+          <ReaderJumpControls />
           {children}
         </div>
       </section>

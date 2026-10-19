@@ -1,3 +1,4 @@
+import { composeHomeMetadata } from "./metadata";
 // Dexie I/O for the home-screen cache. Single row keyed by "me". Cached so
 // the dashboard renders when the app is opened or reloaded offline.
 
@@ -33,6 +34,12 @@ export async function readHome(): Promise<HomePayload | null> {
       let payload = composeHomeReading(
         { ...row.payload, user: normalizeUserRoles(row.payload.user) },
         await db.sessions.toArray(),
+      );
+      payload = composeHomeMetadata(
+        payload,
+        payload.currentEngagement
+          ? await db.libraryItems.get(payload.currentEngagement.libraryItemId)
+          : undefined,
       );
       if (payload.completionItems !== undefined) {
         payload = {

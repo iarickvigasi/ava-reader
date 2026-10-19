@@ -1,0 +1,26 @@
+{
+  "schema_version": "ava-recognition-anchor-context-response-1",
+  "task_id": "anchor-context-6498c6e19d139fd2b15e5705d16802af33dfffeb27a090c50407e349ae76c24e",
+  "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "original_task_id": "recognize-da244b97791a35a369b910e27cd5a6700047f386cb77bb7835ae52e293106895",
+  "render_sha256": "fca62a9f2e757c42b5d1225df44b7f69ac705224b6e70926efec33cda915da36",
+  "original_response_sha256": "417efe912707494b30657c84749ba36cd946a579ec85386606257c590923f922",
+  "outcome": "corrected",
+  "patches": [
+    {
+      "segment_index": 0,
+      "span_index": 0,
+      "span_sha256": "b7bf42d0109038152bf4c72847b91861dd17172c0dec6f053e58c4444b8cb450",
+      "before": "",
+      "after": " Alpha"
+    },
+    {
+      "segment_index": 1,
+      "span_index": 0,
+      "span_sha256": "4f0281e2e9cadb0c633d192c26ef78c75b0469e2c9ddbc7978d297078c137b77",
+      "before": "",
+      "after": " Beta"
+    }
+  ],
+  "unresolved_reason": null
+}

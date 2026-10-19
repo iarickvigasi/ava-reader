@@ -1,0 +1,28 @@
+{
+  "schema_version": "ava-recognition-task-1",
+  "task_id": "recognize-cfc1b6021eea23a766f4c1144076fa55896cfa8535474134a50650edc1fc3e6b",
+  "purpose": "pdf_region_recognition",
+  "source_sha256": "ead57e233d0159460a7a8b63b15fe8ad8c9888be7a1989885a9536696c2d363b",
+  "profile_id": "ava-pdf-prose-en-v2",
+  "page_number": 1,
+  "page_width_pt": 504.0,
+  "page_height_pt": 720.0,
+  "region_box": {
+    "coordinate_space": "page_points_top_left",
+    "x0": 0.0,
+    "y0": 0.0,
+    "x1": 504.0,
+    "y1": 720.0
+  },
+  "image": {
+    "media_type": "image/png",
+    "sha256": "bdde746006f87b45b3ee40a69407eee9588ab3fe8fcf34d215c6e2c8c3cf7bc1",
+    "byte_length": 609792,
+    "width": 1680,
+    "height": 2400
+  },
+  "native_evidence": "{\"reliable\":false,\"lines\":[]}",
+  "native_evidence_sha256": "ed08902016eb1742711bb7cc1fdf4c2757d6d4460163f752a6a71181e79a9564",
+  "prompt_version": "ava-prose-region-2",
+  "response_schema_version": "ava-recognition-response-2"
+}

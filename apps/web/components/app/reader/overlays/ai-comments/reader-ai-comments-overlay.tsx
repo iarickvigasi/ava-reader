@@ -43,6 +43,7 @@ function AiCommentsBackdrop({ onClose }: { onClose: () => void }) {
   return (
     <button
       type="button"
+      tabIndex={-1}
       aria-label="Close AI comments panel"
       className="pointer-events-auto absolute inset-0 bg-transparent md:left-94"
       onClick={onClose}

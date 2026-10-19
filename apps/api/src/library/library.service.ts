@@ -8,10 +8,12 @@ import { getCollection } from './collections/get-collection';
 import { renameCollection } from './collections/rename-collection';
 import { importBook } from './import/import-book';
 import { getLibraryItem } from './items/get-library-item';
+import { getLibraryFormat } from './items/get-library-format';
 import { setFinishedAt } from './items/set-finished-at';
 import { setOfflineRequested } from './items/set-offline-requested';
 import { addCatalogBook } from './membership/add-catalog-book';
 import { getLibraryOverview } from './overview/get-library-overview';
+import { getPublicBookCover } from './covers/get-public-book-cover';
 
 @Injectable()
 export class LibraryService {
@@ -46,12 +48,8 @@ export class LibraryService {
     );
   }
 
-  async getBookCover(bookId: string) {
-    const book = await this.prisma.book.findUnique({
-      where: { id: bookId },
-      select: { coverBlob: { select: { bytes: true, mimeType: true } } },
-    });
-    return book?.coverBlob ?? null;
+  getBookCover(bookId: string) {
+    return getPublicBookCover(this.prisma, bookId);
   }
 
   async getCollection(clerkUserId: string, collectionId: string) {
@@ -70,6 +68,11 @@ export class LibraryService {
       ref: libraryItemId,
       userId: user.id,
     });
+  }
+
+  async getLibraryFormat(clerkUserId: string, ref: string, format: string) {
+    const user = await this.user(clerkUserId);
+    return getLibraryFormat(this.prisma, user.id, ref, format);
   }
 
   async setOfflineRequested(

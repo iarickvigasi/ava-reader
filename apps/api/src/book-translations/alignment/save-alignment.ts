@@ -1,3 +1,5 @@
+import { persistCanonicalAlignment } from './persist-canonical-alignment';
+import type { TranslationContext } from '../types';
 import type { PrismaService } from '../../prisma/prisma.service';
 import type { AlignmentInput } from './alignment-input';
 import {
@@ -11,6 +13,7 @@ export async function saveAlignment(
   row: AlignmentInput,
   outputs: AlignmentOutput[],
   signal: AbortSignal,
+  context?: TranslationContext,
 ) {
   const matches = outputs.filter((output) => output.id === row.sentenceId);
   if (matches.length !== 1)
@@ -26,13 +29,15 @@ export async function saveAlignment(
   );
   signal.throwIfAborted();
   // Save each valid sentence against the exact winning translation.
-  const saved = await prisma.sentenceTranslation.updateMany({
-    where: {
-      id: row.id,
-      sourceText: row.sourceText,
-      translatedText: row.translatedText,
-    },
-    data: { alignment },
-  });
+  const saved = await persistCanonicalAlignment(prisma, context, (tx) =>
+    tx.sentenceTranslation.updateMany({
+      where: {
+        id: row.id,
+        sourceText: row.sourceText,
+        translatedText: row.translatedText,
+      },
+      data: { alignment },
+    }),
+  );
   return saved.count > 0;
 }

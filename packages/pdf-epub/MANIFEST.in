@@ -1,0 +1,11 @@
+include README.md pyproject.toml uv.lock .python-version
+include Makefile Dockerfile .dockerignore
+include THIRD_PARTY.md dependency-inventory.json native-dependencies.json
+recursive-include licenses *.txt
+recursive-include scripts *.py *.json
+recursive-include tests *.py *.json *.pdf *.png *.jpg *.jpeg
+recursive-include src/ava_pdf_epub/contracts/schemas *.json
+include src/ava_pdf_epub/py.typed
+global-exclude *.py[cod]
+global-exclude __pycache__
+include epubcheck-distribution.json

@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { OpenRouterClient } from '../shared/openrouter-client';
+import { backgroundFailureCode } from '../shared/background-failure-code';
 import { recordFailedAttempt } from './chapter-purpose/record-failure';
 import { CHAPTER_PURPOSE_PIPELINE } from './chapter-purpose/request-analysis';
 import { runChapterPurposeAnalysis } from './chapter-purpose/run-analysis';
@@ -38,7 +39,12 @@ export class BookAnalysisService implements OnModuleInit, OnModuleDestroy {
     }
 
     this.poller = setInterval(() => {
-      void this.processPendingRunsOnce();
+      // Scheduled work has no caller to observe a rejected queue/settlement promise.
+      void this.processPendingRunsOnce().catch((error: unknown) => {
+        this.logger.warn(
+          `Book background analysis unavailable (${backgroundFailureCode(error)}); checking again on the next poll.`,
+        );
+      });
     }, POLL_INTERVAL_MS);
   }
 
@@ -90,7 +96,7 @@ export class BookAnalysisService implements OnModuleInit, OnModuleDestroy {
     } catch (error) {
       const message = describe(error);
       this.logger.warn(
-        `Chapter-purpose analysis failed for book ${run.bookId}: ${message}`,
+        `Chapter-purpose analysis failed (${backgroundFailureCode(error)}).`,
       );
 
       await recordFailedAttempt({

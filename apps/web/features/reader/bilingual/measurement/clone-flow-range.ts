@@ -1,3 +1,6 @@
+import { stripMeasurementDescriptions } from "./strip-measurement-descriptions";
+import { restoreFlowAffixes } from "./restore-flow-affixes";
+import { restoreTableGrid } from "./restore-table-grid";
 import type { BilingualChapter } from "@/lib/api-types/bilingual";
 
 export function cloneFlowRange(input: {
@@ -25,7 +28,10 @@ export function cloneFlowRange(input: {
     ancestor = ancestor.parentNode;
   }
   candidate.appendChild(content);
+  restoreTableGrid(candidate, template);
+  restoreFlowAffixes(candidate, template);
   normalizeFragment(candidate, chapter, fillMissing);
+  stripMeasurementDescriptions(candidate);
   return candidate;
 }
 

@@ -1,3 +1,5 @@
+import { epubLibrarySummaryInclude } from '../library/epub-import/library-summary';
+import { pdfLibrarySummarySelect } from '../library/pdf-import/operations/library-summary';
 import type { PrismaService } from '../prisma/prisma.service';
 
 export function loadHomeLibraryItems(prisma: PrismaService, userId: string) {
@@ -8,6 +10,8 @@ export function loadHomeLibraryItems(prisma: PrismaService, userId: string) {
       book: {
         include: {
           // Covers are served by URL; file progress indexes are not used here.
+          ...epubLibrarySummaryInclude,
+          pdfImport: { select: pdfLibrarySummarySelect },
           coverBlob: { select: { mimeType: true } },
           files: { select: { format: true, isPrimary: true, kind: true } },
         },

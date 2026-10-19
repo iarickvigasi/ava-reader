@@ -1,0 +1,16 @@
+{
+  "schema_version": "ava-printed-title-response-1",
+  "task_id": "refine-a4b3e2af33391ca749063dfcb5fcfe8f61b816b62a814456feb27c3884f46c75",
+  "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "observation_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "image_sha256": "0800e3144a6ca8c9a5ae8b33cf40fb65e41310dcfc300e64549f5bc86a68edf1",
+  "decision": {
+    "node_id": "opening-title",
+    "text_sha256": "bdefc38823b5165863f3145a57a08c417d035711193df602228893c711689113",
+    "evidence_ids": [
+      "title-80bd51e596c95a83df0556fc",
+      "context-80bd51e596c95a83df0556fc"
+    ],
+    "role": "title"
+  }
+}

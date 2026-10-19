@@ -17,11 +17,13 @@ export function createBookTx(
     coverBlobId: string | undefined;
     format: 'EPUB' | 'PDF';
     metadata: ExtractedBookMetadata;
+    canonicalEpub?: boolean;
   },
 ) {
   return tx.book.create({
     data: {
       title: input.metadata.title,
+      canonicalImportPrivate: input.canonicalEpub === true,
       authors: input.metadata.authors,
       description: input.metadata.description,
       genres: input.metadata.genres,
@@ -38,7 +40,7 @@ export function createBookTx(
         },
       },
       processingRuns:
-        input.format === BookFileFormat.EPUB
+        input.format === BookFileFormat.EPUB && !input.canonicalEpub
           ? {
               create: {
                 pipeline: 'normalize-reader-package-v1',

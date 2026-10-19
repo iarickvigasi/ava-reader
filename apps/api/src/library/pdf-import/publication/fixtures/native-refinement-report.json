@@ -1,0 +1,29 @@
+{
+  "schema_version": "ava-reconstruction-report-1",
+  "source_sha256": "7c737e9248eb8ad14acbebaf9edbb08a7b805b884a72ed1862fafeb487d4e4fb",
+  "canonical_sha256": "ec16df5bf237e0547a36a6bbae1403ec5cb04f877471ee4631656317ced4a1d1",
+  "epub_sha256": "5cb49eb6479968eeef2a8635657e82384dcf4c161a58e41439e655155c77da74",
+  "resource_hashes": {
+    "image-8d1329ebe0f7de5252924ca1": "8d1329ebe0f7de5252924ca168285371b9dff52219ad4841d3668435121ae961"
+  },
+  "profile_id": "ava-pdf-prose-en-v2",
+  "outcome": "candidate",
+  "page_count": 8,
+  "recognition_task_count": 0,
+  "checks": {
+    "complete_source_pages": "pass",
+    "complete_recognition_task_receipts": "pass",
+    "native_character_conservation": "pass",
+    "canonical_semantic_graph": "pass",
+    "source_region_coverage": "pass",
+    "note_list_table_relationships": "pass",
+    "source_structure_signals_consistent": "pass",
+    "explicit_source_references_resolved": "pass",
+    "required_resource_byte_hashes": "pass",
+    "declared_ocr_uncertainty_resolved": "pass",
+    "epubcheck": "not_run",
+    "independent_visual_source_fidelity": "not_run"
+  },
+  "findings": [],
+  "refinement_evidence": []
+}

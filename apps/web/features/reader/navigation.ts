@@ -2,6 +2,7 @@ import type { ReaderStatusPayload } from "@/lib/api-types";
 
 export type ReaderNavigationTarget =
   | {
+      requestId?: number;
       blockId?: string | null;
       edge?: "end" | "start";
       textOffset?: number;
@@ -10,12 +11,14 @@ export type ReaderNavigationTarget =
 
 export type RestoreIntent =
   | {
+      requestId?: number;
       chapterId: string;
       key: string;
       kind: "edge-start";
       sticky: true;
     }
   | {
+      requestId?: number;
       chapterId: string;
       key: string;
       kind: "edge-end";
@@ -23,6 +26,7 @@ export type RestoreIntent =
     }
   | {
       blockId: string;
+      requestId?: number;
       chapterId: string;
       key: string;
       kind: "block";
@@ -37,6 +41,7 @@ export type ReaderTraversalState = {
 
 export type ReaderTraversalAction =
   | {
+      requestId?: number;
       chapterId: string;
       key: string;
       target?: ReaderNavigationTarget;
@@ -58,6 +63,7 @@ export function createRestoreIntent(
 ): RestoreIntent {
   if (target?.blockId) {
     return {
+      requestId: target.requestId,
       blockId: target.blockId,
       chapterId,
       key,
@@ -71,6 +77,7 @@ export function createRestoreIntent(
 
   if (target?.edge === "end") {
     return {
+      requestId: target.requestId,
       chapterId,
       key,
       kind: "edge-end",
@@ -79,6 +86,7 @@ export function createRestoreIntent(
   }
 
   return {
+    requestId: target?.requestId,
     chapterId,
     key,
     kind: "edge-start",
@@ -102,7 +110,7 @@ export function createInitialTraversalState(
   const restoreIntent = createRestoreIntent(
     visibleChapterId,
     initialTarget,
-    `initial:${visibleChapterId}:${initialTarget?.blockId ? "block" : initialTarget?.edge ?? "start"}`,
+    `initial:${visibleChapterId}:${initialTarget?.blockId ? "block" : (initialTarget?.edge ?? "start")}`,
   );
 
   return {
@@ -194,13 +202,18 @@ export function hasPendingRestoreIntent(
 ) {
   return Boolean(
     restoreIntent &&
-      restoreIntent.chapterId === activeChapterId &&
-      consumedRestoreIntentKey !== restoreIntent.key,
+    restoreIntent.chapterId === activeChapterId &&
+    consumedRestoreIntentKey !== restoreIntent.key,
   );
 }
 
 export function isStickyRestoreIntent(
   restoreIntent: RestoreIntent | null,
-): restoreIntent is Extract<RestoreIntent, { kind: "edge-end" | "edge-start" }> {
-  return restoreIntent?.kind === "edge-end" || restoreIntent?.kind === "edge-start";
+): restoreIntent is Extract<
+  RestoreIntent,
+  { kind: "edge-end" | "edge-start" }
+> {
+  return (
+    restoreIntent?.kind === "edge-end" || restoreIntent?.kind === "edge-start"
+  );
 }

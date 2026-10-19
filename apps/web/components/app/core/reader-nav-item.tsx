@@ -1,3 +1,4 @@
+import { readerPanelId } from "@/features/reader/panel-id";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/cn";
 import { useReaderUi, type ReaderPanel } from "./reader-ui-context";
@@ -63,7 +64,10 @@ export function ReaderNavItem({
       <button
         type="button"
         aria-label={label}
-        aria-pressed={isActive}
+        aria-haspopup="dialog"
+        aria-expanded={isActive}
+        aria-controls={readerPanelId(item.panel)}
+        data-reader-panel-control={item.panel}
         className={className}
         onClick={() => onTogglePanel(item.panel)}
       >

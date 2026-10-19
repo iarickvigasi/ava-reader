@@ -20,7 +20,10 @@ it("repairs an already-backfilled download, retries unchanged server data, and p
   const cached = { ...tocNode, label: "1. Opening words…" };
   const source = { ...tocNode, label: "1 / Wanted: Men Who Love" };
   await db.books.update("book", { toc: [cached] });
-  await db.bookChapters.update(["book", "chapter-1"], {
+  const chapter = await db.bookChapters.get(["book", "chapter-1"]);
+  if (!chapter) throw new Error("Missing seeded chapter");
+  await db.bookChapters.put({
+    ...chapter,
     blocks: [
       { id: "number", kind: "heading", level: 2, text: "1", inlines: [] },
       {

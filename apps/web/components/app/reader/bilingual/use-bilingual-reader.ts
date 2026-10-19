@@ -1,3 +1,5 @@
+import { useBilingualJump } from "@/features/reader/bilingual/position/use-bilingual-jump";
+import { useReaderNavigationActions } from "../state/reader-navigation-context";
 import { useBilingualPageState } from "./use-bilingual-page-state";
 import { bilingualReaderStatus } from "./bilingual-reader-status";
 import { usePageRegeneration } from "./use-page-regeneration";
@@ -10,6 +12,7 @@ import { useBilingualInteractions } from "./interactions/use-bilingual-interacti
 import { useAlignmentDemand } from "@/features/reader/bilingual/alignment/use-alignment-demand";
 
 export function useBilingualReader(props: ReadyReaderProps) {
+  const navigation = useReaderNavigationActions();
   const { activePanel } = useReaderUi();
   const {
     cache,
@@ -42,18 +45,29 @@ export function useBilingualReader(props: ReadyReaderProps) {
   );
   const go = useCallback(
     (direction: -1 | 1) => {
-      if (!isMeasuring && !regeneration.busy) navigate(direction);
+      if (!isMeasuring && !regeneration.busy) {
+        navigation?.leavePassage();
+        navigate(direction);
+      }
     },
-    [isMeasuring, navigate, regeneration.busy],
+    [isMeasuring, navigate, regeneration.busy, navigation],
   );
   const pageKey = `${chapter?.chapterId}:${pagination.pageIndex}:${layoutKey}:${chapter?.targetLang}`;
   const interactions = useBilingualInteractions({
     chapter,
     chapterId: props.activeChapter.chapterId,
+    blocks: props.activeChapter.blocks,
     language: props.payload.book.language,
     pageKey,
     disabled,
     go,
+  });
+  useBilingualJump({
+    sourceRef: interactions.sourceRef,
+    chapter,
+    intent: props.restoreIntent,
+    ready: !disabled && !isMeasuring && !!pagination.page,
+    pageKey,
   });
   const alignmentDemand = useAlignmentDemand(
     measuringChapter,

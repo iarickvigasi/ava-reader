@@ -1,3 +1,4 @@
+import { translationCapability } from './source/request-capability';
 import {
   Body,
   Controller,
@@ -30,6 +31,7 @@ export class BookTranslationsController {
     @Query() query: unknown,
   ) {
     return this.service.chapter({
+      capability: translationCapability(request),
       clerkUserId: request.auth.clerkUserId,
       libraryItemId,
       chapterId,
@@ -55,6 +57,7 @@ export class BookTranslationsController {
     try {
       return await this.service.generate({
         ...parsed,
+        capability: translationCapability(request),
         clerkUserId: request.auth.clerkUserId,
         libraryItemId,
         signal: controller.signal,
@@ -83,6 +86,7 @@ export class BookTranslationsController {
     try {
       return await this.service.align({
         ...parsed,
+        capability: translationCapability(request),
         clerkUserId: request.auth.clerkUserId,
         libraryItemId,
         signal: controller.signal,

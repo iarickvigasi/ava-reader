@@ -1,5 +1,11 @@
 "use client";
 
+import { EpubSourceDownload } from "./epub-source-download";
+import { PdfFormats } from "./pdf-formats";
+import { PdfMetadataEditor } from "./pdf-metadata-editor";
+import { PdfImportStatus } from "@/components/app/shared/pdf-import/status";
+import { isBookReadable } from "@/features/library/is-book-readable";
+import { EpubImportStatus } from "@/components/app/shared/epub-import-status";
 import type { LibraryBookInfo } from "@/lib/api-types";
 import { useBookInfo } from "@/features/offline/buckets/library";
 import { BackLink } from "./back-link";
@@ -25,6 +31,7 @@ export function LibraryBookInfoScreen({
   book: initial,
 }: LibraryBookInfoScreenProps) {
   const book = useBookInfo(initial.slug, initial);
+  const readable = isBookReadable(book);
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col px-5 pb-10 pt-6 sm:px-6 md:pb-14 md:pt-8 lg:px-10">
       <div className="mx-auto w-full max-w-7xl space-y-12 md:space-y-16">
@@ -34,19 +41,39 @@ export function LibraryBookInfoScreen({
           <div className="grid gap-8 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:gap-12">
             <BookCoverPanel
               coverImageUrl={book.coverImageUrl}
-              readerLink={{
-                libraryItemId: book.libraryItemId,
-                slug: book.slug,
-              }}
+              readerLink={
+                readable
+                  ? {
+                      libraryItemId: book.libraryItemId,
+                      slug: book.slug,
+                    }
+                  : undefined
+              }
               title={book.title}
             />
 
             <div className="space-y-8">
               <BookHeader book={book} />
-              <BookActions
-                slug={book.slug}
-                libraryItemId={book.libraryItemId}
-              />
+              <PdfImportStatus status={book.pdfImport} details />
+              <EpubImportStatus status={book.epubImport} />
+              {book.epubImport && (
+                <EpubSourceDownload
+                  libraryItemId={book.libraryItemId}
+                  title={book.title}
+                />
+              )}
+              {readable && (
+                <BookActions
+                  slug={book.slug}
+                  libraryItemId={book.libraryItemId}
+                />
+              )}
+              {book.pdfImport && (
+                <>
+                  <PdfFormats status={book.pdfImport} title={book.title} />
+                  <PdfMetadataEditor book={book} />
+                </>
+              )}
               <ReadingProgress book={book} />
               <BookMetadata book={book} />
             </div>
@@ -59,9 +86,14 @@ export function LibraryBookInfoScreen({
             collections={book.collections}
             finishedAt={book.finishedAt ?? null}
             libraryItemId={book.libraryItemId}
+            pdfImport={book.pdfImport}
+            epubImport={book.epubImport}
           />
         </section>
-        <BookAnnotations key={book.libraryItemId} libraryItemId={book.libraryItemId} />
+        <BookAnnotations
+          key={book.libraryItemId}
+          libraryItemId={book.libraryItemId}
+        />
       </div>
     </div>
   );

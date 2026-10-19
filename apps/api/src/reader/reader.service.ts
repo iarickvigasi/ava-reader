@@ -1,3 +1,10 @@
+import { loadCanonicalReader } from './canonical/load';
+import { canonicalReaderPayload } from './canonical/payload';
+import { updateCanonicalProgress } from './canonical/update-progress';
+import {
+  NO_READER_CAPABILITY,
+  type ReaderCapability,
+} from './canonical/semantic';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
@@ -39,8 +46,16 @@ export class ReaderService {
     clerkUserId: string,
     libraryItemId: string,
     chapterId?: string,
+    capability: ReaderCapability = NO_READER_CAPABILITY,
   ): Promise<ReaderStatusPayload> {
     const libraryItem = await this.ownedLibraryItem(clerkUserId, libraryItemId);
+    const accepted = await loadCanonicalReader(
+      this.prisma,
+      libraryItem,
+      capability,
+    );
+    if (accepted)
+      return canonicalReaderPayload(libraryItem, accepted, chapterId);
     return buildReaderPayload({
       chapterId,
       libraryItem,
@@ -65,9 +80,24 @@ export class ReaderService {
     libraryItemId: string,
     locator: ReaderLocator,
     readAt?: string,
+    capability: ReaderCapability = NO_READER_CAPABILITY,
   ): Promise<ReaderProgressSummary> {
     validateLocator(locator);
     const libraryItem = await this.ownedLibraryItem(clerkUserId, libraryItemId);
+    const accepted = await loadCanonicalReader(
+      this.prisma,
+      libraryItem,
+      capability,
+    );
+    if (accepted)
+      return updateCanonicalProgress(
+        this.prisma,
+        libraryItem,
+        accepted,
+        capability,
+        locator,
+        readAt,
+      );
     return updateReadingProgress(
       this.prisma,
       libraryItem,

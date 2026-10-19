@@ -1,3 +1,4 @@
+import { isBookReadable } from "@/features/library/is-book-readable";
 import type { LibraryBookView, LibraryView } from "../buckets/library";
 
 // Collects the unique books that belong to the default smart collections
@@ -37,6 +38,22 @@ export function collectContentTargets(
   currentBookId: string | null,
 ): LibraryBookView[] {
   return collectSmartBooks(view).filter(
-    (b) => b.offlineRequested || b.libraryItemId === currentBookId,
+    (b) =>
+      (b.offlineRequested || b.libraryItemId === currentBookId) &&
+      isBookReadable(b),
   );
+}
+
+// Readiness changes must re-kick the page-independent downloader, without
+// treating ordinary metadata/progress refreshes as a new download request.
+export function readyRequestedPdfKey(view: LibraryView | null): string {
+  if (!view) return "";
+  const targets = collectContentTargets(view, null)
+    .filter((book) => (book.pdfImport || book.epubImport) && !book.savedOffline)
+    .map((book) => [
+      book.libraryItemId,
+      book.pdfImport?.finalContentId ?? book.epubImport?.finalContentId,
+    ])
+    .sort(([a], [b]) => a!.localeCompare(b!));
+  return targets.length ? JSON.stringify(targets) : "";
 }

@@ -1,0 +1,263 @@
+{
+  "schema": "ava.fixture-qualification-oracle.v1",
+  "version": "1.0.0",
+  "rights": "Original synthetic AVA verification material. No private source books or credentials.",
+  "metadata": {
+    "title": "The Qualification Notebook",
+    "subtitle": "Tables, styles and careful boundaries",
+    "author": "AVA Fixture Studio",
+    "language": "en",
+    "publication_date": "2026-09-28",
+    "rights_statement": "Original synthetic test content; reuse permitted for AVA verification.",
+    "print_identifier": "9780000000002",
+    "print_identifier_scope": "Checksum-valid synthetic ISBN test claim; no actual assignment or publication claim.",
+    "generated_identifier_rule": "urn:uuid: followed by UUIDv5(NAMESPACE_URL, 'ava-fixture-qualification:' + source PDF SHA-256). This is a fixture convention, not a production architecture decision. Never reuse the printed ISBN as the generated edition identifier."
+  },
+  "chapters": [
+    {
+      "id": "qual-ch1",
+      "title": "1. Inheritance",
+      "source_page": 1,
+      "resource": "chapter-1.xhtml"
+    },
+    {
+      "id": "qual-ch2",
+      "title": "2. Table header patterns",
+      "source_page": 2,
+      "resource": "chapter-2.xhtml"
+    }
+  ],
+  "style_blocks": [
+    {
+      "id": "style-parent",
+      "text": "A bold serif parent establishes inherited defaults. Its words continue onto a second line so the generous line spacing is visible.",
+      "style": {
+        "bold": true,
+        "family_role": "serif",
+        "line_height_em": 1.8,
+        "first_line_indent_em": 1.5,
+        "space_after_em": 1.0
+      },
+      "source_top_pt": 285
+    },
+    {
+      "id": "style-reset",
+      "text": "This child explicitly resets bold to false and switches to a sans serif family. It begins without an indent and uses tighter line spacing.",
+      "style": {
+        "bold": false,
+        "family_role": "sans-serif",
+        "line_height_em": 1.3,
+        "first_line_indent_em": 0,
+        "space_after_em": 1.7
+      },
+      "inherits_from": "style-parent"
+    },
+    {
+      "id": "style-mono",
+      "text": "A monospaced paragraph stays in reading order.\nIts second line retains an intentional break.",
+      "style": {
+        "bold": false,
+        "family_role": "monospace",
+        "line_height_em": 1.5,
+        "first_line_indent_em": 0,
+        "space_after_em": 1.0
+      }
+    }
+  ],
+  "tables": [
+    {
+      "id": "headers-row",
+      "caption": "Table Q1. Column headers in the first row.",
+      "mode": "header-row",
+      "matrix": [
+        [
+          "Place",
+          "Day",
+          "Night"
+        ],
+        [
+          "Harbour",
+          "4",
+          "2"
+        ],
+        [
+          "Workshop",
+          "3",
+          "1"
+        ]
+      ],
+      "header_rows": [
+        0
+      ],
+      "header_columns": [],
+      "source_top_pt": 150
+    },
+    {
+      "id": "headers-column",
+      "caption": "Table Q2. Row headers in the first column.",
+      "mode": "header-column",
+      "matrix": [
+        [
+          "Harbour",
+          "4",
+          "2"
+        ],
+        [
+          "Workshop",
+          "3",
+          "1"
+        ],
+        [
+          "Bridge",
+          "2",
+          "0"
+        ]
+      ],
+      "header_rows": [],
+      "header_columns": [
+        0
+      ],
+      "source_top_pt": 325
+    },
+    {
+      "id": "headers-combined",
+      "caption": "Table Q3. Combined row and column headers.",
+      "mode": "combined",
+      "matrix": [
+        [
+          "Place",
+          "Day",
+          "Night"
+        ],
+        [
+          "Harbour",
+          "4",
+          "2"
+        ],
+        [
+          "Workshop",
+          "3",
+          "1"
+        ]
+      ],
+      "header_rows": [
+        0
+      ],
+      "header_columns": [
+        0
+      ],
+      "source_top_pt": 500
+    }
+  ],
+  "table_limits": {
+    "counting_rule": "Physical rows include the header row. Physical columns include the row-header column. No merged cells.",
+    "max_rows": 20,
+    "max_columns": 8,
+    "variants": [
+      {
+        "id": "FX-TABLE-20x8",
+        "rows": 20,
+        "columns": 8,
+        "expected": "within selected source-profile table size bound"
+      },
+      {
+        "id": "FX-TABLE-21x8",
+        "rows": 21,
+        "columns": 8,
+        "expected": "one total row over bound; hold/reject without omission"
+      },
+      {
+        "id": "FX-TABLE-20x9",
+        "rows": 20,
+        "columns": 9,
+        "expected": "one total column over bound; hold/reject without omission"
+      }
+    ],
+    "cell_formula": "r=0: C1..Cn. r>0,c=0: Rr. Other cells: decimal r, period, decimal(c+1). Coordinates are zero-based; all content comes from this authored formula."
+  },
+  "essential_unsupported": {
+    "title": "A Prose Book with an Essential Matrix",
+    "paragraphs": [
+      "The keeper records ordinary prose throughout this short book. The next page contains the decision matrix required to interpret every instruction.",
+      "The matrix uses merged cells to bind two conditions to one outcome. Losing this relationship changes the instructions, so the region is essential content.",
+      "An apparently successful conversion that drops the matrix is not a finished readable book."
+    ],
+    "region": {
+      "source_page": 2,
+      "bbox_top_left_pt": [
+        60,
+        180,
+        444,
+        395
+      ],
+      "feature": "merged-cell decision matrix",
+      "essential": true
+    },
+    "matrix_labels": [
+      "Conditions that must be considered together",
+      "Wind",
+      "Tide",
+      "Required action",
+      "Strong",
+      "High",
+      "Stay in harbour",
+      "Calm",
+      "Low",
+      "Cross with a keeper"
+    ],
+    "expected": "The selected profile excludes merged tables. Account for the essential region and keep the whole initial import from Ready; do not drop it or silently replace it with guessed prose.",
+    "page_routes": {
+      "1": "native selectable prose",
+      "2": "image-only page with essential merged-cell matrix; no hidden text layer"
+    }
+  },
+  "redaction": {
+    "title": "Controlled Redaction Probe",
+    "visible_before": "A public paragraph remains readable before and after redaction.",
+    "secret": "SYNTHETIC-REMOVED-CANARY-9381",
+    "visible_after": "The covered region has no readable words in the printed view.",
+    "rectangle_pdf_bottom_left_pt": [
+      48,
+      420,
+      456,
+      448
+    ],
+    "rectangle_top_left_pt": [
+      48,
+      272,
+      456,
+      300
+    ],
+    "baseline": "Unredacted synthetic source contains one known secret text-show operation.",
+    "black_overlay": "A black rectangle covers the secret visually but the text-show operation remains extractable. This is not redaction.",
+    "applied": "Remove the known secret text-show operation, add the black rectangle, then write a fresh nonincremental PDF. Verify no secret survives extraction, text objects or decoded streams. This is a controlled source-fixture transformation, not a general-purpose redaction engine."
+  },
+  "canary": {
+    "fixture": "FX-EXTERNAL-PATH-CANARY.epub",
+    "network_urls": [],
+    "external_file_uri": "file:///AVA_QUALIFICATION_CANARY_DO_NOT_READ/missing.png",
+    "relative_escape": "../../outside-root-canary.txt",
+    "zip_escape_member": "../outside-root-canary.txt",
+    "payload": "SYNTHETIC-CANARY-NOT-A-SECRET",
+    "expected": "Reject external file references and normalized path escapes before extraction or resource resolution. Inspect the ZIP statically; never render this negative EPUB or extract its traversal member. No real host file or network access is needed to verify its authored structure. Runtime no-read/no-write assertions require the later sandbox observation hook.",
+    "remote_variant": {
+      "fixture": "FX-REMOTE-RESOURCE-CANARY.epub",
+      "uri": "https://ava-canary.invalid/missing.png",
+      "expected": "Static remote-resource input for future sandbox egress tests. Do not render or fetch. Reserved .invalid hostname is not a real external service; no runtime no-fetch claim is made."
+    }
+  },
+  "furniture": {
+    "footer_prefix": "Qualification print page ",
+    "exclude_from_body": true
+  },
+  "normalization": {
+    "text": "Whitespace reflow is allowed except the explicit monospaced line break. Case remains significant.",
+    "styles": "The reset bold=false, zero indent and family/line-spacing differences are explicit values; absent values must not be substituted for false or zero."
+  },
+  "postponed": [
+    "Cryptographic signature verification and genuine signed-source fixtures",
+    "Production queue/concurrency/time/memory/capacity measurement",
+    "Runtime sandbox observation, candidate injection and user-flow verification"
+  ],
+  "style_layout_rule": "First paragraph starts at top=285pt. Each following paragraph starts after the previous laid-out height plus its declared space_after_em times11pt. Font size11pt."
+}

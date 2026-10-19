@@ -14,6 +14,9 @@ The default is dry-run. Review the preview first; it includes book/file IDs and 
 The script scans READY primary reader files of EPUB books held by any user's library, including
 archived items. Shared catalog books are processed once, regardless of how many users hold them.
 Books without a READY package, PDFs, and unused historical packages are excluded.
+Owned PDF conversions and generated EPUB reimports are excluded by their permanent Book markers,
+both during selection and the final file swap. Their accepted canonical content is immutable;
+this legacy label repair must not reinterpret or replace it.
 
 Labels matching `Chapter <spineIndex + 1>` or the exact excerpt regenerated from the stored blocks
 are eligible, as are names matching a component of a combined opening heading. Combine semantic

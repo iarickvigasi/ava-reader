@@ -1,7 +1,7 @@
 "use client";
 
 import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { fetchReaderPayload } from "@/components/app/reader/data/reader-client";
 import { loadReaderPayloadFromCache } from "@/features/offline/buckets/book";
@@ -25,6 +25,13 @@ export function useReaderScreenLoader() {
   const { getToken, isLoaded, isSignedIn } = useAuth();
   const [result, setResult] = useState<ReaderLoadResult | null>(null);
   const [attempt, setAttempt] = useState(0);
+  const generation = useRef(0);
+  const retry = useCallback(() => {
+    // Invalidate immediately, even before React cleans up the old effect.
+    generation.current += 1;
+    setResult(null);
+    setAttempt((current) => current + 1);
+  }, []);
   const authRef = useRef({ getToken, isLoaded, isSignedIn });
   useEffect(() => {
     authRef.current = { getToken, isLoaded, isSignedIn };
@@ -32,6 +39,7 @@ export function useReaderScreenLoader() {
 
   useEffect(() => {
     let cancelled = false;
+    const currentGeneration = generation.current;
     const waitForAuthBoot = () =>
       new Promise<void>((resolve) => {
         const startedAt = Date.now();
@@ -65,11 +73,13 @@ export function useReaderScreenLoader() {
         },
       });
     };
-    void load().then((next) => {
-      if (!cancelled) {
-        setResult(next);
-      }
-    });
+    void load()
+      .catch((): ReaderLoadResult => ({ kind: "error" }))
+      .then((next) => {
+        if (!cancelled && generation.current === currentGeneration) {
+          setResult(next);
+        }
+      });
     return () => {
       cancelled = true;
     };
@@ -90,10 +100,14 @@ export function useReaderScreenLoader() {
       }
       if (wasOffline) {
         wasOffline = false;
+        // Keep an open reader mounted: it owns Back history and overlays.
+        // Failed/empty loads can still show loading while reconnecting.
+        generation.current += 1;
+        setResult((current) => (current?.kind === "loaded" ? current : null));
         setAttempt((current) => current + 1);
       }
     });
   }, []);
 
-  return result;
+  return { result, retry };
 }

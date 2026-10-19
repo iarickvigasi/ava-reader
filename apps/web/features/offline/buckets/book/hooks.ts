@@ -17,7 +17,7 @@ import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useTranslations } from "next-intl";
 import { useCallback, useSyncExternalStore } from "react";
 
-import { fetchReaderPayload } from "@/components/app/reader/data/reader-client";
+import { fetchReaderPayloadFromNetwork } from "@/components/app/reader/data/reader-payload-network";
 import { emitAppToast } from "@/components/app/core/app-toast";
 import { ensurePersistentStorage } from "@/features/offline/lifecycle/persist-storage";
 import { isOnline } from "@/features/offline/net/net-state";
@@ -35,6 +35,7 @@ import {
 import { saveBookOffline, type SaveOutcome } from "./download";
 import { checkStorageQuota } from "./quota";
 import { deleteBookContent } from "./storage";
+import { getDb } from "../../db";
 
 export function useBookSaveStatus(libraryItemId: string): BookSaveSnapshot {
   // We re-derive a fresh "thunked" subscribe + snapshot per id so different
@@ -60,6 +61,7 @@ export function useSaveBook(libraryItemId: string) {
       kind: "auto" | "explicit",
       signal?: AbortSignal,
     ): Promise<SaveOutcome> => {
+      const ownerDb = getDb();
       // Ask the browser to keep this origin's storage out of the eviction
       // pool before we write a book into it (spec 4.1). Browsers grant on
       // engagement, so a save is the moment most likely to succeed. Not
@@ -69,6 +71,7 @@ export function useSaveBook(libraryItemId: string) {
       // Quota guard. Cheap probe (navigator.storage.estimate) — fail fast
       // with a toast before we start fetching chapters and writing to disk.
       const quota = await checkStorageQuota();
+      if (getDb() !== ownerDb) return { kind: "cancelled" };
       if (!quota.ok) {
         emitAppToast({ message: t("quotaLow"), tone: "warning" });
         // Reflect the refusal in the bucket so any UI watching save status
@@ -87,7 +90,7 @@ export function useSaveBook(libraryItemId: string) {
         saveKind: kind,
         signal,
         fetchChapter: (id, chapterId, fetchSignal) =>
-          fetchReaderPayload({
+          fetchReaderPayloadFromNetwork({
             getToken,
             isLoaded,
             isSignedIn,

@@ -1,0 +1,5 @@
+# Authored fixture bytes are hash-bound inputs, never text-normalized.
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary

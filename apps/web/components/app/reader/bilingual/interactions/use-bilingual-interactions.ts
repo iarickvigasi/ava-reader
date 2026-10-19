@@ -1,3 +1,5 @@
+import { useBilingualMarks } from "./use-bilingual-marks";
+import type { ReaderBlock } from "@/lib/api-types/reader";
 import { useCallback, useEffect, useRef } from "react";
 import { useReaderUi } from "@/components/app/core/reader-ui-context";
 import { useKeyboardPageNavigation } from "../../pagination/navigation/use-keyboard-page-navigation";
@@ -14,6 +16,7 @@ import { useBilingualAlignment } from "./use-bilingual-alignment";
 export function useBilingualInteractions(input: {
   chapter: BilingualChapter | null;
   chapterId: string;
+  blocks: ReaderBlock[];
   language: string | null;
   pageKey: string;
   disabled: boolean;
@@ -40,6 +43,14 @@ export function useBilingualInteractions(input: {
   });
   const { onTextSelected, onHighlightClick, onAiCommentClick } =
     useHighlightSelectionBridge(chapterId);
+  useBilingualMarks({
+    articleRef: sourceRef,
+    chapterId,
+    blocks: input.blocks,
+    pageKey,
+    onHighlightClick,
+    onAiCommentClick,
+  });
   useReaderTextSelection({
     containerRef: sourceRef,
     onSelectText: onTextSelected,

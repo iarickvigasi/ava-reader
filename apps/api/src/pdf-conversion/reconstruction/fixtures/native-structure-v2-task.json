@@ -1,0 +1,285 @@
+{
+  "artifacts": [],
+  "boundaries": [
+    {
+      "boundary": "line",
+      "candidate_id": "native-wrap-0a82280266ae016f83b2b26af33f3c00b42a688e190b3389438225c474ffae3e",
+      "candidate_sha256": "454dca1c678860954e098152fd8508137678a255624ee18a75ac6bbd9c6954e2",
+      "left_line_id": "p1-line0",
+      "right_line_id": "p1-line1",
+      "role": "paragraph"
+    }
+  ],
+  "eligible_callouts": [
+    {
+      "box": {
+        "coordinate_space": "page_points_top_left",
+        "x0": 70.0,
+        "x1": 75.0,
+        "y0": 34.0,
+        "y1": 41.0
+      },
+      "exact_text": "1",
+      "line_id": "p1-line0",
+      "span_id": "p1-line0-span1"
+    }
+  ],
+  "image": {
+    "base64": "iVBORw0KGgoAAAANSUhEUgAAAlgAAAMgCAIAAABwAouTAAAL1UlEQVR4nO3VMQEAIAzAMMC/5yFjRxMF/Xpn5gBA1dsOAIBNRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECkGaEAKQZIQBpRghAmhECcMo+J4IJPYdtLCwAAAAASUVORK5CYII=",
+    "byte_length": 3086,
+    "height": 800,
+    "media_type": "image/png",
+    "sha256": "e2aefc00ac5cda224eb367e9613e0d32128d5fdd47d3a6579525985c63a4ecc5",
+    "width": 600
+  },
+  "lines": [
+    {
+      "box": {
+        "coordinate_space": "page_points_top_left",
+        "x0": 40.0,
+        "x1": 130.0,
+        "y0": 34.0,
+        "y1": 50.0
+      },
+      "id": "p1-line0",
+      "spans": [
+        {
+          "end": 6,
+          "id": "p1-line0-span0",
+          "note_label": null,
+          "start": 0,
+          "style": {
+            "align": null,
+            "bold": false,
+            "family": "serif",
+            "id": "p1-line0-g0",
+            "indent_em": null,
+            "italic": false,
+            "line_height": null,
+            "relative_size": 1.0,
+            "small_caps": false,
+            "space_after_em": null,
+            "space_before_em": null,
+            "vertical_align": "baseline"
+          },
+          "target_text": null,
+          "url": null
+        },
+        {
+          "end": 7,
+          "id": "p1-line0-span1",
+          "note_label": null,
+          "start": 6,
+          "style": {
+            "align": null,
+            "bold": false,
+            "family": "serif",
+            "id": "p1-line0-g1",
+            "indent_em": null,
+            "italic": false,
+            "line_height": null,
+            "relative_size": 0.7,
+            "small_caps": false,
+            "space_after_em": null,
+            "space_before_em": null,
+            "vertical_align": "super"
+          },
+          "target_text": null,
+          "url": null
+        },
+        {
+          "end": 18,
+          "id": "p1-line0-span2",
+          "note_label": null,
+          "start": 7,
+          "style": {
+            "align": null,
+            "bold": false,
+            "family": "serif",
+            "id": "p1-line0-g2",
+            "indent_em": null,
+            "italic": false,
+            "line_height": null,
+            "relative_size": 1.0,
+            "small_caps": false,
+            "space_after_em": null,
+            "space_before_em": null,
+            "vertical_align": "baseline"
+          },
+          "target_text": null,
+          "url": null
+        }
+      ],
+      "style": {
+        "align": null,
+        "bold": false,
+        "family": "serif",
+        "id": "p1-line0-style",
+        "indent_em": null,
+        "italic": false,
+        "line_height": null,
+        "relative_size": 1.0,
+        "small_caps": false,
+        "space_after_em": null,
+        "space_before_em": null,
+        "vertical_align": "baseline"
+      },
+      "text": "Caller1 and trans-",
+      "text_sha256": "d170af1212b1eae4332fb3865a94608b8e7c24883007d8cffa184e013d94b65a"
+    },
+    {
+      "box": {
+        "coordinate_space": "page_points_top_left",
+        "x0": 40.0,
+        "x1": 125.0,
+        "y0": 60.0,
+        "y1": 70.0
+      },
+      "id": "p1-line1",
+      "spans": [
+        {
+          "end": 17,
+          "id": "p1-line1-span0",
+          "note_label": null,
+          "start": 0,
+          "style": {
+            "align": null,
+            "bold": false,
+            "family": "serif",
+            "id": "p1-line1-g0",
+            "indent_em": null,
+            "italic": false,
+            "line_height": null,
+            "relative_size": 1.0,
+            "small_caps": false,
+            "space_after_em": null,
+            "space_before_em": null,
+            "vertical_align": "baseline"
+          },
+          "target_text": null,
+          "url": null
+        }
+      ],
+      "style": {
+        "align": null,
+        "bold": false,
+        "family": "serif",
+        "id": "p1-line1-style",
+        "indent_em": null,
+        "italic": false,
+        "line_height": null,
+        "relative_size": 1.0,
+        "small_caps": false,
+        "space_after_em": null,
+        "space_before_em": null,
+        "vertical_align": "baseline"
+      },
+      "text": "cription follows.",
+      "text_sha256": "c585dc97c4f502daf12359605c032ce429bb89172907702f8c162b327c7f6216"
+    },
+    {
+      "box": {
+        "coordinate_space": "page_points_top_left",
+        "x0": 40.0,
+        "x1": 125.0,
+        "y0": 100.0,
+        "y1": 110.0
+      },
+      "id": "p1-note",
+      "spans": [
+        {
+          "end": 17,
+          "id": "p1-note-span0",
+          "note_label": null,
+          "start": 0,
+          "style": {
+            "align": null,
+            "bold": false,
+            "family": "serif",
+            "id": "p1-note-g0",
+            "indent_em": null,
+            "italic": false,
+            "line_height": null,
+            "relative_size": 1.0,
+            "small_caps": false,
+            "space_after_em": null,
+            "space_before_em": null,
+            "vertical_align": "baseline"
+          },
+          "target_text": null,
+          "url": null
+        }
+      ],
+      "style": {
+        "align": null,
+        "bold": false,
+        "family": "serif",
+        "id": "p1-note-style",
+        "indent_em": null,
+        "italic": false,
+        "line_height": null,
+        "relative_size": 1.0,
+        "small_caps": false,
+        "space_after_em": null,
+        "space_before_em": null,
+        "vertical_align": "baseline"
+      },
+      "text": "1. A source note.",
+      "text_sha256": "2d0a442dd2361ece6d0ad571a0a8f082b6626b5acd6f7b8d8b765174990b19c2"
+    }
+  ],
+  "observation_sha256": "02593a9e0472f3500de4110877de8cf73d55354e0903672ff12e2071dbb5ec4a",
+  "page_height_pt": 800.0,
+  "page_number": 1,
+  "page_width_pt": 600.0,
+  "profile_id": "ava-pdf-prose-en-v2",
+  "prompt_version": "ava-native-structure-2",
+  "purpose": "pdf_native_structure",
+  "regions": [
+    {
+      "artifact_id": null,
+      "line_ids": [
+        "p1-line0",
+        "p1-line1"
+      ],
+      "source": {
+        "band": 0,
+        "box": {
+          "coordinate_space": "page_points_top_left",
+          "x0": 40.0,
+          "x1": 130.0,
+          "y0": 34.0,
+          "y1": 70.0
+        },
+        "column": 0,
+        "id": "body",
+        "role": "content",
+        "route": "native"
+      }
+    },
+    {
+      "artifact_id": null,
+      "line_ids": [
+        "p1-note"
+      ],
+      "source": {
+        "band": 1,
+        "box": {
+          "coordinate_space": "page_points_top_left",
+          "x0": 40.0,
+          "x1": 125.0,
+          "y0": 100.0,
+          "y1": 110.0
+        },
+        "column": 0,
+        "id": "notes",
+        "role": "content",
+        "route": "native"
+      }
+    }
+  ],
+  "response_schema_version": "ava-native-structure-response-2",
+  "schema_version": "ava-native-structure-task-2",
+  "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "task_id": "native-structure-b087cc5716bb1e6cb8d4663c4424b9b456dadbf7c553d5a577eae0cf2ef29c6d"
+}

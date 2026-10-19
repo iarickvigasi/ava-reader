@@ -2,6 +2,8 @@ import type { BilingualFlowBlockProps } from "@/features/reader/bilingual/conten
 import { flowSourceAttributes } from "@/features/reader/bilingual/content/flow-source-attributes";
 import { groupFlowListItems } from "@/features/reader/bilingual/content/group-flow-list-items";
 import { cn } from "@/lib/cn";
+import { listBodyStyle } from "../../content/list-body-style";
+import { listMarkerProps } from "../../content/list-marker-style";
 import { LIST_CLASS } from "@/components/app/reader/content/reader-block-classes";
 import {
   resolveAlignmentClass,
@@ -24,36 +26,58 @@ export function BilingualFlowList({
   return (
     <Tag
       {...attributes}
+      start={block.ordered ? block.start : undefined}
       data-bilingual-flow-content
       dir="auto"
       className={cn(
         LIST_CLASS,
+        "[--reader-list-base:1.12rem] sm:[--reader-list-base:1.28rem]",
         block.ordered ? "list-decimal" : "list-disc",
         resolveAlignmentClass(block),
       )}
-      style={resolveBlockStyle(block)}
+      style={{
+        ...resolveBlockStyle(block),
+        ...(block.markerStyle
+          ? {
+              listStyleType:
+                block.markerStyle === "bullet" ? "disc" : block.markerStyle,
+            }
+          : {}),
+      }}
     >
       {groupFlowListItems(block, units).map((item) => {
         const itemAttributes =
           side === "source"
             ? flowSourceAttributes(item.units, chapter.chapterId, block.kind)
             : {};
+        const sourceItem = block.items[item.itemIndex];
+        const marker = sourceItem ? listMarkerProps(sourceItem) : {};
+        const layout = listBodyStyle(sourceItem);
         const continued = item.units[0].unit.startOffset > item.startOffset;
         return (
           <li
             key={item.id}
+            {...marker}
             {...itemAttributes}
-            value={block.ordered ? item.itemIndex + 1 : undefined}
+            value={
+              block.ordered ? (block.start ?? 1) + item.itemIndex : undefined
+            }
             data-bilingual-flow-item={item.id}
             data-bilingual-flow-item-start={item.startOffset}
-            style={continued ? { listStyleType: "none" } : undefined}
+            style={{
+              ...layout.item,
+              ...marker.style,
+              ...(continued ? { listStyleType: "none" } : {}),
+            }}
           >
-            <BilingualFlowSentences
-              units={item.units}
-              block={block}
-              chapter={chapter}
-              side={side}
-            />
+            <div style={layout.body}>
+              <BilingualFlowSentences
+                units={item.units}
+                block={block}
+                chapter={chapter}
+                side={side}
+              />
+            </div>
           </li>
         );
       })}

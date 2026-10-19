@@ -1,0 +1,93 @@
+import { NATIVE_STRUCTURE_V2_POLICY } from '../../library/pdf-import/admission/profile';
+import type { NativeStructureResponse2 } from './generated/NativeStructureResponse2';
+import type {
+  NativeLayoutPolicy,
+  NativeStructurePolicy,
+  SourceNormalizationPolicy,
+  RecognitionRepairPolicy,
+  SourceTitlePolicy,
+  SourceContinuationPolicy,
+} from '../../library/pdf-import/admission/profile';
+import type { AnyGeometryProof } from './geometry-types';
+import type { WordWrapResponse } from './generated/WordWrapResponse';
+import type { NativeStructureResponse } from './generated/NativeStructureResponse';
+import type { RecognitionResponse } from './generated/RecognitionResponse';
+import type { RefinementResponse } from './refinement-packets';
+
+export function reconstructionRequest(
+  identity: {
+    profileId: string;
+    sourceSha256: string;
+    sourceLayoutPolicy?: NativeLayoutPolicy;
+    sourceStructurePolicy?: NativeStructurePolicy;
+    sourceNormalizationPolicy?: SourceNormalizationPolicy;
+    recognitionRepairPolicy?: RecognitionRepairPolicy;
+    sourceTitlePolicy?: SourceTitlePolicy;
+    sourceContinuationPolicy?: SourceContinuationPolicy;
+  },
+  responses: RecognitionResponse[] = [],
+  refinements: RefinementResponse[] = [],
+  titleScheduled = false,
+  nativeStructureResponses: (
+    | NativeStructureResponse
+    | NativeStructureResponse2
+  )[] = [],
+  wordWrapResponses: WordWrapResponse[] = [],
+  geometryCorrections: AnyGeometryProof[] = [],
+) {
+  return {
+    schema_version: identity.sourceContinuationPolicy
+      ? 'ava-reconstruct-input-10'
+      : identity.recognitionRepairPolicy === 'ava-recognition-geometry-repair-2'
+        ? 'ava-reconstruct-input-9'
+        : identity.sourceStructurePolicy === NATIVE_STRUCTURE_V2_POLICY
+          ? 'ava-reconstruct-input-8'
+          : identity.sourceTitlePolicy
+            ? 'ava-reconstruct-input-7'
+            : identity.recognitionRepairPolicy
+              ? 'ava-reconstruct-input-6'
+              : identity.sourceNormalizationPolicy
+                ? 'ava-reconstruct-input-5'
+                : identity.sourceStructurePolicy
+                  ? 'ava-reconstruct-input-4'
+                  : identity.sourceLayoutPolicy
+                    ? 'ava-reconstruct-input-3'
+                    : titleScheduled
+                      ? 'ava-reconstruct-input-2'
+                      : 'ava-reconstruct-input-1',
+    ...(identity.sourceLayoutPolicy
+      ? {
+          source_layout_policy: identity.sourceLayoutPolicy,
+          ...(identity.sourceStructurePolicy
+            ? {
+                source_structure_policy: identity.sourceStructurePolicy,
+                native_structure_responses: nativeStructureResponses,
+              }
+            : {}),
+        }
+      : {}),
+    ...(identity.sourceNormalizationPolicy
+      ? {
+          source_normalization_policy: identity.sourceNormalizationPolicy,
+          word_wrap_responses: wordWrapResponses,
+        }
+      : {}),
+    ...(identity.recognitionRepairPolicy
+      ? {
+          recognition_repair_policy: identity.recognitionRepairPolicy,
+          geometry_corrections: geometryCorrections,
+        }
+      : {}),
+    ...(identity.sourceTitlePolicy
+      ? { source_title_policy: identity.sourceTitlePolicy }
+      : {}),
+    ...(identity.sourceContinuationPolicy
+      ? { source_continuation_policy: identity.sourceContinuationPolicy }
+      : {}),
+    source_feature_policy: 'ava-ocr-source-features-1',
+    profile_id: identity.profileId,
+    source_sha256: identity.sourceSha256,
+    responses,
+    refinements,
+  };
+}

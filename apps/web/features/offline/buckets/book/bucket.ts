@@ -9,12 +9,7 @@
 
 import type { Listener } from "../library/types";
 
-export type BookSaveStatus =
-  | "idle"
-  | "saving"
-  | "saved"
-  | "failed"
-  | "missing";
+export type BookSaveStatus = "idle" | "saving" | "saved" | "failed" | "missing";
 
 export type BookSaveSnapshot = {
   status: BookSaveStatus;
@@ -107,7 +102,7 @@ export function registerInFlight(
   // don't leak two parallel orchestrators writing the same rows.
   const existing = state.inFlight.get(libraryItemId);
   if (existing) {
-    existing.abort();
+    existing.abort("superseded");
   }
   state.inFlight.set(libraryItemId, controller);
 }
@@ -157,7 +152,7 @@ export function abortSaveAndWait(libraryItemId: string): Promise<void> {
     waiters.push(resolve);
     state.settleWaiters.set(libraryItemId, waiters);
   });
-  controller.abort();
+  controller.abort("user-stop");
   return settled;
 }
 
@@ -177,7 +172,7 @@ export function abortInFlightExcept(keepLibraryItemId: string): void {
     if (id === keepLibraryItemId) {
       continue;
     }
-    controller.abort();
+    controller.abort("book-switch");
   }
 }
 

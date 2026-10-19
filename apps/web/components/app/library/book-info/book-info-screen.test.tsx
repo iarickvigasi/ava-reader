@@ -45,15 +45,17 @@ vi.mock("next/link", () => ({
 describe("library book info metadata", () => {
   it("renders reading time and approximate page count metadata", () => {
     const markup = renderToStaticMarkup(
-      withIntl(<LibraryBookInfoScreen
-        backHref="/app/library"
-        book={createBookInfo({
-          approximateBodyPageCount: null,
-          approximatePageCount: 163,
-          minutesRead: 195,
-          publishedYear: 1818,
-        })}
-      />),
+      withIntl(
+        <LibraryBookInfoScreen
+          backHref="/app/library"
+          book={createBookInfo({
+            approximateBodyPageCount: null,
+            approximatePageCount: 163,
+            minutesRead: 195,
+            publishedYear: 1818,
+          })}
+        />,
+      ),
     );
 
     expect(markup).toContain("Reading time");
@@ -67,12 +69,14 @@ describe("library book info metadata", () => {
 
   it("renders full language name for canonical language tags", () => {
     const markup = renderToStaticMarkup(
-      withIntl(<LibraryBookInfoScreen
-        backHref="/app/library"
-        book={createBookInfo({
-          language: "en",
-        })}
-      />),
+      withIntl(
+        <LibraryBookInfoScreen
+          backHref="/app/library"
+          book={createBookInfo({
+            language: "en",
+          })}
+        />,
+      ),
     );
 
     expect(markup).toContain("Language");
@@ -82,13 +86,15 @@ describe("library book info metadata", () => {
 
   it("renders unknown page count fallback", () => {
     const markup = renderToStaticMarkup(
-      withIntl(<LibraryBookInfoScreen
-        backHref="/app/library"
-        book={createBookInfo({
-          approximatePageCount: null,
-          publishedYear: null,
-        })}
-      />),
+      withIntl(
+        <LibraryBookInfoScreen
+          backHref="/app/library"
+          book={createBookInfo({
+            approximatePageCount: null,
+            publishedYear: null,
+          })}
+        />,
+      ),
     );
 
     expect(markup).toContain("Page count");
@@ -101,13 +107,15 @@ describe("library book info metadata", () => {
 
   it("renders estimated total reading time from page count", () => {
     const markup = renderToStaticMarkup(
-      withIntl(<LibraryBookInfoScreen
-        backHref="/app/library"
-        book={createBookInfo({
-          approximatePageCount: 60,
-          minutesRead: 0,
-        })}
-      />),
+      withIntl(
+        <LibraryBookInfoScreen
+          backHref="/app/library"
+          book={createBookInfo({
+            approximatePageCount: 60,
+            minutesRead: 0,
+          })}
+        />,
+      ),
     );
 
     expect(markup).toContain("Reading time");
@@ -116,21 +124,23 @@ describe("library book info metadata", () => {
 
   it("renders genre chips instead of legacy source and collection tags", () => {
     const markup = renderToStaticMarkup(
-      withIntl(<LibraryBookInfoScreen
-        backHref="/app/library"
-        book={createBookInfo({
-          collections: [
-            {
-              id: "collection-1",
-              kind: "SMART",
-              name: "Imported Books",
-              smartKey: "imported-library",
-            },
-          ],
-          genres: ["Gothic", "Science Fiction"],
-          source: "CATALOG",
-        })}
-      />),
+      withIntl(
+        <LibraryBookInfoScreen
+          backHref="/app/library"
+          book={createBookInfo({
+            collections: [
+              {
+                id: "collection-1",
+                kind: "SMART",
+                name: "Imported Books",
+                smartKey: "imported-library",
+              },
+            ],
+            genres: ["Gothic", "Science Fiction"],
+            source: "CATALOG",
+          })}
+        />,
+      ),
     );
 
     expect(markup).toContain("Gothic");
@@ -141,12 +151,14 @@ describe("library book info metadata", () => {
 
   it("does not crash when genres are missing in a legacy payload", () => {
     const markup = renderToStaticMarkup(
-      withIntl(<LibraryBookInfoScreen
-        backHref="/app/library"
-        book={createBookInfo({
-          genres: undefined as unknown as string[],
-        })}
-      />),
+      withIntl(
+        <LibraryBookInfoScreen
+          backHref="/app/library"
+          book={createBookInfo({
+            genres: undefined as unknown as string[],
+          })}
+        />,
+      ),
     );
 
     expect(markup).not.toContain(">Catalog<");
@@ -155,13 +167,43 @@ describe("library book info metadata", () => {
 });
 
 describe("library book info actions", () => {
+  it.each(["PENDING", "PROCESSING", "AWAITING_ACCEPTANCE", "FAILED"] as const)(
+    "keeps a %s EPUB accessible without reader links",
+    (status) => {
+      const markup = renderToStaticMarkup(
+        withIntl(
+          <LibraryBookInfoScreen
+            backHref="/app/library"
+            book={createBookInfo({
+              epubImport: {
+                status,
+                runId: "run",
+                finalContentId: null,
+                updatedAt: "2026-10-15T10:00:00Z",
+              },
+            })}
+          />,
+        ),
+      );
+      expect(markup).not.toContain('href="/app/read/');
+      expect(markup).toContain("Original EPUB");
+      expect(markup).toContain(
+        status === "FAILED" ? "Preparation failed" : "Preparing",
+      );
+    },
+  );
   it("shows a finish date alongside the unchanged reading progress", () => {
-    const markup = renderToStaticMarkup(withIntl(
-      <LibraryBookInfoScreen backHref="/app/library" book={createBookInfo({
-        finishedAt: "2026-09-13T12:00:00.000Z",
-        completionPercent: 44,
-      })} />,
-    ));
+    const markup = renderToStaticMarkup(
+      withIntl(
+        <LibraryBookInfoScreen
+          backHref="/app/library"
+          book={createBookInfo({
+            finishedAt: "2026-09-13T12:00:00.000Z",
+            completionPercent: 44,
+          })}
+        />,
+      ),
+    );
 
     expect(markup).toContain("Finished on Sep 13, 2026");
     expect(markup).toContain("Tap to remove finish date");
@@ -170,12 +212,17 @@ describe("library book info actions", () => {
   });
 
   it("keeps the mark-as-finished action available at 100% without a finish date", () => {
-    const markup = renderToStaticMarkup(withIntl(
-      <LibraryBookInfoScreen backHref="/app/library" book={createBookInfo({
-        finishedAt: null,
-        completionPercent: 100,
-      })} />,
-    ));
+    const markup = renderToStaticMarkup(
+      withIntl(
+        <LibraryBookInfoScreen
+          backHref="/app/library"
+          book={createBookInfo({
+            finishedAt: null,
+            completionPercent: 100,
+          })}
+        />,
+      ),
+    );
 
     expect(markup).toContain("Mark as finished");
     expect(markup).toContain("Tap to save today’s date");
@@ -186,7 +233,10 @@ describe("library book info actions", () => {
   it("mounts the Opening pending label inside the Read button", () => {
     const markup = renderToStaticMarkup(
       withIntl(
-        <LibraryBookInfoScreen backHref="/app/library" book={createBookInfo({})} />,
+        <LibraryBookInfoScreen
+          backHref="/app/library"
+          book={createBookInfo({})}
+        />,
       ),
     );
 

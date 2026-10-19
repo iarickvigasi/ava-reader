@@ -15,12 +15,14 @@ import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { emitAppToast } from "@/components/app/core/app-toast";
-import { fetchReaderPayload } from "@/components/app/reader/data/reader-client";
+import { fetchReaderPayloadFromNetwork } from "@/components/app/reader/data/reader-payload-network";
 
 import { revalidateHome } from "../buckets/home/revalidate";
 import { revalidateLibrary } from "../buckets/library/revalidate";
 import { useSyncTriggers } from "../net/use-sync-triggers";
 import { getDb } from "../db";
+import { useLibraryView } from "../buckets/library";
+import { readyRequestedPdfKey } from "./smart-books";
 import { saveBookOffline } from "../buckets/book/download";
 import { getPrimeProgress, setPrimeProgress } from "../status/prime-progress";
 import { useNetworkState } from "../net/use-network-state";
@@ -37,10 +39,13 @@ import { reduceKick } from "./trigger";
 import type { SaveBookFn } from "./types";
 
 let running = false;
+let pendingRun: (() => Promise<void>) | null = null;
 
 export function BackgroundPrimer(): React.ReactElement | null {
   const { getToken, isLoaded, isSignedIn } = useAuth();
   const online = useNetworkState();
+  const readyPdfKey = readyRequestedPdfKey(useLibraryView());
+  const currentRun = useRef<(() => Promise<void>) | null>(null);
   const t = useTranslations("offline.toast");
   const [consentOpen, setConsentOpen] = useState(false);
   // Recurring identity reconciliation is independent of once-only priming.
@@ -65,7 +70,7 @@ export function BackgroundPrimer(): React.ReactElement | null {
         libraryItemId,
         saveKind,
         fetchChapter: (id, chapterId, signal) =>
-          fetchReaderPayload({
+          fetchReaderPayloadFromNetwork({
             getToken,
             isLoaded,
             isSignedIn,
@@ -86,7 +91,9 @@ export function BackgroundPrimer(): React.ReactElement | null {
   );
 
   const run = useCallback(async () => {
+    if (currentRun.current !== run) return;
     if (running) {
+      pendingRun = run; // Coalesce a readiness/reconnect edge during a pass.
       return;
     }
     running = true;
@@ -112,8 +119,24 @@ export function BackgroundPrimer(): React.ReactElement | null {
       }
     } finally {
       running = false;
+      const next = pendingRun;
+      pendingRun = null;
+      if (next) scheduleIdle(() => void next());
     }
   }, [getToken, saveBook, t]);
+
+  useEffect(() => {
+    currentRun.current = run;
+    return () => {
+      if (currentRun.current === run) currentRun.current = null;
+      if (pendingRun === run) pendingRun = null;
+    };
+  }, [run]);
+
+  useEffect(() => {
+    if (isLoaded && isSignedIn && online && readyPdfKey)
+      scheduleIdle(() => void run());
+  }, [isLoaded, isSignedIn, online, readyPdfKey, run]);
 
   // Re-kick on each offline→online transition (not just the first online
   // render); a redundant kick is a cheap no-op via `running` + idempotency.

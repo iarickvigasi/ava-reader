@@ -15,13 +15,17 @@ export type ReadyReaderMeasurementEntry = Extract<
 export function resolveMeasurementStatus(
   measurementEntry: ReaderMeasurementEntry | null,
 ) {
-  return measurementEntry?.status ?? READER_MEASUREMENT_STATUS_PENDING;
+  return measurementEntry?.status === "ready" &&
+    !resolveReadyMeasurementEntry(measurementEntry)
+    ? READER_MEASUREMENT_STATUS_PENDING
+    : (measurementEntry?.status ?? READER_MEASUREMENT_STATUS_PENDING);
 }
 
 export function resolveReadyMeasurementEntry(
   measurementEntry: ReaderMeasurementEntry | null,
 ): ReadyReaderMeasurementEntry | null {
-  return measurementEntry?.status === READER_MEASUREMENT_STATUS_READY
+  return measurementEntry?.status === READER_MEASUREMENT_STATUS_READY &&
+    measurementEntry.isCurrent?.() !== false
     ? measurementEntry
     : null;
 }
@@ -31,7 +35,8 @@ export function resolvePageResolutionForLocator(input: {
   locator: ReaderLocator | null;
   measurementEntry: ReadyReaderMeasurementEntry | null;
 }): ReaderMeasurementPageResolution | null {
-  if (!input.measurementEntry || !input.locator) {
+  const measurement = resolveReadyMeasurementEntry(input.measurementEntry);
+  if (!measurement || !input.locator) {
     return null;
   }
 
@@ -39,5 +44,5 @@ export function resolvePageResolutionForLocator(input: {
     return null;
   }
 
-  return input.measurementEntry.resolvePageIndex(input.locator);
+  return measurement.resolvePageIndex(input.locator);
 }

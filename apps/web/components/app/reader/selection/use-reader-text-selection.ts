@@ -16,7 +16,8 @@ type UseReaderTextSelectionParams = {
 };
 
 // Reports the text the user selects inside `containerRef`. Both mouse and
-// touch are captured on the tick after the gesture's end event; capture never
+// touch are captured on the tick after the gesture's end event; keyboard
+// extension is captured after Shift release. Capture never
 // mutates the selection (the AI toolbox owns the drop) — the event
 // choreography lives in capture/create-selection-capture.ts.
 //

@@ -61,6 +61,7 @@ function OffscreenPreloaderRoot({ children }: { children: ReactNode }) {
   return (
     <div
       aria-hidden="true"
+      inert
       className="pointer-events-none fixed left-[-200vw] top-0 z-[-1] overflow-hidden opacity-0"
       style={{ visibility: READER_VISIBILITY_HIDDEN }}
     >

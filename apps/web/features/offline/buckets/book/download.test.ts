@@ -90,9 +90,7 @@ function buildFetcher(
     }
     options.onCall?.(chapterId);
     const focus =
-      chapterId && chapterIds.includes(chapterId)
-        ? chapterId
-        : chapterIds[0]!;
+      chapterId && chapterIds.includes(chapterId) ? chapterId : chapterIds[0]!;
     const focusIndex = chapterIds.indexOf(focus);
     const windowIds = [
       chapterIds[focusIndex - 1],
@@ -101,6 +99,8 @@ function buildFetcher(
     ].filter((x): x is string => !!x);
     const payload: ReaderStatusPayload = {
       status: "READY",
+      chapterIds,
+      contentRevision: "1".repeat(64),
       activeChapterId: focus,
       toc: tocFromIds(chapterIds),
       book: bookMetadata(libraryItemId),

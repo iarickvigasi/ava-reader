@@ -1,10 +1,8 @@
 "use client";
 
 import { usePreference } from "./use-preference";
-
-export const DEFAULT_FONT_SCALE = 1;
-export const MIN_FONT_SCALE = 0.85;
-export const MAX_FONT_SCALE = 1.35;
+import { DEFAULT_FONT_SCALE, MIN_FONT_SCALE, MAX_FONT_SCALE } from "./font-scale";
+export { DEFAULT_FONT_SCALE, MIN_FONT_SCALE, MAX_FONT_SCALE } from "./font-scale";
 
 const STORAGE_KEY = "ava.reader.fontScale";
 

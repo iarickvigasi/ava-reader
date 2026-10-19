@@ -6,7 +6,8 @@ import { resolveSwipeNavigationOutcome } from "./resolve-navigation";
 import type { PageStepControls } from "./use-page-stepper";
 
 // Touch swipe page turning. handleTouchStart records the first touch point (or
-// disarms while loading / a panel is open); handleTouchEnd classifies the
+// disarms in a table scroll box, while loading / a panel is open).
+// handleTouchEnd classifies the
 // release delta via resolveSwipeNavigationOutcome. A drag that left a text
 // selection inside containerRef is treated as a selection, not a swipe, so it
 // never turns the page (see spec 2.6-selection-bridge).
@@ -26,7 +27,12 @@ export function useSwipePageNavigation({
   const handleTouchStart = (event: ReactTouchEvent<HTMLDivElement>) => {
     const touch = event.touches[0];
 
-    if (!touch || isLoadingChapter || isPanelOpen) {
+    // Element includes SVG descendants as well as the scroll box itself.
+    // Leave table panning native; releasing outside must not become a page turn.
+    const startsInTable =
+      event.target instanceof Element &&
+      event.target.closest("[data-reader-table-scroll]");
+    if (!touch || isLoadingChapter || isPanelOpen || startsInTable) {
       touchStartRef.current = null;
       return;
     }

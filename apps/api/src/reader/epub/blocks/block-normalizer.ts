@@ -1,261 +1,89 @@
-import type { ReaderBlock } from '../../reader-types';
-import type { EpubAsset } from '../archive';
-import {
-  createEmptyStylesheetHintMap,
-  mergeStylesheetClassHints,
-  type StylesheetClassHints,
-  type StylesheetHintMap,
-} from '../css/build-stylesheet-hints';
 import {
   getNodeAttributes,
   getNodeChildren,
   getNodeTagName,
-  OrderedNode,
+  type OrderedNode,
 } from '../xml-utils';
+import { nodeStyleAncestor } from '../css/lookup-stylesheet-hints';
+import { resolveBlockStyleHints } from './block-style-hints';
 import {
-  buildHeadingBlock,
-  buildImageBlock,
-  buildListBlock,
-  buildTextBlock,
-  buildWrappedInlineBlock,
-  hasDirectBlockChildren,
   isBlockContainerTag,
   isInlineContainerTag,
-  type BlockStyleHints,
+  buildImageBlock,
+  buildSeparatorBlock,
+  buildListBlock,
+  buildTableBlock,
+  buildInlineBlock,
 } from './block-builders';
-import { resolveFontSizeScaleFromStyle } from './font-size';
-import { resolveFontWeightFromStyle } from './font-weight';
-import { resolveTextAlignFromAttrs } from './text-align';
-import { resolveTextIndentFromStyle } from './text-indent';
-
-// Visual hints carried down through nested block containers. CSS
-// inheritance behaviour: text-align, font-size and font-weight all
-// inherit, so a <div style="text-align:center; font-size:0.85em">
-// wrapping multiple <p>s should apply to every paragraph.
-//
-// text-indent does NOT inherit through arbitrary nesting in real CSS,
-// but for our purposes the difference doesn't matter: <div> wrappers
-// in EPUBs that set text-indent always intend it for the paragraphs
-// inside. We propagate it the same way for simplicity.
-type InheritedStyleHints = {
-  align: BlockStyleHints['align'];
-  fontSizeScale: BlockStyleHints['fontSizeScale'];
-  fontWeight: BlockStyleHints['fontWeight'];
-  textIndent: BlockStyleHints['textIndent'];
-};
-
-const EMPTY_HINTS: InheritedStyleHints = {
-  align: null,
-  fontSizeScale: null,
-  fontWeight: null,
-  textIndent: null,
-};
-
-export type NormalizeBlockOptions = {
-  chapterId: string;
-  createBlockId: () => string;
-  resolveAsset: (assetPath: string) => Promise<EpubAsset | null>;
-  stylesheetHints?: StylesheetHintMap;
-  inheritedHints?: InheritedStyleHints;
-};
-
-function lookupStylesheetHints(
-  tagName: string,
-  attrs: Record<string, string>,
-  stylesheetHints: StylesheetHintMap,
-): StylesheetClassHints | undefined {
-  let result: StylesheetClassHints | undefined =
-    stylesheetHints.tagHints.get(tagName);
-
-  // Each class layered on, in document order — later classes override
-  // earlier ones for any property they set.
-  const classNames = (attrs['@_class'] ?? '').split(/\s+/).filter(Boolean);
-
-  for (const className of classNames) {
-    const classHint = stylesheetHints.classHints.get(className);
-    if (classHint) {
-      result = mergeStylesheetClassHints(result, classHint);
-    }
-  }
-
-  return result;
-}
-
-function resolveOwnStyleHints(
-  tagName: string,
-  attrs: Record<string, string>,
-  inherited: InheritedStyleHints,
-  stylesheetHints: StylesheetHintMap,
-): InheritedStyleHints {
-  // Cascade: stylesheet (tag + classes) → inline style → inherited
-  // fallback. Inline style="…" wins over external CSS, matching the
-  // CSS specificity intuition publishers rely on.
-  const fromStylesheet =
-    lookupStylesheetHints(tagName, attrs, stylesheetHints) ?? {};
-  const inlineAlign = resolveTextAlignFromAttrs(attrs);
-  const inlineFontSizeScale = resolveFontSizeScaleFromStyle(attrs['@_style']);
-  const inlineFontWeight = resolveFontWeightFromStyle(attrs['@_style']);
-  const inlineTextIndent = resolveTextIndentFromStyle(attrs['@_style']);
-
-  return {
-    align: inlineAlign ?? fromStylesheet.align ?? inherited.align ?? null,
-    fontSizeScale:
-      inlineFontSizeScale ??
-      fromStylesheet.fontSizeScale ??
-      inherited.fontSizeScale ??
-      null,
-    fontWeight:
-      inlineFontWeight ??
-      fromStylesheet.fontWeight ??
-      inherited.fontWeight ??
-      null,
-    textIndent:
-      inlineTextIndent ??
-      fromStylesheet.textIndent ??
-      inherited.textIndent ??
-      null,
-  };
-}
-
-function toBuilderHints(
-  hints: InheritedStyleHints,
-): BlockStyleHints | undefined {
-  if (
-    hints.align == null &&
-    hints.fontSizeScale == null &&
-    hints.fontWeight == null &&
-    hints.textIndent == null
-  ) {
-    return undefined;
-  }
-  return hints;
-}
+import { normalizeChildBlocks } from './normalize-child-blocks';
+import { buildNoteBlock } from './build-note-block';
+import { getNoteRole } from './note-role';
+import { normalizeContainer } from './normalize-container';
+import type {
+  BlockContext,
+  BlockResult,
+  NormalizeBlockOptions,
+} from './block-context';
+export type { NormalizeBlockOptions } from './block-context';
 
 export async function normalizeBlockNode(
   node: OrderedNode,
   options: NormalizeBlockOptions,
-): Promise<ReaderBlock | ReaderBlock[] | null> {
+): Promise<BlockResult> {
   const tagName = getNodeTagName(node);
-  if (!tagName) {
-    return null;
-  }
-
-  const stylesheetHints =
-    options.stylesheetHints ?? createEmptyStylesheetHintMap();
-  const inheritedHints = options.inheritedHints ?? EMPTY_HINTS;
-
+  if (!tagName || ['script', 'style', 'head'].includes(tagName)) return null;
   const attrs = getNodeAttributes(node);
-  const anchorId = attrs['@_id'] ?? attrs['@_name'] ?? null;
-  const children = getNodeChildren(node);
-
-  const hints = resolveOwnStyleHints(
+  const hints = resolveBlockStyleHints({
     tagName,
     attrs,
-    inheritedHints,
-    stylesheetHints,
-  );
-  const builderHints = toBuilderHints(hints);
-  const childOptions: NormalizeBlockOptions = {
+    inherited: options.inheritedHints,
+    stylesheetHints: options.stylesheetHints,
+    ancestors: options.ancestors,
+  });
+  const context: BlockContext = {
     ...options,
-    stylesheetHints,
-    inheritedHints: hints,
+    attrs,
+    children: getNodeChildren(node),
+    anchorId: attrs['@_id'] ?? attrs['@_name'] ?? null,
+    hints,
+    ancestors: [
+      ...(options.ancestors ?? []),
+      nodeStyleAncestor(tagName, attrs),
+    ],
   };
-
-  const { createBlockId, resolveAsset, chapterId } = options;
-
-  if (tagName === 'img') {
-    return buildImageBlock(attrs, createBlockId, resolveAsset, anchorId);
-  }
-
-  if (tagName === 'p' || tagName === 'blockquote') {
-    const kind = tagName === 'p' ? 'paragraph' : 'blockquote';
-    return buildTextBlock(
-      children,
-      createBlockId,
-      resolveAsset,
-      anchorId,
-      kind,
-      builderHints,
+  if (tagName === '#text')
+    return buildInlineBlock(
+      { ...context, children: [node] },
+      options.inlineTextKind ?? 'paragraph',
     );
-  }
-
-  if (tagName.match(/^h[1-6]$/)) {
-    return buildHeadingBlock(
-      children,
-      createBlockId,
-      resolveAsset,
-      anchorId,
-      Number(tagName.slice(1)),
-      builderHints,
+  if (tagName === 'img') return buildImageBlock(context);
+  if (tagName === 'table') return buildTableBlock(context);
+  if (tagName === 'ol' || tagName === 'ul')
+    return buildListBlock(context, tagName === 'ol');
+  if (tagName === 'hr') return buildSeparatorBlock(context);
+  if (tagName === 'pre') return buildInlineBlock(context, 'code');
+  if (tagName === 'figcaption') return buildInlineBlock(context, 'caption');
+  if (tagName === 'aside')
+    return getNoteRole(attrs)
+      ? buildNoteBlock(context)
+      : buildInlineBlock(context, 'aside');
+  if (/^h[1-6]$/.test(tagName))
+    return buildInlineBlock(context, 'heading', Number(tagName.slice(1)));
+  if (tagName === 'p')
+    return buildInlineBlock(
+      context,
+      /(?:^|\s)verse(?:\s|$)/.test(attrs['@_class'] ?? '')
+        ? 'verse'
+        : 'paragraph',
     );
-  }
-
-  if (tagName === 'ol' || tagName === 'ul') {
-    return buildListBlock(
-      children,
-      chapterId,
-      createBlockId,
-      resolveAsset,
-      anchorId,
-      tagName === 'ol',
-      builderHints,
-    );
-  }
-
-  if (isBlockContainerTag(tagName)) {
-    if (hasDirectBlockChildren(children)) {
-      // Pass hints down so e.g. <div style="text-align:center"> with
-      // multiple <p> children applies the alignment to each child.
-      const childBlocks = await normalizeChildren(children, childOptions);
-      // Propagate the container's `id`/`name` anchor to the first child block
-      // that doesn't define one of its own. Many EPUBs (e.g. Project
-      // Gutenberg books with multi-chapter spine docs) use the anchor only on
-      // a wrapping <div>, and the TOC links target that div — without this
-      // step the splitter would never see the anchor on a block.
-      if (anchorId && childBlocks.length > 0 && !childBlocks[0].anchorId) {
-        childBlocks[0] = { ...childBlocks[0], anchorId };
-      }
-      return childBlocks;
-    }
-
-    return buildTextBlock(
-      children,
-      createBlockId,
-      resolveAsset,
-      anchorId,
+  if (isBlockContainerTag(tagName)) return normalizeContainer(context, tagName);
+  if (isInlineContainerTag(tagName))
+    return buildInlineBlock(
+      { ...context, children: [node], ancestors: options.ancestors },
       'paragraph',
-      builderHints,
     );
-  }
-
-  if (isInlineContainerTag(tagName)) {
-    return buildWrappedInlineBlock(
-      node,
-      createBlockId,
-      resolveAsset,
-      anchorId,
-      builderHints,
-    );
-  }
-
-  return normalizeChildren(children, childOptions);
-}
-
-async function normalizeChildren(
-  children: OrderedNode[],
-  options: NormalizeBlockOptions,
-): Promise<ReaderBlock[]> {
-  const results = await Promise.all(
-    children.map((child) => normalizeBlockNode(child, options)),
-  );
-
-  return flattenBlockResults(results);
-}
-
-function flattenBlockResults(
-  results: Array<ReaderBlock | ReaderBlock[] | null>,
-): ReaderBlock[] {
-  return results.flatMap((entry) =>
-    Array.isArray(entry) ? entry : entry ? [entry] : [],
-  );
+  return normalizeChildBlocks(context.children, {
+    ...context,
+    inheritedHints: hints,
+  });
 }

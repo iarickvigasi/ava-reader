@@ -1,7 +1,7 @@
 /** Heights are measured at the actual pane width and active reader font. */
 export type MeasuredBilingualUnit = {
   id: string;
-  kind: "sentence" | "image";
+  kind: "sentence" | "image" | "literal";
   sourceHeight: number;
   /** null means this sentence has not been translated yet. Images ignore it. */
   translationHeight: number | null;

@@ -1,0 +1,37 @@
+{
+  "text": "A quiet light can be both gentle and strong. Water is H₂O; the area is m².",
+  "spans": [
+    {
+      "anchor": { "exact_text": "gentle", "before": "both ", "after": " and" },
+      "style": { "id": "emphasis", "italic": true },
+      "note_label": null,
+      "target_text": null,
+      "url": null
+    },
+    {
+      "anchor": {
+        "exact_text": "strong",
+        "before": "and ",
+        "after": ". Water"
+      },
+      "style": { "id": "weight", "bold": true },
+      "note_label": null,
+      "target_text": null,
+      "url": null
+    },
+    {
+      "anchor": { "exact_text": "2", "before": "H", "after": "O; the" },
+      "style": { "id": "lowered", "vertical_align": "sub" },
+      "note_label": null,
+      "target_text": null,
+      "url": null
+    },
+    {
+      "anchor": { "exact_text": "2", "before": "m", "after": "." },
+      "style": { "id": "raised", "vertical_align": "super" },
+      "note_label": null,
+      "target_text": null,
+      "url": null
+    }
+  ]
+}

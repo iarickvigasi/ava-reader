@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import { cookies } from "next/headers";
-import { Abhaya_Libre, Afacad, Inter, Noto_Serif } from "next/font/google";
+import localFont from "next/font/local";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { SiteFrame } from "@/components/layout/site-frame";
@@ -11,29 +11,62 @@ import { OfflineIdentityReconciler } from "@/features/offline/lifecycle/offline-
 import { AuthRecoveryRunner } from "@/features/auth/auth-recovery-runner";
 import { cyrillicBody, cyrillicDisplay } from "./fonts/cyrillic";
 import "./globals.css";
+import "./fonts/fallbacks.css";
 import "./modal-surfaces.css";
 
-const display = Abhaya_Libre({
+// Committed official faces keep builds independent of Google's CSS response shape.
+// Full Unicode maps and the original nonweight-axis defaults are retained; see fonts/README.md.
+const display = localFont({
+  src: [
+    { path: "./fonts/abhaya-libre-400.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/abhaya-libre-700.woff2", weight: "700", style: "normal" },
+    { path: "./fonts/abhaya-libre-800.woff2", weight: "800", style: "normal" },
+  ],
   variable: "--font-abhaya",
-  subsets: ["latin"],
-  weight: ["400", "700", "800"],
+  fallback: ["Abhaya Libre Fallback"],
+  declarations: [{ prop: "font-family", value: "'Abhaya Libre'" }],
+  display: "swap",
+  preload: false,
+  adjustFontFallback: false,
 });
 
-const body = Afacad({
+const body = localFont({
+  src: "./fonts/afacad-normal.woff2",
   variable: "--font-afacad",
-  subsets: ["latin"],
+  fallback: ["Afacad Fallback"],
+  declarations: [{ prop: "font-family", value: "'Afacad'" }],
+  weight: "400 700",
+  style: "normal",
+  display: "swap",
+  preload: false,
+  adjustFontFallback: false,
 });
 
-const ui = Inter({
+const ui = localFont({
+  src: "./fonts/inter-normal.woff2",
   variable: "--font-inter",
-  subsets: ["latin"],
+  fallback: ["Inter Fallback"],
+  declarations: [{ prop: "font-family", value: "'Inter'" }],
+  weight: "100 900",
+  style: "normal",
+  display: "swap",
+  preload: false,
+  adjustFontFallback: false,
 });
 
-const readerSerif = Noto_Serif({
+const readerSerif = localFont({
+  src: [
+    { path: "./fonts/noto-serif-normal.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/noto-serif-normal.woff2", weight: "700", style: "normal" },
+    { path: "./fonts/noto-serif-italic.woff2", weight: "400", style: "italic" },
+    { path: "./fonts/noto-serif-italic.woff2", weight: "700", style: "italic" },
+  ],
   variable: "--font-reader-serif",
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  style: ["normal", "italic"],
+  fallback: ["Noto Serif Fallback"],
+  declarations: [{ prop: "font-family", value: "'Noto Serif'" }],
+  display: "swap",
+  preload: false,
+  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = {

@@ -4,7 +4,10 @@ import {
   OnModuleDestroy,
   OnModuleInit,
 } from '@nestjs/common';
+import { cleanupDeletedProviderPayloads } from './pdf-import/providers/cleanup-deleted-payloads';
+import { cleanupExpiredPdfStaging } from './pdf-import/artifacts/cleanup-staging';
 import { PrismaService } from '../prisma/prisma.service';
+import { backgroundFailureCode } from '../shared/background-failure-code';
 
 // Blobs are written outside the metadata transaction (see
 // LibraryService.importBook). On failure, we best-effort delete them,
@@ -46,12 +49,17 @@ export class OrphanBlobCleanupService implements OnModuleInit, OnModuleDestroy {
     this.isTickRunning = true;
 
     try {
+      await cleanupExpiredPdfStaging(this.prisma);
+      await cleanupDeletedProviderPayloads(this.prisma);
       const cutoff = new Date(Date.now() - ORPHAN_BLOB_AGE_MS);
       const result = await this.prisma.storedBlob.deleteMany({
         where: {
           createdAt: { lt: cutoff },
           bookCoverFor: { none: {} },
           bookFiles: { none: {} },
+          pdfArtifacts: { none: {} },
+          canonicalEpubResources: { none: {} },
+          pdfProviderPayloads: { none: {} },
           feedbackAttachments: { none: {} },
         },
       });
@@ -62,7 +70,9 @@ export class OrphanBlobCleanupService implements OnModuleInit, OnModuleDestroy {
 
       return result.count;
     } catch (error) {
-      this.logger.error('Orphan blob cleanup failed.', error);
+      this.logger.error(
+        `Orphan blob cleanup unavailable (${backgroundFailureCode(error)}); checking again on the next sweep.`,
+      );
       return 0;
     } finally {
       this.isTickRunning = false;

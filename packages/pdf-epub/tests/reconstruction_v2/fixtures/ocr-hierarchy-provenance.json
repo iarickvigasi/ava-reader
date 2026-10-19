@@ -1,0 +1,10 @@
+{
+  "authorship": "Independent source and expected hierarchy authored before reconstruction. Fault changes one page-opening H3 to H2. No provider output.",
+  "origin": "output/pdf-epub-integration-08/ocr-hierarchy-gap",
+  "files": {
+    "ocr-hierarchy-correct.json": "6fa53e903fb27d8e1744f8a312b3a59f06d845501ac998c20baad6c68c16e517",
+    "ocr-hierarchy-fault.json": "f6433e082337c635c6958716bc626252ced80b2f6128df46b206d9feeaf9b880",
+    "ocr-hierarchy-oracle.json": "bb230d16bd7224a71ba1739b32b4f6d1b3ff1a84cca0ea05abfa0d1d61539fe6",
+    "ocr-hierarchy.pdf": "e651d6255b5b8ba8000c3ca195a17f1521b60764ac922b64eb05ac784fed6b18"
+  }
+}

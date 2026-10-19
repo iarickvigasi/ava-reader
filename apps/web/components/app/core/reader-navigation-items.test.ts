@@ -7,6 +7,7 @@ it("offers only implemented actions in desktop and mobile reader menus", () => {
     "preferences",
     "highlights",
     "aiComments",
+    "search",
     "bilingualMode",
   ]);
   expect(readerUtilityItems).toEqual([]);

@@ -1,0 +1,26 @@
+{
+  "schema_version": "ava-printed-title-response-2",
+  "task_id": "refine-637eab10db6b11e848dd4a1f322c06008bf101f1eee5eb432b47d669771510d8",
+  "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "observation_sha256": "4ba367e36341f1643ecbc5c51c6924b3e911a98d19631242a6840e369af6c568",
+  "image_sha256": "a615ccf2abab1e8b82dc109f2d29b63341b0b4081483b46f92e54f7eff5cb891",
+  "selected_node_id": "observed-5",
+  "selected_text_sha256": "bdefc38823b5165863f3145a57a08c417d035711193df602228893c711689113",
+  "evidence_ids": [
+    "title-d1add1645ade0bc335ec0fc5",
+    "context-page4"
+  ],
+  "cover": {
+    "node_ids": [
+      "observed-0",
+      "observed-1",
+      "observed-2"
+    ],
+    "evidence_ids": [
+      "title-089df026c5a028488134d5ef",
+      "title-417a6c8b650fec1570e67226",
+      "title-0ad5b7eaddce6a3b42696e5d",
+      "context-page1"
+    ]
+  }
+}

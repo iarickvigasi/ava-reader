@@ -16,18 +16,23 @@ enum BlobPurpose {
   BOOK_COVER
   FEEDBACK_ATTACHMENT
   DERIVED_READER
+  PDF_ARTIFACT
 }
 
 enum BookFileFormat {
   EPUB
   PDF
   READER_PACKAGE
+  CANONICAL_JSON
+  REPORT_JSON
+  IMAGE
   UNKNOWN
 }
 
 enum BookFileKind {
   SOURCE
   DERIVED_READER
+  DERIVED_EPUB
 }
 
 enum ProcessingStatus {
@@ -97,6 +102,11 @@ model User {
   collections                Collection[]
   feedbackSubmissions        FeedbackSubmission[]
   catalogEntriesCreated      CatalogEntry[]              @relation("CatalogEntryCreatedBy")
+  pdfImportReceipts          PdfImportReceipt[]
+  pdfImports                 PdfImportOperation[]
+  canonicalEpubImports       CanonicalEpubImport[]
+  pdfArtifacts               PdfArtifact[]
+  pdfProviderPayloads        PdfProviderPayload[]
   preferences                UserPreferences?
   createdAt                  DateTime                    @default(now())
   updatedAt                  DateTime                    @updatedAt
@@ -121,30 +131,40 @@ model UserPreferences {
 }
 
 model StoredBlob {
-  id                  String               @id @default(cuid())
-  purpose             BlobPurpose
-  mimeType            String
-  sizeBytes           Int
-  originalFilename    String
-  checksum            String
-  bytes               Bytes
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
-  bookCoverFor        Book[]               @relation("BookCover")
-  bookFiles           BookFile[]
-  feedbackAttachments FeedbackSubmission[] @relation("FeedbackAttachment")
+  id                     String                  @id @default(cuid())
+  purpose                BlobPurpose
+  mimeType               String
+  sizeBytes              Int
+  originalFilename       String
+  checksum               String
+  bytes                  Bytes
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  bookCoverFor           Book[]                  @relation("BookCover")
+  canonicalEpubResources CanonicalEpubResource[]
+  pdfArtifacts           PdfArtifact[]
+  pdfProviderPayloads    PdfProviderPayload[]
+  bookFiles              BookFile[]
+  feedbackAttachments    FeedbackSubmission[]    @relation("FeedbackAttachment")
 
   @@index([purpose])
   @@index([checksum])
 }
 
 model Book {
-  id                     String              @id @default(cuid())
+  id                     String               @id @default(cuid())
   title                  String
+  pdfImportPrivate       Boolean              @default(false)
+  canonicalImportPrivate Boolean              @default(false)
+  privateOrphanedAt      DateTime?
+  canonicalEpubImport    CanonicalEpubImport?
+  metadataEditVersion    Int                  @default(0)
+  metadataUserFields     String[]             @default([])
+  pdfImport              PdfImportOperation?
   subtitle               String?
-  authors                String[]            @default([])
+  authors                String[]             @default([])
   description            String?
-  genres                 String[]            @default([])
+  genres                 String[]             @default([])
   language               String?
   publishedYear          Int?
   estimatedPageCount     Int?
@@ -154,56 +174,68 @@ model Book {
   // Null until a book has been analysed — callers fall back to the total.
   estimatedBodyPageCount Int?
   coverBlobId            String?
-  coverBlob              StoredBlob?         @relation("BookCover", fields: [coverBlobId], references: [id], onDelete: SetNull)
+  coverBlob              StoredBlob?          @relation("BookCover", fields: [coverBlobId], references: [id], onDelete: SetNull)
   files                  BookFile[]
   processingRuns         BookProcessingRun[]
   analyses               BookAnalysis[]
   libraryItems           LibraryItem[]
   catalogEntry           CatalogEntry?
-  createdAt              DateTime            @default(now())
-  updatedAt              DateTime            @updatedAt
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
 
   @@index([title])
+  @@index([privateOrphanedAt])
 }
 
 model BookFile {
-  id                   String              @id @default(cuid())
+  id                   String               @id @default(cuid())
   bookId               String
   blobId               String
   kind                 BookFileKind
   format               BookFileFormat
-  processingStatus     ProcessingStatus    @default(READY)
-  isPrimary            Boolean             @default(false)
+  processingStatus     ProcessingStatus     @default(READY)
+  isPrimary            Boolean              @default(false)
   // Compact progress index for DERIVED_READER files — lets `updateProgress`
   // compute completion metrics without loading the multi-MB package blob.
   // Null for legacy rows; populated lazily on first read.
   readingProgressIndex Json?
-  createdAt            DateTime            @default(now())
-  updatedAt            DateTime            @updatedAt
-  book                 Book                @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  blob                 StoredBlob          @relation(fields: [blobId], references: [id], onDelete: Cascade)
-  sourceProcessingRuns BookProcessingRun[] @relation("ProcessingSourceFile")
-  outputProcessingRuns BookProcessingRun[] @relation("ProcessingOutputFile")
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  book                 Book                 @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  blob                 StoredBlob           @relation(fields: [blobId], references: [id], onDelete: Cascade)
+  canonicalEpubSource  CanonicalEpubImport? @relation("CanonicalEpubSource")
+  canonicalEpubReader  CanonicalEpubImport? @relation("CanonicalEpubReader")
+  sourceProcessingRuns BookProcessingRun[]  @relation("ProcessingSourceFile")
+  outputProcessingRuns BookProcessingRun[]  @relation("ProcessingOutputFile")
 
   @@index([bookId, kind])
   @@index([blobId])
 }
 
 model BookProcessingRun {
-  id           String           @id @default(cuid())
-  bookId       String
-  sourceFileId String?
-  outputFileId String?
-  pipeline     String
-  status       ProcessingStatus @default(PENDING)
-  errorMessage String?
-  startedAt    DateTime         @default(now())
-  completedAt  DateTime?
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
-  book         Book             @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  sourceFile   BookFile?        @relation("ProcessingSourceFile", fields: [sourceFileId], references: [id], onDelete: SetNull)
-  outputFile   BookFile?        @relation("ProcessingOutputFile", fields: [outputFileId], references: [id], onDelete: SetNull)
+  id                     String           @id @default(cuid())
+  bookId                 String
+  sourceFileId           String?
+  outputFileId           String?
+  pipeline               String
+  status                 ProcessingStatus @default(PENDING)
+  errorMessage           String?
+  startedAt              DateTime         @default(now())
+  completedAt            DateTime?
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
+  book                   Book             @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  sourceFile             BookFile?        @relation("ProcessingSourceFile", fields: [sourceFileId], references: [id], onDelete: SetNull)
+  outputFile             BookFile?        @relation("ProcessingOutputFile", fields: [outputFileId], references: [id], onDelete: SetNull)
+  // Used only by normalize-canonical-epub-v1; legacy preparation is unchanged.
+  canonicalOwnerId       String?
+  canonicalLibraryItemId String?
+  canonicalContentId     String?          @unique
+  attemptCount           Int              @default(0)
+  attemptFence           Int              @default(0)
+  leaseTokenHash         String?
+  leaseExpiresAt         DateTime?
+  activeDeadlineAt       DateTime?
 
   @@index([bookId, status])
 }
@@ -262,23 +294,24 @@ model CatalogEntry {
 }
 
 model LibraryItem {
-  id                   String            @id @default(cuid())
+  canonicalEpubImport  CanonicalEpubImport?
+  id                   String               @id @default(cuid())
   userId               String
   bookId               String
   slug                 String
   source               LibrarySource
   originCatalogEntryId String?
-  addedAt              DateTime          @default(now())
+  addedAt              DateTime             @default(now())
   lastOpenedAt         DateTime?
   // Explicit reading finish date, independent of position-based progress.
   finishedAt           DateTime?
-  isArchived           Boolean           @default(false)
-  offlineRequested     Boolean           @default(false)
-  createdAt            DateTime          @default(now())
-  updatedAt            DateTime          @updatedAt
-  user                 User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  book                 Book              @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  originCatalogEntry   CatalogEntry?     @relation(fields: [originCatalogEntryId], references: [id], onDelete: SetNull)
+  isArchived           Boolean              @default(false)
+  offlineRequested     Boolean              @default(false)
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  user                 User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book                 Book                 @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  originCatalogEntry   CatalogEntry?        @relation(fields: [originCatalogEntryId], references: [id], onDelete: SetNull)
   progress             ReadingProgress?
   annotations          Annotation[]
   aiComments           AiComment[]
@@ -503,6 +536,616 @@ model DeletedLibraryItem {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+// Selected once at initial upload. Jobs/publication are implemented in PDF-06/09.
+enum PdfImportStatus {
+  QUEUED
+  RUNNING
+  WAITING
+  READY
+  FAILED
+  STOPPED
+}
+
+enum PdfArtifactRole {
+  SOURCE_PDF
+  CANONICAL_BOOK
+  DERIVED_EPUB
+  DERIVED_READER
+  VALIDATION_REPORT
+  RESOURCE
+  COVER
+  DIAGNOSTIC
+}
+
+enum PdfArtifactRetention {
+  STAGING
+  OPERATION
+  ACCEPTED
+}
+
+model PdfImportOperation {
+  id                    String                   @id @default(cuid())
+  ownerId               String
+  idempotencyKey        String
+  requestSha256         String
+  sourceSha256          String
+  configSha256          String
+  configuration         Json
+  profileId             String
+  bookId                String                   @unique
+  libraryItemId         String                   @unique
+  sourceArtifactId      String                   @unique
+  status                PdfImportStatus          @default(QUEUED)
+  stage                 String                   @default("PREFLIGHT")
+  generation            Int                      @default(1)
+  cancellationEpoch     Int                      @default(0)
+  deletedAt             DateTime?
+  finalContentId        String?                  @unique
+  failureId             String?
+  progressCompleted     Int?
+  progressTotal         Int?
+  failureCode           String?
+  failureReason         String?
+  investigationMarkedAt DateTime?
+  notificationPendingAt DateTime?
+  workPurgedAt          DateTime?
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @updatedAt
+  owner                 User                     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  book                  Book                     @relation(fields: [bookId], references: [id], onDelete: Restrict)
+  sourceArtifact        PdfArtifact              @relation("PdfImportSource", fields: [sourceArtifactId], references: [id], onDelete: NoAction)
+  artifacts             PdfArtifact[]            @relation("PdfOperationArtifacts")
+  metadataClaims        PdfMetadataClaim[]
+  job                   PdfConversionJob?
+  failureReceipt        PdfJobFailure?
+  notificationIntent    PdfNotificationIntent?
+  providerGrant         PdfProviderGrant?
+  validations           PdfCandidateValidation[]
+  publication           PdfPublication?
+  validationRun         PdfValidationRun?
+  investigation         PdfConversionInvestigation?
+
+  @@unique([ownerId, idempotencyKey])
+  @@index([ownerId, sourceSha256])
+  @@index([status, createdAt])
+}
+
+// Content-free investigation survives operation/private-artifact cleanup.
+// Retention activation is deliberately separate from creating these records.
+model PdfConversionInvestigation {
+  id                   String                @id
+  ownerId              String?
+  requestKeyHash       String?
+  operationId          String?               @unique
+  operationKey         String?               @unique
+  bookId               String?
+  libraryItemId        String?
+  jobId                String?
+  failureId            String?
+  finalContentId       String?
+  sourceSha256         String?
+  sourceBytes          Int?
+  sourcePages          Int?
+  configSha256         String?
+  profileId            String?
+  workerFingerprint    String?
+  status               String                @default("ADMISSION")
+  stage                String                @default("ADMISSION")
+  nextSequence         Int                   @default(0)
+  activeAdmissionCount Int                   @default(0)
+  coverage             String                @default("API_LIFECYCLE")
+  evidenceGaps         String[]
+  retentionClass       String                @default("OPERATIONAL_AUDIT")
+  retentionPolicyId    String?
+  eligibleForPurgeAt   DateTime?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  operation            PdfImportOperation?   @relation(fields: [operationId], references: [id], onDelete: SetNull)
+  events               PdfConversionEvent[]
+  cost                 PdfConversionCost?
+
+  @@unique([ownerId, requestKeyHash])
+  @@index([bookId, createdAt])
+  @@index([libraryItemId, createdAt])
+  @@index([failureId])
+  @@index([status, updatedAt])
+}
+
+model PdfConversionEvent {
+  id                  String                       @id @default(cuid())
+  conversionId        String
+  sequence            Int
+  producerKey         String
+  payloadSha256       String
+  kind                String
+  stage               String
+  severity            String
+  code                String?
+  attemptId           String?
+  attemptFence        Int?
+  generation          Int?
+  cancellationEpoch   Int?
+  observedAt          DateTime?
+  durationMs          Int?
+  durationKind        String?
+  details             Json
+  createdAt           DateTime                     @default(now())
+  investigation       PdfConversionInvestigation   @relation(fields: [conversionId], references: [id], onDelete: Cascade)
+
+  @@unique([conversionId, sequence])
+  @@unique([conversionId, producerKey])
+}
+
+// Derived projection only; PdfProviderCall/Event remain the billing authority.
+model PdfConversionCost {
+  conversionId         String                      @id
+  version              Int                         @default(1)
+  currency             String                      @default("USD")
+  knownActualNano      BigInt                      @default(0)
+  reservedNano         BigInt                      @default(0)
+  uncertainNano        BigInt                      @default(0)
+  actualComplete       Boolean                     @default(false)
+  state                String                      @default("INCOMPLETE")
+  ledgerWatermark      String
+  callCount            Int
+  projection           Json
+  reconciledAt         DateTime                    @default(now())
+  retentionClass       String                      @default("BILLING_AUDIT")
+  retentionPolicyId    String?
+  eligibleForPurgeAt   DateTime?
+  investigation        PdfConversionInvestigation  @relation(fields: [conversionId], references: [id], onDelete: Restrict)
+}
+
+// A durable pin is created with the blob, before the Library acceptance transaction.
+model PdfArtifact {
+  id           String               @id @default(cuid())
+  ownerId      String
+  operationId  String?
+  blobId       String               @unique
+  attemptId    String?
+  descriptorId String?
+  role         PdfArtifactRole
+  retention    PdfArtifactRetention @default(STAGING)
+  expiresAt    DateTime?
+  checksum     String
+  sizeBytes    Int
+  mimeType     String
+  createdAt    DateTime             @default(now())
+  owner        User                 @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  blob         StoredBlob           @relation(fields: [blobId], references: [id], onDelete: Restrict)
+  operation    PdfImportOperation?  @relation("PdfOperationArtifacts", fields: [operationId], references: [id], onDelete: Cascade)
+  sourceFor    PdfImportOperation?  @relation("PdfImportSource")
+  attempt      PdfJobAttempt?       @relation(fields: [attemptId], references: [id], onDelete: NoAction)
+
+  @@unique([attemptId, descriptorId])
+  @@index([operationId, role])
+  @@index([retention, expiresAt])
+}
+
+model PdfMetadataClaim {
+  id              String             @id @default(cuid())
+  operationId     String
+  field           String
+  value           Json
+  origin          String
+  status          String             @default("candidate")
+  sourceSha256    String
+  evidence        Json
+  observedVersion Int
+  createdAt       DateTime           @default(now())
+  operation       PdfImportOperation @relation(fields: [operationId], references: [id], onDelete: Cascade)
+
+  @@index([operationId, field])
+}
+
+enum PdfJobState {
+  SUCCEEDED
+  QUEUED
+  RUNNING
+  WAITING
+  FAILED
+  STOPPED
+}
+
+enum PdfAttemptState {
+  RUNNING
+  EXPIRED
+  RETRY
+  CANDIDATE
+  FAILED
+  STOPPED
+  WAITING
+}
+
+model PdfWorkerPrincipal {
+  id                String          @id @default(cuid())
+  name              String
+  tokenHash         String
+  workerFingerprint String
+  modes             String[]        @default(["native"])
+  revokedAt         DateTime?
+  createdAt         DateTime        @default(now())
+  attempts          PdfJobAttempt[]
+}
+
+model PdfConversionJob {
+  id                      String             @id @default(cuid())
+  operationId             String             @unique
+  state                   PdfJobState        @default(QUEUED)
+  policy                  Json
+  policySha256            String
+  providerMode            String             @default("native")
+  workerFingerprint       String?
+  attemptFence            Int                @default(0)
+  attemptCount            Int                @default(0)
+  currentAttemptId        String?
+  dispatchAuthorizationId String?
+  dispatchAuthorization   PdfProviderGrant?  @relation(fields: [dispatchAuthorizationId], references: [id], onDelete: Restrict)
+  availableAt             DateTime           @default(now())
+  startedAt               DateTime?
+  deadlineAt              DateTime?
+  waitReason              String?
+  createdAt               DateTime           @default(now())
+  updatedAt               DateTime           @updatedAt
+  operation               PdfImportOperation @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  attempts                PdfJobAttempt[]
+
+  @@index([state, availableAt, createdAt])
+}
+
+model PdfJobAttempt {
+  id                String             @id @default(cuid())
+  jobId             String
+  principalId       String
+  fence             Int
+  attemptTokenHash  String
+  status            PdfAttemptState    @default(RUNNING)
+  jobInput          Json
+  leaseExpiresAt    DateTime
+  deadlineAt        DateTime
+  startedAt         DateTime           @default(now())
+  finishedAt        DateTime?
+  resultSha256      String?
+  result            Json?
+  artifactMap       Json?
+  failureCode       String?
+  stage             String             @default("PREFLIGHT")
+  progressCompleted Int?
+  progressTotal     Int?
+  failures          PdfJobFailure[]
+  job               PdfConversionJob   @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  principal         PdfWorkerPrincipal @relation(fields: [principalId], references: [id], onDelete: Restrict)
+  artifacts         PdfArtifact[]
+
+  @@unique([jobId, fence])
+  @@index([status, leaseExpiresAt])
+  @@index([principalId, status])
+}
+
+model PdfJobFailure {
+  id                String                 @id @default(cuid())
+  operationId       String                 @unique
+  attemptId         String?
+  stage             String
+  code              String
+  safeReason        String
+  sourceSha256      String
+  configSha256      String
+  generation        Int
+  cancellationEpoch Int
+  attemptFence      Int
+  createdAt         DateTime               @default(now())
+  operation         PdfImportOperation     @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  attempt           PdfJobAttempt?         @relation(fields: [attemptId], references: [id], onDelete: NoAction)
+  notification      PdfNotificationIntent?
+}
+
+model PdfNotificationIntent {
+  id             String             @id @default(cuid())
+  operationId    String             @unique
+  failureId      String?            @unique
+  kind           String             @default("pdf_import_failed")
+  status         String             @default("PENDING")
+  createdAt      DateTime           @default(now())
+  deliveredAt    DateTime?
+  acknowledgedAt DateTime?
+  failure        PdfJobFailure?     @relation(fields: [failureId], references: [id], onDelete: Cascade)
+  operation      PdfImportOperation @relation(fields: [operationId], references: [id], onDelete: Cascade)
+}
+
+// AVA operating accounting, not reader billing. Amounts are integer USD nanodollars.
+model PdfProviderBudget {
+  id                     String                  @id @default(cuid())
+  scope                  String
+  scopeKey               String
+  limitNano              BigInt
+  hardCeilingNano        BigInt
+  actualNano             BigInt                  @default(0)
+  reservedNano           BigInt                  @default(0)
+  baselineNano           BigInt                  @default(0)
+  baselineEvidenceSha256 String
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  allocations            PdfProviderAllocation[]
+
+  @@unique([scope, scopeKey])
+}
+
+model PdfProviderRoute {
+  id                  String             @id @default(cuid())
+  accountKey          String
+  modelId             String
+  providerSlug        String
+  mode                String
+  configuration       Json
+  configurationSha256 String
+  tariff              Json
+  tariffSha256        String
+  verifiedAt          DateTime
+  validUntil          DateTime
+  state               String             @default("ACTIVE")
+  createdAt           DateTime           @default(now())
+  grants              PdfProviderGrant[]
+
+  @@index([accountKey, modelId, state])
+}
+
+model PdfProviderGrant {
+  id           String              @id @default(cuid())
+  operationId  String?             @unique
+  operationKey String              @unique
+  ownerId      String
+  sourceSha256 String
+  configSha256 String
+  routeId      String
+  budgetIds    String[]
+  state        String              @default("ACTIVE")
+  createdAt    DateTime            @default(now())
+  operation    PdfImportOperation? @relation(fields: [operationId], references: [id], onDelete: SetNull)
+  route        PdfProviderRoute    @relation(fields: [routeId], references: [id], onDelete: Restrict)
+  jobs         PdfConversionJob[]
+  calls        PdfProviderCall[]
+}
+
+model PdfProviderCall {
+  id                   String                  @id @default(cuid())
+  grantId              String
+  taskId               String
+  requestSha256        String
+  taskSha256           String
+  promptVersion        String
+  schemaVersion        String
+  reservedAttemptId    String
+  dispatchAttemptId    String?
+  state                String                  @default("RESERVED")
+  reservedNano         BigInt
+  actualNano           BigInt?
+  accountKey           String
+  providerGenerationId String?
+  receiptSha256        String?
+  failureCode          String?
+  createdAt            DateTime                @default(now())
+  dispatchedAt         DateTime?
+  settledAt            DateTime?
+  grant                PdfProviderGrant        @relation(fields: [grantId], references: [id], onDelete: Restrict)
+  allocations          PdfProviderAllocation[]
+  payloads             PdfProviderPayload[]
+  events               PdfProviderEvent[]
+
+  @@unique([grantId, taskId])
+  @@unique([accountKey, providerGenerationId])
+  @@index([state, createdAt])
+}
+
+model PdfProviderAllocation {
+  id           String            @id @default(cuid())
+  callId       String
+  budgetId     String
+  reservedNano BigInt
+  actualNano   BigInt            @default(0)
+  call         PdfProviderCall   @relation(fields: [callId], references: [id], onDelete: Restrict)
+  budget       PdfProviderBudget @relation(fields: [budgetId], references: [id], onDelete: Restrict)
+
+  @@unique([callId, budgetId])
+}
+
+// Private content expires with owner deletion; charge audit remains content-free.
+model PdfProviderPayload {
+  id        String          @id @default(cuid())
+  ownerId   String
+  callId    String
+  kind      String
+  blobId    String          @unique
+  checksum  String
+  sizeBytes Int
+  createdAt DateTime        @default(now())
+  owner     User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  call      PdfProviderCall @relation(fields: [callId], references: [id], onDelete: Cascade)
+  blob      StoredBlob      @relation(fields: [blobId], references: [id], onDelete: Restrict)
+
+  @@unique([callId, kind])
+}
+
+model PdfProviderEvent {
+  id             String          @id @default(cuid())
+  callId         String
+  kind           String
+  evidenceSha256 String
+  details        Json
+  createdAt      DateTime        @default(now())
+  call           PdfProviderCall @relation(fields: [callId], references: [id], onDelete: Restrict)
+}
+
+model PdfReaderQualification {
+  id                       String                    @id @default(cuid())
+  readerBuildFingerprint   String
+  adapterFingerprint       String
+  reportSha256             String
+  evidenceKind             String
+  schemaVersion            String                    @default("ava-reader-3")
+  capabilities             String[]
+  evidence                 Json
+  revokedAt                DateTime?
+  createdAt                DateTime                  @default(now())
+  publications             PdfPublication[]
+  canonicalEpubAcceptances CanonicalEpubAcceptance[]
+
+  @@unique([readerBuildFingerprint, adapterFingerprint, reportSha256])
+}
+
+model PdfCandidateValidation {
+  id                    String             @id @default(cuid())
+  operationId           String
+  attemptId             String
+  candidateId           String
+  candidateResultSha256 String
+  validatorFingerprint  String
+  sourceSha256          String
+  configSha256          String
+  generation            Int
+  cancellationEpoch     Int
+  attemptFence          Int
+  canonicalArtifactId   String
+  canonicalDigest       String
+  epubArtifactId        String
+  readerArtifactId      String
+  reportArtifactId      String
+  finalContentId        String             @unique
+  resourceMap           Json
+  verdict               String
+  hardBlocks            String[]
+  reviewFindings        String[]
+  createdAt             DateTime           @default(now())
+  operation             PdfImportOperation @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  review                PdfReviewDecision?
+  publication           PdfPublication?
+
+  @@unique([attemptId, validatorFingerprint])
+  @@index([operationId, createdAt])
+}
+
+model PdfReviewDecision {
+  id               String                 @id @default(cuid())
+  validationId     String                 @unique
+  reviewerKey      String
+  reviewerRole     String
+  decision         String
+  approvedFindings String[]
+  policyVersion    String
+  createdAt        DateTime               @default(now())
+  validation       PdfCandidateValidation @relation(fields: [validationId], references: [id], onDelete: Cascade)
+}
+
+model PdfPublication {
+  id                  String                 @id @default(cuid())
+  operationId         String                 @unique
+  validationId        String                 @unique
+  qualificationId     String
+  finalContentId      String                 @unique
+  sourceArtifactId    String
+  canonicalArtifactId String
+  epubArtifactId      String
+  readerArtifactId    String
+  reportArtifactId    String
+  resourceMap         Json
+  acceptedBytes       Bytes
+  acceptedSha256      String
+  publicationFence    Int
+  generation          Int
+  cancellationEpoch   Int
+  createdAt           DateTime               @default(now())
+  operation           PdfImportOperation     @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  validation          PdfCandidateValidation @relation(fields: [validationId], references: [id], onDelete: Cascade)
+  qualification       PdfReaderQualification @relation(fields: [qualificationId], references: [id], onDelete: Restrict)
+}
+
+// A coordinator lease survives process loss; it is distinct from extraction attempts.
+model PdfValidationRun {
+  operationId     String             @id
+  attemptId       String
+  attempts        Int                @default(0)
+  fence           Int                @default(0)
+  state           String             @default("WAITING")
+  principalId     String?
+  tokenHash       String?
+  leaseExpiresAt  DateTime?
+  availableAt     DateTime           @default(now())
+  lastFailureCode String?
+  updatedAt       DateTime           @updatedAt
+  operation       PdfImportOperation @relation(fields: [operationId], references: [id], onDelete: Cascade)
+}
+
+// A portable generated EPUB has its own import authority; it is never a PDF job.
+model CanonicalEpubImport {
+  id              String @id @default(cuid())
+  ownerId         String
+  bookId          String @unique
+  libraryItemId   String @unique
+  sourceFileId    String @unique
+  sourceSha256    String
+  readerFileId    String @unique
+  readerSha256    String
+  finalContentId  String @unique
+  canonicalDigest String
+
+  validatorFingerprint String
+  validationReport     Json
+  createdAt            DateTime    @default(now())
+  owner                User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  book                 Book        @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  libraryItem          LibraryItem @relation(fields: [libraryItemId], references: [id], onDelete: Cascade)
+  sourceFile           BookFile    @relation("CanonicalEpubSource", fields: [sourceFileId], references: [id], onDelete: Restrict)
+  readerFile           BookFile    @relation("CanonicalEpubReader", fields: [readerFileId], references: [id], onDelete: Restrict)
+
+  acceptance CanonicalEpubAcceptance?
+  resources  CanonicalEpubResource[]
+
+  @@index([ownerId])
+}
+
+model CanonicalEpubResource {
+  id         String              @id @default(cuid())
+  importId   String
+  resourceId String
+  blobId     String
+  sha256     String
+  mediaType  String
+  byteLength Int
+  import     CanonicalEpubImport @relation(fields: [importId], references: [id], onDelete: Cascade)
+  blob       StoredBlob          @relation(fields: [blobId], references: [id], onDelete: Restrict)
+
+  @@unique([importId, resourceId])
+  @@index([blobId])
+}
+
+model CanonicalEpubAcceptance {
+  id              String                 @id @default(cuid())
+  importId        String                 @unique
+  qualificationId String
+  createdAt       DateTime               @default(now())
+  import          CanonicalEpubImport    @relation(fields: [importId], references: [id], onDelete: Cascade)
+  qualification   PdfReaderQualification @relation(fields: [qualificationId], references: [id], onDelete: Restrict)
+}
+
+// Content-free replay guard survives private operation/file cleanup.
+model PdfImportReceipt {
+  operationId    String   @id
+  ownerId        String
+  idempotencyKey String
+  requestSha256  String
+  sourceSha256   String
+  configSha256   String
+  libraryItemId  String
+  stage          String
+  failureCode    String?
+  deletedAt      DateTime
+  purgedAt       DateTime @default(now())
+  owner          User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@unique([ownerId, idempotencyKey])
+  @@index([ownerId, sourceSha256])
 }
 
 // Exact credited activity; adjacent heartbeat intervals are merged under the session lock.

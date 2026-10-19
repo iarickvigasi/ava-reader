@@ -1,0 +1,75 @@
+"""Private source observations, separate from accepted book content and provider messages."""
+
+from typing import Annotated, Literal
+
+from pydantic import Field, model_validator
+
+from ..contracts.common import Digest, Record
+from ..contracts.source import Box
+from ..contracts.styles import Style
+from .embedded_image import EmbeddedImage
+
+
+class Glyph(Record):
+    text: str = Field(min_length=1, max_length=100)
+    box: Box
+    font: str = Field(max_length=500)
+    size: float = Field(gt=0, le=500)
+    visible: bool
+    source_artifact: bool = Field(default=False, exclude_if=lambda v: not v)
+    list_body_mcid: int | None = Field(default=None, ge=0, le=9999, exclude_if=lambda v: v is None)
+    paint_bold: bool = Field(default=False, exclude_if=lambda v: not v)
+    paint_ink_color: str | None = Field(
+        default=None, pattern=r"^#[0-9a-f]{6}$", exclude_if=lambda v: v is None
+    )
+    paint_color: str | None = Field(
+        default=None, pattern=r"^#[0-9a-f]{6}$", exclude_if=lambda v: v is None
+    )
+
+
+class NativeLine(Record):
+    id: str
+    box: Box
+    text: str = Field(max_length=200000)
+    glyphs: list[Glyph] = Field(max_length=200000)
+    style: Style
+    inserted_space_offsets: list[Annotated[int, Field(ge=1, le=200000)]] = Field(
+        default_factory=list, max_length=20000, exclude_if=lambda v: not v
+    )
+
+
+class Graphic(Record):
+    box: Box
+    kind: Literal["image", "vector"]
+    underline_line_id: str | None = Field(default=None, exclude_if=lambda v: v is None)
+    source_image: EmbeddedImage | None = Field(default=None, exclude_if=lambda v: v is None)
+
+
+class RequiredRegion(Record):
+    style: Style | None = None
+    kind: Literal["text", "appearance", "inline_style"]
+    box: Box
+
+    @model_validator(mode="after")
+    def style_role(self) -> "RequiredRegion":
+        if (self.kind == "inline_style") != (self.style is not None):
+            raise ValueError(
+                "Inline annotation regions require a source style; other regions do not"
+            )
+        return self
+
+
+class PageObservation(Record):
+    number: int = Field(ge=1, le=500)
+    width_pt: float = Field(gt=0, le=20000)
+    height_pt: float = Field(gt=0, le=20000)
+    rotation: Literal[0, 90, 180, 270]
+    render_path: str
+    render_sha256: Digest
+    render_width: int = Field(ge=1, le=6000)
+    render_height: int = Field(ge=1, le=6000)
+    lines: list[NativeLine] = Field(max_length=10000)
+    graphics: list[Graphic] = Field(max_length=10000)
+    risks: list[str] = Field(max_length=100)
+
+    required_regions: list[RequiredRegion] = Field(default_factory=list, max_length=1000)

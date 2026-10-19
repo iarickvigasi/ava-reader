@@ -1,8 +1,12 @@
+import { assertCanonicalTranslationAuthority } from './source/assert-canonical-authority';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 import { OpenRouterClient } from '../shared/openrouter-client';
-import type { GenerateTranslationRequest } from './dto';
+import type {
+  ChapterTranslationRequest,
+  GenerateChapterTranslationRequest,
+} from './requests';
 import { generateTranslations } from './generation/generate-translations';
 import { loadTranslationContext } from './source/load-context';
 import { readTranslations } from './storage/read-translations';
@@ -18,13 +22,6 @@ import {
   translationVersionIdentity,
 } from './version-identity';
 
-type ChapterRequest = {
-  clerkUserId: string;
-  libraryItemId: string;
-  chapterId: string;
-  targetLang: string;
-};
-
 @Injectable()
 export class BookTranslationsService {
   private readonly lock = new TranslationLock();
@@ -35,7 +32,9 @@ export class BookTranslationsService {
     private readonly openrouter: OpenRouterClient,
   ) {}
 
-  async chapter(request: ChapterRequest): Promise<ChapterTranslation> {
+  async chapter(
+    request: ChapterTranslationRequest,
+  ): Promise<ChapterTranslation> {
     const context = await loadTranslationContext({
       ...request,
       prisma: this.prisma,
@@ -45,20 +44,18 @@ export class BookTranslationsService {
       prisma: this.prisma,
       context,
     });
+    const alignments = await readAlignments({ prisma: this.prisma, context });
+    await assertCanonicalTranslationAuthority(this.prisma, context);
     return {
       ...translationResponseIdentity(context),
       units: context.units,
       translations,
-      alignments: await readAlignments({ prisma: this.prisma, context }),
+      alignments,
     };
   }
 
   async generate(
-    request: GenerateTranslationRequest & {
-      clerkUserId: string;
-      libraryItemId: string;
-      signal: AbortSignal;
-    },
+    request: GenerateChapterTranslationRequest,
   ): Promise<TranslationResult> {
     const context = await loadTranslationContext({
       ...request,
@@ -77,16 +74,11 @@ export class BookTranslationsService {
         regenerate: request.regenerate,
       }),
     );
+    await assertCanonicalTranslationAuthority(this.prisma, context);
     return { ...translationResponseIdentity(context), translations };
   }
 
-  async align(
-    request: GenerateTranslationRequest & {
-      clerkUserId: string;
-      libraryItemId: string;
-      signal: AbortSignal;
-    },
-  ) {
+  async align(request: GenerateChapterTranslationRequest) {
     const context = await loadTranslationContext({
       ...request,
       prisma: this.prisma,
@@ -104,6 +96,7 @@ export class BookTranslationsService {
         regenerate: request.regenerate,
       }),
     );
+    await assertCanonicalTranslationAuthority(this.prisma, context);
     return { ...translationResponseIdentity(context), alignments };
   }
 }

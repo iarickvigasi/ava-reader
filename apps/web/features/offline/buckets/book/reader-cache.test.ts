@@ -65,11 +65,7 @@ describe("loadReaderPayloadFromCache", () => {
       return;
     }
     expect(payload.activeChapterId).toBe("c");
-    expect(payload.chapters.map((ch) => ch.chapterId)).toEqual([
-      "b",
-      "c",
-      "d",
-    ]);
+    expect(payload.chapters.map((ch) => ch.chapterId)).toEqual(["b", "c", "d"]);
     expect(payload.chapters[0]?.previousChapterId).toBe("a");
     expect(payload.chapters[2]?.nextChapterId).toBe("e");
   });
@@ -86,14 +82,9 @@ describe("loadReaderPayloadFromCache", () => {
     expect(payload.chapters[0]?.previousChapterId).toBeNull();
   });
 
-  it("falls back to the first chapter when the requested chapter isn't cached", async () => {
+  it("does not substitute chapter one for an unknown requested chapter", async () => {
     await seedBook("lib-1", ["a", "b"]);
-    const payload = await loadReaderPayloadFromCache("lib-1", "missing");
-    expect(payload?.status).toBe("READY");
-    if (payload?.status !== "READY") {
-      return;
-    }
-    expect(payload.activeChapterId).toBe("a");
+    expect(await loadReaderPayloadFromCache("lib-1", "missing")).toBeNull();
   });
 
   it("overlays reading progress from the progress bucket so resume works offline", async () => {

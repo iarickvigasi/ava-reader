@@ -1,0 +1,17 @@
+{
+  "schema_version": "ava-book-refinement-response-6",
+  "task_id": "refine-47ca87aeb9860b11f8d4c87b798f6f35aae16ad534034c840144b905f6b26283",
+  "source_sha256": "b7d406c65b334f0c3ae48a9043f5e2afd470632fb749a32228fa0abf1feecf84",
+  "observation_sha256": "677e5fb2cde5cec87ab02dc6bb4aeecda793a0a49c14be2d19ddb3f0ef82440d",
+  "image_sha256": "80f68fe7ffb981e4871816271fe754d31149d3b75d6029a909ee457431f9edfc",
+  "role_decisions": [
+    {
+      "node_id": "quoted",
+      "text_sha256": "e5c114e7fe52c7ff87503e20d195c85b573412746047317154b17c77457b8625",
+      "role": "quote",
+      "reason": null,
+      "evidence_ids": ["role-page", "role-local-1"]
+    }
+  ],
+  "unresolved": []
+}

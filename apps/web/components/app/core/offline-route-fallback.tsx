@@ -5,10 +5,21 @@ import { UnavailablePage } from "./unavailable-page";
 
 export type OfflineRouteKey = "admin" | "insights" | "home" | "generic";
 
-export function OfflineRouteFallback({ routeKey, reason = "unavailable" }: {
+export function OfflineRouteFallback({
+  routeKey,
+  reason = "unavailable",
+  onRetry,
+}: {
   routeKey: OfflineRouteKey;
+  onRetry?: () => void;
   reason?: "apiUnavailable" | "authUnavailable" | "unavailable";
 }) {
   const online = useNetworkState();
-  return <UnavailablePage kind={online ? reason : "offline"} routeKey={routeKey} />;
+  return (
+    <UnavailablePage
+      kind={online ? reason : "offline"}
+      routeKey={routeKey}
+      onRetry={onRetry}
+    />
+  );
 }

@@ -14,8 +14,7 @@
 
 // The registrar appends ?v=<build-version> to the worker URL; activate deletes
 // every cache that doesn't match, so a new build evicts the old assets.
-const SW_VERSION =
-  new URL(self.location.href).searchParams.get("v") || "dev";
+const SW_VERSION = new URL(self.location.href).searchParams.get("v") || "dev";
 const CACHE_NAME = `ava-reader-sw-${SW_VERSION}`;
 
 /* ----------------------------------------------------------------------------
@@ -35,7 +34,9 @@ self.addEventListener("activate", (event) => {
       const names = await caches.keys();
       await Promise.all(
         names
-          .filter((name) => name.startsWith("ava-reader-sw-") && name !== CACHE_NAME)
+          .filter(
+            (name) => name.startsWith("ava-reader-sw-") && name !== CACHE_NAME,
+          )
           .map((name) => caches.delete(name)),
       );
       await self.clients.claim();
@@ -48,7 +49,9 @@ self.addEventListener("activate", (event) => {
 // offline (spec 4.5 §2). Best effort — on failure they cache reactively later.
 async function precacheBuildAssets() {
   try {
-    const response = await fetch("/precache-assets.json", { cache: "no-store" });
+    const response = await fetch("/precache-assets.json", {
+      cache: "no-store",
+    });
     if (!response.ok) {
       return;
     }
@@ -104,6 +107,25 @@ function isPrefetchRequest(request) {
   );
 }
 
+// Operator evidence must never become an offline document or route-precache entry.
+function isPrivateReportRoute(url) {
+  return (
+    url.pathname === "/app/admin/pdf-reports" ||
+    url.pathname.startsWith("/app/admin/pdf-reports/")
+  );
+}
+
+// Auth documents contain request-specific server props and must not be replaced
+// by a pathname-only cached shell during an OAuth return or a slow request.
+function requiresNetworkRoute(url) {
+  return (
+    isPrivateReportRoute(url) ||
+    ["/sign-in", "/sign-up", "/auth/sso-callback"].some(
+      (route) => url.pathname === route || url.pathname.startsWith(`${route}/`),
+    )
+  );
+}
+
 // Redirects reach the browser untouched — substituting the cached shell
 // swallows the Clerk handshake (spec 4.5 §6). Navigations use redirect mode
 // "manual", so a 307 surfaces as an opaqueredirect (status 0, not ok).
@@ -139,7 +161,10 @@ const SHELL_ROUTE_PREFIXES = [
 function shellDocKey(request) {
   const url = new URL(request.url);
   for (const prefix of SHELL_ROUTE_PREFIXES) {
-    if (url.pathname.startsWith(prefix) && url.pathname.length > prefix.length) {
+    if (
+      url.pathname.startsWith(prefix) &&
+      url.pathname.length > prefix.length
+    ) {
       url.pathname = `${prefix}__shell__`;
       url.search = "";
       url.searchParams.set("__sw", "doc");
@@ -204,12 +229,7 @@ const SLOW_DOC_TIMEOUT_MS = 3000;
 // load than before this existed.
 async function networkFirstDoc(request, cache, event) {
   const networkPromise = fetch(request);
-  const cached = await raceCacheFallback(
-    networkPromise,
-    cache,
-    request,
-    event,
-  );
+  const cached = await raceCacheFallback(networkPromise, cache, request, event);
   return cached ?? applyNetworkOutcome(request, cache, networkPromise);
 }
 
@@ -303,6 +323,7 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== self.location.origin) {
     return;
   }
+  if (requiresNetworkRoute(url)) return;
   // The data/auth layer is owned by Dexie + Clerk — never intercepted.
   if (url.pathname.startsWith("/api/")) {
     return;
@@ -359,7 +380,14 @@ self.addEventListener("message", (event) => {
 // Cache every route's shell, then report which routes now have a cached doc.
 async function precacheRoutes(routes) {
   const cache = await caches.open(CACHE_NAME);
-  const valid = routes.filter((route) => typeof route === "string");
+  const valid = routes.filter((route) => {
+    if (typeof route !== "string") return false;
+    try {
+      return !requiresNetworkRoute(new URL(route, self.location.origin));
+    } catch {
+      return false;
+    }
+  });
   const queue = valid.slice();
   const worker = async () => {
     let route;

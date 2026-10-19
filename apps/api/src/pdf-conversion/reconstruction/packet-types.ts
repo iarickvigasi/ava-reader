@@ -1,0 +1,85 @@
+import type { SourceRoleTask } from './generated/SourceRoleTask';
+import type { SourceRoleResponse } from './generated/SourceRoleResponse';
+import type { NativePackets } from './native-packet-types';
+import type { RecognitionSmallCapsQuoteTask } from './generated/RecognitionSmallCapsQuoteTask';
+import type { ContinuationReconstructionInput } from './generated/ContinuationReconstructionInput';
+import type { ContinuationRefinementBatch } from './generated/ContinuationRefinementBatch';
+import type { PresentationRefinementTask } from './generated/PresentationRefinementTask';
+import type { PresentationRefinementResponse } from './generated/PresentationRefinementResponse';
+import type { RecognitionCellGeometryTask } from './generated/RecognitionCellGeometryTask';
+import type { RecognitionCellGeometryResponse } from './generated/RecognitionCellGeometryResponse';
+import type { RecognitionCellGeometryProof } from './generated/RecognitionCellGeometryProof';
+import type { CellGeometryReconstructionInput } from './generated/CellGeometryReconstructionInput';
+import type { RecognitionAnchorQuoteTask } from './generated/RecognitionAnchorQuoteTask';
+import type { RecognitionAnchorQuoteResponse } from './generated/RecognitionAnchorQuoteResponse';
+import type { FrontmatterTitleTask } from './generated/FrontmatterTitleTask';
+import type { FrontmatterTitleResponse } from './generated/FrontmatterTitleResponse';
+import type { FrontmatterTitleRefinementBatch } from './generated/FrontmatterTitleRefinementBatch';
+import type { FrontmatterTitleReconstructionInput } from './generated/FrontmatterTitleReconstructionInput';
+import type { RecognitionGeometryTask } from './generated/RecognitionGeometryTask';
+import type { RecognitionGeometryResponse } from './generated/RecognitionGeometryResponse';
+import type { RecognitionGeometryProof } from './generated/RecognitionGeometryProof';
+import type { RecognitionGeometryReconstructionInput } from './generated/RecognitionGeometryReconstructionInput';
+import type { PrepareResult } from './generated/PrepareResult';
+import type { RecognitionResponse } from './generated/RecognitionResponse';
+import type { RecognitionTask } from './generated/RecognitionTask';
+import type { ReconstructionInput } from './generated/ReconstructionInput';
+import type { ReconstructionReport } from './generated/ReconstructionReport';
+import type { BookRefinementTask } from './generated/BookRefinementTask';
+import type { BookRefinementResponse } from './generated/BookRefinementResponse';
+import type { SourceFeatureTask } from './generated/SourceFeatureTask';
+import type { SourceFeatureResponse } from './generated/SourceFeatureResponse';
+import type { RefinementBatch } from './generated/RefinementBatch';
+import type { PrintedTitleTask } from './generated/PrintedTitleTask';
+import type { PrintedTitleResponse } from './generated/PrintedTitleResponse';
+import type { PrintedTitleRefinementBatch } from './generated/PrintedTitleRefinementBatch';
+import type { PrintedTitleReconstructionInput } from './generated/PrintedTitleReconstructionInput';
+import type { RecognitionAnchorContextTask } from './generated/RecognitionAnchorContextTask';
+import type { RecognitionOverflowContextTask } from './generated/RecognitionOverflowContextTask';
+import type { RecognitionAnchorContextResponse } from './generated/RecognitionAnchorContextResponse';
+
+export type Packets = NativePackets & {
+  SourceRoleTask: SourceRoleTask;
+  SourceRoleResponse: SourceRoleResponse;
+  RecognitionSmallCapsQuoteTask: RecognitionSmallCapsQuoteTask;
+  RecognitionOverflowContextTask: RecognitionOverflowContextTask;
+  ContinuationReconstructionInput: ContinuationReconstructionInput;
+  ContinuationRefinementBatch: ContinuationRefinementBatch;
+  PresentationRefinementTask: PresentationRefinementTask;
+  PresentationRefinementResponse: PresentationRefinementResponse;
+
+  RecognitionCellGeometryTask: RecognitionCellGeometryTask;
+  RecognitionCellGeometryResponse: RecognitionCellGeometryResponse;
+  RecognitionCellGeometryProof: RecognitionCellGeometryProof;
+  CellGeometryReconstructionInput: CellGeometryReconstructionInput;
+
+  RecognitionAnchorQuoteTask: RecognitionAnchorQuoteTask;
+  RecognitionAnchorQuoteResponse: RecognitionAnchorQuoteResponse;
+
+  FrontmatterTitleTask: FrontmatterTitleTask;
+  FrontmatterTitleResponse: FrontmatterTitleResponse;
+  FrontmatterTitleRefinementBatch: FrontmatterTitleRefinementBatch;
+  FrontmatterTitleReconstructionInput: FrontmatterTitleReconstructionInput;
+
+  RecognitionGeometryTask: RecognitionGeometryTask;
+  RecognitionGeometryResponse: RecognitionGeometryResponse;
+  RecognitionGeometryProof: RecognitionGeometryProof;
+  RecognitionGeometryReconstructionInput: RecognitionGeometryReconstructionInput;
+
+  RecognitionAnchorContextTask: RecognitionAnchorContextTask;
+  RecognitionAnchorContextResponse: RecognitionAnchorContextResponse;
+  PrintedTitleTask: PrintedTitleTask;
+  PrintedTitleResponse: PrintedTitleResponse;
+  PrintedTitleRefinementBatch: PrintedTitleRefinementBatch;
+  PrintedTitleReconstructionInput: PrintedTitleReconstructionInput;
+  BookRefinementTask: BookRefinementTask;
+  BookRefinementResponse: BookRefinementResponse;
+  SourceFeatureTask: SourceFeatureTask;
+  SourceFeatureResponse: SourceFeatureResponse;
+  RefinementBatch: RefinementBatch;
+  PrepareResult: PrepareResult;
+  RecognitionTask: RecognitionTask;
+  RecognitionResponse: RecognitionResponse;
+  ReconstructionInput: ReconstructionInput;
+  ReconstructionReport: ReconstructionReport;
+};

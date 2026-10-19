@@ -1,0 +1,8 @@
+.marker::marker {
+  color: var(--reader-marker-color, inherit);
+  font-family: var(--reader-marker-family, inherit);
+  font-weight: var(--reader-marker-weight, inherit);
+  font-style: var(--reader-marker-style, inherit);
+  font-variant: var(--reader-marker-variant, inherit);
+  font-size: var(--reader-marker-size, 1em);
+}

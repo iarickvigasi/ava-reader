@@ -1,0 +1,48 @@
+// Display projection of the API's content-free report contract. Unknown fields
+// are omitted visibly; this is not authority to read raw diagnostic artifacts.
+export const safeFields = new Set(
+  `
+schemaVersion conversionId operationId bookId libraryItemId jobId failureId finalContentId
+sourceSha256 sourceBytes sourcePages configSha256 profileId workerFingerprint status stage
+workerMeasurements packetCount rejectedPacketCount missingPacketCount scanComplete workDurations checkpointReuse sourceFidelity limitations
+coverage evidenceGaps sequenceWatermark activeAdmissionCount createdAt updatedAt costSummaryId
+retention class policyConfigured eligibleForPurgeAt observationCoverage state complete watermark
+results events nextCursor sequence recordedAt kind severity code attemptId attemptFence generation
+cancellationEpoch observedAt durationMs durationKind details observationProtocol observationDelivery
+observationWatermark version producerId ordinal throughOrdinal reportedFailures sealed scope
+requestAttemptId callId providerEventId validationId validationFence validationVerdict publicationId
+purpose pageIndices completed total decision findingCount locations pageNumber regionId
+annotationNumber relationshipPath declaredLanguages detectedLanguages layout annotationCount unitId
+outcome startedAt endedAt timingScope timingStatus workerObservation failureCode sourceFindings
+hostResponseValidation origin category schema checks keyword schemaPath instancePath renderSha256 taskIdSha256
+checksAreAlternatives matchingKindRequiredFields field
+findings region_id block_id page_number region_box box x0 y0 x1 y1 cacheReuse reused preparedRoute
+route nativeSegments recognitionTasks outputInventory chapters blocks resources styles metadataClaims
+figures tables notes languages en uk und unknown links internal note external routeSelection routeId
+providerSlug modelId configurationSha256 evidence observedProvider observationCapture pending lost
+currency knownActualNano reservedNano uncertainNano heldExposureNano actualComplete currentLedgerWatermark
+currentCallCount ledgerWatermark callCount reconciledAt infrastructure compute storage delivery
+ledgerCoverage estimatedNano estimateStatus breakdown calls id requestSha256 receiptSha256
+providerGenerationId routeProvider tariffSha256 promptTokens completionTokens actualNano reason
+investigation timeline cost producers missingRanges observedOrdinalCount expectedThroughOrdinal
+reportedFailureCount claimSequence sealSequence historicalProducers truncated
+exactFinalCountKnown knownPrefixThroughOrdinal reportedDeliveryFailuresAtLatestSnapshot
+recordedOrdinalCount missingOrdinalCount missingRangeCoverage first last
+packet schema_version binding operation_id job_id attempt_id unit_id source_sha256 profile_id
+config_sha256 worker_fingerprint attempt_fence cancellation_epoch request_sha256 command
+failure_code started_at ended_at method phase_timing work_ms work_scope request_binding_scope
+phases name started_ms ended_ms cpu_self_ms cpu_finished_children_ms cpu_method peak_rss_bytes
+peak_rss_scope peak_rss_method peak_rss_platform scratch_current_bytes scratch_bytes_method
+scratch_scan inventory source_bytes_verified observed_profile_id source_page_count observed_pages
+prepared_pages language_pages layout_pages single_column two_column review_required route_pages
+native recognition hybrid blank annotation_counts link empty personal visible flags pages
+locations_complete language_method language_character_limit layout_method annotation_scope
+reuse source_preparation checkpoint_decode annotation_view hits misses findings_complete
+coordinate_space page segment_id_sha256 task_id render_sha256 annotation_number relationship_path link_step
+task_id_sha256 edge_id_sha256 previous_id_sha256 next_id_sha256 observation_sha256 previous_page next_page conflicting_fields check node_id_sha256
+anchorContextProjection rawResponseSha256 derivedResponseSha256 slots segmentIndex spanIndex codePointStart originalBefore originalAfter finalBefore finalAfter
+localCellGeometry taskId originalResponseSha256 proofSha256 tsvSha256 responseSha256 binarySha256 traineddataSha256 slotCount providerCalls providerCostNano
+`
+    .trim()
+    .split(/\s+/),
+);

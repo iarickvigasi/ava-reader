@@ -25,6 +25,8 @@ export async function runEdgeBackfill(
         isPrimary: true,
         processingStatus: 'READY',
         book: {
+          pdfImportPrivate: false,
+          canonicalImportPrivate: false,
           libraryItems: { some: {} },
           files: { some: { kind: 'SOURCE', format: 'EPUB', isPrimary: true } },
         },

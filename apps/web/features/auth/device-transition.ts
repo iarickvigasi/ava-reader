@@ -16,7 +16,7 @@ export function beginDeviceTransition() {
   } catch {
     /* Identity remains gated in this tab if storage is unavailable. */
   }
-  window.location.replace("/app");
+  window.location.replace(deviceTransitionTarget(window.location.href));
 }
 
 export function finishDeviceTransition() {
@@ -27,3 +27,4 @@ export function finishDeviceTransition() {
     /* Storage unavailable. */
   }
 }
+import { deviceTransitionTarget } from "./device-transition-target";
