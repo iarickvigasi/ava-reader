@@ -172,6 +172,12 @@ Python validator and generated API/web contracts together; qualify the actual re
 capability before accepting a fresh initial import. Package checks establish source and export
 behavior, while normal-browser verification remains a separate acceptance requirement.
 
+Current Input10 also supports the distinct Task6/response6 role-only source comparison. Missing
+body references do not authorize invented typography or index exceptions: complete page and local
+pixels must establish paragraph versus quote; uncertainty and processing bounds remain blocking.
+Older task, response and input contracts reject this new authority. Full-book/reader qualification
+remains separate from authored source/contract checks.
+
 `review.Review` is an explicit editorial patch bound to both PDF SHA-256 and canonical serialized
 Book SHA-256. It can set chapter boundaries, accepted metadata, source styles, inline spans and
 assets. Each span/style edit also names its expected text hash. It cannot silently rewrite prose

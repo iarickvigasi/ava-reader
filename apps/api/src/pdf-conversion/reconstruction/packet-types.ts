@@ -1,3 +1,5 @@
+import type { SourceRoleTask } from './generated/SourceRoleTask';
+import type { SourceRoleResponse } from './generated/SourceRoleResponse';
 import type { NativePackets } from './native-packet-types';
 import type { RecognitionSmallCapsQuoteTask } from './generated/RecognitionSmallCapsQuoteTask';
 import type { ContinuationReconstructionInput } from './generated/ContinuationReconstructionInput';
@@ -37,6 +39,8 @@ import type { RecognitionOverflowContextTask } from './generated/RecognitionOver
 import type { RecognitionAnchorContextResponse } from './generated/RecognitionAnchorContextResponse';
 
 export type Packets = NativePackets & {
+  SourceRoleTask: SourceRoleTask;
+  SourceRoleResponse: SourceRoleResponse;
   RecognitionSmallCapsQuoteTask: RecognitionSmallCapsQuoteTask;
   RecognitionOverflowContextTask: RecognitionOverflowContextTask;
   ContinuationReconstructionInput: ContinuationReconstructionInput;

@@ -11,6 +11,7 @@ from .source_feature_geometry import feature_column
 from .source_feature_node import feature_node
 from .source_feature_peers import optional_heading_peer
 from .source_feature_references import local_body_reference, source_body_references
+from .source_feature_reservation import essential_feature_reservation
 from .source_feature_task_contract import SourceFeatureNode
 from .source_nonquote_context import nonquote_context
 
@@ -19,7 +20,11 @@ MAX_FEATURE_DECISIONS = 24
 
 
 def source_feature_selection(
-    segments: list[Segment], pages: PreparedPageMap, state: AssemblyState
+    segments: list[Segment],
+    pages: PreparedPageMap,
+    state: AssemblyState,
+    *,
+    pending_roles: list[Segment] | None = None,
 ) -> tuple[list[SourceFeatureRequest], dict[str, SourceFeatureNode], list[Segment]]:
     page_segments: dict[int, list[Segment]] = defaultdict(list)
     for segment in segments:
@@ -29,6 +34,9 @@ def source_feature_selection(
     missing_context: list[Segment] = []
     requests: list[SourceFeatureRequest] = []
     nodes: dict[str, SourceFeatureNode] = {}
+    remaining_essential = essential_feature_reservation(
+        segments, references, nonquotes, pending_roles is not None
+    )
     for segment in segments:
         if (
             segment.method != "ocr"
@@ -36,6 +44,8 @@ def source_feature_selection(
             or segment.kind not in {"paragraph", "quote", "heading"}
         ):
             continue
+        remaining_essential.discard(segment.id)
+        catalogue_limit = MAX_FEATURE_CATALOGUE - len(remaining_essential)
         nonquote = segment.id in nonquotes
         reference = local_body_reference(segment, references)
         if reference is None:
@@ -44,9 +54,20 @@ def source_feature_selection(
             ):
                 from .source_refusal import refuse_segment
 
-                refuse_segment(pages[segment.page], segment)
-            if nonquote or segment.kind == "heading" or len(segment.text) < 80:
-                if len(requests) + len(missing_context) < MAX_FEATURE_CATALOGUE:
+                if pending_roles is None or segment.kind not in {"paragraph", "quote"}:
+                    refuse_segment(pages[segment.page], segment)
+                assert pending_roles is not None
+                pending_roles.append(segment)
+                if len(requests) + len(missing_context) >= catalogue_limit:
+                    refuse_segment(pages[segment.page], segment)
+            if (
+                pending_roles is not None
+                and segment in pending_roles
+                or nonquote
+                or segment.kind == "heading"
+                or len(segment.text) < 80
+            ):
+                if len(requests) + len(missing_context) < catalogue_limit:
                     missing_context.append(segment)
                 else:
                     state.unrequested_optional_features += 1
@@ -70,7 +91,7 @@ def source_feature_selection(
         )
         if segment.kind == "paragraph" and not isolated:
             continue
-        if len(requests) + len(missing_context) >= MAX_FEATURE_CATALOGUE:
+        if len(requests) + len(missing_context) >= catalogue_limit:
             state.unrequested_optional_features += 1
             if role_candidate or segment.kind == "quote":
                 from .source_refusal import refuse_segment

@@ -5,6 +5,7 @@ type RefinementEvidenceMaps = {
   required_decision_evidence: Record<string, (string | undefined)[]>;
   required_join_evidence: Record<string, (string | undefined)[]>;
   required_presentation_evidence?: Record<string, (string | undefined)[]>;
+  required_role_evidence?: Record<string, string[]>;
   required_title_evidence?: Record<string, string[]>;
   required_metadata_evidence?: Record<string, (string | undefined)[]>;
   required_feature_evidence?: Record<string, Record<string, string[]>>;
@@ -14,6 +15,19 @@ type RefinementEvidenceMaps = {
 export function refinementEvidence(
   task: RefinementTask,
 ): RefinementEvidenceMaps {
+  if (task.schema_version === 'ava-book-refinement-task-6')
+    return {
+      required_decision_evidence: {},
+      required_join_evidence: {},
+      required_role_evidence: Object.fromEntries(
+        task.nodes.map((n) => [
+          n.id,
+          task.crops
+            .filter((c) => c.part === 'page' || c.node_id === n.id)
+            .map((c) => c.id),
+        ]),
+      ),
+    };
   if (task.schema_version === 'ava-printed-title-task-2')
     return {
       required_decision_evidence: {},

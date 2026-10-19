@@ -14,6 +14,18 @@ def validate_refinement(data: bytes) -> dict[str, object]:
     raw = json.loads(data)
     if set(raw) != {"mode", "task", "response"} or raw["mode"] != "validate_refinement":
         raise ValueError("Invalid refinement validation packet")
+    if raw["task"].get("schema_version") == "ava-book-refinement-task-6":
+        from .source_role_contract import SourceRoleResponse, SourceRoleTask
+        from .source_role_response import accept_source_role
+
+        role_task = SourceRoleTask.model_validate(raw["task"])
+        if raw["response"] is not None:
+            accept_source_role(role_task, SourceRoleResponse.model_validate(raw["response"]))
+        return {
+            "schema_version": "ava-refinement-validation-1",
+            "valid": True,
+            "request_sha256": hashlib.sha256(data).hexdigest(),
+        }
     if raw["task"].get("schema_version") == "ava-book-refinement-task-5":
         from .continuation_presentation_contract import (
             PresentationRefinementResponse,

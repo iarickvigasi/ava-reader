@@ -1,3 +1,5 @@
+import type { SourceRoleTask } from './generated/SourceRoleTask';
+import type { SourceRoleResponse } from './generated/SourceRoleResponse';
 import type { PresentationRefinementTask } from './generated/PresentationRefinementTask';
 import type { PresentationRefinementResponse } from './generated/PresentationRefinementResponse';
 import type { ContinuationRefinementBatch } from './generated/ContinuationRefinementBatch';
@@ -15,12 +17,14 @@ import type { FrontmatterTitleRefinementBatch } from './generated/FrontmatterTit
 import { validatePacket } from './validate-packet';
 import { PdfRuntimeError } from '../runtime/runtime-error';
 export type RefinementTask =
+  | SourceRoleTask
   | PresentationRefinementTask
   | BookRefinementTask
   | SourceFeatureTask
   | PrintedTitleTask
   | FrontmatterTitleTask;
 export type RefinementResponse =
+  | SourceRoleResponse
   | PresentationRefinementResponse
   | BookRefinementResponse
   | SourceFeatureResponse
@@ -32,6 +36,9 @@ export type RefinementBatchPacket =
   | PrintedTitleRefinementBatch
   | FrontmatterTitleRefinementBatch;
 export function validateRefinementTask(input: RefinementTask): RefinementTask {
+  if (input.schema_version === 'ava-book-refinement-task-6')
+    return validatePacket('SourceRoleTask', input);
+
   if (input.schema_version === 'ava-book-refinement-task-5')
     return validatePacket('PresentationRefinementTask', input);
   if (input.schema_version === 'ava-printed-title-task-2')
@@ -43,6 +50,8 @@ export function validateRefinementTask(input: RefinementTask): RefinementTask {
   return validatePacket('BookRefinementTask', input);
 }
 export function refinementResponseName(task: RefinementTask) {
+  if (task.schema_version === 'ava-book-refinement-task-6')
+    return 'SourceRoleResponse' as const;
   if (task.schema_version === 'ava-book-refinement-task-5')
     return 'PresentationRefinementResponse' as const;
   if (task.schema_version === 'ava-printed-title-task-2')

@@ -22,6 +22,7 @@ from .refinement_prompt import MIXED_HIERARCHY_PROMPT_VERSION, REFINEMENT_PROMPT
 from .refinement_task_builder import build_refinement_task
 from .refinement_task_groups import task_groups
 from .segments import Segment
+from .source_role_contract import SourceRoleTask
 
 
 def prepare_refinement(
@@ -34,7 +35,7 @@ def prepare_refinement(
     source_feature_policy: str | None = None,
     source_title_policy: str | None = None,
     source_continuation_policy: str | None = None,
-) -> list[AnyRefinementTask | FrontmatterTitleTask]:
+) -> list[AnyRefinementTask | FrontmatterTitleTask | SourceRoleTask]:
     validate_preparation_policies(
         prepared, source_feature_policy, source_title_policy, source_continuation_policy
     )
@@ -77,7 +78,7 @@ def prepare_refinement(
         source_continuation_policy,
         catalogue_limit(state, source_title_policy) > TASK_NODE_LIMIT,
     )
-    tasks: list[AnyRefinementTask | FrontmatterTitleTask] = [
+    tasks: list[AnyRefinementTask | FrontmatterTitleTask | SourceRoleTask] = [
         build_refinement_task(catalogue, group, context)
         for group in task_groups(catalogue, context)
     ]

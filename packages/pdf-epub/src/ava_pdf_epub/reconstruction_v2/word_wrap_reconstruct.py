@@ -14,6 +14,7 @@ from .protocol_native_structure_v2 import NativeStructure2ReconstructionInput
 from .protocol_native_word_wrap import NativeWordWrapReconstructionInput
 from .recognition_contract import RecognitionResponse
 from .refinement_contract import AnyRefinementResponse
+from .source_role_contract import SourceRoleResponse
 from .word_wrap_apply import apply_word_wrap
 from .word_wrap_assembly import WordWrapAssembly
 from .word_wrap_contract import WordWrapResponse
@@ -26,7 +27,7 @@ def reconstruct_word_wrap_assembly(
     scratch: Path,
     prepared: Sequence[AnyPreparedPage],
     responses: list[RecognitionResponse],
-    refinements: list[AnyRefinementResponse | FrontmatterTitleResponse] | None,
+    refinements: list[AnyRefinementResponse | FrontmatterTitleResponse | SourceRoleResponse] | None,
     native_structure_responses: Sequence[AnyNativeStructureResponse] | None,
     source_layout_policy: NativeLayoutPolicy | None,
     source_normalization_policy: NativeWordWrapPolicy,

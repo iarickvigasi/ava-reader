@@ -14,6 +14,7 @@ from .refinement_digest import observation_digest
 from .segments import Segment
 from .source_feature_selection import MAX_FEATURE_CATALOGUE
 from .source_feature_tasks import source_feature_tasks
+from .source_role_contract import SourceRoleTask
 
 
 def current_feature_comparisons(
@@ -23,7 +24,7 @@ def current_feature_comparisons(
     segments: list[Segment],
     state: AssemblyState,
     prior_tasks: int,
-) -> list[AnyRefinementTask | FrontmatterTitleTask]:
+) -> list[AnyRefinementTask | FrontmatterTitleTask | SourceRoleTask]:
     title = frontmatter_title_task(
         segments,
         PreparedPageMap(prepared),
@@ -31,7 +32,7 @@ def current_feature_comparisons(
         hashlib.sha256(source.read_bytes()).hexdigest(),
         observation_digest(segments),
     )
-    tasks: list[AnyRefinementTask | FrontmatterTitleTask] = list(
+    tasks: list[AnyRefinementTask | FrontmatterTitleTask | SourceRoleTask] = list(
         source_feature_tasks(
             source,
             scratch,
@@ -40,6 +41,7 @@ def current_feature_comparisons(
             state,
             prior_tasks + int(title is not None),
             decision_limit=MAX_FEATURE_CATALOGUE,
+            include_unreferenced_roles=True,
         )
     )
     if title is not None:

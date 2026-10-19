@@ -304,6 +304,43 @@ export type SchemaVersion4 = 'ava-book-refinement-task-5';
 export type SourceSha2564 = string;
 export type TaskId3 = string;
 /**
+ * @minItems 2
+ * @maxItems 25
+ */
+export type Crops4 = [SourceRoleCrop, SourceRoleCrop, ...SourceRoleCrop[]];
+export type Id9 = string;
+/**
+ * @minItems 4
+ * @maxItems 4
+ */
+export type ImageBox3 = [number, number, number, number];
+export type NodeId4 = string | null;
+export type Part3 = 'page' | 'local';
+export type RenderSha2565 = string;
+/**
+ * @minItems 1
+ * @maxItems 24
+ */
+export type Nodes4 = [SourceRoleNode, ...SourceRoleNode[]];
+export type Id10 = string;
+export type Kind2 = 'paragraph' | 'quote';
+export type OwnerSha256 = string;
+export type Page8 = number;
+export type TextExcerpt2 = string;
+export type TextLength1 = number;
+export type TextSha2563 = string;
+export type ObservationSha2564 = string;
+export type Page9 = number;
+export type PageHeightPt2 = number;
+export type PageWidthPt2 = number;
+export type PixelsPerPoint4 = 2;
+export type ProfileId4 = 'ava-pdf-prose-en-v2' | 'ava-pdf-prose-en-uk-v3';
+export type PromptVersion4 = 'ava-book-refinement-9';
+export type ResponseSchemaVersion4 = 'ava-book-refinement-response-6';
+export type SchemaVersion5 = 'ava-book-refinement-task-6';
+export type SourceSha2565 = string;
+export type TaskId4 = string;
+/**
  * @maxItems 32
  */
 export type Tasks = (
@@ -311,6 +348,7 @@ export type Tasks = (
   | SourceFeatureTask
   | FrontmatterTitleTask
   | PresentationRefinementTask
+  | SourceRoleTask
 )[];
 
 export interface ContinuationRefinementBatch {
@@ -531,4 +569,38 @@ export interface UniformJoinCandidate {
   previous_style: Style;
   previous_style_sha256: PreviousStyleSha256;
   previous_text_sha256: PreviousTextSha256;
+}
+export interface SourceRoleTask {
+  crops: Crops4;
+  image: RecognitionImage;
+  nodes: Nodes4;
+  observation_sha256: ObservationSha2564;
+  page: Page9;
+  page_height_pt: PageHeightPt2;
+  page_width_pt: PageWidthPt2;
+  pixels_per_point: PixelsPerPoint4;
+  profile_id: ProfileId4;
+  prompt_version: PromptVersion4;
+  response_schema_version: ResponseSchemaVersion4;
+  schema_version: SchemaVersion5;
+  source_sha256: SourceSha2565;
+  task_id: TaskId4;
+}
+export interface SourceRoleCrop {
+  id: Id9;
+  image_box: ImageBox3;
+  node_id: NodeId4;
+  part: Part3;
+  render_sha256: RenderSha2565;
+  source_box: Box;
+}
+export interface SourceRoleNode {
+  id: Id10;
+  kind: Kind2;
+  owner_sha256: OwnerSha256;
+  page: Page8;
+  source_box: Box;
+  text_excerpt: TextExcerpt2;
+  text_length: TextLength1;
+  text_sha256: TextSha2563;
 }

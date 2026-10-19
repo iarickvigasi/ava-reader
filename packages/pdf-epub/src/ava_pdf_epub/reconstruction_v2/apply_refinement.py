@@ -19,19 +19,27 @@ from .refinement_response import accept_refinement
 from .segments import Segment
 from .source_feature_task_contract import SourceFeatureTask
 from .source_refusal import refuse_heading_parent
+from .source_role_contract import SourceRoleResponse, SourceRoleTask
 
 
 def apply_refinement(
     segments: list[Segment],
-    tasks: list[AnyRefinementTask | FrontmatterTitleTask],
-    responses: list[AnyRefinementResponse | FrontmatterTitleResponse],
+    all_tasks: list[AnyRefinementTask | FrontmatterTitleTask | SourceRoleTask],
+    all_responses: list[AnyRefinementResponse | FrontmatterTitleResponse | SourceRoleResponse],
     state: AssemblyState,
 ) -> list[Segment]:
-    if any(t.observation_sha256 != observation_digest(segments) for t in tasks):
+    if any(t.observation_sha256 != observation_digest(segments) for t in all_tasks):
         raise ValueError("Refinement observation identity differs")
-    receipts = {r.task_id: r for r in responses}
-    if len(receipts) != len(responses) or set(receipts) != {t.task_id for t in tasks}:
+    all_receipts = {r.task_id: r for r in all_responses}
+    if len(all_receipts) != len(all_responses) or set(all_receipts) != {
+        t.task_id for t in all_tasks
+    }:
         raise ValueError("Refinement task coverage differs")
+    from .source_role_application import source_role_application
+
+    ordinary_tasks, ordinary_responses, role_tasks, role_receipts = source_role_application(
+        segments, all_tasks, all_responses, state
+    )
     from .continuation_application import (
         PresentationSnapshot,
         finalize_continuation_presentation,
@@ -39,7 +47,7 @@ def apply_refinement(
     )
 
     presentation = prepare_continuation_application(
-        segments, tasks, responses, state.source_continuation_policy
+        segments, ordinary_tasks, ordinary_responses, state.source_continuation_policy
     )
     tasks, responses = presentation.tasks, presentation.responses
     receipts = {response.task_id: response for response in responses}
@@ -192,6 +200,9 @@ def apply_refinement(
         if not isinstance(response, FrontmatterTitleResponse)
     }
     result = apply_source_features(result, feature_tasks, feature_receipts, state)
+    from .source_role_apply import apply_source_roles
+
+    result = apply_source_roles(result, role_tasks, role_receipts, state)
     result = finalize_continuation_presentation(result, presentation, state.source_feature_evidence)
     if presentation.styles:
         state.continuation_presentation = PresentationSnapshot(

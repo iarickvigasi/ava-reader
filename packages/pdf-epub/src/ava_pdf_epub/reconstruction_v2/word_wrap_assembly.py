@@ -23,6 +23,7 @@ from .refinement_contract import AnyRefinementResponse
 from .segments import Segment
 from .source_feature_contract import FEATURE_POLICY
 from .source_page_starts import SourcePageStart, capture_page_starts
+from .source_role_contract import SourceRoleResponse
 from .source_segments import source_segments
 from .stream_joins import stream_joins
 
@@ -41,7 +42,7 @@ def word_wrap_assembly(
     scratch: Path,
     prepared: Sequence[AnyPreparedPage],
     responses: list[RecognitionResponse],
-    refinements: list[AnyRefinementResponse | FrontmatterTitleResponse],
+    refinements: list[AnyRefinementResponse | FrontmatterTitleResponse | SourceRoleResponse],
     native_structure_responses: Sequence[AnyNativeStructureResponse],
     source_layout_policy: NativeLayoutPolicy,
     *,

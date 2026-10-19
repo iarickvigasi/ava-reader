@@ -33,6 +33,7 @@ from .recognition_contract import RecognitionResponse
 from .refinement_contract import AnyRefinementResponse
 from .source_cover import preserve_source_cover
 from .source_feature_contract import FEATURE_POLICY
+from .source_role_contract import SourceRoleResponse
 from .word_wrap_contract import WordWrapResponse
 from .word_wrap_reconstruct import reconstruct_word_wrap_assembly
 
@@ -52,7 +53,8 @@ def reconstruct(
     scratch: Path,
     prepared: Sequence[AnyPreparedPage],
     responses: list[RecognitionResponse],
-    refinements: list[AnyRefinementResponse | FrontmatterTitleResponse] | None = None,
+    refinements: list[AnyRefinementResponse | FrontmatterTitleResponse | SourceRoleResponse]
+    | None = None,
     *,
     source_feature_policy: str | None = None,
     source_layout_policy: NativeLayoutPolicy | None = None,

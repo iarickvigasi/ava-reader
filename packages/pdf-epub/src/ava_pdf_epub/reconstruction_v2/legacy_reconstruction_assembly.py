@@ -20,6 +20,7 @@ from .recognition_contract import RecognitionResponse
 from .refinement_contract import AnyRefinementResponse
 from .source_feature_contract import FEATURE_POLICY
 from .source_page_starts import capture_page_starts
+from .source_role_contract import SourceRoleResponse
 from .source_segments import source_segments
 from .stream_joins import stream_joins
 from .word_wrap_assembly import WordWrapAssembly
@@ -30,7 +31,7 @@ def legacy_reconstruction_assembly(
     scratch: Path,
     prepared: Sequence[AnyPreparedPage],
     responses: list[RecognitionResponse],
-    refinements: list[AnyRefinementResponse | FrontmatterTitleResponse] | None,
+    refinements: list[AnyRefinementResponse | FrontmatterTitleResponse | SourceRoleResponse] | None,
     source_feature_policy: str | None,
     source_layout_policy: NativeLayoutPolicy | None,
     native_structure_responses: Sequence[AnyNativeStructureResponse] | None,

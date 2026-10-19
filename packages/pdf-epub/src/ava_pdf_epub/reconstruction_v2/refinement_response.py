@@ -8,12 +8,22 @@ from .printed_title_contract import PrintedTitleResponse, PrintedTitleTask
 from .printed_title_v2_contract import FrontmatterTitleResponse, FrontmatterTitleTask
 from .refinement_contract import AnyRefinementResponse, AnyRefinementTask, BookRefinementResponse
 from .source_feature_task_contract import SourceFeatureResponse, SourceFeatureTask
+from .source_role_contract import SourceRoleResponse, SourceRoleTask
 
 
 def accept_refinement(
-    task: AnyRefinementTask | FrontmatterTitleTask,
-    response: AnyRefinementResponse | FrontmatterTitleResponse,
+    task: AnyRefinementTask | FrontmatterTitleTask | SourceRoleTask,
+    response: AnyRefinementResponse | FrontmatterTitleResponse | SourceRoleResponse,
 ) -> None:
+    if isinstance(task, SourceRoleTask):
+        from .source_role_response import accept_source_role
+
+        if not isinstance(response, SourceRoleResponse):
+            raise ValueError("Source role response authority differs")
+        accept_source_role(task, response)
+        return
+    if isinstance(response, SourceRoleResponse):
+        raise ValueError("Historical refinement cannot consume source role authority")
     if isinstance(task, FrontmatterTitleTask):
         from .printed_title_v2_response import accept_frontmatter_title
 

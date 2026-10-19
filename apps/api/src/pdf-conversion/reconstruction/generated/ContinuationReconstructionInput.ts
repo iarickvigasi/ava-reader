@@ -399,6 +399,31 @@ export type TaskId6 = string;
  * @maxItems 100
  */
 export type Unresolved3 = string[];
+export type ImageSha2564 = string;
+export type ObservationSha2565 = string;
+/**
+ * @minItems 1
+ * @maxItems 24
+ */
+export type RoleDecisions = [SourceRoleDecision, ...SourceRoleDecision[]];
+/**
+ * @minItems 2
+ * @maxItems 2
+ */
+export type EvidenceIds9 = [string, string];
+export type NodeId5 = string;
+export type Reason1 =
+  | ('source_blurred' | 'source_clipped' | 'source_context_insufficient')
+  | null;
+export type Role2 = ('paragraph' | 'quote') | null;
+export type TextSha2565 = string;
+export type SchemaVersion7 = 'ava-book-refinement-response-6';
+export type SourceSha2567 = string;
+export type TaskId7 = string;
+/**
+ * @maxItems 100
+ */
+export type Unresolved4 = string[];
 /**
  * @maxItems 32
  */
@@ -407,10 +432,11 @@ export type Refinements = (
   | SourceFeatureResponse
   | FrontmatterTitleResponse
   | PresentationRefinementResponse
+  | SourceRoleResponse
 )[];
 export type Language1 = string;
 export type RenderSha2563 = string;
-export type SchemaVersion7 = 'ava-recognition-response-2';
+export type SchemaVersion8 = 'ava-recognition-response-2';
 export type RecognitionSegment = RecognitionSegment1 &
   (
     | {
@@ -642,22 +668,22 @@ export type Text1 = string;
  * @maxItems 2000
  */
 export type Segments = RecognitionSegment[];
-export type SourceSha2567 = string;
-export type TaskId7 = string;
+export type SourceSha2568 = string;
+export type TaskId8 = string;
 /**
  * @maxItems 100
  */
-export type Unresolved4 = string[];
+export type Unresolved5 = string[];
 /**
  * @maxItems 25000
  */
 export type Responses = RecognitionResponse[];
-export type SchemaVersion8 = 'ava-reconstruct-input-10';
+export type SchemaVersion9 = 'ava-reconstruct-input-10';
 export type SourceContinuationPolicy = 'ava-source-continuation-presentation-1';
 export type SourceFeaturePolicy = 'ava-ocr-source-features-1';
 export type SourceLayoutPolicy = 'ava-native-layout-1';
 export type SourceNormalizationPolicy = 'ava-native-word-wrap-1';
-export type SourceSha2568 = string;
+export type SourceSha2569 = string;
 export type SourceStructurePolicy = 'ava-native-structure-2';
 export type SourceTitlePolicy = 'ava-frontmatter-title-1';
 export type CatalogueSha256 = string;
@@ -668,10 +694,10 @@ export type CatalogueSha256 = string;
 export type Decisions3 = [WordWrapDecision, ...WordWrapDecision[]];
 export type Disposition2 = 'layout' | 'literal' | 'unresolved';
 export type Id11 = string;
-export type ObservationSha2565 = string;
-export type SchemaVersion9 = 'ava-native-word-wrap-response-1';
-export type SourceSha2569 = string;
-export type TaskId8 = string;
+export type ObservationSha2566 = string;
+export type SchemaVersion10 = 'ava-native-word-wrap-response-1';
+export type SourceSha25610 = string;
+export type TaskId9 = string;
 /**
  * @maxItems 32
  */
@@ -684,12 +710,12 @@ export interface ContinuationReconstructionInput {
   recognition_repair_policy: RecognitionRepairPolicy;
   refinements?: Refinements;
   responses: Responses;
-  schema_version: SchemaVersion8;
+  schema_version: SchemaVersion9;
   source_continuation_policy: SourceContinuationPolicy;
   source_feature_policy: SourceFeaturePolicy;
   source_layout_policy: SourceLayoutPolicy;
   source_normalization_policy: SourceNormalizationPolicy;
-  source_sha256: SourceSha2568;
+  source_sha256: SourceSha2569;
   source_structure_policy: SourceStructurePolicy;
   source_title_policy: SourceTitlePolicy;
   word_wrap_responses: WordWrapResponses;
@@ -960,14 +986,30 @@ export interface JoinPresentationChoice {
   edge_id: EdgeId1;
   evidence_ids: EvidenceIds8;
 }
-export interface RecognitionResponse {
-  language: Language1;
-  render_sha256: RenderSha2563;
+export interface SourceRoleResponse {
+  image_sha256: ImageSha2564;
+  observation_sha256: ObservationSha2565;
+  role_decisions: RoleDecisions;
   schema_version: SchemaVersion7;
-  segments: Segments;
   source_sha256: SourceSha2567;
   task_id: TaskId7;
   unresolved: Unresolved4;
+}
+export interface SourceRoleDecision {
+  evidence_ids: EvidenceIds9;
+  node_id: NodeId5;
+  reason: Reason1;
+  role: Role2;
+  text_sha256: TextSha2565;
+}
+export interface RecognitionResponse {
+  language: Language1;
+  render_sha256: RenderSha2563;
+  schema_version: SchemaVersion8;
+  segments: Segments;
+  source_sha256: SourceSha2568;
+  task_id: TaskId8;
+  unresolved: Unresolved5;
 }
 export interface RecognitionSegment1 {
   alt?: Alt;
@@ -1039,10 +1081,10 @@ export interface Style1 {
 export interface WordWrapResponse {
   catalogue_sha256: CatalogueSha256;
   decisions: Decisions3;
-  observation_sha256: ObservationSha2565;
-  schema_version: SchemaVersion9;
-  source_sha256: SourceSha2569;
-  task_id: TaskId8;
+  observation_sha256: ObservationSha2566;
+  schema_version: SchemaVersion10;
+  source_sha256: SourceSha25610;
+  task_id: TaskId9;
 }
 export interface WordWrapDecision {
   disposition: Disposition2;

@@ -16,6 +16,8 @@ from .source_feature_selection import MAX_FEATURE_DECISIONS, source_feature_sele
 from .source_feature_sheet import feature_sheet_fits, source_feature_sheet
 from .source_feature_task_contract import SourceFeatureTask
 from .source_feature_uninspected import uninspected_appearance, uninspected_feature
+from .source_role_contract import SourceRoleTask
+from .source_role_tasks import source_role_tasks
 
 
 def source_feature_tasks(
@@ -27,16 +29,22 @@ def source_feature_tasks(
     existing_tasks: int,
     *,
     decision_limit: int = MAX_FEATURE_DECISIONS,
-) -> list[SourceFeatureTask]:
+    include_unreferenced_roles: bool = False,
+) -> list[SourceFeatureTask | SourceRoleTask]:
     state.source_feature_policy = FEATURE_POLICY
     pages, segment_map = PreparedPageMap(prepared), {s.id: s for s in segments}
-    requests, nodes, missing_context = source_feature_selection(segments, pages, state)
+    pending_roles: list[Segment] | None = [] if include_unreferenced_roles else None
+    requests, nodes, missing_context = source_feature_selection(
+        segments, pages, state, pending_roles=pending_roles
+    )
     digest, source_sha = (
         observation_digest(segments),
         hashlib.sha256(source.read_bytes()).hexdigest(),
     )
-    state.requested_source_features = sum(len(q.requested_features) for q in requests) + 4 * len(
-        missing_context
+    state.requested_source_features = (
+        sum(len(q.requested_features) for q in requests)
+        + 4 * len(missing_context)
+        + len(pending_roles or [])
     )
     for segment in missing_context:
         uninspected_appearance(
@@ -47,6 +55,10 @@ def source_feature_tasks(
             digest,
             state,
         )
+    role_tasks = source_role_tasks(
+        source_sha, digest, scratch, pages, pending_roles or [], state, existing_tasks
+    )
+    existing_tasks += len(role_tasks)
     groups: list[list[SourceFeatureRequest]] = []
     current: list[SourceFeatureRequest] = []
     for index, request in enumerate(requests):
@@ -94,4 +106,4 @@ def source_feature_tasks(
         )
         raw["task_id"] = refinement_identifier(raw)
         tasks.append(SourceFeatureTask.model_validate(raw))
-    return tasks
+    return [*role_tasks, *tasks]

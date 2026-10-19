@@ -76,6 +76,12 @@ complete source bookmark, an independently observed printed page label and the a
 The row keeps its text, list presentation and exact link range; its model-assigned role supplies no
 chapter authority. Missing or conflicting source evidence remains a conversion failure.
 
+Current Input10 can request a separate role-only visual decision when an essential OCR passage
+has no qualified body reference. Task6/prompt9/response6 includes the complete printed page once
+and each complete local passage at two pixels per point; it grants only paragraph/quote authority.
+Unknown roles, unreadable crops or exhausted bounds refuse. Typography remains explicitly unknown
+where uninspected. Historical tasks/prompts/inputs stay closed; no native/index glyph rule is waived.
+
 Before joining chapter-title fragments under the current policies, a missing OCR font family may
 be filled by the existing uniform visible-source font proof. Selection limits updates, while all
 original peers remain in the ownership check. Selected pages are decoded one at a time within the

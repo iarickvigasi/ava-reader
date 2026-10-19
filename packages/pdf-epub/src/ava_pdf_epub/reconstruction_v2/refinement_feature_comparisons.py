@@ -12,6 +12,7 @@ from .refinement_catalogue_limits import TASK_NODE_LIMIT, catalogue_limit
 from .refinement_contract import AnyRefinementTask, PrintedTitleTask
 from .refinement_digest import observation_digest
 from .segments import Segment
+from .source_role_contract import SourceRoleTask
 
 
 def feature_comparisons(
@@ -23,14 +24,14 @@ def feature_comparisons(
     prior_tasks: int,
     source_feature_policy: str | None,
     source_title_policy: str | None,
-) -> list[AnyRefinementTask | FrontmatterTitleTask]:
+) -> list[AnyRefinementTask | FrontmatterTitleTask | SourceRoleTask]:
     if source_feature_policy is None:
         return []
     if catalogue_limit(state, source_title_policy) > TASK_NODE_LIMIT:
         from .current_feature_comparisons import current_feature_comparisons
 
         return current_feature_comparisons(source, scratch, prepared, segments, state, prior_tasks)
-    tasks: list[AnyRefinementTask | FrontmatterTitleTask] = []
+    tasks: list[AnyRefinementTask | FrontmatterTitleTask | SourceRoleTask] = []
     page_map = PreparedPageMap(prepared)
     digest = hashlib.sha256(source.read_bytes()).hexdigest()
     from .printed_title_task import printed_title_task

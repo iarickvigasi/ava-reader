@@ -14,17 +14,20 @@ from .protocol_frontmatter_title import (
     FrontmatterRefinementTask,
     FrontmatterTitleRefinementBatch,
 )
+from .source_role_contract import SourceRoleResponse, SourceRoleTask
 
 
 class ContinuationReconstructionInput(CellGeometryReconstructionInput):
     schema_version: Literal["ava-reconstruct-input-10"]  # type: ignore[assignment]
     source_continuation_policy: Literal["ava-source-continuation-presentation-1"]
-    refinements: list[FrontmatterRefinementResponse | PresentationRefinementResponse] = Field(
-        default_factory=list, max_length=32
-    )  # type: ignore[assignment]
+    refinements: list[
+        FrontmatterRefinementResponse | PresentationRefinementResponse | SourceRoleResponse
+    ] = Field(default_factory=list, max_length=32)  # type: ignore[assignment]
 
 
 class ContinuationRefinementBatch(FrontmatterTitleRefinementBatch):
     schema_version: Literal["ava-book-refinement-batch-4"]  # type: ignore[assignment]
     source_continuation_policy: Literal["ava-source-continuation-presentation-1"]
-    tasks: list[FrontmatterRefinementTask | PresentationRefinementTask] = Field(max_length=32)
+    tasks: list[FrontmatterRefinementTask | PresentationRefinementTask | SourceRoleTask] = Field(  # type: ignore[assignment]
+        max_length=32
+    )
