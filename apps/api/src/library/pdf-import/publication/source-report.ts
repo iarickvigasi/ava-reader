@@ -20,6 +20,7 @@ export function parseSourceReport(
   book: CanonicalBookV2,
   epubSha: string,
   requireCurrentFeaturePolicy = false,
+  continuationPolicy?: string,
 ) {
   if (bytes.length > 4 * 1024 ** 2)
     throw new PdfPublicationError('PDF_SOURCE_REPORT_INVALID');
@@ -38,6 +39,11 @@ export function parseSourceReport(
     book.resources.some((r) => report.resource_hashes[r.id] !== r.sha256)
   )
     throw new PdfPublicationError('PDF_SOURCE_REPORT_INVALID');
-  validateSourceFeatures(report, book, requireCurrentFeaturePolicy);
+  validateSourceFeatures(
+    report,
+    book,
+    requireCurrentFeaturePolicy,
+    continuationPolicy,
+  );
   return report;
 }

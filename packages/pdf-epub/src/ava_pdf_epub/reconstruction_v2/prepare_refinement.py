@@ -11,6 +11,7 @@ from .assembly_state import AssemblyState
 from .page_checkpoints import PreparedPageMap
 from .prepared_types import AnyPreparedPage
 from .printed_title_v2_contract import FrontmatterTitleTask
+from .refinement_capacity import refinement_task_limit
 from .refinement_catalogue import refinement_catalogue
 from .refinement_catalogue_limits import TASK_NODE_LIMIT, catalogue_limit
 from .refinement_context import RefinementContext
@@ -94,6 +95,6 @@ def prepare_refinement(
             source_title_policy,
         )
     )
-    if len(tasks) > 32:
+    if len(tasks) > refinement_task_limit(source_continuation_policy):
         raise ValueError("Too many refinement tasks")
     return tasks

@@ -1,3 +1,4 @@
+import { reportMatchesCapturedPolicy } from '../../../pdf-conversion/reconstruction/report-policy';
 import type { ReconstructionReport } from '../../../pdf-conversion/reconstruction/generated/ReconstructionReport';
 import type { CanonicalBookV2 } from '../../../pdf-conversion/contracts/generated/ava-book-2';
 import { PdfPublicationError } from './errors';
@@ -15,13 +16,19 @@ export function validateSourceFeatures(
   report: ReconstructionReport,
   book: CanonicalBookV2,
   requireCurrent: boolean,
+  continuationPolicy?: string,
 ) {
   const ledger = report.source_feature_coverage;
-  const current = report.schema_version === 'ava-reconstruction-report-2';
+  const current = report.schema_version !== 'ava-reconstruction-report-1';
   const fail = () => {
     throw new PdfPublicationError('PDF_SOURCE_REPORT_INVALID');
   };
-  if ((requireCurrent && !current) || current !== Boolean(ledger)) fail();
+  if (
+    !reportMatchesCapturedPolicy(report, continuationPolicy) ||
+    (requireCurrent && !current) ||
+    current !== Boolean(ledger)
+  )
+    fail();
   if (
     !current &&
     'finite_source_feature_dispositions_complete' in report.checks

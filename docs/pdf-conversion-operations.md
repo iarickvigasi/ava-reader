@@ -224,6 +224,11 @@ Defaults: network disabled, read-only root, nonroot UID 10001, dropped capabilit
 is bounded to 2 GiB and counts toward memory. Containers receive source/frozen input/read-only
 lease control, never provider credentials or a writable host output mount.
 
+Current captured-continuation Input10/Batch4 allows64book refinement tasks; older input/batch
+versions stay at32. Report3 permits64receipts only with the captured policy; historical reports1/2
+remain at32. The host and publication checks bind this to the operation configuration hash.
+The64MiB current payload/frame ceiling, per-task image/crop limits and provider budgets stay fixed.
+
 Source limit is 50 MiB/500 pages; inspection 30s. Reconstruction stream bounds: 512 MiB aggregate,
 canonical/reader contracts and streamed artifacts 128 MiB, EPUB 256 MiB, report 4 MiB, resources 200 MiB, 1,003 entries and encoded stdout
 704 MiB. Hash-check every retained descriptor. Image edges/pixels/object counts are bounded;

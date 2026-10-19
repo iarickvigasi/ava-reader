@@ -14,6 +14,7 @@ from .protocol_frontmatter_title import (
     FrontmatterRefinementTask,
     FrontmatterTitleRefinementBatch,
 )
+from .refinement_capacity import CURRENT_REFINEMENT_TASK_LIMIT
 from .source_role_contract import SourceRoleResponse, SourceRoleTask
 
 
@@ -22,12 +23,12 @@ class ContinuationReconstructionInput(CellGeometryReconstructionInput):
     source_continuation_policy: Literal["ava-source-continuation-presentation-1"]
     refinements: list[
         FrontmatterRefinementResponse | PresentationRefinementResponse | SourceRoleResponse
-    ] = Field(default_factory=list, max_length=32)  # type: ignore[assignment]
+    ] = Field(default_factory=list, max_length=CURRENT_REFINEMENT_TASK_LIMIT)  # type: ignore[assignment]
 
 
 class ContinuationRefinementBatch(FrontmatterTitleRefinementBatch):
     schema_version: Literal["ava-book-refinement-batch-4"]  # type: ignore[assignment]
     source_continuation_policy: Literal["ava-source-continuation-presentation-1"]
     tasks: list[FrontmatterRefinementTask | PresentationRefinementTask | SourceRoleTask] = Field(  # type: ignore[assignment]
-        max_length=32
+        max_length=CURRENT_REFINEMENT_TASK_LIMIT
     )

@@ -238,8 +238,8 @@ Native-only text still undergoes structure qualification; already-qualified stru
 requests. A native-only configured route refuses required unresolved comparisons before dispatch.
 True paragraph joins must have compatible effective typography; sparse unknowns never silently
 replace known native properties. They never replace accepted page text. Groups
-are bounded (256 catalogue nodes, 32 groups, 24 decisions/16 joins/48 crops per task, 2048×2048
-sheet, 4 MiB image). Oversized indivisible context is refused, not silently truncated.
+are bounded (256 catalogue nodes;32historical or64captured-continuation groups;
+24decisions/16joins/48crops per task;2048×2048sheet;4MiB image). Oversized indivisible context is refused, not silently truncated.
 
 A separately captured continuation-presentation policy provides finite source-derived candidates
 for eligible mixed native/OCR prose pairs. It requires a positive visual comparison of exact source
@@ -514,8 +514,14 @@ family, weight, italic, first-line indentation, block inset and size relative to
 change the recognized text, inline spans, links, metadata or chapter hierarchy. Native observations
 keep their existing authority. These comparisons do not repair literal spaces or ambiguous Unicode.
 
-The policy catalogues at most 256 appearances and dispatches at most 24, sharing the existing 32-task
-book refinement budget. Essential paragraph/quotation decisions are selected first. Optional
+The policy catalogues at most256appearances. Historical feature paths compare at most24 and share
+a32-task book budget. Captured continuation Input10/Batch4 can compare the current selected catalogue
+within64total book tasks, shared by structure, title, missing-reference role and appearance work.
+The separate24missing-reference-owner bound and all per-task crop/decision constraints stay fixed.
+Current report3 carries up to64receipts and the captured continuation policy; old report tags1/2
+remain capped at32. Host staging and publication bind report3 to the actual captured configuration.
+This count increase never widens payload/report bytes, memory, source evidence or provider budgets.
+Essential paragraph/quotation decisions are selected first. Optional
 uninspected features and unavailable source context remain explicitly unknown, with separate counts
 for optional appearances outside the catalogue; an unresolved essential role refuses conversion.
 A comparison result applies only to its named appearance, never to every paragraph with a similar

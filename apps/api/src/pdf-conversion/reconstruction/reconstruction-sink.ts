@@ -1,3 +1,4 @@
+import { reportMatchesCapturedPolicy } from './report-policy';
 import type { CanonicalBookV2 } from '../contracts/generated/ava-book-2';
 import type { SemanticValidator } from '../contracts/types';
 import { validateContract } from '../contracts/validate-contract';
@@ -11,6 +12,7 @@ export function reconstructionSink(
   deps: CoordinatorDependencies,
   checkActive: () => void,
   semantic: SemanticValidator,
+  continuationPolicy?: string,
 ) {
   const stagedByPath: Record<string, string> = {};
   let book: CanonicalBookV2 | undefined,
@@ -19,8 +21,11 @@ export function reconstructionSink(
     checkActive();
     if (descriptor.path === 'canonical.json')
       book = await validateContract('ava-book-2', bytes, semantic);
-    if (descriptor.path === 'reconstruction-report.json')
+    if (descriptor.path === 'reconstruction-report.json') {
       reportBytes = parsePacket('ReconstructionReport', bytes, 8 * 1024 ** 2);
+      if (!reportMatchesCapturedPolicy(reportBytes, continuationPolicy))
+        throw new PdfRuntimeError('INVALID_RESULT');
+    }
     checkActive();
     stagedByPath[descriptor.path] = await deps.stageArtifact(descriptor, bytes);
     checkActive();
@@ -31,6 +36,7 @@ export function reconstructionSink(
       const header = sink.finish();
       const report = validatePacket('ReconstructionReport', header.report);
       if (
+        !reportMatchesCapturedPolicy(report, continuationPolicy) ||
         !book ||
         !reportBytes ||
         JSON.stringify(reportBytes) !== JSON.stringify(report)

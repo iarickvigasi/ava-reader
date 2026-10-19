@@ -7,6 +7,9 @@ import {
   SOURCE_CONTINUATION_POLICY,
 } from '../../library/pdf-import/admission/profile';
 
+export const HISTORICAL_REFINEMENT_TASK_LIMIT = 32;
+export const CURRENT_REFINEMENT_TASK_LIMIT = 64;
+
 export const MAX_CURRENT_REFINEMENT_PAYLOAD = 64 * 1024 ** 2;
 export const MAX_CURRENT_REFINEMENT_FRAME =
   MAX_CURRENT_REFINEMENT_PAYLOAD + 1024;

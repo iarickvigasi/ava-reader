@@ -5,10 +5,12 @@ import hashlib
 import json
 
 from .reconstruct import ReconstructedBook
-from .report import ReconstructionReport
+from .report import AnyReconstructionReport
 
 
-def candidate_packet(result: ReconstructedBook, report: ReconstructionReport) -> dict[str, object]:
+def candidate_packet(
+    result: ReconstructedBook, report: AnyReconstructionReport
+) -> dict[str, object]:
     artifacts = {
         "canonical.json": result.book.model_dump_json().encode(),
         "book.epub": result.epub,

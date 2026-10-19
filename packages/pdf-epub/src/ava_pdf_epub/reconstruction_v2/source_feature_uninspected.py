@@ -4,8 +4,10 @@ import hashlib
 from typing import Literal
 
 from .assembly_state import AssemblyState
+from .page_checkpoints import PreparedPageMap
 from .segments import Segment
 from .source_feature_contract import Feature, SourceFeatureRequest
+from .source_refusal import refuse_segment
 
 
 def uninspected_feature(
@@ -14,7 +16,12 @@ def uninspected_feature(
     source_sha: str,
     digest: str,
     state: AssemblyState,
+    pages: PreparedPageMap | None = None,
 ) -> None:
+    if request.allowed_roles:
+        if pages is None:
+            raise ValueError("Essential source feature requires original page context")
+        refuse_segment(pages[request.page], segment)
     uninspected_appearance(
         segment, request.requested_features, "comparison_budget_bound", source_sha, digest, state
     )

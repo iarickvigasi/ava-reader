@@ -341,7 +341,7 @@ export type SchemaVersion5 = 'ava-book-refinement-task-6';
 export type SourceSha2565 = string;
 export type TaskId4 = string;
 /**
- * @maxItems 32
+ * @maxItems 64
  */
 export type Tasks = (
   | BookRefinementTask

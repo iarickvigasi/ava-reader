@@ -1,5 +1,8 @@
 /* Generated from Python recognition models; do not edit. */
 
+export type ReconstructionReport =
+  | ReconstructionReport1
+  | ContinuationReconstructionReport;
 export type CanonicalSha256 = string;
 export type EpubSha256 = string;
 export type BlockId = string | null;
@@ -86,8 +89,25 @@ export type RequestedFeatures = number;
 export type UninspectedFeatures = number;
 export type UnrequestedOptionalCandidates = number;
 export type SourceSha2561 = string;
+export type CanonicalSha2561 = string;
+export type EpubSha2561 = string;
+/**
+ * @maxItems 10000
+ */
+export type Findings1 = Finding[];
+export type Outcome1 = 'candidate';
+export type PageCount1 = number;
+export type ProfileId1 = 'ava-pdf-prose-en-v2' | 'ava-pdf-prose-en-uk-v3';
+export type RecognitionTaskCount1 = number;
+/**
+ * @maxItems 64
+ */
+export type RefinementEvidence2 = RefinementEvidence1[];
+export type SchemaVersion1 = 'ava-reconstruction-report-3';
+export type SourceContinuationPolicy = 'ava-source-continuation-presentation-1';
+export type SourceSha2562 = string;
 
-export interface ReconstructionReport {
+export interface ReconstructionReport1 {
   canonical_sha256: CanonicalSha256;
   checks: Checks;
   epub_sha256: EpubSha256;
@@ -157,4 +177,26 @@ export interface SourceFeatureEvidence {
   text_length: TextLength;
   text_sha256: TextSha256;
   value: Value;
+}
+export interface ContinuationReconstructionReport {
+  canonical_sha256: CanonicalSha2561;
+  checks: Checks1;
+  epub_sha256: EpubSha2561;
+  findings: Findings1;
+  outcome: Outcome1;
+  page_count: PageCount1;
+  profile_id: ProfileId1;
+  recognition_task_count: RecognitionTaskCount1;
+  refinement_evidence?: RefinementEvidence2;
+  resource_hashes: ResourceHashes1;
+  schema_version: SchemaVersion1;
+  source_continuation_policy: SourceContinuationPolicy;
+  source_feature_coverage?: SourceFeatureCoverage | null;
+  source_sha256: SourceSha2562;
+}
+export interface Checks1 {
+  [k: string]: 'pass' | 'not_run';
+}
+export interface ResourceHashes1 {
+  [k: string]: string;
 }

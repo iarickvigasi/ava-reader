@@ -1,4 +1,4 @@
-"""Real source crops retain every required role while title and optional work share 32 slots."""
+"""Real source crops retain every required role while title and optional work share the current64 slots."""
 
 import tempfile
 import unittest
@@ -14,7 +14,7 @@ from .source_feature_fixtures import case
 
 
 class FeatureTitleReservationTests(unittest.TestCase):
-    def test_title_slot_precedes_optional_budget_without_creating_a_33rd_task(self):
+    def test_title_slot_precedes_optional_budget_without_creating_a_65th_task(self):
         with tempfile.TemporaryDirectory() as directory:
             scratch = Path(directory)
             source, page, segments, state, _ = case(scratch, include_quote=False)
@@ -26,7 +26,7 @@ class FeatureTitleReservationTests(unittest.TestCase):
                 [page],
                 segments,
                 state,
-                31,
+                63,
                 FEATURE_POLICY,
                 state.source_title_policy,
             )

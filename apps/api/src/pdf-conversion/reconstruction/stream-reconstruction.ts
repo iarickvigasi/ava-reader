@@ -11,6 +11,7 @@ export async function streamReconstruction(
   sandboxInput: () => SandboxInput,
   auxiliaryBytes: Buffer,
   semantic: SemanticValidator,
+  continuationPolicy?: string,
 ) {
   const sink = reconstructionSink(
     deps,
@@ -18,6 +19,7 @@ export async function streamReconstruction(
       sandboxInput();
     },
     semantic,
+    continuationPolicy,
   );
   const input = sandboxInput();
   const transfer = sourceRefusalStream(checksumBuffer(input.source), (chunk) =>

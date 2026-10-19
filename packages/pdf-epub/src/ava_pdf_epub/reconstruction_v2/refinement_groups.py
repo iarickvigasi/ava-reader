@@ -2,6 +2,7 @@
 
 from collections.abc import Callable
 
+from .refinement_capacity import HISTORICAL_REFINEMENT_TASK_LIMIT
 from .refinement_catalogue import RefinementCatalogue
 from .refinement_contract import RefinementEdge
 from .refinement_group import refinement_group
@@ -10,6 +11,8 @@ from .refinement_group import refinement_group
 def refinement_groups(
     catalogue: RefinementCatalogue,
     fits: Callable[[list[str]], bool] | None = None,
+    *,
+    task_limit: int = HISTORICAL_REFINEMENT_TASK_LIMIT,
 ) -> list[tuple[list[str], list[str], list[RefinementEdge]]]:
     pending = [catalogue.decisions[i : i + 8] for i in range(0, len(catalogue.decisions), 8)]
     assigned: set[str] = set()
@@ -24,7 +27,7 @@ def refinement_groups(
             midpoint = len(decisions) // 2
             pending[:0] = [decisions[:midpoint], decisions[midpoint:]]
             continue
-        if oversized or len(groups) >= 32:
+        if oversized or len(groups) >= task_limit:
             raise ValueError("Whole-book refinement groups exceed supported bound")
         groups.append((decisions, crop_ids, edges))
         assigned.update(e.id for e in edges)

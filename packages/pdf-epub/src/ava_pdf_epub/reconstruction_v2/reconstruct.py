@@ -46,6 +46,7 @@ class ReconstructedBook:
     structure_findings: list[Finding]
     refinement_evidence: list[dict[str, Any]]
     source_feature_coverage: dict[str, Any] | None = None
+    source_continuation_policy: str | None = None
 
 
 def reconstruct(
@@ -170,4 +171,5 @@ def reconstruct(
         structure_findings=[*state.structure_findings, *annotation_findings(source)],
         refinement_evidence=state.refinement_evidence,
         source_feature_coverage=feature_coverage,
+        source_continuation_policy=source_continuation_policy,
     )

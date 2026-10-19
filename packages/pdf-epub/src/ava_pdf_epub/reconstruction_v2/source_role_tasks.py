@@ -7,6 +7,7 @@ from ..contracts.common import document_digest, text_digest
 from .assembly_state import AssemblyState
 from .continuation_presentation_contract import POLICY
 from .page_checkpoints import PreparedPageMap
+from .refinement_capacity import refinement_task_limit
 from .refinement_identity import refinement_identifier
 from .segments import Segment
 from .source_refusal import refuse_segment
@@ -46,7 +47,9 @@ def source_role_tasks(
             middle = len(owners) // 2
             pending[0:0] = [owners[:middle], owners[middle:]]
             continue
-        if sheet is None or prior_tasks + len(tasks) >= 32:
+        if sheet is None or prior_tasks + len(tasks) >= refinement_task_limit(
+            state.source_continuation_policy
+        ):
             refuse_segment(checkpoint, owners[0])
         assert sheet is not None
         crops, image = sheet

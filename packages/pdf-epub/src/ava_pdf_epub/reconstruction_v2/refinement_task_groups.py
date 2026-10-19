@@ -2,6 +2,7 @@
 
 from .bibliographic_refinement import metadata_crop_groups
 from .packed_refinement_groups import packed_refinement_groups
+from .refinement_capacity import refinement_task_limit
 from .refinement_catalogue import RefinementCatalogue
 from .refinement_catalogue_limits import TASK_NODE_LIMIT
 from .refinement_context import RefinementContext
@@ -24,7 +25,10 @@ def task_groups(
         else refinement_groups
     )
     groups: list[RefinementGroup] = [
-        (decisions, crops, edges, []) for decisions, crops, edges in grouping(catalogue, fits)
+        (decisions, crops, edges, [])
+        for decisions, crops, edges in grouping(
+            catalogue, fits, task_limit=refinement_task_limit(context.continuation_policy)
+        )
     ]
     anchors = [n.id for n in catalogue.metadata_nodes if n.kind == "heading"][:1]
     for ids in metadata_crop_groups(

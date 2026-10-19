@@ -55,7 +55,7 @@ class SourceRoleRouteTests(unittest.TestCase):
             for active, current, prior in [
                 (state, False, 0),
                 (AssemblyState(), True, 0),
-                (state, True, 32),
+                (state, True, 64),
             ]:
                 with self.assertRaises(SourceContentRefusal):
                     source_feature_tasks(

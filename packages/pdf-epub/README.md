@@ -57,8 +57,10 @@ reviewable EPUB, not a declaration that the whole product is production-ready.
 Current captured continuation imports allow one source-validated refinement batch up to 64 MiB
 (plus the existing 1 KiB exchange envelope). The worker privately serializes the complete bounded
 frame before emitting its prefix; the host admits the larger frame only for Input10 and batch4.
-Historical refinement batches remain at 24 MiB. Page, other control, reply, per-task and 32-task
-bounds stay unchanged. The direct diagnostic command uses the same captured-input payload limit.
+Historical refinement batches remain at24MiB and32tasks. Captured Input10/Batch4 allows64
+book tasks, including structure, title, role and appearance comparisons; a tagged report3 carries
+up to64receipts and its captured continuation policy. Older report tags1/2 stay at32receipts.
+Page, other control, reply, per-task,64MiB current payload and report-byte bounds stay unchanged. The direct diagnostic command uses the same captured-input payload limit.
 This transport allowance does not establish complete-book fidelity or production qualification.
 
 ## Install and run

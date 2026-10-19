@@ -1,4 +1,6 @@
 import {
+  HISTORICAL_REFINEMENT_TASK_LIMIT,
+  CURRENT_REFINEMENT_TASK_LIMIT,
   MAX_CURRENT_REFINEMENT_FRAME,
   MAX_CURRENT_REFINEMENT_PAYLOAD,
   currentRefinementPayload,
@@ -53,6 +55,7 @@ export function exchangeProtocol(
     pages = 0,
     recognitions = 0,
     refinements = 0,
+    refinementTaskLimit = HISTORICAL_REFINEMENT_TASK_LIMIT,
     batch = false,
     wrapBatch = false,
     wraps = 0,
@@ -179,7 +182,11 @@ export function exchangeProtocol(
       } else if (value.kind === 'refinement_batch') {
         if (batch || !pages || pending.length)
           throw new PdfRuntimeError('INVALID_RESULT');
-        pending = exchangeTasks(value.payload, 32, true);
+        refinementTaskLimit =
+          continuationMode && currentRefinementPayload(value.payload)
+            ? CURRENT_REFINEMENT_TASK_LIMIT
+            : HISTORICAL_REFINEMENT_TASK_LIMIT;
+        pending = exchangeTasks(value.payload, refinementTaskLimit, true);
         lastRecognition = undefined;
         batch = true;
       } else if (value.kind === 'word_wrap_batch') {
@@ -234,7 +241,7 @@ export function exchangeProtocol(
           value.kind !== pending[0].kind ||
           (value.kind !== 'refinement'
             ? recognitions >= 25000
-            : refinements >= 32)
+            : refinements >= refinementTaskLimit)
         )
           throw new PdfRuntimeError('INVALID_RESULT');
         pending.shift();

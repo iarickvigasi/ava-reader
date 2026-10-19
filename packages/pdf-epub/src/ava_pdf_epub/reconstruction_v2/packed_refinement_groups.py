@@ -2,6 +2,7 @@
 
 from collections.abc import Callable
 
+from .refinement_capacity import HISTORICAL_REFINEMENT_TASK_LIMIT
 from .refinement_catalogue import RefinementCatalogue
 from .refinement_catalogue_limits import TASK_DECISION_LIMIT
 from .refinement_contract import RefinementEdge
@@ -9,7 +10,10 @@ from .refinement_group import refinement_group
 
 
 def packed_refinement_groups(
-    catalogue: RefinementCatalogue, fits: Callable[[list[str]], bool]
+    catalogue: RefinementCatalogue,
+    fits: Callable[[list[str]], bool],
+    *,
+    task_limit: int = HISTORICAL_REFINEMENT_TASK_LIMIT,
 ) -> list[tuple[list[str], list[str], list[RefinementEdge]]]:
     assigned: set[str] = set()
     groups: list[tuple[list[str], list[str], list[RefinementEdge]]] = []
@@ -24,7 +28,7 @@ def packed_refinement_groups(
                 break
         else:
             raise ValueError("Whole-book refinement group cannot fit readable source context")
-        if len(groups) >= 32:
+        if len(groups) >= task_limit:
             raise ValueError("Whole-book refinement groups exceed supported bound")
         groups.append(group)
         assigned.update(e.id for e in edges)

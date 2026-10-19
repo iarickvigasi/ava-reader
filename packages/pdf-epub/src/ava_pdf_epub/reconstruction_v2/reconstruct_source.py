@@ -14,13 +14,13 @@ from .protocol_native_structure import NativeStructureReconstructionInput
 from .protocol_native_word_wrap import NativeWordWrapReconstructionInput
 from .protocol_recognition_geometry import RecognitionGeometryReconstructionInput
 from .reconstruct import ReconstructedBook, reconstruct
-from .report import ReconstructionReport, reconstruction_report
+from .report import AnyReconstructionReport, reconstruction_report
 from .validate_geometry_proofs import validate_geometry_proofs
 
 
 def reconstruct_source(
     source: Path, scratch: Path, request: AnyReconstructionInput
-) -> tuple[ReconstructedBook, ReconstructionReport]:
+) -> tuple[ReconstructedBook, AnyReconstructionReport]:
     prepared = prepare_source(
         source,
         scratch,
@@ -60,7 +60,7 @@ def reconstruct_from_pages(
     scratch: Path,
     prepared: Sequence[AnyPreparedPage],
     request: AnyReconstructionInput,
-) -> tuple[ReconstructedBook, ReconstructionReport]:
+) -> tuple[ReconstructedBook, AnyReconstructionReport]:
     """Create final assembly state afresh from unchanged private source checkpoints."""
     if isinstance(
         request, (NativeStructureReconstructionInput, NativeWordWrapReconstructionInput)

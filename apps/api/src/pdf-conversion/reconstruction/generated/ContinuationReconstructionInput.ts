@@ -425,7 +425,7 @@ export type TaskId7 = string;
  */
 export type Unresolved4 = string[];
 /**
- * @maxItems 32
+ * @maxItems 64
  */
 export type Refinements = (
   | BookRefinementResponse

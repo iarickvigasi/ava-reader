@@ -1,3 +1,4 @@
+import { capturedSourcePolicies } from '../admission/captured-source-policies';
 import type { ValidationAuthority } from './validation-authority';
 import { requireValidationRun } from './validation-authority';
 import { jobTransaction } from '../jobs/transaction';
@@ -61,6 +62,8 @@ export async function validatePdfCandidate(
     book,
     epub.checksum,
     true,
+    capturedSourcePolicies(c.op.profileId, c.op.configSha256)
+      .sourceContinuationPolicy,
   );
   if (
     book.source.sha256 !== c.op.sourceSha256 ||

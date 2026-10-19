@@ -93,7 +93,12 @@ export async function runAttempt(
         signal,
       ),
   });
-  const sink = reconstructionSink(input.deps, checkActive, semantic);
+  const sink = reconstructionSink(
+    input.deps,
+    checkActive,
+    semantic,
+    input.sourceContinuationPolicy,
+  );
   const result = await input.deps.sandbox({
     ...input.sandboxInput(),
     auxiliaryBytes: Buffer.from(
@@ -115,7 +120,12 @@ export async function runAttempt(
   const prepared = exchanges.finish(result.exitCode);
   const output = sink.finish();
   try {
-    validateSourceFeatures(output.report, output.book, true);
+    validateSourceFeatures(
+      output.report,
+      output.book,
+      true,
+      input.sourceContinuationPolicy,
+    );
   } catch {
     throw new PdfRuntimeError('INVALID_RESULT');
   }

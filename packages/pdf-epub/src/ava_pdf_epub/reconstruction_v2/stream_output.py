@@ -6,14 +6,14 @@ import json
 from collections.abc import Iterator
 
 from .reconstruct import ReconstructedBook
-from .report import ReconstructionReport
+from .report import AnyReconstructionReport
 
 CHUNK_BYTES = 256 * 1024
 MAX_ARTIFACT = 256 * 1024 * 1024
 MAX_TOTAL = 512 * 1024 * 1024
 
 
-def stream_artifacts(result: ReconstructedBook, report: ReconstructionReport) -> Iterator[bytes]:
+def stream_artifacts(result: ReconstructedBook, report: AnyReconstructionReport) -> Iterator[bytes]:
     artifacts = {
         "canonical.json": result.book.model_dump_json().encode(),
         "book.epub": result.epub,

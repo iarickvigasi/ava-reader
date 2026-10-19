@@ -8,6 +8,7 @@ from .assembly_state import AssemblyState
 from .feature_group_nodes import feature_group_nodes
 from .page_checkpoints import PreparedPageMap
 from .prepared_types import AnyPreparedPage
+from .refinement_capacity import refinement_task_limit
 from .refinement_digest import observation_digest
 from .refinement_identity import refinement_identifier
 from .segments import Segment
@@ -64,11 +65,9 @@ def source_feature_tasks(
     for index, request in enumerate(requests):
         can_fit = feature_sheet_fits([request], segment_map, pages)
         if index >= decision_limit or not can_fit:
-            if request.allowed_roles:
-                from .source_refusal import refuse_segment
-
-                refuse_segment(pages[request.page], segment_map[request.node_id])
-            uninspected_feature(request, segment_map[request.node_id], source_sha, digest, state)
+            uninspected_feature(
+                request, segment_map[request.node_id], source_sha, digest, state, pages
+            )
             continue
         if current and not feature_sheet_fits([*current, request], segment_map, pages):
             groups.append(current)
@@ -78,14 +77,10 @@ def source_feature_tasks(
         groups.append(current)
     tasks: list[SourceFeatureTask] = []
     for group in groups:
-        if existing_tasks + len(tasks) >= 32:
+        if existing_tasks + len(tasks) >= refinement_task_limit(state.source_continuation_policy):
             for request in group:
-                if request.allowed_roles:
-                    from .source_refusal import refuse_segment
-
-                    refuse_segment(pages[request.page], segment_map[request.node_id])
                 uninspected_feature(
-                    request, segment_map[request.node_id], source_sha, digest, state
+                    request, segment_map[request.node_id], source_sha, digest, state, pages
                 )
             continue
         crops, image = source_feature_sheet(group, segment_map, pages, scratch)
