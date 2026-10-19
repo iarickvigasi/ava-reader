@@ -84,6 +84,8 @@ def presentation_projection(
                 if field in {"underline", "strike_through"} and value is True:
                     raise ValueError("Continuation block decoration requires component review")
                 current = own.get(field)
+                if field == "line_height" and current is None:
+                    raise ValueError("Continuation source leading is unmeasured")
                 if current is not None and current != value:
                     raise ValueError(
                         "Observed continuation typography conflicts with the selected candidate"

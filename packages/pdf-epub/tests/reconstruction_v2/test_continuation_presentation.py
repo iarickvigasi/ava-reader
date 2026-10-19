@@ -28,7 +28,7 @@ from ava_pdf_epub.reconstruction_v2.recognition_contract import RecognitionImage
 from ava_pdf_epub.reconstruction_v2.refinement_identity import refinement_identifier
 
 
-def pair(native_first=True):
+def pair(native_first=True, unknown_leading=False):
     native = Style(
         id="measured",
         family="serif",
@@ -38,7 +38,7 @@ def pair(native_first=True):
         small_caps=False,
         vertical_align="baseline",
         relative_size=1,
-        line_height=1.2094999999999974,
+        line_height=None if unknown_leading else 1.2094999999999974,
         indent_em=1.1,
         space_before_em=0.4,
         space_after_em=5.329070518200751e-15,
@@ -77,8 +77,8 @@ def pair(native_first=True):
     )
 
 
-def fixture(native_first=True):
-    left, right, native, edge = pair(native_first)
+def fixture(native_first=True, unknown_leading=False):
+    left, right, native, edge = pair(native_first, unknown_leading)
     data = io.BytesIO()
     Image.new("RGB", (64, 64), "white").save(data, format="PNG")
     pixels = data.getvalue()
@@ -187,6 +187,60 @@ class ContinuationPresentationTest(unittest.TestCase):
             self.assertEqual(before, document_digest(task))
             self.assertNotEqual(task.task_id, projection.task.task_id)
             self.assertEqual(task.task_id, projection.proof["task_id"])
+
+    def test_unknown_source_leading_keeps_finite_candidate_without_measurement(self):
+        for direction in (True, False):
+            left, right, native, edge = pair(direction, unknown_leading=True)
+            before = [document_digest(value) for value in (left, right)]
+            candidate = uniform_candidate(
+                edge, left, right, native, native_alignment_fallback=True
+            )
+            self.assertIsNotNone(candidate)
+            self.assertIsNone(candidate.previous_style.line_height)
+            self.assertIsNone(candidate.next_style.line_height)
+            self.assertEqual(before, [document_digest(value) for value in (left, right)])
+            self.assertEqual("#231f20", candidate.previous_style.color)
+            self.assertFalse(candidate.next_style.italic)
+            for field in ("family", "bold", "relative_size"):
+                changed = [
+                    node.model_copy(
+                        update={
+                            "observed_style": node.observed_style.model_copy(
+                                update={field: None}
+                            )
+                        }
+                    )
+                    for node in (left, right)
+                ]
+                self.assertIsNone(
+                    uniform_candidate(
+                        edge, *changed, native, native_alignment_fallback=True
+                    ),
+                    field,
+                )
+
+    def test_unknown_leading_projection_stays_unknown_and_rejects_numeric_guess(self):
+        for direction in (True, False):
+            task, response = fixture(direction, unknown_leading=True)
+            before = document_digest(task)
+            projection = presentation_projection(task, response)
+            self.assertTrue(all(style.line_height is None for style in projection.styles.values()))
+            self.assertEqual(before, document_digest(task))
+            old_task, old_response = fixture(direction)
+            self.assertNotEqual(old_task.task_id, task.task_id)
+            with self.assertRaisesRegex(ValueError, "stale"):
+                presentation_projection(task, old_response)
+            raw = response.model_dump(mode="json")
+            raw["decisions"][0]["style"] = {
+                "id": "observed",
+                "bold": False,
+                "relative_size": 1,
+                "line_height": 1.21,
+            }
+            with self.assertRaisesRegex(ValueError, "unmeasured"):
+                presentation_projection(
+                    task, PresentationRefinementResponse.model_validate(raw)
+                )
 
     def test_explicit_origin_and_known_conflicts(self):
         left, right, native, edge = pair()

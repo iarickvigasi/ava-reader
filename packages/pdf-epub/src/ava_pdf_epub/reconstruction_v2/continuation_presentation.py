@@ -52,7 +52,9 @@ def uniform_candidate(
         common[field] = left if left is not None else right
     if common.get("underline") is True or common.get("strike_through") is True:
         return None  # Ancestor decoration cannot be cancelled by a false inline reset.
-    if any(common[key] is None for key in ("family", "bold", "relative_size", "line_height")):
+    # A single source line has no measurable leading. Preserve that unknown
+    # on both fragments; it is not a conflict or permission to invent a metric.
+    if any(common[key] is None for key in ("family", "bold", "relative_size")):
         return None
     # Gap after the complete paragraph belongs to its final fragment; head indent
     # and before-gap remain on the first endpoint. No floating measurements round.

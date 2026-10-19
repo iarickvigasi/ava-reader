@@ -73,6 +73,12 @@ the host observation contract and safe report export; raw values, invented field
 wrong outcome/command and mismatched bindings are rejected. These diagnostic checks do not qualify
 source fidelity or change the existing publication gates.
 
+Continuation presentation regression also covers both-source-unknown leading in both directions:
+the finite candidate and selected projection retain null, missing base typography still refuses,
+and a numeric leading guess or an old task-bound reply cannot authorize the new comparison.
+Known measured conflicts remain refused. Keep actual source/native provenance, inline-span and
+full-book/EPUB/reader evidence distinct from these component controls.
+
 The installed job builds the stock digest-pinned worker Dockerfile, with its pinned native dependency
 snapshot and checksum-verified EPUBCheck. Dependency installation and the web build's font fetching
 require network access and fail if upstream artifacts are unavailable; this is not an offline or

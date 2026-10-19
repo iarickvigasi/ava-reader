@@ -443,6 +443,12 @@ bytes remain the cache/receipt identity: reuse unaffected exact requests, and re
 for a changed grammar. No paid reply is edited, replayed under a different request or treated as
 source-quality acceptance. This correction requires current provider/corpus verification.
 
+A finite mixed-source paragraph comparison can retain `line_height: null` when neither source
+fragment supplies measured leading, as with a one-line fragment across a page break. This grants
+no numeric metric: a selected candidate with unknown leading rejects a model-supplied number.
+All known style conflicts, source/owner identities, crop choices and final join validation still
+apply. The choice preserves source text and inline spans; it does not automatically join fragments.
+
 For Gemini NativeTask2, generation array limits derive from the validated task's public source
 inventory: group count and each group's line IDs fit its unique line count, boundary decisions
 fit its candidate count, and references fit its unique eligible callout count. Accepted responses
