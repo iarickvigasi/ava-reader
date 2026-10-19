@@ -11,11 +11,12 @@ import {
   settlePdfUploadIntent,
   storePdfUploadIntent,
 } from "./storage";
-import type { GetToken, ImportResult } from "./types";
+import type { GetToken, ImportResult, PdfCopyChoice } from "./types";
 
 export async function importPdfFile(
   file: File,
   getToken: GetToken,
+  copy?: PdfCopyChoice,
 ): Promise<ImportResult> {
   const db = getDb();
   if (file.size > 50 * 1024 * 1024)
@@ -28,16 +29,26 @@ export async function importPdfFile(
     byte.toString(16).padStart(2, "0"),
   ).join("");
   const requestKey = crypto.randomUUID();
-  const intent = await storePdfUploadIntent(db, {
-    requestKey,
-    sourceSha256,
-    filename: file.name,
-    createdAt: new Date().toISOString(),
-  });
+  const intent = await storePdfUploadIntent(
+    db,
+    {
+      requestKey,
+      sourceSha256,
+      filename: file.name,
+      createdAt: new Date().toISOString(),
+      ...(copy ? { copyOfOperationId: copy.operationId } : {}),
+    },
+    copy?.requestKey,
+  );
   if (!intent || db !== getDb()) return { state: "uncertain" };
   try {
     const existing = await reconcilePdfRequest(db, getToken, intent);
-    const known = await knownPdfRequestResult(db, getToken, existing);
+    const known = await knownPdfRequestResult(
+      db,
+      getToken,
+      existing,
+      !copy && Boolean(intent.libraryItemId) ? intent.requestKey : undefined,
+    );
     if (known) return known;
     // Only a brand-new intent may start an upload. An unresolved prior request
     // is observed with GET; missing/ambiguous results never resend its bytes.
@@ -47,6 +58,8 @@ export async function importPdfFile(
     body.append("file", file);
     body.append("originalFilename", file.name);
     body.append("convertToEpub", "true");
+    if (intent.copyOfOperationId)
+      body.append("copyOfOperationId", intent.copyOfOperationId);
     const response = await pdfImportRequest(db, getToken, "", {
       method: "POST",
       body,
@@ -54,6 +67,7 @@ export async function importPdfFile(
     });
     const payload = (await response.json().catch(() => null)) as {
       libraryItemId?: string;
+      operationId?: string;
       code?: string;
     } | null;
     if (db !== getDb()) return { state: "uncertain" };
@@ -61,17 +75,35 @@ export async function importPdfFile(
       (response.ok || payload?.code === "PDF_ALREADY_IMPORTED") &&
       typeof payload?.libraryItemId === "string" &&
       payload.libraryItemId.trim().length > 0 &&
-      payload.libraryItemId.length <= 200
+      payload.libraryItemId.length <= 200 &&
+      (response.ok ||
+        (typeof payload.operationId === "string" &&
+          /^[A-Za-z0-9_-]{1,200}$/.test(payload.operationId)))
     ) {
-      if (!(await settlePdfUploadIntent(db, intent, payload.libraryItemId)))
+      if (
+        !(await settlePdfUploadIntent(
+          db,
+          intent,
+          payload.libraryItemId,
+          response.ok ? undefined : payload.operationId,
+        ))
+      )
         return { state: "uncertain" };
       await revalidateLibrary(getToken);
       if (db !== getDb()) return { state: "uncertain" };
-      return acceptedPdfImportResult(
+      const accepted = await acceptedPdfImportResult(
         db,
         response.ok ? "accepted" : "existing",
         payload.libraryItemId,
       );
+      return !response.ok && accepted.state === "existing"
+        ? {
+            ...accepted,
+            state: "duplicate",
+            operationId: payload.operationId,
+            requestKey: intent.requestKey,
+          }
+        : accepted;
     }
     if (response.status >= 500) {
       const lookup = await reconcilePdfRequest(db, getToken, intent);
@@ -100,11 +132,24 @@ async function knownPdfRequestResult(
   db: AvaReaderDB,
   getToken: GetToken,
   lookup: PdfRequestLookup | null,
+  duplicateRequestKey?: string,
 ): Promise<ImportResult | null> {
   if (db !== getDb()) return { state: "uncertain" };
   if (lookup?.state === "refused")
     return { state: "rejected", code: lookup.code };
   if (lookup?.state !== "accepted") return null;
   await revalidateLibrary(getToken);
-  return acceptedPdfImportResult(db, "existing", lookup.status.libraryItemId);
+  const result = await acceptedPdfImportResult(
+    db,
+    "existing",
+    lookup.status.libraryItemId,
+  );
+  return duplicateRequestKey && result.state === "existing"
+    ? {
+        ...result,
+        state: "duplicate",
+        operationId: lookup.status.operationId,
+        requestKey: duplicateRequestKey,
+      }
+    : result;
 }

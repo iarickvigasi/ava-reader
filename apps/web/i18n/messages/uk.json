@@ -799,6 +799,9 @@
     }
   },
   "pdfImport": {
+    "duplicateTitle": "Цей PDF уже є у вашій бібліотеці",
+    "openExisting": "Відкрити наявну книгу",
+    "addCopy": "Додати ще одну копію",
     "title": "Імпортувати PDF",
     "convert": "Перетворити на EPUB",
     "cancel": "Скасувати",

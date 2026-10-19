@@ -18,7 +18,9 @@ export async function reconcilePdfRequest(
   const response = await pdfImportRequest(
     db,
     getToken,
-    `/requests/${encodeURIComponent(intent.requestKey)}`,
+    intent.duplicateOperationId
+      ? `/${encodeURIComponent(intent.duplicateOperationId)}`
+      : `/requests/${encodeURIComponent(intent.requestKey)}`,
   );
   if (response.status === 404) return { state: "missing" };
   const payload = await response.json().catch(() => null);

@@ -401,3 +401,15 @@ and focus return after desktop-to-phone reflow. This fixes the observed focus-lo
 desktop viewport check, not physical-phone or assistive-use qualification. TEST registration changes
 no accepted book/publication. Independent review, the remaining reader flows and frozen five-book
 regression remain open; this checkpoint does not close PDF-04 or qualify production.
+
+### Explicit separate-copy regression
+
+The existing `apps/api/scripts/check-pdf-provider-database.sh` command also exercises the stock
+import coordinator against its disposable database. A bounded authored inspection replaces only
+the inspector boundary; it does not prove actual PDF inspection, HTTP/Clerk, browser behavior,
+conversion, publication or source fidelity. It checks explicit consent, simultaneous same-key copy
+acceptance, independent book/artifact/job/progress identity, unchanged pre-existing values including
+saved notes and progress (only the importing owner’s existing smart-shelf update timestamps may refresh), request conflicts, owner/source denial, removed-source refusal and
+accepted-copy replay after original removal. Jobs remain queued with no provider grant or dispatch.
+Client tests separately cover persisted copy intent and lost-response reconciliation without reposting.
+Actual choice/dialog, account changes and complete copy-to-readable-book flows remain user-flow gates.

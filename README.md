@@ -151,7 +151,8 @@ container and checks PDF review authority and immutability. Run it locally with
 `apps/api/scripts/check-pdf-review-role-guard.sh`; it does not connect to your configured database.
 After building the API, run `apps/api/scripts/check-pdf-provider-database.sh` for process-crash,
 shared-budget and persisted-cost checks. It starts its own loopback-only disposable database with
-authored fixtures and synthetic receipts; existing databases and real provider keys are unused.
+authored fixtures and synthetic receipts; existing databases and real provider keys are unused. It also checks deliberate PDF copies and
+request recovery with an authored inspection boundary; browser and conversion remain separate checks.
 See [PDF verification](docs/pdf-conversion-verification.md#pull-request-ci) for commands and limits.
 
 ## Notes

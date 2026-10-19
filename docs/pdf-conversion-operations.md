@@ -260,6 +260,21 @@ startup reaps only marked same-UID private runtime directories after deadline pl
 An inactive operator host still needs a deployment janitor. Production private-file cleanup remains
 disabled with no scheduler; do not equate download revocation with physical erasure.
 
+## Explicit separate PDF copies
+
+An exact-source duplicate offers **Open existing book** and **Add another copy**.
+Only the explicit copy action sends `copyOfOperationId` under a fresh idempotency key.
+The server binds that reference to the same owner, source hash and nondeleted original import,
+then repeats the check inside its owner-serialized acceptance transaction. The copy receives its
+own book, Library item, source artifact, job, progress and notes; the existing entry stays fixed.
+A copy of a Failed entry starts a separate import and leaves that failure terminal.
+
+The copy reference participates in the request hash; requests without it retain their previous
+hash. Lost responses and repeated clicks reconcile the accepted copy rather than generating another.
+Accepted-copy replay still works if the original entry is later removed. An unavailable, removed,
+foreign-owner or different-source reference cannot authorize a fresh copy. Edition matching is
+separate from exact-file identity. This does not add reconversion or content replacement.
+
 ## Upload receipt lookup
 
 `GET /api/library/pdf-imports/requests/:requestKey` checks the authenticated owner's

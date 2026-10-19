@@ -799,6 +799,9 @@
     }
   },
   "pdfImport": {
+    "duplicateTitle": "Ce PDF est déjà dans votre bibliothèque",
+    "openExisting": "Ouvrir le livre existant",
+    "addCopy": "Ajouter une autre copie",
     "title": "Importer un PDF",
     "convert": "Convertir en EPUB",
     "cancel": "Annuler",

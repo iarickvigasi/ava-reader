@@ -71,3 +71,29 @@ it('captures a separate server-selected profile without changing legacy configur
     validatePdfUpload({ ...upload(), profileId: 'invented' }),
   ).toThrow('PDF_IMPORT_PROFILE_INVALID');
 });
+
+it('binds explicit copy intent to request identity while retaining the original request hash', () => {
+  const original = validatePdfUpload(upload());
+  const copy = validatePdfUpload({
+    ...upload(),
+    copyOfOperationId: 'pdf-original',
+  });
+  expect(copy.sourceSha256).toBe(original.sourceSha256);
+  expect(copy.configSha256).toBe(original.configSha256);
+  expect(copy.requestSha256).not.toBe(original.requestSha256);
+  expect(
+    validatePdfUpload({ ...upload(), copyOfOperationId: undefined }),
+  ).toEqual(original);
+  expect(
+    validatePdfUpload({ ...upload(), copyOfOperationId: 'pdf-other' })
+      .requestSha256,
+  ).not.toBe(copy.requestSha256);
+});
+it.each([null, true, [], {}, '', 'x'.repeat(201), 'book/path'])(
+  'rejects malformed copy reference %j',
+  (copyOfOperationId) => {
+    expect(() => validatePdfUpload({ ...upload(), copyOfOperationId })).toThrow(
+      BadRequestException,
+    );
+  },
+);

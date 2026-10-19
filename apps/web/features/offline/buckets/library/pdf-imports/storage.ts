@@ -5,6 +5,7 @@ export const PDF_REQUEST_PREFIX = "pdf-upload-request:";
 export async function storePdfUploadIntent(
   db: AvaReaderDB,
   intent: PdfUploadIntent,
+  replaceAcceptedRequestKey?: string,
 ) {
   if (db !== getDb()) return null;
   return db.transaction("rw", db.meta, async () => {
@@ -17,9 +18,12 @@ export async function storePdfUploadIntent(
     if (
       prior &&
       !(
-        prior.rejected === true &&
-        prior.refusalCode === "PDF_ADMISSION_REFUSED" &&
-        !prior.libraryItemId
+        (intent.copyOfOperationId &&
+          prior.libraryItemId &&
+          prior.requestKey === replaceAcceptedRequestKey) ||
+        (prior.rejected === true &&
+          prior.refusalCode === "PDF_ADMISSION_REFUSED" &&
+          !prior.libraryItemId)
       )
     )
       return prior;
@@ -33,6 +37,7 @@ export async function settlePdfUploadIntent(
   db: AvaReaderDB,
   intent: PdfUploadIntent,
   libraryItemId: string,
+  duplicateOperationId?: string,
 ) {
   if (db !== getDb()) return false;
   return db.transaction("rw", db.meta, async () => {
@@ -49,7 +54,11 @@ export async function settlePdfUploadIntent(
       return false;
     await db.meta.put({
       key,
-      value: { ...current, libraryItemId },
+      value: {
+        ...current,
+        libraryItemId,
+        ...(duplicateOperationId ? { duplicateOperationId } : {}),
+      },
       updatedAt: new Date().toISOString(),
     });
     return true;

@@ -6,6 +6,7 @@ export function validatePdfUpload(input: {
   file: Express.Multer.File;
   idempotencyKey: unknown;
   convertToEpub: unknown;
+  copyOfOperationId?: unknown;
   profileId?: string;
   sourceLayoutPolicy?: string;
   sourceStructurePolicy?: string;
@@ -43,6 +44,13 @@ export function validatePdfUpload(input: {
     )
   )
     throw new BadRequestException('The source filename is invalid.');
+  const copyOfOperationId = input.copyOfOperationId;
+  if (
+    copyOfOperationId !== undefined &&
+    (typeof copyOfOperationId !== 'string' ||
+      !/^[A-Za-z0-9_-]{1,200}$/.test(copyOfOperationId))
+  )
+    throw new BadRequestException('The separate-copy reference is invalid.');
   const configuration = pdfImportConfiguration(
     input.profileId,
     input.sourceLayoutPolicy,
@@ -65,11 +73,13 @@ export function validatePdfUpload(input: {
         filename: file.originalname,
         conversion: true,
         configSha256,
+        ...(copyOfOperationId === undefined ? {} : { copyOfOperationId }),
       }),
     ),
   );
   return {
     idempotencyKey,
+    ...(copyOfOperationId === undefined ? {} : { copyOfOperationId }),
     configuration,
     sourceSha256,
     requestSha256,

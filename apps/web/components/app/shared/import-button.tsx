@@ -9,6 +9,9 @@ import {
 import { useImportUpload } from "@/components/app/shared/use-import-upload";
 import { useImportChoice } from "@/features/library/pdf-imports/use-import-choice";
 import { PdfImportConfirmation } from "./pdf-import/confirmation";
+import { PdfDuplicateConfirmation } from "./pdf-import/duplicate-confirmation";
+import type { ImportResult } from "@/features/offline/buckets/library/pdf-imports/types";
+import { getLibraryBookInfoHref, APP_LIBRARY_HREF } from "@/lib/app-routes";
 import { ImportTrigger } from "./import-trigger";
 
 type ImportButtonProps = {
@@ -31,6 +34,11 @@ export function ImportButton({
   variant = "primary",
 }: ImportButtonProps) {
   const t = useTranslations("shared.import");
+  const [duplicate, setDuplicate] = useState<{
+    file: File;
+    result: ImportResult;
+    ownerId: string | null | undefined;
+  } | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [internalNotice, setInternalNotice] = useState<string | null>(null);
 
@@ -39,10 +47,17 @@ export function ImportButton({
     onNoticeChangeAction?.(nextNotice);
   }
 
-  const { isUploading, upload } = useImportUpload({
+  const { isUploading, upload, ownerId } = useImportUpload({
+    onDuplicateAction: (file, result, ownerId) =>
+      setDuplicate({ file, result, ownerId }),
     onNoticeAction: publishNotice,
   });
-  const choice = useImportChoice(upload);
+  const [choiceOwnerId, setChoiceOwnerId] = useState(ownerId);
+  if (choiceOwnerId !== ownerId) {
+    setChoiceOwnerId(ownerId);
+    setDuplicate(null);
+  }
+  const choice = useImportChoice(upload, ownerId);
   const resolvedNotice = notice ?? internalNotice;
   const resolvedLabel = label ?? t("defaultLabel");
 
@@ -61,6 +76,7 @@ export function ImportButton({
             return;
           }
 
+          setDuplicate(null);
           choice.choose(file);
         }}
       />
@@ -82,6 +98,30 @@ export function ImportButton({
           {resolvedNotice}
         </p>
       ) : null}
+      {duplicate &&
+        duplicate.ownerId === ownerId &&
+        duplicate.result.operationId &&
+        duplicate.result.requestKey && (
+          <PdfDuplicateConfirmation
+            filename={duplicate.file.name}
+            existingHref={
+              duplicate.result.slug
+                ? getLibraryBookInfoHref(
+                    encodeURIComponent(duplicate.result.slug),
+                  )
+                : APP_LIBRARY_HREF
+            }
+            onClose={() => setDuplicate(null)}
+            onCopy={() => {
+              const { file, result } = duplicate;
+              setDuplicate(null);
+              upload(file, {
+                operationId: result.operationId!,
+                requestKey: result.requestKey!,
+              });
+            }}
+          />
+        )}
       {choice.pdf && (
         <PdfImportConfirmation
           filename={choice.pdf.name}

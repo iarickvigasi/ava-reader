@@ -42,7 +42,7 @@ export class PdfImportController {
       limits: {
         fileSize: PDF_IMPORT_PROFILE.maxSourceBytes,
         files: 1,
-        fields: 2,
+        fields: 3,
       },
     }),
   )
@@ -50,7 +50,12 @@ export class PdfImportController {
     @Req() request: PdfAdmissionRequest,
     @UploadedFile() file: Express.Multer.File,
     @Headers('idempotency-key') idempotencyKey: string,
-    @Body() body: { convertToEpub?: unknown; originalFilename?: unknown },
+    @Body()
+    body: {
+      convertToEpub?: unknown;
+      originalFilename?: unknown;
+      copyOfOperationId?: unknown;
+    },
   ) {
     const user = await this.users.getCurrentUserRecord(
       request.auth.clerkUserId,
@@ -61,6 +66,7 @@ export class PdfImportController {
       file: withUploadedFilename(file, body.originalFilename),
       idempotencyKey,
       convertToEpub: body.convertToEpub,
+      copyOfOperationId: body.copyOfOperationId,
       admission: request.pdfAdmission,
     });
   }

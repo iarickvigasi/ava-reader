@@ -22,6 +22,7 @@ export async function importPdf(input: {
   file: Express.Multer.File;
   idempotencyKey: unknown;
   convertToEpub: unknown;
+  copyOfOperationId?: unknown;
   admission?: AdmissionIdentity;
 }) {
   // Admission adds an await before the previous importer boundary. Preserve

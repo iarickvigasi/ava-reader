@@ -8,6 +8,7 @@ type Identity = {
   requestSha256: string;
   sourceSha256: string;
   configSha256: string;
+  copyOfOperationId?: string;
 };
 export async function checkExistingPdfImport(
   tx: Prisma.TransactionClient,
@@ -36,13 +37,46 @@ export async function checkExistingPdfImport(
   }
   // Check the retained receipt after the live lookup so a concurrent purge cannot create a gap.
   await checkPdfImportReceipt(tx, userId, identity);
+  // Same-key replay above remains valid even if the source entry was later removed.
+  if (identity.copyOfOperationId) {
+    const source = await tx.pdfImportOperation.findFirst({
+      where: {
+        id: identity.copyOfOperationId,
+        ownerId: userId,
+        sourceSha256: identity.sourceSha256,
+        deletedAt: null,
+      },
+    });
+    if (!source)
+      throw new ConflictException({
+        code: 'PDF_COPY_SOURCE_UNAVAILABLE',
+        message: 'The original import is no longer available.',
+      });
+    return null;
+  }
   const duplicate = await tx.pdfImportOperation.findFirst({
-    where: { ownerId: userId, sourceSha256: identity.sourceSha256 },
+    where: {
+      ownerId: userId,
+      sourceSha256: identity.sourceSha256,
+      deletedAt: null,
+    },
+    orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
   });
-  const removedDuplicate = await tx.pdfImportReceipt.findFirst({
-    where: { ownerId: userId, sourceSha256: identity.sourceSha256 },
-  });
-  if (duplicate || removedDuplicate)
+  const removedOperation = duplicate
+    ? null
+    : await tx.pdfImportOperation.findFirst({
+        where: {
+          ownerId: userId,
+          sourceSha256: identity.sourceSha256,
+          deletedAt: { not: null },
+        },
+      });
+  const removedDuplicate = duplicate
+    ? null
+    : await tx.pdfImportReceipt.findFirst({
+        where: { ownerId: userId, sourceSha256: identity.sourceSha256 },
+      });
+  if (duplicate || removedOperation || removedDuplicate)
     throw new ConflictException({
       code: 'PDF_ALREADY_IMPORTED',
       message: 'This PDF already has an import.',

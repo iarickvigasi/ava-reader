@@ -426,6 +426,7 @@ async function main() {
     'revoked admin cannot export costs',
     revoked.result.state === 'REFUSED' && revoked.result.status === 403,
   );
+  await require('./copy.cjs')(db, s, verify);
   verify(
     'no external provider calls in parent or child',
     s.externalFetches() === 0,
@@ -437,7 +438,7 @@ async function main() {
     syntheticTransportEntries: 1,
     syntheticActualNano: '2000000',
     scope:
-      'Actual database and fresh-process boundaries; not OCR, live billing, Clerk/HTTP, browser or source-fidelity qualification',
+      'Actual database and fresh-process boundaries; not OCR, live billing, Clerk/HTTP, browser or source-fidelity qualification; copy inspection is an authored boundary stub',
   };
 }
 main()
