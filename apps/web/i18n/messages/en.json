@@ -676,7 +676,12 @@
     },
     "shared": {
       "errors": {
-        "sessionTaskRequired": "Additional account work is required before the session can continue."
+        "sessionTaskRequired": "Additional account work is required before the session can continue.",
+        "offline": "Connect to the internet to sign in.",
+        "tryAgain": "That didn’t work. Please try again.",
+        "sendFailed": "We couldn’t send your email. Please try again.",
+        "checkCode": "That didn’t work. Try entering the numbers again, or choose “Resend code” for a new email.",
+        "finishFailed": "We couldn’t finish signing you in. Please try again."
       }
     },
     "providers": {

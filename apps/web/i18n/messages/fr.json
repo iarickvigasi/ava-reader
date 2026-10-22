@@ -676,7 +676,12 @@
     },
     "shared": {
       "errors": {
-        "sessionTaskRequired": "Une action supplémentaire sur le compte est requise avant de poursuivre la session."
+        "sessionTaskRequired": "Une action supplémentaire sur le compte est requise avant de poursuivre la session.",
+        "offline": "Connectez-vous à Internet pour vous connecter.",
+        "tryAgain": "Cela n’a pas fonctionné. Réessayez.",
+        "sendFailed": "Nous n’avons pas pu envoyer l’e-mail. Réessayez.",
+        "checkCode": "Cela n’a pas fonctionné. Saisissez à nouveau les chiffres ou choisissez « Renvoyer le code » pour recevoir un nouvel e-mail.",
+        "finishFailed": "Nous n’avons pas pu terminer la connexion. Réessayez."
       }
     },
     "providers": {

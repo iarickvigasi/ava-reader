@@ -676,7 +676,12 @@
     },
     "shared": {
       "errors": {
-        "sessionTaskRequired": "Vor dem Fortsetzen der Sitzung ist eine zusätzliche Kontoaktion erforderlich."
+        "sessionTaskRequired": "Vor dem Fortsetzen der Sitzung ist eine zusätzliche Kontoaktion erforderlich.",
+        "offline": "Verbinde dich mit dem Internet, um dich anzumelden.",
+        "tryAgain": "Das hat nicht geklappt. Bitte versuche es erneut.",
+        "sendFailed": "Wir konnten die E-Mail nicht senden. Bitte versuche es erneut.",
+        "checkCode": "Das hat nicht geklappt. Gib die Zahlen erneut ein oder wähle „Code erneut senden“ für eine neue E-Mail.",
+        "finishFailed": "Die Anmeldung konnte nicht abgeschlossen werden. Bitte versuche es erneut."
       }
     },
     "providers": {

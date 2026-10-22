@@ -1,6 +1,6 @@
 # Authentication
 
-> Status: active · Updated: 2026-09-24 · ADRs: [[1-clerk-authentication]],
+> Status: active · Updated: 2026-10-22 · ADRs: [[1-clerk-authentication]],
 > [[5-per-user-offline-database]], [[6-durable-offline-authentication]] · Code:
 > apps/web/features/auth, apps/web/components/auth, apps/web/proxy.ts,
 > apps/web/features/offline/lifecycle/offline-identity-reconciler.tsx
@@ -37,6 +37,14 @@ books and pending offline changes; losing an online session never removes local 
 8. Account switching keeps existing purge-on-switch isolation. Old account views unmount before
    adopting the new account. Pending writes must never be sent with another account's token.
 
+9. Starting Google sign-in online resets an expired or abandoned identifier-only attempt first.
+   Only an explicit click starts Google; reconnecting never opens it automatically.
+10. Offline sign-in opens the cached app for a remembered account unless explicitly signed out.
+    New visitors see a connection message. Login work never runs offline or clears reading data.
+11. Login failures appear in every phase as translated, plain-language messages with a next step.
+    Raw provider errors are not shown. Duplicate submissions are blocked; slow requests release
+    their busy state after a deadline. Email resend can restart an expired attempt.
+
 ## Data & sync
 
 Per-user Dexie and the active-user marker are local ownership, never server authorization.
@@ -53,6 +61,10 @@ Authentication failures retain mutation queues; permanent domain failures retain
 - [ ] Reconnecting auto-hides after six seconds or manual dismissal without stopping recovery.
 - [ ] Dismissal survives rerenders/navigation; recovery allows a new notice and expiry shows sign-in.
 - [ ] API access without valid authentication remains denied.
+
+- [ ] Expired Google attempts restart online; reconnecting alone never launches Google.
+- [ ] Offline sign-in opens cached reading, respects explicit sign-out, and makes no auth requests.
+- [ ] Google, email, resend, and finishing failures show friendly messages in every phase.
 
 ## Limits
 

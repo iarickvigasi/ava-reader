@@ -676,7 +676,12 @@
     },
     "shared": {
       "errors": {
-        "sessionTaskRequired": "La cuenta requiere trabajo adicional antes de continuar la sesión."
+        "sessionTaskRequired": "La cuenta requiere trabajo adicional antes de continuar la sesión.",
+        "offline": "Conéctate a internet para iniciar sesión.",
+        "tryAgain": "No ha funcionado. Inténtalo de nuevo.",
+        "sendFailed": "No pudimos enviar el correo. Inténtalo de nuevo.",
+        "checkCode": "No ha funcionado. Introduce los números de nuevo o elige «Reenviar código» para recibir otro correo.",
+        "finishFailed": "No pudimos completar el inicio de sesión. Inténtalo de nuevo."
       }
     },
     "providers": {

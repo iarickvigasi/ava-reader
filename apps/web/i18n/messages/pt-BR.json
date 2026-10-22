@@ -676,7 +676,12 @@
     },
     "shared": {
       "errors": {
-        "sessionTaskRequired": "Uma ação adicional na conta é necessária antes de continuar a sessão."
+        "sessionTaskRequired": "Uma ação adicional na conta é necessária antes de continuar a sessão.",
+        "offline": "Conecte-se à internet para entrar.",
+        "tryAgain": "Não deu certo. Tente novamente.",
+        "sendFailed": "Não conseguimos enviar o e-mail. Tente novamente.",
+        "checkCode": "Não deu certo. Digite os números novamente ou escolha “Reenviar código” para receber outro e-mail.",
+        "finishFailed": "Não conseguimos concluir a entrada. Tente novamente."
       }
     },
     "providers": {
