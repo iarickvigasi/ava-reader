@@ -1,3 +1,4 @@
+import { isSlow, subscribeToSlowState } from "./slow-state";
 import {
   checkNetworkReachability,
   isOnline,
@@ -15,7 +16,7 @@ export function startNetworkMonitor() {
     if (stopped || document.visibilityState === "hidden") return;
     timer = setTimeout(
       check,
-      isOnline() ? ONLINE_INTERVAL_MS : OFFLINE_INTERVAL_MS,
+      isOnline() && !isSlow() ? ONLINE_INTERVAL_MS : OFFLINE_INTERVAL_MS,
     );
   };
   const check = () => {
@@ -24,12 +25,14 @@ export function startNetworkMonitor() {
     void checkNetworkReachability().finally(schedule);
   };
   const unsubscribe = subscribeToNetworkState(schedule);
+  const unsubscribeSlow = subscribeToSlowState(schedule);
   document.addEventListener("visibilitychange", check);
   check();
   return () => {
     stopped = true;
     clearTimeout(timer);
     unsubscribe();
+    unsubscribeSlow();
     document.removeEventListener("visibilitychange", check);
   };
 }

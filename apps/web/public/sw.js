@@ -14,8 +14,7 @@
 
 // The registrar appends ?v=<build-version> to the worker URL; activate deletes
 // every cache that doesn't match, so a new build evicts the old assets.
-const SW_VERSION =
-  new URL(self.location.href).searchParams.get("v") || "dev";
+const SW_VERSION = new URL(self.location.href).searchParams.get("v") || "dev";
 const CACHE_NAME = `ava-reader-sw-${SW_VERSION}`;
 
 /* ----------------------------------------------------------------------------
@@ -35,7 +34,9 @@ self.addEventListener("activate", (event) => {
       const names = await caches.keys();
       await Promise.all(
         names
-          .filter((name) => name.startsWith("ava-reader-sw-") && name !== CACHE_NAME)
+          .filter(
+            (name) => name.startsWith("ava-reader-sw-") && name !== CACHE_NAME,
+          )
           .map((name) => caches.delete(name)),
       );
       await self.clients.claim();
@@ -48,7 +49,9 @@ self.addEventListener("activate", (event) => {
 // offline (spec 4.5 §2). Best effort — on failure they cache reactively later.
 async function precacheBuildAssets() {
   try {
-    const response = await fetch("/precache-assets.json", { cache: "no-store" });
+    const response = await fetch("/precache-assets.json", {
+      cache: "no-store",
+    });
     if (!response.ok) {
       return;
     }
@@ -81,12 +84,7 @@ async function precacheBuildAssets() {
  * Request classification
  * -------------------------------------------------------------------------- */
 
-// Next soft navigations request the React Flight payload. These are never
-// cached or served: the server varies them on `next-router-state-tree`, so a
-// payload stored per pathname answers a different question than the next
-// request asks. A mismatched 200 strands the router — URL changed, previous
-// page still painted, no error and no fallback. Failing instead is what
-// triggers Next's hard navigation onto the cached document (spec 4.5 §5).
+// RSC varies by router state: never cache it; bound navigation requests (§5).
 function isRscRequest(request) {
   return (
     request.headers.get("RSC") === "1" ||
@@ -139,7 +137,10 @@ const SHELL_ROUTE_PREFIXES = [
 function shellDocKey(request) {
   const url = new URL(request.url);
   for (const prefix of SHELL_ROUTE_PREFIXES) {
-    if (url.pathname.startsWith(prefix) && url.pathname.length > prefix.length) {
+    if (
+      url.pathname.startsWith(prefix) &&
+      url.pathname.length > prefix.length
+    ) {
       url.pathname = `${prefix}__shell__`;
       url.search = "";
       url.searchParams.set("__sw", "doc");
@@ -164,6 +165,27 @@ async function cacheFirst(request, cache) {
     cache.put(request, response.clone());
   }
   return response;
+}
+
+// Bound real app RSC navigations so Next can fall back to cached documents (§5).
+async function networkOnlyRsc(request, event) {
+  const controller = new AbortController();
+  let timer;
+  const deadline = new Promise((_, reject) => {
+    timer = setTimeout(() => {
+      controller.abort();
+      event.waitUntil(broadcastSlowConnection());
+      reject(new Error("RSC navigation timed out"));
+    }, SLOW_DOC_TIMEOUT_MS);
+  });
+  try {
+    return await Promise.race([
+      fetch(request, { signal: controller.signal }),
+      deadline,
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 // Store a successful document under its exact per-URL key and, for shell
@@ -204,12 +226,7 @@ const SLOW_DOC_TIMEOUT_MS = 3000;
 // load than before this existed.
 async function networkFirstDoc(request, cache, event) {
   const networkPromise = fetch(request);
-  const cached = await raceCacheFallback(
-    networkPromise,
-    cache,
-    request,
-    event,
-  );
+  const cached = await raceCacheFallback(networkPromise, cache, request, event);
   return cached ?? applyNetworkOutcome(request, cache, networkPromise);
 }
 
@@ -307,9 +324,12 @@ self.addEventListener("fetch", (event) => {
   if (url.pathname.startsWith("/api/")) {
     return;
   }
-  // Prefetch stubs must never touch the cache, and RSC payloads must never be
-  // cached or served at all (spec 4.5 §5).
-  if (isPrefetchRequest(request) || isRscRequest(request)) {
+  // Prefetches bypass; real app RSC navigations are bounded and never cached (§5).
+  if (isPrefetchRequest(request)) return;
+  if (isRscRequest(request)) {
+    if (url.pathname === "/app" || url.pathname.startsWith("/app/")) {
+      event.respondWith(networkOnlyRsc(request, event));
+    }
     return;
   }
 

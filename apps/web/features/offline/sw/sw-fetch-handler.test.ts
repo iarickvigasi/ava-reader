@@ -1,18 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
-// These tests exercise the real service worker (apps/web/public/sw.js) via
-// the shared harness.
-//
-// The contract under test: RSC payloads are never cached and never served
-// from cache. They vary by the router state tree the request carries (the
-// server says so — `Vary: next-router-state-tree`), so one entry per pathname
-// is unsound: the stored payload answers a *different* question than the one
-// being asked. Handing the router a mismatched 200 strands the navigation —
-// URL changed, previous page still painted, no error, no fallback. Letting
-// the request fail instead triggers Next's hard navigation onto the cached
-// document, which is what makes offline navigation work.
-// See docs/specs/4-offline/4.5-route-precaching.md §5.
-
 import {
   dispatchFetch,
   fakeRequest,
@@ -36,30 +23,32 @@ describe("service worker fetch handler — RSC payloads are not cached", () => {
   });
 
   it("passes a navigation RSC request through without touching the cache", async () => {
-    sw.fetchMock.mockResolvedValue(new Response("FRESH_LIBRARY_RSC", { status: 200 }));
+    sw.fetchMock.mockResolvedValue(
+      new Response("FRESH_LIBRARY_RSC", { status: 200 }),
+    );
 
     const response = await dispatchFetch(
       sw.listeners.fetch!,
       fakeRequest("/app/library", { headers: RSC_NAV_HEADERS }),
     );
 
-    // Not intercepted at all — the browser performs the fetch itself.
-    expect(response).toBeUndefined();
+    expect(await response?.text()).toBe("FRESH_LIBRARY_RSC");
     expect(await cache.match(LIBRARY_RSC_KEY)).toBeUndefined();
   });
 
   it("lets an offline navigation RSC request fail instead of serving a stale payload", async () => {
-    // A payload left over from an older build or an earlier arrival path.
-    await cache.put(LIBRARY_RSC_KEY, new Response("MISMATCHED_RSC", { status: 200 }));
+    await cache.put(
+      LIBRARY_RSC_KEY,
+      new Response("MISMATCHED_RSC", { status: 200 }),
+    );
     sw.fetchMock.mockRejectedValue(new Error("offline"));
 
-    const response = await dispatchFetch(
-      sw.listeners.fetch!,
-      fakeRequest("/app/library", { headers: RSC_NAV_HEADERS }),
-    );
-
-    // The failure is what makes Next hard-navigate onto the cached document.
-    expect(response).toBeUndefined();
+    await expect(
+      dispatchFetch(
+        sw.listeners.fetch!,
+        fakeRequest("/app/library", { headers: RSC_NAV_HEADERS }),
+      ),
+    ).rejects.toThrow("offline");
   });
 
   it("passes an RSC request identified by Accept alone through as well", async () => {
@@ -72,12 +61,14 @@ describe("service worker fetch handler — RSC payloads are not cached", () => {
       }),
     );
 
-    expect(response).toBeUndefined();
+    expect(await response?.text()).toBe("RSC");
     expect(await cache.match(LIBRARY_RSC_KEY)).toBeUndefined();
   });
 
   it("still bypasses link prefetches", async () => {
-    sw.fetchMock.mockResolvedValue(new Response("PREFETCH_STUB", { status: 200 }));
+    sw.fetchMock.mockResolvedValue(
+      new Response("PREFETCH_STUB", { status: 200 }),
+    );
 
     const response = await dispatchFetch(
       sw.listeners.fetch!,
@@ -89,12 +80,16 @@ describe("service worker fetch handler — RSC payloads are not cached", () => {
   });
 
   it("still caches and serves the document — the offline navigation target", async () => {
-    sw.fetchMock.mockResolvedValue(new Response("LIBRARY_DOC", { status: 200 }));
+    sw.fetchMock.mockResolvedValue(
+      new Response("LIBRARY_DOC", { status: 200 }),
+    );
     await dispatchFetch(
       sw.listeners.fetch!,
       fakeRequest("/app/library", { mode: "navigate" }),
     );
-    expect(await (await cache.match(LIBRARY_DOC_KEY))?.text()).toBe("LIBRARY_DOC");
+    expect(await (await cache.match(LIBRARY_DOC_KEY))?.text()).toBe(
+      "LIBRARY_DOC",
+    );
 
     sw.fetchMock.mockRejectedValue(new Error("offline"));
     const offline = await dispatchFetch(

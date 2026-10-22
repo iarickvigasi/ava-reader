@@ -1,4 +1,4 @@
-import { probeReachability } from "./probe-reachability";
+import { checkReachability } from "./check-reachability";
 
 type Listener = (online: boolean) => void;
 const listeners = new Set<Listener>();
@@ -7,7 +7,6 @@ let override: boolean | null = null;
 let attached = false;
 let active: { controller: AbortController; promise: Promise<void> } | null =
   null;
-const PROBE_TIMEOUT_MS = 5_000;
 
 function transition(next: boolean) {
   const effective = override ?? next;
@@ -58,8 +57,10 @@ export function checkNetworkReachability(): Promise<void> {
   if (override !== null) return Promise.resolve();
   if (active) return active.promise;
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), PROBE_TIMEOUT_MS);
-  const promise = probeReachability(controller.signal)
+  const promise = checkReachability(
+    controller,
+    () => active?.controller === controller,
+  )
     .then((reachable) => {
       if (active?.controller === controller && reachable !== null)
         transition(reachable);
@@ -68,7 +69,6 @@ export function checkNetworkReachability(): Promise<void> {
       if (active?.controller === controller) transition(false);
     })
     .finally(() => {
-      clearTimeout(timeout);
       if (active?.controller === controller) active = null;
     });
   active = { controller, promise };

@@ -1,18 +1,11 @@
-// Single source of truth for "does the connection look slow right now" —
-// distinct from net-state's online/offline. Driven by the service worker's
-// AVA_SLOW_CONNECTION broadcast (sw.js, spec 4.5-route-precaching §10): each
-// message flips `slow` true and (re)starts a decay timer, so a burst of
-// slow-fallback events reads as one steady state instead of flickering, and
-// the badge clears itself a few seconds after the last one. See spec
-// 4.10-slow-connection.
-
+// Slow combines persistent probe degradation and a six-second SW signal tail.
 type Listener = (slow: boolean) => void;
 
-// How long the "Slow" state persists after the most recent SW signal.
 const DECAY_MS = 6_000;
 
 type SlowState = {
   slow: boolean;
+  probeDegraded: boolean;
   listeners: Set<Listener>;
   attached: boolean;
   decayHandle: ReturnType<typeof setTimeout> | null;
@@ -21,6 +14,7 @@ type SlowState = {
 
 const state: SlowState = {
   slow: false,
+  probeDegraded: false,
   listeners: new Set(),
   attached: false,
   decayHandle: null,
@@ -37,14 +31,17 @@ function setSlow(next: boolean) {
   }
 }
 
+export function setProbeDegraded(degraded: boolean) {
+  state.probeDegraded = degraded;
+  setSlow(degraded || state.decayHandle !== null);
+}
+
 function reportSlowSignal() {
   setSlow(true);
-  if (state.decayHandle !== null) {
-    clearTimeout(state.decayHandle);
-  }
+  if (state.decayHandle !== null) clearTimeout(state.decayHandle);
   state.decayHandle = setTimeout(() => {
     state.decayHandle = null;
-    setSlow(false);
+    setSlow(state.probeDegraded);
   }, DECAY_MS);
 }
 
@@ -78,12 +75,10 @@ export function subscribeToSlowState(listener: Listener): () => void {
   };
 }
 
-// Test-only: simulate the SW broadcast without a real service worker.
 export function __reportSlowSignalForTests() {
   reportSlowSignal();
 }
 
-// Test-only: detach listeners, clear timers, reset to the idle state.
 export function __resetSlowStateForTests() {
   if (
     state.attached &&
@@ -93,11 +88,10 @@ export function __resetSlowStateForTests() {
   ) {
     navigator.serviceWorker.removeEventListener("message", state.onMessage);
   }
-  if (state.decayHandle !== null) {
-    clearTimeout(state.decayHandle);
-  }
+  if (state.decayHandle !== null) clearTimeout(state.decayHandle);
   state.attached = false;
   state.slow = false;
+  state.probeDegraded = false;
   state.decayHandle = null;
   state.onMessage = null;
   state.listeners.clear();
