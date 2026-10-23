@@ -17,6 +17,57 @@ services:
       retries: 5
       start_period: 5s
 
+  catalog-postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    cpus: "0.5"
+    mem_limit: 512m
+    command:
+      ["postgres", "-c", "max_connections=30", "-c", "shared_buffers=128MB"]
+    environment:
+      POSTGRES_DB: ava_catalog
+      POSTGRES_USER: catalog
+      POSTGRES_PASSWORD: ${CATALOG_POSTGRES_PASSWORD:-catalog}
+    ports:
+      - "127.0.0.1:${CATALOG_POSTGRES_HOST_PORT:-15433}:5432"
+    volumes:
+      - catalog_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U catalog -d ava_catalog"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  catalog:
+    build:
+      context: .
+      dockerfile: apps/catalog/Dockerfile
+    restart: unless-stopped
+    cpus: "0.5"
+    mem_limit: 512m
+    depends_on:
+      catalog-postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      CATALOG_PORT: 4001
+      CATALOG_DATABASE_URL: ${CATALOG_DATABASE_URL:-postgresql://catalog:${CATALOG_POSTGRES_PASSWORD:-catalog}@catalog-postgres:5432/ava_catalog}
+      CATALOG_WEB_ORIGIN: ${CATALOG_WEB_ORIGIN:-http://localhost:3000}
+    ports:
+      - "${CATALOG_HOST_PORT:-4001}:4001"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:4001/api/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
   api:
     build:
       context: .
@@ -45,7 +96,7 @@ services:
           "CMD",
           "node",
           "-e",
-          "fetch('http://127.0.0.1:4000/api/health').then(async (response) => { if (!response.ok) process.exit(1); const payload = await response.json(); process.exit(payload.service === 'api' ? 0 : 1); }).catch(() => process.exit(1))"
+          "fetch('http://127.0.0.1:4000/api/health').then(async (response) => { if (!response.ok) process.exit(1); const payload = await response.json(); process.exit(payload.service === 'api' ? 0 : 1); }).catch(() => process.exit(1))",
         ]
       interval: 15s
       timeout: 5s
@@ -79,7 +130,7 @@ services:
           "CMD",
           "node",
           "-e",
-          "fetch('http://127.0.0.1:3000').then(async (response) => { const html = await response.text(); process.exit(response.ok && html.includes('Ava Reader') ? 0 : 1); }).catch(() => process.exit(1))"
+          "fetch('http://127.0.0.1:3000').then(async (response) => { const html = await response.text(); process.exit(response.ok && html.includes('Ava Reader') ? 0 : 1); }).catch(() => process.exit(1))",
         ]
       interval: 15s
       timeout: 5s
@@ -98,8 +149,9 @@ services:
       [
         "node",
         "-e",
-        "const verify = async () => { const apiResponse = await fetch('http://api:4000/api/health'); if (!apiResponse.ok) throw new Error('API returned ' + apiResponse.status); const apiPayload = await apiResponse.json(); if (apiPayload.status !== 'ok' || apiPayload.database !== 'up') throw new Error('Unexpected API payload: ' + JSON.stringify(apiPayload)); const webResponse = await fetch('http://web:3000'); if (!webResponse.ok) throw new Error('Web returned ' + webResponse.status); const html = await webResponse.text(); if (!html.includes('Ava Reader') || !html.includes('Investigate deeper') || !html.includes('Create account')) throw new Error('Web page did not render the expected landing state.'); const signInResponse = await fetch('http://web:3000/sign-in'); if (!signInResponse.ok) throw new Error('Sign-in page returned ' + signInResponse.status); const signInHtml = await signInResponse.text(); if (!signInHtml.includes('Continue with Google') || !signInHtml.includes('Continue with Email')) throw new Error('Sign-in page did not render the expected auth controls.'); console.log('Verified Docker stack.'); console.log(JSON.stringify(apiPayload, null, 2)); }; verify().catch((error) => { console.error(error); process.exit(1); });"
+        "const verify = async () => { const apiResponse = await fetch('http://api:4000/api/health'); if (!apiResponse.ok) throw new Error('API returned ' + apiResponse.status); const apiPayload = await apiResponse.json(); if (apiPayload.status !== 'ok' || apiPayload.database !== 'up') throw new Error('Unexpected API payload: ' + JSON.stringify(apiPayload)); const webResponse = await fetch('http://web:3000'); if (!webResponse.ok) throw new Error('Web returned ' + webResponse.status); const html = await webResponse.text(); if (!html.includes('Ava Reader') || !html.includes('Investigate deeper') || !html.includes('Create account')) throw new Error('Web page did not render the expected landing state.'); const signInResponse = await fetch('http://web:3000/sign-in'); if (!signInResponse.ok) throw new Error('Sign-in page returned ' + signInResponse.status); const signInHtml = await signInResponse.text(); if (!signInHtml.includes('Continue with Google') || !signInHtml.includes('Continue with Email')) throw new Error('Sign-in page did not render the expected auth controls.'); console.log('Verified Docker stack.'); console.log(JSON.stringify(apiPayload, null, 2)); }; verify().catch((error) => { console.error(error); process.exit(1); });",
       ]
 
 volumes:
   postgres_data:
+  catalog_postgres_data:

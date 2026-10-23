@@ -1,0 +1,35 @@
+model Work {
+  id               String          @id @default(uuid()) @db.Uuid
+  originalTitle    String
+  originalLanguage String?
+  revision         Int             @default(1)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  texts            WorkText[]
+  editions         Edition[]
+  credits          WorkCredit[]
+  sourceMappings   SourceMapping[]
+}
+
+model WorkText {
+  workId      String  @db.Uuid
+  locale      String
+  title       String
+  description String?
+  work        Work    @relation(fields: [workId], references: [id], onDelete: Cascade)
+
+  @@id([workId, locale])
+}
+
+model WorkCredit {
+  workId     String     @db.Uuid
+  authorId   String     @db.Uuid
+  role       CreditRole @default(AUTHOR)
+  creditedAs String?
+  position   Int        @default(0)
+  work       Work       @relation(fields: [workId], references: [id], onDelete: Cascade)
+  author     Author     @relation(fields: [authorId], references: [id], onDelete: Restrict)
+
+  @@id([workId, authorId, role])
+  @@index([authorId, workId])
+}

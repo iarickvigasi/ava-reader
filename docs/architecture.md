@@ -22,6 +22,8 @@ Monorepo: pnpm workspaces + Turbo (lint/typecheck/test/build), Node ≥22.
 - **apps/web** — Next.js 16 (App Router), React 19, Tailwind v4, Dexie (IndexedDB), Clerk (auth),
   next-intl (i18n). SSR shell + offline-first client.
 - **apps/api** — NestJS 11, Prisma 7, Postgres. EPUB processing, blobs, AI proxying, dashboards.
+- **apps/catalog** — independent NestJS/Prisma metadata API and PostgreSQL instance (ADR 10);
+  work/edition/author lookup foundation, initially on the same host. No main DB/client dependency.
 - **apps/mobile** — placeholder for future cross-platform.
 - **AI** — OpenRouter via the Vercel `ai` SDK, structured output. See adr/2.
 

@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum CreditRole {
+  AUTHOR
+  TRANSLATOR
+  EDITOR
+  ILLUSTRATOR
+}
+
+enum PublicationFormat {
+  EBOOK
+  PAPERBACK
+  HARDCOVER
+  AUDIOBOOK
+  UNKNOWN
+}

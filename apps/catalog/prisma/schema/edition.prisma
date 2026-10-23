@@ -1,0 +1,51 @@
+model Edition {
+  id             String              @id @default(uuid()) @db.Uuid
+  workId         String              @db.Uuid
+  title          String
+  language       String?
+  publisher      String?
+  publishedYear  Int?
+  format         PublicationFormat   @default(UNKNOWN)
+  revision       Int                 @default(1)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  work           Work                @relation(fields: [workId], references: [id], onDelete: Restrict)
+  credits        EditionCredit[]
+  identifiers    EditionIdentifier[]
+  sourceMappings SourceMapping[]
+
+  @@index([workId, id])
+  @@index([language, workId])
+}
+
+model EditionCredit {
+  editionId  String     @db.Uuid
+  authorId   String     @db.Uuid
+  role       CreditRole
+  creditedAs String?
+  position   Int        @default(0)
+  edition    Edition    @relation(fields: [editionId], references: [id], onDelete: Cascade)
+  author     Author     @relation(fields: [authorId], references: [id], onDelete: Restrict)
+
+  @@id([editionId, authorId, role])
+  @@index([authorId, editionId])
+}
+
+model Identifier {
+  id              String              @id @default(uuid()) @db.Uuid
+  scheme          String
+  normalizedValue String
+  editions        EditionIdentifier[]
+
+  @@unique([scheme, normalizedValue])
+}
+
+model EditionIdentifier {
+  editionId    String     @db.Uuid
+  identifierId String     @db.Uuid
+  edition      Edition    @relation(fields: [editionId], references: [id], onDelete: Cascade)
+  identifier   Identifier @relation(fields: [identifierId], references: [id], onDelete: Restrict)
+
+  @@id([editionId, identifierId])
+  @@index([identifierId, editionId])
+}

@@ -28,7 +28,10 @@
     "docker:down": "docker compose down --remove-orphans",
     "docker:reset": "docker compose down -v --remove-orphans",
     "docker:logs": "docker compose logs -f --tail=100",
-    "docker:verify": "docker compose --profile verify run --rm verify"
+    "docker:verify": "docker compose --profile verify run --rm verify",
+    "dev:catalog": "pnpm --filter catalog start:dev",
+    "catalog:up": "docker compose up -d --build --wait catalog",
+    "catalog:seed": "docker compose exec catalog pnpm --filter catalog db:seed"
   },
   "devDependencies": {
     "turbo": "^2.5.8"

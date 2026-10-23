@@ -1,5 +1,7 @@
 # Dev environment & workflows
 
+Catalog workspace: [catalog development and operations](dev-catalog.md).
+
 Dev workflows and pitfalls; product behaviour lives in specs/. Setup commands: README.md.
 Temporary maintenance: [EPUB edge regrouping](../apps/api/src/scripts/chapter-edge-backfill/README.md).
 [EPUB label backfill](../apps/api/src/scripts/chapter-label-backfill/README.md).

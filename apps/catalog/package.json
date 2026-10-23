@@ -1,0 +1,71 @@
+{
+  "name": "catalog",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "postinstall": "prisma generate",
+    "build": "nest build",
+    "start:dev": "nest start --watch --no-shell",
+    "start:prod": "node dist/src/main.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src scripts test prisma.config.ts",
+    "test": "jest --watchman=false",
+    "test:integration": "ts-node test/integration.ts",
+    "db:generate": "prisma generate",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:seed": "ts-node scripts/seed.ts"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.0.1",
+    "@nestjs/core": "^11.0.1",
+    "@nestjs/platform-express": "^11.0.1",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "@prisma/client-runtime-utils": "7.8.0",
+    "dotenv": "^17.2.3",
+    "pg": "^8.20.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.18.0",
+    "@nestjs/cli": "^11.0.0",
+    "@nestjs/testing": "^11.0.1",
+    "@types/express": "^5.0.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.0.0",
+    "@types/pg": "^8.20.0",
+    "@types/supertest": "^7.0.0",
+    "eslint": "^9.18.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.2",
+    "globals": "^17.0.0",
+    "jest": "^30.0.0",
+    "prettier": "^3.4.2",
+    "prisma": "^7.8.0",
+    "supertest": "^7.0.0",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.20.0"
+  },
+  "jest": {
+    "rootDir": ".",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.ts$": [
+        "ts-jest",
+        {
+          "tsconfig": "tsconfig.json"
+        }
+      ]
+    },
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^#catalog-client$": "<rootDir>/generated/client"
+    }
+  },
+  "imports": {
+    "#catalog-client": "./generated/client/index.js"
+  }
+}
