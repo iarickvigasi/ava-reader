@@ -38,7 +38,6 @@ describe("resolveCachedLibraryItemId", () => {
       completionPercent: 0,
       primaryFormat: "EPUB",
       lastReadAt: null,
-      coverBlob: null,
       savedOffline: true,
       savedAutomatically: false,
       savedAt: null,

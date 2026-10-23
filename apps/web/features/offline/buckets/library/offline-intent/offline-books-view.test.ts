@@ -17,7 +17,6 @@ function row(overrides: Partial<LibraryItemRow> = {}): LibraryItemRow {
     completionPercent: 0,
     primaryFormat: "EPUB",
     lastReadAt: null,
-    coverBlob: null,
     savedOffline: false,
     savedAutomatically: false,
     savedAt: null,
@@ -34,8 +33,16 @@ describe("resolveOfflineCounts", () => {
   it("reports the server's whole-collection count, not the cached preview rows", () => {
     // Two of twelve books happen to be cached. Counting them would report 2.
     const cached = [
-      row({ libraryItemId: "a", offlineRequested: true, offlineRequestedBaseline: true }),
-      row({ libraryItemId: "b", offlineRequested: true, offlineRequestedBaseline: true }),
+      row({
+        libraryItemId: "a",
+        offlineRequested: true,
+        offlineRequestedBaseline: true,
+      }),
+      row({
+        libraryItemId: "b",
+        offlineRequested: true,
+        offlineRequestedBaseline: true,
+      }),
     ];
 
     expect(resolveOfflineCounts(stored, cached)).toEqual(stored);
@@ -102,9 +109,17 @@ describe("resolveOfflineCounts", () => {
 describe("selectOfflineBookRows", () => {
   it("keeps only requested books, most recently engaged first", () => {
     const rows = [
-      row({ libraryItemId: "old", offlineRequested: true, lastReadAt: "2026-01-01T00:00:00Z" }),
+      row({
+        libraryItemId: "old",
+        offlineRequested: true,
+        lastReadAt: "2026-01-01T00:00:00Z",
+      }),
       row({ libraryItemId: "not-saved", offlineRequested: false }),
-      row({ libraryItemId: "new", offlineRequested: true, lastReadAt: "2026-08-30T00:00:00Z" }),
+      row({
+        libraryItemId: "new",
+        offlineRequested: true,
+        lastReadAt: "2026-08-30T00:00:00Z",
+      }),
       row({ libraryItemId: "never", offlineRequested: true, lastReadAt: null }),
     ];
 

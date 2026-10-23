@@ -16,12 +16,15 @@ export function mergeListPayloadItemRow(
   if (!prior) {
     return next;
   }
-  const finishedAt = next.finishedAt !== undefined ? next.finishedAt
-    : prior.finishedAt !== undefined ? prior.finishedAt : prior.details?.finishedAt;
+  const finishedAt =
+    next.finishedAt !== undefined
+      ? next.finishedAt
+      : prior.finishedAt !== undefined
+        ? prior.finishedAt
+        : prior.details?.finishedAt;
   return {
     ...next,
     ...(finishedAt !== undefined ? { finishedAt } : {}),
-    coverBlob: prior.coverBlob,
     savedOffline: prior.savedOffline,
     savedAutomatically: prior.savedAutomatically,
     savedAt: prior.savedAt,
@@ -35,8 +38,12 @@ export function mergeListPayloadItemRow(
       : {}),
     // Lists now carry the canonical finish date too. Keep the remaining
     // details and retain legacy dates when an older list omits this field.
-    details: prior.details && finishedAt !== undefined && prior.details.finishedAt !== finishedAt
-      ? { ...prior.details, finishedAt } : prior.details,
+    details:
+      prior.details &&
+      finishedAt !== undefined &&
+      prior.details.finishedAt !== finishedAt
+        ? { ...prior.details, finishedAt }
+        : prior.details,
     detailsFetchedAt: prior.detailsFetchedAt,
   } satisfies LibraryItemRow;
 }

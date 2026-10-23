@@ -34,7 +34,6 @@ function seedLibraryItem(
     completionPercent: overrides.completionPercent ?? 0,
     primaryFormat: overrides.primaryFormat ?? "EPUB",
     lastReadAt: overrides.lastReadAt ?? null,
-    coverBlob: overrides.coverBlob ?? null,
     savedOffline: overrides.savedOffline ?? false,
     savedAutomatically: overrides.savedAutomatically ?? false,
     savedAt: overrides.savedAt ?? null,
@@ -141,9 +140,9 @@ describe("book bucket storage", () => {
         savedOffline: true,
         savedAutomatically: true,
         savedAt: "2026-01-01T00:00:00Z",
-        coverBlob: new Blob(["cover"], { type: "image/png" }),
       }),
     );
+    await attachCoverBlob("lib-1", new Blob(["cover"]));
     await applyBookContent({
       libraryItemId: "lib-1",
       toc: [],
@@ -169,7 +168,7 @@ describe("book bucket storage", () => {
     expect(await readBookContent("lib-1")).toBeUndefined();
     expect(await readChapter("lib-1", "ch-1")).toBeUndefined();
     const row = await db.libraryItems.get("lib-1");
-    expect(row?.coverBlob).toBeNull();
+    expect(await db.bookCovers.get("lib-1")).toBeUndefined();
     expect(row?.savedOffline).toBe(false);
     expect(row?.savedAutomatically).toBe(false);
     expect(row?.savedAt).toBeNull();
@@ -189,13 +188,14 @@ describe("book bucket storage", () => {
     expect(row?.savedOffline).toBe(true);
   });
 
-  it("attachCoverBlob updates the row's blob", async () => {
+  it("attachCoverBlob stores independent cover bytes", async () => {
     const db = getDb();
     await db.libraryItems.put(seedLibraryItem({ libraryItemId: "lib-1" }));
     const blob = new Blob(["cover"], { type: "image/png" });
     await attachCoverBlob("lib-1", blob);
-    const row = await db.libraryItems.get("lib-1");
-    expect(row?.coverBlob).toBeInstanceOf(Blob);
+    expect((await db.bookCovers.get("lib-1"))?.bytes).toBeInstanceOf(
+      ArrayBuffer,
+    );
   });
 
   it("findEvictableAutoSavedIds returns auto-only rows other than the current book", async () => {

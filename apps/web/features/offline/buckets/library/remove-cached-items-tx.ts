@@ -1,4 +1,5 @@
 import Dexie from "dexie";
+import { forgetWarmCover } from "../book/warm-cover";
 import { createReaderResumeStorageKey } from "@/features/reader/resume";
 import { abortSaveAndWait, setStatus } from "../book/bucket";
 import { getDb, type AvaReaderDB } from "../../db";
@@ -19,6 +20,7 @@ export async function removeCachedItemsTx(db: AvaReaderDB, ids: string[]) {
   Dexie.currentTransaction?.on("complete", () => {
     if (db !== getDb()) return;
     for (const id of ids) {
+      forgetWarmCover(id);
       void abortSaveAndWait(id).then(() => {
         if (db === getDb())
           setStatus(id, {
@@ -55,6 +57,7 @@ export async function removeCachedItemsTx(db: AvaReaderDB, ids: string[]) {
   );
   for (const table of [
     db.libraryItems,
+    db.bookCovers,
     db.books,
     db.progress,
     db.collectionMembershipMutations,

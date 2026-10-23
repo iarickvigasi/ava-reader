@@ -7,6 +7,7 @@ export { removeCachedItemsTx } from "./remove-cached-items-tx";
 export function removalTables(db: AvaReaderDB) {
   return [
     db.libraryItems,
+    db.bookCovers,
     db.collectionMembership,
     db.collectionMembershipMutations,
     db.finishDateMutations,

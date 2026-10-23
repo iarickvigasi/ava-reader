@@ -14,6 +14,9 @@
 // - Native database versions guard against downgrades before Dexie can inspect
 //   or patch a newer schema. Refusal preserves cached data and pending mutations.
 
+import type { LibraryItemRow } from "./library-item-row";
+import type { CoverRow } from "./buckets/book/covers/types";
+import { migrateLegacyCovers } from "./buckets/book/covers/migrate";
 import Dexie, { type Table } from "dexie";
 import { GuardedDatabase } from "./compatibility/guarded-database";
 import type { SessionRow } from "./buckets/sessions/types";
@@ -23,11 +26,7 @@ import type { FinishDateMutation } from "./buckets/library/finish-date/types";
 import type { TranslationChapterRow } from "./buckets/translations/types";
 
 import type { HomePayload } from "@/lib/api-types/home";
-import type {
-  LibraryBookInfoDetails,
-  LibraryCardBook,
-  LibraryCollection,
-} from "@/lib/api-types/library";
+import type { LibraryCollection } from "@/lib/api-types/library";
 import type {
   ReaderBlock,
   ReaderLocator,
@@ -41,45 +40,7 @@ import type { CurrentUserPayload } from "@/lib/api-types/user";
 // book content lives in `books` + `bookChapters` and is only present when the
 // book has been saved for offline (either explicitly or because the user
 // engaged with it).
-export type LibraryItemRow = LibraryCardBook & {
-  // Engagement timestamp from the originating list (max of progress.lastReadAt,
-  // lastOpenedAt, addedAt). `null` for items that have never been engaged.
-  lastReadAt: string | null;
-  // Cached cover blob — populated only when the book is saved offline.
-  coverBlob: Blob | null;
-  // Set to true when the user explicitly taps "Save for offline" OR the moment
-  // they start reading the book (auto-save policy: when the user opens a
-  // book that isn't downloaded yet, it gets cached). Distinct from the
-  // explicit flag because explicit saves are sticky under quota pressure.
-  savedOffline: boolean;
-  savedAutomatically: boolean;
-  savedAt: string | null;
-  // Offline-capable mutation bookkeeping for the server-synced "keep this book
-  // offline" intent. `offlineRequestedDirty` marks a local toggle not yet
-  // PATCHed to the server; the sync flush drains it and a revalidation
-  // preserves the local value while it's still dirty.
-  offlineRequestedDirty?: boolean;
-  // What the last server payload said `offlineRequested` was. Compared against
-  // the live value to find toggles the server hasn't counted yet, so the
-  // Offline Books shelf can report the server's whole-collection count plus
-  // those (see buckets/library/offline-intent/offline-books-view.ts). Deliberately tracks the
-  // payload, not the PATCH: clearing it on a flush ack would drop the toggle
-  // out of the count while the cached collection row still held the old total.
-  // Undefined on rows cached before this field existed — those contribute
-  // nothing, so no schema version bump is needed.
-  offlineRequestedBaseline?: boolean;
-  // Server-side updatedAt of the LibraryItem row, used to short-circuit
-  // unchanged revalidations.
-  serverUpdatedAt: string | null;
-  // Book-info detail fields. Optional — populated when the user has visited
-  // the book-info page at least once (online), so reopening the page later
-  // works offline. Stored flat on the row so a Dexie query for one
-  // libraryItemId returns everything the screen needs without a join.
-  // `details` is intentionally optional rather than nullable so an undefined
-  // value cleanly signals "we don't know yet" vs. "server said null".
-  details?: LibraryBookInfoDetails;
-  detailsFetchedAt?: string;
-};
+export type { LibraryItemRow } from "./library-item-row";
 
 export type CollectionRow = Omit<LibraryCollection, "books"> & {
   // Local revision at the start of the request producing these counts.
@@ -298,7 +259,7 @@ export type MetaRow = {
 // Bumped only for structural changes WITHIN one user's database. The database
 // NAME is per-user (`ava-reader-<userId>`), so different accounts on one browser
 // profile never share an object store — see adr/5.
-export const SCHEMA_VERSION = 4;
+export const SCHEMA_VERSION = 5;
 export const DB_NAME_PREFIX = "ava-reader-";
 // The pre-per-user single database; swept once by purgeOtherUserDbs (adr/5).
 export const LEGACY_DB_NAME = "ava-reader";
@@ -319,6 +280,7 @@ export const DB_NAME = dbNameForUser(ANONYMOUS_DB_USER);
 
 export class AvaReaderDB extends GuardedDatabase {
   libraryItems!: Table<LibraryItemRow, string>;
+  bookCovers!: Table<CoverRow, string>;
   collections!: Table<CollectionRow, string>;
   collectionMembership!: Table<CollectionMembershipRow, [string, string]>;
   collectionMembershipMutations!: Table<MembershipMutation, string>;
@@ -398,6 +360,9 @@ export class AvaReaderDB extends GuardedDatabase {
     this.version(4).stores({
       translations: "[libraryItemId+chapterId+targetLang], libraryItemId",
     });
+    this.version(5)
+      .stores({ bookCovers: "libraryItemId" })
+      .upgrade(migrateLegacyCovers);
   }
 }
 

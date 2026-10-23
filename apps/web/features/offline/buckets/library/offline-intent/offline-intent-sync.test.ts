@@ -3,7 +3,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.stubGlobal("navigator", { onLine: true });
 
-import { DB_NAME, __resetDbForTests, getDb, type LibraryItemRow } from "../../../db";
+import {
+  DB_NAME,
+  __resetDbForTests,
+  getDb,
+  type LibraryItemRow,
+} from "../../../db";
 import {
   __resetOfflineIntentSyncForTests,
   flushOfflineIntents,
@@ -26,7 +31,6 @@ function row(id: string): LibraryItemRow {
     lastReadAt: null,
     offlineRequested: false,
     offlineRequestedDirty: false,
-    coverBlob: null,
     savedOffline: false,
     savedAutomatically: false,
     savedAt: null,

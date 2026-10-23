@@ -56,3 +56,5 @@ export { useRefreshReaderLanguage } from "./use-refresh-reader-language";
 
 export { DownloadedChapterLabelMigration } from "./chapter-labels/migration-runner";
 export { refreshDownloadedChapterLabels } from "./chapter-labels/refresh-labels";
+
+export { useCoverRefresh } from "./covers/use-cover-refresh";

@@ -79,7 +79,6 @@ export function bookToItemRow(
     offlineRequested: book.offlineRequested ?? false,
     offlineRequestedBaseline: book.offlineRequested ?? false,
     offlineRequestedDirty: false,
-    coverBlob: null,
     savedOffline: false,
     savedAutomatically: false,
     savedAt: null,

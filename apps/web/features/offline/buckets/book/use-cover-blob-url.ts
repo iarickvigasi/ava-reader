@@ -1,58 +1,38 @@
 "use client";
 
+import { liveQuery } from "dexie";
 import { useEffect, useState } from "react";
+import { readCoverBlob } from "./covers/read";
+import { forgetWarmCover, releaseCoverUrl } from "./warm-cover";
 
-import { readCoverBlob } from "./storage";
-import { releaseCoverUrl } from "./warm-cover";
-
-// The Dexie-cached cover for a personal-library book — checked first, ahead
-// of the network (see use-book-cover-src.ts). Three states, since "resolving"
-// and "confirmed absent" must read differently to the caller (the former
-// waits; the latter falls back to network):
-//   - no `libraryItemId` (no personal-library id — a public/catalog cover):
-//     `null`, synchronously — nothing to look up.
-//   - an id was given but the Dexie read for it hasn't resolved yet:
-//     `undefined`.
-//   - resolved: the object URL, or `null` once confirmed there's no blob.
-//
-// `resolved` is keyed by the id it was resolved for, so a stale result never
-// leaks out when `libraryItemId` changes before the read for it resolves —
-// mirrors how BookCover keys `measured` off the src it was measured for.
-export function useCoverBlobUrl(
-  libraryItemId: null | string,
-): string | null | undefined {
+// undefined = resolving, null = absent. Subscribe only to cover bytes so
+// metadata refreshes cannot reload artwork. ID/cancellation fences late reads.
+export function useCoverBlobUrl(id: string | null): string | null | undefined {
   const [resolved, setResolved] = useState<{
     id: string;
-    url: null | string;
+    url: string | null;
   } | null>(null);
-
   useEffect(() => {
-    if (!libraryItemId) {
-      return;
-    }
+    if (!id) return;
     let objectUrl: string | null = null;
     let cancelled = false;
-    void readCoverBlob(libraryItemId).then((blob) => {
-      if (cancelled) {
-        return;
-      }
-      if (!blob) {
-        setResolved({ id: libraryItemId, url: null });
-        return;
-      }
-      objectUrl = URL.createObjectURL(blob);
-      setResolved({ id: libraryItemId, url: objectUrl });
+    const subscription = liveQuery(() => readCoverBlob(id)).subscribe({
+      next: (blob) => {
+        if (cancelled) return;
+        if (objectUrl) releaseCoverUrl(objectUrl);
+        forgetWarmCover(id);
+        objectUrl = blob ? URL.createObjectURL(blob) : null;
+        setResolved({ id, url: objectUrl });
+      },
+      error: () => {
+        if (!cancelled) setResolved({ id, url: null });
+      },
     });
     return () => {
       cancelled = true;
-      if (objectUrl) {
-        releaseCoverUrl(objectUrl);
-      }
+      subscription.unsubscribe();
+      if (objectUrl) releaseCoverUrl(objectUrl);
     };
-  }, [libraryItemId]);
-
-  if (!libraryItemId) {
-    return null;
-  }
-  return resolved?.id === libraryItemId ? resolved.url : undefined;
+  }, [id]);
+  return !id ? null : resolved?.id === id ? resolved.url : undefined;
 }

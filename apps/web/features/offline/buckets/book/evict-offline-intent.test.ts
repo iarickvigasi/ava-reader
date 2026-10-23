@@ -3,7 +3,7 @@ import { afterEach, expect, it } from "vitest";
 
 import { __resetDbForTests, getDb } from "../../db";
 import { evictStaleAutoSaves } from "./evict";
-import { markBookSaved } from "./storage";
+import { attachCoverBlob, readCoverBlob, markBookSaved } from "./storage";
 
 afterEach(async () => {
   await getDb().delete();
@@ -25,7 +25,6 @@ it.each([false, true])(
         completionPercent: 0,
         primaryFormat: "EPUB",
         lastReadAt: null,
-        coverBlob,
         savedOffline: false,
         savedAutomatically: false,
         savedAt: null,
@@ -48,6 +47,7 @@ it.each([false, true])(
         aux: null,
         fetchedAt: "2026-09-24T00:00:00Z",
       });
+      await attachCoverBlob(libraryItemId, coverBlob);
       await markBookSaved(libraryItemId, "auto");
     }
 
@@ -59,16 +59,16 @@ it.each([false, true])(
     expect(await evictStaleAutoSaves("current")).toEqual(["ordinary"]);
     expect(await db.books.get("kept")).toBeDefined();
     expect(await db.bookChapters.get(["kept", "ch-1"])).toBeDefined();
-    expect((await db.libraryItems.get("kept"))?.coverBlob).toEqual(coverBlob);
+    expect(await (await readCoverBlob("kept"))?.text()).toBe("cover");
     expect(await db.books.get("current")).toBeDefined();
     expect(await db.books.get("ordinary")).toBeUndefined();
     expect(await db.bookChapters.get(["ordinary", "ch-1"])).toBeUndefined();
-    expect((await db.libraryItems.get("ordinary"))?.coverBlob).toBeNull();
+    expect(await readCoverBlob("ordinary")).toBeNull();
 
     await db.libraryItems.update("kept", { offlineRequested: false });
     expect(await evictStaleAutoSaves("current")).toEqual(["kept"]);
     expect(await db.books.get("kept")).toBeUndefined();
     expect(await db.bookChapters.get(["kept", "ch-1"])).toBeUndefined();
-    expect((await db.libraryItems.get("kept"))?.coverBlob).toBeNull();
+    expect(await readCoverBlob("kept")).toBeNull();
   },
 );

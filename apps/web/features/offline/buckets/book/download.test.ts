@@ -90,9 +90,7 @@ function buildFetcher(
     }
     options.onCall?.(chapterId);
     const focus =
-      chapterId && chapterIds.includes(chapterId)
-        ? chapterId
-        : chapterIds[0]!;
+      chapterId && chapterIds.includes(chapterId) ? chapterId : chapterIds[0]!;
     const focusIndex = chapterIds.indexOf(focus);
     const windowIds = [
       chapterIds[focusIndex - 1],
@@ -128,7 +126,6 @@ function seedLibraryItem(
     completionPercent: overrides.completionPercent ?? 0,
     primaryFormat: overrides.primaryFormat ?? "EPUB",
     lastReadAt: overrides.lastReadAt ?? null,
-    coverBlob: overrides.coverBlob ?? null,
     savedOffline: overrides.savedOffline ?? false,
     savedAutomatically: overrides.savedAutomatically ?? false,
     savedAt: overrides.savedAt ?? null,

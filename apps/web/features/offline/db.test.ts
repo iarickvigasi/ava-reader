@@ -50,7 +50,6 @@ describe("offline db", () => {
       completionPercent: 0,
       primaryFormat: "EPUB",
       lastReadAt: null,
-      coverBlob: null,
       savedOffline: false,
       savedAutomatically: false,
       savedAt: null,

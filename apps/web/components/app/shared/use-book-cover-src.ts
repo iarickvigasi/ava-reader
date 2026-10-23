@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import {
-  persistCoverFromNetwork,
   readWarmCover,
   forgetWarmCover,
   rememberCover,
   useCoverBlobUrl,
+  useCoverRefresh,
 } from "@/features/offline/buckets/book";
 
 type Artwork = { ratio: number; src: string };
@@ -40,12 +40,7 @@ export function useBookCoverSrc(
             ? null
             : src;
 
-  useEffect(() => {
-    if (!libraryItemId || !src || cached !== null) {
-      return;
-    }
-    void persistCoverFromNetwork(libraryItemId, src);
-  }, [libraryItemId, src, cached]);
+  useCoverRefresh(libraryItemId, src, cached);
 
   const artwork =
     measured?.src === effectiveSrc

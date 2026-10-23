@@ -43,7 +43,7 @@ export async function clearCurrentUser(): Promise<void> {
 }
 
 // Cache-first, lazy-write-through avatar photo — mirrors
-// buckets/book/storage.ts's coverBlob (see [[4.9-header-avatar]]). Single row,
+// the book cover read path (see [[4.9-header-avatar]]). Single row,
 // so no id parameter: there's only ever one signed-in user per database.
 export async function attachAvatarBlob(blob: Blob | null): Promise<void> {
   const db = getDb();

@@ -52,7 +52,7 @@ Monorepo: pnpm workspaces + Turbo (lint/typecheck/test/build), Node ≥22.
 ## Offline layer (apps/web/features/offline)
 
 - **db.ts** — one Dexie instance **per user** (`ava-reader-<userId>`; adr/5), versioned schema.
-  Tables: libraryItems, collections, collectionMembership, books, bookChapters, highlights,
+  Tables: libraryItems, bookCovers, collections, collectionMembership, books, bookChapters, highlights,
   aiComments, translations, sessions, progress, statsSnapshot, preferences, me, home, meta + per-domain mutation
   queues (highlightMutations, aiCommentMutations, sessionMutations, preferenceMutations,
   collectionMembershipMutations). Bump
@@ -65,6 +65,8 @@ Monorepo: pnpm workspaces + Turbo (lint/typecheck/test/build), Node ≥22.
 - **bucket sync** — each writeable bucket's `sync.ts` drains its own queue, triggered on `online`
   (its own listener) and via the page hydrators; one in-flight flush per bucket, FIFO queue,
   idempotent upserts keyed by client ULID; permanent 4xx → DropEvent toast.
+- **bookCovers** stores immutable ArrayBuffers, length/hash, MIME/source, and verification state
+  separately from library metadata (ADR 9); book-bucket storage owns migration and validation.
 - **stats/** — composes server baseline + unsynced local session/progress deltas (no double-count on
   sync).
 - **sw/** — service worker caches the app shell; a root identity reconciler (lifecycle/) wipes all

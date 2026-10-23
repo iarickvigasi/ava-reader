@@ -1,23 +1,23 @@
-import { attachCoverBlob } from "./storage";
+import { getDb } from "../../db";
+import { refreshCover } from "./covers/refresh";
 
-// Lazy write-through: once a personal-library cover has been shown from the
-// network (no cached copy yet), fetch and store its bytes so the *next* view
-// — even offline — is a cache hit instead of another network request. The
-// row must already exist (from library metadata sync); if it doesn't yet,
-// attachCoverBlob no-ops and the next successful sync makes this retry moot.
-// Best-effort: a failed fetch (offline, dead URL) just means no write-through
-// this time — the visible cover already succeeded or failed on its own.
+const pending = new WeakMap<object, Map<string, Promise<void>>>();
+
+// Only missing, invalid, or migrated-unverified covers need network bytes.
 export async function persistCoverFromNetwork(
-  libraryItemId: string,
+  id: string,
   src: string,
 ): Promise<void> {
+  const db = getDb();
+  let requests = pending.get(db);
+  if (!requests) pending.set(db, (requests = new Map()));
+  const existing = requests.get(id);
+  if (existing) return existing;
+  const task = refreshCover(db, id, src);
+  requests.set(id, task);
   try {
-    const response = await fetch(src);
-    if (!response.ok) {
-      return;
-    }
-    await attachCoverBlob(libraryItemId, await response.blob());
-  } catch {
-    // Offline, CORS, aborted mid-flight — nothing to recover here.
+    await task;
+  } finally {
+    requests.delete(id);
   }
 }
