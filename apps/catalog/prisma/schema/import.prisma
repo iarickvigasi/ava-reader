@@ -1,0 +1,60 @@
+enum ImportStatus {
+  STAGING
+  STAGED
+  FAILED
+}
+
+enum ImportRecordStatus {
+  PENDING
+  APPLIED
+  SKIPPED
+  INVALID
+  UNRESOLVED
+  CONFLICT
+}
+
+model ImportRun {
+  id             String         @id @default(uuid()) @db.Uuid
+  sourceId       String         @db.Uuid
+  checksum       String
+  adapterVersion Int
+  filename       String
+  checkpoint     Int            @default(0)
+  status         ImportStatus   @default(STAGING)
+  error          String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  source         Source         @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  records        ImportRecord[]
+
+  @@unique([checksum, adapterVersion])
+}
+
+model ImportRecord {
+  id          String             @id @default(uuid()) @db.Uuid
+  runId       String             @db.Uuid
+  line        Int
+  kind        String?
+  externalId  String?
+  revision    Int?
+  modifiedAt  DateTime?
+  payloadHash String?
+  payload     Json?
+  status      ImportRecordStatus @default(PENDING)
+  diagnostic  String?
+  run         ImportRun          @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@unique([runId, line])
+  @@index([kind, status, id])
+}
+
+model CatalogOutbox {
+  id        BigInt   @id @default(autoincrement())
+  kind      String
+  entityId  String   @db.Uuid
+  revision  Int
+  eventType String   @default("METADATA_UPSERTED")
+  createdAt DateTime @default(now())
+
+  @@unique([kind, entityId, revision])
+}

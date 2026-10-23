@@ -19,3 +19,5 @@ coverage
 apps/catalog/dist
 apps/catalog/generated
 apps/catalog/*.tsbuildinfo
+
+/imports/

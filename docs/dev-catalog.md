@@ -4,6 +4,8 @@ Independent NestJS workspace: apps/catalog. Its Prisma client generates into its
 `generated/client` directory; it never imports the main API client or uses DATABASE_URL.
 The same host can run both stacks, using separate PostgreSQL containers and persistent volumes.
 
+Importer commands/checkpoints: [import operations](dev-catalog-import.md).
+
 ## Local commands
 
 - Install: `pnpm install`; generate explicitly after `--ignore-scripts`:

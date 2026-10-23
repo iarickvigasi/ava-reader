@@ -36,6 +36,8 @@ Part of the [AVA glossary](glossary.md). Catalog architecture is currently a pro
 - **Connection pool / budget** — reusable database connections / the maximum assigned to a service.
 - **Resource budget** — limits on CPU, memory, connections, or activity assigned to a service/job.
 - **Bounded concurrency** — a limit on how many jobs or requests execute simultaneously.
+- **Staging / quarantine** — holding imported records before publishing / keeping invalid records for review.
+- **Advisory lock** — a database-held coordination lock allowing only one importer at a time.
 - **Worker / consumer** — background program processing jobs / program receiving change messages.
 
 ## Search and reliable updates

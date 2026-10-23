@@ -3,24 +3,27 @@ model Source {
   key      String          @unique
   name     String
   mappings SourceMapping[]
+  runs     ImportRun[]
 }
 
 // SQL CHECK requires exactly one target and matches it to entityKind.
 model SourceMapping {
-  id             String   @id @default(uuid()) @db.Uuid
-  sourceId       String   @db.Uuid
-  entityKind     String
-  externalId     String
-  sourceUrl      String?
-  sourceRevision String?
-  retrievedAt    DateTime @default(now())
-  workId         String?  @db.Uuid
-  editionId      String?  @db.Uuid
-  authorId       String?  @db.Uuid
-  source         Source   @relation(fields: [sourceId], references: [id], onDelete: Restrict)
-  work           Work?    @relation(fields: [workId], references: [id], onDelete: Restrict)
-  edition        Edition? @relation(fields: [editionId], references: [id], onDelete: Restrict)
-  author         Author?  @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  id              String   @id @default(uuid()) @db.Uuid
+  sourceId        String   @db.Uuid
+  entityKind      String
+  externalId      String
+  sourceUrl       String?
+  sourceRevision  String?
+  payloadHash     String?
+  managedRevision Int?
+  retrievedAt     DateTime @default(now())
+  workId          String?  @db.Uuid
+  editionId       String?  @db.Uuid
+  authorId        String?  @db.Uuid
+  source          Source   @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  work            Work?    @relation(fields: [workId], references: [id], onDelete: Restrict)
+  edition         Edition? @relation(fields: [editionId], references: [id], onDelete: Restrict)
+  author          Author?  @relation(fields: [authorId], references: [id], onDelete: Restrict)
 
   @@unique([sourceId, entityKind, externalId])
   @@index([workId])

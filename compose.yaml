@@ -68,6 +68,23 @@ services:
       retries: 10
       start_period: 20s
 
+  catalog-importer:
+    profiles: ["import"]
+    build:
+      context: .
+      dockerfile: apps/catalog/Dockerfile
+    cpus: "0.5"
+    mem_limit: 512m
+    depends_on:
+      catalog-postgres:
+        condition: service_healthy
+    environment:
+      CATALOG_DATABASE_URL: ${CATALOG_DATABASE_URL:-postgresql://catalog:${CATALOG_POSTGRES_PASSWORD:-catalog}@catalog-postgres:5432/ava_catalog}
+    volumes:
+      - ${CATALOG_IMPORT_DIRECTORY:-./imports}:/imports:ro
+    entrypoint: ["node", "/app/apps/catalog/dist/src/importer/main.js"]
+    command: ["--retry"]
+
   api:
     build:
       context: .

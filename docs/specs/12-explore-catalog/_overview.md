@@ -17,7 +17,8 @@ No source guarantees every book or a complete description; missing metadata stay
 - Deferred: scraper implementations, reviews/ratings/social feeds, store checkout, recommendations,
   dedicated search vendor, and general file-storage migration.
 - First milestone: independent schema, sample metadata, health and ID lookup endpoints.
-  Explore UI/search, ingestion, and personal upload linkage remain unimplemented future phases.
+  Open Library file ingestion is implemented in [12.6](12.6-open-library-import.md).
+  Explore UI/search and personal upload linkage remain future phases.
 
 ## Proposed behavior
 
