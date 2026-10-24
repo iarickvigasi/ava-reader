@@ -25,6 +25,7 @@ file SHA-256, source revision, timestamp, line diagnostics, and outcomes live in
   `pnpm catalog:import --retry` resolves missing relationships after new files arrive.
 - The profile-only catalog-importer container mounts inputs read-only, has no API port, and exits
   when finished. It is limited to 0.5 CPU/512 MiB; canonical transactions execute sequentially.
+  Production overrides the worker to 1 GiB with a 768 MiB Node heap and attached-volume inputs.
   PostgreSQL connections use the catalog pool plus one dedicated advisory-lock connection.
 - Two concurrent importers are refused by a catalog-wide PostgreSQL advisory lock. Failed DB/file
   operations exit 1; malformed/conflicting records exit 2 after other valid records finish.

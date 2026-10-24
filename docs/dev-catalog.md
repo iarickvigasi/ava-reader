@@ -28,13 +28,17 @@ Local Docker web builds need `/catalog` with a gateway, or an HTTPS catalog orig
 
 ## Production gateway and deployment
 
-- Reuse avareader.space DNS/TLS. Import `tools/deploy/catalog.Caddyfile` inside its existing
+- Dockerized production Caddy mounts the tracked root Caddyfile and routes /catalog/\* to
+  catalog:4001 on the shared Compose network. Validate and reload Caddy after config changes.
+- For a host gateway, reuse avareader.space DNS/TLS. Import `tools/deploy/catalog.Caddyfile` inside its existing
   Caddy site block, before the reader fallback; validate and reload the host gateway.
   With another gateway, add the equivalent path rule: `/catalog/api/*` → catalog `/api/*`.
   Strip only `/catalog`, preserve query strings, and route before the reader/main API handlers.
   The host snippet targets port 4001; adapt for CATALOG_HOST_PORT or a container/remote gateway.
 - `compose.prod.yaml` pins the browser base to `/catalog`; requests stay on the reader origin.
   Keep catalog PostgreSQL private; expose port 4001 only to the gateway via the host firewall.
+- Production catalog DB lives at /mnt/HC_Volume_107260972/ava-catalog/postgres;
+  compose.prod.yaml replaces the development Docker volume. Mount the attached disk before deploy.
 - Deploy with `docker compose -f compose.yaml -f compose.prod.yaml up -d --build --wait`.
 - Verify `https://avareader.space/catalog/api/health`, `/catalog/api/works?limit=1`, and
   `/catalog/api/works/filters` return JSON. Deployment checks health and a bounded works request.

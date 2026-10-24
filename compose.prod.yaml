@@ -1,5 +1,26 @@
 # Production catalog routing; layer on top of compose.yaml.
 services:
+  catalog-postgres:
+    volumes: !override
+      - type: bind
+        source: /mnt/HC_Volume_107260972/ava-catalog/postgres
+        target: /var/lib/postgresql/data
+        bind:
+          create_host_path: false
+
+  catalog-importer:
+    image: ava-reader-catalog:latest
+    mem_limit: 1g
+    environment:
+      NODE_OPTIONS: --max-old-space-size=768
+    volumes: !override
+      - type: bind
+        source: /mnt/HC_Volume_107260972/ava-catalog/imports
+        target: /imports
+        read_only: true
+        bind:
+          create_host_path: false
+
   catalog:
     environment:
       CATALOG_WEB_ORIGIN: https://avareader.space
@@ -9,3 +30,24 @@ services:
         NEXT_PUBLIC_CATALOG_API_BASE_URL: /catalog
     environment:
       NEXT_PUBLIC_CATALOG_API_BASE_URL: /catalog
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      web:
+        condition: service_healthy
+      catalog:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:

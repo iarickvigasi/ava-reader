@@ -18,6 +18,7 @@ jobs:
           script: |
             set -e
             cd /opt/ava-reader
+            mountpoint -q /mnt/HC_Volume_107260972
             git pull origin main
             # Pass the freshly-pulled commit to the web build so the service
             # worker cache is versioned by commit (stable + traceable). The

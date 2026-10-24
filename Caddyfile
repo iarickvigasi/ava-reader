@@ -1,0 +1,31 @@
+{
+	email iarick.vigasi@gmail.com
+}
+
+avareader.space {
+	encode gzip zstd
+
+	handle_path /catalog/* {
+		reverse_proxy catalog:4001
+	}
+
+	handle /api/* {
+		reverse_proxy api:4000
+	}
+
+	handle {
+		reverse_proxy web:3000
+	}
+}
+
+http://178.105.20.108 {
+	encode gzip zstd
+
+	handle /api/* {
+		reverse_proxy api:4000
+	}
+
+	handle {
+		reverse_proxy web:3000
+	}
+}
