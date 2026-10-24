@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import { resolveCatalogApiBase } from "./scripts/catalog-api-base.mjs";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
@@ -17,6 +18,10 @@ const SW_VERSION =
 const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_SW_VERSION: SW_VERSION,
+    NEXT_PUBLIC_CATALOG_API_BASE_URL: resolveCatalogApiBase(
+      process.env.NEXT_PUBLIC_CATALOG_API_BASE_URL,
+      process.env.NODE_ENV === "production",
+    ),
   },
 };
 

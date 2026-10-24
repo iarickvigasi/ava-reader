@@ -1,0 +1,11 @@
+# Production catalog routing; layer on top of compose.yaml.
+services:
+  catalog:
+    environment:
+      CATALOG_WEB_ORIGIN: https://avareader.space
+  web:
+    build:
+      args:
+        NEXT_PUBLIC_CATALOG_API_BASE_URL: https://avacatalog.com
+    environment:
+      NEXT_PUBLIC_CATALOG_API_BASE_URL: https://avacatalog.com

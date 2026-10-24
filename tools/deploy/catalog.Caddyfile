@@ -1,0 +1,10 @@
+# Include in the host Caddy configuration alongside the existing reader site.
+# The host must reach the catalog's published Compose port (default 4001).
+avacatalog.com {
+    handle /api/* {
+        reverse_proxy 127.0.0.1:4001
+    }
+    handle {
+        respond 404
+    }
+}

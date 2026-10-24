@@ -2,8 +2,7 @@ export async function fetchCatalog<T>(
   path: string,
   signal: AbortSignal,
 ): Promise<T> {
-  const base =
-    process.env.NEXT_PUBLIC_CATALOG_API_BASE_URL ?? "http://localhost:4001";
+  const base = process.env.NEXT_PUBLIC_CATALOG_API_BASE_URL;
   const controller = new AbortController();
   const abort = () => controller.abort();
   signal.addEventListener("abort", abort, { once: true });

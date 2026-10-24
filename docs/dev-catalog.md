@@ -2,7 +2,6 @@
 
 Independent NestJS workspace: apps/catalog. Its Prisma client generates into its own ignored
 `generated/client` directory; it never imports the main API client or uses DATABASE_URL.
-The same host can run both stacks, using separate PostgreSQL containers and persistent volumes.
 
 Importer commands/checkpoints: [import operations](dev-catalog-import.md).
 
@@ -21,10 +20,25 @@ Importer commands/checkpoints: [import operations](dev-catalog-import.md).
 
 ## Explore integration
 
-Web uses NEXT_PUBLIC_CATALOG_API_BASE_URL (default http://localhost:4001), including Docker build
-arguments. Configure CATALOG_WEB_ORIGIN for the web origin. Search reads catalog directly; it does
-not depend on main API. Rebuild web when changing its public API URL. Local Explore:
-http://localhost:3000/app/explore. See spec 12.7 for filter semantics and current availability limits.
+Next dev defaults to `http://localhost:4001`; production defaults to `https://avacatalog.com`.
+NEXT_PUBLIC_CATALOG_API_BASE_URL is compiled into browser JavaScript; rebuild web after changes.
+Production builds reject non-HTTPS and loopback origins, paths (including /api), and credentials.
+Use `pnpm dev:web` for local HTTP; local Docker web builds need an HTTPS catalog origin override.
+
+## Production gateway and deployment
+
+- Point avacatalog.com DNS to the catalog gateway host; allow inbound TCP 80/443 for TLS.
+- On the Compose host, include `tools/deploy/catalog.Caddyfile` in an existing Caddy config;
+  validate and reload Caddy. It manages TLS and preserves `/api/*` when proxying to port 4001.
+  Adapt the upstream if CATALOG_HOST_PORT changes or the gateway runs in a container/other host.
+  If another gateway already owns ports 80/443, add the equivalent HTTPS virtual host there.
+- `compose.prod.yaml` pins the browser origin to avacatalog.com and catalog CORS to
+  `https://avareader.space`; update that allowlist if additional reader origins are deployed.
+  Keep catalog PostgreSQL private; expose port 4001 only to the gateway via the host firewall.
+- Deploy with `docker compose -f compose.yaml -f compose.prod.yaml up -d --build --wait`.
+- Verify `/api/health`, `/api/works?limit=1`, and `/api/works/filters` return JSON over HTTPS.
+  Check `Origin: https://avareader.space` receives the matching Access-Control-Allow-Origin header,
+  then verify Explore browsing, search, book/author navigation, and no localhost catalog requests.
 
 ## Configuration and host separation
 

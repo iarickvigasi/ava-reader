@@ -23,6 +23,8 @@ jobs:
             # worker cache is versioned by commit (stable + traceable). The
             # build falls back to a timestamp if this is ever unset.
             export GIT_SHA="$(git rev-parse HEAD)"
-            docker compose pull
-            docker compose up -d --build
+            docker compose -f compose.yaml -f compose.prod.yaml pull
+            docker compose -f compose.yaml -f compose.prod.yaml up -d --build --wait
+            curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 15 https://avacatalog.com/api/health
+            curl --fail --silent --show-error --max-time 15 "https://avacatalog.com/api/works?limit=1" > /dev/null
             docker image prune -f
