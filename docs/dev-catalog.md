@@ -39,6 +39,8 @@ Local Docker web builds need `/catalog` with a gateway, or an HTTPS catalog orig
   Keep catalog PostgreSQL private; expose port 4001 only to the gateway via the host firewall.
 - Production catalog DB lives at /mnt/HC_Volume_107260972/ava-catalog/postgres;
   compose.prod.yaml replaces the development Docker volume. Mount the attached disk before deploy.
+- Production main PostgreSQL has no host port; its password comes from server-only
+  AVA_POSTGRES_PASSWORD. Do not replace production Compose with development defaults.
 - Deploy with `docker compose -f compose.yaml -f compose.prod.yaml up -d --build --wait`.
 - Verify `https://avareader.space/catalog/api/health`, `/catalog/api/works?limit=1`, and
   `/catalog/api/works/filters` return JSON. Deployment checks health and a bounded works request.

@@ -1,5 +1,14 @@
 # Production catalog routing; layer on top of compose.yaml.
 services:
+  postgres:
+    ports: !override []
+    environment:
+      POSTGRES_PASSWORD: ${AVA_POSTGRES_PASSWORD:?Set AVA_POSTGRES_PASSWORD on the server}
+
+  api:
+    environment:
+      DATABASE_URL: postgresql://postgres:${AVA_POSTGRES_PASSWORD:?Set AVA_POSTGRES_PASSWORD on the server}@postgres:5432/ava_reader?schema=public
+
   catalog-postgres:
     volumes: !override
       - type: bind
