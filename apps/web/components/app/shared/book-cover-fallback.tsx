@@ -25,7 +25,7 @@ export function BookCoverFallback({
         <p className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-olive">
           AVA Reader
         </p>
-        <p className="mt-2 font-display text-2xl leading-tight text-title">
+        <p className="mt-2 line-clamp-5 wrap-anywhere font-display text-lg leading-tight text-title">
           {title}
         </p>
       </div>

@@ -1,0 +1,25 @@
+export const CATEGORY_AUDIENCE_ALIASES = {
+  children: [
+    'children',
+    "children's books",
+    "children's literature",
+    "children's stories",
+    "children's fiction",
+    'juvenile literature',
+    'juvenile fiction',
+    'juvenile nonfiction',
+    'дитяча література',
+    'література для дітей',
+    'literatura infantil',
+    'kinderliteratur',
+  ],
+  'young-adult': [
+    'young adult',
+    'young adult literature',
+    'young adult fiction',
+    'young adult nonfiction',
+    'підліткова література',
+    'literatura juvenil',
+    'jugendliteratur',
+  ],
+} as const;

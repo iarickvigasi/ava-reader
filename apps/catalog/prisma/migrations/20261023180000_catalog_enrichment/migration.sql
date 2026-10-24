@@ -1,0 +1,7 @@
+ALTER TABLE "Work" ADD COLUMN "coverId" INTEGER,
+ ADD COLUMN "subjects" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[],
+ ADD COLUMN "categories" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[],
+ ADD COLUMN "categoryVersion" INTEGER NOT NULL DEFAULT 0,
+ ADD COLUMN "metadataIncomplete" BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE "Edition" ADD COLUMN "coverId" INTEGER;
+CREATE INDEX "Work_categories_idx" ON "Work" USING GIN ("categories");

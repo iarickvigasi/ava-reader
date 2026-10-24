@@ -1,4 +1,6 @@
-import { text } from './raw-fields';
+import { openLibraryCover } from './open-library-cover';
+import { readerCategories, CATEGORY_VERSION } from './reader-categories';
+import { references, strings, text } from './raw-fields';
 import { normalizeLanguage } from './normalize-language';
 import { resolveReferences } from './resolve-references';
 import type { Raw, Tx } from './types';
@@ -11,12 +13,20 @@ export async function writeWork(
   raw: Raw,
 ) {
   const authors = await resolveReferences(tx, sourceId, raw.authors, 'authors');
+  const subjects = strings(raw.subjects);
+  const enrichment = {
+    ...openLibraryCover(raw.covers),
+    subjects,
+    categories: subjects ? readerCategories(subjects) : undefined,
+    categoryVersion: subjects ? CATEGORY_VERSION : undefined,
+    metadataIncomplete: false,
+  };
   const originalTitle = text(raw.title)!;
   const originalLanguage = normalizeLanguage(raw.original_language);
   await tx.work.upsert({
     where: { id },
-    create: { id, originalTitle, originalLanguage, revision },
-    update: { originalTitle, originalLanguage, revision },
+    create: { id, originalTitle, originalLanguage, revision, ...enrichment },
+    update: { originalTitle, originalLanguage, revision, ...enrichment },
   });
   const locale = originalLanguage ?? 'und';
   const description = text(raw.description);
@@ -35,4 +45,5 @@ export async function writeWork(
       })),
     });
   }
+  return authors.length < references(raw.authors, 'authors').length;
 }

@@ -13,11 +13,12 @@
     "test:integration": "ts-node test/integration.ts",
     "db:generate": "prisma generate",
     "db:migrate:deploy": "prisma migrate deploy",
-    "db:seed": "ts-node scripts/seed.ts",
     "import:open-library": "ts-node src/importer/main.ts",
     "import:open-library:prod": "node dist/src/importer/main.js",
     "test:importer": "ts-node test/importer-integration.ts",
-    "test:importer:docker": "ts-node test/importer-worker-smoke.ts"
+    "test:importer:docker": "ts-node test/importer-worker-smoke.ts",
+    "categories:rebuild": "ts-node src/importer/rebuild-categories.main.ts",
+    "categories:rebuild:prod": "node dist/src/importer/rebuild-categories.main.js"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

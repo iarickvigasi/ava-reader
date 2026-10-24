@@ -3,7 +3,7 @@
 import { Fragment, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { useDeviceIdentity } from "@/features/auth/use-device-identity";
-import { AppPageSkeleton } from "@/components/app/core/app-page-skeleton";
+import { AppStartupSkeleton } from "@/components/app/core/app-startup-skeleton";
 import { DatabaseAccessGate } from "../compatibility/database-access-gate";
 import { LocalSignOutRecovery } from "@/features/auth/local-sign-out-recovery";
 
@@ -21,7 +21,9 @@ export function OfflineIdentityReconciler({
   return (
     <>
       <LocalSignOutRecovery blocked={blocked} />
-      {pathname.startsWith("/app") && !ready && !blocked && <AppPageSkeleton />}
+      {pathname.startsWith("/app") && !ready && !blocked && (
+        <AppStartupSkeleton />
+      )}
       {(!pathname.startsWith("/app") || (ready && !blocked)) && (
         <Fragment key={owner ?? "visitor"}>
           {pathname.startsWith("/app") ? (

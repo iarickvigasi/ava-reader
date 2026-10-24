@@ -76,11 +76,11 @@ export default async function RootLayout({
             afterSignOutUrl="/sign-in"
           >
             <AuthRecoveryRunner />
-            <OfflineIdentityReconciler serverUserId={serverUserId}>
-              <ThemeProvider initialTheme={initialTheme}>
+            <ThemeProvider initialTheme={initialTheme}>
+              <OfflineIdentityReconciler serverUserId={serverUserId}>
                 <SiteFrame>{children}</SiteFrame>
-              </ThemeProvider>
-            </OfflineIdentityReconciler>
+              </OfflineIdentityReconciler>
+            </ThemeProvider>
           </ClerkProvider>
         </NextIntlClientProvider>
       </body>

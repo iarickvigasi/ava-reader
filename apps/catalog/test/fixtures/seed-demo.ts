@@ -1,4 +1,4 @@
-import type { CatalogDatabase } from '../src/database/catalog-database';
+import type { CatalogDatabase } from '../../src/database/catalog-database';
 import { demo } from './demo-data';
 import { demoBooks } from './demo-books';
 

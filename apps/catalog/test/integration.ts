@@ -5,9 +5,10 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from '../src/app.module';
 import { configureApp } from '../src/app.config';
 import { CatalogDatabase } from '../src/database/catalog-database';
-import { seedDemo } from '../scripts/seed-demo';
-import { demo } from '../scripts/demo-data';
+import { seedDemo } from './fixtures/seed-demo';
+import { demo } from './fixtures/demo-data';
 import { verifyConstraints } from './verify-constraints';
+import { verifyBrowse } from './verify-browse';
 import { verifyPages } from './verify-pages';
 
 async function integration() {
@@ -55,6 +56,7 @@ async function integration() {
     );
     await verifyConstraints(db);
     await verifyPages(db, get);
+    await verifyBrowse(db, get);
     console.log(
       'Catalog integration checks passed (HTTP, replay, constraints, pagination).',
     );

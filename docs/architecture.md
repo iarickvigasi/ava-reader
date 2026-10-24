@@ -23,7 +23,7 @@ Monorepo: pnpm workspaces + Turbo (lint/typecheck/test/build), Node ≥22.
   next-intl (i18n). SSR shell + offline-first client.
 - **apps/api** — NestJS 11, Prisma 7, Postgres. EPUB processing, blobs, AI proxying, dashboards.
 - **apps/catalog** — independent NestJS/Prisma metadata API and PostgreSQL instance (ADR 10);
-  work/edition/author lookup foundation, initially on the same host. No main DB/client dependency.
+  work/edition/author lookup and paginated search, initially on the same host. No main DB/client dependency.
 - **apps/mobile** — placeholder for future cross-platform.
 - **AI** — OpenRouter via the Vercel `ai` SDK, structured output. See adr/2.
 
@@ -50,6 +50,10 @@ Monorepo: pnpm workspaces + Turbo (lint/typecheck/test/build), Node ≥22.
   Tests and fixtures live beside their consumers. Translation storage stays in the offline layer.
 - **lib/api-types/** — typed API contracts (reader, home, library, user, admin, shared);
   lib/server-api.ts fetches initial payloads, lib/api.ts is the browser client.
+  lib/catalog-api.ts reads public catalog metadata directly from the independent Catalog API;
+  features/explore caches bounded public responses in per-user Dexie meta and appends viewport-sized
+  browse batches. Approved edition assets reference main catalog entries; acquisition stays in the
+  library bucket and existing main content/reader pipeline.
 
 ## Offline layer (apps/web/features/offline)
 

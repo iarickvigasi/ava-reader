@@ -1,5 +1,7 @@
 import { Prisma, type ImportRecord, type SourceMapping } from '#catalog-client';
-import { ConflictingRecord, type Tx } from './types';
+import { object } from './raw-fields';
+import { retryEnrichment } from './retry-enrichment';
+import { ConflictingRecord, RecordStatus, type Tx } from './types';
 
 export async function checkVersion(
   tx: Tx,
@@ -12,7 +14,8 @@ export async function checkVersion(
   if (current === record.revision) {
     if (mapping.payloadHash !== record.payloadHash)
       throw new ConflictingRecord('Same revision has different JSON');
-    return { skip: true, revision: 0 };
+    if (record.status !== RecordStatus.UNRESOLVED)
+      return { skip: true, revision: 0 };
   }
   const table = mapping.authorId
     ? 'Author'
@@ -31,6 +34,14 @@ export async function checkVersion(
     throw new ConflictingRecord(
       'Canonical entry changed outside this importer',
     );
+  }
+  if (
+    current === record.revision &&
+    record.status === RecordStatus.UNRESOLVED
+  ) {
+    const retry = await retryEnrichment(tx, mapping, object(record.payload));
+    if (!retry.needsWrite)
+      return { skip: true, revision: 0, incomplete: retry.incomplete };
   }
   return { skip: false, revision: target.revision + 1 };
 }

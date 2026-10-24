@@ -1,14 +1,22 @@
 model Work {
-  id               String          @id @default(uuid()) @db.Uuid
-  originalTitle    String
-  originalLanguage String?
-  revision         Int             @default(1)
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
-  texts            WorkText[]
-  editions         Edition[]
-  credits          WorkCredit[]
-  sourceMappings   SourceMapping[]
+  id                 String          @id @default(uuid()) @db.Uuid
+  coverImageUrl      String?
+  coverId            Int?
+  subjects           String[]        @default([])
+  categories         String[]        @default([])
+  categoryVersion    Int             @default(0)
+  metadataIncomplete Boolean         @default(false)
+  originalTitle      String
+  originalLanguage   String?
+  revision           Int             @default(1)
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  texts              WorkText[]
+  editions           Edition[]
+  credits            WorkCredit[]
+  sourceMappings     SourceMapping[]
+
+  @@index([categories], type: Gin)
 }
 
 model WorkText {

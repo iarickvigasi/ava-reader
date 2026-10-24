@@ -132,6 +132,8 @@ const SHELL_ROUTE_PREFIXES = [
   "/app/read/",
   "/app/library/books/",
   "/app/library/collections/",
+  "/app/explore/books/",
+  "/app/explore/authors/",
 ];
 
 function shellDocKey(request) {

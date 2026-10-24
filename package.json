@@ -31,7 +31,6 @@
     "docker:verify": "docker compose --profile verify run --rm verify",
     "dev:catalog": "pnpm --filter catalog start:dev",
     "catalog:up": "docker compose up -d --build --wait catalog",
-    "catalog:seed": "docker compose exec catalog pnpm --filter catalog db:seed",
     "catalog:import": "docker compose run --rm --build catalog-importer"
   },
   "devDependencies": {

@@ -1,9 +1,24 @@
 import { Controller, Get, Param, ParseUUIDPipe, Query } from '@nestjs/common';
+import { BrowseService } from './browse.service';
+import { parseBrowseQuery } from './browse-query';
 import { WorksService } from './works.service';
 
 @Controller('works')
 export class WorksController {
-  constructor(private readonly works: WorksService) {}
+  constructor(
+    private readonly works: WorksService,
+    private readonly browse: BrowseService,
+  ) {}
+
+  @Get()
+  list(@Query() query: Record<string, unknown>) {
+    return this.browse.list(parseBrowseQuery(query));
+  }
+
+  @Get('filters')
+  filters() {
+    return this.browse.filters();
+  }
 
   @Get(':id')
   find(@Param('id', new ParseUUIDPipe()) id: string) {

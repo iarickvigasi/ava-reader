@@ -1,6 +1,6 @@
 # Catalog and infrastructure glossary
 
-Part of the [AVA glossary](glossary.md). Catalog architecture is currently a proposal.
+Part of the [AVA glossary](glossary.md).
 
 ## Book identities and sources
 
@@ -53,3 +53,8 @@ Part of the [AVA glossary](glossary.md). Catalog architecture is currently a pro
 - **Read replica / replication lag** — a database copy for reads / delay behind its primary's changes.
 - **PITR / cutover** — point-in-time recovery from backups and logs / switching to a new deployment.
 - **ETag** — response version tag allowing clients to check whether cached data is still current.
+
+- **Taxonomy / facet** — a controlled category tree / a filter dimension such as language or genre.
+- **Cursor** — a continuation marker for fetching the next bounded result batch.
+- **Infinite scroll** — appending another batch when the reader reaches the list's bottom.
+- **Rights jurisdiction** — the territory covered by a file's rights assessment; not its language.

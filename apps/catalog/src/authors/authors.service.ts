@@ -1,3 +1,4 @@
+import { WORK_CARD_SELECT } from '../works/work-card-select';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PAGE_SIZE } from '../page-size';
 import { CatalogDatabase } from '../database/catalog-database';
@@ -34,12 +35,7 @@ export class AuthorsService {
       },
       orderBy: { id: 'asc' },
       take: PAGE_SIZE + 1,
-      select: {
-        id: true,
-        originalTitle: true,
-        originalLanguage: true,
-        revision: true,
-      },
+      select: WORK_CARD_SELECT,
     });
     return {
       items: rows.slice(0, PAGE_SIZE),

@@ -61,3 +61,5 @@ export {
 } from "./membership";
 
 export { readReaderCover } from "./read-reader-cover";
+
+export { acquireCatalogBook } from "./acquire-catalog-book";

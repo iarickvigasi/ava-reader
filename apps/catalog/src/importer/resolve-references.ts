@@ -15,10 +15,13 @@ export async function resolveReferences(
       externalId: { in: keys },
     },
   });
-  return keys.map((key) => {
-    const mapping = mappings.find((row) => row.externalId === key);
-    const id = kind === 'authors' ? mapping?.authorId : mapping?.workId;
-    if (!id) throw new UnresolvedRecord(`Missing ${kind} reference: ${key}`);
-    return id;
-  });
+  return keys
+    .map((key) => {
+      const mapping = mappings.find((row) => row.externalId === key);
+      const id = kind === 'authors' ? mapping?.authorId : mapping?.workId;
+      if (!id && kind === 'works')
+        throw new UnresolvedRecord(`Missing ${kind} reference: ${key}`);
+      return id;
+    })
+    .filter((id): id is string => !!id);
 }

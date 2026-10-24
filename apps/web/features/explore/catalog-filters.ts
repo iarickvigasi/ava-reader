@@ -1,0 +1,17 @@
+export const CATALOG_FILTERS = [
+  "readable",
+  "fiction",
+  "nonfiction",
+  "fantasy",
+  "novels",
+  "short-stories",
+  "poetry",
+  "essays",
+  "mystery",
+  "history",
+  "philosophy",
+  "science",
+  "biography",
+  "children",
+  "young-adult",
+] as const;

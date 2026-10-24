@@ -18,6 +18,8 @@ it.each([
   "/app",
   "/app/connect",
   "/app/explore",
+  "/app/explore/books/work",
+  "/app/explore/authors/author",
   "/app/insights",
   "/app/admin/catalog",
   "/app/read/book",
@@ -39,4 +41,18 @@ it.each([
 ])("reuses the existing skeleton for %s", (pathname, expected) => {
   route.pathname = pathname;
   expect(renderToStaticMarkup(<AppPageSkeleton />)).toContain(expected);
+});
+
+it("uses the book-detail skeleton for Explore book startup", () => {
+  route.pathname = "/app/explore/books/work";
+  expect(renderToStaticMarkup(<AppPageSkeleton />)).toContain(
+    'aria-label="Loading book details"',
+  );
+});
+
+it("uses the author-detail skeleton for Explore author startup", () => {
+  route.pathname = "/app/explore/authors/author";
+  expect(renderToStaticMarkup(<AppPageSkeleton />)).toContain(
+    'aria-label="Loading author details"',
+  );
 });

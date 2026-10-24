@@ -1,3 +1,4 @@
+import { READY_READING_ASSET } from './ready-reading-assets';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PAGE_SIZE } from '../page-size';
 import { CatalogDatabase } from '../database/catalog-database';
@@ -10,6 +11,15 @@ export class WorksService {
     const work = await this.db.work.findUnique({
       where: { id },
       include: {
+        editions: {
+          where: { coverImageUrl: { not: null } },
+          orderBy: [
+            { publishedYear: { sort: 'asc', nulls: 'last' } },
+            { id: 'asc' },
+          ],
+          take: 1,
+          select: { coverImageUrl: true },
+        },
         texts: { orderBy: { locale: 'asc' } },
         credits: {
           orderBy: [{ position: 'asc' }, { authorId: 'asc' }],
@@ -18,7 +28,23 @@ export class WorksService {
       },
     });
     if (!work) throw new NotFoundException('Work not found');
-    return work;
+    const readingAssets = await this.db.readingAsset.findMany({
+      where: { ...READY_READING_ASSET, edition: { workId: id } },
+      orderBy: { id: 'asc' },
+      take: PAGE_SIZE,
+      include: {
+        edition: {
+          select: {
+            id: true,
+            title: true,
+            language: true,
+            format: true,
+            publishedYear: true,
+          },
+        },
+      },
+    });
+    return { ...work, readingAssets };
   }
 
   async editions(workId: string, after?: string) {

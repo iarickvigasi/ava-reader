@@ -1,6 +1,8 @@
 model Edition {
   id             String              @id @default(uuid()) @db.Uuid
   workId         String              @db.Uuid
+  coverImageUrl  String?
+  coverId        Int?
   title          String
   language       String?
   publisher      String?
@@ -13,6 +15,7 @@ model Edition {
   credits        EditionCredit[]
   identifiers    EditionIdentifier[]
   sourceMappings SourceMapping[]
+  readingAssets  ReadingAsset[]
 
   @@index([workId, id])
   @@index([language, workId])

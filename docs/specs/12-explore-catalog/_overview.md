@@ -18,7 +18,7 @@ No source guarantees every book or a complete description; missing metadata stay
   dedicated search vendor, and general file-storage migration.
 - First milestone: independent schema, sample metadata, health and ID lookup endpoints.
   Open Library file ingestion is implemented in [12.6](12.6-open-library-import.md).
-  Explore UI/search and personal upload linkage remain future phases.
+  Explore browsing/search/details are implemented in [12.7](12.7-explore-ui.md); personal links remain.
 
 ## Proposed behavior
 
@@ -48,6 +48,11 @@ See [12.5](12.5-foundation.md) for the implemented subset and endpoint contract.
 - [12.2](12.2-personal-library.md): ownership boundaries, lists, uploads, and offline behavior.
 - [12.3](12.3-ingestion.md): source research, provenance, ingestion, and public assets.
 - [12.4](12.4-rollout-and-search.md): deployment, search scaling, migration, and validation.
+- [12.5](12.5-foundation.md): shipped independent catalog and lookup endpoints.
+- [12.6](12.6-open-library-import.md): shipped Open Library file importer.
+- [12.7](12.7-explore-ui.md): Explore browsing, shared book components, and author pages.
+- [12.8](12.8-reading-assets.md): approved reading-asset ownership and reading behavior.
+- [12.9](12.9-reader-categories.md): proposed reader categories and whole-corpus subject normalization.
 
 ## Shared model
 

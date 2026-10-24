@@ -24,19 +24,30 @@ export async function applyRecord(
   if (version.skip) {
     await tx.importRecord.update({
       where: { id: record.id },
-      data: { status: RecordStatus.SKIPPED, diagnostic: null },
+      data: {
+        status:
+          version.incomplete === undefined
+            ? RecordStatus.SKIPPED
+            : version.incomplete
+              ? RecordStatus.UNRESOLVED
+              : RecordStatus.APPLIED,
+        diagnostic: version.incomplete
+          ? 'Published; missing author references'
+          : null,
+      },
     });
     return;
   }
   const id =
     mapping?.authorId ?? mapping?.workId ?? mapping?.editionId ?? randomUUID();
   const raw = object(record.payload);
+  let incomplete = false;
   if (record.kind === 'AUTHOR')
     await writeAuthor(tx, id, version.revision, raw);
   if (record.kind === 'WORK')
-    await writeWork(tx, sourceId, id, version.revision, raw);
+    incomplete = await writeWork(tx, sourceId, id, version.revision, raw);
   if (record.kind === 'EDITION')
-    await writeEdition(tx, sourceId, id, version.revision, raw);
+    incomplete = await writeEdition(tx, sourceId, id, version.revision, raw);
   const data = {
     sourceRevision: String(record.revision),
     payloadHash: record.payloadHash,
@@ -60,6 +71,9 @@ export async function applyRecord(
   });
   await tx.importRecord.update({
     where: { id: record.id },
-    data: { status: RecordStatus.APPLIED, diagnostic: null },
+    data: {
+      status: incomplete ? RecordStatus.UNRESOLVED : RecordStatus.APPLIED,
+      diagnostic: incomplete ? 'Published; missing author references' : null,
+    },
   });
 }

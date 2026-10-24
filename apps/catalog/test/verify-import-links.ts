@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { verifyPartialImport } from './verify-partial-import';
 import { runImport } from '../src/importer/run-import';
 import { dumpLine, type ImportFixture } from './importer-fixtures';
 
@@ -17,11 +18,14 @@ export async function verifyImportLinks(ctx: ImportFixture) {
     true,
   );
   assert.equal((await runImport(ctx.db, edition)).counts.UNRESOLVED, 1);
+  const provisionalId = await verifyPartialImport(ctx, edition);
   const work = await ctx.file('work', [
     dumpLine(ctx.work, 'work', {
       title: 'Fixture work',
       authors: [{ author: { key: ctx.author } }],
       description: { value: 'Source description' },
+      covers: [-1, 12345],
+      subjects: ['Fantasy fiction', 'Juvenile fiction', 'Short stories'],
     }),
   ]);
   assert.equal((await runImport(ctx.db, work)).counts.UNRESOLVED, 1);
@@ -53,6 +57,7 @@ export async function verifyImportLinks(ctx: ImportFixture) {
     include: { identifiers: { include: { identifier: true } } },
   });
   assert.equal(stored.workId, workMap.workId);
+  assert.equal(workMap.workId, provisionalId);
   assert.equal(stored.language, 'en');
   assert.equal(stored.identifiers.length, 1);
   assert.equal(
@@ -67,6 +72,11 @@ export async function verifyImportLinks(ctx: ImportFixture) {
       },
     }),
     1,
+  );
+  assert.equal(
+    (await ctx.db.work.findUniqueOrThrow({ where: { id: workMap.workId! } }))
+      .coverImageUrl,
+    'https://covers.openlibrary.org/b/id/12345-L.jpg?default=false',
   );
   const ids = [editionMap.editionId!, workMap.workId!, authorMap.authorId!];
   const outboxBefore = await ctx.db.catalogOutbox.count({

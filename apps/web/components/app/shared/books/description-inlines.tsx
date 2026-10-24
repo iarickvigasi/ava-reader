@@ -18,7 +18,9 @@ export function DescriptionInlines({
           content = <em>{content}</em>;
         }
         if (inline.bold) {
-          content = <strong className="font-bold text-copy-strong">{content}</strong>;
+          content = (
+            <strong className="font-bold text-copy-strong">{content}</strong>
+          );
         }
         return <Fragment key={index}>{content}</Fragment>;
       })}

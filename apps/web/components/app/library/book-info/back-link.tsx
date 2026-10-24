@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { BookBackLink } from "@/components/app/shared/books/book-back-link";
 import { useTranslations } from "next-intl";
 
 type BackLinkProps = {
@@ -11,12 +11,5 @@ export function BackLink({ backHref }: BackLinkProps) {
     ? t("backToCollection")
     : t("backToLibrary");
 
-  return (
-    <Link
-      href={backHref}
-      className="inline-flex text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-brand-fill hover:text-brand-fill-strong"
-    >
-      {label}
-    </Link>
-  );
+  return <BookBackLink href={backHref}>{label}</BookBackLink>;
 }

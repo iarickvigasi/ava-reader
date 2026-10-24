@@ -75,14 +75,15 @@ similar interests found.
 
 Reader (offline-capable), highlights, AI toolbox (translate/explain/etymology), AI comments, reading
 sessions + progress + stats, save-for-offline, library + collections, reading preferences, home
-dashboard, Clerk auth, feedback capture, catalog/admin (curation). See specs/.
+dashboard, Clerk auth, feedback capture, catalog/admin (curation), Explore metadata search and
+book/author pages. See specs/.
 
 ## Roadmap — next
 
 - **AI chat about a book** (the diary's discussion layer; UI scaffold exists).
 - **Listening / TTS narration** with voice interaction (preferences UI scaffold exists).
 - **Connect**: community introduction first, then opt-in reader profiles and reader discovery.
-- **Insights** (reading analytics), reached from Home’s Daily mastery; **Explore** (discovery).
+- **Insights** (reading analytics), reached from Home’s Daily mastery; **Explore** saved books and upload linking.
 - BYO-key + credit accounting and billing.
 
 ## Roadmap — later

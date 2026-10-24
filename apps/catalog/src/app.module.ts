@@ -1,3 +1,4 @@
+import { BrowseService } from './works/browse.service';
 import { Module } from '@nestjs/common';
 import { CatalogDatabase } from './database/catalog-database';
 import { WorksController } from './works/works.controller';
@@ -8,6 +9,6 @@ import { HealthController } from './health/health.controller';
 
 @Module({
   controllers: [WorksController, AuthorsController, HealthController],
-  providers: [CatalogDatabase, WorksService, AuthorsService],
+  providers: [CatalogDatabase, WorksService, AuthorsService, BrowseService],
 })
 export class AppModule {}

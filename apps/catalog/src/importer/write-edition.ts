@@ -1,9 +1,11 @@
 import { PublicationFormat, CreditRole } from '#catalog-client';
-import { strings, text } from './raw-fields';
+import { openLibraryCover } from './open-library-cover';
+import { ensureEditionWork } from './ensure-edition-work';
+import { references, strings, text } from './raw-fields';
 import { normalizeLanguage } from './normalize-language';
 import { resolveReferences } from './resolve-references';
 import { writeIdentifiers } from './write-identifiers';
-import { UnresolvedRecord, type Raw, type Tx } from './types';
+import { type Raw, type Tx } from './types';
 
 export async function writeEdition(
   tx: Tx,
@@ -12,9 +14,7 @@ export async function writeEdition(
   revision: number,
   raw: Raw,
 ) {
-  const works = await resolveReferences(tx, sourceId, raw.works, 'works');
-  if (works.length !== 1)
-    throw new UnresolvedRecord('Edition needs exactly one linked work');
+  const workId = await ensureEditionWork(tx, sourceId, raw);
   const authors = await resolveReferences(tx, sourceId, raw.authors, 'authors');
   const language = Array.isArray(raw.languages)
     ? normalizeLanguage(raw.languages[0])
@@ -22,7 +22,8 @@ export async function writeEdition(
   const year = text(raw.publish_date)?.match(/\b([12]\d{3})\b/);
   const data = {
     title: text(raw.title)!,
-    workId: works[0],
+    workId,
+    ...openLibraryCover(raw.covers),
     language,
     publisher: strings(raw.publishers)?.[0],
     publishedYear: year ? Number(year[1]) : undefined,
@@ -46,6 +47,7 @@ export async function writeEdition(
     });
   }
   await writeIdentifiers(tx, id, raw);
+  return authors.length < references(raw.authors, 'authors').length;
 }
 
 function format(value: unknown) {

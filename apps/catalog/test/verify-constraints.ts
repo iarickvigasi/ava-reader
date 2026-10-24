@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import type { CatalogDatabase } from '../src/database/catalog-database';
-import { demo } from '../scripts/demo-data';
+import { demo } from './fixtures/demo-data';
 
 export async function verifyConstraints(db: CatalogDatabase) {
   const base = {

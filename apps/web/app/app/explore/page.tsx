@@ -1,7 +1,7 @@
-import { ExplorePlaceholderPage } from "@/components/app/explore/explore-placeholder-page";
+import { ExploreScreen } from "@/components/app/explore/explore-screen";
 
 export const dynamic = "force-dynamic";
 
 export default function ExplorePage() {
-  return <ExplorePlaceholderPage />;
+  return <ExploreScreen />;
 }

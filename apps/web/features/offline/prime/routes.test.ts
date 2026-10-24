@@ -19,6 +19,8 @@ describe("collectAppRoutes", () => {
       "/app/read/__shell__",
       "/app/library/books/__shell__",
       "/app/library/collections/__shell__",
+      "/app/explore/books/__shell__",
+      "/app/explore/authors/__shell__",
     ]);
   });
 });

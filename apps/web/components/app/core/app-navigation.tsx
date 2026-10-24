@@ -33,9 +33,13 @@ type AppNavigationProps = {
   // (brand, links, theme/offline controls) with the admin entry + display
   // name hidden until a user is available.
   currentUser: CurrentUserPayload | null;
+  startup?: boolean;
 };
 
-export function AppNavigation({ currentUser }: AppNavigationProps) {
+export function AppNavigation({
+  currentUser,
+  startup = false,
+}: AppNavigationProps) {
   const t = useTranslations("nav");
   const pathname = usePathname();
   const isReaderRoute = pathname.startsWith("/app/read/");
@@ -55,7 +59,7 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
               <div className="shrink-0">
                 <ThemeToggle />
               </div>
-              <HeaderStatusChip compact />
+              {!startup && <HeaderStatusChip compact />}
             </div>
             <Link href="/app" className="min-w-0">
               <AppHeaderBrand className="justify-center gap-2" />
@@ -71,7 +75,7 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
                 </Link>
               ) : null}
               <div className="flex size-8 shrink-0 items-center justify-center">
-                <UserMenuButton currentUser={currentUser} />
+                {!startup && <UserMenuButton currentUser={currentUser} />}
               </div>
             </div>
           </div>
@@ -112,10 +116,12 @@ export function AppNavigation({ currentUser }: AppNavigationProps) {
                 </Link>
               ) : null}
               <div className="flex w-9 shrink-0 items-center lg:w-24">
-                <HeaderStatusChip compact />
+                {!startup && <HeaderStatusChip compact />}
               </div>
               <ThemeToggle />
-              <UserMenuButton currentUser={currentUser} showName />
+              {!startup && (
+                <UserMenuButton currentUser={currentUser} showName />
+              )}
             </div>
           </div>
         </div>

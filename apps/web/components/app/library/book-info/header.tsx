@@ -1,5 +1,6 @@
 import type { LibraryBookInfo } from "@/lib/api-types";
-import { formatAuthors } from "@/lib/format-authors";
+import { BookTitle } from "@/components/app/shared/books/book-title";
+import { BookAuthors } from "@/components/app/shared/books/book-authors";
 import { buildBookTags } from "./formatters";
 
 type BookHeaderProps = {
@@ -23,12 +24,8 @@ export function BookHeader({ book }: BookHeaderProps) {
       </div>
 
       <div className="space-y-2">
-        <h1 className="font-display text-[3.2rem] leading-[0.96] tracking-[-0.03em] text-title md:text-[4.6rem]">
-          {book.title}
-        </h1>
-        <p className="font-reader text-xl text-plum md:text-[1.75rem]">
-          {formatAuthors(book.authors)}
-        </p>
+        <BookTitle>{book.title}</BookTitle>
+        <BookAuthors authors={book.authors.map((name) => ({ name }))} />
       </div>
     </div>
   );

@@ -3,8 +3,8 @@ import { expect, it, vi } from "vitest";
 import type { DatabaseAccess } from "./database-access";
 import { DatabaseAccessGate } from "./database-access-gate";
 
-vi.mock("@/components/app/core/app-page-skeleton", () => ({
-  AppPageSkeleton: () => <div aria-busy="true">Skeleton</div>,
+vi.mock("@/components/app/core/app-startup-skeleton", () => ({
+  AppStartupSkeleton: () => <div aria-busy="true">Skeleton</div>,
 }));
 
 const access = vi.hoisted(() => ({ state: "opening" as DatabaseAccess }));
