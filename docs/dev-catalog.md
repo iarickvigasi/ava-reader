@@ -20,25 +20,25 @@ Importer commands/checkpoints: [import operations](dev-catalog-import.md).
 
 ## Explore integration
 
-Next dev defaults to `http://localhost:4001`; production defaults to `https://avacatalog.com`.
+Next dev defaults to `http://localhost:4001`; production defaults to same-origin `/catalog`.
 NEXT_PUBLIC_CATALOG_API_BASE_URL is compiled into browser JavaScript; rebuild web after changes.
-Production builds reject non-HTTPS and loopback origins, paths (including /api), and credentials.
-Use `pnpm dev:web` for local HTTP; local Docker web builds need an HTTPS catalog origin override.
+The client appends `/api`, so configure `/catalog`, not `/catalog/api`. Other relative paths,
+credentials, and production HTTP/loopback origins are rejected; HTTPS origin overrides remain valid.
+Local Docker web builds need `/catalog` with a gateway, or an HTTPS catalog origin override.
 
 ## Production gateway and deployment
 
-- Point avacatalog.com DNS to the catalog gateway host; allow inbound TCP 80/443 for TLS.
-- On the Compose host, include `tools/deploy/catalog.Caddyfile` in an existing Caddy config;
-  validate and reload Caddy. It manages TLS and preserves `/api/*` when proxying to port 4001.
-  Adapt the upstream if CATALOG_HOST_PORT changes or the gateway runs in a container/other host.
-  If another gateway already owns ports 80/443, add the equivalent HTTPS virtual host there.
-- `compose.prod.yaml` pins the browser origin to avacatalog.com and catalog CORS to
-  `https://avareader.space`; update that allowlist if additional reader origins are deployed.
+- Reuse avareader.space DNS/TLS. Import `tools/deploy/catalog.Caddyfile` inside its existing
+  Caddy site block, before the reader fallback; validate and reload the host gateway.
+  With another gateway, add the equivalent path rule: `/catalog/api/*` → catalog `/api/*`.
+  Strip only `/catalog`, preserve query strings, and route before the reader/main API handlers.
+  The host snippet targets port 4001; adapt for CATALOG_HOST_PORT or a container/remote gateway.
+- `compose.prod.yaml` pins the browser base to `/catalog`; requests stay on the reader origin.
   Keep catalog PostgreSQL private; expose port 4001 only to the gateway via the host firewall.
 - Deploy with `docker compose -f compose.yaml -f compose.prod.yaml up -d --build --wait`.
-- Verify `/api/health`, `/api/works?limit=1`, and `/api/works/filters` return JSON over HTTPS.
-  Check `Origin: https://avareader.space` receives the matching Access-Control-Allow-Origin header,
-  then verify Explore browsing, search, book/author navigation, and no localhost catalog requests.
+- Verify `https://avareader.space/catalog/api/health`, `/catalog/api/works?limit=1`, and
+  `/catalog/api/works/filters` return JSON. Deployment checks health and a bounded works request.
+  Verify Explore search, book/author navigation, and same-origin catalog requests in DevTools.
 
 ## Configuration and host separation
 

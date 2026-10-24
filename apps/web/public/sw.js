@@ -1,7 +1,7 @@
 /* Ava Reader offline service worker.
  *
  * Makes the app's HTML shell + JS/CSS chunks load offline. The data layer is
- * owned by Dexie buckets + the sync runner — /api/* is never intercepted.
+ * owned by Dexie buckets + the sync runner — API requests are never intercepted.
  * Behavior contract (strategies, cache keys, precache protocol, and the
  * regression traps behind them): docs/specs/4-offline/4.5-route-precaching.md, with
  * specs 4.1 (offline reading), 4.4 (cache priming) and ADR 4. File layout:
@@ -323,7 +323,10 @@ self.addEventListener("fetch", (event) => {
     return;
   }
   // The data/auth layer is owned by Dexie + Clerk — never intercepted.
-  if (url.pathname.startsWith("/api/")) {
+  if (
+    url.pathname.startsWith("/api/") ||
+    url.pathname.startsWith("/catalog/api/")
+  ) {
     return;
   }
   // Prefetches bypass; real app RSC navigations are bounded and never cached (§5).

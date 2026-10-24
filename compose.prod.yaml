@@ -6,6 +6,6 @@ services:
   web:
     build:
       args:
-        NEXT_PUBLIC_CATALOG_API_BASE_URL: https://avacatalog.com
+        NEXT_PUBLIC_CATALOG_API_BASE_URL: /catalog
     environment:
-      NEXT_PUBLIC_CATALOG_API_BASE_URL: https://avacatalog.com
+      NEXT_PUBLIC_CATALOG_API_BASE_URL: /catalog

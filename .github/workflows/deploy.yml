@@ -25,6 +25,6 @@ jobs:
             export GIT_SHA="$(git rev-parse HEAD)"
             docker compose -f compose.yaml -f compose.prod.yaml pull
             docker compose -f compose.yaml -f compose.prod.yaml up -d --build --wait
-            curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 15 https://avacatalog.com/api/health
-            curl --fail --silent --show-error --max-time 15 "https://avacatalog.com/api/works?limit=1" > /dev/null
+            curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 15 https://avareader.space/catalog/api/health
+            curl --fail --silent --show-error --max-time 15 "https://avareader.space/catalog/api/works?limit=1" > /dev/null
             docker image prune -f
