@@ -1,6 +1,7 @@
 import type { ImportRun, Prisma } from '#catalog-client';
 import type { CatalogDatabase } from '../database/catalog-database';
 import { readLines } from './read-lines';
+import { commitStageBatch } from './commit-stage-batch';
 import { stagedRow } from './staged-row';
 import { STAGE_BATCH_SIZE, MAX_STAGE_BATCH_BYTES } from './types';
 
@@ -14,13 +15,7 @@ export async function stageLines(
   let batch: Prisma.ImportRecordCreateManyInput[] = [];
   const flush = async () => {
     if (!batch.length) return;
-    await db.$transaction([
-      db.importRecord.createMany({ data: batch }),
-      db.importRun.update({
-        where: { id: run.id },
-        data: { checkpoint: batch[batch.length - 1].line },
-      }),
-    ]);
+    await commitStageBatch(db, run.id, batch);
     batch = [];
     bytes = 0;
   };

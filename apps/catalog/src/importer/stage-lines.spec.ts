@@ -12,14 +12,15 @@ it('flushes by bytes without checkpointing the next uncommitted line', async () 
     await writeFile(path, ('x'.repeat(3 * 1024 * 1024) + '\n').repeat(2));
     const update = jest.fn().mockResolvedValue({});
     const createMany = jest.fn().mockResolvedValue({});
-    const transaction = jest.fn((operations: Promise<unknown>[]) =>
-      Promise.all(operations),
-    );
-    const db = {
+    const tx = {
       importRecord: { createMany },
       importRun: { update },
-      $transaction: transaction,
-    } as unknown as CatalogDatabase;
+      $executeRaw: jest.fn().mockResolvedValue(0),
+    };
+    const transaction = jest.fn((action: (client: typeof tx) => unknown) =>
+      action(tx),
+    );
+    const db = { $transaction: transaction } as unknown as CatalogDatabase;
     await stageLines(db, path, { id: 'run', checkpoint: 0 } as ImportRun);
     expect(transaction).toHaveBeenCalledTimes(2);
     expect(
