@@ -3,7 +3,7 @@
 Independent NestJS workspace: apps/catalog. Its Prisma client generates into its own ignored
 `generated/client` directory; it never imports the main API client or uses DATABASE_URL.
 
-Importer commands/checkpoints: [import operations](dev-catalog-import.md).
+Importer commands/checkpoints: [import operations](catalog-import.md).
 
 ## Local commands
 

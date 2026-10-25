@@ -15,10 +15,44 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          command_timeout: 30m
           script: |
             set -e
             cd /opt/ava-reader
             mountpoint -q /mnt/HC_Volume_107260972
+            # Bound cleanup by age, retained cache size, and wall time. Never prune volumes.
+            cleanup() {
+              timeout 60s docker builder prune --all -f --filter 'until=24h' --keep-storage 5GB || echo 'Warning: build cache cleanup failed or timed out' >&2
+              timeout 60s docker image prune -f --filter 'until=24h' || echo 'Warning: dangling image cleanup failed or timed out' >&2
+            }
+            finish() {
+              deploy_status=$?
+              trap - EXIT
+              cleanup
+              exit "$deploy_status"
+            }
+            trap finish EXIT
+            # Run before pulls/builds as well as on successful or failed shell exit.
+            cleanup
+            docker_root="$(docker info --format '{{.DockerRootDir}}')"
+            min_free_kib=2097152 # Stop below 2 GiB; actual build headroom is not yet measured.
+            warn_free_kib=5242880 # Warn below 5 GiB.
+            min_free_inodes=10000
+            for storage_path in . /tmp "$docker_root" /mnt/HC_Volume_107260972; do
+              space_report=$(df -Pk "$storage_path")
+              inode_report=$(df -Pi "$storage_path")
+              printf '%s\n' "$space_report" "$inode_report"
+              free_kib=$(printf '%s\n' "$space_report" | awk 'NR == 2 {print $4}')
+              free_inodes=$(printf '%s\n' "$inode_report" | awk 'NR == 2 {print $4}')
+              if [ "$free_kib" -lt "$min_free_kib" ] || [ "$free_inodes" -lt "$min_free_inodes" ]; then
+                echo "Insufficient storage at $storage_path: need 2 GiB and 10000 free inodes before deployment" >&2
+                exit 1
+              fi
+              if [ "$free_kib" -lt "$warn_free_kib" ]; then
+                echo "Warning: less than 5 GiB free at $storage_path; build disk usage is not yet measured" >&2
+              fi
+            done
+            docker system df
             git pull origin main
             # Pass the freshly-pulled commit to the web build so the service
             # worker cache is versioned by commit (stable + traceable). The
@@ -28,4 +62,3 @@ jobs:
             docker compose -f compose.yaml -f compose.prod.yaml up -d --build --wait
             curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 15 https://avareader.space/catalog/api/health
             curl --fail --silent --show-error --max-time 15 "https://avareader.space/catalog/api/works?limit=1" > /dev/null
-            docker image prune -f

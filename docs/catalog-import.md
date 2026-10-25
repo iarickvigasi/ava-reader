@@ -7,7 +7,7 @@ file SHA-256, source revision, timestamp, line diagnostics, and outcomes live in
 
 ## Run locally
 
-1. Configure apps/catalog/.env as in [catalog setup](dev-catalog.md), then run
+1. Configure apps/catalog/.env as in [catalog setup](catalog.md), then run
    `pnpm --filter catalog db:generate` and `pnpm --filter catalog db:migrate:deploy`.
 2. Import in order: authors, works, editions. Each command also retries staged missing references:
    `pnpm --filter catalog import:open-library --file /absolute/path/authors.txt.gz`.
@@ -63,4 +63,4 @@ This bounded, advisory-locked command replays importer-owned works/editions from
 including covers, categories, and missing credits. It performs no provider downloads. Manual
 canonical revisions remain protected; inspect reported conflicts. Incomplete source work records
 use the edition title until the actual work arrives and retain the source work ID for reconciliation.
-Category maintenance: [category rebuild operations](dev-catalog-categories.md).
+Category maintenance: [category rebuild operations](catalog-categories.md).
