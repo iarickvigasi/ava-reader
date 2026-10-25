@@ -5,7 +5,7 @@
 // books, plus the current book when Save-Data allows — and stops at the first
 // match, so it's safe to call on every reconnect.
 
-import { collectContentTargets } from "./smart-books";
+import { collectContentTargets } from "./library-books";
 import type { PrimeInternals } from "./types";
 
 export async function hasOutstandingOfflineContent(

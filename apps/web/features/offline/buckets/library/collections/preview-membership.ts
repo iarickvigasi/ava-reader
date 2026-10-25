@@ -20,8 +20,16 @@ export async function replacePreviewMembershipTx(
   const db = getDb();
   const byCollection = groupMembershipByCollection(memberships);
   for (const collection of payload.collections) {
-    let links = byCollection.get(collection.id) ?? [];
-    const complete = collection.books.length >= collection.itemCount;
+    let links = collection.completionItems
+      ? collection.completionItems.map((item, order) => ({
+          collectionId: collection.id,
+          libraryItemId: item.libraryItemId,
+          order,
+        }))
+      : (byCollection.get(collection.id) ?? []);
+    const complete =
+      collection.completionItems !== undefined ||
+      collection.books.length >= collection.itemCount;
     if (!complete) {
       const cached = await db.collectionMembership
         .where("collectionId")
@@ -30,7 +38,8 @@ export async function replacePreviewMembershipTx(
       const previewIds = new Set(links.map((link) => link.libraryItemId));
       links = [
         ...links,
-        ...cached.sort((a, b) => a.order - b.order)
+        ...cached
+          .sort((a, b) => a.order - b.order)
           .filter((link) => !previewIds.has(link.libraryItemId)),
       ].map((link, order) => ({ ...link, order }));
     }

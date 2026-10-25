@@ -1,5 +1,5 @@
 export { BackgroundPrimer } from "./primer";
-export { primeAllCaches, collectSmartBooks } from "./prime-all";
+export { primeAllCaches } from "./prime-all";
 export type {
   PrimeRuntime,
   PrimeInternals,

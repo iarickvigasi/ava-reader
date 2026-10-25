@@ -1,20 +1,13 @@
 // Tier 1 of the primer: the cheap metadata caches — home, user preferences,
 // the library list, every collection in full, and per-book info for every
-// smart-collection book. Reuses the existing `revalidate*` functions, so no
+// library book. Reuses the existing `revalidate*` functions, so no
 // new endpoints.
 //
-// Why hydrate each collection: `/api/library` only returns a 4-book preview
-// per collection, so the library view alone can't enumerate every book.
-// `/api/library/collections/:slug` returns the full list, so we hydrate every
-// collection before enumerating book-info targets.
+// Refresh collection details for offline collection routes; Library already supplies all book cards.
 //
-// This pass is also the only place allowed to delete cached library rows: it
-// is the one moment the device holds the whole library, so absence is
-// knowable ([[4-offline/_overview]], Write paths).
+// Only GET /library's complete identity set authorizes pruning, inside the bucket.
 
 import { mapWithConcurrency } from "./concurrency";
-import { collectCompleteLibraryIds } from "./library-completeness";
-import { collectSmartBooks } from "./smart-books";
 import type { PrimeInternals, PrimeRuntime } from "./types";
 
 // How many book-info revalidations run at once. Generous enough to hide
@@ -22,7 +15,7 @@ import type { PrimeInternals, PrimeRuntime } from "./types";
 const BOOKINFO_CONCURRENCY = 5;
 
 // Returns true only when we can verify every target is cached: the home payload
-// is present, the library view is present, and each smart book has a book-info
+// is present, the library view is present, and each library book has a book-info
 // row. `revalidate*` swallow network errors, so a silent failure leaves a hole
 // → not clean → retried on the next home load.
 export async function primeMetadata(
@@ -55,14 +48,7 @@ export async function primeMetadata(
     return false;
   }
 
-  // Drop books that are gone server-side — but only against a pass that
-  // demonstrably cached every shelf in full (`revalidate*` swallow network
-  // errors, so finishing the loop above proves nothing).
-  const cachedIds = collectCompleteLibraryIds(view);
-  if (cachedIds) {
-    await d.pruneLibraryItems(cachedIds);
-  }
-  const slugs = collectSmartBooks(view).map((b) => b.slug);
+  const slugs = view.books.map((b) => b.slug);
 
   // Per-book-info is the dominant cost and what gates offline book-info/details
   // pages. Not surfaced in the header chip (it's a fast handful of small JSON

@@ -25,7 +25,6 @@
     "db:backfill-epub-chapter-labels": "ts-node src/scripts/backfill-epub-chapter-labels.ts",
     "db:backfill-book-slugs": "ts-node src/scripts/backfill-library-item-slugs.ts",
     "db:backfill-collection-slugs": "ts-node src/scripts/backfill-collection-slugs.ts",
-    "db:backfill-offline-books": "ts-node src/scripts/backfill-offline-books-collection.ts",
     "developer:grant": "ts-node src/scripts/grant-developer.ts",
     "admin:revoke": "ts-node src/scripts/revoke-admin.ts",
     "developer:revoke": "ts-node src/scripts/revoke-developer.ts",

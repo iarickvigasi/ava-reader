@@ -41,11 +41,22 @@ vi.mock("next/link", () => ({
 describe("library and navigation UI", () => {
   it("shows an empty custom collection even when the library has no books", () => {
     const payload = createLibraryPayload();
-    payload.collections = payload.collections.filter((collection) => collection.kind === "CUSTOM").map((collection) => ({ ...collection, books: [], itemCount: 0, unreadCount: 0 }));
+    payload.collections = payload.collections
+      .filter((collection) => collection.kind === "CUSTOM")
+      .map((collection) => ({
+        ...collection,
+        books: [],
+        itemCount: 0,
+        unreadCount: 0,
+      }));
     payload.summary.booksCount = 0;
-    const markup = renderToStaticMarkup(withIntl(<LibraryScreen library={payload} />));
+    const markup = renderToStaticMarkup(
+      withIntl(<LibraryScreen library={payload} />),
+    );
     expect(markup).toContain("Late Night Reads");
-    expect(markup).toContain('href="/app/library/collections/late-night-reads"');
+    expect(markup).toContain(
+      'href="/app/library/collections/late-night-reads"',
+    );
   });
 
   it("renders per-collection view-all links to collection detail screens", () => {
@@ -54,7 +65,9 @@ describe("library and navigation UI", () => {
     );
 
     expect(markup).toContain('href="/app/library/collections/imported-books"');
-    expect(markup).toContain('href="/app/library/collections/late-night-reads"');
+    expect(markup).toContain(
+      'href="/app/library/collections/late-night-reads"',
+    );
   });
 
   it("renders collection titles as links to their collection screens", () => {
@@ -111,9 +124,13 @@ describe("library and navigation UI", () => {
   });
 
   it("marks the library tab active in shared app navigation", () => {
-    expect(isAppNavigationItemActive("/app/library", "/app/library")).toBe(true);
+    expect(isAppNavigationItemActive("/app/library", "/app/library")).toBe(
+      true,
+    );
     expect(isAppNavigationItemActive("/app/library", "/app")).toBe(false);
-    expect(isAppNavigationItemActive("/app/library", "/app/explore")).toBe(false);
+    expect(isAppNavigationItemActive("/app/library", "/app/explore")).toBe(
+      false,
+    );
   });
 });
 
@@ -166,7 +183,7 @@ function createLibraryPayload(): LibraryPayload {
         description: "Your personal uploads.",
         id: "collection-1",
         itemCount: 5,
-        kind: "SMART",
+        kind: "CUSTOM",
         name: "Imported Books",
         slug: "imported-books",
         smartKey: "imported-library",

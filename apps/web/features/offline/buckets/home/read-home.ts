@@ -1,6 +1,3 @@
-// Dexie I/O for the home-screen cache. Single row keyed by "me". Cached so
-// the dashboard renders when the app is opened or reloaded offline.
-
 import type { HomePayload } from "@/lib/api-types/home";
 
 import { normalizeUserRoles } from "@/features/auth/normalize-user-roles";

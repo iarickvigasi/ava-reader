@@ -4,7 +4,6 @@
 import { readHome } from "../buckets/home/storage";
 import { revalidateHome } from "../buckets/home/revalidate";
 import {
-  pruneLibraryItems,
   readBookInfo,
   readLibraryView,
   revalidateBookInfo,
@@ -37,7 +36,6 @@ export const DEFAULT_INTERNALS: PrimeInternals = {
   revalidateHome,
   revalidateLibrary,
   revalidateCollection,
-  pruneLibraryItems,
   revalidateBookInfo,
   revalidatePreferences,
   revalidateHighlights,

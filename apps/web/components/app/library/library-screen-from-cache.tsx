@@ -42,6 +42,7 @@ export function LibraryScreenFromCache() {
         status: "ready",
         payload: {
           summary: view.summary,
+          books: view.books as LibraryPayload["books"],
           collections: view.collections.map(collectionViewToLibraryCollection),
         },
       });

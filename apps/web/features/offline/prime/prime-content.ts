@@ -5,7 +5,7 @@
 // Sequential (the save orchestrator is single-flight), quota-gated, and yields
 // to any save the user starts.
 
-import { collectContentTargets } from "./smart-books";
+import { collectContentTargets } from "./library-books";
 import type { PrimeInternals, PrimeRuntime } from "./types";
 
 // Background priming is more conservative about disk than an interactive save:

@@ -20,6 +20,9 @@ export function collectPayloadRows(payload: LibraryPayload, nowIso: string) {
   const collections: CollectionRow[] = [];
   const memberships: CollectionMembershipRow[] = [];
 
+  for (const book of payload.books ?? []) {
+    items.set(book.libraryItemId, bookToItemRow(book, nowIso));
+  }
   for (const collection of payload.collections) {
     collections.push(collectionToRow(collection));
     memberships.push(...membershipRows(collection));

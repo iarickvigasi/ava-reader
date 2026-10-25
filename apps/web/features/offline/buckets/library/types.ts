@@ -7,6 +7,8 @@
 import type { LibraryCollection } from "@/lib/api-types/library";
 
 export type LibraryView = {
+  books: LibraryBookView[];
+  uncollectedBooks?: LibraryBookView[];
   collections: CollectionView[];
   summary: {
     booksCount: number;

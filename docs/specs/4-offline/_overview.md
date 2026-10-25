@@ -21,7 +21,7 @@ raw fetch. Split by subsystem, like [[2-reader/_overview]].
 - 6.5 route-precaching — the service worker: which shells are cached, and what must never be.
 - 6.6 sw-code-organization — how sw.js is laid out (code organization only, no behaviour).
 - 6.7 data-isolation — per-user Dexie DB, cache + localStorage clearing on sign-out/switch.
-- 6.8 offline-books-collection — the SMART shelf listing what is saved offline.
+- 6.8 offline-books-collection — retirement of the former default offline shelf.
 - 4.9 header-avatar — always-visible header avatar slot + offline profile-photo caching.
 - 4.10 slow-connection — the "Slow" header badge + cache-first document fallback on a degraded
   (online but unresponsive) connection.
@@ -77,13 +77,12 @@ Deletion markers fence late responses and writes in other tabs so they cannot re
 The book-info DELETE flow and a confirmed book-info 404 use the same cascade.
 
 The app refreshes library identities on authenticated startup, reconnection, and return to a
-visible tab, independently of the once-only primer. The legacy primer can still prune after a
-complete collection pass, preserving pending membership, finish-date, and offline-intent edits.
+visible tab, independently of the once-only primer. Collection enumeration never authorizes
+pruning: books can now live directly in Library without any collection membership.
 
 ### The rule
 
 **Never gate a read on a projection.** Ask the table that owns the thing: "can I read this book
 offline?" is a question for `books`, not `libraryItems`. Resolving a reader slug through
 `libraryItems` alone made fully-downloaded books report "This page needs a connection" whenever they
-had drifted out of every collection preview — see [[4.1-offline-reading]] Read path. The same shape
-is behind the Offline Books count gap in [[4.8-offline-books-collection]].
+had drifted out of every collection preview — see [[4.1-offline-reading]] Read path.

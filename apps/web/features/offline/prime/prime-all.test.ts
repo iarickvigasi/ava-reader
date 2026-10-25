@@ -11,7 +11,6 @@ import {
   META_KEY_METADATA_DONE,
 } from "./meta";
 import {
-  collectSmartBooks,
   primeAllCaches,
   type PrimeInternals,
   type PrimeRuntime,
@@ -40,6 +39,14 @@ function view(
   customBooks: LibraryBookView[] = [],
 ): LibraryView {
   return {
+    books: [
+      ...new Map(
+        [...smartBooks, ...customBooks].map((book) => [
+          book.libraryItemId,
+          book,
+        ]),
+      ).values(),
+    ],
     collections: [
       {
         id: "c-smart",
@@ -76,7 +83,6 @@ type Harness = {
   revalidateBookInfo: ReturnType<typeof vi.fn>;
   revalidateLibrary: ReturnType<typeof vi.fn>;
   revalidateCollection: ReturnType<typeof vi.fn>;
-  pruneLibraryItems: ReturnType<typeof vi.fn>;
   revalidatePreferences: ReturnType<typeof vi.fn>;
   revalidateHighlights: ReturnType<typeof vi.fn>;
   revalidateAiComments: ReturnType<typeof vi.fn>;
@@ -89,7 +95,6 @@ function setup(overrides: Partial<PrimeInternals> = {}): Harness {
   const revalidateBookInfo = vi.fn(async () => {});
   const revalidateLibrary = vi.fn(async () => {});
   const revalidateCollection = vi.fn(async () => {});
-  const pruneLibraryItems = vi.fn(async () => {});
   const revalidatePreferences = vi.fn(async () => {});
   const revalidateHighlights = vi.fn(async () => {});
   const revalidateAiComments = vi.fn(async () => {});
@@ -111,7 +116,6 @@ function setup(overrides: Partial<PrimeInternals> = {}): Harness {
     revalidateHome: async () => {},
     revalidateLibrary,
     revalidateCollection,
-    pruneLibraryItems,
     revalidateBookInfo,
     revalidatePreferences,
     revalidateHighlights,
@@ -136,24 +140,12 @@ function setup(overrides: Partial<PrimeInternals> = {}): Harness {
     revalidateBookInfo,
     revalidateLibrary,
     revalidateCollection,
-    pruneLibraryItems,
     revalidatePreferences,
     revalidateHighlights,
     revalidateAiComments,
     revalidateProgress,
   };
 }
-
-describe("collectSmartBooks", () => {
-  it("returns only books from SMART collections, deduped, in order", () => {
-    const shared = book("a");
-    const v = view([shared, book("b")], [shared, book("c")]);
-    expect(collectSmartBooks(v).map((b) => b.libraryItemId)).toEqual([
-      "a",
-      "b",
-    ]);
-  });
-});
 
 describe("primeAllCaches", () => {
   it("does nothing when the connection can't prime metadata", async () => {
@@ -199,7 +191,8 @@ describe("primeAllCaches", () => {
     // never downloaded, and it isn't offline-marked) must still reconcile so
     // "continue reading" reads offline. Save-Data off → allowed.
     const h = setup({
-      readLibraryView: async () => view([book("a", { offlineRequested: false })]),
+      readLibraryView: async () =>
+        view([book("a", { offlineRequested: false })]),
       readCurrentBookId: async () => "a",
       hasBookContent: async () => false,
     });
@@ -231,43 +224,14 @@ describe("primeAllCaches", () => {
     const h = setup();
     await primeAllCaches(h.runtime, h.internals);
 
-    expect(h.revalidateCollection).toHaveBeenCalledWith("imported", expect.any(Function));
-    expect(h.revalidateCollection).toHaveBeenCalledWith("faves", expect.any(Function));
-  });
-
-  it("prunes to the ids a complete pass saw", async () => {
-    const h = setup();
-    await primeAllCaches(h.runtime, h.internals);
-
-    expect(h.pruneLibraryItems).toHaveBeenCalledTimes(1);
-    expect(h.pruneLibraryItems.mock.calls[0][0].sort()).toEqual(["a", "b"]);
-  });
-
-  it("never prunes when a collection came back short of its itemCount", async () => {
-    // One book failed to fetch; `revalidate*` swallowed the error, so the loop
-    // finished but the shelf is incomplete. Pruning here would delete it.
-    const h = setup({
-      readLibraryView: async () => ({
-        collections: [
-          {
-            id: "c-smart",
-            slug: "imported",
-            name: "Imported Books",
-            description: null,
-            kind: "SMART",
-            smartKey: "imported-library",
-            itemCount: 50,
-            unreadCount: 0,
-            books: [book("a")],
-          },
-        ],
-        summary: { booksCount: 50, collectionsCount: 1 },
-      }),
-    });
-
-    await primeAllCaches(h.runtime, h.internals);
-
-    expect(h.pruneLibraryItems).not.toHaveBeenCalled();
+    expect(h.revalidateCollection).toHaveBeenCalledWith(
+      "imported",
+      expect.any(Function),
+    );
+    expect(h.revalidateCollection).toHaveBeenCalledWith(
+      "faves",
+      expect.any(Function),
+    );
   });
 
   it("happy path: primes metadata, preferences, content + annotations", async () => {
@@ -277,7 +241,10 @@ describe("primeAllCaches", () => {
     expect(h.revalidatePreferences).toHaveBeenCalledTimes(1);
     expect(h.revalidateLibrary).toHaveBeenCalledTimes(1);
     // Each smart collection is hydrated in full before enumerating books.
-    expect(h.revalidateCollection).toHaveBeenCalledWith("imported", expect.any(Function));
+    expect(h.revalidateCollection).toHaveBeenCalledWith(
+      "imported",
+      expect.any(Function),
+    );
     expect(h.revalidateBookInfo).toHaveBeenCalledTimes(2);
     expect(h.saveBook).toHaveBeenCalledWith("a");
     expect(h.saveBook).toHaveBeenCalledWith("b");
@@ -286,7 +253,10 @@ describe("primeAllCaches", () => {
     // Progress is revalidated per offline book too, so a fresh device resumes
     // on the right page (not chapter 1) once the "Ready offline" cue shows.
     expect(h.revalidateProgress).toHaveBeenCalledTimes(2);
-    expect(h.revalidateProgress).toHaveBeenCalledWith("a", expect.any(Function));
+    expect(h.revalidateProgress).toHaveBeenCalledWith(
+      "a",
+      expect.any(Function),
+    );
     expect(h.flags.has(META_KEY_METADATA_DONE)).toBe(true);
     expect(h.flags.has(META_KEY_CONTENT_DONE)).toBe(true);
     expect(h.flags.has(META_KEY_COMPLETED)).toBe(true);
@@ -342,7 +312,10 @@ describe("primeAllCaches", () => {
     );
     // Metadata isn't surfaced; the content tier has nothing to do (total 0),
     // then the run signals ready — the user's "safe to browse offline" cue.
-    expect(ticks).toEqual([{ phase: "content", done: 0, total: 0 }, { phase: "ready" }]);
+    expect(ticks).toEqual([
+      { phase: "content", done: 0, total: 0 },
+      { phase: "ready" },
+    ]);
   });
 
   it("content tier targets only offline-marked books (metadata covers all)", async () => {
@@ -425,7 +398,9 @@ describe("primeAllCaches", () => {
     // Warm device: the current book is outstanding but its auto-save keeps
     // failing. The reconcile pass runs, but "Ready" must not fire until the
     // content is genuinely present.
-    const saveBook = vi.fn(async () => ({ kind: "failed", reason: "x" }) as const);
+    const saveBook = vi.fn(
+      async () => ({ kind: "failed", reason: "x" }) as const,
+    );
     const h = setup({
       readLibraryView: async () =>
         view([book("b", { offlineRequested: false })]),
@@ -454,13 +429,13 @@ describe("primeAllCaches", () => {
     expect(h.saveBook).toHaveBeenCalledWith("a"); // explicit, not "auto"
   });
 
-  it("only enumerates books from smart collections", async () => {
+  it("enumerates books in custom collections as well", async () => {
     const h = setup({
       readLibraryView: async () =>
         view([book("a", { offlineRequested: true })], [book("custom")]),
     });
     await primeAllCaches(h.runtime, h.internals);
-    expect(h.revalidateBookInfo).toHaveBeenCalledTimes(1);
+    expect(h.revalidateBookInfo).toHaveBeenCalledTimes(2);
     expect(h.saveBook).toHaveBeenCalledTimes(1);
     expect(h.saveBook).toHaveBeenCalledWith("a");
   });

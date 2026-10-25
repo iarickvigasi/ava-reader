@@ -1,0 +1,91 @@
+"use client";
+
+// Client side of the generic collection shell (ADR 4). Slug from
+// location.pathname, data from Dexie with a one-shot revalidation on miss
+// while online. Freshness on a hit is owned by CollectionHydrator, exactly as
+// on the old SSR page.
+
+import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
+import { useEffect, useRef, useState } from "react";
+
+import {
+  collectionViewToLibraryCollection,
+  readCollectionViewBySlug,
+  readWithRevalidate,
+  revalidateCollection,
+} from "@/features/offline/buckets/library";
+import { isOnline } from "@/features/offline/net/net-state";
+import { useNetworkState } from "@/features/offline/net/use-network-state";
+import type { LibraryCollection } from "@/lib/api-types";
+import { slugFromPath } from "@/lib/app-routes";
+
+const COLLECTION_PATH_PREFIX = "/app/library/collections/";
+
+type LoaderState =
+  | { status: "loading" }
+  | { status: "ready"; collection: LibraryCollection }
+  | { status: "unavailable" }
+  | { status: "notFound" };
+
+export function useCollectionLoader() {
+  const { getToken } = useAuth();
+  const online = useNetworkState();
+  const [state, setState] = useState<LoaderState>({ status: "loading" });
+  const [attempt, setAttempt] = useState(0);
+  const wasOffline = useRef(false);
+
+  useEffect(() => {
+    const slug = slugFromPath(window.location.pathname, COLLECTION_PATH_PREFIX);
+    if (!slug) {
+      setState({ status: "notFound" });
+      return;
+    }
+    let cancelled = false;
+    let missing = false;
+    setState({ status: "loading" });
+    void readWithRevalidate({
+      isOnline,
+      read: async () => {
+        const view = await readCollectionViewBySlug(slug);
+        return view ? collectionViewToLibraryCollection(view) : null;
+      },
+      revalidate: () =>
+        revalidateCollection(slug, getToken, () => {
+          missing = true;
+          window.location.replace("/app/library");
+        }),
+    })
+      .then((collection) => {
+        if (cancelled) {
+          return;
+        }
+        setState(
+          collection
+            ? { status: "ready", collection }
+            : { status: missing ? "notFound" : "unavailable" },
+        );
+      })
+      .catch(() => {
+        if (!cancelled) setState({ status: "unavailable" });
+      });
+    return () => {
+      cancelled = true;
+    };
+    // getToken's identity is deliberately not a dep; `attempt` drives reruns.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [attempt]);
+
+  // Auto-retry when the connection returns and we have nothing to show.
+  useEffect(() => {
+    if (!online) {
+      wasOffline.current = true;
+      return;
+    }
+    if (wasOffline.current) {
+      wasOffline.current = false;
+      setAttempt((current) => current + 1);
+    }
+  }, [online]);
+
+  return state;
+}

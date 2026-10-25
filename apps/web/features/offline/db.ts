@@ -16,7 +16,7 @@
 
 import type { LibraryItemRow } from "./library-item-row";
 import type { CoverRow } from "./buckets/book/covers/types";
-import { migrateLegacyCovers } from "./buckets/book/covers/migrate";
+import { registerOfflineSchema } from "./register-schema";
 import Dexie, { type Table } from "dexie";
 import { GuardedDatabase } from "./compatibility/guarded-database";
 import type { SessionRow } from "./buckets/sessions/types";
@@ -256,10 +256,10 @@ export type MetaRow = {
   updatedAt: string;
 };
 
-// Bumped only for structural changes WITHIN one user's database. The database
+// Bumped for schema changes and one-time data upgrades within a user's database. The database
 // NAME is per-user (`ava-reader-<userId>`), so different accounts on one browser
 // profile never share an object store — see adr/5.
-export const SCHEMA_VERSION = 5;
+export const SCHEMA_VERSION = 6;
 export const DB_NAME_PREFIX = "ava-reader-";
 // The pre-per-user single database; swept once by purgeOtherUserDbs (adr/5).
 export const LEGACY_DB_NAME = "ava-reader";
@@ -311,58 +311,7 @@ export class AvaReaderDB extends GuardedDatabase {
   constructor(name: string) {
     super(name, SCHEMA_VERSION);
 
-    // v1 — initial schema. Indexes:
-    // - libraryItems: primary `libraryItemId`, secondary `slug` for slug
-    //   lookups from the reader URL, and `lastReadAt` for sorting recents.
-    // - collectionMembership: compound PK [collectionId+libraryItemId] so a
-    //   single book can live in multiple collections; index libraryItemId
-    //   alone for the reverse lookup ("what collections is this book in").
-    // - bookChapters: compound PK [libraryItemId+chapterId]; index
-    //   libraryItemId for batch reads of a single book.
-    // - highlights / aiComments: same compound shape.
-    // - sessions: primary `clientSessionId`; index `libraryItemId+state` so
-    //   the runner can find any unsynced open session quickly.
-    // - *Mutations: primary `mutationId`; index `queuedAt` for FIFO drain;
-    //   `scopeId` for per-bucket queues.
-    this.version(1).stores({
-      libraryItems:
-        "libraryItemId, slug, lastReadAt, savedOffline, savedAutomatically",
-      collections: "id, slug, kind",
-      collectionMembership:
-        "[collectionId+libraryItemId], collectionId, libraryItemId, order",
-
-      books: "libraryItemId",
-      bookChapters: "[libraryItemId+chapterId], libraryItemId, index",
-
-      highlights: "[libraryItemId+id], libraryItemId, updatedAt",
-      aiComments: "[libraryItemId+id], libraryItemId, status, createdAt",
-
-      sessions: "clientSessionId, libraryItemId, state, syncedAt",
-      progress: "libraryItemId, dirty",
-      statsSnapshot: "id",
-      preferences: "id",
-      me: "id",
-      home: "id",
-
-      highlightMutations: "mutationId, scopeId, queuedAt, highlightId",
-      aiCommentMutations: "mutationId, scopeId, queuedAt, commentId",
-      sessionMutations: "mutationId, scopeId, queuedAt, clientSessionId",
-      preferenceMutations: "mutationId, queuedAt",
-
-      meta: "key",
-    });
-    this.version(2).stores({
-      collectionMembershipMutations: "libraryItemId, queuedAt",
-    });
-    this.version(3).stores({
-      finishDateMutations: "libraryItemId, queuedAt",
-    });
-    this.version(4).stores({
-      translations: "[libraryItemId+chapterId+targetLang], libraryItemId",
-    });
-    this.version(5)
-      .stores({ bookCovers: "libraryItemId" })
-      .upgrade(migrateLegacyCovers);
+    registerOfflineSchema(this);
   }
 }
 

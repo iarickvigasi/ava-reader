@@ -495,7 +495,9 @@
       "itemsAndUnread": "{items} elementos • {unread} sin leer",
       "viewAll": "Ver todo",
       "noBooksYet": "Aún no hay libros en esta colección.",
-      "backToLibrary": "Volver a la biblioteca"
+      "backToLibrary": "Volver a la biblioteca",
+      "generalBooks": "Libros",
+      "showMore": "Mostrar más"
     },
     "bookInfo": {
       "backToLibrary": "Volver a la biblioteca",

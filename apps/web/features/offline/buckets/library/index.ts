@@ -60,6 +60,8 @@ export {
   type MembershipDropEvent,
 } from "./membership";
 
+export { selectUncollectedBooks } from "./collections/uncollected-books";
+export { removeCollectionFromCache } from "./remove-collection";
 export { readReaderCover } from "./read-reader-cover";
 
 export { acquireCatalogBook } from "./acquire-catalog-book";

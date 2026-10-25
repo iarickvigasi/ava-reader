@@ -5,8 +5,6 @@ import {
 } from '@prisma/client';
 import { findPrimarySourceFile } from '../../shared/primary-book-file';
 import { createLibraryItemTx } from './create-library-item';
-import { ensureCollectionMembershipTx } from './ensure-collection-membership';
-import { ensureDefaultCollectionsTx } from './ensure-default-collections';
 
 export type LibraryMutationPayload = {
   addedAt: string;
@@ -33,8 +31,6 @@ export async function addBookToUserLibraryTx(
     userId: string;
   },
 ): Promise<LibraryMutationPayload> {
-  await ensureDefaultCollectionsTx(tx, input.userId);
-
   const existing = await tx.libraryItem.findUnique({
     where: {
       userId_bookId: {
@@ -75,12 +71,6 @@ export async function addBookToUserLibraryTx(
       },
     });
   }
-
-  await ensureCollectionMembershipTx(tx, {
-    libraryItemId: libraryItem.id,
-    source: input.source,
-    userId: input.userId,
-  });
 
   const primaryFile = findPrimarySourceFile(libraryItem.book.files);
 

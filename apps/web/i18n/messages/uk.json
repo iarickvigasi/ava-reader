@@ -495,7 +495,9 @@
       "itemsAndUnread": "{items} елем. • {unread} непрочитаних",
       "viewAll": "Переглянути все",
       "noBooksYet": "У цій колекції ще немає книжок.",
-      "backToLibrary": "Повернутися до бібліотеки"
+      "backToLibrary": "Повернутися до бібліотеки",
+      "generalBooks": "Книги",
+      "showMore": "Показати ще"
     },
     "bookInfo": {
       "backToLibrary": "Повернутися до бібліотеки",

@@ -15,8 +15,8 @@ reading lists" job. Split by subsystem, like [[2-reader/_overview]].
 
 - 7.1 library-screen — the library page: collection sections, book cards, offline rendering.
 - 7.2 book-info — per-book detail page: stats, collections, read/save actions.
-- 7.3 collections — collection model and rules: CUSTOM vs SMART, guards, membership.
-- 7.4 import — server ingest: upload → metadata → blobs → processing run → shelves.
+- 7.3 collections — collection model and rules: custom lists, migration, membership.
+- 7.4 import — server ingest: upload → metadata → blobs → processing run → Library.
 - 7.5 library-payloads — server reads and the serialized shapes.
 
 ## Shared data model
@@ -24,7 +24,8 @@ reading lists" job. Split by subsystem, like [[2-reader/_overview]].
 - **LibraryItem** — the user↔book link: per-user slug, source (IMPORTED | CATALOG),
   offlineRequested, isArchived, addedAt/lastOpenedAt, one ReadingProgress row.
 - **Collection** {kind: CUSTOM | SMART, smartKey?, name, slug, sortOrder} with CollectionItem
-  membership rows; SMART shelves are system-owned ([[4.8-offline-books-collection]]).
+  membership rows; only CUSTOM lists are created. Legacy system shelves are removed
+  ([[3.3-collections]]); uncollected books appear directly in Library.
 - **Book card** (serialized) — {libraryItemId, slug, title, authors, coverImageUrl,
   completionPercent, lastReadAt, offlineRequested, primaryFormat}: the one shape every book list
   renders (library, collection pages; home mirrors it).
@@ -48,10 +49,9 @@ reading lists" job. Split by subsystem, like [[2-reader/_overview]].
       initial entry (including offline shells); same-page updates preserve scroll. Reader
       locators and saved reading progress remain unchanged.
 - [ ] Library, collections, and book-info render offline from cache.
-- [ ] An imported or catalog-added book appears in its smart shelf with progress at 0.
+- [ ] An imported or catalog-added book appears directly in Library with progress at 0.
 - [ ] Every book list orders by engagement recency and excludes archived items.
 
 ## Open questions
 
-Collection create / add-remove / reorder (no endpoints yet); smart-collection rule editor;
-collection sharing (depends on social).
+Manual collection reorder; collection sharing (depends on social).
