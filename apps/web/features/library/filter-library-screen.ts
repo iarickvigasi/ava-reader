@@ -41,7 +41,7 @@ export function filterLibraryScreen(
               unreadCount: books.filter((book) => !isFinished(book)).length,
             }
           : {}),
-        books: books.slice(0, 4),
+        books,
       } as LibraryCollection;
     })
     .filter((collection) => !filters.length || collection.itemCount > 0);

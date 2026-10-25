@@ -54,30 +54,15 @@ export function CollectionSection({ collection }: CollectionSectionProps) {
           {collectionDisplay.emptyMessage(collection)}
         </div>
       ) : (
-        <>
-          {/* Column-flow grid rather than a flex row: the cards are two-row
-              subgrids, so they need real tracks to share a shelf line. */}
-          <div className="grid grid-flow-col auto-cols-max grid-rows-[auto_auto] gap-x-4 overflow-x-auto pb-2 md:hidden">
-            {collection.books.map((book) => (
-              <LibraryBookCard
-                key={book.libraryItemId}
-                book={book}
-                collectionSlug={collection.slug}
-                mobile
-              />
-            ))}
-          </div>
-
-          <div className="hidden gap-x-8 gap-y-6 md:grid md:grid-cols-3 xl:grid-cols-4">
-            {collection.books.map((book) => (
-              <LibraryBookCard
-                key={book.libraryItemId}
-                book={book}
-                collectionSlug={collection.slug}
-              />
-            ))}
-          </div>
-        </>
+        <div className="grid grid-flow-col auto-cols-[10.875rem] grid-rows-[auto_auto] gap-x-4 overflow-x-auto pb-2 md:auto-cols-[15.375rem] md:gap-x-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {collection.books.map((book) => (
+            <LibraryBookCard
+              key={book.libraryItemId}
+              book={book}
+              collectionSlug={collection.slug}
+            />
+          ))}
+        </div>
       )}
     </section>
   );
@@ -97,13 +82,7 @@ export function CollectionSectionSkeleton() {
         <div className="hidden h-4 w-16 animate-pulse rounded bg-paper-strong md:block" />
       </div>
 
-      <div className="grid grid-flow-col auto-cols-max grid-rows-[auto_auto] gap-x-4 overflow-x-auto pb-2 md:hidden">
-        {Array.from({ length: 4 }, (_, index) => (
-          <BookCardSkeleton key={index} mobile />
-        ))}
-      </div>
-
-      <div className="hidden gap-x-8 gap-y-6 md:grid md:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-flow-col auto-cols-[10.875rem] grid-rows-[auto_auto] gap-x-4 overflow-x-auto pb-2 md:auto-cols-[15.375rem] md:gap-x-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {Array.from({ length: 4 }, (_, index) => (
           <BookCardSkeleton key={index} />
         ))}

@@ -35,7 +35,7 @@ const library: LibraryPayload = {
   collections: [collection],
   summary: { booksCount: 7, collectionsCount: 1 },
 };
-it("filters complete membership before limiting the preview", () => {
+it("filters complete collection membership", () => {
   const result = filterLibraryScreen(library, null, ["done"]);
   expect(result.collections[0].books.map((book) => book.libraryItemId)).toEqual(
     ["5"],
@@ -46,6 +46,12 @@ it("filters complete membership before limiting the preview", () => {
   expect(library.summary.booksCount).toBe(7);
 });
 it("keeps uncollected books separate from collection contents", () => {
+  expect(filterLibraryScreen(library, null, []).collections[0].books).toEqual(
+    books.slice(0, 6),
+  );
+  expect(
+    filterLibraryScreen(library, null, ["not-started"]).collections[0].books,
+  ).toHaveLength(5);
   expect(
     filterLibraryScreen(library, null, []).books.map(
       (book) => book.libraryItemId,
