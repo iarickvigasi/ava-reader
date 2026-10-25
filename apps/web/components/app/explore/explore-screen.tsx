@@ -60,7 +60,6 @@ export function ExploreScreen() {
         error={state.error}
         stale={state.stale}
         loadMore={state.loadMore}
-        retry={state.retry}
       />
     </ScreenContainer>
   );

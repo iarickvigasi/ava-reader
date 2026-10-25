@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
+import { ErrorState } from "@/components/app/shared/error-state";
 
 export function CatalogStatus({
   error,
@@ -12,19 +12,18 @@ export function CatalogStatus({
   retry: () => void;
 }) {
   const t = useTranslations("explore");
-  if (!error && !loading) return null;
+  if (loading)
+    return (
+      <p role="status" className="text-sm text-muted">
+        {t("loading")}
+      </p>
+    );
+  if (!error) return null;
   return (
-    <div
-      role="status"
-      aria-live="polite"
-      className="flex items-center gap-3 text-sm text-muted"
-    >
-      {loading ? t("loading") : t("unavailable")}
-      {error && (
-        <Button size="sm" variant="soft" onClick={retry}>
-          {t("retry")}
-        </Button>
-      )}
-    </div>
+    <ErrorState
+      message={t("unavailable")}
+      retryLabel={t("retry")}
+      retry={retry}
+    />
   );
 }

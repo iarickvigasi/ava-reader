@@ -9,7 +9,6 @@ export function CatalogFeedFooter({
   error,
   stale,
   loadMore,
-  retry,
 }: {
   hasNext: boolean;
   hasItems: boolean;
@@ -17,7 +16,6 @@ export function CatalogFeedFooter({
   error: boolean;
   stale: boolean;
   loadMore: () => void;
-  retry: () => void;
 }) {
   const t = useTranslations("explore");
   const sentinelRef = useScrollLoad(
@@ -34,11 +32,6 @@ export function CatalogFeedFooter({
         <p role="status" className="text-sm text-muted">
           {t("loading")}
         </p>
-      )}
-      {error && (
-        <Button size="sm" variant="soft" onClick={retry}>
-          {t("retry")}
-        </Button>
       )}
       {hasNext && !busy && !error && (
         <Button
