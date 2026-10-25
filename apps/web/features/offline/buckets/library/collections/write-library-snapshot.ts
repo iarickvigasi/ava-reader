@@ -76,7 +76,10 @@ export async function applyLibraryPayload(
       );
       await writeLibraryBooksCountTx(payload.summary.booksCount);
       if (payload.books !== undefined)
-        await writeCatalogIds(payload.books.map((book) => book.libraryItemId));
+        await writeCatalogIds(
+          payload.books.map((book) => book.libraryItemId),
+          options.expectedCompletionRevision ?? 0,
+        );
       if (options.canRemove !== false && payload.libraryItemIds !== undefined) {
         const keep = new Set(payload.libraryItemIds);
         const candidates =

@@ -23,6 +23,9 @@ export type CollectionView = Omit<LibraryCollection, "books"> & {
 // What a card needs to render. Drawn from LibraryItemRow but stripped of
 // blob/offline-management fields the rendering code doesn't care about.
 export type LibraryBookView = {
+  source?: "IMPORTED" | "CATALOG";
+  hasReadableEdition?: boolean;
+  availableOffline?: boolean;
   libraryItemId: string;
   slug: string;
   title: string;

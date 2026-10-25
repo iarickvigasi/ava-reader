@@ -3,7 +3,7 @@
 import type { CatalogText } from "@/lib/catalog-types";
 import { useCatalogDescription } from "@/features/explore/use-catalog-description";
 import { BookDescription } from "@/components/app/shared/books/book-description";
-import { FilterPill } from "./filter-pill";
+import { FilterPill } from "@/components/app/shared/filter-pill";
 
 export function CatalogDescription({ texts }: { texts: CatalogText[] }) {
   const { available, active, select } = useCatalogDescription(texts);

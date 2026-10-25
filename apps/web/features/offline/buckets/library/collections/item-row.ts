@@ -24,6 +24,8 @@ export function mergeListPayloadItemRow(
         : prior.details?.finishedAt;
   return {
     ...next,
+    source: next.source ?? prior.source ?? prior.details?.source,
+    hasReadableEdition: next.hasReadableEdition ?? prior.hasReadableEdition,
     ...(finishedAt !== undefined ? { finishedAt } : {}),
     savedOffline: prior.savedOffline,
     savedAutomatically: prior.savedAutomatically,

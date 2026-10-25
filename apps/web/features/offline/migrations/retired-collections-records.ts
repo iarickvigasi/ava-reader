@@ -1,6 +1,12 @@
 export function preservedCacheRecords(collectionId: string) {
   return {
-    books: { libraryItemId: "lib-1", content: "download" },
+    books: {
+      libraryItemId: "lib-1",
+      toc: [],
+      chapterIds: ["ch-1"],
+      metadata: {},
+      fetchedAt: "before",
+    },
     bookChapters: {
       libraryItemId: "lib-1",
       chapterId: "ch-1",

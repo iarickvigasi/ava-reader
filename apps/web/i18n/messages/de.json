@@ -680,6 +680,17 @@
         "title": "Viele weitere Entdeckungen",
         "body": "Gemeinsames Lesen und Hören desselben Buches als Paar. Schriftstellerinnen können ihre eigenen Bücher veröffentlichen und ihre ersten Leserinnen und Leser erreichen."
       }
+    },
+    "filters": {
+      "offline": "Offline",
+      "imported": "Importiert",
+      "public-domain": "Gemeinfrei",
+      "wish-list": "Wunschliste",
+      "in-progress": "Am Lesen",
+      "done": "Gelesen",
+      "not-started": "Nicht begonnen",
+      "label": "Bibliothek filtern",
+      "noResults": "Keine Bücher passen zu diesen Filtern."
     }
   },
   "insights": {

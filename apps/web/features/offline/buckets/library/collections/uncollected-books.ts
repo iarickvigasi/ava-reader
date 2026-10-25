@@ -1,7 +1,4 @@
-import type {
-  LibraryCollection,
-  LibraryCollectionBook,
-} from "@/lib/api-types/library";
+import type { LibraryCollection } from "@/lib/api-types/library";
 import type {
   CollectionMembershipRow,
   CollectionRow,
@@ -34,8 +31,8 @@ export function selectUncollectedRows(
 }
 
 // Initial server render before the bucket hydrates; snapshots include off-preview members.
-export function selectUncollectedBooks(
-  books: LibraryCollectionBook[],
+export function selectUncollectedBooks<T extends { libraryItemId: string }>(
+  books: T[],
   collections: LibraryCollection[],
 ) {
   const members = new Set(

@@ -680,6 +680,17 @@
         "title": "Muchas más novedades",
         "body": "Lectura y escucha compartidas del mismo libro en pareja. Las escritoras podrán publicar sus propios libros y encontrar a sus primeros lectores."
       }
+    },
+    "filters": {
+      "offline": "Sin conexión",
+      "imported": "Importados",
+      "public-domain": "Dominio público",
+      "wish-list": "Deseados",
+      "in-progress": "En curso",
+      "done": "Leídos",
+      "not-started": "Sin empezar",
+      "label": "Filtrar biblioteca",
+      "noResults": "Ningún libro coincide con estos filtros."
     }
   },
   "insights": {

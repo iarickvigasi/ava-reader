@@ -1,6 +1,6 @@
 import { useLocale, useTranslations } from "next-intl";
 import { languageName } from "@/features/explore/catalog-display";
-import { FilterPill } from "./filter-pill";
+import { FilterPill } from "@/components/app/shared/filter-pill";
 
 import { CategoryPills } from "./category-pills";
 

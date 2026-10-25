@@ -287,6 +287,7 @@ describe('LibraryService', () => {
         description: 'A gothic classic.',
         finishedAt: '2026-09-13T10:00:00.000Z',
         genres: ['Gothic', 'Horror'],
+        hasReadableEdition: true,
         language: 'English',
         lastReadAt: '2026-04-11T08:30:00.000Z',
         libraryItemId: 'library-42',

@@ -1,3 +1,4 @@
+import { hasReadableEdition } from '../has-readable-edition';
 import { BookFileFormat } from '@prisma/client';
 import { NotFoundException } from '@nestjs/common';
 import type { PrismaService } from '../../prisma/prisma.service';
@@ -72,6 +73,7 @@ export async function getLibraryItem(options: {
       publishedYear: item.book.publishedYear,
       slug: item.slug,
       source: item.source,
+      hasReadableEdition: hasReadableEdition(item.book.files),
       title: item.book.title,
     },
   };

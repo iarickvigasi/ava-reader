@@ -11,6 +11,8 @@ export function buildBookInfoRow(input: {
   const { book, prior, finishedAt, retainCollections, nowIso } = input;
   return {
     libraryItemId: book.libraryItemId,
+    source: book.source,
+    hasReadableEdition: book.hasReadableEdition ?? prior?.hasReadableEdition,
     slug: book.slug,
     title: book.title,
     authors: book.authors,

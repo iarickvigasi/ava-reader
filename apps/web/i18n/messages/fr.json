@@ -680,6 +680,17 @@
         "title": "Bien d’autres découvertes",
         "body": "Lecture et écoute partagées d’un même livre en couple. Les autrices pourront publier leurs propres livres et rencontrer leurs premiers lecteurs."
       }
+    },
+    "filters": {
+      "offline": "Hors ligne",
+      "imported": "Importés",
+      "public-domain": "Domaine public",
+      "wish-list": "Envies",
+      "in-progress": "En cours",
+      "done": "Lus",
+      "not-started": "Non commencés",
+      "label": "Filtrer la bibliothèque",
+      "noResults": "Aucun livre ne correspond à ces filtres."
     }
   },
   "insights": {

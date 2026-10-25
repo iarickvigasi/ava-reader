@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import { CATALOG_FILTERS } from "@/features/explore/catalog-filters";
-import { FilterPill } from "./filter-pill";
+import { FilterPill } from "@/components/app/shared/filter-pill";
 
 export function CategoryPills({
   filters,

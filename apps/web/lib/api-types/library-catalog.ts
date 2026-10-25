@@ -11,6 +11,8 @@ export type CompletionItem = {
 // collection, the home "currently reading" widget. Anything that knows a book
 // at all knows at least this much. Subtypes add screen-specific extras.
 export type LibraryCardBook = {
+  source?: "IMPORTED" | "CATALOG";
+  hasReadableEdition?: boolean;
   authors: string[];
   completionPercent: number;
   // Older list payloads can omit the finish date; null explicitly clears it.

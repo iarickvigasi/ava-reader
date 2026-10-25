@@ -680,6 +680,17 @@
         "title": "Many more things to discover",
         "body": "Shared reading and listening to the same book as a couple. Writers will be able to publish their own books and reach their first readers."
       }
+    },
+    "filters": {
+      "offline": "Offline",
+      "imported": "Imported",
+      "public-domain": "Public domain",
+      "wish-list": "Wish list",
+      "in-progress": "In progress",
+      "done": "Done",
+      "not-started": "Not started",
+      "label": "Filter library",
+      "noResults": "No books match these filters."
     }
   },
   "insights": {

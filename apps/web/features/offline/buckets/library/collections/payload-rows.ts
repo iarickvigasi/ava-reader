@@ -71,6 +71,8 @@ export function bookToItemRow(
 ): LibraryItemRow {
   return {
     libraryItemId: book.libraryItemId,
+    source: book.source,
+    hasReadableEdition: book.hasReadableEdition,
     slug: book.slug,
     title: book.title,
     authors: book.authors,

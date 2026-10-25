@@ -3,6 +3,7 @@ import type { Prisma } from '@prisma/client';
 export type LibraryPreviewBookRecord = Prisma.LibraryItemGetPayload<{
   select: {
     id: true;
+    source: true;
     finishedAt: true;
     slug: true;
     offlineRequested: true;
@@ -32,6 +33,7 @@ export async function loadPreviewItems(
     where: { id: { in: previewIds } },
     select: {
       id: true,
+      source: true,
       finishedAt: true,
       slug: true,
       offlineRequested: true,

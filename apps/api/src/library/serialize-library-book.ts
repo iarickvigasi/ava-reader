@@ -1,4 +1,9 @@
-import { BookFileFormat, type BookFileKind } from '@prisma/client';
+import { hasReadableEdition } from './has-readable-edition';
+import {
+  BookFileFormat,
+  type BookFileKind,
+  type LibrarySource,
+} from '@prisma/client';
 import { buildCoverImageUrl } from '../shared/cover-image-url';
 import { findPrimarySourceFile } from '../shared/primary-book-file';
 
@@ -15,6 +20,7 @@ type LibraryBookItem = {
     title: string;
   };
   id: string;
+  source?: LibrarySource;
   finishedAt: Date | null;
   offlineRequested: boolean;
   slug: string;
@@ -28,6 +34,8 @@ export function serializeLibraryBook(
 ) {
   return {
     authors: item.book.authors,
+    source: item.source,
+    hasReadableEdition: hasReadableEdition(item.book.files),
     completionPercent: engagement.completionPercent,
     finishedAt: item.finishedAt?.toISOString() ?? null,
     coverImageUrl: item.book.coverBlob

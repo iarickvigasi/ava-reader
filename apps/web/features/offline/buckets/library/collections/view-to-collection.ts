@@ -21,6 +21,9 @@ export function collectionViewToLibraryCollection(
     unreadCount: view.unreadCount,
     books: view.books.map((book) => ({
       libraryItemId: book.libraryItemId,
+      source: book.source,
+      hasReadableEdition: book.hasReadableEdition,
+      offlineRequested: book.offlineRequested,
       slug: book.slug,
       title: book.title,
       authors: book.authors,

@@ -10,6 +10,9 @@ import { LibraryBooksGrid } from "./library-sections/library-books-grid";
 import { LibraryScreenShell } from "./library-screen-shell";
 export { LibraryScreenSkeleton } from "./library-screen-skeleton";
 
+import { LibraryFilterPills } from "./library-filter-pills";
+import { LibraryNoResults } from "./library-no-results";
+
 import { useLibraryScreen } from "@/features/library/use-library-screen";
 
 type LibraryScreenProps = {
@@ -21,18 +24,23 @@ type LibraryScreenProps = {
 };
 
 export function LibraryScreen({ library }: LibraryScreenProps) {
-  const { collections, summary, books, isEmpty } = useLibraryScreen(library);
+  const { collections, summary, books, isEmpty, filters, toggle, noMatches } =
+    useLibraryScreen(library);
 
   return (
     <LibraryScreenShell>
       <LibraryHeader />
       <LibraryFeaturesSection />
-      <LibraryHeaderBar summary={summary} />
+      <div className="min-w-0 space-y-6">
+        <LibraryHeaderBar summary={summary} />
+        <LibraryFilterPills filters={filters} toggle={toggle} />
+      </div>
+      {noMatches && summary.booksCount > 0 && <LibraryNoResults />}
       {summary.booksCount === 0 && <LibraryEmptyState />}
 
       {!isEmpty && (
         <div className="space-y-12 md:space-y-14">
-          <LibraryBooksGrid books={books} />
+          <LibraryBooksGrid key={filters.join(",")} books={books} />
           {collections.map((collection) => (
             <CollectionSection key={collection.id} collection={collection} />
           ))}

@@ -680,6 +680,17 @@
         "title": "Muitas outras novidades",
         "body": "Leitura e escuta compartilhadas do mesmo livro em casal. Escritoras poderão publicar seus próprios livros e encontrar seus primeiros leitores."
       }
+    },
+    "filters": {
+      "offline": "Offline",
+      "imported": "Importados",
+      "public-domain": "Domínio público",
+      "wish-list": "Desejos",
+      "in-progress": "Em leitura",
+      "done": "Lidos",
+      "not-started": "Não iniciados",
+      "label": "Filtrar biblioteca",
+      "noResults": "Nenhum livro corresponde a estes filtros."
     }
   },
   "insights": {
