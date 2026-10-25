@@ -26,8 +26,11 @@ file SHA-256, source revision, timestamp, line diagnostics, and outcomes live in
 - The profile-only catalog-importer container mounts inputs read-only, has no API port, and exits
   when finished. It is limited to 0.5 CPU/512 MiB; canonical transactions execute sequentially.
   Production overrides the worker to 1 GiB with a 768 MiB Node heap and attached-volume inputs.
-  Staging uses a transaction-local 60s SQL timeout and a 120s transaction deadline;
+  Importer connections use a 60s SQL timeout; staging and canonical transactions have a 120s deadline;
   a failed batch rolls back with its checkpoint and can be resumed using the same input.
+  Batch reads and canonical transactions retry SQL cancellation, deadlock, and serialization
+  failures up to three attempts with 1s/2s backoff; other failures stop immediately.
+  Structured stderr diagnostics include operation, cursor/record, attempt, elapsed time, and SQLSTATE.
   PostgreSQL connections use the catalog pool plus one dedicated advisory-lock connection.
 - Two concurrent importers are refused by a catalog-wide PostgreSQL advisory lock. Failed DB/file
   operations exit 1; malformed/conflicting records exit 2 after other valid records finish.

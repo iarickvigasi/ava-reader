@@ -7,6 +7,7 @@ import { fixture } from './importer-fixtures';
 import { verifyImportLinks } from './verify-import-links';
 import { verifyImportRevisions } from './verify-import-revisions';
 import { verifyImportResume } from './verify-import-resume';
+import { verifySlowApplication } from './verify-slow-application';
 import { verifySlowStaging } from './verify-slow-staging';
 import { verifyImportFailures } from './verify-import-failures';
 import { cleanupImportFixtures } from './cleanup-import-fixtures';
@@ -20,6 +21,7 @@ async function integration() {
     await verifyImportRevisions(ctx);
     await verifyImportResume(ctx);
     await verifySlowStaging(ctx);
+    await verifySlowApplication(ctx);
     await verifyImportFailures(ctx);
     console.log(
       'Importer integration passed: links, gzip, replay, revision guards, resume, quarantine, lock.',

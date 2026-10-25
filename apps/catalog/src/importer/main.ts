@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { parseArgs } from 'node:util';
 import { CatalogDatabase } from '../database/catalog-database';
 import { runImport } from './run-import';
+import { IMPORT_STATEMENT_TIMEOUT_MS } from './types';
 
 async function main() {
   const { values } = parseArgs({
@@ -13,7 +14,7 @@ async function main() {
   if (Boolean(values.file) === Boolean(values.retry)) {
     throw new Error('Use --file /path/dump.txt[.gz] or --retry');
   }
-  const db = new CatalogDatabase();
+  const db = new CatalogDatabase(IMPORT_STATEMENT_TIMEOUT_MS);
   try {
     const summary = await runImport(db, values.file);
     console.log(JSON.stringify(summary, null, 2));
