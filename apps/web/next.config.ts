@@ -1,3 +1,4 @@
+import { resolve } from "node:path";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 import { resolveCatalogApiBase } from "./scripts/catalog-api-base.mjs";
@@ -16,6 +17,8 @@ const SW_VERSION =
   `build-${Date.now()}`;
 
 const nextConfig: NextConfig = {
+  output: "standalone",
+  outputFileTracingRoot: resolve(__dirname, "../.."),
   env: {
     NEXT_PUBLIC_SW_VERSION: SW_VERSION,
     NEXT_PUBLIC_CATALOG_API_BASE_URL: resolveCatalogApiBase(

@@ -1,4 +1,4 @@
-FROM node:22-bookworm-slim
+FROM node:22-bookworm-slim AS build
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -33,6 +33,14 @@ ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY"
 ENV GIT_SHA="$GIT_SHA"
 RUN pnpm --filter web build
 
+FROM node:22-bookworm-slim AS runtime
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+COPY --from=build /app/apps/web/.next/standalone ./
+COPY --from=build /app/apps/web/.next/static ./apps/web/.next/static
+# gen-precache-manifest runs after next build, so copy public from the completed build.
+COPY --from=build /app/apps/web/public ./apps/web/public
 EXPOSE 3000
-
-CMD ["sh", "-c", "cd apps/web && pnpm exec next start --hostname 0.0.0.0 --port 3000"]
+CMD ["node", "apps/web/server.js"]

@@ -64,4 +64,4 @@ Local Docker web builds need `/catalog` with a gateway, or an HTTPS catalog orig
   PITR and restore drills, monitoring, and measured sizing. Compose volumes alone are not backups.
 
 Fictional catalog data exists only under `apps/catalog/test/fixtures` for integration tests.
-There is no development or production demo seed command; production migrations run before startup.
+production migrations run in the separate `catalog-migrate` service before startup.

@@ -70,20 +70,23 @@ jobs:
             if [ -f "$deploy_pending" ]; then previous_sha=; fi
             build_services=$(sh tools/deploy/select-builds.sh "$previous_sha" "$GIT_SHA")
             for service in api catalog web; do
-              if ! docker image inspect "ava-reader-$service" >/dev/null 2>&1; then
-                case "$build_services" in *"$service"*) ;; *) build_services="$build_services $service" ;; esac
-              fi
+              for image in "$service" "$service-migrate"; do
+                [ "$image" != web-migrate ] || continue
+                if ! docker image inspect "ava-reader-$image" >/dev/null 2>&1; then
+                  case "$build_services" in *"$service"*) ;; *) build_services="$build_services $service" ;; esac
+                fi
+              done
             done
             printf 'Selected application builds: %s\n' "${build_services:-none}"
             printf '%s\n' "$GIT_SHA" > "$deploy_pending"
             if [ -n "$build_services" ]; then
               # Intentional splitting: select-builds.sh emits only fixed service names.
-              docker compose -f compose.yaml -f compose.prod.yaml build $build_services
+              sh tools/deploy/build-images.sh $build_services
             fi
             # Only databases start before migrations; application health checks start afterward.
             docker compose -f compose.yaml -f compose.prod.yaml up -d --no-build --wait postgres catalog-postgres
-            docker compose -f compose.yaml -f compose.prod.yaml run --rm --no-deps -T api pnpm --filter api db:migrate:deploy
-            docker compose -f compose.yaml -f compose.prod.yaml run --rm --no-deps -T catalog pnpm --filter catalog db:migrate:deploy
+            docker compose -f compose.yaml -f compose.prod.yaml -f compose.migrations.yaml run --rm --no-deps -T api-migrate
+            docker compose -f compose.yaml -f compose.prod.yaml -f compose.migrations.yaml run --rm --no-deps -T catalog-migrate
             docker compose -f compose.yaml -f compose.prod.yaml up -d --no-build --wait
             curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 15 https://avareader.space/catalog/api/health
             curl --fail --silent --show-error --max-time 15 "https://avareader.space/catalog/api/works?limit=1" > /dev/null

@@ -1,0 +1,21 @@
+# One-off production tools: include alongside compose.yaml and compose.prod.yaml.
+services:
+  api-migrate:
+    profiles: ["migrate"]
+    image: ava-reader-api-migrate:latest
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: migration
+    environment:
+      DATABASE_URL: postgresql://postgres:${AVA_POSTGRES_PASSWORD:?Set AVA_POSTGRES_PASSWORD on the server}@postgres:5432/ava_reader?schema=public
+
+  catalog-migrate:
+    profiles: ["migrate"]
+    image: ava-reader-catalog-migrate:latest
+    build:
+      context: .
+      dockerfile: apps/catalog/Dockerfile
+      target: migration
+    environment:
+      CATALOG_DATABASE_URL: ${CATALOG_DATABASE_URL:-postgresql://catalog:${CATALOG_POSTGRES_PASSWORD:-catalog}@catalog-postgres:5432/ava_catalog}
