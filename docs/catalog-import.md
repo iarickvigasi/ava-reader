@@ -49,7 +49,11 @@ line, externalId, revision, status, and diagnostic identify problems without exp
 CatalogOutbox holds durable entity/revision changes; its search/refresh consumer is still pending.
 
 Staging batches up to 100 rows/4 MiB per transaction (a larger valid row is written alone); application reads 50 records at a time and commits each
-canonical record separately. Memory is bounded, including 8 MiB oversized-line quarantine. Gzip
+canonical record separately. Candidate IDs are selected per staged run/kind/status through
+`ImportRecord_runId_kind_status_id_idx`; full JSON is fetched only for the merged 50-row page.
+Apply the concurrent index migration before restarting the worker; it needs temporary disk headroom.
+If an interrupted index build leaves an invalid index, drop that invalid index concurrently and
+resolve the failed Prisma migration before retrying deployment. Memory is bounded, including 8 MiB oversized-line quarantine. Gzip
 resume scans/decompresses the prefix; SHA-256 identification is an additional sequential file pass.
 This baseline favors correctness over throughput: full Open Library corpus storage, COPY-based
 loading, byte-offset checkpoints, raw archival/retention automation, and throughput benchmarks remain

@@ -46,6 +46,7 @@ model ImportRecord {
 
   @@unique([runId, line])
   @@index([kind, status, id])
+  @@index([runId, kind, status, id])
 }
 
 model CatalogOutbox {

@@ -7,6 +7,7 @@ import { fixture } from './importer-fixtures';
 import { verifyImportLinks } from './verify-import-links';
 import { verifyImportRevisions } from './verify-import-revisions';
 import { verifyImportResume } from './verify-import-resume';
+import { verifyApplySelection } from './verify-apply-selection';
 import { verifySlowApplication } from './verify-slow-application';
 import { verifySlowStaging } from './verify-slow-staging';
 import { verifyImportFailures } from './verify-import-failures';
@@ -17,6 +18,7 @@ async function integration() {
   const directory = await mkdtemp(join(tmpdir(), 'ava-import-'));
   const ctx = fixture(db, directory);
   try {
+    await verifyApplySelection(ctx);
     await verifyImportLinks(ctx);
     await verifyImportRevisions(ctx);
     await verifyImportResume(ctx);
