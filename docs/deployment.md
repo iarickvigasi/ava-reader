@@ -21,3 +21,20 @@
   deployments must follow the same order as `.github/workflows/deploy.yml`. Local Compose keeps
   its existing migration-on-start behavior. Long migrations use the SSH command's 30m budget,
   separate from application health checks; they must remain compatible with running old services.
+
+## Selective builds and caching
+
+- `tools/deploy/select-builds.sh` compares the checkout with `.git/ava-last-successful-deploy`.
+  Web/API/catalog paths select their own image; docs/README/agent guidance/mobile changes skip
+  builds. Shared or unknown paths conservatively select all three. Missing images are rebuilt.
+- First deploy, missing/non-ancestor baseline, or `.git/ava-deploy-in-progress` rebuilds all.
+  The pending marker is written before builds; only a healthy, publicly verified rollout advances
+  the success marker and removes it. Failed builds/rollouts cannot become the next baseline.
+- Workflow concurrency serializes deployments. Migrations and health checks still run when images
+  are unchanged. Server-only build-argument changes require a full build: remove the success marker
+  before the next deploy. This also provides an explicit full-build override.
+- Web/API install only their workspace dependencies before copying application source. Web build
+  arguments, including `GIT_SHA`, are set afterward so they do not invalidate the dependency layer.
+  A skipped web build retains its existing service-worker version. Runtime image slimming is pending.
+
+Selector regression checks: `node --test tools/deploy/select-builds.test.mjs`.
