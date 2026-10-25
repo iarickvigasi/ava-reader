@@ -6,6 +6,8 @@ services:
       POSTGRES_PASSWORD: ${AVA_POSTGRES_PASSWORD:?Set AVA_POSTGRES_PASSWORD on the server}
 
   api:
+    # Production migrations run explicitly in the deployment workflow before service startup.
+    command: ["pnpm", "--filter", "api", "start:prod"]
     environment:
       DATABASE_URL: postgresql://postgres:${AVA_POSTGRES_PASSWORD:?Set AVA_POSTGRES_PASSWORD on the server}@postgres:5432/ava_reader?schema=public
 
@@ -31,6 +33,7 @@ services:
           create_host_path: false
 
   catalog:
+    command: ["pnpm", "--filter", "catalog", "start:prod"]
     environment:
       CATALOG_WEB_ORIGIN: https://avareader.space
   web:

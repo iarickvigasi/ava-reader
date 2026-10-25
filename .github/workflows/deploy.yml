@@ -59,6 +59,11 @@ jobs:
             # build falls back to a timestamp if this is ever unset.
             export GIT_SHA="$(git rev-parse HEAD)"
             docker compose -f compose.yaml -f compose.prod.yaml pull
-            docker compose -f compose.yaml -f compose.prod.yaml up -d --build --wait
+            docker compose -f compose.yaml -f compose.prod.yaml build api catalog web
+            # Only databases start before migrations; application health checks start afterward.
+            docker compose -f compose.yaml -f compose.prod.yaml up -d --no-build --wait postgres catalog-postgres
+            docker compose -f compose.yaml -f compose.prod.yaml run --rm --no-deps -T api pnpm --filter api db:migrate:deploy
+            docker compose -f compose.yaml -f compose.prod.yaml run --rm --no-deps -T catalog pnpm --filter catalog db:migrate:deploy
+            docker compose -f compose.yaml -f compose.prod.yaml up -d --no-build --wait
             curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 15 https://avareader.space/catalog/api/health
             curl --fail --silent --show-error --max-time 15 "https://avareader.space/catalog/api/works?limit=1" > /dev/null

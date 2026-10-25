@@ -41,7 +41,8 @@ Local Docker web builds need `/catalog` with a gateway, or an HTTPS catalog orig
   compose.prod.yaml replaces the development Docker volume. Mount the attached disk before deploy.
 - Production main PostgreSQL has no host port; its password comes from server-only
   AVA_POSTGRES_PASSWORD. Do not replace production Compose with development defaults.
-- Deploy with `docker compose -f compose.yaml -f compose.prod.yaml up -d --build --wait`.
+- Follow the build → database startup → migrations → application startup order in
+  [production deployment](deployment.md); production startup does not run migrations.
 - Verify `https://avareader.space/catalog/api/health`, `/catalog/api/works?limit=1`, and
   `/catalog/api/works/filters` return JSON. Deployment checks health and a bounded works request.
   Verify Explore search, book/author navigation, and same-origin catalog requests in DevTools.
@@ -63,4 +64,4 @@ Local Docker web builds need `/catalog` with a gateway, or an HTTPS catalog orig
   PITR and restore drills, monitoring, and measured sizing. Compose volumes alone are not backups.
 
 Fictional catalog data exists only under `apps/catalog/test/fixtures` for integration tests.
-There is no development or production demo seed command; startup runs migrations only.
+There is no development or production demo seed command; production migrations run before startup.
