@@ -4,6 +4,7 @@ import { useScrollLoad } from "@/features/explore/use-scroll-load";
 
 export function CatalogFeedFooter({
   hasNext,
+  hasItems,
   busy,
   error,
   stale,
@@ -11,6 +12,7 @@ export function CatalogFeedFooter({
   retry,
 }: {
   hasNext: boolean;
+  hasItems: boolean;
   busy: boolean;
   error: boolean;
   stale: boolean;
@@ -48,7 +50,7 @@ export function CatalogFeedFooter({
           {t("loadMore")}
         </Button>
       )}
-      {!hasNext && !busy && !error && (
+      {hasItems && !hasNext && !busy && !error && (
         <p className="text-sm text-muted">{t("endOfResults")}</p>
       )}
     </div>

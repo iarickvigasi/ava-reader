@@ -4,7 +4,8 @@
     "compactNumber": {
       "thousand": "{value} mil",
       "million": "{value} M"
-    }
+    },
+    "noResults": "Ningún libro coincide con estos filtros."
   },
   "landing": {
     "tagline": {
@@ -111,8 +112,6 @@
     "loading": "Cargando libros…",
     "unavailable": "Catálogo no disponible. Comprueba tu conexión e inténtalo de nuevo.",
     "retry": "Reintentar",
-    "empty": "Ningún libro coincide. Cambia la búsqueda o desactiva un filtro.",
-    "noReadable": "Ninguna edición disponible para leer coincide con los filtros.",
     "backToExplore": "Volver a Explorar",
     "editions": "Ediciones",
     "metadataOnly": "Solo información del libro. Un registro del catálogo no incluye un archivo para leer.",
@@ -689,8 +688,7 @@
       "in-progress": "En curso",
       "done": "Leídos",
       "not-started": "Sin empezar",
-      "label": "Filtrar biblioteca",
-      "noResults": "Ningún libro coincide con estos filtros."
+      "label": "Filtrar biblioteca"
     }
   },
   "insights": {

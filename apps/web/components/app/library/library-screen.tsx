@@ -11,7 +11,7 @@ import { LibraryScreenShell } from "./library-screen-shell";
 export { LibraryScreenSkeleton } from "./library-screen-skeleton";
 
 import { LibraryFilterPills } from "./library-filter-pills";
-import { LibraryNoResults } from "./library-no-results";
+import { BooksNoResults } from "@/components/app/shared/books-no-results";
 
 import { useLibraryScreen } from "@/features/library/use-library-screen";
 
@@ -35,7 +35,7 @@ export function LibraryScreen({ library }: LibraryScreenProps) {
         <LibraryHeaderBar summary={summary} />
         <LibraryFilterPills filters={filters} toggle={toggle} />
       </div>
-      {noMatches && summary.booksCount > 0 && <LibraryNoResults />}
+      {noMatches && summary.booksCount > 0 && <BooksNoResults />}
       {summary.booksCount === 0 && <LibraryEmptyState />}
 
       {!isEmpty && (

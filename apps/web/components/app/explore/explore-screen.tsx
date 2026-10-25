@@ -10,6 +10,7 @@ import { CatalogFeedPrevious } from "./catalog-feed-previous";
 import { ExploreHeader } from "./explore-header";
 import { CatalogFeedFooter } from "./catalog-feed-footer";
 import { EXPLORE_SCREEN_CLASS_NAME } from "./explore-layout";
+import { BooksNoResults } from "@/components/app/shared/books-no-results";
 import { CatalogStatus } from "./catalog-status";
 
 export function ExploreScreen() {
@@ -51,12 +52,9 @@ export function ExploreScreen() {
         busy={busy}
         {...focus}
       />
-      {!busy && !state.error && state.items.length === 0 && (
-        <p role="status" className="font-reader text-lg text-muted">
-          {t(state.filters.includes("readable") ? "noReadable" : "empty")}
-        </p>
-      )}
+      {!busy && !state.error && state.items.length === 0 && <BooksNoResults />}
       <CatalogFeedFooter
+        hasItems={state.items.length > 0}
         hasNext={state.hasNext}
         busy={busy}
         error={state.error}

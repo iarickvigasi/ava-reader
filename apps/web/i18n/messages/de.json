@@ -4,7 +4,8 @@
     "compactNumber": {
       "thousand": "{value} Tsd.",
       "million": "{value} Mio."
-    }
+    },
+    "noResults": "Keine Bücher passen zu diesen Filtern."
   },
   "landing": {
     "tagline": {
@@ -111,8 +112,6 @@
     "loading": "Bücher werden geladen…",
     "unavailable": "Katalog nicht verfügbar. Prüfe deine Verbindung und versuche es erneut.",
     "retry": "Erneut versuchen",
-    "empty": "Keine Bücher für diese Filter. Ändere die Suche oder entferne einen Filter.",
-    "noReadable": "Keine lesbare Ausgabe entspricht diesen Filtern.",
     "backToExplore": "Zurück zu Entdecken",
     "editions": "Ausgaben",
     "metadataOnly": "Nur Buchinformationen. Ein Katalogeintrag enthält keine lesbare Datei.",
@@ -689,8 +688,7 @@
       "in-progress": "Am Lesen",
       "done": "Gelesen",
       "not-started": "Nicht begonnen",
-      "label": "Bibliothek filtern",
-      "noResults": "Keine Bücher passen zu diesen Filtern."
+      "label": "Bibliothek filtern"
     }
   },
   "insights": {

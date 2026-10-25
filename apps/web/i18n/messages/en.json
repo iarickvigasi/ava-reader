@@ -4,7 +4,8 @@
     "compactNumber": {
       "thousand": "{value}k",
       "million": "{value}M"
-    }
+    },
+    "noResults": "No books match these filters."
   },
   "landing": {
     "tagline": {
@@ -111,8 +112,6 @@
     "loading": "Loading books…",
     "unavailable": "Catalog unavailable. Check your connection and try again.",
     "retry": "Retry",
-    "empty": "No books match these filters. Try another search or turn off a filter.",
-    "noReadable": "No readable edition matches these filters.",
     "backToExplore": "Back to Explore",
     "editions": "Editions",
     "metadataOnly": "Book information only. A catalog record does not include a readable file.",
@@ -689,8 +688,7 @@
       "in-progress": "In progress",
       "done": "Done",
       "not-started": "Not started",
-      "label": "Filter library",
-      "noResults": "No books match these filters."
+      "label": "Filter library"
     }
   },
   "insights": {

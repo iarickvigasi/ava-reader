@@ -1,8 +1,8 @@
 import { useTranslations } from "next-intl";
 import { LibraryNavigationIcon } from "@/components/app/core/library-navigation-icon";
 
-export function LibraryNoResults() {
-  const t = useTranslations("library.filters");
+export function BooksNoResults() {
+  const t = useTranslations("common");
   return (
     <div
       role="status"
