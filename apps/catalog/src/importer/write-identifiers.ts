@@ -1,17 +1,9 @@
-import { strings } from './raw-fields';
-import { normalizeIsbn } from './normalize-isbn';
+import { isbnValues } from './isbn-values';
 import type { Raw, Tx } from './types';
 
 export async function writeIdentifiers(tx: Tx, editionId: string, raw: Raw) {
   if (raw.isbn_10 === undefined && raw.isbn_13 === undefined) return;
-  const values = [
-    ...new Set(
-      [
-        ...(strings(raw.isbn_10) ?? []),
-        ...(strings(raw.isbn_13) ?? []),
-      ].flatMap((value) => normalizeIsbn(value) ?? []),
-    ),
-  ];
+  const values = isbnValues(raw);
   const identifiers = [];
   for (const normalizedValue of values) {
     const identifier = await tx.identifier.upsert({

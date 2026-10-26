@@ -5,6 +5,11 @@ import { applyRecord } from './apply-record';
 import type { CatalogDatabase } from '../database/catalog-database';
 
 jest.mock('./read-apply-batch', () => ({ readApplyBatch: jest.fn() }));
+jest.mock('./apply-new-batch', () => ({
+  applyNewBatch: jest.fn((_, records: unknown[]) =>
+    Promise.resolve({ remaining: records, count: 0 }),
+  ),
+}));
 jest.mock('./apply-record', () => ({ applyRecord: jest.fn() }));
 jest.mock('node:timers/promises', () => ({
   setTimeout: jest.fn().mockResolvedValue(undefined),

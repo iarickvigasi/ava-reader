@@ -1,3 +1,8 @@
+import { verifyBulkLinkedFailures } from './verify-bulk-linked-failures';
+import { verifyBulkPlaceholders } from './verify-bulk-placeholders';
+import { verifyBulkEditions } from './verify-bulk-editions';
+import { verifyBulkWorks } from './verify-bulk-works';
+import { verifyBulkMixed } from './verify-bulk-mixed';
 import 'dotenv/config';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -8,6 +13,10 @@ import { verifyImportLinks } from './verify-import-links';
 import { verifyImportRevisions } from './verify-import-revisions';
 import { verifyImportResume } from './verify-import-resume';
 import { verifyApplySelection } from './verify-apply-selection';
+import { verifyBulkAuthors } from './verify-bulk-authors';
+import { verifyBulkInvalid } from './verify-bulk-invalid';
+import { verifyBulkRollback } from './verify-bulk-rollback';
+import { verifyApplyTransactions } from './verify-apply-transactions';
 import { verifySlowApplication } from './verify-slow-application';
 import { verifySlowStaging } from './verify-slow-staging';
 import { verifyImportFailures } from './verify-import-failures';
@@ -24,6 +33,15 @@ async function integration() {
     await verifyImportResume(ctx);
     await verifySlowStaging(ctx);
     await verifySlowApplication(ctx);
+    await verifyApplyTransactions(ctx);
+    await verifyBulkAuthors(ctx);
+    await verifyBulkRollback(ctx);
+    await verifyBulkInvalid(ctx);
+    await verifyBulkLinkedFailures(ctx);
+    await verifyBulkPlaceholders(ctx);
+    await verifyBulkEditions(ctx);
+    await verifyBulkWorks(ctx);
+    await verifyBulkMixed(ctx);
     await verifyImportFailures(ctx);
     console.log(
       'Importer integration passed: links, gzip, replay, revision guards, resume, quarantine, lock.',

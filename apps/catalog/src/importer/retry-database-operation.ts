@@ -1,21 +1,13 @@
 import { setTimeout as delay } from 'node:timers/promises';
+import type { ImportContext } from './import-operation';
 import { databaseErrorCode } from './database-error-code';
 
 const MAX_ATTEMPTS = 3;
 const BACKOFF_MS = 1000;
 const RETRYABLE_CODES = new Set(['57014', '40001', '40P01']);
 
-type Context = {
-  operation: string;
-  kind: string;
-  after?: string;
-  runId?: string;
-  recordId?: string;
-  externalId?: string | null;
-};
-
 export async function retryDatabaseOperation<T>(
-  context: Context,
+  context: ImportContext,
   action: () => Promise<T>,
 ): Promise<T> {
   for (let attempt = 1; ; attempt++) {

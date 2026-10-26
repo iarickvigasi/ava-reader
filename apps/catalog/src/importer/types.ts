@@ -4,6 +4,7 @@ export const ADAPTER_VERSION = 1;
 export const STAGE_BATCH_SIZE = 100;
 export const MAX_STAGE_BATCH_BYTES = 4 * 1024 * 1024;
 export const APPLY_BATCH_SIZE = 50;
+export const APPLY_TRANSACTION_SIZE = 25;
 export const IMPORT_STATEMENT_TIMEOUT_MS = 60_000;
 export const IMPORT_TRANSACTION_TIMEOUT_MS = 120_000;
 export const MAX_LINE_BYTES = 8 * 1024 * 1024;

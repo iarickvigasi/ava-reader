@@ -1,8 +1,7 @@
-import { PublicationFormat, CreditRole } from '#catalog-client';
-import { openLibraryCover } from './open-library-cover';
+import { CreditRole } from '#catalog-client';
+import { editionData } from './edition-data';
 import { ensureEditionWork } from './ensure-edition-work';
-import { references, strings, text } from './raw-fields';
-import { normalizeLanguage } from './normalize-language';
+import { references } from './raw-fields';
 import { resolveReferences } from './resolve-references';
 import { writeIdentifiers } from './write-identifiers';
 import { type Raw, type Tx } from './types';
@@ -16,20 +15,7 @@ export async function writeEdition(
 ) {
   const workId = await ensureEditionWork(tx, sourceId, raw);
   const authors = await resolveReferences(tx, sourceId, raw.authors, 'authors');
-  const language = Array.isArray(raw.languages)
-    ? normalizeLanguage(raw.languages[0])
-    : undefined;
-  const year = text(raw.publish_date)?.match(/\b([12]\d{3})\b/);
-  const data = {
-    title: text(raw.title)!,
-    workId,
-    ...openLibraryCover(raw.covers),
-    language,
-    publisher: strings(raw.publishers)?.[0],
-    publishedYear: year ? Number(year[1]) : undefined,
-    format: format(raw.physical_format),
-    revision,
-  };
+  const data = editionData(raw, workId, revision);
   await tx.edition.upsert({
     where: { id },
     create: { id, ...data },
@@ -48,16 +34,4 @@ export async function writeEdition(
   }
   await writeIdentifiers(tx, id, raw);
   return authors.length < references(raw.authors, 'authors').length;
-}
-
-function format(value: unknown) {
-  const name = text(value)?.toLowerCase();
-  if (!name) return undefined;
-  if (['epub', 'ebook', 'e-book', 'electronic resource'].includes(name))
-    return PublicationFormat.EBOOK;
-  if (name.includes('paperback')) return PublicationFormat.PAPERBACK;
-  if (name.includes('hardcover') || name.includes('hardback'))
-    return PublicationFormat.HARDCOVER;
-  if (name.includes('audio')) return PublicationFormat.AUDIOBOOK;
-  return PublicationFormat.UNKNOWN;
 }
