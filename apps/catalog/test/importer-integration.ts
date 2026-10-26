@@ -1,3 +1,4 @@
+import { verifyImportAutovacuum } from './verify-import-autovacuum';
 import { verifyBulkLinkedFailures } from './verify-bulk-linked-failures';
 import { verifyBulkPlaceholders } from './verify-bulk-placeholders';
 import { verifyBulkEditions } from './verify-bulk-editions';
@@ -27,6 +28,7 @@ async function integration() {
   const directory = await mkdtemp(join(tmpdir(), 'ava-import-'));
   const ctx = fixture(db, directory);
   try {
+    await verifyImportAutovacuum(ctx);
     await verifyApplySelection(ctx);
     await verifyImportLinks(ctx);
     await verifyImportRevisions(ctx);

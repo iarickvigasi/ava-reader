@@ -49,9 +49,9 @@ live in catalog PostgreSQL. Contract: [Open Library importer](specs/12-explore-c
 
 ## Storage and maintenance
 
-Staging commits up to 100 rows/4 MiB plus checkpoint (larger valid rows alone). Apply reads 50 records
-through `ImportRecord_runId_kind_status_id_idx`; full JSON follows ID selection. Its concurrent index
-migration needs temporary disk headroom; interrupted invalid indexes require removal/migration resolution.
+Staging commits up to 100 rows/4 MiB plus checkpoint; apply reads 50 rows through the composite index.
+Read phases and table-specific autovacuum settings: [maintenance and measurement](catalog-import-maintenance.md).
+Concurrent index builds need disk headroom; interrupted invalid indexes require removal/migration resolution.
 Gzip resume rescans the prefix; SHA-256 adds a file pass. The line ceiling is 8 MiB. CatalogOutbox retains
 entity/revision changes; the search consumer, full-corpus benchmarks, COPY, and retention remain pending.
 Measure disk and contention before full dumps. Deploy updated images, stop the old worker, then create

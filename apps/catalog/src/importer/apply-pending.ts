@@ -1,4 +1,5 @@
 import type { CatalogDatabase } from '../database/catalog-database';
+import type { ImportContext } from './import-operation';
 import { retryDatabaseOperation } from './retry-database-operation';
 import { readApplyBatch } from './read-apply-batch';
 import { applyRecords } from './apply-records';
@@ -17,9 +18,14 @@ export async function applyPending(db: CatalogDatabase) {
       let after: string | undefined;
       while (true) {
         const readStarted = performance.now();
-        const records = await retryDatabaseOperation(
-          { operation: 'readApplyBatch', kind, runId: run.id, after },
-          () => readApplyBatch(db, { runId: run.id, kind, after }),
+        const context: ImportContext = {
+          operation: 'readApplyBatch',
+          kind,
+          runId: run.id,
+          after,
+        };
+        const records = await retryDatabaseOperation(context, () =>
+          readApplyBatch(db, { runId: run.id, kind, after }, context),
         );
         if (!records.length) break;
         const readMs = performance.now() - readStarted;

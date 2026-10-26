@@ -12,6 +12,7 @@ export type ImportContext = {
   batchSize?: number;
   databaseOperation?: string;
   phase?: string;
+  readId?: string;
 };
 export type ImportStep = <T>(
   operation: string,
