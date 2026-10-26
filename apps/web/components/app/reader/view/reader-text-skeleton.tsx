@@ -9,11 +9,12 @@ export function ReaderTextSkeleton() {
       aria-hidden="true"
       data-reader-text-skeleton
       className={cn(
-        "pointer-events-none absolute inset-0 z-10 overflow-hidden bg-paper px-3 py-2",
+        "pointer-events-none absolute inset-0 z-10 overflow-hidden bg-paper px-3 py-2 flex gap-12",
         !isPhone && "sm:px-5 sm:py-6 md:px-6",
       )}
     >
       <BilingualPageSkeleton />
+      {!isPhone && <BilingualPageSkeleton />}
     </div>
   );
 }

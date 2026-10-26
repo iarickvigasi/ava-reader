@@ -22,7 +22,6 @@ it.each([
   "/app/explore/authors/author",
   "/app/insights",
   "/app/admin/catalog",
-  "/app/read/book",
   "/app/library/books/book",
 ])(
   "renders a full-page skeleton for %s without account providers",
@@ -55,4 +54,12 @@ it("uses the author-detail skeleton for Explore author startup", () => {
   expect(renderToStaticMarkup(<AppPageSkeleton />)).toContain(
     'aria-label="Loading author details"',
   );
+});
+
+it("keeps the server reader fallback blank until its cover lookup resolves", () => {
+  route.pathname = "/app/read/book";
+  const html = renderToStaticMarkup(<AppPageSkeleton />);
+  expect(html).toContain("data-reader-cover-pending");
+  expect(html).toContain('aria-busy="true"');
+  expect(html).not.toContain("animate-pulse");
 });

@@ -5,6 +5,7 @@ import { useContext, useEffect } from "react";
 import { ReaderCoverContext } from "@/features/reader/reader-cover-context";
 import { ReaderCoverLoadingContext } from "@/features/reader/reader-cover-loading-context";
 import { useReaderCover } from "@/features/reader/use-reader-cover";
+import { useReaderCoverPresence } from "@/features/reader/use-reader-cover-presence";
 import { useReaderCoverHold } from "@/features/reader/use-reader-cover-hold";
 import { resolveApiAssetUrl } from "@/lib/api";
 import { cn } from "@/lib/cn";
@@ -23,13 +24,14 @@ export function ReaderLoadingCover({
   const cover = routeCover ?? cached ?? (book ? { ...book, src: null } : null);
   const holding = useReaderCoverHold(Boolean(cover));
   const visible = loading || holding;
+  const present = useReaderCoverPresence(visible);
   const reportLoading = useContext(ReaderCoverLoadingContext);
   useEffect(() => {
     reportLoading?.reportLoading(loading);
   }, [loading, reportLoading]);
   if (reportLoading)
     return loading && !reportLoading.opening ? <ReaderTextSkeleton /> : null;
-  if (!cover) return null;
+  if (!cover || !present) return null;
   return (
     <div
       aria-hidden="true"

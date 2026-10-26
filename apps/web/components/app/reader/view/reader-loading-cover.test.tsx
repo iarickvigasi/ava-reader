@@ -3,9 +3,11 @@ import { describe, expect, it, vi } from "vitest";
 import { ReaderCoverLoadingContext } from "@/features/reader/reader-cover-loading-context";
 import { ReaderLoadingCover } from "./reader-loading-cover";
 
+const device = vi.hoisted(() => ({ isPhone: false }));
+
 vi.mock("next-intl", () => ({ useTranslations: () => (key: string) => key }));
 vi.mock("@/components/app/core/reader-ui-context", () => ({
-  useReaderUi: () => ({ isPhone: false }),
+  useReaderUi: () => device,
 }));
 
 describe("reader loading after opening", () => {
@@ -22,6 +24,24 @@ describe("reader loading after opening", () => {
     expect(markup).not.toContain("data-reader-loading-cover");
     expect(markup).not.toContain("<img");
   });
+
+  it.each([false, true])(
+    "matches the text columns with phone=%s",
+    (isPhone) => {
+      device.isPhone = isPhone;
+      const markup = renderToStaticMarkup(
+        <ReaderCoverLoadingContext
+          value={{ opening: false, reportLoading: vi.fn() }}
+        >
+          <ReaderLoadingCover loading />
+        </ReaderCoverLoadingContext>,
+      );
+      expect(markup.match(/data-bilingual-page-skeleton/g)).toHaveLength(
+        isPhone ? 1 : 2,
+      );
+      device.isPhone = false;
+    },
+  );
 
   it("keeps chapter placeholders out of settled pages and the initial cover handoff", () => {
     for (const [opening, loading] of [

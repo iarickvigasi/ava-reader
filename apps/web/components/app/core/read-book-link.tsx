@@ -9,6 +9,9 @@
 // The offline cache state is read FRESH on each click (see
 // read-book-link-action)
 
+import { beginReaderOpeningCover } from "@/features/reader/reader-opening-cover";
+import { useReaderCover } from "@/features/reader/use-reader-cover";
+import { slugFromPath } from "@/lib/app-routes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type AnchorHTMLAttributes, type ReactNode } from "react";
@@ -42,6 +45,7 @@ export function ReadBookLink({
   onClickExtra,
   ...rest
 }: Props) {
+  const cover = useReaderCover(slugFromPath(href, "/app/read/") ?? undefined);
   const online = useNetworkState();
   const router = useRouter();
 
@@ -67,6 +71,7 @@ export function ReadBookLink({
     void resolveOfflineReadAction(libraryItemId, hasBookContent).then(
       (action) => {
         if (action === "navigate") {
+          beginReaderOpeningCover(href, cover);
           router.push(href);
         } else {
           emitMissingBookOfflineModal({ libraryItemId });
@@ -76,7 +81,12 @@ export function ReadBookLink({
   };
 
   return (
-    <Link href={href} onClick={handleClick} {...rest}>
+    <Link
+      href={href}
+      onClick={handleClick}
+      onNavigate={() => beginReaderOpeningCover(href, cover)}
+      {...rest}
+    >
       {children}
     </Link>
   );

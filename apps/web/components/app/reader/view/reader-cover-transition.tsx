@@ -20,7 +20,10 @@ export function ReaderCoverTransition({
   const transition = useReaderCoverTransition();
   const isPhone = useReaderDevice() !== "desktop";
   return (
-    <div className="relative h-full" data-reader-cover-transition>
+    <div
+      className="relative h-full has-[[data-reader-loading-cover]]:[&_[data-reader-text-skeleton]]:invisible has-[[data-reader-loading-cover]]:[&_[data-reader-shell-placeholder]]:invisible has-[[data-reader-loading-cover]]:[&_[data-bilingual-page-skeleton]]:invisible has-[[data-reader-loading-cover]]:[&_[data-bilingual-skeleton]]:invisible"
+      data-reader-cover-transition
+    >
       <ReaderCoverLoadingContext value={transition}>
         {children}
       </ReaderCoverLoadingContext>

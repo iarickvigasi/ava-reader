@@ -3,7 +3,7 @@
 import { liveQuery } from "dexie";
 import { useEffect, useState } from "react";
 import { readCoverBlob } from "./covers/read";
-import { forgetWarmCover, releaseCoverUrl } from "./warm-cover";
+import { forgetWarmCover, readWarmCover, releaseCoverUrl } from "./warm-cover";
 
 // undefined = resolving, null = absent. Subscribe only to cover bytes so
 // metadata refreshes cannot reload artwork. ID/cancellation fences late reads.
@@ -16,9 +16,16 @@ export function useCoverBlobUrl(id: string | null): string | null | undefined {
     if (!id) return;
     let objectUrl: string | null = null;
     let cancelled = false;
+    let firstRead = true;
     const subscription = liveQuery(() => readCoverBlob(id)).subscribe({
       next: (blob) => {
         if (cancelled) return;
+        const warm = firstRead ? readWarmCover(id) : null;
+        firstRead = false;
+        if (warm) {
+          setResolved({ id, url: warm.src });
+          return;
+        }
         if (objectUrl) releaseCoverUrl(objectUrl);
         forgetWarmCover(id);
         objectUrl = blob ? URL.createObjectURL(blob) : null;

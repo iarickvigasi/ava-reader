@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
+import { ReaderOpeningCover } from "@/components/app/reader/view/reader-opening-cover";
 import { ClerkNav } from "@/components/auth/clerk-nav";
 
 type SiteFrameProps = {
@@ -21,6 +22,7 @@ export function SiteFrame({ children }: SiteFrameProps) {
     <div className="flex min-h-full flex-col">
       {isAppRoute || !showPublicHeader ? null : <ClerkNav />}
       <main className="flex-1">{children}</main>
+      <ReaderOpeningCover />
     </div>
   );
 }

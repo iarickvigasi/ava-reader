@@ -1,26 +1,37 @@
 import { useEffect, useState } from "react";
-import { readReaderCover } from "@/features/offline/buckets/library";
+import {
+  readReaderCover,
+  readWarmReaderCover,
+} from "@/features/offline/buckets/library";
 import { slugFromPath } from "@/lib/app-routes";
 
 export function useReaderCover(slug?: string) {
-  const [cover, setCover] =
-    useState<Awaited<ReturnType<typeof readReaderCover>>>(null);
+  const currentSlug =
+    slug ??
+    (typeof window === "undefined"
+      ? null
+      : slugFromPath(window.location.pathname, "/app/read/"));
+  const [resolved, setResolved] = useState<{
+    slug: string;
+    cover: Awaited<ReturnType<typeof readReaderCover>>;
+  } | null>(null);
   useEffect(() => {
     let cancelled = false;
-    const currentSlug =
-      slug ?? slugFromPath(window.location.pathname, "/app/read/");
     if (currentSlug) {
       void readReaderCover(currentSlug)
         .then((next) => {
-          if (!cancelled) setCover(next);
+          if (!cancelled) setResolved({ slug: currentSlug, cover: next });
         })
         .catch(() => {
-          /* Cover metadata must never block content loading. */
+          if (!cancelled) setResolved({ slug: currentSlug, cover: null });
         });
     }
     return () => {
       cancelled = true;
     };
-  }, [slug]);
-  return cover;
+  }, [currentSlug]);
+  return currentSlug
+    ? (readWarmReaderCover(currentSlug) ??
+        (resolved?.slug === currentSlug ? resolved.cover : undefined))
+    : undefined;
 }
