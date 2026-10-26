@@ -422,6 +422,19 @@
       "previous": "Página anterior",
       "next": "Página siguiente",
       "page": "Página {page}"
+    },
+    "search": {
+      "title": "Buscar en el libro",
+      "field": "Buscar",
+      "clear": "Borrar",
+      "close": "Cerrar búsqueda",
+      "searching": "Buscando…",
+      "count": "{count, plural, one {# oración} other {# oraciones}}",
+      "empty": "No se encontraron oraciones.",
+      "partial": "Solo se buscan capítulos descargados. Los resultados se actualizan durante la descarga.",
+      "error": "No se pudo leer el texto guardado. Cierra y vuelve a abrir la búsqueda.",
+      "more": "Mostrar más",
+      "resultsPlaceholder": "Los resultados de búsqueda aparecerán aquí"
     }
   },
   "shared": {

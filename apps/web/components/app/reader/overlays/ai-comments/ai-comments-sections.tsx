@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { SearchField } from "@/components/app/shared/search-field";
 import type { ReaderTocNode } from "@/lib/api-types";
 import { AiCommentsFiltersSection } from "./ai-comments-filters-section";
 import { AiCommentsListSection } from "./ai-comments-list-section";
@@ -30,16 +31,12 @@ export function AiCommentsSections({
   return (
     <div className="mt-8 flex min-h-0 flex-1 flex-col gap-6 overflow-hidden">
       <section>
-        <label className="block">
-          <span className="sr-only">{t("searchAria")}</span>
-          <input
-            type="search"
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder={t("searchPlaceholder")}
-            className="block h-9 w-full rounded-lg bg-soft-tone-fill px-3 font-ui text-[0.78rem] uppercase tracking-[0.16em] text-muted placeholder:text-muted/70 focus:outline-none focus:ring-2 focus:ring-ink/15"
-          />
-        </label>
+        <SearchField
+          label={t("searchAria")}
+          placeholder={t("searchPlaceholder")}
+          value={searchQuery}
+          onChange={(event) => setSearchQuery(event.target.value)}
+        />
       </section>
       <AiCommentsFiltersSection
         activeFilterId={activeFilterId}

@@ -1,0 +1,15 @@
+/* Keep scrollbars readable over translucent panels in either theme. */
+* {
+  scrollbar-color: var(--muted) transparent;
+}
+
+::-webkit-scrollbar,
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted);
+  border-radius: 999px;
+}

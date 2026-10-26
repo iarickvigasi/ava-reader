@@ -1,4 +1,5 @@
-import { SearchField } from "./highlights-fields";
+import { useTranslations } from "next-intl";
+import { SearchField } from "@/components/app/shared/search-field";
 
 type ControlsSectionProps = {
   onChange: (value: string) => void;
@@ -6,9 +7,15 @@ type ControlsSectionProps = {
 };
 
 export function ControlsSection({ onChange, value }: ControlsSectionProps) {
+  const t = useTranslations("reader.highlights");
   return (
     <section>
-      <SearchField onChange={onChange} value={value} />
+      <SearchField
+        label={t("searchAria")}
+        placeholder={t("searchPlaceholder")}
+        onChange={(event) => onChange(event.target.value)}
+        value={value}
+      />
     </section>
   );
 }

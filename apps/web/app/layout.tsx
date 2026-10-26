@@ -12,6 +12,7 @@ import { AuthRecoveryRunner } from "@/features/auth/auth-recovery-runner";
 import { cyrillicBody, cyrillicDisplay } from "./fonts/cyrillic";
 import "./globals.css";
 import "./modal-surfaces.css";
+import "./scrollbars.css";
 
 const display = Abhaya_Libre({
   variable: "--font-abhaya",

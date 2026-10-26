@@ -1,31 +1,5 @@
-import { useTranslations } from "next-intl";
 import { cn } from "@/lib/cn";
-import {
-  HIGHLIGHT_COLOR_BG,
-  type HighlightFilter,
-} from "./highlights-data";
-
-export function SearchField({
-  onChange,
-  value,
-}: {
-  onChange: (value: string) => void;
-  value: string;
-}) {
-  const t = useTranslations("reader.highlights");
-  return (
-    <label className="block">
-      <span className="sr-only">{t("searchAria")}</span>
-      <input
-        type="search"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        placeholder={t("searchPlaceholder")}
-        className="block h-9 w-full rounded-lg bg-soft-tone-fill px-3 font-ui text-[0.78rem] uppercase tracking-[0.16em] text-muted placeholder:text-muted/70 focus:outline-none focus:ring-2 focus:ring-ink/15"
-      />
-    </label>
-  );
-}
+import { HIGHLIGHT_COLOR_BG, type HighlightFilter } from "./highlights-data";
 
 export function ColorFilterChip({
   filter,
@@ -37,9 +11,7 @@ export function ColorFilterChip({
   onSelect: () => void;
 }) {
   const badgeColor =
-    filter.id === "all"
-      ? "var(--paper-strong)"
-      : HIGHLIGHT_COLOR_BG[filter.id];
+    filter.id === "all" ? "var(--paper-strong)" : HIGHLIGHT_COLOR_BG[filter.id];
 
   return (
     <button

@@ -422,6 +422,19 @@
       "previous": "Page précédente",
       "next": "Page suivante",
       "page": "Page {page}"
+    },
+    "search": {
+      "title": "Rechercher dans le livre",
+      "field": "Recherche",
+      "clear": "Effacer",
+      "close": "Fermer la recherche",
+      "searching": "Recherche…",
+      "count": "{count, plural, one {# phrase} other {# phrases}}",
+      "empty": "Aucune phrase correspondante.",
+      "partial": "Recherche dans les chapitres téléchargés uniquement. Les résultats évoluent pendant le téléchargement.",
+      "error": "Impossible de lire le texte enregistré. Fermez puis rouvrez la recherche.",
+      "more": "Afficher plus",
+      "resultsPlaceholder": "Les résultats de recherche apparaîtront ici"
     }
   },
   "shared": {

@@ -6,7 +6,7 @@ import {
   ReaderFavoritesIcon,
   SparkIcon,
   // ReaderBookmarksIcon,
-  // ReaderSearchIcon,
+  ReaderSearchIcon,
   // ReaderListeningIcon,
   ReaderTranslationIcon,
   // ReaderSaveIcon,
@@ -26,7 +26,7 @@ export const readerNavItems = [
   },
   { href: "", icon: SparkIcon, id: "aiComments", panel: "ai-comments" },
   // { href: "", icon: ReaderBookmarksIcon, id: "bookmarks" },
-  // { href: "", icon: ReaderSearchIcon, id: "search" },
+  { href: "", icon: ReaderSearchIcon, id: "search", panel: "search" },
   // { href: "", icon: ReaderListeningIcon, id: "listenToBook" },
   {
     href: "",

@@ -422,6 +422,19 @@
       "previous": "Previous page",
       "next": "Next page",
       "page": "Page {page}"
+    },
+    "search": {
+      "title": "Search in book",
+      "field": "Search",
+      "clear": "Clear",
+      "close": "Close search panel",
+      "searching": "Searching…",
+      "count": "{count, plural, one {# sentence} other {# sentences}}",
+      "empty": "No matching sentences.",
+      "partial": "Searching downloaded chapters only. Results update as the book finishes downloading.",
+      "error": "Could not read cached book text. Close and reopen search to retry.",
+      "more": "Show more",
+      "resultsPlaceholder": "Search results will appear here"
     }
   },
   "shared": {

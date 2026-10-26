@@ -82,6 +82,12 @@ instant completions never flash. Pending strings carry no literal "…" — the 
 
 - visible `focus-visible:ring-2 focus-visible:ring-line-strong`.
 
+Search fields reuse `components/app/shared/search-field.tsx` across reader panels, Library, and
+Explore. Use its soft-tone fill and inset, muted-brown focus ring (`ring-muted/60`): the ring stays inside the
+input so scroll containers cannot clip it. Keep labels accessible without visible helper text.
+The native clear control stays inside the field and uses the muted theme color.
+Reader empty states reuse `overlays/panel-placeholder.tsx`, with centered text and 20% padding.
+
 ## Modals & overlays
 
 Backdrop `fixed inset-0 z-50 flex … bg-transparent backdrop-blur-sm`, click-to-close.
@@ -98,3 +104,5 @@ panels, `soft-fill` and `paper-strong` use `paper` to swap the control and panel
 `z-50` modals/overlays · `z-40` sticky nav/headers · `z-10` local poppers/menus.
 Wrap screens in `<ScreenContainer>` (`max-w-6xl`, responsive px). Spacing rhythm:
 `gap`/`space-y` in 2 / 3 / 4 / 6.
+
+Scrollbars use transparent tracks/corners and muted theme-colored thumbs (`app/scrollbars.css`).

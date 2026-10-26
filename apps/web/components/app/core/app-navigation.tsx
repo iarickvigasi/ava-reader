@@ -158,12 +158,7 @@ export function AppNavigation({
 
 export function ReaderNavigation() {
   const { activePanel, togglePanel, isPhone } = useReaderUi();
-  const isLeftPanelOpen =
-    activePanel === "contents" ||
-    activePanel === "preferences" ||
-    activePanel === "ai-chats" ||
-    activePanel === "highlights" ||
-    activePanel === "ai-comments";
+  const isLeftPanelOpen = activePanel !== null && activePanel !== "ai-toolbox";
 
   return (
     <>

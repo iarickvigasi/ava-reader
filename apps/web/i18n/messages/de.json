@@ -422,6 +422,19 @@
       "previous": "Vorherige Seite",
       "next": "Nächste Seite",
       "page": "Seite {page}"
+    },
+    "search": {
+      "title": "Im Buch suchen",
+      "field": "Suche",
+      "clear": "Leeren",
+      "close": "Suchbereich schließen",
+      "searching": "Suche läuft…",
+      "count": "{count, plural, one {# Satz} other {# Sätze}}",
+      "empty": "Keine passenden Sätze.",
+      "partial": "Nur heruntergeladene Kapitel werden durchsucht. Ergebnisse werden beim Herunterladen aktualisiert.",
+      "error": "Der gespeicherte Buchtext konnte nicht gelesen werden. Schließe und öffne die Suche erneut.",
+      "more": "Mehr anzeigen",
+      "resultsPlaceholder": "Hier erscheinen die Suchergebnisse"
     }
   },
   "shared": {

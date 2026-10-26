@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { ReaderSearchOverlay } from "../overlays/search/reader-search-overlay";
+import type { BookSearchResult } from "@/features/reader/search/types";
 import { useReaderUi } from "@/components/app/core/reader-ui-context";
 import type { ReadyReaderProps } from "../shared/types";
 import { ReaderAiChatsOverlay } from "../overlays/ai-chats/reader-ai-chats-overlay";
@@ -6,23 +9,32 @@ import { ReaderAiToolboxOverlay } from "../overlays/ai-toolbox/reader-ai-toolbox
 import { ReaderContentsOverlay } from "../overlays/contents/reader-contents-overlay";
 import { ReaderHighlightsOverlay } from "../overlays/highlights/reader-highlights-overlay";
 import { ReaderPreferencesOverlay } from "../overlays/preferences/reader-preferences-overlay";
-import { useAiCommentsContext } from "../overlays/ai-comments/ai-comments-context";
-import { useHighlightsContext } from "../overlays/highlights/highlights-context";
-import type { ReaderRangeLocator } from "@/lib/api-types";
+import { useAnnotationJump } from "./use-annotation-jump";
 
-export function ReadyReaderOverlays(props: ReadyReaderProps) {
+export function ReadyReaderOverlays(
+  props: ReadyReaderProps & {
+    onSelectSearchResult: (result: BookSearchResult) => void;
+  },
+) {
+  const [query, setQuery] = useState("");
   const { activePanel, closePanel } = useReaderUi();
-  const { highlights } = useHighlightsContext();
-  const { comments } = useAiCommentsContext();
-  const jump = (locator: ReaderRangeLocator | null | undefined) => {
-    if (!locator) return;
-    closePanel();
-    props.onSelectChapter(locator.chapterId, {
-      blockId: locator.startBlockId,
-      textOffset: locator.startOffset,
-    });
-  };
+  const { selectHighlight, selectComment } = useAnnotationJump(
+    props.onSelectChapter,
+  );
   switch (activePanel) {
+    case "search":
+      return (
+        <ReaderSearchOverlay
+          reader={props}
+          query={query}
+          onQueryChange={setQuery}
+          onClose={closePanel}
+          onSelect={(result) => {
+            closePanel();
+            props.onSelectSearchResult(result);
+          }}
+        />
+      );
     case "contents":
       return (
         <ReaderContentsOverlay
@@ -53,9 +65,7 @@ export function ReadyReaderOverlays(props: ReadyReaderProps) {
         <ReaderHighlightsOverlay
           toc={props.payload.toc}
           onClose={closePanel}
-          onSelectHighlight={(id) =>
-            jump(highlights.find((row) => row.id === id)?.locator)
-          }
+          onSelectHighlight={selectHighlight}
         />
       );
     case "ai-comments":
@@ -63,9 +73,7 @@ export function ReadyReaderOverlays(props: ReadyReaderProps) {
         <ReaderAiCommentsOverlay
           toc={props.payload.toc}
           onClose={closePanel}
-          onSelectAiComment={(id) =>
-            jump(comments.find((row) => row.id === id)?.locator)
-          }
+          onSelectAiComment={selectComment}
         />
       );
     case "ai-toolbox":

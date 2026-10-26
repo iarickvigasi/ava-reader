@@ -1,3 +1,4 @@
+import { PanelPlaceholder } from "../panel-placeholder";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { AiCommentRow } from "./ai-comment-row";
@@ -20,13 +21,7 @@ export function AiCommentsListSection({
   const t = useTranslations("reader.aiComments");
 
   if (comments.length === 0) {
-    return (
-      <div className="flex flex-1 items-center justify-center pb-8">
-        <p className="font-ui text-[0.78rem] uppercase tracking-[0.16em] text-muted">
-          {t("empty")}
-        </p>
-      </div>
-    );
+    return <PanelPlaceholder>{t("empty")}</PanelPlaceholder>;
   }
 
   return (

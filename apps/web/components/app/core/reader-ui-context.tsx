@@ -12,6 +12,7 @@ import { useReaderMode } from "@/features/reader/modes/use-reader-mode";
 import { useReaderDevice } from "@/features/reader/modes/use-reader-device";
 
 export type ReaderPanel =
+  | "search"
   | "contents"
   | "preferences"
   | "ai-chats"

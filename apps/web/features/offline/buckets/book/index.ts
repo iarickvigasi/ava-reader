@@ -58,3 +58,5 @@ export { DownloadedChapterLabelMigration } from "./chapter-labels/migration-runn
 export { refreshDownloadedChapterLabels } from "./chapter-labels/refresh-labels";
 
 export { useCoverRefresh } from "./covers/use-cover-refresh";
+
+export { observeSearchContent } from "./observe-search-content";

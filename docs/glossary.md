@@ -62,7 +62,8 @@ Catalog and infrastructure terms: [catalog glossary](glossary-catalog.md).
 ## Reader — UI & annotations
 
 - **Panel** — reader sidebar drawer (contents, preferences, highlights, ai-comments, ai-toolbox,
-  ai-chats); toggled via ReaderUiContext.
+  ai-chats,
+  search); toggled via ReaderUiContext.
 - **Highlight** — user text selection with a color, anchored by a locator.
 - **AI Comment** — AI annotation (translate, explain, etymology) anchored to a locator.
 - **AI Toolbox** — on-selection AI tools (translate, explain, etymology) with streaming output.
