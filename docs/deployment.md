@@ -33,6 +33,8 @@
 - Workflow concurrency serializes deployments. Migrations and health checks still run when images
   are unchanged. Server-only build-argument changes require a full build: remove the success marker
   before the next deploy. This also provides an explicit full-build override.
+- Image builds also run sequentially: each selected API/catalog runtime, then its migration image,
+  then the next service (web last in a full build). A failure stops all remaining builds.
 - Web/API install only their workspace dependencies before copying application source. Web build
   arguments, including `GIT_SHA`, are set afterward so they do not invalidate the dependency layer.
   A skipped web build retains its existing service-worker version.

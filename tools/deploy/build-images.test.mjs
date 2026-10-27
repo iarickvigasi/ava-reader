@@ -19,7 +19,7 @@ for (const [services, expected] of [
   [["web"], ["web"]],
   [
     ["api", "catalog", "web"],
-    ["api", "catalog", "web", "api-migrate", "catalog-migrate"],
+    ["api", "api-migrate", "catalog", "catalog-migrate", "web"],
   ],
 ]) {
   test(`builds matching targets for ${services.join(", ")}`, (t) => {
@@ -27,26 +27,40 @@ for (const [services, expected] of [
     t.after(() => rmSync(directory, { recursive: true, force: true }));
     const docker = join(directory, "docker");
     const log = join(directory, "calls");
-    writeFileSync(docker, '#!/bin/sh\nprintf "%s\\n" "$@" > "$TASK_LOG"\n');
+    writeFileSync(
+      docker,
+      '#!/bin/sh\nprintf "%s\\n" "$*" >> "$TASK_LOG"\n[ "${9}" != "$TASK_FAIL" ]\n',
+    );
     chmodSync(docker, 0o755);
     const env = {
       ...process.env,
       PATH: `${directory}:${process.env.PATH}`,
       TASK_LOG: log,
+      TASK_FAIL: "",
     };
     execFileSync("sh", [script, ...services], { env });
-    assert.deepEqual(readFileSync(log, "utf8").trim().split("\n"), [
-      "compose",
-      "-f",
-      "compose.yaml",
-      "-f",
-      "compose.prod.yaml",
-      "-f",
-      "compose.migrations.yaml",
-      "build",
-      ...expected,
-    ]);
-    assert.equal(spawnSync("sh", [script, "unknown"], { env }).status, 2);
+    const command =
+      "compose -f compose.yaml -f compose.prod.yaml -f compose.migrations.yaml build";
+    assert.deepEqual(
+      readFileSync(log, "utf8").trim().split("\n"),
+      expected.map((service) => `${command} ${service}`),
+    );
+    writeFileSync(log, "");
+    assert.equal(
+      spawnSync("sh", [script, "api", "unknown"], { env }).status,
+      2,
+    );
     assert.equal(spawnSync("sh", [script], { env }).status, 0);
+    assert.equal(readFileSync(log, "utf8"), "");
+    assert.equal(
+      spawnSync("sh", [script, "api", "catalog", "web"], {
+        env: { ...env, TASK_FAIL: "api-migrate" },
+      }).status,
+      1,
+    );
+    assert.deepEqual(readFileSync(log, "utf8").trim().split("\n"), [
+      `${command} api`,
+      `${command} api-migrate`,
+    ]);
   });
 }
