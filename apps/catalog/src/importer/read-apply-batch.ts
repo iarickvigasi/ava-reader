@@ -1,8 +1,10 @@
+import { batchSettings, type BatchSettings } from './batch-settings';
+import { readPayloadPage } from './read-payload-page';
 import { randomUUID } from 'node:crypto';
 import type { ImportContext } from './import-operation';
 import { readImportPhase } from './read-import-phase';
 import type { CatalogDatabase } from '../database/catalog-database';
-import { APPLY_BATCH_SIZE, RecordStatus, type Kind } from './types';
+import { RecordStatus, type Kind } from './types';
 
 type Page = { runId: string; kind: Kind; after?: string };
 
@@ -10,6 +12,7 @@ export async function readApplyBatch(
   db: CatalogDatabase,
   page: Page,
   context: ImportContext = { operation: 'readApplyBatch', ...page },
+  settings: BatchSettings = batchSettings(),
 ) {
   context.readId = randomUUID();
   const candidates: { id: string }[] = [];
@@ -26,7 +29,7 @@ export async function readApplyBatch(
         },
         select: { id: true },
         orderBy: { id: 'asc' },
-        take: APPLY_BATCH_SIZE,
+        take: settings.readSize,
       }),
     );
     candidates.push(...ids);
@@ -35,13 +38,10 @@ export async function readApplyBatch(
     .sort((left, right) =>
       left.id < right.id ? -1 : left.id > right.id ? 1 : 0,
     )
-    .slice(0, APPLY_BATCH_SIZE)
+    .slice(0, settings.readSize)
     .map(({ id }) => id);
   if (!ids.length) return [];
   return readImportPhase(context, 'payloads', () =>
-    db.importRecord.findMany({
-      where: { id: { in: ids } },
-      orderBy: { id: 'asc' },
-    }),
+    readPayloadPage(db, ids, settings.readBytes),
   );
 }

@@ -24,7 +24,7 @@ live in catalog PostgreSQL. Contract: [Open Library importer](specs/12-explore-c
 - The profile-only worker mounts inputs read-only, has no API port, and exits when finished.
   Local limits are 0.5 CPU/512 MiB; production uses 1 GiB, a 768 MiB heap, and attached-volume files.
 - One catalog-wide session advisory lock refuses concurrent importers; it uses a dedicated connection.
-  Transactions group up to 25 records. New authors/works/editions bulk-write metadata and relationships;
+  Transactions default to 25 records/4 MiB. New authors/works/editions bulk-write metadata and relationships;
   mapped entries keep revision guards, repeated keys stay ordered, and mixed groups bulk-write new rows.
   Missing/ambiguous edition works retain placeholder/unresolved handling. Manual revisions stay protected.
 - SQL allows 60s per statement; transactions allow 120s. Reads and canonical transactions retry
@@ -49,8 +49,8 @@ live in catalog PostgreSQL. Contract: [Open Library importer](specs/12-explore-c
 
 ## Storage and maintenance
 
-Staging commits up to 100 rows/4 MiB plus checkpoint; apply reads 50 rows through the composite index.
-Read phases and table-specific autovacuum settings: [maintenance and measurement](catalog-import-maintenance.md).
+Staging commits up to 100 rows/4 MiB; apply pages default to 50 rows/8 MiB through the composite index.
+[Batch tuning and monitoring](catalog-import-tuning.md); read phases/autovacuum: [maintenance and measurement](catalog-import-maintenance.md).
 Concurrent index builds need disk headroom; interrupted invalid indexes require removal/migration resolution.
 Gzip resume rescans the prefix; SHA-256 adds a file pass. The line ceiling is 8 MiB. CatalogOutbox retains
 entity/revision changes; the search consumer, full-corpus benchmarks, COPY, and retention remain pending.

@@ -79,6 +79,10 @@ services:
       catalog-postgres:
         condition: service_healthy
     environment:
+      CATALOG_IMPORT_READ_SIZE: ${CATALOG_IMPORT_READ_SIZE:-50}
+      CATALOG_IMPORT_TRANSACTION_SIZE: ${CATALOG_IMPORT_TRANSACTION_SIZE:-25}
+      CATALOG_IMPORT_READ_BYTES: ${CATALOG_IMPORT_READ_BYTES:-8388608}
+      CATALOG_IMPORT_TRANSACTION_BYTES: ${CATALOG_IMPORT_TRANSACTION_BYTES:-4194304}
       CATALOG_DATABASE_URL: ${CATALOG_DATABASE_URL:-postgresql://catalog:${CATALOG_POSTGRES_PASSWORD:-catalog}@catalog-postgres:5432/ava_catalog}
     volumes:
       - ${CATALOG_IMPORT_DIRECTORY:-./imports}:/imports:ro

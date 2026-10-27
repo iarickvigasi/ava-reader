@@ -1,3 +1,4 @@
+import { verifyBatchBudgets } from './verify-batch-budgets';
 import { verifyImportAutovacuum } from './verify-import-autovacuum';
 import { verifyBulkLinkedFailures } from './verify-bulk-linked-failures';
 import { verifyBulkPlaceholders } from './verify-bulk-placeholders';
@@ -44,6 +45,7 @@ async function integration() {
     await verifyBulkEditions(ctx);
     await verifyBulkWorks(ctx);
     await verifyBulkMixed(ctx);
+    await verifyBatchBudgets(ctx);
     await verifyImportFailures(ctx);
     console.log(
       'Importer integration passed: links, gzip, replay, revision guards, resume, quarantine, lock.',

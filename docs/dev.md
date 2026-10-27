@@ -1,7 +1,7 @@
 # Dev environment & workflows
 
 Catalog workspace: [catalog development and operations](catalog.md).
-Deployment: [production deployment](deployment.md).
+Deployment: [production deployment](deployment.md); DB memory rollout: [tuning](catalog-import-tuning.md).
 
 Dev workflows and pitfalls; product behaviour lives in specs/. Setup commands: README.md.
 Temporary maintenance: [EPUB edge regrouping](../apps/api/src/scripts/chapter-edge-backfill/README.md).

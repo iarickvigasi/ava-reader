@@ -1,8 +1,9 @@
 import type { ImportRecord } from '#catalog-client';
 import type { CatalogDatabase } from '../database/catalog-database';
 import { applyTransaction, type ApplyMetrics } from './apply-transaction';
+import { batchSettings, type BatchSettings } from './batch-settings';
+import { recordGroups } from './record-groups';
 import {
-  APPLY_TRANSACTION_SIZE,
   ConflictingRecord,
   InvalidRecord,
   RecordStatus,
@@ -13,6 +14,7 @@ export async function applyRecords(
   db: CatalogDatabase,
   records: ImportRecord[],
   sourceId: string,
+  settings: BatchSettings = batchSettings(),
 ) {
   const metrics: ApplyMetrics = {
     transactions: 0,
@@ -21,12 +23,11 @@ export async function applyRecords(
     transactionMs: 0,
     recordWriteMs: 0,
   };
-  for (
-    let offset = 0;
-    offset < records.length;
-    offset += APPLY_TRANSACTION_SIZE
-  ) {
-    const group = records.slice(offset, offset + APPLY_TRANSACTION_SIZE);
+  for (const group of recordGroups(
+    records,
+    settings.transactionSize,
+    settings.transactionBytes,
+  )) {
     try {
       await applyTransaction(db, group, sourceId, metrics);
     } catch (error) {

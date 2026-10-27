@@ -14,10 +14,12 @@ describe('readApplyBatch', () => {
       .fn()
       .mockResolvedValueOnce(pending)
       .mockResolvedValueOnce(unresolved)
-      .mockResolvedValueOnce(['payloads']);
+      .mockImplementation((input: { where: { id: { in: string[] } } }) =>
+        Promise.resolve(input.where.id.in.map((id) => ({ id, payload: null }))),
+      );
     const db = { importRecord: { findMany } } as unknown as CatalogDatabase;
     const page = { runId: 'run', kind: 'AUTHOR' as const, after: 'previous' };
-    await expect(readApplyBatch(db, page)).resolves.toEqual(['payloads']);
+    await expect(readApplyBatch(db, page)).resolves.toHaveLength(50);
     for (const [index, status] of [
       RecordStatus.PENDING,
       RecordStatus.UNRESOLVED,
@@ -29,14 +31,15 @@ describe('readApplyBatch', () => {
         take: APPLY_BATCH_SIZE,
       });
     }
-    expect(findMany).toHaveBeenNthCalledWith(3, {
-      where: {
-        id: {
-          in: Array.from({ length: 50 }, (_, i) => String(i).padStart(3, '0')),
-        },
-      },
-      orderBy: { id: 'asc' },
-    });
+    const payloadQueries = findMany.mock.calls.slice(2) as unknown as [
+      { where: { id: { in: string[] } } },
+    ][];
+    expect(payloadQueries.flatMap(([query]) => query.where.id.in)).toEqual(
+      Array.from({ length: 50 }, (_, i) => String(i).padStart(3, '0')),
+    );
+    expect(
+      payloadQueries.every(([query]) => query.where.id.in.length <= 8),
+    ).toBe(true);
   });
 
   it('does not fetch payloads for an exhausted run/kind', async () => {
