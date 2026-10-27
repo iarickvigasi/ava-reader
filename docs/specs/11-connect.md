@@ -98,3 +98,9 @@ soon, not as working features.
 
 Discovery ordering, search, granular visibility, moderation, and social
 interaction APIs remain open.
+
+## Avatar loading
+
+- The current user’s discovery card uses the same cached photo as the header and preview.
+- Other readers use network photos with initials beneath them until successfully loaded.
+- Missing or failed photos retain initials, including offline.

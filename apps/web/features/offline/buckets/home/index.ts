@@ -7,3 +7,5 @@ export {
 } from "./hooks";
 export { HomeHydrator } from "./hydrator";
 export { revalidateHome } from "./revalidate";
+
+export { useDeveloperAvatar } from "./use-developer-avatar";

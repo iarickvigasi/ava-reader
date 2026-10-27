@@ -12,7 +12,9 @@ import { useEffect, useState } from "react";
 
 import type { CurrentUserPayload } from "@/lib/api-types/user";
 
-import { applyCurrentUser, readCurrentUser } from "./storage";
+import { applyCurrentUser, readCurrentUser, readAvatarBlob } from "./storage";
+import { persistAvatarFromNetwork } from "./persist-avatar-blob";
+import { getDb } from "../../db";
 
 // Seeds Dexie with the freshly-fetched user. No-op when `initial` is null
 // (offline) — we keep whatever was cached previously.
@@ -24,7 +26,13 @@ export function useHydrateCurrentUser(
     if (!initial) {
       return;
     }
-    void applyCurrentUser(initial);
+    const db = getDb();
+    void applyCurrentUser(initial).then(async () => {
+      const blob = await readAvatarBlob();
+      if (db === getDb() && initial.avatarUrl && !blob) {
+        await persistAvatarFromNetwork(initial.avatarUrl);
+      }
+    });
   }, [initial]);
 }
 

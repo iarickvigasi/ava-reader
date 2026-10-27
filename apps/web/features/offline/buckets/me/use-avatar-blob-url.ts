@@ -1,5 +1,6 @@
 "use client";
 
+import { liveQuery } from "dexie";
 import { useEffect, useState } from "react";
 
 import { readAvatarBlob } from "./storage";
@@ -17,18 +18,23 @@ export function useAvatarBlobUrl(): string | null | undefined {
   useEffect(() => {
     let objectUrl: string | null = null;
     let cancelled = false;
-    void readAvatarBlob().then((blob) => {
-      if (cancelled) {
-        return;
-      }
-      if (!blob) {
-        setResolved(null);
-        return;
-      }
-      objectUrl = URL.createObjectURL(blob);
-      setResolved(objectUrl);
+    const subscription = liveQuery(readAvatarBlob).subscribe({
+      next: (blob) => {
+        if (cancelled) {
+          return;
+        }
+        if (objectUrl) URL.revokeObjectURL(objectUrl);
+        if (!blob) {
+          setResolved(null);
+          return;
+        }
+        objectUrl = URL.createObjectURL(blob);
+        setResolved(objectUrl);
+      },
+      error: () => setResolved(null),
     });
     return () => {
+      subscription.unsubscribe();
       cancelled = true;
       if (objectUrl) {
         URL.revokeObjectURL(objectUrl);

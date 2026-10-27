@@ -16,13 +16,18 @@ export async function applyCurrentUser(
   user: CurrentUserPayload,
 ): Promise<void> {
   const db = getDb();
-  const existing = await db.me.get("me");
-  if (db !== getDb()) return;
-  await db.me.put({
-    id: "me",
-    user: normalizeUserRoles(user),
-    avatarBlob: existing?.avatarBlob ?? null,
-    fetchedAt: new Date().toISOString(),
+  await db.transaction("rw", db.me, async () => {
+    const existing = await db.me.get("me");
+    if (db !== getDb()) return;
+    await db.me.put({
+      id: "me",
+      user: normalizeUserRoles(user),
+      avatarBlob:
+        existing?.user.avatarUrl === user.avatarUrl
+          ? existing.avatarBlob
+          : null,
+      fetchedAt: new Date().toISOString(),
+    });
   });
 }
 

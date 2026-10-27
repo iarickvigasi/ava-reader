@@ -44,3 +44,9 @@ win over old roles. Cached permissions never authorize server writes. Roles are 
 - [x] Non-developers cannot set Telegram or roles; invalid links fail validation.
 - [x] Contacts render before feedback on mobile and beside it on desktop in all six UI languages.
 - [x] Missing photos, old caches, rejected edits and account switches are handled safely.
+
+## Developer avatar caching
+
+- Developer photo bytes are cached per signed-in user in the Home bucket’s meta storage.
+- Chips render cached photos first, with initials while loading or unavailable offline.
+- Reconnect retries missing photos; account cleanup removes cached photo bytes.
