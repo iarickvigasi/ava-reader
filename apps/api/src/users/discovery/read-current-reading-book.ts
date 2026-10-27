@@ -1,3 +1,4 @@
+import { privateBookAccess } from '../../shared/private-book-access';
 import type { PrismaService } from '../../prisma/prisma.service';
 
 export async function readCurrentReadingBook(
@@ -9,7 +10,12 @@ export async function readCurrentReadingBook(
       userId,
       lastReadAt: { not: null },
       completionPercent: { lt: 100 },
-      libraryItem: { isArchived: false, finishedAt: null },
+      libraryItem: {
+        userId,
+        book: privateBookAccess(userId),
+        isArchived: false,
+        finishedAt: null,
+      },
     },
     orderBy: [{ lastReadAt: 'desc' }, { libraryItemId: 'asc' }],
     select: {

@@ -49,6 +49,7 @@ export async function importBook(options: {
   try {
     return await options.prisma.$transaction(async (tx) => {
       const book = await createBookTx(tx, {
+        userId: user.id,
         blobId: blob.id,
         coverBlobId: coverBlob?.id,
         format,

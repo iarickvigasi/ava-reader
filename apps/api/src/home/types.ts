@@ -17,7 +17,6 @@ export type CatalogEntryRecord = Prisma.CatalogEntryGetPayload<{
   include: {
     book: {
       include: {
-        coverBlob: { select: { mimeType: true } };
         files: { select: { format: true; isPrimary: true; kind: true } };
       };
     };

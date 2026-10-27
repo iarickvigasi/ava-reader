@@ -1,3 +1,4 @@
+import { privateBookAccess } from '../../shared/private-book-access';
 import { getLibraryOverview } from './get-library-overview';
 import { overviewTestFixture } from './overview-test-fixture';
 
@@ -33,7 +34,9 @@ describe('independent Library catalog', () => {
       expect.objectContaining({ where: { userId: 'owner' } }),
     );
     expect(prisma.libraryItem.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { userId: 'owner' } }),
+      expect.objectContaining({
+        where: { userId: 'owner', book: privateBookAccess('owner') },
+      }),
     );
   });
 

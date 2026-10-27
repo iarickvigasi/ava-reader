@@ -1,3 +1,4 @@
+import { privateBookAccess } from '../../shared/private-book-access';
 import type { Prisma } from '@prisma/client';
 
 // All owned identities authorize pruning; archived rows never become visible cards.
@@ -6,7 +7,7 @@ export function loadLibraryItems(
   userId: string,
 ) {
   return prisma.libraryItem.findMany({
-    where: { userId },
+    where: { userId, book: privateBookAccess(userId) },
     select: {
       id: true,
       isArchived: true,

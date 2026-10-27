@@ -154,18 +154,12 @@ Notes:
 - Docker verification runs from a dedicated `verify` container on the same Compose network, so the smoke test checks real in-network connectivity rather than only host access.
 - If `3000`, `4000`, or `15432` are already taken on your machine, override them in `.env` or inline when starting Compose, for example `WEB_HOST_PORT=3001 API_HOST_PORT=4001 POSTGRES_HOST_PORT=15433 NEXT_PUBLIC_API_BASE_URL=http://localhost:4001 pnpm docker:up`.
 
-## Roles and Demo Data
+## Roles
 
 - Promote the first local app user to admin after they sign in once:
 
   ```bash
   pnpm --filter api admin:grant you@example.com
-  ```
-
-- Seed a realistic populated home dashboard for an existing local user:
-
-  ```bash
-  pnpm --filter api db:seed:home-demo you@example.com
   ```
 
 - Grant the developer contact role after the user has signed in once:
@@ -206,13 +200,8 @@ Use this flow when you come back later and want to verify the app quickly end to
 5. Refresh and open the internal catalog route:
    - `http://localhost:3000/app/admin/catalog`
 
-6. Choose one of two paths:
-   - Manual catalog path: create public-domain titles in the admin UI, publish them, then add them from the home screen.
-   - Demo-data path: seed a realistic populated dashboard immediately:
-
-     ```bash
-     pnpm --filter api db:seed:home-demo you@example.com
-     ```
+6. Import a book into your private library, or create public-domain titles in the admin UI,
+   publish them, and add them to your library.
 
 7. Refresh `http://localhost:3000/app` and verify the populated dashboard state.
 
@@ -233,5 +222,4 @@ pnpm typecheck
 pnpm test
 pnpm build
 pnpm --filter api admin:grant you@example.com
-pnpm --filter api db:seed:home-demo you@example.com
 ```

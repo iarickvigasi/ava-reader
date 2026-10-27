@@ -1,3 +1,4 @@
+import { privateBookAccess } from '../../shared/private-book-access';
 import { NotFoundException } from '@nestjs/common';
 import type { PrismaService } from '../../prisma/prisma.service';
 
@@ -17,6 +18,7 @@ export async function setOfflineRequested(options: {
       id: options.libraryItemId,
       isArchived: false,
       userId: options.userId,
+      book: privateBookAccess(options.userId),
     },
     select: { id: true },
   });

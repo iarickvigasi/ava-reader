@@ -13,6 +13,7 @@ import type { ExtractedBookMetadata } from '../../shared/metadata-extractor';
 export function createBookTx(
   tx: Prisma.TransactionClient,
   input: {
+    userId: string;
     blobId: string;
     coverBlobId: string | undefined;
     format: 'EPUB' | 'PDF';
@@ -21,6 +22,7 @@ export function createBookTx(
 ) {
   return tx.book.create({
     data: {
+      privateOwnerId: input.userId,
       title: input.metadata.title,
       authors: input.metadata.authors,
       description: input.metadata.description,

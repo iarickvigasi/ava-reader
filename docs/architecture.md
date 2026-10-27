@@ -101,7 +101,9 @@ their implementations, with shared fixtures in `testing/`.
 
 - **User** → UserPreferences, LibraryItem[], ReadingProgress[], ReadingSession[], Annotation[],
   AiComment[], Collection[]. UserRoleMembership independently grants ADMIN and DEVELOPER access.
-- **Book** → BookFile[] (EPUB | PDF | READER_PACKAGE | UNKNOWN), StoredBlob (cover/content via
+- **Book** — PRIVATE with privateOwnerId, or shared PUBLIC catalog content (ADR 11);
+  LibraryItem ownership plus Book access is required. Unresolved legacy ownership stays blocked.
+  Book → BookFile[] (EPUB | PDF | READER_PACKAGE | UNKNOWN), StoredBlob (cover/content via
   BlobPurpose), BookProcessingRun (ProcessingStatus). CatalogEntry (DRAFT | PUBLISHED | ARCHIVED)
   publishes a Book.
 - **LibraryItem** — User↔Book join (source IMPORTED | CATALOG); the scope for ReadingProgress

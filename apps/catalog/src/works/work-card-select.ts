@@ -1,14 +1,9 @@
+import { WORK_COVER_SELECT } from './work-cover-select';
 import type { Prisma } from '#catalog-client';
 
 export const WORK_CARD_SELECT = {
-  coverImageUrl: true,
+  ...WORK_COVER_SELECT,
   categories: true,
-  editions: {
-    where: { coverImageUrl: { not: null } },
-    orderBy: [{ publishedYear: { sort: 'asc', nulls: 'last' } }, { id: 'asc' }],
-    take: 1,
-    select: { coverImageUrl: true },
-  },
   id: true,
   originalTitle: true,
   originalLanguage: true,

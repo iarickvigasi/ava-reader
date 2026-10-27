@@ -1,3 +1,4 @@
+import { PUBLIC_CATALOG_BOOK } from '../../shared/private-book-access';
 import { LibrarySource } from '@prisma/client';
 import { BadRequestException } from '@nestjs/common';
 import type { PrismaService } from '../../prisma/prisma.service';
@@ -16,6 +17,7 @@ export function addCatalogBook(options: {
       where: {
         id: options.entryId,
         status: 'PUBLISHED',
+        book: PUBLIC_CATALOG_BOOK,
       },
       include: {
         book: true,

@@ -26,7 +26,7 @@ export async function readMembershipResult(options: {
   });
   const affected = await tx.collection.findMany({
     where: { id: { in: collectionIds }, userId },
-    include: collectionDetailsInclude,
+    include: collectionDetailsInclude(userId),
   });
   const byId = new Map(
     affected.map((collection) => [collection.id, collection]),

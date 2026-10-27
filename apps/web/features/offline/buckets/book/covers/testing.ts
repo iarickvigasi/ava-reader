@@ -5,6 +5,8 @@ import { clearWarmCover } from "../warm-cover";
 
 export async function seedCoverItems() {
   const collection = payload().collections[0];
+  for (const book of collection.books)
+    book.coverImageUrl = `/api/library/covers/${book.libraryItemId}`;
   await applyCollectionPayload(collection);
   return collection;
 }

@@ -1,6 +1,7 @@
 import { resolveApiAssetUrl } from "@/lib/api";
 import type { AvaReaderDB } from "../../../db";
 import { attachCoverBlob } from "./attach";
+import { fetchCover } from "./fetch-cover";
 import { isValidCover } from "./validate";
 
 export async function refreshCover(
@@ -22,7 +23,7 @@ export async function refreshCover(
       (await isValidCover(row))
     )
       return;
-    const response = await fetch(src, { cache: "no-store" });
+    const response = await fetchCover(src);
     if (response.ok) await attachCoverBlob(id, await response.blob(), src, db);
   } catch {
     // Keep valid offline legacy artwork when revalidation cannot complete.

@@ -1,3 +1,4 @@
+import { privateBookAccess } from '../../shared/private-book-access';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { BookFileKind, ProcessingStatus } from '@prisma/client';
 import type { PrismaService } from '../../prisma/prisma.service';
@@ -60,6 +61,7 @@ describe('owned translation source', () => {
       expect.objectContaining({
         where: {
           userId: 'user-1',
+          book: privateBookAccess('user-1'),
           OR: [{ id: 'book-slug' }, { slug: 'book-slug' }],
         },
       }),

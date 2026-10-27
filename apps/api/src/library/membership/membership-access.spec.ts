@@ -1,3 +1,4 @@
+import { privateBookAccess } from '../../shared/private-book-access';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { membershipTestFixture } from './membership-test-fixture';
 import { updateCollectionMembership } from './update-collection-membership';
@@ -11,7 +12,12 @@ describe('membership ownership and smart guards', () => {
         updateCollectionMembership({ ...options, libraryItemId }),
       ).rejects.toThrow(NotFoundException);
       expect(libraryItem.findFirst).toHaveBeenCalledWith({
-        where: { id: libraryItemId, userId: 'user', isArchived: false },
+        where: {
+          id: libraryItemId,
+          userId: 'user',
+          isArchived: false,
+          book: privateBookAccess('user'),
+        },
         select: { id: true },
       });
       expect(collectionItem.createMany).not.toHaveBeenCalled();

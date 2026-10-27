@@ -13,6 +13,7 @@
 // probes) and bridge React state. Keeping the orchestrator pure makes it
 // unit-testable without Clerk in scope.
 
+import { fetchCover } from "./covers/fetch-cover";
 import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useTranslations } from "next-intl";
 import { useCallback, useSyncExternalStore } from "react";
@@ -97,7 +98,7 @@ export function useSaveBook(libraryItemId: string) {
           }),
         fetchCover: async (url, fetchSignal) => {
           try {
-            const response = await fetch(url, { signal: fetchSignal });
+            const response = await fetchCover(url, getToken, fetchSignal);
             if (!response.ok) {
               return null;
             }

@@ -1,3 +1,4 @@
+import { privateBookAccess } from '../../shared/private-book-access';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import type { Prisma } from '@prisma/client';
 
@@ -9,7 +10,12 @@ export async function validateMembershipAccess(options: {
 }) {
   const { collectionIds, libraryItemId, tx, userId } = options;
   const item = await tx.libraryItem.findFirst({
-    where: { id: libraryItemId, userId, isArchived: false },
+    where: {
+      id: libraryItemId,
+      userId,
+      isArchived: false,
+      book: privateBookAccess(userId),
+    },
     select: { id: true },
   });
   if (!item) {

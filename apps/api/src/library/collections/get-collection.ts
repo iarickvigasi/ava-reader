@@ -14,7 +14,7 @@ export async function getCollection(options: {
       userId: options.userId,
       OR: [{ id: options.ref }, { slug: options.ref }],
     },
-    include: collectionDetailsInclude,
+    include: collectionDetailsInclude(options.userId),
   });
 
   if (!collection) {

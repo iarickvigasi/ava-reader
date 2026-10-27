@@ -1,3 +1,4 @@
+import { privateBookAccess } from '../../shared/private-book-access';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { z } from 'zod';
 import type { PrismaService } from '../../prisma/prisma.service';
@@ -26,6 +27,7 @@ export async function setFinishedAt(options: {
     id: options.libraryItemId,
     isArchived: false,
     userId: options.userId,
+    book: privateBookAccess(options.userId),
   };
   const item = await options.prisma.libraryItem.findFirst({
     where,

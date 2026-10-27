@@ -1,3 +1,4 @@
+import { privateBookAccess } from '../shared/private-book-access';
 import { BookFileFormat, BookFileKind } from '@prisma/client';
 import { createHomeContractFixture } from './home-contract-fixture';
 
@@ -236,6 +237,7 @@ describe('HomeService', () => {
     expect(prisma.libraryItem.findMany).toHaveBeenCalledTimes(2);
     const initialQuery = prisma.libraryItem.findMany.mock.calls[0][0];
     expect(initialQuery.where).toEqual({
+      book: privateBookAccess('user-1'),
       userId: 'user-1',
       isArchived: false,
     });

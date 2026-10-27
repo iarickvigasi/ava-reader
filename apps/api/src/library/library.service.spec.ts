@@ -1,3 +1,4 @@
+import { privateBookAccess } from '../shared/private-book-access';
 import {
   BadRequestException,
   ForbiddenException,
@@ -98,6 +99,12 @@ describe('LibraryService', () => {
       },
       include: {
         items: {
+          where: {
+            libraryItem: {
+              userId: 'user-1',
+              book: privateBookAccess('user-1'),
+            },
+          },
           include: {
             libraryItem: {
               include: {
@@ -234,6 +241,7 @@ describe('LibraryService', () => {
         userId: 'user-1',
         isArchived: false,
         OR: [{ id: 'library-42' }, { slug: 'library-42' }],
+        book: privateBookAccess('user-1'),
       },
       include: {
         book: {
@@ -355,7 +363,12 @@ describe('LibraryService', () => {
     });
     expect(getCurrentUserRecord).toHaveBeenCalledWith('clerk_123');
     expect(updateLibraryItem).toHaveBeenCalledWith({
-      where: { id: 'library-42', userId: 'user-1', isArchived: false },
+      where: {
+        id: 'library-42',
+        userId: 'user-1',
+        isArchived: false,
+        book: privateBookAccess('user-1'),
+      },
       data: { finishedAt },
       select: { id: true, finishedAt: true },
     });
@@ -599,7 +612,12 @@ describe('LibraryService', () => {
     );
 
     expect(findFirstLibraryItem).toHaveBeenCalledWith({
-      where: { id: 'item-1', isArchived: false, userId: 'user-1' },
+      where: {
+        id: 'item-1',
+        isArchived: false,
+        userId: 'user-1',
+        book: privateBookAccess('user-1'),
+      },
       select: { id: true },
     });
     expect(updateLibraryItem).toHaveBeenCalledWith({

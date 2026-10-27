@@ -1,3 +1,4 @@
+import { PUBLIC_CATALOG_BOOK } from '../shared/private-book-access';
 import {
   BlobPurpose,
   BookFileFormat,
@@ -56,6 +57,7 @@ export class CatalogService {
     await this.usersService.assertAdmin(clerkUserId);
 
     const entries = await this.prisma.catalogEntry.findMany({
+      where: { book: PUBLIC_CATALOG_BOOK },
       include: {
         book: {
           include: {
@@ -140,6 +142,7 @@ export class CatalogService {
           },
           book: {
             create: {
+              visibility: 'PUBLIC',
               title: parseOptionalStringInput(body.title) ?? metadata.title,
               authors: parseAuthorsInput(body.authors) ?? metadata.authors,
               description:
@@ -198,7 +201,7 @@ export class CatalogService {
     await this.usersService.assertAdmin(clerkUserId);
 
     const currentEntry = await this.prisma.catalogEntry.findUnique({
-      where: { id: entryId },
+      where: { id: entryId, book: PUBLIC_CATALOG_BOOK },
       include: {
         book: {
           include: {

@@ -1,3 +1,4 @@
+import { privateBookAccess } from '../../shared/private-book-access';
 import { readCurrentReadingBook } from './read-current-reading-book';
 import { UsersService } from '../users.service';
 
@@ -24,7 +25,12 @@ it('selects the most recently read active unfinished book for the authenticated 
         userId: 'user-1',
         lastReadAt: { not: null },
         completionPercent: { lt: 100 },
-        libraryItem: { isArchived: false, finishedAt: null },
+        libraryItem: {
+          userId: 'user-1',
+          book: privateBookAccess('user-1'),
+          isArchived: false,
+          finishedAt: null,
+        },
       },
       orderBy: [{ lastReadAt: 'desc' }, { libraryItemId: 'asc' }],
     }),

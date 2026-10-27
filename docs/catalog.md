@@ -20,6 +20,9 @@ Importer commands/checkpoints: [import operations](catalog-import.md).
 
 ## Explore integration
 
+Main Home resolves public cover mappings via CATALOG_API_BASE_URL (Compose: http://catalog:4001;
+host default: http://localhost:4001). Catalog failure yields placeholders, never Book cover blobs.
+
 Next dev defaults to `http://localhost:4001`; production defaults to same-origin `/catalog`.
 NEXT_PUBLIC_CATALOG_API_BASE_URL is compiled into browser JavaScript; rebuild web after changes.
 The client appends `/api`, so configure `/catalog`, not `/catalog/api`. Other relative paths,

@@ -1,3 +1,4 @@
+import { privateBookAccess } from './private-book-access';
 import { NotFoundException } from '@nestjs/common';
 import type { PrismaService } from '../prisma/prisma.service';
 import type { UsersService } from '../users/users.service';
@@ -15,7 +16,11 @@ export async function requireOwnedLibraryItem(input: {
 }): Promise<{ userId: string; libraryItemId: string }> {
   const user = await input.users.getCurrentUserRecord(input.clerkUserId);
   const libraryItem = await input.prisma.libraryItem.findFirst({
-    where: { id: input.libraryItemId, userId: user.id },
+    where: {
+      id: input.libraryItemId,
+      userId: user.id,
+      book: privateBookAccess(user.id),
+    },
     select: { id: true },
   });
   if (!libraryItem) {

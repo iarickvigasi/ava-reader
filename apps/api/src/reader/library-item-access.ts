@@ -1,3 +1,4 @@
+import { privateBookAccess } from '../shared/private-book-access';
 import { BookFileKind, ProcessingStatus } from '@prisma/client';
 import { NotFoundException } from '@nestjs/common';
 import type { PrismaService } from '../prisma/prisma.service';
@@ -13,6 +14,7 @@ export async function getOwnedLibraryItem(
   const libraryItem = await prisma.libraryItem.findFirst({
     where: {
       userId: user.id,
+      book: privateBookAccess(user.id),
       OR: [{ id: libraryItemId }, { slug: libraryItemId }],
     },
     include: {

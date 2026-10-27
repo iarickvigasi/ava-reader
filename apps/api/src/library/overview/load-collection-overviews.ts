@@ -1,3 +1,4 @@
+import { privateBookAccess } from '../../shared/private-book-access';
 import type { Prisma } from '@prisma/client';
 
 export type LibraryItemLite = Prisma.LibraryItemGetPayload<{
@@ -32,6 +33,7 @@ export function loadCollectionOverviews(
       smartKey: true,
       sortOrder: true,
       items: {
+        where: { libraryItem: { userId, book: privateBookAccess(userId) } },
         select: {
           libraryItem: {
             select: {

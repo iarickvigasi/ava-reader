@@ -1,3 +1,7 @@
+import { PUBLIC_CATALOG_BOOK } from '../shared/private-book-access';
+jest.mock('./load-catalog-covers', () => ({
+  loadCatalogCovers: jest.fn().mockResolvedValue(new Map()),
+}));
 import { loadHomeCatalog } from './load-home-catalog';
 import type { CatalogEntryRecord } from './types';
 
@@ -25,7 +29,7 @@ describe('loadHomeCatalog ranking', () => {
     expect(entries.map(({ id }) => id)).toEqual(['winner', 'runner-up']);
   });
 
-  it('limits catalog reads to published books and lightweight cover/file data', async () => {
+  it('limits catalog reads to published books and file metadata without private cover fields', async () => {
     const findMany = jest.fn().mockResolvedValue([]);
 
     await expect(
@@ -33,11 +37,10 @@ describe('loadHomeCatalog ranking', () => {
     ).resolves.toEqual([]);
 
     expect(findMany).toHaveBeenCalledWith({
-      where: { status: 'PUBLISHED' },
+      where: { status: 'PUBLISHED', book: PUBLIC_CATALOG_BOOK },
       include: {
         book: {
           include: {
-            coverBlob: { select: { mimeType: true } },
             files: { select: { format: true, isPrimary: true, kind: true } },
           },
         },

@@ -57,7 +57,6 @@ The signed-in landing page: resume reading, stats, daily goal, annotations, and 
     Detect the device IANA timezone on hydration/resume; only today follows the current device zone.
     Historical minutes retain the local dates of each session’s saved start timezone.
     Calendar-day changes and timezone changes refresh the cache and chart without a reload.
-
 11. Mastery scrolls horizontally through seven-day device-local windows, initially ending today.
     Arrow and keyboard navigation jumps to exact week boundaries anchored to today's window;
     loading earlier dates must not interrupt a move and leave partially clipped days.
@@ -81,9 +80,12 @@ The signed-in landing page: resume reading, stats, daily goal, annotations, and 
 12. A localized `FeatureCards` introduction. Empty Home places it after welcome/import actions;
     populated Home places it immediately before developer contacts and feedback.
 
-Developer contacts appear above feedback on mobile and in the left column beside it on desktop;
-see [[10-user-profile]] for eligibility,
-localization, link behaviour, and offline handling.
+13. Featured public books use the same public work cover as Explore, resolved through the
+    approved reading asset’s main catalog-entry ID. Never use the main Book cover as a fallback.
+    Missing mappings or catalog outages show a placeholder; cached Home payloads refresh normally.
+    Developer contacts appear above feedback on mobile and in the left column beside it on desktop;
+    see [[10-user-profile]] for eligibility,
+    localization, link behaviour, and offline handling.
 
 ## Data & sync
 

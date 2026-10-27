@@ -1,3 +1,4 @@
+import { privateBookAccess } from '../../shared/private-book-access';
 import type { Prisma } from '@prisma/client';
 
 // Every item read/mutation resolves ownership the same way: the user's own,
@@ -9,6 +10,7 @@ export function ownedLibraryItemWhere(
 ): Prisma.LibraryItemWhereInput {
   return {
     userId,
+    book: privateBookAccess(userId),
     isArchived: false,
     OR: [{ id: ref }, { slug: ref }],
   };

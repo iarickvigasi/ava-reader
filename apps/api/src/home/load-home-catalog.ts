@@ -1,5 +1,6 @@
+import { PUBLIC_CATALOG_BOOK } from '../shared/private-book-access';
 import type { PrismaService } from '../prisma/prisma.service';
-import { buildCoverImageUrl } from '../shared/cover-image-url';
+import { loadCatalogCovers } from './load-catalog-covers';
 import { findPrimarySourceFile } from '../shared/primary-book-file';
 import type { CatalogEntryRecord } from './types';
 
@@ -7,21 +8,23 @@ const HOME_CATALOG_LIMIT = 2;
 
 export async function loadHomeCatalog(prisma: PrismaService) {
   const entries = await prisma.catalogEntry.findMany({
-    where: { status: 'PUBLISHED' },
+    where: { status: 'PUBLISHED', book: PUBLIC_CATALOG_BOOK },
     include: {
       book: {
         include: {
-          coverBlob: { select: { mimeType: true } },
           files: { select: { format: true, isPrimary: true, kind: true } },
         },
       },
     },
   });
 
-  return entries
+  const featured = entries
     .sort(compareCatalogEntries)
-    .slice(0, HOME_CATALOG_LIMIT)
-    .map(serializeCatalogEntry);
+    .slice(0, HOME_CATALOG_LIMIT);
+  const covers = await loadCatalogCovers(featured.map(({ id }) => id));
+  return featured.map((entry) =>
+    serializeCatalogEntry(entry, covers.get(entry.id) ?? null),
+  );
 }
 
 function compareCatalogEntries(
@@ -43,14 +46,15 @@ function compareCatalogEntries(
   return right.updatedAt.getTime() - left.updatedAt.getTime();
 }
 
-function serializeCatalogEntry(entry: CatalogEntryRecord) {
+function serializeCatalogEntry(
+  entry: CatalogEntryRecord,
+  coverImageUrl: string | null,
+) {
   const primarySource = findPrimarySourceFile(entry.book.files);
 
   return {
     authors: entry.book.authors,
-    coverImageUrl: entry.book.coverBlob
-      ? buildCoverImageUrl(entry.book.id)
-      : null,
+    coverImageUrl,
     description: entry.editorialDescription ?? entry.book.description,
     id: entry.id,
     isFeatured: entry.isFeatured,

@@ -41,21 +41,22 @@ export class LibraryController {
     );
   }
 
-  // Public read endpoint. Covers are not sensitive (often marketing artwork),
-  // bookIds are unpredictable CUIDs, and skipping auth lets `<img>` tags load
-  // without juggling Clerk tokens. The long-lived Cache-Control header lets
-  // the browser skip repeat downloads as the user scrolls a collection.
   @Get('covers/:bookId')
+  @UseGuards(ClerkAuthGuard)
   async getBookCover(
+    @Req() request: AuthenticatedRequest,
     @Param('bookId') bookId: string,
     @Res() response: Response,
   ) {
-    const cover = await this.libraryService.getBookCover(bookId);
+    const cover = await this.libraryService.getBookCover(
+      bookId,
+      request.auth.clerkUserId,
+    );
     if (!cover) {
       throw new NotFoundException('Cover not found.');
     }
     response.setHeader('Content-Type', cover.mimeType);
-    response.setHeader('Cache-Control', 'public, max-age=86400');
+    response.setHeader('Cache-Control', 'private, no-store');
     response.send(Buffer.from(cover.bytes));
   }
 

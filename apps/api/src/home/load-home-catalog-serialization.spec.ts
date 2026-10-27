@@ -1,3 +1,6 @@
+import { loadCatalogCovers } from './load-catalog-covers';
+jest.mock('./load-catalog-covers');
+beforeEach(() => jest.mocked(loadCatalogCovers).mockResolvedValue(new Map()));
 import { loadHomeCatalog } from './load-home-catalog';
 
 describe('loadHomeCatalog serialization', () => {
@@ -25,6 +28,11 @@ describe('loadHomeCatalog serialization', () => {
       },
     ]);
 
+    jest
+      .mocked(loadCatalogCovers)
+      .mockResolvedValue(
+        new Map([['catalog-1', 'https://public.example/cover.jpg']]),
+      );
     const entries = await loadHomeCatalog({
       catalogEntry: { findMany },
     } as never);
@@ -32,7 +40,7 @@ describe('loadHomeCatalog serialization', () => {
     expect(entries).toEqual([
       {
         authors: ['Example Author'],
-        coverImageUrl: '/api/library/covers/book-1',
+        coverImageUrl: 'https://public.example/cover.jpg',
         description: 'Editorial description',
         id: 'catalog-1',
         isFeatured: true,
@@ -40,6 +48,16 @@ describe('loadHomeCatalog serialization', () => {
         title: 'Editorial title',
       },
     ]);
+  });
+
+  it('never falls back to the stored Book artwork when public mapping is absent', async () => {
+    const findMany = jest
+      .fn()
+      .mockResolvedValue([{ book, id: 'unmapped', isFeatured: false }]);
+    const entries = await loadHomeCatalog({
+      catalogEntry: { findMany },
+    } as never);
+    expect(entries[0].coverImageUrl).toBeNull();
   });
 
   it.each([

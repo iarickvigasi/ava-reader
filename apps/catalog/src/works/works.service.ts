@@ -1,3 +1,4 @@
+import { WORK_COVER_SELECT } from './work-cover-select';
 import { READY_READING_ASSET } from './ready-reading-assets';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PAGE_SIZE } from '../page-size';
@@ -11,15 +12,7 @@ export class WorksService {
     const work = await this.db.work.findUnique({
       where: { id },
       include: {
-        editions: {
-          where: { coverImageUrl: { not: null } },
-          orderBy: [
-            { publishedYear: { sort: 'asc', nulls: 'last' } },
-            { id: 'asc' },
-          ],
-          take: 1,
-          select: { coverImageUrl: true },
-        },
+        editions: WORK_COVER_SELECT.editions,
         texts: { orderBy: { locale: 'asc' } },
         credits: {
           orderBy: [{ position: 'asc' }, { authorId: 'asc' }],

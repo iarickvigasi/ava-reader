@@ -1,3 +1,4 @@
+import { privateBookAccess } from '../../shared/private-book-access';
 import type { LibrarySource, Prisma } from '@prisma/client';
 import { buildBookSlugBase } from '../../shared/book-slug';
 import { resolveUniqueSlug } from '../../shared/slugify';
@@ -14,7 +15,7 @@ export async function createLibraryItemTx(
   },
 ) {
   const book = await tx.book.findUniqueOrThrow({
-    where: { id: input.bookId },
+    where: { id: input.bookId, AND: privateBookAccess(input.userId) },
     select: { title: true, authors: true },
   });
   const baseSlug = buildBookSlugBase({
