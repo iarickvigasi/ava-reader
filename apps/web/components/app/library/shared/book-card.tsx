@@ -22,6 +22,7 @@ export function LibraryBookCard({
         fromCollectionSlug: collectionSlug,
       })}
       libraryItemId={book.libraryItemId}
+      progressLabel={`${Math.round(book.completionPercent)}%`}
       coverImageUrl={resolveApiAssetUrl(book.coverImageUrl)}
       mobile={mobile}
     />

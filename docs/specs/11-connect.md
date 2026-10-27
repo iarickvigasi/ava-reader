@@ -18,6 +18,8 @@ soon, not as working features.
 - Home's Daily mastery heading opens the preserved `/app/insights` page.
 - Both routes are precached for offline navigation.
 - The introduction explains the community and shows three Coming soon cards.
+- Community copy uses feminine forms where natural in the language; otherwise use ordinary
+  reader terms without explicit “female” or “women” qualifiers (English: “Meet readers”).
 - All Inter eyebrow labels follow the shared size/weight rule in styles.md: bold
   (700), 10.8px below `sm`, and 10px from `sm`, visually matching Home’s
   Currently engaged label.

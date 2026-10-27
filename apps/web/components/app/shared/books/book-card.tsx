@@ -12,6 +12,7 @@ export function BookCard({
   mobile = false,
   uniformCover = false,
   catalogWorkId,
+  progressLabel,
 }: {
   title: string;
   authors: BookAuthor[];
@@ -21,6 +22,7 @@ export function BookCard({
   mobile?: boolean;
   uniformCover?: boolean;
   catalogWorkId?: string;
+  progressLabel?: string;
 }) {
   return (
     <article
@@ -57,13 +59,18 @@ export function BookCard({
             {title}
           </h3>
         </Link>
-        <BookAuthors
-          authors={authors}
-          className={cn(
-            "text-[0.95rem] leading-5 md:text-base",
-            uniformCover && "line-clamp-2",
+        <div className="flex items-start justify-between gap-2 text-[0.95rem] leading-5 md:text-base">
+          <BookAuthors
+            authors={authors}
+            className={cn(
+              "min-w-0",
+              progressLabel ? "truncate" : uniformCover && "line-clamp-2",
+            )}
+          />
+          {progressLabel && (
+            <span className="ml-auto shrink-0 text-olive">{progressLabel}</span>
           )}
-        />
+        </div>
       </div>
     </article>
   );
