@@ -15,9 +15,11 @@ type Listening = NonNullable<HomePayload["listening"]>;
 // The mobile cover column is a percentage rather than a fixed width, so cover
 // and title shrink together on a narrow phone instead of starving the title.
 export function ListeningSection({
+  libraryItemId,
   coverImageUrl,
   listening,
 }: {
+  libraryItemId: string;
   coverImageUrl: string | null;
   listening: Listening;
 }) {
@@ -31,6 +33,7 @@ export function ListeningSection({
           <BookCover
             alt={`${listening.title} listening placeholder`}
             className="w-full shadow-(--shadow-card) sm:w-40 md:row-span-4"
+            libraryItemId={libraryItemId}
             ratio="audiobook"
             src={resolveApiAssetUrl(coverImageUrl)}
             title={listening.title}

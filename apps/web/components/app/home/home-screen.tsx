@@ -66,6 +66,7 @@ function PopulatedHome({
 
       {home.listening ? (
         <ListeningSection
+          libraryItemId={engagement.libraryItemId}
           coverImageUrl={engagement.coverImageUrl}
           listening={home.listening}
         />

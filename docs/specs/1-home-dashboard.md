@@ -26,7 +26,8 @@ The signed-in landing page: resume reading, stats, daily goal, annotations, and 
    lowest sortOrder. Rows open the clicked collection's page (payload carries the slug);
    the panel header's "open all" opens the library. A cached payload predating the slug field
    falls back to the library link until revalidation refreshes it.
-5. Now Listening lays out as one grid in two shapes. Below `md` the cover and the title/author
+5. Now Listening uses the current engagement’s library item ID for cached covers before network.
+   Below `md` the cover and the title/author
    share a row — the cover column is a percentage of the card, so cover and title scale together
    on a narrow phone — and the "coming soon" line, the times/bar and the transport each span the
    full card width beneath it. From `md` the cover spans the whole stack in its own column.
@@ -119,8 +120,7 @@ Cold start offline → minimal shell; stale payload + fresh local deltas; no cur
 ## Known gaps
 
 - A title long enough to overrun its column falls back to a mid-word break with no hyphen where the
-  browser ships no hyphenation dictionary (embedded Chromium; iOS Safari hyphenates). Past five
-  lines it truncates — `line-clamp-5`.
+  browser lacks a hyphenation dictionary; past five lines it truncates (`line-clamp-5`).
 - `listening.authorLine` carries authors only; the "coming soon" line is web copy. A cached payload
   written before that split still holds the old combined string, so the suffix shows twice until
   revalidation refreshes the home bucket.
