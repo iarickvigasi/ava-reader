@@ -1,140 +1,59 @@
 import { ReaderLoadingCover } from "./reader-loading-cover";
-import { useEffect, useMemo } from "react";
-import { useReaderUi } from "@/components/app/core/reader-ui-context";
 import { ReaderArticle } from "../content/reader-article";
 import { ReaderPaginationPreloader } from "../pagination/measurement/reader-pagination-preloader";
 import { ReadyReaderProgress } from "./ready-reader-progress";
 import { ReaderFrame } from "./reader-frame";
 import { ReaderPageViewport } from "./reader-page-viewport";
-import { READER_VISIBILITY_HIDDEN } from "../shared/constants";
 import type { ReadyReaderProps } from "../shared/types";
-import { useReaderPagination } from "../pagination/use-reader-pagination";
-import { useHighlightSelectionBridge } from "../selection/use-highlight-selection-bridge";
-import { useReaderTextSelection } from "../selection/use-reader-text-selection";
 import { IosSelectionOverlay } from "../selection/ios/ios-selection-overlay";
-import { useIosSelection } from "../selection/ios/use-ios-selection";
+import { useReadyReader } from "./use-ready-reader";
 
-export function ReadyReader({
-  activeChapter,
-  fontScale,
-  isBootstrapping,
-  isLoadingChapter,
-  isRefreshingWindow,
-  libraryItemId,
-  onSelectChapter,
-  onVisibleLocatorChange,
-  payload,
-  restoreIntent,
-  visibleLocator,
-  embedded = false,
-}: ReadyReaderProps & { embedded?: boolean }) {
-  const { activePanel } = useReaderUi();
-  const isPanelOpen = activePanel !== null;
-
-  // Look up the immediate neighbours so the spread logic can fill column 2
-  // with the next chapter when the active chapter is single-page, and skip
-  // the active chapter's column 1 when the previous chapter was single-page
-  // (since the user already saw it in that previous chapter's spread).
-  const previousChapter = useMemo(
-    () =>
-      payload.chapters.find(
-        (chapter) => chapter.chapterId === activeChapter.previousChapterId,
-      ) ?? null,
-    [activeChapter.previousChapterId, payload.chapters],
-  );
-  const nextChapter = useMemo(
-    () =>
-      payload.chapters.find(
-        (chapter) => chapter.chapterId === activeChapter.nextChapterId,
-      ) ?? null,
-    [activeChapter.nextChapterId, payload.chapters],
-  );
-
+export function ReadyReader(props: ReadyReaderProps & { embedded?: boolean }) {
   const {
-    articleStyle,
+    activeChapter,
+    fontScale,
+    payload,
+    libraryItemId,
+    embedded = false,
+  } = props;
+  const {
+    rootRef,
     availableHeight,
-    currentPageIndex,
     handleTouchEnd,
     handleTouchStart,
     pageBoxRef,
+    isIosSelection,
+    onAiCommentClick,
+    onHighlightClick,
     pageBoxSize,
-    pageCount,
     prefixBlocks,
-    rootRef,
-    shouldMaskArticle,
-    spilloverBlocks,
-    storeMeasurementEntry,
-  } = useReaderPagination({
-    activeChapter,
-    fontScale,
-    isBootstrapping,
-    isLoadingChapter,
-    isPanelOpen,
-    libraryItemId,
-    nextChapter,
-    onSelectChapter,
-    onVisibleLocatorChange,
     previousChapter,
-    restoreIntent,
-    visibleLocator,
-  });
-
-  // Bridges fresh selections and clicks on painted highlights into the AI
-  // Comments panel, matching to existing rows when possible. Owns the
-  // highlight-store reads, so this component stays focused on layout.
-  const { onTextSelected, onHighlightClick, onAiCommentClick } =
-    useHighlightSelectionBridge(activeChapter.chapterId);
-
-  useReaderTextSelection({
-    containerRef: pageBoxRef,
-    onSelectText: onTextSelected,
-    // Selecting while the article is masked (e.g., during chapter transitions)
-    // would surface stale text — skip those windows.
-    disabled: shouldMaskArticle,
-  });
-
-  // iOS uses app-owned selection gestures and paint (spec 2.6 Behaviour 8).
-  const { isActive: isIosSelection, rects: iosSelectionRects } =
-    useIosSelection({
-      bookLanguage: payload.book.language,
-      containerRef: pageBoxRef,
-      onSelectText: onTextSelected,
-      disabled: shouldMaskArticle,
-      pageKey: `${libraryItemId}:${activeChapter.chapterId}:${currentPageIndex}`,
-    });
-
-  useEffect(() => {
-    if (!isPanelOpen) {
-      return;
-    }
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = READER_VISIBILITY_HIDDEN;
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [isPanelOpen]);
+    spilloverBlocks,
+    nextChapter,
+    articleStyle,
+    shouldMaskArticle,
+    currentPageIndex,
+    pageCount,
+    isPanelOpen,
+    goToNextPage,
+    goToPreviousPage,
+    iosSelectionRects,
+    storeMeasurementEntry,
+  } = useReadyReader(props);
 
   return (
     <>
       <ReaderFrame
+        {...props}
         rootRef={rootRef}
         height={availableHeight}
-        activeChapter={activeChapter}
         embedded={embedded}
-        payload={payload}
-        isBootstrapping={isBootstrapping}
-        isLoadingChapter={isLoadingChapter}
-        isRefreshingWindow={isRefreshingWindow}
       >
         <ReaderPageViewport
           onTouchEnd={handleTouchEnd}
           onTouchStart={handleTouchStart}
           embedded={embedded}
         >
-          {/* Must NOT clip: its edge coincides exactly with the column
-                  edge, so any overflow-hidden here re-amputates edge ink. */}
           <div
             ref={pageBoxRef}
             className={
@@ -168,6 +87,10 @@ export function ReadyReader({
             completionPercent={payload.progress.completionPercent}
             currentPageIndex={currentPageIndex}
             pageCount={pageCount}
+            activeChapter={activeChapter}
+            disabled={shouldMaskArticle || isPanelOpen}
+            goToNextPage={goToNextPage}
+            goToPreviousPage={goToPreviousPage}
           />
         )}
       </ReaderFrame>

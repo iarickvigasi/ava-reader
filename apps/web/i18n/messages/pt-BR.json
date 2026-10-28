@@ -419,8 +419,8 @@
       "failed": "Tradução indisponível",
       "alignmentFailed": "Algumas correspondências de frases estão indisponíveis",
       "retry": "Tentar novamente",
-      "previous": "Página anterior",
-      "next": "Próxima página",
+      "previous": "Anterior",
+      "next": "Próxima",
       "page": "Página {page}"
     },
     "search": {

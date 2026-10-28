@@ -35,6 +35,8 @@ export type UseReaderPaginationInput = {
 };
 
 export type UseReaderPaginationResult = {
+  goToNextPage: () => void;
+  goToPreviousPage: () => void;
   articleStyle: CSSProperties;
   availableHeight: number;
   currentPageIndex: number;

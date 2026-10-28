@@ -11,17 +11,6 @@ import type {
   UseReaderPaginationInput,
   UseReaderPaginationResult,
 } from "./use-reader-pagination.types";
-
-/**
- * useReaderPagination = thin orchestrator that wires together:
- * - viewport sizing
- * - measurement caching + layout keys
- * - two-column spread composition (prefix / spillover)
- * - restore-intent state machine
- * - locator publishing
- * - page navigation (keyboard + touch)
- * - article CSS styling
- */
 export function useReaderPagination({
   activeChapter,
   fontScale,
@@ -37,10 +26,8 @@ export function useReaderPagination({
   visibleLocator,
 }: UseReaderPaginationInput): UseReaderPaginationResult {
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
-
-  const { availableHeight, pageBoxRef, pageBoxSize, rootRef } =
-    useViewportSize();
-
+  const viewport = useViewportSize();
+  const { pageBoxRef, pageBoxSize } = viewport;
   const { activePaginationLayoutKey, previousPaginationLayoutKey } =
     usePaginationLayoutKeys({
       activeChapter,
@@ -49,7 +36,6 @@ export function useReaderPagination({
       libraryItemId,
       pageBoxSize,
     });
-
   const {
     activeMeasurementEntry,
     activeReadyMeasurementEntry,
@@ -61,11 +47,7 @@ export function useReaderPagination({
     activePaginationLayoutKey,
     previousPaginationLayoutKey,
   });
-
   const activeRestoreCycleKey = restoreIntent?.key ?? activeChapter.chapterId;
-
-  // Prefix/spillover feed the restore, locator and style hooks below, so this
-  // must run before them.
   const { prefixBlocks, prefixPageCount, spilloverBlocks } = useSpreadBlocks({
     activeChapter,
     previousChapter,
@@ -74,7 +56,6 @@ export function useReaderPagination({
     pageCount,
     pageBoxSize,
   });
-
   const restorePhase = useRestoreController({
     activePaginationLayoutKey,
     activeMeasurementEntry,
@@ -88,7 +69,6 @@ export function useReaderPagination({
     activeRestoreCycleKey,
     visibleLocator,
   });
-
   useLocatorSync({
     currentPageIndex,
     activeReadyMeasurementEntry,
@@ -98,8 +78,7 @@ export function useReaderPagination({
     visibleLocator,
     onVisibleLocatorChange,
   });
-
-  const { handleTouchEnd, handleTouchStart } = usePageNavigation({
+  const navigation = usePageNavigation({
     currentPageIndex,
     setCurrentPageIndex,
     pageCount,
@@ -109,7 +88,6 @@ export function useReaderPagination({
     onSelectChapter,
     containerRef: pageBoxRef,
   });
-
   const { articleStyle, shouldMaskArticle } = useArticleStyle({
     pageBoxSize,
     currentPageIndex,
@@ -118,18 +96,13 @@ export function useReaderPagination({
     restorePhase,
     prefixPageCount,
   });
-
   return {
     articleStyle,
-    availableHeight,
+    ...viewport,
     currentPageIndex,
-    handleTouchEnd,
-    handleTouchStart,
-    pageBoxRef,
-    pageBoxSize,
+    ...navigation,
     pageCount,
     prefixBlocks,
-    rootRef,
     shouldMaskArticle,
     spilloverBlocks,
     storeMeasurementEntry,

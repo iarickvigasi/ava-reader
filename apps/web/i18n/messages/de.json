@@ -419,8 +419,8 @@
       "failed": "Übersetzung nicht verfügbar",
       "alignmentFailed": "Einige Wortgruppen-Zuordnungen sind nicht verfügbar",
       "retry": "Erneut versuchen",
-      "previous": "Vorherige Seite",
-      "next": "Nächste Seite",
+      "previous": "Vorherige",
+      "next": "Nächste",
       "page": "Seite {page}"
     },
     "search": {
