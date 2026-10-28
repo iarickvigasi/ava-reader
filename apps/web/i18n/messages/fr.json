@@ -380,10 +380,6 @@
       "tryAgain": "Réessayer",
       "queued": "En attente de connexion… nous terminerons dès que vous serez de nouveau en ligne.",
       "errors": {
-        "signIn": "Vous devez être connecté(e) pour utiliser les outils IA.",
-        "noToken": "Aucun jeton de session n'était disponible.",
-        "requestFailed": "La requête IA a échoué (HTTP {status}). Veuillez réessayer.",
-        "emptyStream": "La réponse de l'IA était vide.",
         "generic": "Une erreur est survenue."
       }
     },

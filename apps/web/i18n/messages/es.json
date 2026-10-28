@@ -380,10 +380,6 @@
       "tryAgain": "Intentar de nuevo",
       "queued": "Esperando conexión… lo completaremos en cuanto vuelvas a estar en línea.",
       "errors": {
-        "signIn": "Inicia sesión para usar las herramientas de IA.",
-        "noToken": "No había un token de sesión disponible.",
-        "requestFailed": "La solicitud de IA falló (HTTP {status}). Inténtalo de nuevo.",
-        "emptyStream": "La respuesta de la IA llegó vacía.",
         "generic": "Algo salió mal."
       }
     },

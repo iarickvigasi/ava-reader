@@ -380,10 +380,6 @@
       "tryAgain": "Erneut versuchen",
       "queued": "Warte auf eine Verbindung… wir schließen das ab, sobald du wieder online bist.",
       "errors": {
-        "signIn": "Du musst angemeldet sein, um KI-Tools zu nutzen.",
-        "noToken": "Kein Sitzungstoken verfügbar.",
-        "requestFailed": "KI-Anfrage fehlgeschlagen (HTTP {status}). Bitte erneut versuchen.",
-        "emptyStream": "Die KI-Antwort war leer.",
         "generic": "Etwas ist schiefgelaufen."
       }
     },
