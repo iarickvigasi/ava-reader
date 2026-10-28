@@ -4,10 +4,10 @@ Latin keeps Afacad (body) and Abhaya Libre (display). The local, script-only fac
 their fallback stacks, so Cyrillic cannot fall through to Arial/Times. Inter UI and Noto
 Serif reader text already support Ukrainian. Companions load on demand, from the app origin.
 
-| Face | Fixed axes | Weights | Size adjustment | Size |
-| --- | --- | --- | --- | --- |
-| Nunito Sans | YTLC 480, opsz 12, wdth 100 | 400–700 | 88.65% | 20,616 B |
-| Source Serif 4 | opsz 20 | 400–800 | 87.4% | 40,352 B |
+| Face           | Fixed axes                  | Weights | Size adjustment | Size     |
+| -------------- | --------------------------- | ------- | --------------- | -------- |
+| Nunito Sans    | YTLC 480, opsz 12, wdth 100 | 400–700 | 88.65%          | 20,616 B |
+| Source Serif 4 | opsz 20                     | 400–800 | 87.4%           | 40,352 B |
 
 Both WOFF2 files retain all 66 Ukrainian uppercase/lowercase letters, including Ґґ Єє Іі Її.
 Available Cyrillic extensions, combining accents and the hryvnia sign are also retained;
@@ -50,3 +50,5 @@ Verify these original SHA-256 hashes before reproducing the current assets:
 
 - Nunito Sans: `f934d7142fb4784bf828da485b7dcbd90c0c80d514e9d49a5da0ed3a1ae2491d`
 - Source Serif 4: `97b2d4da6e3cb494b5a1e66ae176914d852ccabef49e0c02c0df25f3e39aca0b`
+
+Primary font sources and rebuild steps: [local primary fonts](primary.md).

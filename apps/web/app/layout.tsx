@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import { cookies } from "next/headers";
-import { Abhaya_Libre, Afacad, Inter, Noto_Serif } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { SiteFrame } from "@/components/layout/site-frame";
@@ -10,32 +9,10 @@ import { ThemeProvider } from "@/components/theme/theme-provider";
 import { OfflineIdentityReconciler } from "@/features/offline/lifecycle/offline-identity-reconciler";
 import { AuthRecoveryRunner } from "@/features/auth/auth-recovery-runner";
 import { cyrillicBody, cyrillicDisplay } from "./fonts/cyrillic";
+import { display, body, ui, readerSerif } from "./fonts/primary";
 import "./globals.css";
 import "./modal-surfaces.css";
 import "./scrollbars.css";
-
-const display = Abhaya_Libre({
-  variable: "--font-abhaya",
-  subsets: ["latin"],
-  weight: ["400", "700", "800"],
-});
-
-const body = Afacad({
-  variable: "--font-afacad",
-  subsets: ["latin"],
-});
-
-const ui = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
-const readerSerif = Noto_Serif({
-  variable: "--font-reader-serif",
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  style: ["normal", "italic"],
-});
 
 export const metadata: Metadata = {
   title: "Ava Reader",

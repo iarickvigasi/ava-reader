@@ -41,6 +41,9 @@
 
 Deployment regression checks: `node --test tools/deploy/*.test.mjs`.
 
+Web fonts are committed WOFF2 assets loaded with `next/font/local`; building never contacts Google
+Fonts. Sources, licenses, and rebuild instructions live in `apps/web/app/fonts/README.md`.
+
 ## Runtime images
 
 - Production selects `runtime` targets: web ships Next standalone output/static/public (including
