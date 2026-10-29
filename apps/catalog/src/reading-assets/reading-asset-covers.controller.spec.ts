@@ -13,6 +13,7 @@ it('maps only ready assets by explicit entry IDs using Explore cover precedence'
   findMany.mockResolvedValue([
     {
       mainCatalogEntryId: 'public',
+      editionId: 'edition-public',
       edition: {
         work: {
           coverImageUrl: 'work.jpg',
@@ -22,6 +23,7 @@ it('maps only ready assets by explicit entry IDs using Explore cover precedence'
     },
     {
       mainCatalogEntryId: 'fallback',
+      editionId: 'edition-fallback',
       edition: {
         work: {
           coverImageUrl: null,
@@ -31,14 +33,23 @@ it('maps only ready assets by explicit entry IDs using Explore cover precedence'
     },
     {
       mainCatalogEntryId: 'missing',
+      editionId: 'edition-missing',
       edition: { work: { coverImageUrl: null, editions: [] } },
     },
   ]);
   expect(await controller.covers('public,fallback,missing')).toEqual({
     items: [
-      { entryId: 'public', coverImageUrl: 'work.jpg' },
-      { entryId: 'fallback', coverImageUrl: 'edition.jpg' },
-      { entryId: 'missing', coverImageUrl: null },
+      {
+        entryId: 'public',
+        editionId: 'edition-public',
+        coverImageUrl: 'work.jpg',
+      },
+      {
+        entryId: 'fallback',
+        editionId: 'edition-fallback',
+        coverImageUrl: 'edition.jpg',
+      },
+      { entryId: 'missing', editionId: 'edition-missing', coverImageUrl: null },
     ],
   });
   expect(findMany).toHaveBeenCalledWith({
@@ -51,6 +62,7 @@ it('maps only ready assets by explicit entry IDs using Explore cover precedence'
     take: 3,
     select: {
       mainCatalogEntryId: true,
+      editionId: true,
       edition: { select: { work: { select: WORK_COVER_SELECT } } },
     },
   });

@@ -5,7 +5,7 @@ import { CurrentEngagementSection } from "./sections/current-engagement/current-
 import { DashboardFooter } from "./sections/dashboard-footer";
 import { HomeFeaturesSection } from "./sections/home-features-section";
 import { EmptyHomeState } from "./sections/empty-home-state";
-import { FeaturedBooksSection } from "./sections/featured-books/featured-books-section";
+import { HomeFeaturedWithCache } from "./sections/home-featured-with-cache";
 import { FeedbackSection } from "./sections/feedback/feedback-section";
 import { ListeningSection } from "./sections/listening/listening-section";
 import {
@@ -33,7 +33,7 @@ export function HomeScreen({ home }: HomeScreenProps) {
       {home.state === "EMPTY" ? <HomeFeaturesSection /> : null}
 
       <QuoteSection />
-      <FeaturedBooksSection entries={home.featuredCatalog.entries} />
+      <HomeFeaturedWithCache home={home} />
 
       {engagement ? (
         <section className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">

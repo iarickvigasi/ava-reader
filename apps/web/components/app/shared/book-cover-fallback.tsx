@@ -17,7 +17,7 @@ export function BookCoverFallback({
       style={style}
       className={cn(
         "flex items-center justify-center p-4 text-center",
-        "bg-soft-fill",
+        "bg-paper-strong",
         className,
       )}
     >

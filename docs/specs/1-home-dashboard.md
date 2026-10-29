@@ -69,6 +69,15 @@ The signed-in landing page: resume reading, stats, daily goal, annotations, and 
     mappings or catalog outages show a placeholder; cached Home payloads refresh normally. Developer
     contacts follow [[10-user-profile]] for eligibility, localization, links and offline use.
 
+Featured covers and titles open the mapped edition info page on desktop and mobile. Unmapped or
+older cached entries remain unlinked until refreshed. Featured cards subscribe to the Home cache so
+refreshed edition mappings update visible links without reopening the page.
+
+Desktop featured cards offer Read (using the catalog acquisition/reader flow) and Add to library.
+Mobile cards retain edition links on the cover and title without action buttons.
+Featured descriptions use the same safe HTML/entity decoding as book info, including cached content.
+Featured book previews follow the Home presentation rules in [styles](../styles.md).
+
 ## Data & sync
 
 home bucket (single payload row keyed to the user); composed with stats deltas. Service worker

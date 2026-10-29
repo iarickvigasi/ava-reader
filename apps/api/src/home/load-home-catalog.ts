@@ -23,7 +23,7 @@ export async function loadHomeCatalog(prisma: PrismaService) {
     .slice(0, HOME_CATALOG_LIMIT);
   const covers = await loadCatalogCovers(featured.map(({ id }) => id));
   return featured.map((entry) =>
-    serializeCatalogEntry(entry, covers.get(entry.id) ?? null),
+    serializeCatalogEntry(entry, covers.get(entry.id)),
   );
 }
 
@@ -48,13 +48,14 @@ function compareCatalogEntries(
 
 function serializeCatalogEntry(
   entry: CatalogEntryRecord,
-  coverImageUrl: string | null,
+  mapping?: { coverImageUrl: string | null; editionId?: string },
 ) {
   const primarySource = findPrimarySourceFile(entry.book.files);
 
   return {
     authors: entry.book.authors,
-    coverImageUrl,
+    coverImageUrl: mapping?.coverImageUrl ?? null,
+    editionId: mapping?.editionId ?? null,
     description: entry.editorialDescription ?? entry.book.description,
     id: entry.id,
     isFeatured: entry.isFeatured,

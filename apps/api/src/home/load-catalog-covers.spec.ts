@@ -9,6 +9,7 @@ it('loads covers by explicit public catalog entry identity', async () => {
         items: [
           {
             entryId: 'published',
+            editionId: 'edition-1',
             coverImageUrl: 'https://public.example/cover.jpg',
           },
         ],
@@ -16,7 +17,16 @@ it('loads covers by explicit public catalog entry identity', async () => {
     ),
   );
   expect(await loadCatalogCovers(['published'])).toEqual(
-    new Map([['published', 'https://public.example/cover.jpg']]),
+    new Map([
+      [
+        'published',
+        {
+          entryId: 'published',
+          editionId: 'edition-1',
+          coverImageUrl: 'https://public.example/cover.jpg',
+        },
+      ],
+    ]),
   );
   expect(fetch).toHaveBeenCalledWith(
     expect.stringContaining('/api/reading-assets/covers?entryIds=published'),

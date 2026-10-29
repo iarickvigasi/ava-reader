@@ -1,11 +1,9 @@
 import { TextActionLink } from "@/components/ui/text-action-link";
 import { useTranslations } from "next-intl";
-import { BookCover } from "@/components/app/shared/book-cover";
 import type { HomePayload } from "@/lib/api-types";
-import { resolveApiAssetUrl } from "@/lib/api";
-import { formatAuthors } from "@/lib/format-authors";
 import { Panel, SectionHeader } from "../../shared/home-shared";
-import { CatalogAddButton } from "./catalog-add-button";
+import { FeaturedBookCompact } from "./featured-book-compact";
+import { FeaturedBookFull } from "./featured-book-full";
 
 type FeaturedEntry = HomePayload["featuredCatalog"]["entries"][number];
 
@@ -48,59 +46,5 @@ export function FeaturedBooksSection({
         </>
       )}
     </section>
-  );
-}
-
-function FeaturedBookCompact({ entry }: { entry: FeaturedEntry }) {
-  return (
-    <div className="space-y-3">
-      <BookCover
-        alt={`${entry.title} cover`}
-        className="w-full"
-        src={resolveApiAssetUrl(entry.coverImageUrl)}
-        title={entry.title}
-      />
-      <div className="space-y-1">
-        <h3 className="font-display text-lg leading-none text-title">
-          {entry.title}
-        </h3>
-        <p className="text-[0.6rem] font-semibold uppercase tracking-[0.14em] text-plum">
-          {formatAuthors(entry.authors)}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function FeaturedBookFull({ entry }: { entry: FeaturedEntry }) {
-  const t = useTranslations("home.featuredBooks");
-  return (
-    <Panel className="grid gap-5 p-5 sm:grid-cols-[120px_1fr] sm:items-start sm:p-6">
-      <BookCover
-        alt={`${entry.title} cover`}
-        className="w-28"
-        src={resolveApiAssetUrl(entry.coverImageUrl)}
-        title={entry.title}
-      />
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <h3 className="font-display text-3xl leading-none text-title">
-            {entry.title}
-          </h3>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-plum">
-            {formatAuthors(entry.authors)}
-          </p>
-        </div>
-        <p className="text-base leading-7 text-copy">
-          {entry.description ?? t("fallback")}
-        </p>
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="rounded-full bg-white/55 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-olive">
-            {entry.primaryFormat}
-          </span>
-          <CatalogAddButton entryId={entry.id} />
-        </div>
-      </div>
-    </Panel>
   );
 }

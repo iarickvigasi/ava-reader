@@ -49,6 +49,7 @@ export type HomePayload = {
       coverImageUrl: string | null;
       description: string | null;
       id: string;
+      editionId?: string | null;
       isFeatured: boolean;
       primaryFormat: BookFileFormat;
       title: string;

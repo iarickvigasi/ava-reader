@@ -6,7 +6,6 @@ import { loadHomeCatalog } from './load-home-catalog';
 describe('loadHomeCatalog serialization', () => {
   const book = {
     authors: ['Example Author'],
-    coverBlob: { mimeType: 'image/jpeg' },
     description: 'Book description',
     files: [
       { format: 'READER_PACKAGE', isPrimary: true, kind: 'DERIVED_READER' },
@@ -28,11 +27,18 @@ describe('loadHomeCatalog serialization', () => {
       },
     ]);
 
-    jest
-      .mocked(loadCatalogCovers)
-      .mockResolvedValue(
-        new Map([['catalog-1', 'https://public.example/cover.jpg']]),
-      );
+    jest.mocked(loadCatalogCovers).mockResolvedValue(
+      new Map([
+        [
+          'catalog-1',
+          {
+            entryId: 'catalog-1',
+            editionId: 'edition-1',
+            coverImageUrl: 'https://public.example/cover.jpg',
+          },
+        ],
+      ]),
+    );
     const entries = await loadHomeCatalog({
       catalogEntry: { findMany },
     } as never);
@@ -41,6 +47,7 @@ describe('loadHomeCatalog serialization', () => {
       {
         authors: ['Example Author'],
         coverImageUrl: 'https://public.example/cover.jpg',
+        editionId: 'edition-1',
         description: 'Editorial description',
         id: 'catalog-1',
         isFeatured: true,

@@ -4,7 +4,6 @@ import { useState, useTransition } from "react";
 import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { CheckIcon } from "@/components/app/shared/app-icons";
 import { cn } from "@/lib/cn";
 import { getPublicApiBaseUrl } from "@/lib/api";
 
@@ -62,7 +61,7 @@ export function CatalogAddButton({
     <button
       type="button"
       className={cn(
-        "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-white/40 px-4 text-xs font-semibold uppercase tracking-[0.14em] text-ink transition hover:bg-white/70 disabled:cursor-not-allowed disabled:opacity-60",
+        "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-white/40 px-4 text-xs font-semibold uppercase tracking-[0.14em] text-ink transition hover:brightness-90 disabled:cursor-not-allowed disabled:opacity-60",
         className,
       )}
       disabled={isPending}
@@ -72,18 +71,17 @@ export function CatalogAddButton({
         })
       }
     >
-      {state === "added" || state === "existing" ? (
-        <CheckIcon className="size-4" />
-      ) : null}
-      {isPending
-        ? t("adding")
-        : state === "added"
-          ? t("added")
-          : state === "existing"
-            ? t("inLibrary")
-            : state === "error"
-              ? t("retry")
-              : t("add")}
+      <span className="min-w-0">
+        {isPending
+          ? t("adding")
+          : state === "added"
+            ? t("added")
+            : state === "existing"
+              ? t("inLibrary")
+              : state === "error"
+                ? t("retry")
+                : t("add")}
+      </span>
     </button>
   );
 }

@@ -24,15 +24,19 @@ export class ReadingAssetCoversController {
       take: entryIds.length,
       select: {
         mainCatalogEntryId: true,
+        editionId: true,
         edition: { select: { work: { select: WORK_COVER_SELECT } } },
       },
     });
     return {
-      items: assets.map(({ mainCatalogEntryId, edition: { work } }) => ({
-        entryId: mainCatalogEntryId!,
-        coverImageUrl:
-          work.coverImageUrl ?? work.editions[0]?.coverImageUrl ?? null,
-      })),
+      items: assets.map(
+        ({ mainCatalogEntryId, editionId, edition: { work } }) => ({
+          entryId: mainCatalogEntryId!,
+          editionId,
+          coverImageUrl:
+            work.coverImageUrl ?? work.editions[0]?.coverImageUrl ?? null,
+        }),
+      ),
     };
   }
 }
