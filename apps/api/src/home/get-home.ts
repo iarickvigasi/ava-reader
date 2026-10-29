@@ -49,7 +49,14 @@ export async function getHome(options: {
     readingSnapshot: activity.readingSnapshot,
     currentEngagement: engagement.currentEngagement,
     feedback: { acceptsScreenshot: true },
-    featuredCatalog: { entries: featuredCatalogEntries },
+    featuredCatalog: {
+      entries: featuredCatalogEntries.map((entry) => ({
+        ...entry,
+        libraryItemId:
+          libraryItems.find((item) => item.originCatalogEntryId === entry.id)
+            ?.id ?? null,
+      })),
+    },
     listening: engagement.listening,
     mastery: createMasteryPayload(
       activity.recentReadingSessions,

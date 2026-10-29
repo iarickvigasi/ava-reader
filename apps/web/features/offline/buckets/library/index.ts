@@ -79,3 +79,5 @@ export {
   clearCatalogLinkRuntime,
   type CatalogLink,
 } from "./catalog-link";
+
+export { useCatalogPresence } from "./use-catalog-presence";

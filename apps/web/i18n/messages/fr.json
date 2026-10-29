@@ -366,7 +366,6 @@
     },
     "catalogAdd": {
       "adding": "Ajout en cours...",
-      "added": "Ajouté",
       "inLibrary": "Dans la bibliothèque",
       "retry": "Réessayer",
       "add": "Ajouter à la bibliothèque"

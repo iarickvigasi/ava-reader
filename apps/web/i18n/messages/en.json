@@ -366,7 +366,6 @@
     },
     "catalogAdd": {
       "adding": "Adding...",
-      "added": "Added",
       "inLibrary": "In library",
       "retry": "Retry add",
       "add": "Add to library"

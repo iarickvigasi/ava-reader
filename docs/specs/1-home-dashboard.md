@@ -74,6 +74,8 @@ older cached entries remain unlinked until refreshed. Featured cards subscribe t
 refreshed edition mappings update visible links without reopening the page.
 
 Desktop featured cards offer Read (using the catalog acquisition/reader flow) and Add to library.
+Featured Add actions reflect active library membership on load and after acquisition, including
+reopening Home offline; saved books show “In library” and their Add actions are disabled. Removed books can be added again.
 Mobile cards retain edition links on the cover and title without action buttons.
 Featured descriptions use the same safe HTML/entity decoding as book info, including cached content.
 Featured book previews follow the Home presentation rules in [styles](../styles.md).

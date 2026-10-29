@@ -33,7 +33,10 @@ export function FeaturedBookFull({ entry }: { entry: FeaturedEntry }) {
         </div>
         <FeaturedDescription description={entry.description} />
         <div className="mt-auto">
-          <FeaturedBookActions entryId={entry.id} />
+          <FeaturedBookActions
+            entryId={entry.id}
+            libraryItemId={entry.libraryItemId}
+          />
         </div>
       </div>
     </Panel>

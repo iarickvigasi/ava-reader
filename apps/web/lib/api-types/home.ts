@@ -50,6 +50,7 @@ export type HomePayload = {
       description: string | null;
       id: string;
       editionId?: string | null;
+      libraryItemId?: string | null;
       isFeatured: boolean;
       primaryFormat: BookFileFormat;
       title: string;
