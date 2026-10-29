@@ -5,24 +5,21 @@
 
 ## Summary
 
-Read an original book beside its translation, with both languages paginated without scrolling.
-Build a translated book incrementally, saving reusable sentence translations in the DB and cache.
+Read an original book and its translation, with both languages paginated without scrolling. Build a
+translated book incrementally, saving reusable sentence translations in the DB and cache.
 
 ## Behaviour
 
-1. Desktop: the reader sidebar bilingual button toggles the mode with an accurate pressed state.
-2. Phone: the header bilingual button uses the desktop icon and toggles the saved book mode.
-   Store plain/bilingual in localStorage per book reader URL, across reopening and refreshes.
-   Books without a saved mode default to plain; ignore the legacy global mode. Switching books
-   restores that book’s mode immediately, including navigation within the shared reader shell.
-   Rotation never changes the selected mode. Storage failures preserve session toggling.
-   Tablets also use the manual toggle; no synced account preference is written.
-3. Phone: original above translation in equal-height panes in both orientations, separated by a
-   small divider. Split the reading area after header/footer space. Desktop retains original left
-   and translation right. Neither pane scrolls. Left/right swipes and arrow keys turn both together.
-4. Sentences retain their paragraph flow and ordinary reader typography; no sentence rows or
-   height matching between paragraphs. Both columns paginate the same range to fit both languages.
-   A sentence taller than one page uses continuation pages; no text is truncated or font shrunk.
+1. Desktop: the bilingual action toggles the mode with an accurate accessible pressed state.
+2. Phone: the bilingual action toggles the saved book mode. Store plain/bilingual in localStorage
+   per book reader URL, across reopening and refreshes. Books without a saved mode default to plain;
+   ignore the legacy global mode. Switching books restores that book’s mode immediately, including
+   navigation within the shared reader shell. Rotation never changes the selected mode. Storage
+   failures preserve session toggling. Tablets also use the manual toggle; no synced account
+   preference is written.
+3. Neither language scrolls independently. Swipes and arrow keys page both together on all devices.
+4. Sentences retain source paragraph structure. Paginate a common range that fits both languages;
+   oversized sentences use continuations without losing text. Measure the configured pane bounds.
 5. Use the existing translation target language. Preserve original locators across mode, language,
    font, and viewport changes. Source progress is authoritative.
 6. Translate only enough sentences to fill the current and following bilingual page. At a page
@@ -43,7 +40,8 @@ Build a translated book incrementally, saving reusable sentence translations in 
 - [9.1 Layout](9.1-layout.md): paragraph flow, measurement, gestures, position preservation.
 - [9.2 AI API](9.2-ai-api.md): stable IDs, translated-book storage, generation prompt.
 - [9.3 Cache](9.3-cache.md): offline storage and bounded demand.
-- [9.4 Alignment](9.4-alignment.md): phrase matching, tap/selection gestures, and AI language context.
+- [9.4 Alignment](9.4-alignment.md): phrase matching, tap/selection gestures, and AI language
+  context.
 
 ## Scope
 
@@ -58,7 +56,7 @@ Checked items reflect unit tests and desktop/phone-emulated checks; physical che
 
 - [x] Each book restores its own mode on navigation/reopen; unset books ignore the legacy mode.
 - [ ] Desktop and phone buttons toggle mode; phone rotation preserves the chosen mode.
-- [ ] Phone panes stack original above translation equally; desktop panes stay side by side.
+- [ ] Both device modes measure their actual pane bounds and preserve all translated content.
 - [x] Neither column scrolls, including long translations and oversized sentences.
 - [x] Horizontal gestures navigate both columns together.
 - [x] Font changes and rotation reuse sentence translations without repeating AI work.
@@ -69,11 +67,11 @@ Checked items reflect unit tests and desktop/phone-emulated checks; physical che
 
 ## Validation
 
-API tests cover canonical IDs, ownership, validation, cached generation, and atomic persistence.
-Web tests cover demand bounds, continuations, source offsets, cache/account isolation, restore,
-cache → database GET → AI ordering, and atomic measured-page updates.
-Manual /dev/bilingual-fixture checks on 2026-09-21 verified desktop toggle, simulated phone rotation,
-cached re-entry, and stable arrivals. Standalone Playwright rerun and iPhone checks remain pending.
+API tests cover canonical IDs, ownership, validation, cached generation, and atomic persistence. Web
+tests cover demand bounds, continuations, source offsets, cache/account isolation, restore, cache →
+database GET → AI ordering, and atomic measured-page updates. Manual /dev/bilingual-fixture checks
+on 2026-09-21 verified desktop toggle, simulated phone rotation, cached re-entry, and stable
+arrivals. Standalone Playwright rerun and iPhone checks remain pending.
 
 2026-09-24: manual phone mode and stacked-pane geometry have unit coverage. Browser regression
 checks cover toggling, rotation, paging, and header fit; execution is pending because the local

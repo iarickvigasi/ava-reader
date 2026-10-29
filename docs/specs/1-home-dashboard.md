@@ -16,77 +16,58 @@ The signed-in landing page: resume reading, stats, daily goal, annotations, and 
 
 ## Behaviour
 
-1. Home loads a cached payload (recents, featured, stats, collections) and renders offline.
-   Route loading and cache hydration show a full-page skeleton matching populated Home.
-2. Stats reconcile local sessions against the cached reading snapshot
-   (see [[6-reading-sessions-progress]]).
+1. Home loads a cached payload (recents, featured, stats, collections) and renders offline. Route
+   loading and cache hydration show a full-page skeleton matching populated Home.
+2. Stats reconcile local sessions against the cached reading snapshot (see
+   [[6-reading-sessions-progress]]).
 3. Current-book card resumes reading at the saved position; cards link into library/reader.
 4. The collections panel lists the first six collections in the library's display order
    ([[3-library/3.1-library-screen]] §3) — the six most relevant shelves, not the six with the
-   lowest sortOrder. Rows open the clicked collection's page (payload carries the slug);
-   the panel header's "open all" opens the library. A cached payload predating the slug field
-   falls back to the library link until revalidation refreshes it.
+   lowest sortOrder. Rows open the clicked collection's page (payload carries the slug); the panel
+   header's "open all" opens the library. A cached payload predating the slug field falls back to
+   the library link until revalidation refreshes it.
 5. Now Listening uses the current engagement’s library item ID for cached covers before network.
-   Below `md` the cover and the title/author
-   share a row — the cover column is a percentage of the card, so cover and title scale together
-   on a narrow phone — and the "coming soon" line, the times/bar and the transport each span the
-   full card width beneath it. From `md` the cover spans the whole stack in its own column.
-   Titles too wide for the column hyphenate (`hyphens-auto`, dictionary keyed off `<html lang>`).
-6. Slow-action feedback ([styles.md](../styles.md) §Buttons): resume surfaces (desktop button,
-   mobile engagement card — not covers) swap their label to "Opening" + trailing ellipsis dots
-   while reader navigation is pending; import buttons (incl. the empty-state first upload) show
-   "Uploading" + dots from file pick until the refreshed payload renders.
-7. The quote block shows one quote from a fixed curated list, picked by UTC day so it changes once
-   a day and every viewer sees the same quote. Each pass through the list is shuffled by a seeded
-   PRNG keyed to the pass number: the order looks different every cycle, yet all quotes still show
-   before any repeats, and the pick stays reproducible on both server and client. Quotes stay in
-   their original English in all locales and live in a code list (`home-quotes.ts`), not in the
-   i18n message files.
-8. Recent annotations shows up to three stacked quote cards, one latest saved annotation per
-   non-archived book, ordered by the shared engagement timestamp (latest read, opened, or added).
-   Books without annotations are skipped before selecting three. Home fetches annotation text
-   only for those selected books, using annotation counts on library metadata to find candidates.
-   Fewer eligible books show fewer cards; no annotations shows the existing empty state.
-9. Daily mastery headings link to `/app/insights` on desktop and mobile.
-   Daily mastery uses the user's saved reading goal (60 minutes when unset). Local goal edits
-   immediately update remaining minutes, the chart scale, and completion for all displayed days,
-   including days without new reading activity. Reading minutes are preserved.
-10. After hydration, mastery shows seven device-local dates ending today, retaining matching cached days
-    and adding unsynced reading per date. New dates show locally known activity until refresh.
-    The existing 30-second stats refresh and tab-resume refresh advance stale windows.
-    Initial rendering retains the cached window to keep server/client hydration consistent.
-    Detect the device IANA timezone on hydration/resume; only today follows the current device zone.
-    Historical minutes retain the local dates of each session’s saved start timezone.
-    Calendar-day changes and timezone changes refresh the cache and chart without a reload.
+6. Resume actions report pending navigation as “Opening”; imports report “Uploading” from file
+   selection until refreshed metadata is available. The book-cover link remains a resume action.
+7. The quote block shows one quote from a fixed curated list, picked by UTC day so it changes once a
+   day and every viewer sees the same quote. Each pass through the list is shuffled by a seeded PRNG
+   keyed to the pass number: the order looks different every cycle, yet all quotes still show before
+   any repeats, and the pick stays reproducible on both server and client. Quotes stay in their
+   original English in all locales and live in a code list (`home-quotes.ts`), not in the i18n
+   message files.
+8. Recent annotations shows up to three entries, one latest saved annotation per non-archived book,
+   ordered by the shared engagement timestamp (latest read, opened, or added). Books without
+   annotations are skipped before selecting three. Home fetches annotation text only for those
+   selected books, using annotation counts on library metadata to find candidates. Fewer eligible
+   books show fewer cards; no annotations shows the existing empty state.
+9. Daily mastery headings link to `/app/insights` on desktop and mobile. Daily mastery uses the
+   user's saved reading goal (60 minutes when unset). Local goal edits immediately update remaining
+   minutes, the chart scale, and completion for all displayed days, including days without new
+   reading activity. Reading minutes are preserved.
+10. After hydration, mastery shows seven device-local dates ending today, retaining matching cached
+    days and adding unsynced reading per date. New dates show locally known activity until refresh.
+    The existing 30-second stats refresh and tab-resume refresh advance stale windows. Initial
+    rendering retains the cached window to keep server/client hydration consistent. Detect the
+    device IANA timezone on hydration/resume; only today follows the current device zone. Historical
+    minutes retain the local dates of each session’s saved start timezone. Calendar-day changes and
+    timezone changes refresh the cache and chart without a reload.
 11. Mastery scrolls horizontally through seven-day device-local windows, initially ending today.
-    Arrow and keyboard navigation jumps to exact week boundaries anchored to today's window;
-    loading earlier dates must not interrupt a move and leave partially clipped days.
-    Older weeks load on demand with seven-column skeletons and weekday labels, with no visible loading,
-    previous-week prompt, or error text. The previous arrow retries failures.
-    Scrollbars stay hidden on desktop and mobile using scoped native scrollbar rules; horizontal
-    scrolling remains enabled and vertical chart overflow is clipped. Once today leaves the viewport,
-    “Back to today” replaces the daily-goal message; otherwise the message stays visible.
-    Date/arrow controls use compact vertical spacing. Chart height, including date controls, is
-    11rem on mobile and 15rem on desktop. Bars, goal lines, and loading skeletons occupy 85% of
-    the available plot height, anchored to the bottom; labels and controls keep their positions.
-    Loading columns match the actual bars' top-only rounding: `rounded-t-xs` on mobile and
-    `rounded-t-sm` on desktop, with square bottom corners.
-    Responsive hide/show and resize preserve the viewed dates using the last visible scroll offset;
-    hidden charts must not replace that offset with their reset DOM position.
-    Prepending preserves the viewed dates; today’s summary remains fixed. Stop at the earliest
-    recorded day, not an empty week. Earlier weeks stay in memory only and are never persisted.
-    Offline users can browse already loaded weeks. Missing weeks remain retryable; authentication
-    recovery or reconnect automatically retries the requested week without a page reload.
-    Token and request deadlines prevent an indefinitely pending skeleton.
-12. A localized `FeatureCards` introduction. Empty Home places it after welcome/import actions;
-    populated Home places it immediately before developer contacts and feedback.
-
-13. Featured public books use the same public work cover as Explore, resolved through the
-    approved reading asset’s main catalog-entry ID. Never use the main Book cover as a fallback.
-    Missing mappings or catalog outages show a placeholder; cached Home payloads refresh normally.
-    Developer contacts appear above feedback on mobile and in the left column beside it on desktop;
-    see [[10-user-profile]] for eligibility,
-    localization, link behaviour, and offline handling.
+    Arrow and keyboard navigation jumps to exact week boundaries anchored to today's window; loading
+    earlier dates must not interrupt a move and leave partially clipped days. Older weeks load on
+    demand and keep weekday/date context while pending. The previous-week action retries failures.
+    Once today is no longer viewed, “Back to today” replaces the goal message; otherwise the goal
+    message remains available. Responsive hide/show and resize preserve the viewed dates using the
+    last visible scroll offset; hidden charts must not replace that offset with their reset DOM
+    position. Prepending preserves the viewed dates; today’s summary remains fixed. Stop at the
+    earliest recorded day, not an empty week. Earlier weeks stay in memory only and are never
+    persisted. Offline users can browse already loaded weeks. Missing weeks remain retryable;
+    authentication recovery or reconnect automatically retries the requested week without a page
+    reload. Token and request deadlines prevent an indefinitely pending skeleton.
+12. A localized introduction explains available features on empty and populated Home.
+13. Featured public books use the same public work cover as Explore, resolved through the approved
+    reading asset’s main catalog-entry ID. Never use the main Book cover as a fallback. Missing
+    mappings or catalog outages show a placeholder; cached Home payloads refresh normally. Developer
+    contacts follow [[10-user-profile]] for eligibility, localization, links and offline use.
 
 ## Data & sync
 
@@ -107,20 +88,13 @@ Cold start offline → minimal shell; stale payload + fresh local deltas; no cur
 - [ ] Resume card opens the current book at the last position.
 - [ ] Clicking a collections-panel row opens that collection at /app/library/collections/[slug].
 - [ ] Recent annotations shows the latest quote from each of three recently engaged books with
-      annotations, or fewer cards when fewer books qualify, using the existing quote card design.
-- [ ] Covers render whole (never cropped) whatever the source image ratio — one shared
-      `<BookCover>` owns ratio and fit app-wide, see [styles.md](../styles.md).
-- [ ] Resume and import controls show their pending label (Opening/Uploading + trailing dots)
-      while the action is in flight.
+      annotations, or fewer entries when fewer books qualify.
+- [ ] Resume and import controls report pending navigation/upload until completion.
 - [ ] The quote block shows the same quote for a whole UTC day and a different one the next day,
       cycling through the full list before repeating, in a different order each pass.
-- [ ] Below `md`, Now Listening renders the title beside the cover and never overflows its column
-      at any phone width; from `md` the layout is unchanged.
 
 ## Known gaps
 
-- A title long enough to overrun its column falls back to a mid-word break with no hyphen where the
-  browser lacks a hyphenation dictionary; past five lines it truncates (`line-clamp-5`).
 - `listening.authorLine` carries authors only; the "coming soon" line is web copy. A cached payload
   written before that split still holds the old combined string, so the suffix shows twice until
   revalidation refreshes the home bucket.

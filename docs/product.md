@@ -5,12 +5,11 @@ See architecture.md for how; specs/ for per-feature behaviour. Keep ≤150 lines
 ## Thesis
 
 AVA Reader (avareader.space) is a cross-platform reading app built around an integrated AI assistant
-that turns reading into an interactive process.
-Instead of passively moving through text, readers investigate meaning as they go — clarifying hard
-passages, exploring etymology,
-translating, answering questions, and unpacking references without breaking focus. The AI is a
-contextual guide available at any moment.
-At its core the app is a tool for **learning, and connecting to similar-minded people**.
+that turns reading into an interactive process. Instead of passively moving through text, readers
+investigate meaning as they go — clarifying hard passages, exploring etymology, translating,
+answering questions, and unpacking references without breaking focus. The AI is a contextual guide
+available at any moment. At its core the app is a tool for **learning, and connecting to
+similar-minded people**.
 
 ## Audience
 
@@ -34,7 +33,7 @@ At its core the app is a tool for **learning, and connecting to similar-minded p
 - Read books of various formats across devices, online or fully offline.
 - Understand hard passages in flow — explain, etymology, translate, ask questions — without leaving
   the page.
-- Read foreign books via **parallel translation**: explore the original beside a translation and
+- Read foreign books via **parallel translation**: explore an original text and its translation and
   start learning the language while reading something exciting.
 - **Listen**: high quality theatrical AI narration with different voices for characters. Full voice
   interaction — interrupt, ask questions, and control playback hands-free.
@@ -83,7 +82,8 @@ book/author pages. See specs/.
 - **AI chat about a book** (the diary's discussion layer; UI scaffold exists).
 - **Listening / TTS narration** with voice interaction (preferences UI scaffold exists).
 - **Connect**: community introduction first, then opt-in reader profiles and reader discovery.
-- **Insights** (reading analytics), reached from Home’s Daily mastery; **Explore** saved books and upload linking.
+- **Insights** (reading analytics), reached from Home’s Daily mastery; **Explore** saved books and
+  upload linking.
 - BYO-key + credit accounting and billing.
 
 ## Roadmap — later

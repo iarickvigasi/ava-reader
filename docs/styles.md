@@ -1,108 +1,60 @@
 # Styles
 
-The app's visual language. Tokens live in `apps/web/app/globals.css`; classes
-compose with `cn()` (`lib/cn.ts`). Tailwind v4, theme-switched via `data-theme`.
-Extends [conventions.md](conventions.md) §Code — this is the visual layer.
+The only documentation for UI appearance and element placement. Other docs own behavior and data.
+Tokens: `apps/web/app/globals.css`; compose with `cn()` and Tailwind v4; theme via `data-theme`.
 
-## Theming & color
+## Foundations
 
-Light + dark under `:root[data-theme]`; every color is a CSS var surfaced as a
-Tailwind token. **Never hardcode a color** — no `#hex`/`rgb()` in `className`.
-Tune with `/NN` opacity (`text-ink/55`, `bg-ink/40`).
+- All colors use theme CSS variables, never hardcoded class colors; use `/NN` for opacity.
+- Surfaces: `paper`, `paper-strong`, `surface`, `surface-strong`; text:
+  `title`/`copy`/`ink`/`muted`.
+- Actions: `brand-fill`/`brand-foreground`, `soft-fill`/`soft-foreground`; status: `success`,
+  `danger`.
+- Accents: `plum`, `olive`, `sand`; dividers: `line`, `line-strong`; selections: `highlight-*`.
+- Radius: `rounded-cover` 6px, `control` 14px, `card` 18px, `modal` 28px, `shell` 32px, `full`
+  circles.
+- No decorative borders; structural dividers use `border-line`, drop zones may be dashed.
+- Shadows: `shadow-(--shadow-soft|--shadow-card|--shadow-nav)`; motion uses theme-aware transitions.
+- Use `ScreenContainer` (`max-w-6xl`, responsive padding); spacing rhythm: 2 / 3 / 4 / 6.
+- Layers: overlays `z-50`, sticky navigation `z-40`, local poppers `z-10`.
+- Scrollbars: transparent tracks/corners and muted thumbs (`app/scrollbars.css`).
 
-- Surfaces — `paper`, `paper-strong`, `surface`, `surface-strong`
-- Text — `title` headings · `copy`/`copy-strong` body · `ink` UI · `muted` meta
-- Action — `brand-fill`(+`-strong`, `brand-foreground`) primary ·
-  `soft-fill`/`soft-tone-fill`/`soft-foreground` secondary
-- Status `success`/`danger` · accents `plum`/`olive`/`sand` · dividers `line`/`line-strong` ·
-  `highlight-*`(+`-inverse`)
+## Typography and shared primitives
 
-## Type
+| Primitive             | Visual contract                                                                                                                                                                                                                           |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Typography            | `font-display`: Abhaya Libre + Source Serif 4 Cyrillic; `font-reader`: Noto Serif for reader/dialog titles; `font-ui`: Inter; `font-sans`: Afacad + Nunito Sans Cyrillic. Use utilities rather than raw font variables.                   |
+| Script companions     | Cyrillic-only, size-matched faces precede Latin fallbacks. Nunito Sans adjustment 88.65%, Source Serif 4 87.4%; sources/build/license facts remain in `apps/web/app/fonts/README.md`.                                                     |
+| Eyebrows              | `font-ui`, weight 700, uppercase, tracking 0.16em, muted; 10.8px below `sm`, 10px from `sm`.                                                                                                                                              |
+| BookCover             | Shared cover frame hugs decoded artwork; initial book ratio 2:3, audio square. Never crop; preserve artwork ratio and rounded shadow. Call sites set width/shadow/margins only.                                                           |
+| Button                | Shared `components/ui/button.tsx`; filled, borderless, `rounded-control`. Primary brand fill/shadow; soft secondary fill; ghost transparent; danger destructive confirmation. Compact modal actions use `sm`.                             |
+| PendingLabel          | Keep width stable with stacked labels; pending label and trailing animated dots fade in after 150ms. No literal ellipsis in pending copy.                                                                                                 |
+| TextInput/SearchField | Filled, borderless, rounded controls with visible keyboard focus. Shared search has soft-tone fill, inset muted-brown focus ring and themed native clear control.                                                                         |
+| ActionCard            | Matching bold rounded icons; serif action title and muted, normally weighted UI caption; destructive actions use danger color.                                                                                                            |
+| Modal                 | Transparent blurred backdrop in both themes; rounded panel and card shadow. Day panels use `surface-strong`, with inner `paper` controls; dark text fields use lighter `soft-fill`.                                                       |
+| Modal forms           | Shared right-aligned compact `ModalActions`, soft Cancel, primary/danger confirmation; 28px themed checkboxes align with the first text line. Smaller placeholders; normal entered text. Repeatable forms use dividers, not nested cards. |
+| Empty states          | Shared illustrated Library/Explore state; reader panel placeholders use centered text and 20% message padding.                                                                                                                            |
+| Description           | Serif text, theme colors, start alignment, readable width and generous line/paragraph spacing.                                                                                                                                            |
 
-| Utility        | Font                                   | Use                               |
-| -------------- | -------------------------------------- | --------------------------------- |
-| `font-display` | Abhaya Libre + Source Serif 4 Cyrillic | headings, hero numerals           |
-| `font-reader`  | Noto Serif                             | reader body **and dialog titles** |
-| `font-ui`      | Inter                                  | eyebrows, labels, meta            |
-| `font-sans`    | Afacad + Nunito Sans Cyrillic          | default body                      |
+## Page and reader composition
 
-Cyrillic companions use script-only, size-matched faces; Latin retains its original fonts.
-Font sources, metrics and licenses: [font notes](../apps/web/app/fonts/README.md).
-
-Always the utility — never `font-(--font-x)`. **Eyebrow/overline** (ubiquitous):
-`font-ui text-[0.675rem] font-bold uppercase tracking-[0.16em] text-muted sm:text-[0.625rem]`.
-Inter eyebrows/overlines use weight 700: 10.8px below `sm`, 10px from `sm`, to visually match
-Home’s Afacad Currently engaged label. Keep contextual colors and tracking; other UI text varies.
-
-## Radius — tokens; map any ad-hoc value to the nearest
-
-- `rounded-cover` 6px — book covers (applied by `<BookCover>`, never by a call site).
-  The value lives in `globals.css` `@theme`; this line only documents it.
-- `rounded-control` 14px — buttons, inputs, chips
-- `rounded-card` 18px — cards, tiles, panels
-- `rounded-modal` 28px — dialogs, overlays
-- `rounded-shell` 32px — page shells
-- `rounded-full` circles & icon-pills
-
-## Book covers → `components/app/shared/book-cover.tsx`
-
-Every cover renders through `<BookCover>`. The frame hugs the artwork — `ratio` (`"book"` 2:3 ·
-`"audiobook"` square) only reserves space until the image reports its natural size — so the rounded
-clip and shadow trace the cover, never a letterbox bar. The placeholder fills the frame until the
-image decodes. Call sites pass width/shadow/margins only; never an `aspect-*`, radius or background.
-
-## Borders
-
-No **decorative** borders — shape comes from fill + shadow. Keep only
-**structural** hairline dividers: directional `border-t/b/x/y` in `border-line(/NN)`,
-plus dashed drop-zones. Focus shows a **ring**, never a border.
-
-## Shadow & motion
-
-Shadows are theme-switched vars: `shadow-(--shadow-soft|--shadow-card|--shadow-nav)`
-— use the `()` shorthand, not `[var(...)]`. Motion: `transition` +
-`duration-200`/`300` + `ease-out`; skeletons `animate-pulse`; named keyframes in globals.css.
-Interactive titles hover to `ink` (`hover:text-ink`; cards `group-hover:text-ink`) + `transition`.
-
-## Buttons → `components/ui/button.tsx`
-
-`rounded-control`, fill-based, **no border**. Variants `primary` (brand-fill +
-`shadow-(--shadow-card)`), `soft` (soft-fill), `ghost` (transparent → hover
-`soft-fill`), `danger` (bg-danger — destructive confirms). Sizes `md` (default) ·
-`sm` (compact, uppercase — modal/secondary actions). Reuse the primitive; don't
-hand-roll `<button className>`.
-**Pending actions**: a control firing a slow action swaps its label through `<PendingLabel>`
-(`components/app/shared/pending-label.tsx`) — stacked layers keep width stable while the pending
-text + trailing `<DotPulseIcon>` (an animated ellipsis on the baseline) fade in after 150ms, so
-instant completions never flash. Pending strings carry no literal "…" — the dots are the ellipsis.
-
-## Inputs → `components/ui/text-input.tsx`
-
-`rounded-control`, filled (`bg-paper`/`bg-paper-strong`), no border, `outline-none`
-
-- visible `focus-visible:ring-2 focus-visible:ring-line-strong`.
-
-Search fields reuse `components/app/shared/search-field.tsx` across reader panels, Library, and
-Explore. Use its soft-tone fill and inset, muted-brown focus ring (`ring-muted/60`): the ring stays inside the
-input so scroll containers cannot clip it. Keep labels accessible without visible helper text.
-The native clear control stays inside the field and uses the muted theme color.
-Reader empty states reuse `overlays/panel-placeholder.tsx`, with centered text and 20% padding.
-
-## Modals & overlays
-
-Backdrop `fixed inset-0 z-50 flex … bg-transparent backdrop-blur-sm`, click-to-close.
-Keep backdrops transparent in both themes; native dialogs use
-`backdrop:bg-transparent backdrop:backdrop-blur-sm` to override the browser tint.
-Panel `rounded-modal bg-paper`/`bg-surface` + `shadow-(--shadow-card)`,
-with day-theme fills overridden to `surface-strong` by `app/modal-surfaces.css`; inside these
-panels, `soft-fill` and `paper-strong` use `paper`; dark modal text fields use lighter `soft-fill`.
-`role="dialog" aria-modal`, Escape closes, title `font-reader`. Action row uses
-shared `ModalActions` with small buttons and soft Cancel; `Checkbox` supplies themed 28px controls.
-
-## Z-index & layout
-
-`z-50` modals/overlays · `z-40` sticky nav/headers · `z-10` local poppers/menus.
-Wrap screens in `<ScreenContainer>` (`max-w-6xl`, responsive px). Spacing rhythm:
-`gap`/`space-y` in 2 / 3 / 4 / 6.
-
-Scrollbars use transparent tracks/corners and muted theme-colored thumbs (`app/scrollbars.css`).
+| Surface           | Placement and responsive treatment                                                                                                                                                                                                                                                                                                                       |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Home              | Mobile Now Listening shares cover/title in a row, with status/transport below; desktop cover has its own column. Titles hyphenate, fall back to mid-word wrapping, and clamp after five lines.                                                                                                                                                           |
+| Daily mastery     | Compact date controls; chart 11rem mobile, 15rem desktop; bars/goal/loading use 85% plot height from the bottom. Rounded bar tops only; hidden native scrollbars.                                                                                                                                                                                        |
+| Contacts/feedback | Stack developers before feedback below `lg`; desktop uses equal columns, developers left. Feedback spans the row when contacts are absent.                                                                                                                                                                                                               |
+| Connect           | Reader masonry uses 320px minimum columns and 16px gaps; place each card in the shortest column, ties left to right, retaining source order. Cards hug content; responsive natural-height grid before measurement.                                                                                                                                       |
+| Profile preview   | Match discovery fill; align introduction/preview labels. Mobile introduction grows with text; desktop starts at three lines. Empty discovery centers its icon and invitation.                                                                                                                                                                            |
+| Library           | Collections use one horizontal book row without scroll controls. Completion sits right of the author, matching type/size with olive accent. Long authors ellipsize while reserving completion space.                                                                                                                                                     |
+| Filters           | Library uses two mobile rows for source/availability and progress, one row from `sm`; Explore retains its category and language grouping.                                                                                                                                                                                                                |
+| Book annotations  | Equal desktop columns; stack Highlights before Comments below `lg`, with independent scroll regions capped at `100dvh`. Menus escape clipping and flip near viewport edges.                                                                                                                                                                              |
+| Explore details   | Reuse Library covers/type and shared Read/Listen controls. Read follows author; About edition/work sits left of Read with a 1.5rem gap. Metadata/estimates use aligned two-column groups and generous gaps.                                                                                                                                              |
+| Explore actions   | Below cover/header: under the cover without a description, otherwise right of the description. Private linking first, Delete last; keep Edit, publication and attachment order. Author editing is one-third desktop width, full mobile width.                                                                                                            |
+| Explore results   | Bounded cover frames, compact/clamped titles, smaller fallback-cover titles capped at five lines; loading placeholders match page composition.                                                                                                                                                                                                           |
+| Account header    | Fixed-size avatar/initials circle; desktop name/avatar share a soft-hover trigger. Names wrap beyond 12rem instead of truncating. Mobile AVA centers between equal-width sides; status reserves stable space.                                                                                                                                            |
+| Reader header     | Bold uppercase body font, muted, small responsive type and wide tracking; tighter mobile treatment. Desktop title truncates at 75ch; mobile reserves up to 40% for author or chapter when needed. Logo respects safe area and 1rem inset.                                                                                                                |
+| Reader navigation | Previous left, Next right, progress centered even with one action absent; text/arrows use `text-title/85`, no fills. Keep footer height stable.                                                                                                                                                                                                          |
+| Bilingual         | Desktop original left/translation right; phone uses equal stacked panes, original above, with a structural divider. Match ordinary reader type and paragraph flow; no sentence-row alignment padding or shrinking type to fit.                                                                                                                           |
+| Reader opening    | Fit cover within both dimensions with 12px margin; overlay above chrome. Hold at least one second; reveal settled content with a 300ms blur/fade, skipped for reduced motion.                                                                                                                                                                            |
+| Reader emphasis   | Source script runs use native sup/sub baseline treatment without extra line height. List padding 1.8em; page paint allowance 12–24px inside a 48px page gap. Phrase alignment uses theme-aware warm yellow.                                                                                                                                              |
+| Search/selection  | Reader panels share transparent desktop/translucent mobile surfaces and entry animation. Search-result emphasis holds one second, then fades over two. Counts use UI uppercase/tracking; reserve count height. Selection Copy uses a check icon for about two seconds. Collapsed selection previews ellipsize; expanded previews wrap without animation. |

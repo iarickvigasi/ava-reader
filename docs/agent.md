@@ -20,6 +20,9 @@ product.md, dev.md, and the relevant docs/specs/_.md. For consequential decision
 ## Rules
 
 - Spec is source of truth for behaviour, ADR for decisions; code follows them.
+- Only styles.md describes UI placement or appearance. Other docs describe logic, behavior, data,
+  permissions, states, and algorithms; link to styles.md instead of duplicating visual instructions.
+  Remove visual prescriptions when editing docs; retain geometry only when needed for correctness.
 - A fix never gets its own spec — edit the existing spec that owns the behaviour (Workflow §1);
   never add a new docs/specs/N file for a bug fix.
 - Specs are product functionality only. Dev tooling/workflow (compose files, dev scripts, CI) is
@@ -30,9 +33,9 @@ product.md, dev.md, and the relevant docs/specs/_.md. For consequential decision
   file instead of duplicating.
 - Clean code: one function/component per file; split large components; logic in hooks + pure
   functions. Refactor toward the limits, never add to a violation.
-- Write code minimalistically — the smallest change that fixes the problem actually observed. Do
-  not pre-fix predicted problems: report them and document them in the owning spec (Known gap /
-  Open questions) instead.
+- Write code minimalistically — the smallest change that fixes the problem actually observed. Do not
+  pre-fix predicted problems: report them and document them in the owning spec (Known gap / Open
+  questions) instead.
 - Code reads as a sequence of named steps. A function that does several things is a short list of
   calls to small, intent-named helpers (find → clamp → pick → compose), each doing one thing; the
   helpers live below it in the same file, or in a use-\*.ts hook / sibling module when they are a
@@ -40,18 +43,18 @@ product.md, dev.md, and the relevant docs/specs/_.md. For consequential decision
   until the top level reads like text. Components stay layout-only: derivations move to hooks,
   branching to pure functions. Duplicated blocks (e.g. the same ownership check in three service
   methods) become one shared helper.
-- Relocating a file (splitting a folder, renaming) → `git mv` it, then edit the moved file in
-  place. Never `rm`/delete the old path and `Write` a fresh file at the new one — that severs git's
-  rename tracking and history. A 1-to-many split (one file's logic spread across several new ones)
-  still starts with `git mv` for whichever new file keeps most of the original; the rest are
-  legitimately new files.
-- After a `git mv`/rename, grep docs for the old path too — spec "Code:" headers and prose
-  reference source files, and stale paths there are as broken as a stale import. Update every hit.
+- Relocating a file (splitting a folder, renaming) → `git mv` it, then edit the moved file in place.
+  Never `rm`/delete the old path and `Write` a fresh file at the new one — that severs git's rename
+  tracking and history. A 1-to-many split (one file's logic spread across several new ones) still
+  starts with `git mv` for whichever new file keeps most of the original; the rest are legitimately
+  new files.
+- After a `git mv`/rename, grep docs for the old path too — spec "Code:" headers and prose reference
+  source files, and stale paths there are as broken as a stale import. Update every hit.
 - Before declaring done, `git add` explicit paths for every file created or changed by the task,
   including tests, migrations, and docs. Check `git status --short` for missed files or later edits.
   Leave unrelated changes untouched; do not commit or push unless the user requests it.
 - Run the installed Prettier on every file created or edited, including tests and docs, using its
-  applicable project configuration. Format explicit changed paths, then verify with `--check`.
-  For unsupported formats, use the existing native formatter when available and report any skips.
-  Assess size limits after formatting; never compress code to avoid Prettier's line wrapping.
+  applicable project configuration. Format explicit changed paths, then verify with `--check`. For
+  unsupported formats, use the existing native formatter when available and report any skips. Assess
+  size limits after formatting; never compress code to avoid Prettier's line wrapping.
 - Verify before declaring done: pnpm typecheck, lint, test.

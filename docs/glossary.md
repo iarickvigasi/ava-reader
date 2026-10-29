@@ -7,8 +7,8 @@ Catalog and infrastructure terms: [catalog glossary](glossary-catalog.md).
 - **Bucket** — per-(book/user) offline state container: in-memory snapshot + pending mutation
   queue + Dexie persistence + sync.
 - **Snapshot** — authoritative server state held in a bucket.
-- **Pending / Mutation** — queued local op (upsert, delete, generate.\*) awaiting flush; coalesced to
-  one per id.
+- **Pending / Mutation** — queued local op (upsert, delete, generate.\*) awaiting flush; coalesced
+  to one per id.
 - **Flush** — replay pending mutations to the API, idempotently (keyed by client ULID), then apply
   the server snapshot.
 - **Drop / DropEvent** — permanent mutation failure (e.g. 4xx); surfaced to the user as a toast.
@@ -31,14 +31,13 @@ Catalog and infrastructure terms: [catalog glossary](glossary-catalog.md).
   for one layout (pending | ready | failed); built by measuring the chapter offscreen.
 - **Layout key** — measurement cache key `libraryItemId:chapterId:width:height:fontScale`; a resize
   or font change mints a new key → re-measure → re-paginate.
-- **Spread / Prefix / Spillover** — wide screens render two columns side-by-side (a _spread_); a
-  single-page neighbour is surfaced as _prefix_ (previous → column 1) or _spillover_ (next → column 2) so no half-screen is wasted.
+- **Spread / Prefix / Spillover** — a paired-page pagination group; prefix and spillover identify
+  pages supplied by the previous or next chapter at a chapter boundary.
 - **Preloader** — offscreen render of the chapter window that measures each chapter's layout without
   displaying it.
 - **Page box** — the rectangle pages are laid into (viewport minus header); its size drives column
   count and page span.
-- **Page span / Page gap** — horizontal distance between consecutive pages (page width + `PAGE_GAP`,
-  48px).
+- **Page span / Page gap** — distance between consecutive pages: page width plus `PAGE_GAP`.
 - **Page resolution** — outcome of mapping a locator to a page: `exact`, `block-start`, or
   `missing-block`.
 - **Restore phase** — `restoring → settled` state machine gating locator publishing and article
@@ -54,16 +53,15 @@ Catalog and infrastructure terms: [catalog glossary](glossary-catalog.md).
 - **Settle scheduler** — single-slot debounce timer (`settle-scheduler.ts`): the storm of events one
   gesture emits (`touchend`, then a synthetic `mouseup`) collapses to one check.
 - **Compatibility (synthetic) mouse events** — `mousedown` / `mouseup` / `click` the browser
-  _fabricates_ after a touch so legacy mouse-only code still works; may echo a real selection gesture
-  and must not override its touch check.
-- **Native callout** — the OS text menu (iOS Copy/Look-Up, Android Copy/Translate); touch checks drop
-  the live selection to keep it from covering the panel.
+  _fabricates_ after a touch so legacy mouse-only code still works; may echo a real selection
+  gesture and must not override its touch check.
+- **Native callout** — the OS text menu (iOS Copy/Look-Up, Android Copy/Translate); touch checks
+  drop the live selection to keep it from covering the panel.
 
 ## Reader — UI & annotations
 
 - **Panel** — reader sidebar drawer (contents, preferences, highlights, ai-comments, ai-toolbox,
-  ai-chats,
-  search); toggled via ReaderUiContext.
+  ai-chats, search); toggled via ReaderUiContext.
 - **Highlight** — user text selection with a color, anchored by a locator.
 - **AI Comment** — AI annotation (translate, explain, etymology) anchored to a locator.
 - **AI Toolbox** — on-selection AI tools (translate, explain, etymology) with streaming output.
