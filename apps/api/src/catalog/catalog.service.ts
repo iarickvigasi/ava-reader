@@ -1,6 +1,10 @@
+import { parseCatalogStatus } from './parse-catalog-status';
+import { assertImportedCatalogEdit } from './publication/assert-imported-catalog-edit';
+import { readStoredBlob } from './publication/read-stored-blob';
+import { storeCatalogUpload } from './publication/store-catalog-upload';
+import { catalogPublicationChange } from './publication/catalog-publication-change';
 import { PUBLIC_CATALOG_BOOK } from '../shared/private-book-access';
 import {
-  BlobPurpose,
   BookFileFormat,
   BookFileKind,
   CatalogStatus,
@@ -11,11 +15,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UsersService } from '../users/users.service';
 import { LibraryService } from '../library/library.service';
-import {
-  bufferToDataUrl,
-  checksumBuffer,
-  toPrismaBytes,
-} from '../shared/blob-utils';
+import { bufferToDataUrl } from '../shared/blob-utils';
 import {
   parseBooleanInput,
   parseOptionalNumberInput,
@@ -26,7 +26,7 @@ import {
   extractBookMetadata,
   isSupportedSourceFormat,
 } from '../shared/metadata-extractor';
-import { inferMimeType, normalizeBookLanguage } from '../shared/book-utils';
+import { normalizeBookLanguage } from '../shared/book-utils';
 
 type CatalogFormInput = Record<string, unknown>;
 type CatalogFilesInput = {
@@ -73,7 +73,9 @@ export class CatalogService {
       orderBy: [{ sortOrder: 'asc' }, { updatedAt: 'desc' }],
     });
 
-    return entries.map((entry) => this.serializeCatalogEntry(entry));
+    return Promise.all(
+      entries.map((entry) => this.serializeCatalogEntry(entry)),
+    );
   }
 
   async createCatalogEntry(
@@ -99,31 +101,12 @@ export class CatalogService {
     const metadata = await extractBookMetadata(sourceFile);
     const coverImage = files.coverImage?.[0];
 
+    const { sourceBlob, coverBlob } = await storeCatalogUpload(
+      this.prisma,
+      sourceFile,
+      coverImage,
+    );
     const entry = await this.prisma.$transaction(async (tx) => {
-      const sourceBlob = await tx.storedBlob.create({
-        data: {
-          purpose: BlobPurpose.BOOK_SOURCE,
-          mimeType: sourceFile.mimetype || inferMimeType(format),
-          sizeBytes: sourceFile.size,
-          originalFilename: sourceFile.originalname,
-          checksum: checksumBuffer(sourceFile.buffer),
-          bytes: toPrismaBytes(sourceFile.buffer),
-        },
-      });
-
-      const coverBlob = coverImage
-        ? await tx.storedBlob.create({
-            data: {
-              purpose: BlobPurpose.BOOK_COVER,
-              mimeType: coverImage.mimetype || 'image/*',
-              sizeBytes: coverImage.size,
-              originalFilename: coverImage.originalname,
-              checksum: checksumBuffer(coverImage.buffer),
-              bytes: toPrismaBytes(coverImage.buffer),
-            },
-          })
-        : null;
-
       return tx.catalogEntry.create({
         data: {
           status: parseCatalogStatus(body.status),
@@ -159,7 +142,7 @@ export class CatalogService {
               coverBlobId: coverBlob?.id,
               files: {
                 create: {
-                  blobId: sourceBlob.id,
+                  blobId: sourceBlob!.id,
                   format,
                   kind: BookFileKind.SOURCE,
                   processingStatus: ProcessingStatus.READY,
@@ -217,6 +200,7 @@ export class CatalogService {
       );
     }
 
+    assertImportedCatalogEdit(currentEntry, body, files);
     const sourceFile = files.sourceFile?.[0];
     const coverImage = files.coverImage?.[0];
     const format = sourceFile ? detectBookFileFormat(sourceFile) : null;
@@ -229,36 +213,16 @@ export class CatalogService {
 
     const metadata = sourceFile ? await extractBookMetadata(sourceFile) : null;
 
+    const { sourceBlob, coverBlob } = await storeCatalogUpload(
+      this.prisma,
+      sourceFile,
+      coverImage,
+    );
     const entry = await this.prisma.$transaction(async (tx) => {
       let coverBlobId = currentEntry.book.coverBlobId;
 
-      if (coverImage) {
-        const coverBlob = await tx.storedBlob.create({
-          data: {
-            purpose: BlobPurpose.BOOK_COVER,
-            mimeType: coverImage.mimetype || 'image/*',
-            sizeBytes: coverImage.size,
-            originalFilename: coverImage.originalname,
-            checksum: checksumBuffer(coverImage.buffer),
-            bytes: toPrismaBytes(coverImage.buffer),
-          },
-        });
-
-        coverBlobId = coverBlob.id;
-      }
-
-      if (sourceFile && format) {
-        const sourceBlob = await tx.storedBlob.create({
-          data: {
-            purpose: BlobPurpose.BOOK_SOURCE,
-            mimeType: sourceFile.mimetype || inferMimeType(format),
-            sizeBytes: sourceFile.size,
-            originalFilename: sourceFile.originalname,
-            checksum: checksumBuffer(sourceFile.buffer),
-            bytes: toPrismaBytes(sourceFile.buffer),
-          },
-        });
-
+      if (coverBlob) coverBlobId = coverBlob.id;
+      if (sourceBlob && format) {
         await tx.bookFile.updateMany({
           where: {
             bookId: currentEntry.bookId,
@@ -311,7 +275,7 @@ export class CatalogService {
       return tx.catalogEntry.update({
         where: { id: entryId },
         data: {
-          status,
+          ...catalogPublicationChange(currentEntry, status),
           editorialTitle: normalizeNullableValue(body.editorialTitle),
           editorialDescription: normalizeNullableValue(
             body.editorialDescription,
@@ -373,7 +337,7 @@ export class CatalogService {
     return this.libraryService.addCatalogBookToLibrary(clerkUserId, entryId);
   }
 
-  private serializeCatalogEntry(entry: CatalogEntryRecord) {
+  private async serializeCatalogEntry(entry: CatalogEntryRecord) {
     const sourceFile = entry.book.files.find(
       (file) => file.kind === BookFileKind.SOURCE && file.isPrimary,
     );
@@ -383,7 +347,7 @@ export class CatalogService {
         authors: entry.book.authors,
         coverImageDataUrl: entry.book.coverBlob
           ? bufferToDataUrl(
-              entry.book.coverBlob.bytes,
+              await readStoredBlob(entry.book.coverBlob),
               entry.book.coverBlob.mimeType,
             )
           : null,
@@ -405,24 +369,6 @@ export class CatalogService {
       updatedAt: entry.updatedAt.toISOString(),
     };
   }
-}
-
-function parseCatalogStatus(value: unknown) {
-  if (typeof value !== 'string' || value.trim().length === 0) {
-    return CatalogStatus.DRAFT;
-  }
-
-  const normalized = value.trim().toUpperCase();
-
-  if (normalized === CatalogStatus.PUBLISHED) {
-    return CatalogStatus.PUBLISHED;
-  }
-
-  if (normalized === CatalogStatus.ARCHIVED) {
-    return CatalogStatus.ARCHIVED;
-  }
-
-  return CatalogStatus.DRAFT;
 }
 
 function parseAuthorsInput(value: unknown) {

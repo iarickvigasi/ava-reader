@@ -10,6 +10,11 @@ it.each([1, 0])(
     const tx = { bookFile: { updateMany, create: createBackup } };
     const createBlob = jest.fn().mockResolvedValue({ id: 'new-blob' });
     const prisma = {
+      book: {
+        findUniqueOrThrow: jest
+          .fn()
+          .mockResolvedValue({ visibility: 'PRIVATE' }),
+      },
       storedBlob: { create: createBlob },
       $transaction: (callback: (value: typeof tx) => Promise<unknown>) =>
         callback(tx),

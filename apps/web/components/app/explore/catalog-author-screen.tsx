@@ -1,4 +1,5 @@
 "use client";
+import { CatalogAdminTools } from "./admin/catalog-admin-tools";
 
 import { BookBackLink } from "@/components/app/shared/books/book-back-link";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,9 @@ export function CatalogAuthorScreen() {
       {author && (
         <>
           <BookTitle>{author.displayName}</BookTitle>
+          <div className="w-full lg:w-1/3">
+            <CatalogAdminTools kind="authors" id={author.id} />
+          </div>
           {catalogText(author.texts, locale)?.biography && (
             <CatalogBiography
               biography={catalogText(author.texts, locale)!.biography!}

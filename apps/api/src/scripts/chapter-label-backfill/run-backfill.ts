@@ -1,3 +1,4 @@
+import { readStoredBlob } from '../../catalog/publication/read-stored-blob';
 import type { PrismaClient } from '@prisma/client';
 import { parseReaderPackage } from '../../reader/package/parse-reader-package';
 import type { ReaderPackage } from '../../reader/reader-types';
@@ -30,9 +31,9 @@ export async function runBackfill(prisma: PrismaClient, apply: boolean) {
       try {
         const blob = await prisma.storedBlob.findUniqueOrThrow({
           where: { id: file.blobId },
-          select: { bytes: true },
+          select: { bytes: true, catalogBlobId: true, checksum: true },
         });
-        const bytes = Buffer.from(blob.bytes);
+        const bytes = await readStoredBlob(blob);
         parseReaderPackage(bytes); // Validate with the reader's supported format.
         // Retain raw metadata and content: this is a label-only edit.
         const raw = JSON.parse(bytes.toString('utf8')) as ReaderPackage;

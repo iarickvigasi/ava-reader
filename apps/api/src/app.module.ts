@@ -1,3 +1,11 @@
+import { ReadingOperatorController } from './catalog/reading-import/reading-operator.controller';
+import { ReadingOperatorGuard } from './catalog/reading-import/reading-operator.guard';
+import { ReadingUnpublishController } from './catalog/reading-import/reading-unpublish.controller';
+import { ReadingDetailsController } from './catalog/reading-details.controller';
+import { PrivateCatalogLinksController } from './library/catalog-link/private-catalog-links.controller';
+import { CatalogLinkController } from './library/catalog-link/catalog-link.controller';
+import { EditionWorkController } from './catalog/editorial/edition-work.controller';
+import { EditorialController } from './catalog/editorial/editorial.controller';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AiCommentsController } from './ai-comments/ai-comments.controller';
@@ -15,6 +23,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CatalogController } from './catalog/catalog.controller';
 import { CatalogService } from './catalog/catalog.service';
+import { ReviewsController } from './catalog/reading-import/reviews.controller';
+import { PublicationSyncService } from './catalog/publication/publication-sync.service';
+import { ReadingImportController } from './catalog/reading-import/reading-import.controller';
+import { ReadingImportService } from './catalog/reading-import/reading-import.service';
 import { FeedbackController } from './feedback/feedback.controller';
 import { FeedbackService } from './feedback/feedback.service';
 import { HomeController } from './home/home.controller';
@@ -34,6 +46,7 @@ import { UsersService } from './users/users.service';
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true })],
   controllers: [
+    ReadingDetailsController,
     AppController,
     UsersController,
     HomeController,
@@ -41,6 +54,14 @@ import { UsersService } from './users/users.service';
     CollectionMembershipController,
     ReaderController,
     CatalogController,
+    EditorialController,
+    EditionWorkController,
+    CatalogLinkController,
+    PrivateCatalogLinksController,
+    ReviewsController,
+    ReadingImportController,
+    ReadingOperatorController,
+    ReadingUnpublishController,
     FeedbackController,
     AiCommentsController,
     AiToolboxController,
@@ -51,6 +72,7 @@ import { UsersService } from './users/users.service';
     AppService,
     PrismaService,
     ClerkAuthGuard,
+    ReadingOperatorGuard,
     ClerkAuthService,
     UsersService,
     PreferencesService,
@@ -60,6 +82,8 @@ import { UsersService } from './users/users.service';
     ReaderService,
     ReaderProcessingService,
     CatalogService,
+    PublicationSyncService,
+    ReadingImportService,
     FeedbackService,
     AiCommentsService,
     OpenRouterClient,

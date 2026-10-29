@@ -5,18 +5,20 @@ enum ReadingAssetStatus {
 }
 
 model ReadingAsset {
-  id                 String             @id @default(uuid()) @db.Uuid
-  editionId          String             @db.Uuid
-  sourceUrl          String
-  checksum           String
-  mediaType          String
-  rightsStatement    String
-  rightsUrl          String
-  rightsJurisdiction String
-  reviewedAt         DateTime
-  status             ReadingAssetStatus @default(PENDING)
-  mainCatalogEntryId String?
-  edition            Edition            @relation(fields: [editionId], references: [id], onDelete: Restrict)
+  id                  String             @id @default(uuid()) @db.Uuid
+  editionId           String             @db.Uuid
+  sourceUrl           String
+  checksum            String
+  mediaType           String
+  reviewDeferred      Boolean            @default(false)
+  rightsStatement     String
+  rightsUrl           String
+  rightsJurisdiction  String
+  reviewedAt          DateTime
+  status              ReadingAssetStatus @default(PENDING)
+  mainCatalogEntryId  String?
+  publicationRevision Int                @default(0)
+  edition             Edition            @relation(fields: [editionId], references: [id], onDelete: Restrict)
 
   @@unique([editionId, checksum])
   @@index([status, editionId])

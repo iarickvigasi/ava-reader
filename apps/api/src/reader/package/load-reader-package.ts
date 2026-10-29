@@ -1,6 +1,7 @@
 import type { PrismaService } from '../../prisma/prisma.service';
 import type { ReaderPackage } from '../reader-types';
 import { parseReaderPackage } from './parse-reader-package';
+import { readStoredBlob } from '../../catalog/publication/read-stored-blob';
 import {
   clearReaderPackageLoad,
   getCachedReaderPackage,
@@ -15,9 +16,9 @@ async function loadBlobBytes(
 ): Promise<Buffer> {
   const blob = await prisma.storedBlob.findUniqueOrThrow({
     where: { id: blobId },
-    select: { bytes: true },
+    select: { bytes: true, catalogBlobId: true, checksum: true },
   });
-  return Buffer.from(blob.bytes);
+  return readStoredBlob(blob);
 }
 
 export async function loadReaderPackage(

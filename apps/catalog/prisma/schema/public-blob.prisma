@@ -1,0 +1,12 @@
+model PublicBlob {
+  id               String   @id @default(uuid()) @db.Uuid
+  purpose          String
+  checksum         String
+  mimeType         String
+  originalFilename String
+  sizeBytes        Int
+  bytes            Bytes
+  createdAt        DateTime @default(now())
+
+  @@unique([checksum, purpose])
+}

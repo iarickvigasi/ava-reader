@@ -3,6 +3,7 @@
 import { useLayoutEffect, useEffect, type RefObject } from "react";
 import type { CatalogWork } from "@/lib/catalog-types";
 import { restoreVirtualGrid, type GridRestorer } from "./restore-virtual-grid";
+import { useIsCatalogAdmin } from "./admin/use-is-catalog-admin";
 import { useGridViewport } from "./use-grid-viewport";
 import { useGridAnchor } from "./use-grid-anchor";
 import { virtualCatalogRange } from "./virtual-catalog-range";
@@ -22,7 +23,8 @@ export function useVirtualCatalogGrid(
       restoreRef.current = null;
     };
   }, [ref, items, restoreRef]);
-  const viewport = useGridViewport(ref);
+  const admin = useIsCatalogAdmin();
+  const viewport = useGridViewport(ref, admin);
   useGridAnchor(items, viewport, ref);
   const firstRow = Math.max(
     0,

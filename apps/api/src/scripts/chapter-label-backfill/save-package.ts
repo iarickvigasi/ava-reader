@@ -1,3 +1,4 @@
+import { storeBookBlob } from '../../catalog/publication/store-book-blob';
 import {
   BlobPurpose,
   Prisma,
@@ -14,7 +15,11 @@ export async function savePackage(
   index: Prisma.InputJsonValue | null,
 ) {
   const bytes = Buffer.from(JSON.stringify(readerPackage));
-  const blob = await prisma.storedBlob.create({
+  const book = await prisma.book.findUniqueOrThrow({
+    where: { id: file.bookId },
+    select: { visibility: true },
+  });
+  const blob = await storeBookBlob(prisma, book.visibility === 'PUBLIC', {
     data: {
       bytes: toPrismaBytes(bytes),
       checksum: checksumBuffer(bytes),
@@ -23,7 +28,6 @@ export async function savePackage(
       purpose: BlobPurpose.DERIVED_READER,
       sizeBytes: bytes.byteLength,
     },
-    select: { id: true },
   });
   // The old blob remains referenced by a non-primary backup file, safe from GC.
   // Keep the primary file ID: analysis and translations still refer to the same content.

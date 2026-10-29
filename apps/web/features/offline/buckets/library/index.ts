@@ -69,3 +69,13 @@ export {
 } from "./read-reader-cover";
 
 export { acquireCatalogBook } from "./acquire-catalog-book";
+export { acquireAdminPreview } from "./acquire-admin-preview";
+
+export {
+  useCatalogLink,
+  useWorkCopies,
+  setCatalogLink,
+  flushCatalogLinks,
+  clearCatalogLinkRuntime,
+  type CatalogLink,
+} from "./catalog-link";

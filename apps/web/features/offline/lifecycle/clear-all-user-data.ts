@@ -10,6 +10,7 @@ import { clearWarmCover } from "../buckets/book";
 import {
   clearCollectionMembershipRuntime,
   clearFinishDateRuntime,
+  clearCatalogLinkRuntime,
   clearLibraryBucket,
   clearWarmReaderCovers,
 } from "../buckets/library";
@@ -51,6 +52,7 @@ function resetInMemoryBuckets(): void {
   clearAllTranslationBuckets();
   clearCollectionMembershipRuntime();
   clearFinishDateRuntime();
+  clearCatalogLinkRuntime();
   clearLibraryBucket();
   clearAllAiCommentsBuckets();
   clearAllHighlightsBuckets();

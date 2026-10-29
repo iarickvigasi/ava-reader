@@ -1,0 +1,2623 @@
+{
+  "version": 1,
+  "researchedAt": "2026-10-29",
+  "scope": "Bibliographic and ordinary-term research; never exact-file publication approval",
+  "books": [
+    {
+      "id": "400963b6ef10e1a3fa08",
+      "title": "Faust",
+      "author": "Johann Wolfgang von Goethe",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1832,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Johann_Wolfgang_von_Goethe",
+        "authorPageSha256": "22c5ba11d6ca7bbf403f9874e5d04e95eb1c8dd14f6ce8411fc211fcd961ff76",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://de.wikisource.org/wiki/Faust"],
+        "ordinaryLife70Expiry": "1903-01-01",
+        "life100ComparisonExpiry": "1933-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "21000",
+          "url": "https://www.gutenberg.org/ebooks/21000",
+          "catalogTitle": "Faust: Eine Tragödie [erster Teil]",
+          "catalogAuthors": "Goethe, Johann Wolfgang von, 1749-1832",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://de.wikisource.org/wiki/Faust",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "40230b77f787c207e7d8",
+      "title": "Die Judenbuche",
+      "author": "Annette von Droste-Hülshoff",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1848,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Annette_von_Droste-Hülshoff",
+        "authorPageSha256": "9011c50a96f26c1d448650f95c2925653764b8176ee65de5748f92572c3b8f36",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://de.wikisource.org/wiki/Die_Judenbuche"],
+        "ordinaryLife70Expiry": "1919-01-01",
+        "life100ComparisonExpiry": "1949-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "45798",
+          "url": "https://www.gutenberg.org/ebooks/45798",
+          "catalogTitle": "Die Judenbuche",
+          "catalogAuthors": "Droste-Hülshoff, Annette von, 1797-1848; Unold, Max, 1885-1964 [Illustrator]",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://de.wikisource.org/wiki/Die_Judenbuche",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "bacf7c55b2f816dd6799",
+      "title": "Die Leiden des jungen Werthers",
+      "author": "Johann Wolfgang von Goethe",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1832,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Johann_Wolfgang_von_Goethe",
+        "authorPageSha256": "22c5ba11d6ca7bbf403f9874e5d04e95eb1c8dd14f6ce8411fc211fcd961ff76",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1903-01-01",
+        "life100ComparisonExpiry": "1933-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "textgrid",
+          "url": "https://textgridrep.org/browse/4bjkj.0",
+          "formats": ["TEI_XML", "EPUB_EXPORT"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Die Leiden des jungen Werthers",
+          "catalogAuthors": "Goethe, Johann Wolfgang von",
+          "metadataUrl": "https://textgridlab.org/1.0/tgcrud-public/rest/textgrid:4bjkj.0/metadata",
+          "notes": "Text object verified in catalog; EPUB export, completeness and object/edition license need validation before integration.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "downloadUrl": "https://textgridlab.org/1.0/aggregator/epub/textgrid:4bjkj.0",
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "53f83cf7b7c5ebc4a1e9",
+      "title": "Die Schlacht im Loener Bruch",
+      "author": "Annette von Droste-Hülshoff",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1848,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Annette_von_Droste-Hülshoff",
+        "authorPageSha256": "9011c50a96f26c1d448650f95c2925653764b8176ee65de5748f92572c3b8f36",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": false,
+        "titleEvidenceUrls": ["https://www.droste-gesellschaft.de/chronik/"],
+        "ordinaryLife70Expiry": "1919-01-01",
+        "life100ComparisonExpiry": "1949-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "e-rara",
+          "url": "https://www.e-rara.ch/zuz/content/titleinfo/30522486",
+          "formats": ["PDF", "DIGITIZED_SCAN"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "Complete 1844 Gedichte collection; poem starts at section /zuz/content/zoom/30523054. Item states Public Domain Mark. Not the bilingual first-song excerpt circulated elsewhere.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "licenseEvidenceUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+          "license": "Public Domain Mark",
+          "downloadUrl": "https://www.e-rara.ch/zuz/download/pdf/30522486",
+          "completeness": "LOCATE_WORK_WITHIN_COLLECTION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "80cc953ad56a27ef7149",
+      "title": "Wilhelm Meisters Lehrjahre",
+      "author": "Johann Wolfgang von Goethe",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1832,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Johann_Wolfgang_von_Goethe",
+        "authorPageSha256": "22c5ba11d6ca7bbf403f9874e5d04e95eb1c8dd14f6ce8411fc211fcd961ff76",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1903-01-01",
+        "life100ComparisonExpiry": "1933-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "2335",
+          "url": "https://www.gutenberg.org/ebooks/2335",
+          "catalogTitle": "Wilhelm Meisters Lehrjahre — Band 1",
+          "catalogAuthors": "Goethe, Johann Wolfgang von, 1749-1832",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "2336",
+          "url": "https://www.gutenberg.org/ebooks/2336",
+          "catalogTitle": "Wilhelm Meisters Lehrjahre — Band 2",
+          "catalogAuthors": "Goethe, Johann Wolfgang von, 1749-1832",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "2337",
+          "url": "https://www.gutenberg.org/ebooks/2337",
+          "catalogTitle": "Wilhelm Meisters Lehrjahre — Band 3",
+          "catalogAuthors": "Goethe, Johann Wolfgang von, 1749-1832",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "0ef1e4402d56cfa06fe0",
+      "title": "Das geistliche Jahr",
+      "author": "Annette von Droste-Hülshoff",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1848,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Annette_von_Droste-Hülshoff",
+        "authorPageSha256": "9011c50a96f26c1d448650f95c2925653764b8176ee65de5748f92572c3b8f36",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1919-01-01",
+        "life100ComparisonExpiry": "1949-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "bibliotheca-augustana",
+          "url": "https://www.tha.de/~harsch/germanica/Chronologie/19Jh/Droste/dro_javo.html",
+          "formats": ["HTML"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "Preface/contents-linked edition; validate every poem and provider reuse terms.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "PROVIDER_TERMS_AND_EDITORIAL_RIGHTS_UNVERIFIED",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "3b38c9e1bc588c15f215",
+      "title": "Die Wahlverwandtschaften",
+      "author": "Johann Wolfgang von Goethe",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1832,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Johann_Wolfgang_von_Goethe",
+        "authorPageSha256": "22c5ba11d6ca7bbf403f9874e5d04e95eb1c8dd14f6ce8411fc211fcd961ff76",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1903-01-01",
+        "life100ComparisonExpiry": "1933-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "2403",
+          "url": "https://www.gutenberg.org/ebooks/2403",
+          "catalogTitle": "Die Wahlverwandtschaften",
+          "catalogAuthors": "Goethe, Johann Wolfgang von, 1749-1832",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "caf73ae711a5f01573b7",
+      "title": "Die letzte Reckenburgerin",
+      "author": "Louise von François",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1893,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Louise_von_François",
+        "authorPageSha256": "8fda7032fc7d9418f02a82282748eef2e48b93c2029726992d6acd09e823d339",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1964-01-01",
+        "life100ComparisonExpiry": "1994-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "textgrid",
+          "url": "https://textgridrep.org/browse/n24t.0",
+          "formats": ["TEI_XML", "EPUB_EXPORT"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Die letzte Reckenburgerin",
+          "catalogAuthors": "François, Louise von",
+          "metadataUrl": "https://textgridlab.org/1.0/tgcrud-public/rest/textgrid:n24t.0/metadata",
+          "notes": "Text object verified in catalog; EPUB export, completeness and object/edition license need validation before integration.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "downloadUrl": "https://textgridlab.org/1.0/aggregator/epub/textgrid:n24t.0",
+          "licenseEvidenceUrl": "http://creativecommons.org/licenses/by/3.0/de/legalcode",
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "45caa497cae6fd3b3a24",
+      "title": "Iphigenie auf Tauris",
+      "author": "Johann Wolfgang von Goethe",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1832,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Johann_Wolfgang_von_Goethe",
+        "authorPageSha256": "22c5ba11d6ca7bbf403f9874e5d04e95eb1c8dd14f6ce8411fc211fcd961ff76",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1903-01-01",
+        "life100ComparisonExpiry": "1933-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "2054",
+          "url": "https://www.gutenberg.org/ebooks/2054",
+          "catalogTitle": "Iphigenie auf Tauris",
+          "catalogAuthors": "Goethe, Johann Wolfgang von, 1749-1832",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "4e2ddd27f9f391be24ad",
+      "title": "Stufenjahre eines Glücklichen",
+      "author": "Louise von François",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1893,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Louise_von_François",
+        "authorPageSha256": "8fda7032fc7d9418f02a82282748eef2e48b93c2029726992d6acd09e823d339",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1964-01-01",
+        "life100ComparisonExpiry": "1994-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "textgrid",
+          "url": "https://textgridrep.org/browse/n248.0",
+          "formats": ["TEI_XML", "EPUB_EXPORT"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Stufenjahre eines Glücklichen",
+          "catalogAuthors": "François, Louise von",
+          "metadataUrl": "https://textgridlab.org/1.0/tgcrud-public/rest/textgrid:n248.0/metadata",
+          "notes": "Text object verified in catalog; EPUB export, completeness and object/edition license need validation before integration.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "downloadUrl": "https://textgridlab.org/1.0/aggregator/epub/textgrid:n248.0",
+          "licenseEvidenceUrl": "http://creativecommons.org/licenses/by/3.0/de/legalcode",
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "6c3c84aa03d81ce96ea3",
+      "title": "Die Räuber",
+      "author": "Johann Christoph Friedrich von Schiller",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1805,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Friedrich_Schiller",
+        "authorPageSha256": "67a5009ae506e093176dcd1bd5cf65a937123b4b173eb09e4760702eb38c89f5",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://de.wikisource.org/wiki/Die_Räuber"],
+        "ordinaryLife70Expiry": "1876-01-01",
+        "life100ComparisonExpiry": "1906-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "47804",
+          "url": "https://www.gutenberg.org/ebooks/47804",
+          "catalogTitle": "Die Räuber: Ein Schauspiel",
+          "catalogAuthors": "Schiller, Friedrich, 1759-1805",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://de.wikisource.org/wiki/Die_Räuber",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "d9be9bec1fc9eb68b25b",
+      "title": "Frau Erdmuthens Zwillingssöhne",
+      "author": "Louise von François",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1893,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Louise_von_François",
+        "authorPageSha256": "8fda7032fc7d9418f02a82282748eef2e48b93c2029726992d6acd09e823d339",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1964-01-01",
+        "life100ComparisonExpiry": "1994-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "bayerische-staatsbibliothek",
+          "url": "https://www.digitale-sammlungen.de/de/view/bsb11156088",
+          "formats": ["DIGITIZED_SCAN"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "Volume 1; also bsb11156089 volume 2. No EPUB verified.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "MULTIVOLUME_CHECK_REQUIRED"
+        },
+        {
+          "provider": "bayerische-staatsbibliothek",
+          "url": "https://www.digitale-sammlungen.de/de/view/bsb11156089",
+          "formats": ["DIGITIZED_SCAN"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "Volume 2; both volumes required. No EPUB verified.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "MULTIVOLUME_CHECK_REQUIRED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "679de519bc263cbda56d",
+      "title": "Kabale und Liebe",
+      "author": "Johann Christoph Friedrich von Schiller",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1805,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Friedrich_Schiller",
+        "authorPageSha256": "67a5009ae506e093176dcd1bd5cf65a937123b4b173eb09e4760702eb38c89f5",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://de.wikisource.org/wiki/Kabale_und_Liebe"
+        ],
+        "ordinaryLife70Expiry": "1876-01-01",
+        "life100ComparisonExpiry": "1906-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "6498",
+          "url": "https://www.gutenberg.org/ebooks/6498",
+          "catalogTitle": "Kabale und Liebe: Ein bürgerliches Trauerspiel",
+          "catalogAuthors": "Schiller, Friedrich, 1759-1805",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://de.wikisource.org/wiki/Kabale_und_Liebe",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "725627a145cee9eeaddf",
+      "title": "Das Gemeindekind",
+      "author": "Marie von Ebner-Eschenbach",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1916,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Marie_von_Ebner-Eschenbach",
+        "authorPageSha256": "88071c45b0a8352e21bbcdf08cce315ed82d2de61b38a2569ca9fae85a9b0f20",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1987-01-01",
+        "life100ComparisonExpiry": "2017-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "textgrid",
+          "url": "https://textgridrep.org/browse/mksx.0",
+          "formats": ["TEI_XML", "EPUB_EXPORT"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Das Gemeindekind",
+          "catalogAuthors": "Ebner-Eschenbach, Marie von",
+          "metadataUrl": "https://textgridlab.org/1.0/tgcrud-public/rest/textgrid:mksx.0/metadata",
+          "notes": "Text object verified in catalog; EPUB export, completeness and object/edition license need validation before integration.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "downloadUrl": "https://textgridlab.org/1.0/aggregator/epub/textgrid:mksx.0",
+          "licenseEvidenceUrl": "http://creativecommons.org/licenses/by/3.0/de/legalcode",
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "0f5ec6f20ac481f21e6a",
+      "title": "Don Karlos",
+      "author": "Johann Christoph Friedrich von Schiller",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1805,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Friedrich_Schiller",
+        "authorPageSha256": "67a5009ae506e093176dcd1bd5cf65a937123b4b173eb09e4760702eb38c89f5",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1876-01-01",
+        "life100ComparisonExpiry": "1906-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "textgrid",
+          "url": "https://textgridrep.org/browse/tx4z.0",
+          "formats": ["TEI_XML", "EPUB_EXPORT"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "Don Carlos, Infant von Spanien, by Schiller; avoid same-title criticism by Ludwig Boerne. Validate export and edition license.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "downloadUrl": "https://textgridlab.org/1.0/aggregator/epub/textgrid:tx4z.0",
+          "licenseEvidenceUrl": "http://creativecommons.org/licenses/by/3.0/de/legalcode",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "92f9b2872a79f11a9f1d",
+      "title": "Krambambuli",
+      "author": "Marie von Ebner-Eschenbach",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1916,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Marie_von_Ebner-Eschenbach",
+        "authorPageSha256": "88071c45b0a8352e21bbcdf08cce315ed82d2de61b38a2569ca9fae85a9b0f20",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1987-01-01",
+        "life100ComparisonExpiry": "2017-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "textgrid",
+          "url": "https://textgridrep.org/browse/mktc.0",
+          "formats": ["TEI_XML", "EPUB_EXPORT"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Krambambuli",
+          "catalogAuthors": "Ebner-Eschenbach, Marie von",
+          "metadataUrl": "https://textgridlab.org/1.0/tgcrud-public/rest/textgrid:mktc.0/metadata",
+          "notes": "Text object verified in catalog; EPUB export, completeness and object/edition license need validation before integration.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "downloadUrl": "https://textgridlab.org/1.0/aggregator/epub/textgrid:mktc.0",
+          "licenseEvidenceUrl": "http://creativecommons.org/licenses/by/3.0/de/legalcode",
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "729cb855e9a3d1ea6046",
+      "title": "Wilhelm Tell",
+      "author": "Johann Christoph Friedrich von Schiller",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1805,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Friedrich_Schiller",
+        "authorPageSha256": "67a5009ae506e093176dcd1bd5cf65a937123b4b173eb09e4760702eb38c89f5",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://de.wikisource.org/wiki/Wilhelm_Tell"],
+        "ordinaryLife70Expiry": "1876-01-01",
+        "life100ComparisonExpiry": "1906-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "77182",
+          "url": "https://www.gutenberg.org/ebooks/77182",
+          "catalogTitle": "Wilhelm Tell",
+          "catalogAuthors": "Schiller, Friedrich, 1759-1805",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://de.wikisource.org/wiki/Wilhelm_Tell",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "515238704d2222fa189e",
+      "title": "Božena",
+      "author": "Marie von Ebner-Eschenbach",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1916,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Marie_von_Ebner-Eschenbach",
+        "authorPageSha256": "88071c45b0a8352e21bbcdf08cce315ed82d2de61b38a2569ca9fae85a9b0f20",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1987-01-01",
+        "life100ComparisonExpiry": "2017-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "textgrid",
+          "url": "https://textgridrep.org/browse/mktj.0",
+          "formats": ["TEI_XML", "EPUB_EXPORT"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Bozena",
+          "catalogAuthors": "Ebner-Eschenbach, Marie von",
+          "metadataUrl": "https://textgridlab.org/1.0/tgcrud-public/rest/textgrid:mktj.0/metadata",
+          "notes": "Bozena spelling variant; validate export and edition license.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "downloadUrl": "https://textgridlab.org/1.0/aggregator/epub/textgrid:mktj.0",
+          "licenseEvidenceUrl": "http://creativecommons.org/licenses/by/3.0/de/legalcode",
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "46c71a322036fd26a326",
+      "title": "Michael Kohlhaas",
+      "author": "Bernd Heinrich Wilhelm von Kleist",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1811,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Heinrich_von_Kleist",
+        "authorPageSha256": "c19306735d0b6a34d30c07771a55c666f297b971930081b32c91cc41c29698fb",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1882-01-01",
+        "life100ComparisonExpiry": "1912-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "textgrid",
+          "url": "https://textgridrep.org/browse/r0th.0",
+          "formats": ["TEI_XML", "EPUB_EXPORT"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Michael Kohlhaas",
+          "catalogAuthors": "Kleist, Heinrich von",
+          "metadataUrl": "https://textgridlab.org/1.0/tgcrud-public/rest/textgrid:r0th.0/metadata",
+          "notes": "Text object verified in catalog; EPUB export, completeness and object/edition license need validation before integration.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "downloadUrl": "https://textgridlab.org/1.0/aggregator/epub/textgrid:r0th.0",
+          "licenseEvidenceUrl": "http://creativecommons.org/licenses/by/3.0/de/legalcode",
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "538188555799eb94a1b4",
+      "title": "Lotti, die Uhrmacherin",
+      "author": "Marie von Ebner-Eschenbach",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1916,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Marie_von_Ebner-Eschenbach",
+        "authorPageSha256": "88071c45b0a8352e21bbcdf08cce315ed82d2de61b38a2569ca9fae85a9b0f20",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1987-01-01",
+        "life100ComparisonExpiry": "2017-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "textgrid",
+          "url": "https://textgridrep.org/browse/mks5.0",
+          "formats": ["TEI_XML", "EPUB_EXPORT"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Lotti, die Uhrmacherin",
+          "catalogAuthors": "Ebner-Eschenbach, Marie von",
+          "metadataUrl": "https://textgridlab.org/1.0/tgcrud-public/rest/textgrid:mks5.0/metadata",
+          "notes": "Text object verified in catalog; EPUB export, completeness and object/edition license need validation before integration.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "downloadUrl": "https://textgridlab.org/1.0/aggregator/epub/textgrid:mks5.0",
+          "licenseEvidenceUrl": "http://creativecommons.org/licenses/by/3.0/de/legalcode",
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "84ce7dbfc11728342879",
+      "title": "Der zerbrochne Krug",
+      "author": "Bernd Heinrich Wilhelm von Kleist",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1811,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Heinrich_von_Kleist",
+        "authorPageSha256": "c19306735d0b6a34d30c07771a55c666f297b971930081b32c91cc41c29698fb",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://de.wikisource.org/wiki/Der_zerbrochne_Krug"
+        ],
+        "ordinaryLife70Expiry": "1882-01-01",
+        "life100ComparisonExpiry": "1912-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "6647",
+          "url": "https://www.gutenberg.org/ebooks/6647",
+          "catalogTitle": "Der Zerbrochene Krug",
+          "catalogAuthors": "Kleist, Heinrich von, 1777-1811",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://de.wikisource.org/wiki/Der_zerbrochne_Krug",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "248fd4d8ecf8ea527beb",
+      "title": "Unsühnbar",
+      "author": "Marie von Ebner-Eschenbach",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1916,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Marie_von_Ebner-Eschenbach",
+        "authorPageSha256": "88071c45b0a8352e21bbcdf08cce315ed82d2de61b38a2569ca9fae85a9b0f20",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1987-01-01",
+        "life100ComparisonExpiry": "2017-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "textgrid",
+          "url": "https://textgridrep.org/browse/mkrw.0",
+          "formats": ["TEI_XML", "EPUB_EXPORT"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Unsühnbar",
+          "catalogAuthors": "Ebner-Eschenbach, Marie von",
+          "metadataUrl": "https://textgridlab.org/1.0/tgcrud-public/rest/textgrid:mkrw.0/metadata",
+          "notes": "Text object verified in catalog; EPUB export, completeness and object/edition license need validation before integration.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "downloadUrl": "https://textgridlab.org/1.0/aggregator/epub/textgrid:mkrw.0",
+          "licenseEvidenceUrl": "http://creativecommons.org/licenses/by/3.0/de/legalcode",
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "60f122611f67da223f4f",
+      "title": "Penthesilea",
+      "author": "Bernd Heinrich Wilhelm von Kleist",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1811,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Heinrich_von_Kleist",
+        "authorPageSha256": "c19306735d0b6a34d30c07771a55c666f297b971930081b32c91cc41c29698fb",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1882-01-01",
+        "life100ComparisonExpiry": "1912-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "6648",
+          "url": "https://www.gutenberg.org/ebooks/6648",
+          "catalogTitle": "Penthesilea",
+          "catalogAuthors": "Kleist, Heinrich von, 1777-1811",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "316616c55ddb8392d418",
+      "title": "Jenny",
+      "author": "Fanny Lewald",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1889,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Fanny_Lewald",
+        "authorPageSha256": "a818693efab3fa88ceca7fc0870e3c09dfc1f48d4ca4d8a44c88c3389bd3f640",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1960-01-01",
+        "life100ComparisonExpiry": "1990-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "textgrid",
+          "url": "https://textgridrep.org/browse/rm5b.0",
+          "formats": ["TEI_XML", "EPUB_EXPORT"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Jenny",
+          "catalogAuthors": "Lewald, Fanny",
+          "metadataUrl": "https://textgridlab.org/1.0/tgcrud-public/rest/textgrid:rm5b.0/metadata",
+          "notes": "Text object verified in catalog; EPUB export, completeness and object/edition license need validation before integration.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "downloadUrl": "https://textgridlab.org/1.0/aggregator/epub/textgrid:rm5b.0",
+          "licenseEvidenceUrl": "http://creativecommons.org/licenses/by/3.0/de/legalcode",
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "fb8fad30a575dc619e2c",
+      "title": "Der Sandmann",
+      "author": "Ernst Theodor Amadeus Hoffmann",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1822,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/E._T._A._Hoffmann",
+        "authorPageSha256": "546dfc5f1c42856e21d9b7136dd38e5ea908c0dd436fe0c2c27dd2b50f545502",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://de.wikisource.org/wiki/Der_Sandmann"],
+        "ordinaryLife70Expiry": "1893-01-01",
+        "life100ComparisonExpiry": "1923-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://de.wikisource.org/wiki/Der_Sandmann",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "e50c5a6a9eabcdeed6ef",
+      "title": "Clementine",
+      "author": "Fanny Lewald",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1889,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Fanny_Lewald",
+        "authorPageSha256": "a818693efab3fa88ceca7fc0870e3c09dfc1f48d4ca4d8a44c88c3389bd3f640",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1960-01-01",
+        "life100ComparisonExpiry": "1990-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "45965",
+          "url": "https://www.gutenberg.org/ebooks/45965",
+          "catalogTitle": "Clementine",
+          "catalogAuthors": "Lewald, Fanny, 1811-1889",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "ef7638a09ad1635033da",
+      "title": "Der goldne Topf",
+      "author": "Ernst Theodor Amadeus Hoffmann",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1822,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/E._T._A._Hoffmann",
+        "authorPageSha256": "546dfc5f1c42856e21d9b7136dd38e5ea908c0dd436fe0c2c27dd2b50f545502",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://de.wikisource.org/wiki/Der_goldne_Topf"],
+        "ordinaryLife70Expiry": "1893-01-01",
+        "life100ComparisonExpiry": "1923-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "17362",
+          "url": "https://www.gutenberg.org/ebooks/17362",
+          "catalogTitle": "Der Goldene Topf",
+          "catalogAuthors": "Hoffmann, E. T. A. (Ernst Theodor Amadeus), 1776-1822",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://de.wikisource.org/wiki/Der_goldne_Topf",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "44438446d9a4eb405c5f",
+      "title": "Eine Lebensfrage",
+      "author": "Fanny Lewald",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1889,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Fanny_Lewald",
+        "authorPageSha256": "a818693efab3fa88ceca7fc0870e3c09dfc1f48d4ca4d8a44c88c3389bd3f640",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1960-01-01",
+        "life100ComparisonExpiry": "1990-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "textgrid",
+          "url": "https://textgridrep.org/browse/rm5h.0",
+          "formats": ["TEI_XML", "EPUB_EXPORT"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Eine Lebensfrage",
+          "catalogAuthors": "Lewald, Fanny",
+          "metadataUrl": "https://textgridlab.org/1.0/tgcrud-public/rest/textgrid:rm5h.0/metadata",
+          "notes": "Text object verified in catalog; EPUB export, completeness and object/edition license need validation before integration.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "downloadUrl": "https://textgridlab.org/1.0/aggregator/epub/textgrid:rm5h.0",
+          "licenseEvidenceUrl": "http://creativecommons.org/licenses/by/3.0/de/legalcode",
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "c8674c6a220adc8d0313",
+      "title": "Die Elixiere des Teufels",
+      "author": "Ernst Theodor Amadeus Hoffmann",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1822,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/E._T._A._Hoffmann",
+        "authorPageSha256": "546dfc5f1c42856e21d9b7136dd38e5ea908c0dd436fe0c2c27dd2b50f545502",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1893-01-01",
+        "life100ComparisonExpiry": "1923-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "76360",
+          "url": "https://www.gutenberg.org/ebooks/76360",
+          "catalogTitle": "Die Elixiere des Teufels",
+          "catalogAuthors": "Hoffmann, E. T. A. (Ernst Theodor Amadeus), 1776-1822; Stern, Ernst, 1876-1954 [Illustrator]",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "6d26b1b67cce75508f9f",
+      "title": "Diogena",
+      "author": "Fanny Lewald",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1889,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Fanny_Lewald",
+        "authorPageSha256": "a818693efab3fa88ceca7fc0870e3c09dfc1f48d4ca4d8a44c88c3389bd3f640",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1960-01-01",
+        "life100ComparisonExpiry": "1990-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "textgrid",
+          "url": "https://textgridrep.org/browse/rm5r.0",
+          "formats": ["TEI_XML", "EPUB_EXPORT"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Diogena",
+          "catalogAuthors": "Lewald, Fanny",
+          "metadataUrl": "https://textgridlab.org/1.0/tgcrud-public/rest/textgrid:rm5r.0/metadata",
+          "notes": "Text object verified in catalog; EPUB export, completeness and object/edition license need validation before integration.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "downloadUrl": "https://textgridlab.org/1.0/aggregator/epub/textgrid:rm5r.0",
+          "licenseEvidenceUrl": "http://creativecommons.org/licenses/by/3.0/de/legalcode",
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "27637f3e34e5c321f047",
+      "title": "Effi Briest",
+      "author": "Heinrich Theodor Fontane",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1898,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Theodor_Fontane",
+        "authorPageSha256": "bb18641b188dd1c5b41ff67853c108a88ff457a33d57b3c317a96f1a3a26e628",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1969-01-01",
+        "life100ComparisonExpiry": "1999-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "5323",
+          "url": "https://www.gutenberg.org/ebooks/5323",
+          "catalogTitle": "Effi Briest",
+          "catalogAuthors": "Fontane, Theodor, 1819-1898",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "eea0a8124e4e8a9ae84b",
+      "title": "Schloß und Fabrik",
+      "author": "Louise Otto-Peters",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1895,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Louise_Otto-Peters",
+        "authorPageSha256": "3cbe08ea8372a16cf6e227a0db1f6917f69f1cf5b7350db1d927a8b7e277b58a",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1966-01-01",
+        "life100ComparisonExpiry": "1996-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "textgrid",
+          "url": "https://textgridrep.org/browse/swk9.0",
+          "formats": ["TEI_XML", "EPUB_EXPORT"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Schloß und Fabrik",
+          "catalogAuthors": "Otto, Louise",
+          "metadataUrl": "https://textgridlab.org/1.0/tgcrud-public/rest/textgrid:swk9.0/metadata",
+          "notes": "Text object verified in catalog; EPUB export, completeness and object/edition license need validation before integration.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "downloadUrl": "https://textgridlab.org/1.0/aggregator/epub/textgrid:swk9.0",
+          "licenseEvidenceUrl": "http://creativecommons.org/licenses/by/3.0/de/legalcode",
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "6c8fcaa592ec5ebf3ca2",
+      "title": "Irrungen, Wirrungen",
+      "author": "Heinrich Theodor Fontane",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1898,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Theodor_Fontane",
+        "authorPageSha256": "bb18641b188dd1c5b41ff67853c108a88ff457a33d57b3c317a96f1a3a26e628",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1969-01-01",
+        "life100ComparisonExpiry": "1999-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "textgrid",
+          "url": "https://textgridrep.org/browse/n121.0",
+          "formats": ["TEI_XML", "EPUB_EXPORT"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Irrungen, Wirrungen",
+          "catalogAuthors": "Fontane, Theodor",
+          "metadataUrl": "https://textgridlab.org/1.0/tgcrud-public/rest/textgrid:n121.0/metadata",
+          "notes": "Text object verified in catalog; EPUB export, completeness and object/edition license need validation before integration.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "downloadUrl": "https://textgridlab.org/1.0/aggregator/epub/textgrid:n121.0",
+          "licenseEvidenceUrl": "http://creativecommons.org/licenses/by/3.0/de/legalcode",
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "dccbba48c848a8b6b0c5",
+      "title": "Ein Bauernsohn",
+      "author": "Louise Otto-Peters",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1895,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Louise_Otto-Peters",
+        "authorPageSha256": "3cbe08ea8372a16cf6e227a0db1f6917f69f1cf5b7350db1d927a8b7e277b58a",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1966-01-01",
+        "life100ComparisonExpiry": "1996-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "addf-meta",
+          "url": "https://www.meta-katalog.eu/Record/66174addf",
+          "formats": ["MANUSCRIPT_SCAN"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "Institutional finding aid identifies 196-page manuscript as Eines Dichters Heimathdorf / Ein Bauernsohn. Access, edition identity and completeness require checking.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "MANUSCRIPT_IDENTITY_AND_ACCESS_UNVERIFIED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "a9494a82c504a5cc77a3",
+      "title": "Der Stechlin",
+      "author": "Heinrich Theodor Fontane",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1898,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Theodor_Fontane",
+        "authorPageSha256": "bb18641b188dd1c5b41ff67853c108a88ff457a33d57b3c317a96f1a3a26e628",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://de.wikisource.org/wiki/Der_Stechlin"],
+        "ordinaryLife70Expiry": "1969-01-01",
+        "life100ComparisonExpiry": "1999-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "53628",
+          "url": "https://www.gutenberg.org/ebooks/53628",
+          "catalogTitle": "Der Stechlin: Roman",
+          "catalogAuthors": "Fontane, Theodor, 1819-1898",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://de.wikisource.org/wiki/Der_Stechlin",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "e1d83f7969ec3d883a37",
+      "title": "Vier Geschwister",
+      "author": "Louise Otto-Peters",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1895,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Louise_Otto-Peters",
+        "authorPageSha256": "3cbe08ea8372a16cf6e227a0db1f6917f69f1cf5b7350db1d927a8b7e277b58a",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1966-01-01",
+        "life100ComparisonExpiry": "1996-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "google-books",
+          "url": "https://play.google.com/store/books/details/Louise_Otto_Peters_Vier_Geschwister?id=n6NDAQAAMAAJ",
+          "formats": ["DIGITIZED_SCAN"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "1852 volume 2 only; discover other volumes and downloadable formats before considering import.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "MULTIVOLUME_CHECK_REQUIRED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "ec1f5ca90d6bb72ab3a9",
+      "title": "Der Schimmelreiter",
+      "author": "Hans Theodor Woldsen Storm",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1888,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Theodor_Storm",
+        "authorPageSha256": "b2d699052e5f721c60c6751f886bf66c72deebbd49c1cb3b64212b5fd7f75ab4",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://de.wikisource.org/wiki/Der_Schimmelreiter"
+        ],
+        "ordinaryLife70Expiry": "1959-01-01",
+        "life100ComparisonExpiry": "1989-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "74008",
+          "url": "https://www.gutenberg.org/ebooks/74008",
+          "catalogTitle": "Der Schimmelreiter",
+          "catalogAuthors": "Storm, Theodor, 1817-1888",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://de.wikisource.org/wiki/Der_Schimmelreiter",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "a9de8b0fd34339b044c8",
+      "title": "Die Günderode",
+      "author": "Elisabeth Catharina Ludovica Magdalena von Arnim (Bettina von Arnim)",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1859,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Bettina_von_Arnim",
+        "authorPageSha256": "a3ecc2401d0a71e241c91623f4a9ca81515ca280e8490a125bcb7ee3f3f93ff8",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1930-01-01",
+        "life100ComparisonExpiry": "1960-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "textgrid",
+          "url": "https://textgridrep.org/browse/k2k1.0",
+          "formats": ["TEI_XML", "EPUB_EXPORT"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Die Günderode",
+          "catalogAuthors": "Arnim, Bettina von",
+          "metadataUrl": "https://textgridlab.org/1.0/tgcrud-public/rest/textgrid:k2k1.0/metadata",
+          "notes": "Text object verified in catalog; EPUB export, completeness and object/edition license need validation before integration.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "downloadUrl": "https://textgridlab.org/1.0/aggregator/epub/textgrid:k2k1.0",
+          "licenseEvidenceUrl": "http://creativecommons.org/licenses/by/3.0/de/legalcode",
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "01ae8ef5ee69201722a1",
+      "title": "Immensee",
+      "author": "Hans Theodor Woldsen Storm",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1888,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Theodor_Storm",
+        "authorPageSha256": "b2d699052e5f721c60c6751f886bf66c72deebbd49c1cb3b64212b5fd7f75ab4",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://de.wikisource.org/wiki/Immensee"],
+        "ordinaryLife70Expiry": "1959-01-01",
+        "life100ComparisonExpiry": "1989-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "6651",
+          "url": "https://www.gutenberg.org/ebooks/6651",
+          "catalogTitle": "Immensee",
+          "catalogAuthors": "Storm, Theodor, 1817-1888",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://de.wikisource.org/wiki/Immensee",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "5386fc7f849d63503296",
+      "title": "Goethes Briefwechsel mit einem Kinde",
+      "author": "Elisabeth Catharina Ludovica Magdalena von Arnim (Bettina von Arnim)",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1859,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Bettina_von_Arnim",
+        "authorPageSha256": "a3ecc2401d0a71e241c91623f4a9ca81515ca280e8490a125bcb7ee3f3f93ff8",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1930-01-01",
+        "life100ComparisonExpiry": "1960-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "textgrid",
+          "url": "https://textgridrep.org/browse/k2kp.0",
+          "formats": ["TEI_XML", "EPUB_EXPORT"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Goethes Briefwechsel mit einem Kinde",
+          "catalogAuthors": "Arnim, Bettina von",
+          "metadataUrl": "https://textgridlab.org/1.0/tgcrud-public/rest/textgrid:k2kp.0/metadata",
+          "notes": "Text object verified in catalog; EPUB export, completeness and object/edition license need validation before integration.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "downloadUrl": "https://textgridlab.org/1.0/aggregator/epub/textgrid:k2kp.0",
+          "licenseEvidenceUrl": "http://creativecommons.org/licenses/by/3.0/de/legalcode",
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "5982467833cde66c3e94",
+      "title": "Aquis submersus",
+      "author": "Hans Theodor Woldsen Storm",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1888,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Theodor_Storm",
+        "authorPageSha256": "b2d699052e5f721c60c6751f886bf66c72deebbd49c1cb3b64212b5fd7f75ab4",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1959-01-01",
+        "life100ComparisonExpiry": "1989-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "8889",
+          "url": "https://www.gutenberg.org/ebooks/8889",
+          "catalogTitle": "Aquis Submersus",
+          "catalogAuthors": "Storm, Theodor, 1817-1888",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "4855c4708e1b0b7198e4",
+      "title": "Geschichte des Fräuleins von Sternheim",
+      "author": "Marie Sophie von La Roche",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1807,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Sophie_von_La_Roche",
+        "authorPageSha256": "ce8855f81a79fd461e84f33d309824d0a25bd898123de2191624ef58eb5229ca",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1878-01-01",
+        "life100ComparisonExpiry": "1908-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "textgrid",
+          "url": "https://textgridrep.org/browse/rfbc.0",
+          "formats": ["TEI_XML", "EPUB_EXPORT"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Geschichte des Fräuleins von Sternheim",
+          "catalogAuthors": "La Roche, Sophie von",
+          "metadataUrl": "https://textgridlab.org/1.0/tgcrud-public/rest/textgrid:rfbc.0/metadata",
+          "notes": "Text object verified in catalog; EPUB export, completeness and object/edition license need validation before integration.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "downloadUrl": "https://textgridlab.org/1.0/aggregator/epub/textgrid:rfbc.0",
+          "licenseEvidenceUrl": "http://creativecommons.org/licenses/by/3.0/de/legalcode",
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "ee99ff68b9a13fbcfbd4",
+      "title": "Der grüne Heinrich",
+      "author": "Gottfried Keller",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1890,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Gottfried_Keller",
+        "authorPageSha256": "b1d057d23943c25e03cfe35a342436a6ba3940582694045c8625c552870fd0d6",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1961-01-01",
+        "life100ComparisonExpiry": "1991-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "textgrid",
+          "url": "https://textgridrep.org/browse/qrpx.0",
+          "formats": ["TEI_XML", "EPUB_EXPORT"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Der grüne Heinrich [Erste Fassung]",
+          "catalogAuthors": "Keller, Gottfried",
+          "metadataUrl": "https://textgridlab.org/1.0/tgcrud-public/rest/textgrid:qrpx.0/metadata",
+          "notes": "Text object verified in catalog; EPUB export, completeness and object/edition license need validation before integration.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "downloadUrl": "https://textgridlab.org/1.0/aggregator/epub/textgrid:qrpx.0",
+          "licenseEvidenceUrl": "http://creativecommons.org/licenses/by/3.0/de/legalcode",
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "10c0437695194548feff",
+      "title": "Freunde und Freundinnen",
+      "author": "Marie Sophie von La Roche",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1807,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Sophie_von_La_Roche",
+        "authorPageSha256": "ce8855f81a79fd461e84f33d309824d0a25bd898123de2191624ef58eb5229ca",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1878-01-01",
+        "life100ComparisonExpiry": "1908-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "byu-sophie",
+          "url": "https://scholarsarchive.byu.edu/sophiefiction/565/",
+          "formats": ["DOCX"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "Verified transcription; no EPUB or blanket redistribution license established.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "PROVIDER_TERMS_AND_EDITORIAL_RIGHTS_UNVERIFIED",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "5a16a4ca30a0b7e31aea",
+      "title": "Kleider machen Leute",
+      "author": "Gottfried Keller",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1890,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Gottfried_Keller",
+        "authorPageSha256": "b1d057d23943c25e03cfe35a342436a6ba3940582694045c8625c552870fd0d6",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1961-01-01",
+        "life100ComparisonExpiry": "1991-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "textgrid",
+          "url": "https://textgridrep.org/browse/qs8d.0",
+          "formats": ["TEI_XML", "EPUB_EXPORT"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Kleider machen Leute",
+          "catalogAuthors": "Keller, Gottfried",
+          "metadataUrl": "https://textgridlab.org/1.0/tgcrud-public/rest/textgrid:qs8d.0/metadata",
+          "notes": "Text object verified in catalog; EPUB export, completeness and object/edition license need validation before integration.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "downloadUrl": "https://textgridlab.org/1.0/aggregator/epub/textgrid:qs8d.0",
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "bd7350d18aee4dbd3555",
+      "title": "Geschichte von Miß Lony und Der schöne Bund",
+      "author": "Marie Sophie von La Roche",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1807,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Sophie_von_La_Roche",
+        "authorPageSha256": "ce8855f81a79fd461e84f33d309824d0a25bd898123de2191624ef58eb5229ca",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1878-01-01",
+        "life100ComparisonExpiry": "1908-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikimedia-commons",
+          "url": "https://commons.wikimedia.org/wiki/File%3AGeschichte%20von%20Mi%C3%9F%20Lony%20und%20der%20sch%C3%B6ne%20Bund-%20Mit%20zwey%20Kupfern%20%28IA%2010113502bsb%29.pdf",
+          "formats": ["PDF"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "1789 scan, 299 pages, about 143 MB; no readable EPUB verified.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "c59da90a9d44b35fd9a6",
+      "title": "Die Harzreise",
+      "author": "Christian Johann Heinrich Heine",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1856,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Heinrich_Heine",
+        "authorPageSha256": "4c95d3a0bff003bd492a86f6e53bac34da9348a3ef969323be23253ad6f43fc4",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1927-01-01",
+        "life100ComparisonExpiry": "1957-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "24249",
+          "url": "https://www.gutenberg.org/ebooks/24249",
+          "catalogTitle": "Die Harzreise",
+          "catalogAuthors": "Heine, Heinrich, 1797-1856; Lachmann, Otto F. [Editor]",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "9a3558058a673c3d31a0",
+      "title": "Amanda und Eduard",
+      "author": "Sophie Friederike Mereau",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1806,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Sophie_Mereau",
+        "authorPageSha256": "f6ed2d92b5ebedaee5e24aab5c03f5475b1897ba8c78ea0dd407088e705c6702",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1877-01-01",
+        "life100ComparisonExpiry": "1907-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "textgrid",
+          "url": "https://textgridrep.org/browse/scb2.0",
+          "formats": ["TEI_XML", "EPUB_EXPORT"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Amanda und Eduard",
+          "catalogAuthors": "Mereau, Sophie",
+          "metadataUrl": "https://textgridlab.org/1.0/tgcrud-public/rest/textgrid:scb2.0/metadata",
+          "notes": "Text object verified in catalog; EPUB export, completeness and object/edition license need validation before integration.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "downloadUrl": "https://textgridlab.org/1.0/aggregator/epub/textgrid:scb2.0",
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "a7237d13ea6ff9ed324b",
+      "title": "Deutschland. Ein Wintermärchen",
+      "author": "Christian Johann Heinrich Heine",
+      "authorGender": "man",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1856,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Heinrich_Heine",
+        "authorPageSha256": "4c95d3a0bff003bd492a86f6e53bac34da9348a3ef969323be23253ad6f43fc4",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": false,
+        "titleEvidenceUrls": [
+          "https://commons.wikimedia.org/wiki/File:Deutschland_Ein_Winterm%C3%A4hrchen_350.jpg"
+        ],
+        "ordinaryLife70Expiry": "1927-01-01",
+        "life100ComparisonExpiry": "1957-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "6079",
+          "url": "https://www.gutenberg.org/ebooks/6079",
+          "catalogTitle": "Deutschland. Ein Wintermärchen",
+          "catalogAuthors": "Heine, Heinrich, 1797-1856",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "2366008c753e54ce9aa9",
+      "title": "Das Blüthenalter der Empfindung",
+      "author": "Sophie Friederike Mereau",
+      "authorGender": "woman",
+      "language": "de",
+      "originalTextResearch": {
+        "authorDeathYear": 1806,
+        "authorEvidenceUrl": "https://de.wikisource.org/wiki/Sophie_Mereau",
+        "authorPageSha256": "f6ed2d92b5ebedaee5e24aab5c03f5475b1897ba8c78ea0dd407088e705c6702",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1877-01-01",
+        "life100ComparisonExpiry": "1907-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "textgrid",
+          "url": "https://textgridrep.org/browse/scb5.0",
+          "formats": ["TEI_XML", "EPUB_EXPORT"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Das Blüthenalter der Empfindung",
+          "catalogAuthors": "Mereau, Sophie",
+          "metadataUrl": "https://textgridlab.org/1.0/tgcrud-public/rest/textgrid:scb5.0/metadata",
+          "notes": "Text object verified in catalog; EPUB export, completeness and object/edition license need validation before integration.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "downloadUrl": "https://textgridlab.org/1.0/aggregator/epub/textgrid:scb5.0",
+          "licenseEvidenceUrl": "http://creativecommons.org/licenses/by/3.0/de/legalcode",
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    }
+  ]
+}

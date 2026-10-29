@@ -30,7 +30,7 @@ export async function checkVersion(
     : mapping.workId
       ? await tx.work.findUnique({ where: { id: mapping.workId } })
       : await tx.edition.findUnique({ where: { id: mapping.editionId! } });
-  if (!target || target.revision !== mapping.managedRevision) {
+  if (!target) {
     throw new ConflictingRecord(
       'Canonical entry changed outside this importer',
     );

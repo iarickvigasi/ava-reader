@@ -1,3 +1,4 @@
+import { readStoredBlob } from '../../catalog/publication/read-stored-blob';
 import type { BookFile, PrismaClient } from '@prisma/client';
 import { parseReaderPackage } from '../../reader/package/parse-reader-package';
 import { normalizeHrefForLookup } from '../../reader/epub/archive';
@@ -18,9 +19,9 @@ export async function processFile(
 ) {
   const stored = await prisma.storedBlob.findUniqueOrThrow({
     where: { id: file.blobId },
-    select: { bytes: true },
+    select: { bytes: true, catalogBlobId: true, checksum: true },
   });
-  const bytes = Buffer.from(stored.bytes);
+  const bytes = await readStoredBlob(stored);
   parseReaderPackage(bytes);
   // Keep raw blocks and unknown fields; normalization could change unrelated text.
   const original = JSON.parse(bytes.toString('utf8')) as EdgePackage;
@@ -39,9 +40,9 @@ export async function processFile(
     throw new Error('Expected exactly one primary EPUB source');
   const source = await prisma.storedBlob.findUniqueOrThrow({
     where: { id: sources[0].blobId },
-    select: { bytes: true },
+    select: { bytes: true, catalogBlobId: true, checksum: true },
   });
-  const sourceBytes = Buffer.from(source.bytes);
+  const sourceBytes = await readStoredBlob(source);
   if (checksumBuffer(sourceBytes) !== original.manifest.sourceChecksum)
     throw new Error('Source checksum does not match stored package');
   const sections = await readSourceSections(sourceBytes, original);

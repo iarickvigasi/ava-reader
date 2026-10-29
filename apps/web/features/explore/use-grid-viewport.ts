@@ -8,7 +8,10 @@ import {
 } from "./measure-grid-viewport";
 export type { GridViewport } from "./measure-grid-viewport";
 
-export function useGridViewport(ref: RefObject<HTMLElement | null>) {
+export function useGridViewport(
+  ref: RefObject<HTMLElement | null>,
+  layoutRevision = false,
+) {
   const [viewport, setViewport] = useState<GridViewport>({
     columns: 2,
     rowHeight: 440,
@@ -47,6 +50,6 @@ export function useGridViewport(ref: RefObject<HTMLElement | null>) {
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
     };
-  }, [ref]);
+  }, [ref, layoutRevision]);
   return viewport;
 }

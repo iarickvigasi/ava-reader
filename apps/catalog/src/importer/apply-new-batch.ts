@@ -34,7 +34,11 @@ export async function applyNewBatch(
   const rows = await step('prepareRecords', () =>
     Promise.resolve(
       records
-        .filter((row) => !mapped.has(row.externalId!))
+        .filter(
+          (row) =>
+            !mapped.has(row.externalId!) &&
+            object(row.payload).texts === undefined,
+        )
         .map((record) => {
           const raw = object(record.payload);
           if (!text(kind === 'AUTHOR' ? raw.name : raw.title))

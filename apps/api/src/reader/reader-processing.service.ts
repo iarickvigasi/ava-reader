@@ -1,9 +1,4 @@
-import {
-  BlobPurpose,
-  BookFileFormat,
-  BookFileKind,
-  ProcessingStatus,
-} from '@prisma/client';
+import { BookFileFormat, BookFileKind, ProcessingStatus } from '@prisma/client';
 import {
   Injectable,
   Logger,
@@ -12,12 +7,12 @@ import {
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { checksumBuffer, toPrismaBytes } from '../shared/blob-utils';
 import { buildReaderPackageFromEpub } from './epub/epub-reader-package';
 import { estimatePageCount } from './page-estimate';
 import { buildReadingProgressIndex } from './progress/reading-progress-index';
+import { readStoredBlob } from '../catalog/publication/read-stored-blob';
+import { storeReaderOutput } from './store-reader-output';
 
-const READER_PACKAGE_MIME_TYPE = 'application/vnd.ava.reader-package+json';
 const READER_PROCESSING_TRANSACTION_TIMEOUT_MS = 30_000;
 
 @Injectable()
@@ -128,14 +123,13 @@ export class ReaderProcessingService implements OnModuleInit, OnModuleDestroy {
     try {
       const readerPackage = await buildReaderPackageFromEpub({
         authors: run.book.authors,
-        buffer: Buffer.from(sourceFile.blob.bytes),
+        buffer: await readStoredBlob(sourceFile.blob),
         checksum: sourceFile.blob.checksum,
         language: run.book.language,
         title: run.book.title,
       });
       const estimatedPageCount = estimatePageCount(readerPackage);
       const packageBytes = Buffer.from(JSON.stringify(readerPackage), 'utf8');
-      const checksum = checksumBuffer(packageBytes);
       const readingProgressIndex = buildReadingProgressIndex(readerPackage);
 
       // Write the package blob outside the metadata transaction. For large
@@ -144,16 +138,7 @@ export class ReaderProcessingService implements OnModuleInit, OnModuleDestroy {
       // connection plus row locks for the entire write. Same pattern as
       // LibraryService.importBook — orphan blobs are best-effort cleaned up
       // below on failure, with OrphanBlobCleanupService as backstop.
-      const blob = await this.prisma.storedBlob.create({
-        data: {
-          bytes: toPrismaBytes(packageBytes),
-          checksum,
-          mimeType: READER_PACKAGE_MIME_TYPE,
-          originalFilename: `${run.bookId}-reader-package.json`,
-          purpose: BlobPurpose.DERIVED_READER,
-          sizeBytes: packageBytes.byteLength,
-        },
-      });
+      const blob = await storeReaderOutput(this.prisma, run.book, packageBytes);
       createdBlobId = blob.id;
 
       await this.prisma.$transaction(

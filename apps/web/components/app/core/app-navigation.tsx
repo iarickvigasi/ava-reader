@@ -9,7 +9,7 @@ import { useReaderUi } from "@/components/app/core/reader-ui-context";
 import { HomeIcon } from "@/components/app/shared/app-icons";
 import { UserMenuButton } from "@/components/auth/clerk-user-button";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { UserRole, type CurrentUserPayload } from "@/lib/api-types/user";
+import type { CurrentUserPayload } from "@/lib/api-types/user";
 import { isAppNavigationItemActive } from "@/lib/app-navigation";
 import { cn } from "@/lib/cn";
 
@@ -43,7 +43,6 @@ export function AppNavigation({
   const t = useTranslations("nav");
   const pathname = usePathname();
   const isReaderRoute = pathname.startsWith("/app/read/");
-  const isAdmin = currentUser?.roles.includes(UserRole.ADMIN);
 
   if (isReaderRoute) {
     return <ReaderNavigation />;
@@ -53,7 +52,7 @@ export function AppNavigation({
     <>
       <header className="sticky top-0 z-40 bg-paper/92 backdrop-blur">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10">
-          {/* Equal side tracks keep the brand centered regardless of status or admin controls. */}
+          {/* Equal side tracks keep the brand centered regardless of status or profile controls. */}
           <div className="grid h-16 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 md:hidden">
             <div className="flex min-w-0 items-center gap-2">
               <div className="shrink-0">
@@ -65,15 +64,6 @@ export function AppNavigation({
               <AppHeaderBrand className="justify-center gap-2" />
             </Link>
             <div className="flex min-w-0 items-center justify-end gap-2">
-              {isAdmin ? (
-                <Link
-                  href="/app/admin/catalog"
-                  className="inline-flex min-h-10 min-w-0 items-center rounded-control bg-soft-fill px-3 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-ink transition hover:bg-soft-tone-fill"
-                  title={t("admin.long")}
-                >
-                  <span className="truncate">{t("admin.short")}</span>
-                </Link>
-              ) : null}
               <div className="flex size-8 shrink-0 items-center justify-center">
                 {!startup && <UserMenuButton currentUser={currentUser} />}
               </div>
@@ -106,15 +96,6 @@ export function AppNavigation({
             </nav>
 
             <div className="flex shrink-0 items-center gap-2">
-              {isAdmin ? (
-                <Link
-                  href="/app/admin/catalog"
-                  className="inline-flex min-h-11 max-w-20 items-center rounded-control bg-white/60 px-3 text-xs font-semibold uppercase tracking-[0.16em] text-ink transition hover:bg-white"
-                  title={t("admin.long")}
-                >
-                  <span className="truncate">{t("admin.short")}</span>
-                </Link>
-              ) : null}
               <div className="flex w-9 shrink-0 items-center lg:w-24">
                 {!startup && <HeaderStatusChip compact />}
               </div>

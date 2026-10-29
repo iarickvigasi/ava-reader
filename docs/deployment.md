@@ -1,4 +1,4 @@
-# Production deployment
+# Production deployment — [public EPUB importer](catalog-import-deployment.md)
 
 - `.github/workflows/deploy.yml` allows 30m for the SSH command. Before pulls/builds it checks
   the checkout, `/tmp`, Docker's data directory, and the attached volume for 2 GiB and 10000

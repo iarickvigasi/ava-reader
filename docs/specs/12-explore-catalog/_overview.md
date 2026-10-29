@@ -53,6 +53,8 @@ See [12.5](12.5-foundation.md) for the implemented subset and endpoint contract.
 - [12.7](12.7-explore-ui.md): Explore browsing, shared book components, and author pages.
 - [12.8](12.8-reading-assets.md): approved reading-asset ownership and reading behavior.
 - [12.9](12.9-reader-categories.md): proposed reader categories and whole-corpus subject normalization.
+- [12.10](12.10-editorial-controls.md): shared Explore admin controls and metadata correction.
+- [12.11](12.11-import-order-and-linking.md): import-order options and two-way linking requirements.
 
 ## Shared model
 

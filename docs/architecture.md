@@ -21,9 +21,9 @@ Monorepo: pnpm workspaces + Turbo (lint/typecheck/test/build), Node ≥22.
 
 - **apps/web** — Next.js 16 (App Router), React 19, Tailwind v4, Dexie (IndexedDB), Clerk (auth),
   next-intl (i18n). SSR shell + offline-first client.
-- **apps/api** — NestJS 11, Prisma 7, Postgres. EPUB processing, blobs, AI proxying, dashboards.
-- **apps/catalog** — independent NestJS/Prisma metadata API and PostgreSQL instance (ADR 10);
-  work/edition/author lookup and paginated search, initially on the same host. No main DB/client dependency.
+- **apps/api** — NestJS 11, Prisma 7, Postgres. User data, private uploads, EPUB processing, AI proxying, dashboards.
+- **apps/catalog** — independent NestJS/Prisma catalog API and PostgreSQL instance (ADRs 10, 13);
+  work/edition/author lookup, search, and public source/cover/reader bytes. No main DB/client dependency.
 - **apps/mobile** — placeholder for future cross-platform.
 - **AI** — OpenRouter via the Vercel `ai` SDK, structured output. See adr/2.
 
@@ -105,7 +105,8 @@ their implementations, with shared fixtures in `testing/`.
   LibraryItem ownership plus Book access is required. Unresolved legacy ownership stays blocked.
   Book → BookFile[] (EPUB | PDF | READER_PACKAGE | UNKNOWN), StoredBlob (cover/content via
   BlobPurpose), BookProcessingRun (ProcessingStatus). CatalogEntry (DRAFT | PUBLISHED | ARCHIVED)
-  publishes a Book.
+  publishes a Book. Public bytes live in Catalog PublicBlob; main StoredBlob descriptors have
+  catalogBlobId and empty bytes. Private StoredBlob bytes stay local. See ADR 13.
 - **LibraryItem** — User↔Book join (source IMPORTED | CATALOG); the scope for ReadingProgress
   (unique, locator + completion % + minutes), ReadingSession (clientSessionId ULID, Participant +
   per-day UTC Segment + credited UTC Interval + saved session timezone; adr/7), Annotation

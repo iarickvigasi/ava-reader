@@ -125,15 +125,15 @@ function navigationCacheKey(request) {
   return url.toString();
 }
 
-// Per-entity routes are generic shells (ADR 4): each family keeps one extra
-// doc entry under a __shell__ key so a never-visited slug still gets a shell
-// offline (spec 4.5 §7).
+// Generic shells use one __shell__ key per family, including never-visited slugs.
+// See ADR 4 and spec 4.5 §7.
 const SHELL_ROUTE_PREFIXES = [
   "/app/read/",
   "/app/library/books/",
   "/app/library/collections/",
   "/app/explore/books/",
   "/app/explore/authors/",
+  "/app/explore/editions/",
 ];
 
 function shellDocKey(request) {

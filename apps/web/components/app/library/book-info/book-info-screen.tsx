@@ -56,12 +56,16 @@ export function LibraryBookInfoScreen({
         <section className="grid gap-10 border-t border-line/30 pt-10 lg:grid-cols-[minmax(0,1fr)_minmax(300px,420px)] lg:gap-12 lg:pt-14">
           <BookDescription description={book.description} />
           <BookActionCards
+            source={book.source}
             collections={book.collections}
             finishedAt={book.finishedAt ?? null}
             libraryItemId={book.libraryItemId}
           />
         </section>
-        <BookAnnotations key={book.libraryItemId} libraryItemId={book.libraryItemId} />
+        <BookAnnotations
+          key={book.libraryItemId}
+          libraryItemId={book.libraryItemId}
+        />
       </div>
     </div>
   );

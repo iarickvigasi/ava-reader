@@ -1,4 +1,5 @@
 "use client";
+import { ModalActions } from "@/components/ui/modal-actions";
 
 import { useOfflineAuth as useAuth } from "@/features/auth/use-offline-auth";
 import { useRouter } from "next/navigation";
@@ -68,22 +69,20 @@ export function DeleteBookCard({ libraryItemId }: { libraryItemId: string }) {
                 {t("error")}
               </p>
             )}
-            <div className="mt-5 flex justify-end gap-2">
+            <ModalActions
+              cancelLabel={t("cancel")}
+              onCancel={() => setOpen(false)}
+              pending={pending}
+            >
               <Button
-                variant="soft"
-                disabled={pending}
-                onClick={() => setOpen(false)}
-              >
-                {t("cancel")}
-              </Button>
-              <Button
+                size="sm"
                 variant="danger"
                 disabled={pending || !online}
                 onClick={() => void confirm()}
               >
                 {t(pending ? "deleting" : "confirm")}
               </Button>
-            </div>
+            </ModalActions>
           </div>
         </ModalShell>
       )}

@@ -9,6 +9,7 @@ export class AuthorsService {
 
   async find(id: string) {
     const author = await this.db.author.findUnique({
+      omit: { metadataOverrides: true },
       where: { id },
       include: {
         aliases: { orderBy: { name: 'asc' } },
@@ -30,6 +31,7 @@ export class AuthorsService {
     }
     const rows = await this.db.work.findMany({
       where: {
+        deletedAt: null,
         credits: { some: { authorId } },
         ...(after ? { id: { gt: after } } : {}),
       },

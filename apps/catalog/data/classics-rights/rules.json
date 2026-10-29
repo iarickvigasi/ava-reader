@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "asOf": "2026-10-29",
+  "scope": "Research rules only. National transitional, posthumous, rehabilitation, scientific/critical-edition, moral-rights and remuneration exceptions require separate review. No worldwide clearance is asserted.",
+  "rules": {
+    "eu-term": {
+      "territory": "EU member states; ordinary rule, not a country-by-country clearance",
+      "basis": "Directive 2006/116/EC Articles 1 and 8: ordinarily author life plus 70 years, counted from the next January. Articles 4, 5 and 10 require separate publication/critical-edition/transitional consideration.",
+      "evidenceUrl": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32006L0116"
+    },
+    "ukraine-term": {
+      "territory": "Ukraine; ordinary rule only",
+      "basis": "Law 2811-IX Article 31: ordinarily life plus 70; joint, anonymous, posthumously rehabilitated authors and first publication require separate review.",
+      "evidenceUrl": "https://zakon.rada.gov.ua/laws/show/2811-20"
+    },
+    "mexico-comparison": {
+      "territory": "Mexico; longer-term screening comparison only",
+      "basis": "Article 29 includes life plus 100, with separate posthumous/disclosure provisions. Arithmetic alone does not establish Mexican or worldwide rights.",
+      "evidenceUrl": "https://www.wipo.int/wipolex/es/legislation/details/23966"
+    },
+    "us-publication": {
+      "territory": "United States; first-publication date must be evidenced",
+      "basis": "Project Gutenberg Rule 1 describes pre-1931 qualifying publication expiry in 2026. No publication date is inferred from an author's death or an electronic release date.",
+      "evidenceUrl": "https://www.gutenberg.org/help/copyright"
+    },
+    "berne-translations": {
+      "territory": "Applicable national law",
+      "basis": "Translations/adaptations have independent protection; duration and exceptions vary by national law.",
+      "evidenceUrl": "https://www.wipo.int/wipolex/en/text/283698"
+    }
+  },
+  "providerEvidence": {
+    "project-gutenberg-metadata": "https://www.gutenberg.org/ebooks/offline_catalogs.html",
+    "project-gutenberg-automation": "https://www.gutenberg.org/policy/robot_access.html",
+    "project-gutenberg-license": "https://www.gutenberg.org/policy/license.html",
+    "wolne-lektury-api": "https://wolnelektury.pl/api/",
+    "wolne-lektury-reuse": "https://wolnelektury.pl/info/zasady-wykorzystania/",
+    "wikisource-export": "https://wikisource.org/wiki/Wikisource:WS_Export/en",
+    "wikisource-german-license": "https://de.wikisource.org/wiki/Wikisource:Lizenzbestimmungen",
+    "standard-ebooks-feeds": "https://standardebooks.org/feeds"
+  },
+  "metadataSnapshots": [
+    {
+      "provider": "project-gutenberg",
+      "sha256": "3cece81ad3a9261f1b2fbfd2db1e1819cf0c4d3bcffc02ef74ccb8865b46895c",
+      "observedAt": "2026-10-29"
+    },
+    {
+      "provider": "wolne-lektury",
+      "sha256": "7824306a50cc928a139b5b75aa4280d0afc23f89b7b086fd2967ef19482e99e3",
+      "observedAt": "2026-10-29"
+    }
+  ]
+}

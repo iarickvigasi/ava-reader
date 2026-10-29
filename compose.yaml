@@ -51,6 +51,7 @@ services:
     environment:
       NODE_ENV: production
       CATALOG_PORT: 4001
+      READING_ASSET_SYNC_SECRET: ${READING_ASSET_SYNC_SECRET:-}
       CATALOG_DATABASE_URL: ${CATALOG_DATABASE_URL:-postgresql://catalog:${CATALOG_POSTGRES_PASSWORD:-catalog}@catalog-postgres:5432/ava_catalog}
       CATALOG_WEB_ORIGIN: ${CATALOG_WEB_ORIGIN:-http://localhost:3000}
     ports:
@@ -79,6 +80,9 @@ services:
       catalog-postgres:
         condition: service_healthy
     environment:
+      READING_ASSET_SYNC_SECRET: ${READING_ASSET_SYNC_SECRET:-}
+      READING_IMPORT_MAIN_API_URL: ${READING_IMPORT_MAIN_API_URL:-http://api:4000/api}
+      READING_IMPORT_USER_AGENT: ${READING_IMPORT_USER_AGENT:-}
       CATALOG_IMPORT_READ_SIZE: ${CATALOG_IMPORT_READ_SIZE:-50}
       CATALOG_IMPORT_TRANSACTION_SIZE: ${CATALOG_IMPORT_TRANSACTION_SIZE:-25}
       CATALOG_IMPORT_READ_BYTES: ${CATALOG_IMPORT_READ_BYTES:-8388608}
@@ -101,6 +105,7 @@ services:
       NODE_ENV: production
       PORT: 4000
       CATALOG_API_BASE_URL: http://catalog:4001
+      READING_ASSET_SYNC_SECRET: ${READING_ASSET_SYNC_SECRET:-}
       WEB_ORIGIN: ${WEB_ORIGIN:-http://localhost:${WEB_HOST_PORT:-3000}}
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/ava_reader?schema=public
       CLERK_SECRET_KEY: ${CLERK_SECRET_KEY:-}

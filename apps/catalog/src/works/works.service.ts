@@ -10,7 +10,8 @@ export class WorksService {
 
   async find(id: string) {
     const work = await this.db.work.findUnique({
-      where: { id },
+      omit: { metadataOverrides: true },
+      where: { id, deletedAt: null },
       include: {
         editions: WORK_COVER_SELECT.editions,
         texts: { orderBy: { locale: 'asc' } },
@@ -43,13 +44,14 @@ export class WorksService {
   async editions(workId: string, after?: string) {
     if (
       !(await this.db.work.findUnique({
-        where: { id: workId },
+        where: { id: workId, deletedAt: null },
         select: { id: true },
       }))
     ) {
       throw new NotFoundException('Work not found');
     }
     const rows = await this.db.edition.findMany({
+      omit: { metadataOverrides: true },
       where: { workId, ...(after ? { id: { gt: after } } : {}) },
       orderBy: { id: 'asc' },
       take: PAGE_SIZE + 1,

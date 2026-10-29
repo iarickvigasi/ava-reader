@@ -54,5 +54,5 @@ export function browseWhere(input: BrowseQuery): Prisma.WorkWhereInput {
       });
     }
   }
-  return { AND };
+  return { deletedAt: null, AND };
 }

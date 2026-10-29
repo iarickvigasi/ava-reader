@@ -1,20 +1,22 @@
 "use client";
 
-
 import type { LibraryBookInfo } from "@/lib/api-types";
 
+import { PrivateCopyLink } from "@/components/app/explore/linking/private-copy-link";
 import { DeleteBookCard } from "./delete-book-card";
 import { DownloadOfflineCard } from "./download-offline-card";
 import { FinishedDateCard } from "./finished-date-card";
 import { ManageCollectionsCard } from "./manage-collections-card";
 
 type BookActionCardsProps = {
+  source: LibraryBookInfo["source"];
   collections: LibraryBookInfo["collections"];
   finishedAt: string | null;
   libraryItemId: string;
 };
 
 export function BookActionCards({
+  source,
   collections,
   finishedAt,
   libraryItemId,
@@ -27,7 +29,13 @@ export function BookActionCards({
           placeholder; same icon and visual treatment, just wired up. */}
       <DownloadOfflineCard libraryItemId={libraryItemId} />
       <FinishedDateCard finishedAt={finishedAt} libraryItemId={libraryItemId} />
-      <ManageCollectionsCard collections={collections} libraryItemId={libraryItemId} />
+      <ManageCollectionsCard
+        collections={collections}
+        libraryItemId={libraryItemId}
+      />
+      {source === "IMPORTED" && (
+        <PrivateCopyLink libraryItemId={libraryItemId} />
+      )}
       <DeleteBookCard libraryItemId={libraryItemId} />
     </aside>
   );

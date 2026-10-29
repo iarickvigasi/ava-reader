@@ -4,7 +4,6 @@
 // in new code so the dependency graph stays explicit. This barrel exists so
 // the long-standing `@/lib/api-types` import path keeps working.
 
-export * from "./admin";
 export * from "./home";
 export * from "./library";
 export * from "./reader";

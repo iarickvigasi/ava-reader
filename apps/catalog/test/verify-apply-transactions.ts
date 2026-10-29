@@ -4,6 +4,9 @@ import { stageFile } from '../src/importer/stage-file';
 import { dumpLine, type ImportFixture } from './importer-fixtures';
 
 export async function verifyApplyTransactions(ctx: ImportFixture) {
+  const original = await ctx.db.author.findUniqueOrThrow({
+    where: { id: (await ctx.mapped(ctx.author)).authorId! },
+  });
   const rows = Array.from({ length: 30 }, (_, index) =>
     dumpLine(
       ctx.author,
@@ -48,7 +51,7 @@ export async function verifyApplyTransactions(ctx: ImportFixture) {
   const author = await ctx.db.author.findUniqueOrThrow({
     where: { id: mapping.authorId! },
   });
-  assert.equal(author.displayName, 'Committed valid author');
+  assert.equal(author.displayName, original.displayName);
   assert.equal(
     await ctx.db.catalogOutbox.count({ where: { kind: 'AUTHOR' } }),
     before + 1,
@@ -59,6 +62,6 @@ export async function verifyApplyTransactions(ctx: ImportFixture) {
   });
   assert.deepEqual(
     statuses.map((r) => r.status),
-    ['APPLIED', 'INVALID'],
+    ['CONFLICT', 'INVALID'],
   );
 }

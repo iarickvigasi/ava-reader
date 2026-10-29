@@ -1,0 +1,2569 @@
+{
+  "version": 1,
+  "researchedAt": "2026-10-29",
+  "scope": "Bibliographic and ordinary-term research; never exact-file publication approval",
+  "books": [
+    {
+      "id": "cd150421e5aaebcd81bd",
+      "title": "Les Misérables",
+      "author": "Victor Marie Hugo",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1885,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Victor_Hugo",
+        "authorPageSha256": "7a8affc96ab9fcf06984e7aa6e49355b0311f8c6438d5737a15e848d540e1a32",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/Les_Mis%C3%A9rables_(%C3%A9ditions)"
+        ],
+        "ordinaryLife70Expiry": "1956-01-01",
+        "life100ComparisonExpiry": "1986-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "17489",
+          "url": "https://www.gutenberg.org/ebooks/17489",
+          "catalogTitle": "Les misérables Tome I: Fantine",
+          "catalogAuthors": "Hugo, Victor, 1802-1885",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "17493",
+          "url": "https://www.gutenberg.org/ebooks/17493",
+          "catalogTitle": "Les misérables Tome II: Cosette",
+          "catalogAuthors": "Hugo, Victor, 1802-1885",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "17494",
+          "url": "https://www.gutenberg.org/ebooks/17494",
+          "catalogTitle": "Les misérables Tome III: Marius",
+          "catalogAuthors": "Hugo, Victor, 1802-1885",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Les_Mis%C3%A9rables_(%C3%A9ditions)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "d4f8aef8ad0d3cb00771",
+      "title": "La Mare au diable",
+      "author": "Amantine Aurore Lucile Dupin (George Sand)",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1876,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:George_Sand",
+        "authorPageSha256": "8bce9ec464a9b5cf5ce8ae60e1313e15cd799bd87ab5313785a0416f94aad934",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/La_Mare_au_diable"
+        ],
+        "ordinaryLife70Expiry": "1947-01-01",
+        "life100ComparisonExpiry": "1977-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "23582",
+          "url": "https://www.gutenberg.org/ebooks/23582",
+          "catalogTitle": "La Mare au Diable",
+          "catalogAuthors": "Sand, George, 1804-1876",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/La_Mare_au_diable",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "a8194c112811049db389",
+      "title": "Notre-Dame de Paris",
+      "author": "Victor Marie Hugo",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1885,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Victor_Hugo",
+        "authorPageSha256": "7a8affc96ab9fcf06984e7aa6e49355b0311f8c6438d5737a15e848d540e1a32",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/Notre-Dame_de_Paris_(%C3%A9ditions)"
+        ],
+        "ordinaryLife70Expiry": "1956-01-01",
+        "life100ComparisonExpiry": "1986-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "19657",
+          "url": "https://www.gutenberg.org/ebooks/19657",
+          "catalogTitle": "Notre-Dame de Paris",
+          "catalogAuthors": "Hugo, Victor, 1802-1885",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "70891",
+          "url": "https://www.gutenberg.org/ebooks/70891",
+          "catalogTitle": "Notre-Dame de Paris - Tome 1",
+          "catalogAuthors": "Hugo, Victor, 1802-1885; Flameng, François, 1856-1923 [Illustrator]",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "71445",
+          "url": "https://www.gutenberg.org/ebooks/71445",
+          "catalogTitle": "Notre-Dame de Paris - Tome 2",
+          "catalogAuthors": "Hugo, Victor, 1802-1885; Flameng, François, 1856-1923 [Illustrator]",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Notre-Dame_de_Paris_(%C3%A9ditions)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "15e0aabebdab44aad575",
+      "title": "Indiana",
+      "author": "Amantine Aurore Lucile Dupin (George Sand)",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1876,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:George_Sand",
+        "authorPageSha256": "8bce9ec464a9b5cf5ce8ae60e1313e15cd799bd87ab5313785a0416f94aad934",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://fr.wikisource.org/wiki/Indiana"],
+        "ordinaryLife70Expiry": "1947-01-01",
+        "life100ComparisonExpiry": "1977-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Indiana",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "89db4de3eac79203533f",
+      "title": "Les Travailleurs de la mer",
+      "author": "Victor Marie Hugo",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1885,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Victor_Hugo",
+        "authorPageSha256": "7a8affc96ab9fcf06984e7aa6e49355b0311f8c6438d5737a15e848d540e1a32",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/Les_Travailleurs_de_la_mer"
+        ],
+        "ordinaryLife70Expiry": "1956-01-01",
+        "life100ComparisonExpiry": "1986-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "79493",
+          "url": "https://www.gutenberg.org/ebooks/79493",
+          "catalogTitle": "Les travailleurs de la mer - tome 1",
+          "catalogAuthors": "Hugo, Victor, 1802-1885; Flameng, François, 1856-1923 [Illustrator]",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "79659",
+          "url": "https://www.gutenberg.org/ebooks/79659",
+          "catalogTitle": "Les travailleurs de la mer - tome 2",
+          "catalogAuthors": "Hugo, Victor, 1802-1885; Flameng, François, 1856-1923 [Illustrator]",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Les_Travailleurs_de_la_mer",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "a1b9d3b7dca88f9d60de",
+      "title": "Lélia",
+      "author": "Amantine Aurore Lucile Dupin (George Sand)",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1876,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:George_Sand",
+        "authorPageSha256": "8bce9ec464a9b5cf5ce8ae60e1313e15cd799bd87ab5313785a0416f94aad934",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://fr.wikisource.org/wiki/L%C3%A9lia"],
+        "ordinaryLife70Expiry": "1947-01-01",
+        "life100ComparisonExpiry": "1977-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "39738",
+          "url": "https://www.gutenberg.org/ebooks/39738",
+          "catalogTitle": "Lélia",
+          "catalogAuthors": "Sand, George, 1804-1876; Johannot, Tony, 1803-1852 [Illustrator]; Sand, Maurice, 1823-1889 [Illustrator]",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/L%C3%A9lia",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "34b7137b0d39b93632a6",
+      "title": "L’Homme qui rit",
+      "author": "Victor Marie Hugo",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1885,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Victor_Hugo",
+        "authorPageSha256": "7a8affc96ab9fcf06984e7aa6e49355b0311f8c6438d5737a15e848d540e1a32",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/L%E2%80%99Homme_qui_rit"
+        ],
+        "ordinaryLife70Expiry": "1956-01-01",
+        "life100ComparisonExpiry": "1986-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "5423",
+          "url": "https://www.gutenberg.org/ebooks/5423",
+          "catalogTitle": "L'homme Qui Rit",
+          "catalogAuthors": "Hugo, Victor, 1802-1885",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/L%E2%80%99Homme_qui_rit",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "801f4c1b7b16c8733c0b",
+      "title": "Valentine",
+      "author": "Amantine Aurore Lucile Dupin (George Sand)",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1876,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:George_Sand",
+        "authorPageSha256": "8bce9ec464a9b5cf5ce8ae60e1313e15cd799bd87ab5313785a0416f94aad934",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/Valentine_(Sand)"
+        ],
+        "ordinaryLife70Expiry": "1947-01-01",
+        "life100ComparisonExpiry": "1977-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "17251",
+          "url": "https://www.gutenberg.org/ebooks/17251",
+          "catalogTitle": "Valentine",
+          "catalogAuthors": "Sand, George, 1804-1876",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Valentine_(Sand)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "c2336fb2709c453cec73",
+      "title": "Le Père Goriot",
+      "author": "Honoré de Balzac",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1850,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Honoré_de_Balzac",
+        "authorPageSha256": "13130fe08babdd80b544f1ab8dd44f648e0fc5e6f7f0c3b3ab011cd44bc49565",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/Le_P%C3%A8re_Goriot"
+        ],
+        "ordinaryLife70Expiry": "1921-01-01",
+        "life100ComparisonExpiry": "1951-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Le_P%C3%A8re_Goriot",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "9a3e4ed15ee727ab9905",
+      "title": "La Petite Fadette",
+      "author": "Amantine Aurore Lucile Dupin (George Sand)",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1876,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:George_Sand",
+        "authorPageSha256": "8bce9ec464a9b5cf5ce8ae60e1313e15cd799bd87ab5313785a0416f94aad934",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/La_Petite_Fadette"
+        ],
+        "ordinaryLife70Expiry": "1947-01-01",
+        "life100ComparisonExpiry": "1977-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "34204",
+          "url": "https://www.gutenberg.org/ebooks/34204",
+          "catalogTitle": "La petite Fadette",
+          "catalogAuthors": "Sand, George, 1804-1876",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/La_Petite_Fadette",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "4e038b7a2d077096d631",
+      "title": "Eugénie Grandet",
+      "author": "Honoré de Balzac",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1850,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Honoré_de_Balzac",
+        "authorPageSha256": "13130fe08babdd80b544f1ab8dd44f648e0fc5e6f7f0c3b3ab011cd44bc49565",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/Eug%C3%A9nie_Grandet"
+        ],
+        "ordinaryLife70Expiry": "1921-01-01",
+        "life100ComparisonExpiry": "1951-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "11049",
+          "url": "https://www.gutenberg.org/ebooks/11049",
+          "catalogTitle": "Eugénie Grandet",
+          "catalogAuthors": "Balzac, Honoré de, 1799-1850",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Eug%C3%A9nie_Grandet",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "7ca64be686eb23ec87d8",
+      "title": "François le Champi",
+      "author": "Amantine Aurore Lucile Dupin (George Sand)",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1876,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:George_Sand",
+        "authorPageSha256": "8bce9ec464a9b5cf5ce8ae60e1313e15cd799bd87ab5313785a0416f94aad934",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/Fran%C3%A7ois_le_Champi_(Th%C3%A9%C3%A2tre)"
+        ],
+        "ordinaryLife70Expiry": "1947-01-01",
+        "life100ComparisonExpiry": "1977-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Fran%C3%A7ois_le_Champi_(Th%C3%A9%C3%A2tre)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "8b9da0c20fca979582e2",
+      "title": "La Peau de chagrin",
+      "author": "Honoré de Balzac",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1850,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Honoré_de_Balzac",
+        "authorPageSha256": "13130fe08babdd80b544f1ab8dd44f648e0fc5e6f7f0c3b3ab011cd44bc49565",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/La_Peau_de_chagrin"
+        ],
+        "ordinaryLife70Expiry": "1921-01-01",
+        "life100ComparisonExpiry": "1951-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/La_Peau_de_chagrin",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "22e39d03e021404d4fcd",
+      "title": "Consuelo",
+      "author": "Amantine Aurore Lucile Dupin (George Sand)",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1876,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:George_Sand",
+        "authorPageSha256": "8bce9ec464a9b5cf5ce8ae60e1313e15cd799bd87ab5313785a0416f94aad934",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://fr.wikisource.org/wiki/Consuelo"],
+        "ordinaryLife70Expiry": "1947-01-01",
+        "life100ComparisonExpiry": "1977-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "12666",
+          "url": "https://www.gutenberg.org/ebooks/12666",
+          "catalogTitle": "Consuelo, Tome 1 (1861)",
+          "catalogAuthors": "Sand, George, 1804-1876",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "13258",
+          "url": "https://www.gutenberg.org/ebooks/13258",
+          "catalogTitle": "Consuelo, Tome 2 (1861)",
+          "catalogAuthors": "Sand, George, 1804-1876",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "13374",
+          "url": "https://www.gutenberg.org/ebooks/13374",
+          "catalogTitle": "Consuelo, Tome 3 (1861)",
+          "catalogAuthors": "Sand, George, 1804-1876",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Consuelo",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "aff40890214aeb7ef4f4",
+      "title": "Illusions perdues",
+      "author": "Honoré de Balzac",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1850,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Honoré_de_Balzac",
+        "authorPageSha256": "13130fe08babdd80b544f1ab8dd44f648e0fc5e6f7f0c3b3ab011cd44bc49565",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/Illusions_perdues"
+        ],
+        "ordinaryLife70Expiry": "1921-01-01",
+        "life100ComparisonExpiry": "1951-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Illusions_perdues",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "3b85926ae5097cb95fe3",
+      "title": "Corinne ou l’Italie",
+      "author": "Anne-Louise-Germaine Necker de Staël-Holstein",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1817,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Madame_de_Staël",
+        "authorPageSha256": "98cf0a7678feb622072285ed00206a869a61956cc063e50949aeef0b401c90ae",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/Corinne_ou_l%E2%80%99Italie"
+        ],
+        "ordinaryLife70Expiry": "1888-01-01",
+        "life100ComparisonExpiry": "1918-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "60810",
+          "url": "https://www.gutenberg.org/ebooks/60810",
+          "catalogTitle": "Corinne; ou, l'Italie\nNouvelle édition revue avec soin et précédée d'observations par Mme Necker de Saussure et M. Sainte-Beuve de l'Académie française",
+          "catalogAuthors": "Staël, Madame de (Anne-Louise-Germaine), 1766-1817; Necker de Saussure, Albertine-Adrienne, 1766-1841 [Contributor]; Sainte-Beuve, Charles Augustin, 1804-1869 [Contributor]",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Corinne_ou_l%E2%80%99Italie",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "2dd2764fcc13696c007d",
+      "title": "Madame Bovary",
+      "author": "Gustave Flaubert",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1880,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Gustave_Flaubert",
+        "authorPageSha256": "7bda23ad3d0017129e73e2eaaa5f6ca54cf0b8ad58289140cffa8becc5124b4e",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://fr.wikisource.org/wiki/Madame_Bovary"],
+        "ordinaryLife70Expiry": "1951-01-01",
+        "life100ComparisonExpiry": "1981-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "14155",
+          "url": "https://www.gutenberg.org/ebooks/14155",
+          "catalogTitle": "Madame Bovary",
+          "catalogAuthors": "Flaubert, Gustave, 1821-1880",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "48359",
+          "url": "https://www.gutenberg.org/ebooks/48359",
+          "catalogTitle": "Œuvres complètes de Gustave Flaubert, tome 1 (of 8): Madame Bovary",
+          "catalogAuthors": "Flaubert, Gustave, 1821-1880",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Madame_Bovary",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "2c1f87c20848864e01ea",
+      "title": "Delphine",
+      "author": "Anne-Louise-Germaine Necker de Staël-Holstein",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1817,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Madame_de_Staël",
+        "authorPageSha256": "98cf0a7678feb622072285ed00206a869a61956cc063e50949aeef0b401c90ae",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://fr.wikisource.org/wiki/Delphine"],
+        "ordinaryLife70Expiry": "1888-01-01",
+        "life100ComparisonExpiry": "1918-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "7812",
+          "url": "https://www.gutenberg.org/ebooks/7812",
+          "catalogTitle": "Delphine",
+          "catalogAuthors": "Staël, Madame de (Anne-Louise-Germaine), 1766-1817",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Delphine",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "cb4ccb5b49b9c3fa1bb1",
+      "title": "Salammbô",
+      "author": "Gustave Flaubert",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1880,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Gustave_Flaubert",
+        "authorPageSha256": "7bda23ad3d0017129e73e2eaaa5f6ca54cf0b8ad58289140cffa8becc5124b4e",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://fr.wikisource.org/wiki/Salammb%C3%B4"],
+        "ordinaryLife70Expiry": "1951-01-01",
+        "life100ComparisonExpiry": "1981-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "48881",
+          "url": "https://www.gutenberg.org/ebooks/48881",
+          "catalogTitle": "Œuvres complètes de Gustave Flaubert, tome 2: Salammbô",
+          "catalogAuthors": "Flaubert, Gustave, 1821-1880",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Salammb%C3%B4",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "818f52eac5a5a1a7c4a1",
+      "title": "De l’Allemagne",
+      "author": "Anne-Louise-Germaine Necker de Staël-Holstein",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1817,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Madame_de_Staël",
+        "authorPageSha256": "98cf0a7678feb622072285ed00206a869a61956cc063e50949aeef0b401c90ae",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/De_l%E2%80%99Allemagne"
+        ],
+        "ordinaryLife70Expiry": "1888-01-01",
+        "life100ComparisonExpiry": "1918-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "66924",
+          "url": "https://www.gutenberg.org/ebooks/66924",
+          "catalogTitle": "De l'Allemagne; t.1",
+          "catalogAuthors": "Staël, Madame de (Anne-Louise-Germaine), 1766-1817",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "67933",
+          "url": "https://www.gutenberg.org/ebooks/67933",
+          "catalogTitle": "De l'Allemagne; t. 2",
+          "catalogAuthors": "Staël, Madame de (Anne-Louise-Germaine), 1766-1817",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/De_l%E2%80%99Allemagne",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "47f6c49b194091967c5d",
+      "title": "L’Éducation sentimentale",
+      "author": "Gustave Flaubert",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1880,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Gustave_Flaubert",
+        "authorPageSha256": "7bda23ad3d0017129e73e2eaaa5f6ca54cf0b8ad58289140cffa8becc5124b4e",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/L%E2%80%99%C3%89ducation_sentimentale,_%C3%A9d._Conard,_1910"
+        ],
+        "ordinaryLife70Expiry": "1951-01-01",
+        "life100ComparisonExpiry": "1981-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "49773",
+          "url": "https://www.gutenberg.org/ebooks/49773",
+          "catalogTitle": "Œuvres complètes de Gustave Flaubert, tome 3: L'éducation sentimentale, v. 1",
+          "catalogAuthors": "Flaubert, Gustave, 1821-1880",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "52893",
+          "url": "https://www.gutenberg.org/ebooks/52893",
+          "catalogTitle": "Œuvres complètes de Gustave Flaubert, tome 4: L'éducation sentimentale, v. 2",
+          "catalogAuthors": "Flaubert, Gustave, 1821-1880",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/L%E2%80%99%C3%89ducation_sentimentale,_%C3%A9d._Conard,_1910",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "2b6c0f69f1938030101d",
+      "title": "La Princesse de Clèves",
+      "author": "Marie-Madeleine Pioche de La Vergne (Madame de La Fayette)",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1693,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Madame_de_La_Fayette",
+        "authorPageSha256": "d9bfa179c7450c702c5e09db5d355b3bc7dfdfcee290a0e3250bc0275c0ee9d5",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/La_Princesse_de_Cl%C3%A8ves_(%C3%A9dition_originale)"
+        ],
+        "ordinaryLife70Expiry": "1764-01-01",
+        "life100ComparisonExpiry": "1794-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "18797",
+          "url": "https://www.gutenberg.org/ebooks/18797",
+          "catalogTitle": "La princesse de Clèves",
+          "catalogAuthors": "La Fayette, Madame de (Marie-Madeleine Pioche de La Vergne), 1634-1693",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "20262",
+          "url": "https://www.gutenberg.org/ebooks/20262",
+          "catalogTitle": "La Princesse De Clèves par Mme de La Fayette\nEdited with Introduction and Notes",
+          "catalogAuthors": "La Fayette, Madame de (Marie-Madeleine Pioche de La Vergne), 1634-1693; Gorrell, Hendren J. [Editor]; Sledd, Benjamin Franklin, 1864-1940 [Editor]",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/La_Princesse_de_Cl%C3%A8ves_(%C3%A9dition_originale)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "4a4d74c102e847556fad",
+      "title": "Voyage au centre de la Terre",
+      "author": "Jules Gabriel Verne",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1905,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Jules_Verne",
+        "authorPageSha256": "0457eda9adc611b7ed97f455a58c722f5662a44f65dae70b8baaa99cf8d308fc",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/Voyage_au_centre_de_la_Terre"
+        ],
+        "ordinaryLife70Expiry": "1976-01-01",
+        "life100ComparisonExpiry": "2006-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "4791",
+          "url": "https://www.gutenberg.org/ebooks/4791",
+          "catalogTitle": "Voyage au Centre de la Terre",
+          "catalogAuthors": "Verne, Jules, 1828-1905",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Voyage_au_centre_de_la_Terre",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "843b5e9d2ff97408d3a9",
+      "title": "La Princesse de Montpensier",
+      "author": "Marie-Madeleine Pioche de La Vergne (Madame de La Fayette)",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1693,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Madame_de_La_Fayette",
+        "authorPageSha256": "d9bfa179c7450c702c5e09db5d355b3bc7dfdfcee290a0e3250bc0275c0ee9d5",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/La_Princesse_de_Montpensier"
+        ],
+        "ordinaryLife70Expiry": "1764-01-01",
+        "life100ComparisonExpiry": "1794-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/La_Princesse_de_Montpensier",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "9c0a2f47419104bd3ae9",
+      "title": "Vingt mille lieues sous les mers",
+      "author": "Jules Gabriel Verne",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1905,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Jules_Verne",
+        "authorPageSha256": "0457eda9adc611b7ed97f455a58c722f5662a44f65dae70b8baaa99cf8d308fc",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/Vingt_mille_lieues_sous_les_mers"
+        ],
+        "ordinaryLife70Expiry": "1976-01-01",
+        "life100ComparisonExpiry": "2006-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "54873",
+          "url": "https://www.gutenberg.org/ebooks/54873",
+          "catalogTitle": "Vingt mille lieues sous les mers",
+          "catalogAuthors": "Verne, Jules, 1828-1905; Neuville, Alphonse Marie de, 1835-1885 [Illustrator]; Riou, Edouard, 1833-1900 [Illustrator]",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "5095",
+          "url": "https://www.gutenberg.org/ebooks/5095",
+          "catalogTitle": "Vingt Mille Lieues Sous Les Mers — Part 1",
+          "catalogAuthors": "Verne, Jules, 1828-1905",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "5096",
+          "url": "https://www.gutenberg.org/ebooks/5096",
+          "catalogTitle": "Vingt Mille Lieues Sous Les Mers — Part 2",
+          "catalogAuthors": "Verne, Jules, 1828-1905",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Vingt_mille_lieues_sous_les_mers",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "788532e9931003a3c171",
+      "title": "Zaïde",
+      "author": "Marie-Madeleine Pioche de La Vergne (Madame de La Fayette)",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1693,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Madame_de_La_Fayette",
+        "authorPageSha256": "d9bfa179c7450c702c5e09db5d355b3bc7dfdfcee290a0e3250bc0275c0ee9d5",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://fr.wikisource.org/wiki/Zayde"],
+        "ordinaryLife70Expiry": "1764-01-01",
+        "life100ComparisonExpiry": "1794-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Zayde",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "357a9866df3af3dd9181",
+      "title": "Le Tour du monde en quatre-vingts jours",
+      "author": "Jules Gabriel Verne",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1905,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Jules_Verne",
+        "authorPageSha256": "0457eda9adc611b7ed97f455a58c722f5662a44f65dae70b8baaa99cf8d308fc",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/Le_Tour_du_monde_en_quatre-vingts_jours"
+        ],
+        "ordinaryLife70Expiry": "1976-01-01",
+        "life100ComparisonExpiry": "2006-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "800",
+          "url": "https://www.gutenberg.org/ebooks/800",
+          "catalogTitle": "Le tour du monde en quatre-vingts jours",
+          "catalogAuthors": "Verne, Jules, 1828-1905",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "3456",
+          "url": "https://www.gutenberg.org/ebooks/3456",
+          "catalogTitle": "Le tour du monde en quatre-vingts jours",
+          "catalogAuthors": "Verne, Jules, 1828-1905",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "46541",
+          "url": "https://www.gutenberg.org/ebooks/46541",
+          "catalogTitle": "Le Tour du monde en quatre-vingts jours",
+          "catalogAuthors": "Verne, Jules, 1828-1905; Benett, Léon, 1838-1917 [Illustrator]; Neuville, Alphonse Marie de, 1835-1885 [Illustrator]",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Le_Tour_du_monde_en_quatre-vingts_jours",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "3cb556d259192f9becec",
+      "title": "Lettres de mistriss Fanni Butlerd",
+      "author": "Marie-Jeanne Riccoboni",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1792,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Marie-Jeanne_Riccoboni",
+        "authorPageSha256": "52bf535a32553d0492c3833a6d1d48cf5018a22638dd0307ba0d825d5262acdf",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/Lettres_de_mistriss_Fanni_Butlerd,_%C3%A0_milord_Charles_Alfred_de_Caitombridge"
+        ],
+        "ordinaryLife70Expiry": "1863-01-01",
+        "life100ComparisonExpiry": "1893-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Lettres_de_mistriss_Fanni_Butlerd,_%C3%A0_milord_Charles_Alfred_de_Caitombridge",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "f025e98945c23f5c3af9",
+      "title": "L’Île mystérieuse",
+      "author": "Jules Gabriel Verne",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1905,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Jules_Verne",
+        "authorPageSha256": "0457eda9adc611b7ed97f455a58c722f5662a44f65dae70b8baaa99cf8d308fc",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/L%E2%80%99%C3%8Ele_myst%C3%A9rieuse"
+        ],
+        "ordinaryLife70Expiry": "1976-01-01",
+        "life100ComparisonExpiry": "2006-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "14287",
+          "url": "https://www.gutenberg.org/ebooks/14287",
+          "catalogTitle": "L'île mystérieuse",
+          "catalogAuthors": "Verne, Jules, 1828-1905",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/L%E2%80%99%C3%8Ele_myst%C3%A9rieuse",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "621dd07b87583a15094f",
+      "title": "Histoire de Monsieur le Marquis de Cressy",
+      "author": "Marie-Jeanne Riccoboni",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1792,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Marie-Jeanne_Riccoboni",
+        "authorPageSha256": "52bf535a32553d0492c3833a6d1d48cf5018a22638dd0307ba0d825d5262acdf",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/Histoire_de_Monsieur_le_Marquis_de_Cressy"
+        ],
+        "ordinaryLife70Expiry": "1863-01-01",
+        "life100ComparisonExpiry": "1893-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Histoire_de_Monsieur_le_Marquis_de_Cressy",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "71afc127255cd7b8c713",
+      "title": "Bel-Ami",
+      "author": "Henry René Albert Guy de Maupassant",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1893,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Guy_de_Maupassant",
+        "authorPageSha256": "5f8032bc14aa0cb6e4e1849a7da155e25b6bb06fb160a0cb5e3e5fbcd1b0fb69",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/Bel-Ami/%C3%89dition_Ollendorff,_1901"
+        ],
+        "ordinaryLife70Expiry": "1964-01-01",
+        "life100ComparisonExpiry": "1994-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Bel-Ami/%C3%89dition_Ollendorff,_1901",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "6ef3a943809c537f6328",
+      "title": "Histoire d’Ernestine",
+      "author": "Marie-Jeanne Riccoboni",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1792,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Marie-Jeanne_Riccoboni",
+        "authorPageSha256": "52bf535a32553d0492c3833a6d1d48cf5018a22638dd0307ba0d825d5262acdf",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/Histoire_d%E2%80%99Ernestine"
+        ],
+        "ordinaryLife70Expiry": "1863-01-01",
+        "life100ComparisonExpiry": "1893-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Histoire_d%E2%80%99Ernestine",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "652707338a98285014ab",
+      "title": "Une vie",
+      "author": "Henry René Albert Guy de Maupassant",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1893,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Guy_de_Maupassant",
+        "authorPageSha256": "5f8032bc14aa0cb6e4e1849a7da155e25b6bb06fb160a0cb5e3e5fbcd1b0fb69",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://fr.wikisource.org/wiki/Une_vie"],
+        "ordinaryLife70Expiry": "1964-01-01",
+        "life100ComparisonExpiry": "1994-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "17457",
+          "url": "https://www.gutenberg.org/ebooks/17457",
+          "catalogTitle": "Une vie",
+          "catalogAuthors": "Maupassant, Guy de, 1850-1893",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Une_vie",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "3b64d2ef3401f1b3b2f6",
+      "title": "Ourika",
+      "author": "Claire Louisa Rose Bonne de Coëtnempren de Kersaint (Claire de Duras)",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1828,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Claire_de_Duras",
+        "authorPageSha256": "699558005938e11f1c8f3a30a2e8cb2be6261a60725b15d23e2eaead7e188f28",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://fr.wikisource.org/wiki/Ourika"],
+        "ordinaryLife70Expiry": "1899-01-01",
+        "life100ComparisonExpiry": "1929-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "26820",
+          "url": "https://www.gutenberg.org/ebooks/26820",
+          "catalogTitle": "Ourika",
+          "catalogAuthors": "Duras, Claire de Durfort, duchesse de, 1777-1828",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Ourika",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "caca808b039c348067a7",
+      "title": "Pierre et Jean",
+      "author": "Henry René Albert Guy de Maupassant",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1893,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Guy_de_Maupassant",
+        "authorPageSha256": "5f8032bc14aa0cb6e4e1849a7da155e25b6bb06fb160a0cb5e3e5fbcd1b0fb69",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://fr.wikisource.org/wiki/Pierre_et_Jean"],
+        "ordinaryLife70Expiry": "1964-01-01",
+        "life100ComparisonExpiry": "1994-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "11131",
+          "url": "https://www.gutenberg.org/ebooks/11131",
+          "catalogTitle": "Pierre et Jean",
+          "catalogAuthors": "Maupassant, Guy de, 1850-1893",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Pierre_et_Jean",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "b65707b9258aeafeb504",
+      "title": "Édouard",
+      "author": "Claire Louisa Rose Bonne de Coëtnempren de Kersaint (Claire de Duras)",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1828,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Claire_de_Duras",
+        "authorPageSha256": "699558005938e11f1c8f3a30a2e8cb2be6261a60725b15d23e2eaead7e188f28",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://fr.wikisource.org/wiki/%C3%89douard"],
+        "ordinaryLife70Expiry": "1899-01-01",
+        "life100ComparisonExpiry": "1929-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "26814",
+          "url": "https://www.gutenberg.org/ebooks/26814",
+          "catalogTitle": "Edouard",
+          "catalogAuthors": "Duras, Claire de Durfort, duchesse de, 1777-1828",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/%C3%89douard",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "d0f91390643794a8bcb5",
+      "title": "Boule de suif",
+      "author": "Henry René Albert Guy de Maupassant",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1893,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Guy_de_Maupassant",
+        "authorPageSha256": "5f8032bc14aa0cb6e4e1849a7da155e25b6bb06fb160a0cb5e3e5fbcd1b0fb69",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1964-01-01",
+        "life100ComparisonExpiry": "1994-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "10746",
+          "url": "https://www.gutenberg.org/ebooks/10746",
+          "catalogTitle": "Boule de Suif",
+          "catalogAuthors": "Maupassant, Guy de, 1850-1893",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "35cbda02398a66f47463",
+      "title": "Pérégrinations d’une paria",
+      "author": "Flore Célestine Thérèse Henriette Tristán y Moscoso (Flora Tristan)",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1844,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Flora_Tristan",
+        "authorPageSha256": "dbf5e0a0228a454c4b63e96b2e999e6fba32620b43f1580082b744dee692847e",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1915-01-01",
+        "life100ComparisonExpiry": "1945-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/P%C3%A9r%C3%A9grinations_d%E2%80%99une_paria",
+          "formats": ["HTML", "EPUB_EXPORT_UNVERIFIED"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Pérégrinations d’une paria",
+          "notes": "Existing work/version page; validate author, all sections, proofreading status, export and contributor licenses.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "2991a9f0bbb33d26687d",
+      "title": "Le Rouge et le Noir",
+      "author": "Marie-Henri Beyle (Stendhal)",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1842,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Stendhal",
+        "authorPageSha256": "4e7aab2465cf2d5bd28ce65a03844e7959060a06598988acc505d5c48a533ace",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1913-01-01",
+        "life100ComparisonExpiry": "1943-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "798",
+          "url": "https://www.gutenberg.org/ebooks/798",
+          "catalogTitle": "Le rouge et le noir: chronique du XIXe siècle",
+          "catalogAuthors": "Stendhal, 1783-1842",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "d929155464cfbcdf7778",
+      "title": "Méphis",
+      "author": "Flore Célestine Thérèse Henriette Tristán y Moscoso (Flora Tristan)",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1844,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Flora_Tristan",
+        "authorPageSha256": "dbf5e0a0228a454c4b63e96b2e999e6fba32620b43f1580082b744dee692847e",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1915-01-01",
+        "life100ComparisonExpiry": "1945-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "bibliotheque-numerique-romande",
+          "url": "https://ebooks-bnr.com/tristan-flora-mephis-tome-1/",
+          "formats": ["EPUB", "PDF"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "Tome 1 only; locate and validate tome 2, source notices and provider reuse terms.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "PROVIDER_TERMS_AND_EDITORIAL_RIGHTS_UNVERIFIED",
+          "completeness": "MULTIVOLUME_CHECK_REQUIRED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "73fd44985ed39da929a9",
+      "title": "La Chartreuse de Parme",
+      "author": "Marie-Henri Beyle (Stendhal)",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1842,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Stendhal",
+        "authorPageSha256": "4e7aab2465cf2d5bd28ce65a03844e7959060a06598988acc505d5c48a533ace",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/La_Chartreuse_de_Parme"
+        ],
+        "ordinaryLife70Expiry": "1913-01-01",
+        "life100ComparisonExpiry": "1943-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "796",
+          "url": "https://www.gutenberg.org/ebooks/796",
+          "catalogTitle": "La Chartreuse De Parme",
+          "catalogAuthors": "Stendhal, 1783-1842",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/La_Chartreuse_de_Parme",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "c5f18d5393042b298811",
+      "title": "Pauvres fleurs",
+      "author": "Marceline Félicité Josèphe Desbordes-Valmore",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1859,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Marceline_Desbordes-Valmore",
+        "authorPageSha256": "8b3a219195748813991ae2d6469a34753126fcd26ff84efdbeb92a52673f1c74",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/Pauvres_fleurs_(%C3%A9d._Dumont_1839)"
+        ],
+        "ordinaryLife70Expiry": "1930-01-01",
+        "life100ComparisonExpiry": "1960-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Pauvres_fleurs_(%C3%A9d._Dumont_1839)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "92a24f96573a39a522f8",
+      "title": "Le Tartuffe",
+      "author": "Jean-Baptiste Poquelin (Molière)",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1673,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Molière",
+        "authorPageSha256": "bfd37809a4ec0708e170d495c7d5d585a30434d48bb32f01f7f415932d6b8f10",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1744-01-01",
+        "life100ComparisonExpiry": "1774-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Tartuffe_ou_l%E2%80%99Imposteur",
+          "formats": ["HTML", "EPUB_EXPORT_UNVERIFIED"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Tartuffe ou l’Imposteur",
+          "notes": "Existing work/version page; validate author, all sections, proofreading status, export and contributor licenses.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "416fd356196f12af93a5",
+      "title": "Élégies et romances",
+      "author": "Marceline Félicité Josèphe Desbordes-Valmore",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1859,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Marceline_Desbordes-Valmore",
+        "authorPageSha256": "8b3a219195748813991ae2d6469a34753126fcd26ff84efdbeb92a52673f1c74",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": false,
+        "titleEvidenceUrls": [
+          "https://www.bnf.fr/fr/marceline-desbordes-valmore-bibliographie"
+        ],
+        "ordinaryLife70Expiry": "1930-01-01",
+        "life100ComparisonExpiry": "1960-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/%C3%89l%C3%A9gies%2C_Marie_et_romances",
+          "formats": ["HTML", "EPUB_EXPORT_UNVERIFIED"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "Expanded title: Élégies, Marie et romances; verify edition and all sections.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "BnF records the fuller title Élégies, Marie et Romances (1819); verify intended collection identity."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "42a41a64aaade2fbd436",
+      "title": "Le Misanthrope",
+      "author": "Jean-Baptiste Poquelin (Molière)",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1673,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Molière",
+        "authorPageSha256": "bfd37809a4ec0708e170d495c7d5d585a30434d48bb32f01f7f415932d6b8f10",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1744-01-01",
+        "life100ComparisonExpiry": "1774-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Le_Misanthrope",
+          "formats": ["HTML", "EPUB_EXPORT_UNVERIFIED"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Le Misanthrope",
+          "notes": "Existing work/version page; validate author, all sections, proofreading status, export and contributor licenses.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "e6fb18cf89d9e744b755",
+      "title": "Les Pleurs",
+      "author": "Marceline Félicité Josèphe Desbordes-Valmore",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1859,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Marceline_Desbordes-Valmore",
+        "authorPageSha256": "8b3a219195748813991ae2d6469a34753126fcd26ff84efdbeb92a52673f1c74",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://fr.wikisource.org/wiki/Les_Pleurs"],
+        "ordinaryLife70Expiry": "1930-01-01",
+        "life100ComparisonExpiry": "1960-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Les_Pleurs",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "2c6fc84e53407ee253c7",
+      "title": "L’Avare",
+      "author": "Jean-Baptiste Poquelin (Molière)",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1673,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Molière",
+        "authorPageSha256": "bfd37809a4ec0708e170d495c7d5d585a30434d48bb32f01f7f415932d6b8f10",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/L%E2%80%99Avare_(Moli%C3%A8re)"
+        ],
+        "ordinaryLife70Expiry": "1744-01-01",
+        "life100ComparisonExpiry": "1774-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "6318",
+          "url": "https://www.gutenberg.org/ebooks/6318",
+          "catalogTitle": "L'Avare",
+          "catalogAuthors": "Molière, 1622-1673",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/L%E2%80%99Avare_(Moli%C3%A8re)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "05640aca5522281355b6",
+      "title": "Bouquets et prières",
+      "author": "Marceline Félicité Josèphe Desbordes-Valmore",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1859,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Marceline_Desbordes-Valmore",
+        "authorPageSha256": "8b3a219195748813991ae2d6469a34753126fcd26ff84efdbeb92a52673f1c74",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/Bouquets_et_pri%C3%A8res"
+        ],
+        "ordinaryLife70Expiry": "1930-01-01",
+        "life100ComparisonExpiry": "1960-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Bouquets_et_pri%C3%A8res",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "48c54958b425ea50b163",
+      "title": "Le Malade imaginaire",
+      "author": "Jean-Baptiste Poquelin (Molière)",
+      "authorGender": "man",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1673,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Molière",
+        "authorPageSha256": "bfd37809a4ec0708e170d495c7d5d585a30434d48bb32f01f7f415932d6b8f10",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1744-01-01",
+        "life100ComparisonExpiry": "1774-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Le_Malade_imaginaire",
+          "formats": ["HTML", "EPUB_EXPORT_UNVERIFIED"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Le Malade imaginaire",
+          "notes": "Existing work/version page; validate author, all sections, proofreading status, export and contributor licenses.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "5b98994576be94a267cc",
+      "title": "Poésies inédites",
+      "author": "Marceline Félicité Josèphe Desbordes-Valmore",
+      "authorGender": "woman",
+      "language": "fr",
+      "originalTextResearch": {
+        "authorDeathYear": 1859,
+        "authorEvidenceUrl": "https://fr.wikisource.org/wiki/Auteur:Marceline_Desbordes-Valmore",
+        "authorPageSha256": "8b3a219195748813991ae2d6469a34753126fcd26ff84efdbeb92a52673f1c74",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://fr.wikisource.org/wiki/Po%C3%A9sies_in%C3%A9dites_(Desbordes-Valmore)"
+        ],
+        "ordinaryLife70Expiry": "1930-01-01",
+        "life100ComparisonExpiry": "1960-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://fr.wikisource.org/wiki/Po%C3%A9sies_in%C3%A9dites_(Desbordes-Valmore)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    }
+  ]
+}

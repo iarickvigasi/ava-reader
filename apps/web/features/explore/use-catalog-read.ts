@@ -3,10 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useOfflineAuth } from "@/features/auth/use-offline-auth";
-import { acquireCatalogBook } from "@/features/offline/buckets/library";
+import {
+  acquireAdminPreview,
+  acquireCatalogBook,
+} from "@/features/offline/buckets/library";
 import { getReaderHref } from "@/lib/app-routes";
 
-export function useCatalogRead(entryId: string) {
+export function useCatalogRead(
+  entryId: string,
+  draft?: { editionId: string; checksum: string },
+) {
   const { getToken } = useOfflineAuth();
   const router = useRouter();
   const operation = useRef<AbortController | null>(null);
@@ -22,7 +28,7 @@ export function useCatalogRead(entryId: string) {
       operation.current?.abort();
       operation.current = null;
     };
-  }, [entryId]);
+  }, [entryId, draft?.editionId, draft?.checksum]);
   const read = async () => {
     if (operation.current || !mounted.current) return;
     const controller = new AbortController();
@@ -31,11 +37,9 @@ export function useCatalogRead(entryId: string) {
     setPending(true);
     setError(false);
     try {
-      const target = await acquireCatalogBook(
-        entryId,
-        getToken,
-        controller.signal,
-      );
+      const target = await (draft
+        ? acquireAdminPreview(draft, getToken, controller.signal)
+        : acquireCatalogBook(entryId, getToken, controller.signal));
       if (
         mounted.current &&
         !controller.signal.aborted &&

@@ -1,0 +1,48 @@
+import type { EpubProvider } from './providers/provider-reference';
+export const MAX_EPUB_BYTES = 50 * 1024 * 1024;
+export const MAX_MANIFEST_BYTES = 32 * 1024 * 1024;
+export const MAX_CANDIDATES = 100;
+export type Review = {
+  reviewDeferred?: boolean;
+  sha256: string;
+  reviewer: string;
+  rightsStatement: string;
+  rightsUrl: string;
+  rightsJurisdiction: string;
+  reviewedAt: string;
+  qualityReviewedAt: string;
+  notes: string;
+};
+export type Candidate = {
+  sourceKey?: 'open-library' | 'curated-classics';
+  editionId: string;
+  workId: string;
+  externalId: string;
+  sourceRevision: string;
+  sourcePayloadHash: string;
+  title: string;
+  authors: string[];
+  language: string;
+  iaIdentifier?: string;
+  provider?: EpubProvider;
+  providerId?: string;
+  sourceUrl?: string;
+  downloadUrl?: string;
+  filename?: string;
+  checksum?: string;
+  localFile?: string;
+  metadata?: Record<string, unknown>;
+  fileMetadata?: Record<string, unknown>;
+  inspectedAt?: string;
+  review?: Review | null;
+};
+export type Manifest = { version: 1; candidates: Candidate[] };
+export type MainStatus = {
+  id: string;
+  checksum: string;
+  editionId: string;
+  status: 'PENDING' | 'PROCESSED' | 'READY' | 'WITHDRAWN' | 'FAILED';
+  coverCatalogBlobId?: string | null;
+  syncPending?: boolean;
+  error?: string | null;
+};

@@ -3,11 +3,11 @@
 import { useTranslations } from "next-intl";
 import { ReadBookLink } from "@/components/app/core/read-book-link";
 import { ReadLinkOpeningLabel } from "@/components/app/core/read-link-opening-label";
+import { StackBooksIcon } from "@/components/app/shared/app-icons";
 import {
-  ReaderListeningIcon,
-  StackBooksIcon,
-} from "@/components/app/shared/app-icons";
-import { Button } from "@/components/ui/button";
+  ReadListenActions,
+  READ_ACTION_CLASS_NAME,
+} from "@/components/app/shared/books/read-listen-actions";
 import { getReaderHref } from "@/lib/app-routes";
 
 type BookActionsProps = {
@@ -18,29 +18,19 @@ type BookActionsProps = {
 export function BookActions({ slug, libraryItemId }: BookActionsProps) {
   const t = useTranslations("library.bookInfo");
   return (
-    <div className="grid w-full max-w-120 grid-cols-2 gap-3">
-      {/* Read button — when the user is offline and the book hasn't been
-          saved, ReadBookLink intercepts the click and shows the
-          missing-book modal instead of letting them land on an empty
-          reader page. Online behaviour is unchanged. */}
-      <ReadBookLink
-        href={getReaderHref(slug)}
-        libraryItemId={libraryItemId}
-        className="relative inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-control bg-brand-fill px-6 text-sm font-semibold uppercase tracking-[0.12em] text-brand-foreground transition duration-200 hover:bg-brand-fill-strong"
-      >
-        <ReadLinkOpeningLabel>
-          <StackBooksIcon className="size-4" />
-          {t("read")}
-        </ReadLinkOpeningLabel>
-      </ReadBookLink>
-      <Button
-        type="button"
-        variant="soft"
-        className="min-h-12 w-full gap-2 rounded-control px-6 text-sm font-semibold uppercase tracking-[0.12em]"
-      >
-        <ReaderListeningIcon className="size-4" />
-        {t("listen")}
-      </Button>
-    </div>
+    <ReadListenActions
+      readAction={
+        <ReadBookLink
+          href={getReaderHref(slug)}
+          libraryItemId={libraryItemId}
+          className={READ_ACTION_CLASS_NAME}
+        >
+          <ReadLinkOpeningLabel>
+            <StackBooksIcon className="size-4" />
+            {t("read")}
+          </ReadLinkOpeningLabel>
+        </ReadBookLink>
+      }
+    />
   );
 }

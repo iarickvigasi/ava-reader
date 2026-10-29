@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   sessions: vi.fn(async () => {}),
   memberships: vi.fn(async () => {}),
   finishes: vi.fn(async () => {}),
+  links: vi.fn(async () => {}),
   db: {
     highlightMutations: {
       toArray: vi.fn(async () => [
@@ -21,6 +22,7 @@ vi.mock("./buckets/ai-comments", () => mocks.comments);
 vi.mock("./buckets/library", () => ({
   flushCollectionMemberships: mocks.memberships,
   flushFinishDates: mocks.finishes,
+  flushCatalogLinks: mocks.links,
 }));
 vi.mock("./buckets/sessions", () => ({ syncPendingSessions: mocks.sessions }));
 vi.mock("@/components/app/reader/data/reader-client-instance-id", () => ({
@@ -57,4 +59,5 @@ it("resumes every queued book without reopening it and deduplicates concurrent t
   );
   expect(mocks.highlights.flushBucket).toHaveBeenCalledOnce();
   expect(mocks.sessions).toHaveBeenCalledExactlyOnceWith(token, "tab");
+  expect(mocks.links).toHaveBeenCalledExactlyOnceWith(token);
 });

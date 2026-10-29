@@ -1,0 +1,3 @@
+ALTER TABLE "Author" ADD COLUMN "metadataOverrides" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];
+ALTER TABLE "Work" ADD COLUMN "metadataOverrides" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];
+ALTER TABLE "Edition" ADD COLUMN "metadataOverrides" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];

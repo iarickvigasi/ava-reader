@@ -1,3 +1,6 @@
+import type { ReadingDetails } from "@/features/explore/use-reading-details";
+import { CatalogReadingEstimates } from "./catalog-reading-estimates";
+import { CatalogBookReading } from "./catalog-book-reading";
 import { useLocale, useTranslations } from "next-intl";
 import type { CatalogWork, CatalogEdition } from "@/lib/catalog-types";
 import { catalogTitle, languageName } from "@/features/explore/catalog-display";
@@ -6,13 +9,14 @@ import { BookCoverPanel } from "@/components/app/shared/books/book-cover-panel";
 import { BookTitle } from "@/components/app/shared/books/book-title";
 import { BookAuthors } from "@/components/app/shared/books/book-authors";
 import { MetadataItem } from "@/components/app/shared/books/metadata-item";
-import { CatalogReadingAssets } from "./catalog-reading-assets";
 
 export function CatalogBookHero({
   work,
   edition,
+  readingDetails,
 }: {
   work: CatalogWork;
+  readingDetails: ReadingDetails | null;
   edition?: Pick<
     CatalogEdition,
     "id" | "language" | "format" | "publishedYear"
@@ -20,9 +24,6 @@ export function CatalogBookHero({
 }) {
   const t = useTranslations("explore");
   const locale = useLocale();
-  const asset = work.readingAssets?.find(
-    (item) => item.edition.id === edition?.id,
-  );
   return (
     <section className="grid items-start gap-10 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:gap-16">
       <BookCoverPanel
@@ -51,37 +52,30 @@ export function CatalogBookHero({
               name: credit.creditedAs ?? credit.author.displayName,
             }))}
         />
-        <CatalogReadingAssets assets={work.readingAssets} />
-        <div className="grid grid-cols-2 gap-5 sm:grid-cols-3">
-          {edition?.language && (
-            <MetadataItem
-              label={t("metadata.language")}
-              value={languageName(edition.language, locale)}
-            />
-          )}
-          {edition?.format && edition.format !== "UNKNOWN" && (
-            <MetadataItem
-              label={t("metadata.format")}
-              value={t(`formats.${edition.format}`)}
-            />
-          )}
-          {edition?.publishedYear && (
-            <MetadataItem
-              label={t("metadata.published")}
-              value={String(edition.publishedYear)}
-            />
-          )}
+        <CatalogBookReading work={work} editionId={edition?.id} />
+        <div className="space-y-10">
+          <div className="grid grid-cols-2 gap-x-12 gap-y-10">
+            {edition?.language && (
+              <MetadataItem
+                label={t("metadata.language")}
+                value={languageName(edition.language, locale)}
+              />
+            )}
+            {edition?.format && edition.format !== "UNKNOWN" && (
+              <MetadataItem
+                label={t("metadata.format")}
+                value={t(`formats.${edition.format}`)}
+              />
+            )}
+            {edition?.publishedYear && (
+              <MetadataItem
+                label={t("metadata.published")}
+                value={String(edition.publishedYear)}
+              />
+            )}
+          </div>
+          {edition && <CatalogReadingEstimates estimates={readingDetails} />}
         </div>
-        {asset && (
-          <a
-            href={asset.rightsUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-block text-sm text-plum underline"
-          >
-            {asset.rightsStatement} ({asset.rightsJurisdiction})
-          </a>
-        )}
       </div>
     </section>
   );

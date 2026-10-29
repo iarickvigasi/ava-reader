@@ -1,0 +1,2211 @@
+{
+  "version": 1,
+  "researchedAt": "2026-10-29",
+  "scope": "Bibliographic and ordinary-term research; never exact-file publication approval",
+  "books": [
+    {
+      "id": "69abbff5453f65539352",
+      "title": "Енеїда",
+      "author": "Іван Петрович Котляревський",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1838,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Іван_Котляревський",
+        "authorPageSha256": "7249782748df26508ecd3bca048c355e4886820391becfc46f50e45b8069d9e6",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://uk.wikisource.org/wiki/Енеїда"],
+        "ordinaryLife70Expiry": "1909-01-01",
+        "life100ComparisonExpiry": "1939-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Енеїда",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "aa68886e0f8e993aa70b",
+      "title": "Лісова пісня",
+      "author": "Лариса Петрівна Косач-Квітка (Леся Українка)",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1913,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Леся_Українка",
+        "authorPageSha256": "5574d1dfb1ebe17c8c925ecdf9f97a53552f42c2d49c0ef7e858e413dc99147c",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://uk.wikisource.org/wiki/Лісова_пісня"],
+        "ordinaryLife70Expiry": "1984-01-01",
+        "life100ComparisonExpiry": "2014-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Лісова_пісня",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "c1dc2759f4f5f8425ceb",
+      "title": "Наталка Полтавка",
+      "author": "Іван Петрович Котляревський",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1838,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Іван_Котляревський",
+        "authorPageSha256": "7249782748df26508ecd3bca048c355e4886820391becfc46f50e45b8069d9e6",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://uk.wikisource.org/wiki/Наталка_Полтавка"
+        ],
+        "ordinaryLife70Expiry": "1909-01-01",
+        "life100ComparisonExpiry": "1939-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Наталка_Полтавка",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "0db3618abd242c22c927",
+      "title": "Кассандра",
+      "author": "Лариса Петрівна Косач-Квітка (Леся Українка)",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1913,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Леся_Українка",
+        "authorPageSha256": "5574d1dfb1ebe17c8c925ecdf9f97a53552f42c2d49c0ef7e858e413dc99147c",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1984-01-01",
+        "life100ComparisonExpiry": "2014-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "lesya-ukrainka-encyclopedia",
+          "url": "https://www.l-ukrainka.name/uk/Dramas/Kassandra.html",
+          "formats": ["HTML"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "Original drama with linked acts; not an EPUB. Separate modern notes and verify redistribution permission.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "PROVIDER_TERMS_AND_EDITORIAL_RIGHTS_UNVERIFIED",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "271075d388388a561d88",
+      "title": "Москаль-чарівник",
+      "author": "Іван Петрович Котляревський",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1838,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Іван_Котляревський",
+        "authorPageSha256": "7249782748df26508ecd3bca048c355e4886820391becfc46f50e45b8069d9e6",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://uk.wikisource.org/wiki/Москаль-чарівник"
+        ],
+        "ordinaryLife70Expiry": "1909-01-01",
+        "life100ComparisonExpiry": "1939-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Москаль-чарівник",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "764678abb61e420ba55d",
+      "title": "На крилах пісень",
+      "author": "Лариса Петрівна Косач-Квітка (Леся Українка)",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1913,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Леся_Українка",
+        "authorPageSha256": "5574d1dfb1ebe17c8c925ecdf9f97a53552f42c2d49c0ef7e858e413dc99147c",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://uk.wikisource.org/wiki/На_крилах_пісень"
+        ],
+        "ordinaryLife70Expiry": "1984-01-01",
+        "life100ComparisonExpiry": "2014-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/На_крилах_пісень",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "639d70294a1fd446451b",
+      "title": "Кобзар",
+      "author": "Тарас Григорович Шевченко",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1861,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Тарас_Шевченко",
+        "authorPageSha256": "8f31bd75520e233a788c455d4047089c555093d5b2ef7f908cadb4c91ca45033",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://uk.wikisource.org/wiki/Кобзар"],
+        "ordinaryLife70Expiry": "1932-01-01",
+        "life100ComparisonExpiry": "1962-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Кобзар",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "846f1badab7fcf39a0a4",
+      "title": "Думи і мрії",
+      "author": "Лариса Петрівна Косач-Квітка (Леся Українка)",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1913,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Леся_Українка",
+        "authorPageSha256": "5574d1dfb1ebe17c8c925ecdf9f97a53552f42c2d49c0ef7e858e413dc99147c",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://uk.wikisource.org/wiki/Думи_і_мрії"],
+        "ordinaryLife70Expiry": "1984-01-01",
+        "life100ComparisonExpiry": "2014-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Думи_і_мрії",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "5a684bf679ce53fb9084",
+      "title": "Гайдамаки",
+      "author": "Тарас Григорович Шевченко",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1861,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Тарас_Шевченко",
+        "authorPageSha256": "8f31bd75520e233a788c455d4047089c555093d5b2ef7f908cadb4c91ca45033",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://uk.wikisource.org/wiki/Гайдамаки"],
+        "ordinaryLife70Expiry": "1932-01-01",
+        "life100ComparisonExpiry": "1962-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Гайдамаки",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "7c1ab30975b239e474b2",
+      "title": "Блакитна троянда",
+      "author": "Лариса Петрівна Косач-Квітка (Леся Українка)",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1913,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Леся_Українка",
+        "authorPageSha256": "5574d1dfb1ebe17c8c925ecdf9f97a53552f42c2d49c0ef7e858e413dc99147c",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1984-01-01",
+        "life100ComparisonExpiry": "2014-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "lesya-ukrainka-encyclopedia",
+          "url": "https://www.l-ukrainka.name/uk/Dramas/LtBlueRose.html",
+          "formats": ["HTML"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "Original drama with linked acts; not an EPUB. Separate modern notes and verify redistribution permission.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "PROVIDER_TERMS_AND_EDITORIAL_RIGHTS_UNVERIFIED",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "c17f6c431fe243cf49e2",
+      "title": "Катерина",
+      "author": "Тарас Григорович Шевченко",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1861,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Тарас_Шевченко",
+        "authorPageSha256": "8f31bd75520e233a788c455d4047089c555093d5b2ef7f908cadb4c91ca45033",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://uk.wikisource.org/wiki/Катерина"],
+        "ordinaryLife70Expiry": "1932-01-01",
+        "life100ComparisonExpiry": "1962-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Катерина",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "86269266a08a7b53ccd4",
+      "title": "Бояриня",
+      "author": "Лариса Петрівна Косач-Квітка (Леся Українка)",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1913,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Леся_Українка",
+        "authorPageSha256": "5574d1dfb1ebe17c8c925ecdf9f97a53552f42c2d49c0ef7e858e413dc99147c",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://uk.wikisource.org/wiki/Бояриня"],
+        "ordinaryLife70Expiry": "1984-01-01",
+        "life100ComparisonExpiry": "2014-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Бояриня",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "5c0857c44bc5013f4345",
+      "title": "Наймичка",
+      "author": "Тарас Григорович Шевченко",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1861,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Тарас_Шевченко",
+        "authorPageSha256": "8f31bd75520e233a788c455d4047089c555093d5b2ef7f908cadb4c91ca45033",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://uk.wikisource.org/wiki/Наймичка_(1860)"],
+        "ordinaryLife70Expiry": "1932-01-01",
+        "life100ComparisonExpiry": "1962-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Наймичка_(1860)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "d8ffee08afa1e9f40b86",
+      "title": "Камінний господар",
+      "author": "Лариса Петрівна Косач-Квітка (Леся Українка)",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1913,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Леся_Українка",
+        "authorPageSha256": "5574d1dfb1ebe17c8c925ecdf9f97a53552f42c2d49c0ef7e858e413dc99147c",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1984-01-01",
+        "life100ComparisonExpiry": "2014-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "lesya-ukrainka-encyclopedia",
+          "url": "https://www.l-ukrainka.name/uk/Dramas/KaminnyjGospodar.html",
+          "formats": ["HTML"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "Original drama with linked acts; not an EPUB. Separate modern notes and verify redistribution permission.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "PROVIDER_TERMS_AND_EDITORIAL_RIGHTS_UNVERIFIED",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "fd2ebf7095e46a619960",
+      "title": "Гамалія",
+      "author": "Тарас Григорович Шевченко",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1861,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Тарас_Шевченко",
+        "authorPageSha256": "8f31bd75520e233a788c455d4047089c555093d5b2ef7f908cadb4c91ca45033",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://uk.wikisource.org/wiki/Гамалія_(1844)"],
+        "ordinaryLife70Expiry": "1932-01-01",
+        "life100ComparisonExpiry": "1962-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Гамалія_(1844)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "1358ced8ac0dd016006e",
+      "title": "Одержима",
+      "author": "Лариса Петрівна Косач-Квітка (Леся Українка)",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1913,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Леся_Українка",
+        "authorPageSha256": "5574d1dfb1ebe17c8c925ecdf9f97a53552f42c2d49c0ef7e858e413dc99147c",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://uk.wikisource.org/wiki/Одержима"],
+        "ordinaryLife70Expiry": "1984-01-01",
+        "life100ComparisonExpiry": "2014-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Одержима",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "ac44c50489a9296a5830",
+      "title": "Назар Стодоля",
+      "author": "Тарас Григорович Шевченко",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1861,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Тарас_Шевченко",
+        "authorPageSha256": "8f31bd75520e233a788c455d4047089c555093d5b2ef7f908cadb4c91ca45033",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://uk.wikisource.org/wiki/Назар_Стодоля"],
+        "ordinaryLife70Expiry": "1932-01-01",
+        "life100ComparisonExpiry": "1962-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Назар_Стодоля",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "f2a9eb600081a9d2a4b7",
+      "title": "Оргія",
+      "author": "Лариса Петрівна Косач-Квітка (Леся Українка)",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1913,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Леся_Українка",
+        "authorPageSha256": "5574d1dfb1ebe17c8c925ecdf9f97a53552f42c2d49c0ef7e858e413dc99147c",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1984-01-01",
+        "life100ComparisonExpiry": "2014-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "lesya-ukrainka-encyclopedia",
+          "url": "https://www.l-ukrainka.name/uk/Dramas/Orgija.html",
+          "formats": ["HTML"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "Original drama with linked acts; not an EPUB. Separate modern notes and verify redistribution permission.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "PROVIDER_TERMS_AND_EDITORIAL_RIGHTS_UNVERIFIED",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "24908be0683050df178f",
+      "title": "Сон",
+      "author": "Тарас Григорович Шевченко",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1861,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Тарас_Шевченко",
+        "authorPageSha256": "8f31bd75520e233a788c455d4047089c555093d5b2ef7f908cadb4c91ca45033",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://uk.wikisource.org/wiki/Сон_(У_всякого_своя_доля)"
+        ],
+        "ordinaryLife70Expiry": "1932-01-01",
+        "life100ComparisonExpiry": "1962-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Сон_(У_всякого_своя_доля)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "677eebf14314c240793e",
+      "title": "Адвокат Мартіан",
+      "author": "Лариса Петрівна Косач-Квітка (Леся Українка)",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1913,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Леся_Українка",
+        "authorPageSha256": "5574d1dfb1ebe17c8c925ecdf9f97a53552f42c2d49c0ef7e858e413dc99147c",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1984-01-01",
+        "life100ComparisonExpiry": "2014-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "lesya-ukrainka-encyclopedia",
+          "url": "https://www.l-ukrainka.name/uk/Dramas/AdvokatMartian.html",
+          "formats": ["HTML"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "Original drama with linked acts; not an EPUB. Separate modern notes and verify redistribution permission.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "PROVIDER_TERMS_AND_EDITORIAL_RIGHTS_UNVERIFIED",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "db2a984c952c302f4934",
+      "title": "Неофіти",
+      "author": "Тарас Григорович Шевченко",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1861,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Тарас_Шевченко",
+        "authorPageSha256": "8f31bd75520e233a788c455d4047089c555093d5b2ef7f908cadb4c91ca45033",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://uk.wikisource.org/wiki/Неофіти"],
+        "ordinaryLife70Expiry": "1932-01-01",
+        "life100ComparisonExpiry": "1962-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Неофіти",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "5536efecbb9fc4621538",
+      "title": "Інститутка",
+      "author": "Марія Олександрівна Вілінська (Марко Вовчок)",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1907,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Марко_Вовчок",
+        "authorPageSha256": "d831892a7b7f73df211c8251bcc91cc025e6556df88120bfb0267c9c2cfdd8af",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://uk.wikisource.org/wiki/Інститутка"],
+        "ordinaryLife70Expiry": "1978-01-01",
+        "life100ComparisonExpiry": "2008-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Інститутка",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "f4dfa85ae969a3572b83",
+      "title": "Маруся",
+      "author": "Григорій Федорович Квітка-Основ’яненко",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1843,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Григорій_Квітка-Основ%27яненко",
+        "authorPageSha256": "345ff73ab40ab7b0391956d0cc3592df328b6e3e6d16f6f30021cfcc78db8ea6",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://uk.wikisource.org/wiki/Маруся_(Квітка-Основ'яненко)"
+        ],
+        "ordinaryLife70Expiry": "1914-01-01",
+        "life100ComparisonExpiry": "1944-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Маруся_(Квітка-Основ'яненко)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "7091c6265455b628ec67",
+      "title": "Народні оповідання",
+      "author": "Марія Олександрівна Вілінська (Марко Вовчок)",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1907,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Марко_Вовчок",
+        "authorPageSha256": "d831892a7b7f73df211c8251bcc91cc025e6556df88120bfb0267c9c2cfdd8af",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://uk.wikisource.org/wiki/Народні_оповідання"
+        ],
+        "ordinaryLife70Expiry": "1978-01-01",
+        "life100ComparisonExpiry": "2008-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Народні_оповідання",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "af59c44cbb3c79b6f23e",
+      "title": "Конотопська відьма",
+      "author": "Григорій Федорович Квітка-Основ’яненко",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1843,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Григорій_Квітка-Основ%27яненко",
+        "authorPageSha256": "345ff73ab40ab7b0391956d0cc3592df328b6e3e6d16f6f30021cfcc78db8ea6",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://uk.wikisource.org/wiki/Конотопська_відьма"
+        ],
+        "ordinaryLife70Expiry": "1914-01-01",
+        "life100ComparisonExpiry": "1944-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Конотопська_відьма",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "7b814580e9d6e221cc16",
+      "title": "Максим Гримач",
+      "author": "Марія Олександрівна Вілінська (Марко Вовчок)",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1907,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Марко_Вовчок",
+        "authorPageSha256": "d831892a7b7f73df211c8251bcc91cc025e6556df88120bfb0267c9c2cfdd8af",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://uk.wikisource.org/wiki/Максим_Гримач"],
+        "ordinaryLife70Expiry": "1978-01-01",
+        "life100ComparisonExpiry": "2008-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Максим_Гримач",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "1d3730366ef8bc023d87",
+      "title": "Перекотиполе",
+      "author": "Григорій Федорович Квітка-Основ’яненко",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1843,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Григорій_Квітка-Основ%27яненко",
+        "authorPageSha256": "345ff73ab40ab7b0391956d0cc3592df328b6e3e6d16f6f30021cfcc78db8ea6",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://uk.wikisource.org/wiki/Перекотиполе_(1874)"
+        ],
+        "ordinaryLife70Expiry": "1914-01-01",
+        "life100ComparisonExpiry": "1944-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Перекотиполе_(1874)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "3e0d44311dee11359638",
+      "title": "Кармелюк",
+      "author": "Марія Олександрівна Вілінська (Марко Вовчок)",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1907,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Марко_Вовчок",
+        "authorPageSha256": "d831892a7b7f73df211c8251bcc91cc025e6556df88120bfb0267c9c2cfdd8af",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://uk.wikisource.org/wiki/Кармелюк_(Марко_Вовчок)"
+        ],
+        "ordinaryLife70Expiry": "1978-01-01",
+        "life100ComparisonExpiry": "2008-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Кармелюк_(Марко_Вовчок)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "ceb56bc23bab70c7f423",
+      "title": "Чорна рада",
+      "author": "Пантелеймон Олександрович Куліш",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1897,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Пантелеймон_Куліш",
+        "authorPageSha256": "84d65602b50b9036279f36bea0c3ca9ce51be32ebafa65947f70ed6d95a4b4cb",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://uk.wikisource.org/wiki/Чорна_рада"],
+        "ordinaryLife70Expiry": "1968-01-01",
+        "life100ComparisonExpiry": "1998-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Чорна_рада",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "bdf73f7f88a4716aeef7",
+      "title": "Горпина",
+      "author": "Марія Олександрівна Вілінська (Марко Вовчок)",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1907,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Марко_Вовчок",
+        "authorPageSha256": "d831892a7b7f73df211c8251bcc91cc025e6556df88120bfb0267c9c2cfdd8af",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://uk.wikisource.org/wiki/Горпина"],
+        "ordinaryLife70Expiry": "1978-01-01",
+        "life100ComparisonExpiry": "2008-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Горпина",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "f78e73ccd565d8f3cd02",
+      "title": "Досвітки",
+      "author": "Пантелеймон Олександрович Куліш",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1897,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Пантелеймон_Куліш",
+        "authorPageSha256": "84d65602b50b9036279f36bea0c3ca9ce51be32ebafa65947f70ed6d95a4b4cb",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1968-01-01",
+        "life100ComparisonExpiry": "1998-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "nbuv-ukrainica",
+          "url": "https://irbis-nbuv.gov.ua/ulib/item/0001587",
+          "formats": ["DIGITIZED_SCAN"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "1876 second expanded edition, 256 pages. No EPUB/reuse grant verified.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "e4f7ff54a91a628f8ab4",
+      "title": "Козачка",
+      "author": "Марія Олександрівна Вілінська (Марко Вовчок)",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1907,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Марко_Вовчок",
+        "authorPageSha256": "d831892a7b7f73df211c8251bcc91cc025e6556df88120bfb0267c9c2cfdd8af",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://uk.wikisource.org/wiki/Козачка_(Вовчок)"
+        ],
+        "ordinaryLife70Expiry": "1978-01-01",
+        "life100ComparisonExpiry": "2008-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Козачка_(Вовчок)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "705f3cf8968b7b62e771",
+      "title": "Орися",
+      "author": "Пантелеймон Олександрович Куліш",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1897,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Пантелеймон_Куліш",
+        "authorPageSha256": "84d65602b50b9036279f36bea0c3ca9ce51be32ebafa65947f70ed6d95a4b4cb",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://uk.wikisource.org/wiki/Орися"],
+        "ordinaryLife70Expiry": "1968-01-01",
+        "life100ComparisonExpiry": "1998-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Орися",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "4e7a90b35bb9ef1554c3",
+      "title": "Два сини",
+      "author": "Марія Олександрівна Вілінська (Марко Вовчок)",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1907,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Марко_Вовчок",
+        "authorPageSha256": "d831892a7b7f73df211c8251bcc91cc025e6556df88120bfb0267c9c2cfdd8af",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://uk.wikisource.org/wiki/Два_сини"],
+        "ordinaryLife70Expiry": "1978-01-01",
+        "life100ComparisonExpiry": "2008-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Два_сини",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "fca627440e1e00f72b83",
+      "title": "Дівоче серце",
+      "author": "Пантелеймон Олександрович Куліш",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1897,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Пантелеймон_Куліш",
+        "authorPageSha256": "84d65602b50b9036279f36bea0c3ca9ce51be32ebafa65947f70ed6d95a4b4cb",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://uk.wikisource.org/wiki/Дівоче_серце"],
+        "ordinaryLife70Expiry": "1968-01-01",
+        "life100ComparisonExpiry": "1998-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Дівоче_серце",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "eabc08be7862ba990f0a",
+      "title": "Забісована дівчина Настуся",
+      "author": "Олександра Михайлівна Білозерська-Куліш (Ганна Барвінок)",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1911,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Ганна_Барвінок",
+        "authorPageSha256": "03d8e4eb658087ebb6647e9d113537c6d4a5b92db48bad2dd5cfbfe75383316c",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://uk.wikisource.org/wiki/Забісована_дївчина_Настуся"
+        ],
+        "ordinaryLife70Expiry": "1982-01-01",
+        "life100ComparisonExpiry": "2012-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Забісована_дївчина_Настуся",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "8924930bb15daaf2a620",
+      "title": "Мартин Гак",
+      "author": "Пантелеймон Олександрович Куліш",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1897,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Пантелеймон_Куліш",
+        "authorPageSha256": "84d65602b50b9036279f36bea0c3ca9ce51be32ebafa65947f70ed6d95a4b4cb",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://uk.wikisource.org/wiki/Мартин_Гак"],
+        "ordinaryLife70Expiry": "1968-01-01",
+        "life100ComparisonExpiry": "1998-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Мартин_Гак",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "b9b8d1e4be008dbff176",
+      "title": "Молодича боротьба",
+      "author": "Олександра Михайлівна Білозерська-Куліш (Ганна Барвінок)",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1911,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Ганна_Барвінок",
+        "authorPageSha256": "03d8e4eb658087ebb6647e9d113537c6d4a5b92db48bad2dd5cfbfe75383316c",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://uk.wikisource.org/wiki/Молодыча_боротьба"
+        ],
+        "ordinaryLife70Expiry": "1982-01-01",
+        "life100ComparisonExpiry": "2012-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Молодыча_боротьба",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "b80b590a6fe98c1c9633",
+      "title": "Огняний змій",
+      "author": "Пантелеймон Олександрович Куліш",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1897,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Пантелеймон_Куліш",
+        "authorPageSha256": "84d65602b50b9036279f36bea0c3ca9ce51be32ebafa65947f70ed6d95a4b4cb",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://uk.wikisource.org/wiki/Огняний_змій"],
+        "ordinaryLife70Expiry": "1968-01-01",
+        "life100ComparisonExpiry": "1998-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Огняний_змій",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "e46f1b583dcf77681dfb",
+      "title": "Садовнича школа",
+      "author": "Олександра Михайлівна Білозерська-Куліш (Ганна Барвінок)",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1911,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Ганна_Барвінок",
+        "authorPageSha256": "03d8e4eb658087ebb6647e9d113537c6d4a5b92db48bad2dd5cfbfe75383316c",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1982-01-01",
+        "life100ComparisonExpiry": "2012-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/%D0%9B%D0%9D%D0%92/27/9/%D0%A1%D0%B0%D0%B4%D0%BE%D0%B2%D0%BD%D0%B8%D1%87%D0%B0_%D1%88%D0%BA%D0%BE%D0%BB%D0%B0",
+          "formats": ["HTML", "EPUB_EXPORT_UNVERIFIED"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "ЛНВ/27/9/Садовнича школа",
+          "notes": "Existing work/version page; validate author, all sections, proofreading status, export and contributor licenses.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "ffc516160f21ebe196bf",
+      "title": "Хуторна поезія",
+      "author": "Пантелеймон Олександрович Куліш",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1897,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Пантелеймон_Куліш",
+        "authorPageSha256": "84d65602b50b9036279f36bea0c3ca9ce51be32ebafa65947f70ed6d95a4b4cb",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://uk.wikisource.org/wiki/Хуторна_поезія"],
+        "ordinaryLife70Expiry": "1968-01-01",
+        "life100ComparisonExpiry": "1998-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Хуторна_поезія",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "c485cc5f9151aff4e116",
+      "title": "Довічний жаль",
+      "author": "Олександра Михайлівна Білозерська-Куліш (Ганна Барвінок)",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1911,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Ганна_Барвінок",
+        "authorPageSha256": "03d8e4eb658087ebb6647e9d113537c6d4a5b92db48bad2dd5cfbfe75383316c",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1982-01-01",
+        "life100ComparisonExpiry": "2012-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/%D0%86%D0%BD%D0%B4%D0%B5%D0%BA%D1%81%3A%D0%A0%D1%96%D0%B4%D0%BD%D0%B8%D0%B9_%D0%9A%D1%80%D0%B0%D0%B9._1908.pdf",
+          "formats": ["JOURNAL_SCAN"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "Author bibliography identifies story in issue 5, 8 February 1908. Story transcription is a red link; locate its scan pages and transcribe before EPUB export.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "licenseEvidenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/deed.uk",
+          "completeness": "LOCATE_WORK_WITHIN_COLLECTION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "dff647854348db52e45e",
+      "title": "Дзвін",
+      "author": "Пантелеймон Олександрович Куліш",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1897,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Пантелеймон_Куліш",
+        "authorPageSha256": "84d65602b50b9036279f36bea0c3ca9ce51be32ebafa65947f70ed6d95a4b4cb",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1968-01-01",
+        "life100ComparisonExpiry": "1998-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "nlu-culture-ukraine",
+          "url": "https://elib.nlu.org.ua/object.html?id=9988",
+          "formats": ["DIGITIZED_SCAN"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "1893 Geneva collection, 239+IV pages, 75.8 MB scan. No EPUB and no blanket reuse permission verified.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "89241a2dce6f4dba349e",
+      "title": "Дух часу",
+      "author": "Наталія Іванівна Кобринська",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1920,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Наталія_Кобринська",
+        "authorPageSha256": "acbaa3e376b5517cdf1164182520d39fe5eedacd0be20788b1a769aec2020722",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://uk.wikisource.org/wiki/Оповідання_(Кобринська)/Дух_часу"
+        ],
+        "ordinaryLife70Expiry": "1991-01-01",
+        "life100ComparisonExpiry": "2021-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Оповідання_(Кобринська)/Дух_часу",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "27d38bc6caaad208e374",
+      "title": "Байда, князь Вишневецький",
+      "author": "Пантелеймон Олександрович Куліш",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1897,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Пантелеймон_Куліш",
+        "authorPageSha256": "84d65602b50b9036279f36bea0c3ca9ce51be32ebafa65947f70ed6d95a4b4cb",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://uk.wikisource.org/wiki/Байда,_князь_Вишневецький"
+        ],
+        "ordinaryLife70Expiry": "1968-01-01",
+        "life100ComparisonExpiry": "1998-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Байда,_князь_Вишневецький",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "12515f850444e3ededc0",
+      "title": "Задля кусника хліба",
+      "author": "Наталія Іванівна Кобринська",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1920,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Наталія_Кобринська",
+        "authorPageSha256": "acbaa3e376b5517cdf1164182520d39fe5eedacd0be20788b1a769aec2020722",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1991-01-01",
+        "life100ComparisonExpiry": "2021-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/%D0%9E%D0%BF%D0%BE%D0%B2%D1%96%D0%B4%D0%B0%D0%BD%D0%BD%D1%8F_%28%D0%9A%D0%BE%D0%B1%D1%80%D0%B8%D0%BD%D1%81%D1%8C%D0%BA%D0%B0%29/%D0%97%D0%B0%D0%B4%D0%BB%D1%8F_%D0%BA%D1%83%D1%81%D0%BD%D0%B8%D0%BA%D0%B0_%D1%85%D0%BB%D1%96%D0%B1%D0%B0",
+          "formats": ["HTML", "EPUB_EXPORT_UNVERIFIED"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "Author bibliography links this chapter; validate text completeness and export.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "6fa00e960a5393bfd725",
+      "title": "Цар Наливай",
+      "author": "Пантелеймон Олександрович Куліш",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1897,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Пантелеймон_Куліш",
+        "authorPageSha256": "84d65602b50b9036279f36bea0c3ca9ce51be32ebafa65947f70ed6d95a4b4cb",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1968-01-01",
+        "life100ComparisonExpiry": "1998-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "nbuv-ukrainica",
+          "url": "https://irbis-nbuv.gov.ua/ulib/item/ukr0000023975",
+          "formats": ["DIGITIZED_SCAN"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "Contained in Dramovana trylohiia, 1900, 316 pages. Requires identifying/extracting the drama; no standalone EPUB verified.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "LOCATE_WORK_WITHIN_COLLECTION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "0232464d2b227a9d1323",
+      "title": "Казки",
+      "author": "Наталія Іванівна Кобринська",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1920,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Наталія_Кобринська",
+        "authorPageSha256": "acbaa3e376b5517cdf1164182520d39fe5eedacd0be20788b1a769aec2020722",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://uk.wikisource.org/wiki/Казки_(Кобринська)"
+        ],
+        "ordinaryLife70Expiry": "1991-01-01",
+        "life100ComparisonExpiry": "2021-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Казки_(Кобринська)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "6f59143f08d9bc48e9e3",
+      "title": "Петро Сагайдашний",
+      "author": "Пантелеймон Олександрович Куліш",
+      "authorGender": "man",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1897,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Пантелеймон_Куліш",
+        "authorPageSha256": "84d65602b50b9036279f36bea0c3ca9ce51be32ebafa65947f70ed6d95a4b4cb",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1968-01-01",
+        "life100ComparisonExpiry": "1998-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "nbuv-ukrainica",
+          "url": "https://irbis-nbuv.gov.ua/ulib/item/ukr0000023975",
+          "formats": ["DIGITIZED_SCAN"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "Petro Sahaidachnyi spelling variant in Dramovana trylohiia, 1900. Identify/extract drama; no standalone EPUB verified.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "LOCATE_WORK_WITHIN_COLLECTION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "97400661f124487c13f7",
+      "title": "Ядзя і Катруся",
+      "author": "Наталія Іванівна Кобринська",
+      "authorGender": "woman",
+      "language": "uk",
+      "originalTextResearch": {
+        "authorDeathYear": 1920,
+        "authorEvidenceUrl": "https://uk.wikisource.org/wiki/Автор:Наталія_Кобринська",
+        "authorPageSha256": "acbaa3e376b5517cdf1164182520d39fe5eedacd0be20788b1a769aec2020722",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://uk.wikisource.org/wiki/Оповідання_(Кобринська)/Ядзя_і_Катруся"
+        ],
+        "ordinaryLife70Expiry": "1991-01-01",
+        "life100ComparisonExpiry": "2021-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://uk.wikisource.org/wiki/Оповідання_(Кобринська)/Ядзя_і_Катруся",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    }
+  ]
+}

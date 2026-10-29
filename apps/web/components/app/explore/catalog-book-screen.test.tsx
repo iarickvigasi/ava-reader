@@ -33,9 +33,7 @@ const state: ReturnType<typeof useCatalogBook> = {
     stale: false,
     retry: vi.fn(),
   },
-  items: [],
   selectedEdition: undefined,
-  next: vi.fn(),
 };
 
 beforeEach(() => {
@@ -75,16 +73,19 @@ it("shows a real description and preserves Library's default fallback", () => {
   ).toBe("");
 });
 
-it.each(["work", "editions"] as const)(
-  "shows a skeleton while %s loads",
-  (resource) => {
-    state[resource].loading = true;
-    if (resource === "work") state.work.data = null;
-    const html = renderToStaticMarkup(withIntl(<CatalogBookScreen />));
-    expect(html).toContain('aria-busy="true"');
-    expect(html).toContain(
-      resource === "work" ? "Loading book details" : "Loading editions",
-    );
-    expect(html).not.toContain("Loading books");
-  },
-);
+it("shows a skeleton while the work loads", () => {
+  state.work.loading = true;
+  state.work.data = null;
+  const html = renderToStaticMarkup(withIntl(<CatalogBookScreen />));
+  expect(html).toContain('aria-busy="true"');
+  expect(html).toContain("Loading book details");
+  expect(html).not.toContain("Loading books");
+});
+
+vi.mock("@/features/explore/use-reading-details", () => ({
+  useReadingDetails: () => null,
+}));
+vi.mock("./admin/catalog-admin-tools", () => ({
+  CatalogAdminTools: () => null,
+}));
+vi.mock("./linking/link-private-copy", () => ({ LinkPrivateCopy: () => null }));

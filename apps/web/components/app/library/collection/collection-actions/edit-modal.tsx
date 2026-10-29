@@ -1,3 +1,4 @@
+import { ModalActions } from "@/components/ui/modal-actions";
 import { useId } from "react";
 import {
   normalizeCollectionText,
@@ -120,16 +121,11 @@ export function EditCollectionModal({
         </p>
       ) : null}
 
-      <div className="mt-5 flex items-center justify-end gap-2">
-        <Button
-          size="sm"
-          variant="soft"
-          disabled={isPending}
-          onClick={onClose}
-          type="button"
-        >
-          {t("cancel")}
-        </Button>
+      <ModalActions
+        cancelLabel={t("cancel")}
+        onCancel={onClose}
+        pending={isPending}
+      >
         <Button
           size="sm"
           disabled={
@@ -145,7 +141,7 @@ export function EditCollectionModal({
               ? t("saving")
               : t("save")}
         </Button>
-      </div>
+      </ModalActions>
     </form>
   );
 }

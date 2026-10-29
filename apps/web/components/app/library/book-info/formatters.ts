@@ -1,7 +1,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import type { LibraryBookInfo } from "@/lib/api-types";
 
-const ESTIMATED_PAGES_PER_HOUR = 30;
+import { estimatedReadingHours } from "@/lib/estimated-reading-hours";
 
 // Pure helpers — no user-facing strings, safe to call anywhere.
 
@@ -81,14 +81,12 @@ export function useBookInfoFormatters() {
     }
 
     const estimated = t("estimated", {
-      hours: formatHours(approximatePageCount / ESTIMATED_PAGES_PER_HOUR),
+      hours: formatHours(estimatedReadingHours(approximatePageCount)),
     });
     return `${spent} / ${estimated}`;
   };
 
-  const formatApproximatePageCount = (
-    approximatePageCount: number | null,
-  ) => {
+  const formatApproximatePageCount = (approximatePageCount: number | null) => {
     if (!approximatePageCount || approximatePageCount < 1) {
       return t("unknown");
     }

@@ -1,4 +1,4 @@
-import { privateBookAccess } from '../shared/private-book-access';
+import { loadBookCover } from './items/load-book-cover';
 import { deleteLibraryItem } from './items/delete-library-item';
 import { createCollection } from './collections/create-collection';
 import { Injectable } from '@nestjs/common';
@@ -49,15 +49,7 @@ export class LibraryService {
 
   async getBookCover(bookId: string, clerkUserId: string) {
     const user = await this.user(clerkUserId);
-    const book = await this.prisma.book.findFirst({
-      where: {
-        id: bookId,
-        AND: privateBookAccess(user.id),
-        libraryItems: { some: { user: { clerkUserId } } },
-      },
-      select: { coverBlob: { select: { bytes: true, mimeType: true } } },
-    });
-    return book?.coverBlob ?? null;
+    return loadBookCover(this.prisma, bookId, user.id);
   }
 
   async getCollection(clerkUserId: string, collectionId: string) {

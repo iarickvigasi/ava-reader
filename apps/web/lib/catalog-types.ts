@@ -1,3 +1,4 @@
+import type { CatalogImportEvidence } from "./catalog-import-evidence";
 export type CatalogText = {
   locale: string;
   title?: string;
@@ -10,6 +11,7 @@ export type CatalogCredit = {
   author: { id: string; displayName: string };
 };
 export type CatalogWork = {
+  revision?: number;
   id: string;
   coverImageUrl?: string | null;
   categories?: string[];
@@ -44,7 +46,9 @@ export type CatalogPage<T> = {
 };
 
 export type CatalogReadingAsset = {
+  reviewDeferred?: boolean;
   id: string;
+  checksum?: string;
   mainCatalogEntryId: string;
   rightsUrl: string;
   rightsJurisdiction: string;
@@ -53,4 +57,13 @@ export type CatalogReadingAsset = {
     CatalogEdition,
     "id" | "title" | "language" | "format" | "publishedYear"
   >;
+};
+
+export type CatalogEditionDetail = CatalogEdition & {
+  importEvidence?: CatalogImportEvidence[];
+  work: Pick<
+    CatalogWork,
+    "id" | "originalTitle" | "credits" | "coverImageUrl" | "editions"
+  >;
+  readingAssets?: CatalogReadingAsset[];
 };

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { TextActionLink } from "@/components/ui/text-action-link";
 import { useTranslations } from "next-intl";
 import { useCollectionDisplay } from "@/components/app/library/shared/collection-display";
 import { ArrowRightIcon } from "@/components/app/shared/app-icons";
@@ -19,12 +20,9 @@ export function CollectionsPanel({
       <SectionHeader
         label={t("title")}
         action={
-          <Link
-            href={APP_LIBRARY_HREF}
-            className="text-[0.8rem] font-bold uppercase tracking-[0.12em] text-ink underline decoration-line-strong underline-offset-6 sm:text-sm"
-          >
+          <TextActionLink href={APP_LIBRARY_HREF}>
             {t("openAll")}
-          </Link>
+          </TextActionLink>
         }
       />
 

@@ -63,7 +63,7 @@ export async function verifyBulkAuthors(ctx: ImportFixture) {
     );
     assert.equal(
       await ctx.db.catalogOutbox.count({ where: { entityId: { in: ids } } }),
-      5,
+      6,
     );
     assert.equal(
       await ctx.db.authorAlias.count({ where: { authorId: { in: ids } } }),

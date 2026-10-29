@@ -1,4 +1,5 @@
 "use client";
+import { ModalActions } from "@/components/ui/modal-actions";
 
 import { useId } from "react";
 import { useTranslations } from "next-intl";
@@ -68,14 +69,15 @@ export function ProfileDialog({
             {t(editor.status)}
           </p>
         )}
-        <div className="flex flex-wrap justify-end gap-3">
-          <Button type="button" variant="ghost" onClick={onClose}>
-            {t("close")}
-          </Button>
-          <Button type="submit" disabled={editor.busy}>
+        <ModalActions
+          cancelLabel={t("close")}
+          onCancel={onClose}
+          pending={editor.busy}
+        >
+          <Button size="sm" type="submit" disabled={editor.busy}>
             {t("save")}
           </Button>
-        </div>
+        </ModalActions>
       </form>
     </ModalShell>
   );

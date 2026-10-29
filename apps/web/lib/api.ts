@@ -17,5 +17,10 @@ export function resolveApiAssetUrl(path: null | string) {
   if (/^https?:\/\//.test(path)) {
     return path;
   }
+  if (path.startsWith("/catalog/api/edition-covers/")) {
+    const base =
+      process.env.NEXT_PUBLIC_CATALOG_API_BASE_URL ?? "http://localhost:4001";
+    return `${base.replace(/\/$/, "")}${path.slice("/catalog".length)}`;
+  }
   return `${getPublicApiBaseUrl()}${path}`;
 }

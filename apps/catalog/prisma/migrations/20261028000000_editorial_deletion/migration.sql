@@ -1,0 +1,1 @@
+ALTER TABLE "Work" ADD COLUMN "deletedAt" TIMESTAMP(3);

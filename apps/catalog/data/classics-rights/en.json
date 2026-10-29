@@ -1,0 +1,2943 @@
+{
+  "version": 1,
+  "researchedAt": "2026-10-29",
+  "scope": "Bibliographic and ordinary-term research; never exact-file publication approval",
+  "books": [
+    {
+      "id": "a58ea075a924dde7217f",
+      "title": "Great Expectations",
+      "author": "Charles John Huffam Dickens",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1870,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Charles_John_Huffam_Dickens",
+        "authorPageSha256": "478bb45728854872d33c9d7934cd242cbe381d2616dae3f29caf06eeea357fc1",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://en.wikisource.org/wiki/Great_Expectations"
+        ],
+        "ordinaryLife70Expiry": "1941-01-01",
+        "life100ComparisonExpiry": "1971-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "1400",
+          "url": "https://www.gutenberg.org/ebooks/1400",
+          "catalogTitle": "Great Expectations",
+          "catalogAuthors": "Dickens, Charles, 1812-1870",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/Great_Expectations",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "be05590105096746bf6e",
+      "title": "Pride and Prejudice",
+      "author": "Jane Austen",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1817,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Jane_Austen",
+        "authorPageSha256": "f35a16faf23f39c7ddb7a61af25a524c360c713456ee0d880ccf9bcc1222f83b",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://en.wikisource.org/wiki/Pride_and_Prejudice"
+        ],
+        "ordinaryLife70Expiry": "1888-01-01",
+        "life100ComparisonExpiry": "1918-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "1342",
+          "url": "https://www.gutenberg.org/ebooks/1342",
+          "catalogTitle": "Pride and Prejudice",
+          "catalogAuthors": "Austen, Jane, 1775-1817",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "42671",
+          "url": "https://www.gutenberg.org/ebooks/42671",
+          "catalogTitle": "Pride and Prejudice",
+          "catalogAuthors": "Austen, Jane, 1775-1817; Chapman, R. W. (Robert William), 1881-1960 [Editor]",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "37431",
+          "url": "https://www.gutenberg.org/ebooks/37431",
+          "catalogTitle": "Pride and Prejudice, a play founded on Jane Austen's novel",
+          "catalogAuthors": "MacKaye, Steele, Mrs., 1845-1924; Austen, Jane, 1775-1817",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/Pride_and_Prejudice",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "83f66fa6ac82bfc0466a",
+      "title": "A Tale of Two Cities",
+      "author": "Charles John Huffam Dickens",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1870,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Charles_John_Huffam_Dickens",
+        "authorPageSha256": "478bb45728854872d33c9d7934cd242cbe381d2616dae3f29caf06eeea357fc1",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://en.wikisource.org/wiki/A_Tale_of_Two_Cities_(Dickens)"
+        ],
+        "ordinaryLife70Expiry": "1941-01-01",
+        "life100ComparisonExpiry": "1971-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "98",
+          "url": "https://www.gutenberg.org/ebooks/98",
+          "catalogTitle": "A Tale of Two Cities",
+          "catalogAuthors": "Dickens, Charles, 1812-1870",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/A_Tale_of_Two_Cities_(Dickens)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "944ec3510ec549ca7f0c",
+      "title": "Sense and Sensibility",
+      "author": "Jane Austen",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1817,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Jane_Austen",
+        "authorPageSha256": "f35a16faf23f39c7ddb7a61af25a524c360c713456ee0d880ccf9bcc1222f83b",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://en.wikisource.org/wiki/Sense_and_Sensibility"
+        ],
+        "ordinaryLife70Expiry": "1888-01-01",
+        "life100ComparisonExpiry": "1918-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "161",
+          "url": "https://www.gutenberg.org/ebooks/161",
+          "catalogTitle": "Sense and Sensibility",
+          "catalogAuthors": "Austen, Jane, 1775-1817",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "21839",
+          "url": "https://www.gutenberg.org/ebooks/21839",
+          "catalogTitle": "Sense and Sensibility",
+          "catalogAuthors": "Austen, Jane, 1775-1817; Dobson, Austin, 1840-1921 [Commentator]; Thomson, Hugh, 1860-1920 [Illustrator]",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/Sense_and_Sensibility",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "b57729ea140e0c1e63df",
+      "title": "Oliver Twist",
+      "author": "Charles John Huffam Dickens",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1870,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Charles_John_Huffam_Dickens",
+        "authorPageSha256": "478bb45728854872d33c9d7934cd242cbe381d2616dae3f29caf06eeea357fc1",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://en.wikisource.org/wiki/Oliver_Twist"],
+        "ordinaryLife70Expiry": "1941-01-01",
+        "life100ComparisonExpiry": "1971-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "730",
+          "url": "https://www.gutenberg.org/ebooks/730",
+          "catalogTitle": "Oliver Twist",
+          "catalogAuthors": "Dickens, Charles, 1812-1870",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "46675",
+          "url": "https://www.gutenberg.org/ebooks/46675",
+          "catalogTitle": "Oliver Twist; or, The Parish Boy's Progress. Illustrated",
+          "catalogAuthors": "Dickens, Charles, 1812-1870; Cruikshank, George, 1792-1878 [Illustrator]",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "47529",
+          "url": "https://www.gutenberg.org/ebooks/47529",
+          "catalogTitle": "Oliver Twist, Vol. 1 (of 3)",
+          "catalogAuthors": "Dickens, Charles, 1812-1870; Cruikshank, George, 1792-1878 [Illustrator]",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/Oliver_Twist",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "8607043a8d3838250409",
+      "title": "Emma",
+      "author": "Jane Austen",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1817,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Jane_Austen",
+        "authorPageSha256": "f35a16faf23f39c7ddb7a61af25a524c360c713456ee0d880ccf9bcc1222f83b",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://en.wikisource.org/wiki/Emma_(Austen)"],
+        "ordinaryLife70Expiry": "1888-01-01",
+        "life100ComparisonExpiry": "1918-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "standard-ebooks",
+          "url": "https://standardebooks.org/ebooks/jane-austen/emma",
+          "match": "individual-book-page-checked",
+          "reviewStatus": "UNREVIEWED_FILE_AND_ARTWORK",
+          "technicalSample": {
+            "source": "standard-ebooks",
+            "checksum": "97c1233f43d21ef98d2791b40df3eaa1cf799bfa4b11c23b38e22d8646ed51ef",
+            "bytes": 798869,
+            "paragraphs": 2323,
+            "characters": 882362,
+            "chapters": 61,
+            "replacementCharacters": 0,
+            "ruleVersion": 1,
+            "tocEntries": 6,
+            "chapterTitles": [
+              "Titlepage",
+              "Imprint",
+              "Dedication",
+              "Emma",
+              "I"
+            ],
+            "checkedAt": "2026-10-29",
+            "downloadUrl": "https://standardebooks.org/ebooks/jane-austen/emma/downloads/jane-austen_emma.epub?source=download",
+            "rightsAndFullReadingApproval": false
+          }
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "158",
+          "url": "https://www.gutenberg.org/ebooks/158",
+          "catalogTitle": "Emma",
+          "catalogAuthors": "Austen, Jane, 1775-1817",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/Emma_(Austen)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "1b84c3a3a857a280023c",
+      "title": "David Copperfield",
+      "author": "Charles John Huffam Dickens",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1870,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Charles_John_Huffam_Dickens",
+        "authorPageSha256": "478bb45728854872d33c9d7934cd242cbe381d2616dae3f29caf06eeea357fc1",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://en.wikisource.org/wiki/David_Copperfield"
+        ],
+        "ordinaryLife70Expiry": "1941-01-01",
+        "life100ComparisonExpiry": "1971-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "766",
+          "url": "https://www.gutenberg.org/ebooks/766",
+          "catalogTitle": "David Copperfield",
+          "catalogAuthors": "Dickens, Charles, 1812-1870",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "43111",
+          "url": "https://www.gutenberg.org/ebooks/43111",
+          "catalogTitle": "The Personal History of David Copperfield",
+          "catalogAuthors": "Dickens, Charles, 1812-1870; Browne, Hablot Knight, 1815-1882 [Illustrator]",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/David_Copperfield",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "1ea37eaa545caf0950c5",
+      "title": "Mansfield Park",
+      "author": "Jane Austen",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1817,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Jane_Austen",
+        "authorPageSha256": "f35a16faf23f39c7ddb7a61af25a524c360c713456ee0d880ccf9bcc1222f83b",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://en.wikisource.org/wiki/Mansfield_Park"],
+        "ordinaryLife70Expiry": "1888-01-01",
+        "life100ComparisonExpiry": "1918-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "141",
+          "url": "https://www.gutenberg.org/ebooks/141",
+          "catalogTitle": "Mansfield Park",
+          "catalogAuthors": "Austen, Jane, 1775-1817",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/Mansfield_Park",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "b8aa2ef2cf9c6d0ebc96",
+      "title": "Bleak House",
+      "author": "Charles John Huffam Dickens",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1870,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Charles_John_Huffam_Dickens",
+        "authorPageSha256": "478bb45728854872d33c9d7934cd242cbe381d2616dae3f29caf06eeea357fc1",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://en.wikisource.org/wiki/Bleak_House"],
+        "ordinaryLife70Expiry": "1941-01-01",
+        "life100ComparisonExpiry": "1971-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "1023",
+          "url": "https://www.gutenberg.org/ebooks/1023",
+          "catalogTitle": "Bleak House",
+          "catalogAuthors": "Dickens, Charles, 1812-1870",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/Bleak_House",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "789e0a8a7f51764548d2",
+      "title": "Persuasion",
+      "author": "Jane Austen",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1817,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Jane_Austen",
+        "authorPageSha256": "f35a16faf23f39c7ddb7a61af25a524c360c713456ee0d880ccf9bcc1222f83b",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://en.wikisource.org/wiki/Persuasion"],
+        "ordinaryLife70Expiry": "1888-01-01",
+        "life100ComparisonExpiry": "1918-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "105",
+          "url": "https://www.gutenberg.org/ebooks/105",
+          "catalogTitle": "Persuasion",
+          "catalogAuthors": "Austen, Jane, 1775-1817",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/Persuasion",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "4051ab373849f9a0a38a",
+      "title": "A Christmas Carol",
+      "author": "Charles John Huffam Dickens",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1870,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Charles_John_Huffam_Dickens",
+        "authorPageSha256": "478bb45728854872d33c9d7934cd242cbe381d2616dae3f29caf06eeea357fc1",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://en.wikisource.org/wiki/A_Christmas_Carol_(Dickens)"
+        ],
+        "ordinaryLife70Expiry": "1941-01-01",
+        "life100ComparisonExpiry": "1971-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "19337",
+          "url": "https://www.gutenberg.org/ebooks/19337",
+          "catalogTitle": "A Christmas Carol",
+          "catalogAuthors": "Dickens, Charles, 1812-1870; Williams, George Alfred, 1875-1932 [Illustrator]",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "24022",
+          "url": "https://www.gutenberg.org/ebooks/24022",
+          "catalogTitle": "A Christmas Carol",
+          "catalogAuthors": "Dickens, Charles, 1812-1870; Rackham, Arthur, 1867-1939 [Illustrator]",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "46",
+          "url": "https://www.gutenberg.org/ebooks/46",
+          "catalogTitle": "A Christmas Carol in Prose; Being a Ghost Story of Christmas",
+          "catalogAuthors": "Dickens, Charles, 1812-1870; Leech, John, 1817-1864 [Illustrator]",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/A_Christmas_Carol_(Dickens)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "0be9d0defdf82c19f40a",
+      "title": "Northanger Abbey",
+      "author": "Jane Austen",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1817,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Jane_Austen",
+        "authorPageSha256": "f35a16faf23f39c7ddb7a61af25a524c360c713456ee0d880ccf9bcc1222f83b",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://en.wikisource.org/wiki/Northanger_Abbey"
+        ],
+        "ordinaryLife70Expiry": "1888-01-01",
+        "life100ComparisonExpiry": "1918-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "121",
+          "url": "https://www.gutenberg.org/ebooks/121",
+          "catalogTitle": "Northanger Abbey",
+          "catalogAuthors": "Austen, Jane, 1775-1817",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/Northanger_Abbey",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "be7c231003f3ea173ffe",
+      "title": "Moby-Dick",
+      "author": "Herman Melville",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1891,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Herman_Melville",
+        "authorPageSha256": "8df2306b1a9683e810445db98bbb06714641eada49b52cc02bd8e70692139201",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://en.wikisource.org/wiki/Moby-Dick_(Melville)"
+        ],
+        "ordinaryLife70Expiry": "1962-01-01",
+        "life100ComparisonExpiry": "1992-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "15",
+          "url": "https://www.gutenberg.org/ebooks/15",
+          "catalogTitle": "Moby-Dick; or, The Whale",
+          "catalogAuthors": "Melville, Herman, 1819-1891",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "2489",
+          "url": "https://www.gutenberg.org/ebooks/2489",
+          "catalogTitle": "Moby Dick; Or, The Whale",
+          "catalogAuthors": "Melville, Herman, 1819-1891",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "2701",
+          "url": "https://www.gutenberg.org/ebooks/2701",
+          "catalogTitle": "Moby Dick; Or, The Whale",
+          "catalogAuthors": "Melville, Herman, 1819-1891",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/Moby-Dick_(Melville)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "819d61721de59bdc06a2",
+      "title": "Jane Eyre",
+      "author": "Charlotte Brontë",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1855,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Charlotte_Brontë",
+        "authorPageSha256": "f10e721f56a4c96bc79ab8d9e7d84f3546eb79a63a5358aec5b3cd7fdd9738eb",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://en.wikisource.org/wiki/Jane_Eyre"],
+        "ordinaryLife70Expiry": "1926-01-01",
+        "life100ComparisonExpiry": "1956-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "79159",
+          "url": "https://www.gutenberg.org/ebooks/79159",
+          "catalogTitle": "Jane Eyre",
+          "catalogAuthors": "Brougham, John, 1810-1880; Brontë, Charlotte, 1816-1855",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "1260",
+          "url": "https://www.gutenberg.org/ebooks/1260",
+          "catalogTitle": "Jane Eyre: An Autobiography",
+          "catalogAuthors": "Brontë, Charlotte, 1816-1855; Townsend, F. H. (Frederick Henry), 1868-1920 [Illustrator]",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/Jane_Eyre",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "72a570f648a1076de3cd",
+      "title": "Typee",
+      "author": "Herman Melville",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1891,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Herman_Melville",
+        "authorPageSha256": "8df2306b1a9683e810445db98bbb06714641eada49b52cc02bd8e70692139201",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://en.wikisource.org/wiki/Typee"],
+        "ordinaryLife70Expiry": "1962-01-01",
+        "life100ComparisonExpiry": "1992-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "28656",
+          "url": "https://www.gutenberg.org/ebooks/28656",
+          "catalogTitle": "Typee",
+          "catalogAuthors": "Melville, Herman, 1819-1891",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/Typee",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "654065aa311f700f92c0",
+      "title": "Shirley",
+      "author": "Charlotte Brontë",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1855,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Charlotte_Brontë",
+        "authorPageSha256": "f10e721f56a4c96bc79ab8d9e7d84f3546eb79a63a5358aec5b3cd7fdd9738eb",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://en.wikisource.org/wiki/Shirley"],
+        "ordinaryLife70Expiry": "1926-01-01",
+        "life100ComparisonExpiry": "1956-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "30486",
+          "url": "https://www.gutenberg.org/ebooks/30486",
+          "catalogTitle": "Shirley",
+          "catalogAuthors": "Brontë, Charlotte, 1816-1855",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/Shirley",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "41cc6a74408562f692d6",
+      "title": "Omoo",
+      "author": "Herman Melville",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1891,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Herman_Melville",
+        "authorPageSha256": "8df2306b1a9683e810445db98bbb06714641eada49b52cc02bd8e70692139201",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1962-01-01",
+        "life100ComparisonExpiry": "1992-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/Omoo",
+          "formats": ["HTML", "EPUB_EXPORT_UNVERIFIED"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Omoo",
+          "notes": "Existing work/version page; validate author, all sections, proofreading status, export and contributor licenses.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        },
+        {
+          "provider": "project-gutenberg",
+          "url": "https://www.gutenberg.org/ebooks/4045",
+          "formats": ["EPUB", "HTML"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "id": "4045",
+          "volume": "1 of 1",
+          "notes": "Expanded catalog title is Omoo: Adventures in the South Seas; validate exact EPUB.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "986e64392ca6ae02211f",
+      "title": "Villette",
+      "author": "Charlotte Brontë",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1855,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Charlotte_Brontë",
+        "authorPageSha256": "f10e721f56a4c96bc79ab8d9e7d84f3546eb79a63a5358aec5b3cd7fdd9738eb",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://en.wikisource.org/wiki/Villette"],
+        "ordinaryLife70Expiry": "1926-01-01",
+        "life100ComparisonExpiry": "1956-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "9182",
+          "url": "https://www.gutenberg.org/ebooks/9182",
+          "catalogTitle": "Villette",
+          "catalogAuthors": "Brontë, Charlotte, 1816-1855",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/Villette",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "94a1432ec7a25be057a8",
+      "title": "The Adventures of Tom Sawyer",
+      "author": "Samuel Langhorne Clemens (Mark Twain)",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1910,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Mark_Twain",
+        "authorPageSha256": "3524822d31b784559b0a96d5d042c68f51169cd1f5f466df5377475809bf8c47",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://en.wikisource.org/wiki/The_Adventures_of_Tom_Sawyer"
+        ],
+        "ordinaryLife70Expiry": "1981-01-01",
+        "life100ComparisonExpiry": "2011-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "74",
+          "url": "https://www.gutenberg.org/ebooks/74",
+          "catalogTitle": "The Adventures of Tom Sawyer, Complete",
+          "catalogAuthors": "Twain, Mark, 1835-1910",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "7193",
+          "url": "https://www.gutenberg.org/ebooks/7193",
+          "catalogTitle": "The Adventures of Tom Sawyer, Part 1.",
+          "catalogAuthors": "Twain, Mark, 1835-1910",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "7194",
+          "url": "https://www.gutenberg.org/ebooks/7194",
+          "catalogTitle": "The Adventures of Tom Sawyer, Part 2.",
+          "catalogAuthors": "Twain, Mark, 1835-1910",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/The_Adventures_of_Tom_Sawyer",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "cf57739ae315ad6818bb",
+      "title": "Wuthering Heights",
+      "author": "Emily Jane Brontë",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1848,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Emily_Jane_Brontë",
+        "authorPageSha256": "e2a60163fd443c55fe0fb76ab467f81bf4002a1f766328d5e18cf2ca9d724fe3",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://en.wikisource.org/wiki/Wuthering_Heights"
+        ],
+        "ordinaryLife70Expiry": "1919-01-01",
+        "life100ComparisonExpiry": "1949-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "768",
+          "url": "https://www.gutenberg.org/ebooks/768",
+          "catalogTitle": "Wuthering Heights",
+          "catalogAuthors": "Brontë, Emily, 1818-1848",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/Wuthering_Heights",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "85411eed19f5cfcb71b7",
+      "title": "Adventures of Huckleberry Finn",
+      "author": "Samuel Langhorne Clemens (Mark Twain)",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1910,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Mark_Twain",
+        "authorPageSha256": "3524822d31b784559b0a96d5d042c68f51169cd1f5f466df5377475809bf8c47",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://en.wikisource.org/wiki/Adventures_of_Huckleberry_Finn"
+        ],
+        "ordinaryLife70Expiry": "1981-01-01",
+        "life100ComparisonExpiry": "2011-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "76",
+          "url": "https://www.gutenberg.org/ebooks/76",
+          "catalogTitle": "Adventures of Huckleberry Finn",
+          "catalogAuthors": "Twain, Mark, 1835-1910; Kemble, E. W. (Edward Windsor), 1861-1933 [Illustrator]",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "7100",
+          "url": "https://www.gutenberg.org/ebooks/7100",
+          "catalogTitle": "Adventures of Huckleberry Finn, Chapters 01 to 05",
+          "catalogAuthors": "Twain, Mark, 1835-1910",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "7101",
+          "url": "https://www.gutenberg.org/ebooks/7101",
+          "catalogTitle": "Adventures of Huckleberry Finn, Chapters 06 to 10",
+          "catalogAuthors": "Twain, Mark, 1835-1910",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/Adventures_of_Huckleberry_Finn",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "1218fcacf9e9668ef6d5",
+      "title": "Frankenstein",
+      "author": "Mary Wollstonecraft Shelley",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1851,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Mary_Wollstonecraft_Shelley",
+        "authorPageSha256": "6f86c541553e683728a9218076aab7f0d9b21a570ea3a2f97f6bc0b432ceab63",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://en.wikisource.org/wiki/Frankenstein,_or_the_Modern_Prometheus"
+        ],
+        "ordinaryLife70Expiry": "1922-01-01",
+        "life100ComparisonExpiry": "1952-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "84",
+          "url": "https://www.gutenberg.org/ebooks/84",
+          "catalogTitle": "Frankenstein; or, The modern Prometheus",
+          "catalogAuthors": "Shelley, Mary Wollstonecraft, 1797-1851",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "41445",
+          "url": "https://www.gutenberg.org/ebooks/41445",
+          "catalogTitle": "Frankenstein; or, The modern Prometheus",
+          "catalogAuthors": "Shelley, Mary Wollstonecraft, 1797-1851",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "42324",
+          "url": "https://www.gutenberg.org/ebooks/42324",
+          "catalogTitle": "Frankenstein; or, The modern Prometheus",
+          "catalogAuthors": "Shelley, Mary Wollstonecraft, 1797-1851",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/Frankenstein,_or_the_Modern_Prometheus",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "761d58ee1ab3cbe09105",
+      "title": "The Prince and the Pauper",
+      "author": "Samuel Langhorne Clemens (Mark Twain)",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1910,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Mark_Twain",
+        "authorPageSha256": "3524822d31b784559b0a96d5d042c68f51169cd1f5f466df5377475809bf8c47",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://en.wikisource.org/wiki/The_Prince_and_the_Pauper"
+        ],
+        "ordinaryLife70Expiry": "1981-01-01",
+        "life100ComparisonExpiry": "2011-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "1837",
+          "url": "https://www.gutenberg.org/ebooks/1837",
+          "catalogTitle": "The Prince and the Pauper",
+          "catalogAuthors": "Twain, Mark, 1835-1910",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "7154",
+          "url": "https://www.gutenberg.org/ebooks/7154",
+          "catalogTitle": "The Prince and the Pauper, Part 1.",
+          "catalogAuthors": "Twain, Mark, 1835-1910",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "7155",
+          "url": "https://www.gutenberg.org/ebooks/7155",
+          "catalogTitle": "The Prince and the Pauper, Part 2.",
+          "catalogAuthors": "Twain, Mark, 1835-1910",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/The_Prince_and_the_Pauper",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "913b4cdb0d2ec4f6daff",
+      "title": "The Last Man",
+      "author": "Mary Wollstonecraft Shelley",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1851,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Mary_Wollstonecraft_Shelley",
+        "authorPageSha256": "6f86c541553e683728a9218076aab7f0d9b21a570ea3a2f97f6bc0b432ceab63",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://en.wikisource.org/wiki/The_Last_Man_(Shelley)"
+        ],
+        "ordinaryLife70Expiry": "1922-01-01",
+        "life100ComparisonExpiry": "1952-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "18247",
+          "url": "https://www.gutenberg.org/ebooks/18247",
+          "catalogTitle": "The Last Man",
+          "catalogAuthors": "Shelley, Mary Wollstonecraft, 1797-1851",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/The_Last_Man_(Shelley)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "d7e186c6c97f53c641c3",
+      "title": "A Connecticut Yankee in King Arthur’s Court",
+      "author": "Samuel Langhorne Clemens (Mark Twain)",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1910,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Mark_Twain",
+        "authorPageSha256": "3524822d31b784559b0a96d5d042c68f51169cd1f5f466df5377475809bf8c47",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://en.wikisource.org/wiki/A_Connecticut_Yankee_in_King_Arthur's_Court"
+        ],
+        "ordinaryLife70Expiry": "1981-01-01",
+        "life100ComparisonExpiry": "2011-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "86",
+          "url": "https://www.gutenberg.org/ebooks/86",
+          "catalogTitle": "A Connecticut Yankee in King Arthur's Court",
+          "catalogAuthors": "Twain, Mark, 1835-1910",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "7242",
+          "url": "https://www.gutenberg.org/ebooks/7242",
+          "catalogTitle": "A Connecticut Yankee in King Arthur's Court, Part 1.",
+          "catalogAuthors": "Twain, Mark, 1835-1910",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "7243",
+          "url": "https://www.gutenberg.org/ebooks/7243",
+          "catalogTitle": "A Connecticut Yankee in King Arthur's Court, Part 2.",
+          "catalogAuthors": "Twain, Mark, 1835-1910",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/A_Connecticut_Yankee_in_King_Arthur's_Court",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "160f6aa13b80ad3281b2",
+      "title": "Lodore",
+      "author": "Mary Wollstonecraft Shelley",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1851,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Mary_Wollstonecraft_Shelley",
+        "authorPageSha256": "6f86c541553e683728a9218076aab7f0d9b21a570ea3a2f97f6bc0b432ceab63",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1922-01-01",
+        "life100ComparisonExpiry": "1952-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "url": "https://www.gutenberg.org/ebooks/64555",
+          "formats": ["EPUB", "HTML"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "id": "64555",
+          "volume": "1 of 3",
+          "notes": "Original-language catalog text; Lodore needs all three volumes, not volume one alone.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "MULTIVOLUME_CHECK_REQUIRED"
+        },
+        {
+          "provider": "project-gutenberg",
+          "url": "https://www.gutenberg.org/ebooks/64556",
+          "formats": ["EPUB", "HTML"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "id": "64556",
+          "volume": "2 of 3",
+          "notes": "Original-language catalog text; Lodore needs all three volumes, not volume one alone.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "MULTIVOLUME_CHECK_REQUIRED"
+        },
+        {
+          "provider": "project-gutenberg",
+          "url": "https://www.gutenberg.org/ebooks/64557",
+          "formats": ["EPUB", "HTML"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "id": "64557",
+          "volume": "3 of 3",
+          "notes": "Original-language catalog text; Lodore needs all three volumes, not volume one alone.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "MULTIVOLUME_CHECK_REQUIRED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "d742125b2e3b7b07fbd6",
+      "title": "Dracula",
+      "author": "Abraham Stoker (Bram Stoker)",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1912,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Bram_Stoker",
+        "authorPageSha256": "a327af28aadc5a371bb85468353b703fc2658605d93cb5c292352376c86fdfa9",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://en.wikisource.org/wiki/Dracula"],
+        "ordinaryLife70Expiry": "1983-01-01",
+        "life100ComparisonExpiry": "2013-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "345",
+          "url": "https://www.gutenberg.org/ebooks/345",
+          "catalogTitle": "Dracula",
+          "catalogAuthors": "Stoker, Bram, 1847-1912",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "45839",
+          "url": "https://www.gutenberg.org/ebooks/45839",
+          "catalogTitle": "Dracula",
+          "catalogAuthors": "Stoker, Bram, 1847-1912",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "10150",
+          "url": "https://www.gutenberg.org/ebooks/10150",
+          "catalogTitle": "Dracula's Guest",
+          "catalogAuthors": "Stoker, Bram, 1847-1912",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/Dracula",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "f8c5db720e8cb71bcc6a",
+      "title": "Middlemarch",
+      "author": "Mary Ann Evans (George Eliot)",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1880,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:George_Eliot",
+        "authorPageSha256": "da220cb9f8523c16f6c1a67d8503e1464e78de984ccc5d3800aa2e0e1d54afa1",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://en.wikisource.org/wiki/Middlemarch"],
+        "ordinaryLife70Expiry": "1951-01-01",
+        "life100ComparisonExpiry": "1981-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "145",
+          "url": "https://www.gutenberg.org/ebooks/145",
+          "catalogTitle": "Middlemarch",
+          "catalogAuthors": "Eliot, George, 1819-1880",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/Middlemarch",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "12044fcd25ea53fb1212",
+      "title": "The Lair of the White Worm",
+      "author": "Abraham Stoker (Bram Stoker)",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1912,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Bram_Stoker",
+        "authorPageSha256": "a327af28aadc5a371bb85468353b703fc2658605d93cb5c292352376c86fdfa9",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://en.wikisource.org/wiki/The_Lair_of_the_White_Worm"
+        ],
+        "ordinaryLife70Expiry": "1983-01-01",
+        "life100ComparisonExpiry": "2013-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "1188",
+          "url": "https://www.gutenberg.org/ebooks/1188",
+          "catalogTitle": "The Lair of the White Worm",
+          "catalogAuthors": "Stoker, Bram, 1847-1912",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/The_Lair_of_the_White_Worm",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "c90bd5d84ede111848e2",
+      "title": "The Mill on the Floss",
+      "author": "Mary Ann Evans (George Eliot)",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1880,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:George_Eliot",
+        "authorPageSha256": "da220cb9f8523c16f6c1a67d8503e1464e78de984ccc5d3800aa2e0e1d54afa1",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://en.wikisource.org/wiki/The_Mill_on_the_Floss"
+        ],
+        "ordinaryLife70Expiry": "1951-01-01",
+        "life100ComparisonExpiry": "1981-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "6688",
+          "url": "https://www.gutenberg.org/ebooks/6688",
+          "catalogTitle": "The Mill on the Floss",
+          "catalogAuthors": "Eliot, George, 1819-1880",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/The_Mill_on_the_Floss",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "62758d8c69cd6ead8251",
+      "title": "The Picture of Dorian Gray",
+      "author": "Oscar Fingal O’Flahertie Wills Wilde",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1900,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Oscar_Wilde",
+        "authorPageSha256": "c6f8be7ba80c6e92ccc8dbac5118a8fd3c30d0051be1dd62e2449beaaa1db3ca",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://en.wikisource.org/wiki/The_Picture_of_Dorian_Gray"
+        ],
+        "ordinaryLife70Expiry": "1971-01-01",
+        "life100ComparisonExpiry": "2001-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "174",
+          "url": "https://www.gutenberg.org/ebooks/174",
+          "catalogTitle": "The Picture of Dorian Gray",
+          "catalogAuthors": "Wilde, Oscar, 1854-1900",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "4078",
+          "url": "https://www.gutenberg.org/ebooks/4078",
+          "catalogTitle": "The Picture of Dorian Gray",
+          "catalogAuthors": "Wilde, Oscar, 1854-1900",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "26740",
+          "url": "https://www.gutenberg.org/ebooks/26740",
+          "catalogTitle": "The Picture of Dorian Gray",
+          "catalogAuthors": "Wilde, Oscar, 1854-1900",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/The_Picture_of_Dorian_Gray",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "9e6b87d5ffee7ba71008",
+      "title": "Silas Marner",
+      "author": "Mary Ann Evans (George Eliot)",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1880,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:George_Eliot",
+        "authorPageSha256": "da220cb9f8523c16f6c1a67d8503e1464e78de984ccc5d3800aa2e0e1d54afa1",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://en.wikisource.org/wiki/Silas_Marner"],
+        "ordinaryLife70Expiry": "1951-01-01",
+        "life100ComparisonExpiry": "1981-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "550",
+          "url": "https://www.gutenberg.org/ebooks/550",
+          "catalogTitle": "Silas Marner",
+          "catalogAuthors": "Eliot, George, 1819-1880",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/Silas_Marner",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "86db8111cbe9be090eb4",
+      "title": "The Importance of Being Earnest",
+      "author": "Oscar Fingal O’Flahertie Wills Wilde",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1900,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Oscar_Wilde",
+        "authorPageSha256": "c6f8be7ba80c6e92ccc8dbac5118a8fd3c30d0051be1dd62e2449beaaa1db3ca",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://en.wikisource.org/wiki/The_Importance_of_Being_Earnest"
+        ],
+        "ordinaryLife70Expiry": "1971-01-01",
+        "life100ComparisonExpiry": "2001-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "844",
+          "url": "https://www.gutenberg.org/ebooks/844",
+          "catalogTitle": "The Importance of Being Earnest: A Trivial Comedy for Serious People",
+          "catalogAuthors": "Wilde, Oscar, 1854-1900",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/The_Importance_of_Being_Earnest",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "96ff5567c950734674ed",
+      "title": "Adam Bede",
+      "author": "Mary Ann Evans (George Eliot)",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1880,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:George_Eliot",
+        "authorPageSha256": "da220cb9f8523c16f6c1a67d8503e1464e78de984ccc5d3800aa2e0e1d54afa1",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1951-01-01",
+        "life100ComparisonExpiry": "1981-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "507",
+          "url": "https://www.gutenberg.org/ebooks/507",
+          "catalogTitle": "Adam Bede",
+          "catalogAuthors": "Eliot, George, 1819-1880",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "cd5d46647273e3d79429",
+      "title": "Alice’s Adventures in Wonderland",
+      "author": "Charles Lutwidge Dodgson (Lewis Carroll)",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1898,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Charles_Lutwidge_Dodgson",
+        "authorPageSha256": "c41e42ae32d23294843bc252d64619a6cfd6efeb927f700ed04b5e49e6f101a6",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://en.wikisource.org/wiki/Alice's_Adventures_in_Wonderland"
+        ],
+        "ordinaryLife70Expiry": "1969-01-01",
+        "life100ComparisonExpiry": "1999-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "11",
+          "url": "https://www.gutenberg.org/ebooks/11",
+          "catalogTitle": "Alice's Adventures in Wonderland",
+          "catalogAuthors": "Carroll, Lewis, 1832-1898",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "19033",
+          "url": "https://www.gutenberg.org/ebooks/19033",
+          "catalogTitle": "Alice's Adventures in Wonderland",
+          "catalogAuthors": "Carroll, Lewis, 1832-1898; Robinson, Gordon [Illustrator]",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "928",
+          "url": "https://www.gutenberg.org/ebooks/928",
+          "catalogTitle": "Alice's Adventures in Wonderland\nHTML Edition",
+          "catalogAuthors": "Carroll, Lewis, 1832-1898",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/Alice's_Adventures_in_Wonderland",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "96e3370f20bb03df8724",
+      "title": "North and South",
+      "author": "Elizabeth Cleghorn Gaskell",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1865,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Elizabeth_Cleghorn_Gaskell",
+        "authorPageSha256": "cf514f2913b2a5978690206a8da613ed0e5a6925b94fe89821d9580c82fb4e6c",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://en.wikisource.org/wiki/North_and_South_(First_Edition)"
+        ],
+        "ordinaryLife70Expiry": "1936-01-01",
+        "life100ComparisonExpiry": "1966-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "4276",
+          "url": "https://www.gutenberg.org/ebooks/4276",
+          "catalogTitle": "North and South",
+          "catalogAuthors": "Gaskell, Elizabeth Cleghorn, 1810-1865",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/North_and_South_(First_Edition)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "044635812713c9820ce6",
+      "title": "Through the Looking-Glass",
+      "author": "Charles Lutwidge Dodgson (Lewis Carroll)",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1898,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Charles_Lutwidge_Dodgson",
+        "authorPageSha256": "c41e42ae32d23294843bc252d64619a6cfd6efeb927f700ed04b5e49e6f101a6",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://en.wikisource.org/wiki/Through_the_Looking-Glass,_and_What_Alice_Found_There"
+        ],
+        "ordinaryLife70Expiry": "1969-01-01",
+        "life100ComparisonExpiry": "1999-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "12",
+          "url": "https://www.gutenberg.org/ebooks/12",
+          "catalogTitle": "Through the Looking-Glass",
+          "catalogAuthors": "Carroll, Lewis, 1832-1898",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "35688",
+          "url": "https://www.gutenberg.org/ebooks/35688",
+          "catalogTitle": "Alice in Wonderland\nA Dramatization of Lewis Carroll's \"Alice's Adventures in Wonderland\" and \"Through the Looking Glass\"",
+          "catalogAuthors": "Gerstenberg, Alice, 1885-1972; Carroll, Lewis, 1832-1898",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "36308",
+          "url": "https://www.gutenberg.org/ebooks/36308",
+          "catalogTitle": "Songs From Alice in Wonderland and Through the Looking-Glass",
+          "catalogAuthors": "Broadwood, Lucy Etheldred, 1858-1929 [Composer]; Carroll, Lewis, 1832-1898; Folkard, Charles, 1878-1963 [Illustrator]",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/Through_the_Looking-Glass,_and_What_Alice_Found_There",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "574f7b4d8b84497940fb",
+      "title": "Cranford",
+      "author": "Elizabeth Cleghorn Gaskell",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1865,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Elizabeth_Cleghorn_Gaskell",
+        "authorPageSha256": "cf514f2913b2a5978690206a8da613ed0e5a6925b94fe89821d9580c82fb4e6c",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1936-01-01",
+        "life100ComparisonExpiry": "1966-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "394",
+          "url": "https://www.gutenberg.org/ebooks/394",
+          "catalogTitle": "Cranford",
+          "catalogAuthors": "Gaskell, Elizabeth Cleghorn, 1810-1865; Brock, C. E. (Charles Edmund), 1870-1938 [Illustrator]",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "57539",
+          "url": "https://www.gutenberg.org/ebooks/57539",
+          "catalogTitle": "Cranford",
+          "catalogAuthors": "Gaskell, Elizabeth Cleghorn, 1810-1865; Ritchie, Anne Thackeray, 1837-1919 [Author of introduction, etc.]; Thomson, Hugh, 1860-1920 [Illustrator]",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "78f622fe578ce6dd81b0",
+      "title": "Treasure Island",
+      "author": "Robert Louis Balfour Stevenson",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1894,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Robert_Louis_Stevenson",
+        "authorPageSha256": "8087714ba79d215692a84d17264d1a4cd0873e3f810c1f1a71af9a6fa85eed9b",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1965-01-01",
+        "life100ComparisonExpiry": "1995-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "120",
+          "url": "https://www.gutenberg.org/ebooks/120",
+          "catalogTitle": "Treasure Island",
+          "catalogAuthors": "Stevenson, Robert Louis, 1850-1894; Rhead, Louis, 1857-1926 [Illustrator]",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "27780",
+          "url": "https://www.gutenberg.org/ebooks/27780",
+          "catalogTitle": "Treasure Island",
+          "catalogAuthors": "Stevenson, Robert Louis, 1850-1894; Winter, Milo, 1888-1956 [Illustrator]",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "4c0fa334d1496e993a10",
+      "title": "Mary Barton",
+      "author": "Elizabeth Cleghorn Gaskell",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1865,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Elizabeth_Cleghorn_Gaskell",
+        "authorPageSha256": "cf514f2913b2a5978690206a8da613ed0e5a6925b94fe89821d9580c82fb4e6c",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://en.wikisource.org/wiki/Mary_Barton"],
+        "ordinaryLife70Expiry": "1936-01-01",
+        "life100ComparisonExpiry": "1966-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "2153",
+          "url": "https://www.gutenberg.org/ebooks/2153",
+          "catalogTitle": "Mary Barton",
+          "catalogAuthors": "Gaskell, Elizabeth Cleghorn, 1810-1865",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/Mary_Barton",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "3b76bfeb385f9eaaaadf",
+      "title": "Kidnapped",
+      "author": "Robert Louis Balfour Stevenson",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1894,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Robert_Louis_Stevenson",
+        "authorPageSha256": "8087714ba79d215692a84d17264d1a4cd0873e3f810c1f1a71af9a6fa85eed9b",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1965-01-01",
+        "life100ComparisonExpiry": "1995-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "421",
+          "url": "https://www.gutenberg.org/ebooks/421",
+          "catalogTitle": "Kidnapped",
+          "catalogAuthors": "Stevenson, Robert Louis, 1850-1894",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "56562",
+          "url": "https://www.gutenberg.org/ebooks/56562",
+          "catalogTitle": "Kidnapped (Illustrated)\nBeing Memoirs of the Adventures of David Balfour in the Year 1751",
+          "catalogAuthors": "Stevenson, Robert Louis, 1850-1894; Wyeth, N. C. (Newell Convers), 1882-1945 [Illustrator]",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "9e65607251feb5445fe5",
+      "title": "Little Women",
+      "author": "Louisa May Alcott",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1888,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Louisa_May_Alcott",
+        "authorPageSha256": "e3a58b9f51102f198f28f4d44c6dc0f7b4ea56cb4eb330fb33c2e4148a30b04b",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1959-01-01",
+        "life100ComparisonExpiry": "1989-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "514",
+          "url": "https://www.gutenberg.org/ebooks/514",
+          "catalogTitle": "Little Women",
+          "catalogAuthors": "Alcott, Louisa May, 1832-1888",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "33986",
+          "url": "https://www.gutenberg.org/ebooks/33986",
+          "catalogTitle": "Comic Tragedies\nWritten by 'Jo' and 'Meg' and Acted by The 'Little Women'",
+          "catalogAuthors": "Alcott, Louisa May, 1832-1888; Pratt, Anna Bronson Alcott, 1831-1893",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "37106",
+          "url": "https://www.gutenberg.org/ebooks/37106",
+          "catalogTitle": "Little Women; Or, Meg, Jo, Beth, and Amy",
+          "catalogAuthors": "Alcott, Louisa May, 1832-1888; Merrill, Frank T., 1848-1923 [Illustrator]",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "665171c321cb121ed435",
+      "title": "Strange Case of Dr Jekyll and Mr Hyde",
+      "author": "Robert Louis Balfour Stevenson",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1894,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Robert_Louis_Stevenson",
+        "authorPageSha256": "8087714ba79d215692a84d17264d1a4cd0873e3f810c1f1a71af9a6fa85eed9b",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1965-01-01",
+        "life100ComparisonExpiry": "1995-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "42",
+          "url": "https://www.gutenberg.org/ebooks/42",
+          "catalogTitle": "The strange case of Dr. Jekyll and Mr. Hyde",
+          "catalogAuthors": "Stevenson, Robert Louis, 1850-1894",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "43",
+          "url": "https://www.gutenberg.org/ebooks/43",
+          "catalogTitle": "The strange case of Dr. Jekyll and Mr. Hyde",
+          "catalogAuthors": "Stevenson, Robert Louis, 1850-1894",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "f86f33ffb651b632f578",
+      "title": "Little Men",
+      "author": "Louisa May Alcott",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1888,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Louisa_May_Alcott",
+        "authorPageSha256": "e3a58b9f51102f198f28f4d44c6dc0f7b4ea56cb4eb330fb33c2e4148a30b04b",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1959-01-01",
+        "life100ComparisonExpiry": "1989-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "2788",
+          "url": "https://www.gutenberg.org/ebooks/2788",
+          "catalogTitle": "Little Men: Life at Plumfield With Jo's Boys",
+          "catalogAuthors": "Alcott, Louisa May, 1832-1888",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "52900",
+          "url": "https://www.gutenberg.org/ebooks/52900",
+          "catalogTitle": "Little Men: Life at Plumfield with Jo's Boys",
+          "catalogAuthors": "Alcott, Louisa May, 1832-1888; Birch, Reginald B. (Reginald Bathurst), 1856-1943 [Illustrator]",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "3423ff775fa2063a8e8d",
+      "title": "The Gold-Bug",
+      "author": "Edgar Allan Poe",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1849,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Edgar_Allan_Poe",
+        "authorPageSha256": "5df4f1a6a10e4ce8b35606937973eaa03f61a0ba669e4b20d9bb25bd36958176",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1920-01-01",
+        "life100ComparisonExpiry": "1950-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/The_Gold-Bug",
+          "formats": ["HTML", "EPUB_EXPORT_UNVERIFIED"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "The Gold-Bug",
+          "notes": "Existing work/version page; validate author, all sections, proofreading status, export and contributor licenses.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "1c68da28ee03dcfee75c",
+      "title": "Jo’s Boys",
+      "author": "Louisa May Alcott",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1888,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Louisa_May_Alcott",
+        "authorPageSha256": "e3a58b9f51102f198f28f4d44c6dc0f7b4ea56cb4eb330fb33c2e4148a30b04b",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1959-01-01",
+        "life100ComparisonExpiry": "1989-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "3499",
+          "url": "https://www.gutenberg.org/ebooks/3499",
+          "catalogTitle": "Jo's Boys",
+          "catalogAuthors": "Alcott, Louisa May, 1832-1888",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "2788",
+          "url": "https://www.gutenberg.org/ebooks/2788",
+          "catalogTitle": "Little Men: Life at Plumfield With Jo's Boys",
+          "catalogAuthors": "Alcott, Louisa May, 1832-1888",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "52900",
+          "url": "https://www.gutenberg.org/ebooks/52900",
+          "catalogTitle": "Little Men: Life at Plumfield with Jo's Boys",
+          "catalogAuthors": "Alcott, Louisa May, 1832-1888; Birch, Reginald B. (Reginald Bathurst), 1856-1943 [Illustrator]",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "1749bc0ced0fb05aa83c",
+      "title": "The Fall of the House of Usher",
+      "author": "Edgar Allan Poe",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1849,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Edgar_Allan_Poe",
+        "authorPageSha256": "5df4f1a6a10e4ce8b35606937973eaa03f61a0ba669e4b20d9bb25bd36958176",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1920-01-01",
+        "life100ComparisonExpiry": "1950-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "932",
+          "url": "https://www.gutenberg.org/ebooks/932",
+          "catalogTitle": "The Fall of the House of Usher",
+          "catalogAuthors": "Poe, Edgar Allan, 1809-1849",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "c385f53040d586b39261",
+      "title": "The Secret Garden",
+      "author": "Frances Eliza Hodgson Burnett",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1924,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Frances_Hodgson_Burnett",
+        "authorPageSha256": "cc4f5b5ed602218e083ece96c906a3cb3f88080d9e1b7a90c4ec6d26c04d27b3",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1995-01-01",
+        "life100ComparisonExpiry": "2025-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "113",
+          "url": "https://www.gutenberg.org/ebooks/113",
+          "catalogTitle": "The Secret Garden",
+          "catalogAuthors": "Burnett, Frances Hodgson, 1849-1924",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "17396",
+          "url": "https://www.gutenberg.org/ebooks/17396",
+          "catalogTitle": "The Secret Garden",
+          "catalogAuthors": "Burnett, Frances Hodgson, 1849-1924",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "1a2d0d2a8f6f9712a32c",
+      "title": "The Murders in the Rue Morgue",
+      "author": "Edgar Allan Poe",
+      "authorGender": "man",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1849,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Edgar_Allan_Poe",
+        "authorPageSha256": "5df4f1a6a10e4ce8b35606937973eaa03f61a0ba669e4b20d9bb25bd36958176",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1920-01-01",
+        "life100ComparisonExpiry": "1950-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://en.wikisource.org/wiki/The_Murders_in_the_Rue_Morgue",
+          "formats": ["HTML", "EPUB_EXPORT_UNVERIFIED"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "The Murders in the Rue Morgue",
+          "notes": "Existing work/version page; validate author, all sections, proofreading status, export and contributor licenses.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "4502ed1ffaf7d5401f95",
+      "title": "A Little Princess",
+      "author": "Frances Eliza Hodgson Burnett",
+      "authorGender": "woman",
+      "language": "en",
+      "originalTextResearch": {
+        "authorDeathYear": 1924,
+        "authorEvidenceUrl": "https://en.wikisource.org/wiki/Author:Frances_Hodgson_Burnett",
+        "authorPageSha256": "cc4f5b5ed602218e083ece96c906a3cb3f88080d9e1b7a90c4ec6d26c04d27b3",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1995-01-01",
+        "life100ComparisonExpiry": "2025-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "146",
+          "url": "https://www.gutenberg.org/ebooks/146",
+          "catalogTitle": "A Little Princess\nBeing the whole story of Sara Crewe now told for the first time",
+          "catalogAuthors": "Burnett, Frances Hodgson, 1849-1924",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "37332",
+          "url": "https://www.gutenberg.org/ebooks/37332",
+          "catalogTitle": "A Little Princess: Being the whole story of Sara Crewe now told for the first time",
+          "catalogAuthors": "Burnett, Frances Hodgson, 1849-1924; Betts, Ethel Franklin, 1877-1959 [Illustrator]",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    }
+  ]
+}

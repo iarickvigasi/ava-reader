@@ -95,9 +95,9 @@ Keep backdrops transparent in both themes; native dialogs use
 `backdrop:bg-transparent backdrop:backdrop-blur-sm` to override the browser tint.
 Panel `rounded-modal bg-paper`/`bg-surface` + `shadow-(--shadow-card)`,
 with day-theme fills overridden to `surface-strong` by `app/modal-surfaces.css`; inside these
-panels, `soft-fill` and `paper-strong` use `paper` to swap the control and panel colors.
+panels, `soft-fill` and `paper-strong` use `paper`; dark modal text fields use lighter `soft-fill`.
 `role="dialog" aria-modal`, Escape closes, title `font-reader`. Action row uses
-`<Button size="sm">` (`rounded-control`, no border).
+shared `ModalActions` with small buttons and soft Cancel; `Checkbox` supplies themed 28px controls.
 
 ## Z-index & layout
 

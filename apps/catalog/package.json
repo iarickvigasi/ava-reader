@@ -15,10 +15,18 @@
     "db:migrate:deploy": "prisma migrate deploy",
     "import:open-library": "ts-node src/importer/main.ts",
     "import:open-library:prod": "node dist/src/importer/main.js",
+    "import:reading-assets": "ts-node src/reading-import/main.ts",
+    "import:reading-assets:prod": "node dist/src/reading-import/main.js",
     "test:importer": "ts-node test/importer-integration.ts",
     "test:importer:docker": "ts-node test/importer-worker-smoke.ts",
     "categories:rebuild": "ts-node src/importer/rebuild-categories.main.ts",
-    "categories:rebuild:prod": "node dist/src/importer/rebuild-categories.main.js"
+    "categories:rebuild:prod": "node dist/src/importer/rebuild-categories.main.js",
+    "publish:reading-assets": "ts-node src/reading-import/publication/main.ts",
+    "publish:reading-assets:prod": "node dist/src/reading-import/publication/main.js",
+    "publish:classics": "ts-node src/reading-import/publication/collection.main.ts",
+    "publish:classics:prod": "node dist/src/reading-import/publication/collection.main.js",
+    "import:conflicts:prod": "node dist/src/importer/import-conflicts.main.js",
+    "import:conflicts": "ts-node src/importer/import-conflicts.main.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

@@ -12,6 +12,7 @@
 //      hard-refresh / direct-URL case where the page loads first and the
 //      cache check resolves to "missing-offline".
 
+import { ModalShell } from "@/components/app/library/collection/collection-actions/modal-shell";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
@@ -46,17 +47,11 @@ export function MissingBookOfflineModal() {
   }
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="missing-book-offline-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-4 backdrop-blur-sm"
-      onClick={() => setOpenFor(null)}
+    <ModalShell
+      labelledBy="missing-book-offline-title"
+      onClose={() => setOpenFor(null)}
     >
-      <div
-        className="relative w-full max-w-lg rounded-modal bg-paper p-6 shadow-(--shadow-card)"
-        onClick={(event) => event.stopPropagation()}
-      >
+      <div className="relative w-full max-w-lg rounded-modal bg-paper p-6 shadow-(--shadow-card)">
         <h2
           id="missing-book-offline-title"
           className="font-reader text-[1.75rem] leading-[1.1] text-title"
@@ -70,6 +65,6 @@ export function MissingBookOfflineModal() {
           </Button>
         </div>
       </div>
-    </div>
+    </ModalShell>
   );
 }

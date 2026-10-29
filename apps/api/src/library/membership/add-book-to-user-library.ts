@@ -30,6 +30,7 @@ export async function addBookToUserLibraryTx(
     source: LibrarySource;
     userId: string;
   },
+  bookAccess?: Prisma.BookWhereInput,
 ): Promise<LibraryMutationPayload> {
   const existing = await tx.libraryItem.findUnique({
     where: {
@@ -48,7 +49,8 @@ export async function addBookToUserLibraryTx(
     },
   });
 
-  const libraryItem = existing ?? (await createLibraryItemTx(tx, input));
+  const libraryItem =
+    existing ?? (await createLibraryItemTx(tx, input, bookAccess));
 
   if (
     existing &&

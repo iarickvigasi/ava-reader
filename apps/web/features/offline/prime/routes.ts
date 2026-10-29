@@ -23,6 +23,7 @@ export const SHELL_ROUTE_SENTINELS = [
   "/app/library/collections/__shell__",
   "/app/explore/books/__shell__",
   "/app/explore/authors/__shell__",
+  "/app/explore/editions/__shell__",
 ] as const;
 
 export function collectAppRoutes(): string[] {

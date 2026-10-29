@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { TextActionLink } from "@/components/ui/text-action-link";
 import { useTranslations } from "next-intl";
 import { BookCover } from "@/components/app/shared/book-cover";
 import type { HomePayload } from "@/lib/api-types";
@@ -22,12 +22,7 @@ export function FeaturedBooksSection({
       <SectionHeader
         label={t("explore")}
         action={
-          <Link
-            href="/app/explore"
-            className="text-[0.8rem] font-bold uppercase tracking-[0.12em] text-ink underline decoration-line-strong underline-offset-6 sm:text-sm"
-          >
-            {t("openAll")}
-          </Link>
+          <TextActionLink href="/app/explore">{t("openAll")}</TextActionLink>
         }
       />
 

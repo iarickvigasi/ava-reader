@@ -1,7 +1,7 @@
 "use client";
 
+import { ModalShell } from "@/components/app/library/collection/collection-actions/modal-shell";
 import { useTranslations } from "next-intl";
-import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 
@@ -13,49 +13,26 @@ export function OfflineModal() {
   const titleKey = reason === "slow" ? "slowTitle" : "title";
   const bodyKey = reason === "slow" ? "slowBody" : "body";
 
-  // Close on Escape — mirrors what the other modals in the app do.
-  useEffect(() => {
-    if (!isOpen) return;
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        close();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [isOpen, close]);
-
   if (!isOpen) {
     return null;
   }
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="offline-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-transparent px-4 backdrop-blur-sm"
-      onClick={close}
-    >
-      <div
-        className="relative w-full max-w-lg rounded-modal bg-paper p-6 shadow-(--shadow-card)"
-        onClick={(event) => event.stopPropagation()}
-      >
+    <ModalShell labelledBy="offline-modal-title" onClose={close}>
+      <div className="relative w-full max-w-lg rounded-modal bg-paper p-6 shadow-(--shadow-card)">
         <h2
           id="offline-modal-title"
           className="font-reader text-[1.75rem] leading-[1.1] text-title"
         >
           {t(titleKey)}
         </h2>
-        <p className="mt-4 text-base leading-7 text-copy">
-          {t(bodyKey)}
-        </p>
+        <p className="mt-4 text-base leading-7 text-copy">{t(bodyKey)}</p>
         <div className="mt-6 flex justify-end">
           <Button type="button" size="sm" onClick={close}>
             {t("dismiss")}
           </Button>
         </div>
       </div>
-    </div>
+    </ModalShell>
   );
 }

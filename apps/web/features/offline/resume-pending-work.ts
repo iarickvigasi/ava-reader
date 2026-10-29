@@ -6,6 +6,7 @@ import * as comments from "./buckets/ai-comments";
 import {
   flushCollectionMemberships,
   flushFinishDates,
+  flushCatalogLinks,
 } from "./buckets/library";
 import { flushDirtyProgress } from "./buckets/progress";
 import { flushPreferences } from "./buckets/preferences";
@@ -38,6 +39,7 @@ async function resume(getToken: () => Promise<string | null>) {
     flushPreferences(getToken),
     flushCollectionMemberships(getToken),
     flushFinishDates(getToken),
+    flushCatalogLinks(getToken),
     syncPendingSessions(getToken, getOrCreateReaderClientInstanceId()),
     ...[...new Set(highlightRows.map((row) => row.scopeId))].map((id) => {
       highlights.setBucketAuth(id, api, getToken);

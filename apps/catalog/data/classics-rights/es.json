@@ -1,0 +1,2473 @@
+{
+  "version": 1,
+  "researchedAt": "2026-10-29",
+  "scope": "Bibliographic and ordinary-term research; never exact-file publication approval",
+  "books": [
+    {
+      "id": "9ad791ceb381c824cd13",
+      "title": "Don Quijote de la Mancha",
+      "author": "Miguel de Cervantes Saavedra",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1616,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Miguel_de_Cervantes",
+        "authorPageSha256": "3146ad69fb8caad933bbdabc4f4a3c44212513763e572d760589ce19f6b2ccac",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://es.wikisource.org/wiki/Don_Quijote_de_la_Mancha"
+        ],
+        "ordinaryLife70Expiry": "1687-01-01",
+        "life100ComparisonExpiry": "1717-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/Don_Quijote_de_la_Mancha",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "ece338439f832bfa189f",
+      "title": "La gaviota",
+      "author": "Cecilia Böhl de Faber y Ruiz de Larrea (Fernán Caballero)",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1877,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Fernán_Caballero",
+        "authorPageSha256": "0e1c195224d0f3d466ee4f8af1c777deafff68158eb6d91ef8de62c25b71a6a6",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://es.wikisource.org/wiki/La_gaviota_(Caballero)"
+        ],
+        "ordinaryLife70Expiry": "1948-01-01",
+        "life100ComparisonExpiry": "1978-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "23600",
+          "url": "https://www.gutenberg.org/ebooks/23600",
+          "catalogTitle": "La gaviota",
+          "catalogAuthors": "Caballero, Fernán, 1796-1877",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/La_gaviota_(Caballero)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "1beff26936dc44a6fea9",
+      "title": "Novelas ejemplares",
+      "author": "Miguel de Cervantes Saavedra",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1616,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Miguel_de_Cervantes",
+        "authorPageSha256": "3146ad69fb8caad933bbdabc4f4a3c44212513763e572d760589ce19f6b2ccac",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://es.wikisource.org/wiki/Novelas_ejemplares"
+        ],
+        "ordinaryLife70Expiry": "1687-01-01",
+        "life100ComparisonExpiry": "1717-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "61202",
+          "url": "https://www.gutenberg.org/ebooks/61202",
+          "catalogTitle": "Novelas ejemplares",
+          "catalogAuthors": "Cervantes Saavedra, Miguel de, 1547-1616",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/Novelas_ejemplares",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "21437250f99935a46909",
+      "title": "Clemencia",
+      "author": "Cecilia Böhl de Faber y Ruiz de Larrea (Fernán Caballero)",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1877,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Fernán_Caballero",
+        "authorPageSha256": "0e1c195224d0f3d466ee4f8af1c777deafff68158eb6d91ef8de62c25b71a6a6",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://es.wikisource.org/wiki/Clemencia_(Caballero)"
+        ],
+        "ordinaryLife70Expiry": "1948-01-01",
+        "life100ComparisonExpiry": "1978-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "60284",
+          "url": "https://www.gutenberg.org/ebooks/60284",
+          "catalogTitle": "Clemencia: Novela de costumbres",
+          "catalogAuthors": "Caballero, Fernán, 1796-1877",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/Clemencia_(Caballero)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "e925e591ac7ac7c4d952",
+      "title": "La Galatea",
+      "author": "Miguel de Cervantes Saavedra",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1616,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Miguel_de_Cervantes",
+        "authorPageSha256": "3146ad69fb8caad933bbdabc4f4a3c44212513763e572d760589ce19f6b2ccac",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://es.wikisource.org/wiki/La_Galatea"],
+        "ordinaryLife70Expiry": "1687-01-01",
+        "life100ComparisonExpiry": "1717-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/La_Galatea",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "e7d45f124fce87068809",
+      "title": "Los pazos de Ulloa",
+      "author": "Emilia Pardo Bazán y de la Rúa",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1921,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Emilia_Pardo_Bazán",
+        "authorPageSha256": "98b49825114318fbe2cf5134be6e83cefe3853a0ad10fcbf63e945c1f2704e20",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://es.wikisource.org/wiki/Los_pazos_de_Ulloa"
+        ],
+        "ordinaryLife70Expiry": "1992-01-01",
+        "life100ComparisonExpiry": "2022-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "18005",
+          "url": "https://www.gutenberg.org/ebooks/18005",
+          "catalogTitle": "Los pazos de Ulloa",
+          "catalogAuthors": "Pardo Bazán, Emilia, condesa de, 1852-1921",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "58059",
+          "url": "https://www.gutenberg.org/ebooks/58059",
+          "catalogTitle": "La madre naturaleza (2ª parte de Los pazos de Ulloa)",
+          "catalogAuthors": "Pardo Bazán, Emilia, condesa de, 1852-1921",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/Los_pazos_de_Ulloa",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "6c7330f2b65716e26253",
+      "title": "Los trabajos de Persiles y Sigismunda",
+      "author": "Miguel de Cervantes Saavedra",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1616,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Miguel_de_Cervantes",
+        "authorPageSha256": "3146ad69fb8caad933bbdabc4f4a3c44212513763e572d760589ce19f6b2ccac",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://es.wikisource.org/wiki/Los_trabajos_de_Persiles_y_Sigismunda"
+        ],
+        "ordinaryLife70Expiry": "1687-01-01",
+        "life100ComparisonExpiry": "1717-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/Los_trabajos_de_Persiles_y_Sigismunda",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "dba509224fd336c4b2e8",
+      "title": "La madre naturaleza",
+      "author": "Emilia Pardo Bazán y de la Rúa",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1921,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Emilia_Pardo_Bazán",
+        "authorPageSha256": "98b49825114318fbe2cf5134be6e83cefe3853a0ad10fcbf63e945c1f2704e20",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://es.wikisource.org/wiki/La_madre_Naturaleza"
+        ],
+        "ordinaryLife70Expiry": "1992-01-01",
+        "life100ComparisonExpiry": "2022-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "58059",
+          "url": "https://www.gutenberg.org/ebooks/58059",
+          "catalogTitle": "La madre naturaleza (2ª parte de Los pazos de Ulloa)",
+          "catalogAuthors": "Pardo Bazán, Emilia, condesa de, 1852-1921",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/La_madre_Naturaleza",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "9119d40be822fd2c1e42",
+      "title": "Fuenteovejuna",
+      "author": "Félix Lope de Vega y Carpio",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1635,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Lope_de_Vega",
+        "authorPageSha256": "52d35898970883f4528028499efff9a591bcafedb5801a16b8e531dbdb0fd68c",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://es.wikisource.org/wiki/Fuenteovejuna"],
+        "ordinaryLife70Expiry": "1706-01-01",
+        "life100ComparisonExpiry": "1736-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "60198",
+          "url": "https://www.gutenberg.org/ebooks/60198",
+          "catalogTitle": "Fuente Ovejuna",
+          "catalogAuthors": "Vega, Lope de, 1562-1635",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/Fuenteovejuna",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "3e2232bbca8bdc99227f",
+      "title": "La tribuna",
+      "author": "Emilia Pardo Bazán y de la Rúa",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1921,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Emilia_Pardo_Bazán",
+        "authorPageSha256": "98b49825114318fbe2cf5134be6e83cefe3853a0ad10fcbf63e945c1f2704e20",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://es.wikisource.org/wiki/La_Tribuna"],
+        "ordinaryLife70Expiry": "1992-01-01",
+        "life100ComparisonExpiry": "2022-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "17491",
+          "url": "https://www.gutenberg.org/ebooks/17491",
+          "catalogTitle": "La Tribuna",
+          "catalogAuthors": "Pardo Bazán, Emilia, condesa de, 1852-1921",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/La_Tribuna",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "aec4900c0e50dc05321d",
+      "title": "Peribáñez y el comendador de Ocaña",
+      "author": "Félix Lope de Vega y Carpio",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1635,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Lope_de_Vega",
+        "authorPageSha256": "52d35898970883f4528028499efff9a591bcafedb5801a16b8e531dbdb0fd68c",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://es.wikisource.org/wiki/Peribáñez_y_el_comendador_de_Ocaña"
+        ],
+        "ordinaryLife70Expiry": "1706-01-01",
+        "life100ComparisonExpiry": "1736-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/Peribáñez_y_el_comendador_de_Ocaña",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "2090ec84e7afaa058baa",
+      "title": "Insolación",
+      "author": "Emilia Pardo Bazán y de la Rúa",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1921,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Emilia_Pardo_Bazán",
+        "authorPageSha256": "98b49825114318fbe2cf5134be6e83cefe3853a0ad10fcbf63e945c1f2704e20",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1992-01-01",
+        "life100ComparisonExpiry": "2022-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "52597",
+          "url": "https://www.gutenberg.org/ebooks/52597",
+          "catalogTitle": "Insolación y Morriña (Dos historias amorosas)",
+          "catalogAuthors": "Pardo Bazán, Emilia, condesa de, 1852-1921",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "b2b65d9e39fbdadc606d",
+      "title": "El caballero de Olmedo",
+      "author": "Félix Lope de Vega y Carpio",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1635,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Lope_de_Vega",
+        "authorPageSha256": "52d35898970883f4528028499efff9a591bcafedb5801a16b8e531dbdb0fd68c",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": false,
+        "titleEvidenceUrls": [
+          "https://www.cervantesvirtual.com/obra-visor/el-caballero-de-olmedo-4/html/ff188674-82b1-11df-acc7-002185ce6064_2.html"
+        ],
+        "ordinaryLife70Expiry": "1706-01-01",
+        "life100ComparisonExpiry": "1736-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/El_caballero_de_Olmedo",
+          "formats": ["HTML", "EPUB_EXPORT_UNVERIFIED"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "El caballero de Olmedo",
+          "notes": "Existing work/version page; validate author, all sections, proofreading status, export and contributor licenses.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "abda6905572ffbd7ba54",
+      "title": "Sab",
+      "author": "Gertrudis Gómez de Avellaneda y Arteaga",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1873,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Gertrudis_Gómez_de_Avellaneda",
+        "authorPageSha256": "7ab662ba67933ce44152466bd4531495051924cab1d21c2aa794ebc11cee75a0",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1944-01-01",
+        "life100ComparisonExpiry": "1974-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "url": "https://www.gutenberg.org/ebooks/75126",
+          "formats": ["EPUB", "HTML"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "id": "75126",
+          "catalogTitle": "Sab (novela original)",
+          "catalogAuthors": "Gómez de Avellaneda, Gertrudis",
+          "notes": "Short-title match missed the earlier prefix threshold; exact text/edition review pending.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "a38ac6e9599e83a6de30",
+      "title": "El perro del hortelano",
+      "author": "Félix Lope de Vega y Carpio",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1635,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Lope_de_Vega",
+        "authorPageSha256": "52d35898970883f4528028499efff9a591bcafedb5801a16b8e531dbdb0fd68c",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": false,
+        "titleEvidenceUrls": [
+          "https://cervantesvirtual.com/obra/el-perro-del-hortelano--0/"
+        ],
+        "ordinaryLife70Expiry": "1706-01-01",
+        "life100ComparisonExpiry": "1736-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/El_perro_del_hortelano",
+          "formats": ["HTML", "EPUB_EXPORT_UNVERIFIED"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "El perro del hortelano",
+          "notes": "Existing work/version page; validate author, all sections, proofreading status, export and contributor licenses.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "9cb105db4eb10b6e00fa",
+      "title": "Dos mujeres",
+      "author": "Gertrudis Gómez de Avellaneda y Arteaga",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1873,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Gertrudis_Gómez_de_Avellaneda",
+        "authorPageSha256": "7ab662ba67933ce44152466bd4531495051924cab1d21c2aa794ebc11cee75a0",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": false,
+        "titleEvidenceUrls": [
+          "https://www.cervantesvirtual.com/obra/dos-mujeres-tomo-i--0/"
+        ],
+        "ordinaryLife70Expiry": "1944-01-01",
+        "life100ComparisonExpiry": "1974-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/Dos_mujeres",
+          "formats": ["HTML", "EPUB_EXPORT_UNVERIFIED"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Dos mujeres",
+          "notes": "Existing work/version page; validate author, all sections, proofreading status, export and contributor licenses.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Evidence is volume I; verify all four volumes before accepting a complete-book EPUB."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "93bbc6206f9688c539ef",
+      "title": "La vida es sueño",
+      "author": "Pedro Calderón de la Barca",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1681,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Pedro_Calderón_de_la_Barca",
+        "authorPageSha256": "f58c8e0cdd1b1f9eb34fb38ff358c707da84eee775ddbe6d74800a70ab2abf7b",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://es.wikisource.org/wiki/La_vida_es_sueño"
+        ],
+        "ordinaryLife70Expiry": "1752-01-01",
+        "life100ComparisonExpiry": "1782-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/La_vida_es_sueño",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "da6cf0f39e18000a395e",
+      "title": "La hija de las flores",
+      "author": "Gertrudis Gómez de Avellaneda y Arteaga",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1873,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Gertrudis_Gómez_de_Avellaneda",
+        "authorPageSha256": "7ab662ba67933ce44152466bd4531495051924cab1d21c2aa794ebc11cee75a0",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1944-01-01",
+        "life100ComparisonExpiry": "1974-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "biblioteca-virtual-miguel-de-cervantes",
+          "url": "https://www.cervantesvirtual.com/obra-visor/la-hija-de-las-flores-o-todos-estan-locos-comedia-original-en-tres-actos-y-en-verso--0/html/",
+          "formats": ["HTML"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "Three acts; provider redistribution conditions require separate permission assessment.",
+          "verification": {
+            "method": "direct-http",
+            "error": "HTTP Error 403: Forbidden"
+          },
+          "reuseStatus": "CHECK_ITEM_LICENSE_OR_OBTAIN_PERMISSION",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "20268a211c825a3a4718",
+      "title": "El alcalde de Zalamea",
+      "author": "Pedro Calderón de la Barca",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1681,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Pedro_Calderón_de_la_Barca",
+        "authorPageSha256": "f58c8e0cdd1b1f9eb34fb38ff358c707da84eee775ddbe6d74800a70ab2abf7b",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://es.wikisource.org/wiki/El_alcalde_de_Zalamea"
+        ],
+        "ordinaryLife70Expiry": "1752-01-01",
+        "life100ComparisonExpiry": "1782-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/El_alcalde_de_Zalamea",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "9a21a343b82ae2ca1aed",
+      "title": "Jarilla",
+      "author": "Carolina Coronado Romero de Tejada",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1911,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Carolina_Coronado",
+        "authorPageSha256": "e0ade71834de7bd65f1b3680974512e40570155ddedf1d9ea6d1d7de84b560a6",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1982-01-01",
+        "life100ComparisonExpiry": "2012-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "biblioteca-virtual-miguel-de-cervantes",
+          "url": "https://www.cervantesvirtual.com/nd/ark:/59851/bmc1231706",
+          "formats": ["PDF"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "1920 La Novela Corta issue 258, potentially condensed rather than the full 1873 novel. BNE also produced an EPUB of the 1873 edition; exact BNE object still needs locating.",
+          "verification": {
+            "method": "direct-http",
+            "error": "HTTP Error 403: Forbidden"
+          },
+          "reuseStatus": "CHECK_ITEM_LICENSE_OR_OBTAIN_PERMISSION",
+          "completeness": "POSSIBLY_ABRIDGED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "8fc5ecfda496cb631a79",
+      "title": "La dama duende",
+      "author": "Pedro Calderón de la Barca",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1681,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Pedro_Calderón_de_la_Barca",
+        "authorPageSha256": "f58c8e0cdd1b1f9eb34fb38ff358c707da84eee775ddbe6d74800a70ab2abf7b",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://es.wikisource.org/wiki/La_dama_duende"],
+        "ordinaryLife70Expiry": "1752-01-01",
+        "life100ComparisonExpiry": "1782-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/La_dama_duende",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "4c0da0b2b4b02b7a165d",
+      "title": "Paquita",
+      "author": "Carolina Coronado Romero de Tejada",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1911,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Carolina_Coronado",
+        "authorPageSha256": "e0ade71834de7bd65f1b3680974512e40570155ddedf1d9ea6d1d7de84b560a6",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1982-01-01",
+        "life100ComparisonExpiry": "2012-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "biblioteca-virtual-miguel-de-cervantes",
+          "url": "https://www.cervantesvirtual.com/nd/ark:/59851/bmc8s558",
+          "formats": ["PDF"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "1850 Paquita; Adoracion collection, 181 pages, Adolfo de Castro preface. No EPUB; provider reuse terms require checking.",
+          "verification": {
+            "method": "direct-http",
+            "error": "HTTP Error 403: Forbidden"
+          },
+          "reuseStatus": "CHECK_ITEM_LICENSE_OR_OBTAIN_PERMISSION",
+          "completeness": "LOCATE_WORK_WITHIN_COLLECTION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "152d87a390ab90db85d3",
+      "title": "El Buscón",
+      "author": "Francisco Gómez de Quevedo Villegas",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1645,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Francisco_de_Quevedo",
+        "authorPageSha256": "50e7d8ef1acc7afc57b28f6a508a8ea6b9621b7aeee4c1415dfd52b4a6776575",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1716-01-01",
+        "life100ComparisonExpiry": "1746-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "32315",
+          "url": "https://www.gutenberg.org/ebooks/32315",
+          "catalogTitle": "Historia de la vida del Buscón, llamado Don Pablos, ejemplo de vagabundos y espejo de tacaños",
+          "catalogAuthors": "Quevedo, Francisco de, 1580-1645",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "a7b7b93fd2de10e8079d",
+      "title": "Novelas amorosas y ejemplares",
+      "author": "María de Zayas y Sotomayor",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1661,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:María_de_Zayas_y_Sotomayor",
+        "authorPageSha256": "c9f2444fe06a04703e785669fd570bc311ae41f3ff40f8305da0649eea8991ae",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1732-01-01",
+        "life100ComparisonExpiry": "1762-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "biblioteca-virtual-miguel-de-cervantes",
+          "url": "https://www.cervantesvirtual.com/nd/ark:/59851/bmc1204247",
+          "formats": ["PDF"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "1638 Zaragoza edition, 224 leaves. Item explicitly grants CC BY 4.0 for BNE images. About 232.8 MB; exceeds current EPUB import size and requires transcription.",
+          "verification": {
+            "method": "direct-http",
+            "error": "HTTP Error 403: Forbidden"
+          },
+          "reuseStatus": "ITEM_LICENSE_NOTICE_RECORDED",
+          "license": "CC BY 4.0 (BNE images; item notice)",
+          "licenseEvidenceUrl": "https://www.cervantesvirtual.com/nd/ark:/59851/bmc1204247",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "db4651517f00f1ab686a",
+      "title": "Sueños y discursos",
+      "author": "Francisco Gómez de Quevedo Villegas",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1645,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Francisco_de_Quevedo",
+        "authorPageSha256": "50e7d8ef1acc7afc57b28f6a508a8ea6b9621b7aeee4c1415dfd52b4a6776575",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1716-01-01",
+        "life100ComparisonExpiry": "1746-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/Sue%C3%B1os_y_discursos",
+          "formats": ["HTML", "EPUB_EXPORT_UNVERIFIED"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Sueños y discursos",
+          "notes": "Existing work/version page; validate author, all sections, proofreading status, export and contributor licenses.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "277fa359a744a9552932",
+      "title": "Desengaños amorosos",
+      "author": "María de Zayas y Sotomayor",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1661,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:María_de_Zayas_y_Sotomayor",
+        "authorPageSha256": "c9f2444fe06a04703e785669fd570bc311ae41f3ff40f8305da0649eea8991ae",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": false,
+        "titleEvidenceUrls": [
+          "https://cvc.cervantes.es/literatura/sabia/05_02_zayas.htm"
+        ],
+        "ordinaryLife70Expiry": "1732-01-01",
+        "life100ComparisonExpiry": "1762-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "textos-info",
+          "url": "https://www.textos.info/maria-de-zayas-y-sotomayor/desenganos-amorosos/",
+          "formats": ["EPUB", "HTML", "PDF"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "Lists all ten desenganos and EPUB download; verify edition and item/provider reuse license before redistribution.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "PROVIDER_TERMS_AND_EDITORIAL_RIGHTS_UNVERIFIED",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "ec2a5a8822059d980877",
+      "title": "Don Gil de las calzas verdes",
+      "author": "Gabriel Téllez (Tirso de Molina)",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1648,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Tirso_de_Molina",
+        "authorPageSha256": "7211610335adb5aaef400092bec51d17f0ea404e40a0d874a95b3435dd94256a",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://es.wikisource.org/wiki/Don_Gil_de_las_calzas_verdes"
+        ],
+        "ordinaryLife70Expiry": "1719-01-01",
+        "life100ComparisonExpiry": "1749-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/Don_Gil_de_las_calzas_verdes",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "730499c3325f716b3dc4",
+      "title": "Aves sin nido",
+      "author": "Clorinda Matto de Turner",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1909,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Clorinda_Matto_de_Turner",
+        "authorPageSha256": "a464d3098c182d31a5464fd36f243f92f15ba2a2afdd165494e1a08aa6d6acd8",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://es.wikisource.org/wiki/Aves_sin_nido_(Matto_de_Turner)"
+        ],
+        "ordinaryLife70Expiry": "1980-01-01",
+        "life100ComparisonExpiry": "2010-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/Aves_sin_nido_(Matto_de_Turner)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "8ee76a89d6d8010127f3",
+      "title": "Marta la piadosa",
+      "author": "Gabriel Téllez (Tirso de Molina)",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1648,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Tirso_de_Molina",
+        "authorPageSha256": "7211610335adb5aaef400092bec51d17f0ea404e40a0d874a95b3435dd94256a",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://es.wikisource.org/wiki/Marta_la_piadosa"
+        ],
+        "ordinaryLife70Expiry": "1719-01-01",
+        "life100ComparisonExpiry": "1749-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/Marta_la_piadosa",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "82f1d61bf52fc06ec3d8",
+      "title": "Índole",
+      "author": "Clorinda Matto de Turner",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1909,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Clorinda_Matto_de_Turner",
+        "authorPageSha256": "a464d3098c182d31a5464fd36f243f92f15ba2a2afdd165494e1a08aa6d6acd8",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1980-01-01",
+        "life100ComparisonExpiry": "2010-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "biblioteca-virtual-miguel-de-cervantes",
+          "url": "https://www.cervantesvirtual.com/nd/ark:/59851/bmchm5b7",
+          "formats": ["PDF"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "verification": {
+            "method": "indexed-primary-catalog-record",
+            "evidenceUrl": "https://www.letrasmexicanas.mx/obra/indole--0/"
+          },
+          "reuseStatus": "CHECK_ITEM_LICENSE_OR_OBTAIN_PERMISSION",
+          "notes": "Clorinda Matto de Turner; PDF based on Lima Instituto Nacional de Cultura 1974 edition. Check modern editorial additions and provider terms.",
+          "completeness": "UNREVIEWED"
+        },
+        {
+          "provider": "biblioteca-nacional-del-peru",
+          "url": "https://bibliotecadigital.bnp.gob.pe/bitstreams/1639293f-2e39-45a2-997e-6a0ddd893c3f/download",
+          "formats": ["PDF"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "1891 Lima, 224 pages. Download linked by viajaraperu.com/libro/indole/ as Public Domain Mark; direct BNP request failed, so institutional metadata and access still require verification.",
+          "verification": {
+            "method": "direct-http",
+            "error": "<urlopen error [Errno 61] Connection refused>"
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "aeaa83c2437af152db17",
+      "title": "El sombrero de tres picos",
+      "author": "Pedro Antonio de Alarcón y Ariza",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1891,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Pedro_Antonio_de_Alarcón",
+        "authorPageSha256": "243df77af3199f69a5f84d0f38a7c37f07a3cee05db985b3750e5b6583d2e8c7",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://es.wikisource.org/wiki/El_sombrero_de_tres_picos"
+        ],
+        "ordinaryLife70Expiry": "1962-01-01",
+        "life100ComparisonExpiry": "1992-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "29506",
+          "url": "https://www.gutenberg.org/ebooks/29506",
+          "catalogTitle": "El sombrero de tres picos\nHistoria verdadera de un sucedido que anda en romances escrita ahora tal y como pasó",
+          "catalogAuthors": "Alarcón, Pedro Antonio de, 1833-1891; Bourland, Benjamin Parsons, 1870-1943 [Editor]",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/El_sombrero_de_tres_picos",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "78cfcd230d12f1ae212d",
+      "title": "Herencia",
+      "author": "Clorinda Matto de Turner",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1909,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Clorinda_Matto_de_Turner",
+        "authorPageSha256": "a464d3098c182d31a5464fd36f243f92f15ba2a2afdd165494e1a08aa6d6acd8",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1980-01-01",
+        "life100ComparisonExpiry": "2010-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "biblioteca-virtual-miguel-de-cervantes",
+          "url": "https://www.cervantesvirtual.com/nd/ark:/59851/bmc0k2f9",
+          "formats": ["PDF"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "Digital reproduction of 1974 edition; modern editorial content and provider restrictions require permission assessment.",
+          "verification": {
+            "method": "direct-http",
+            "error": "HTTP Error 403: Forbidden"
+          },
+          "reuseStatus": "CHECK_ITEM_LICENSE_OR_OBTAIN_PERMISSION",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "d46563c63c27d8e9cd33",
+      "title": "El escándalo",
+      "author": "Pedro Antonio de Alarcón y Ariza",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1891,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Pedro_Antonio_de_Alarcón",
+        "authorPageSha256": "243df77af3199f69a5f84d0f38a7c37f07a3cee05db985b3750e5b6583d2e8c7",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://es.wikisource.org/wiki/El_escándalo"],
+        "ordinaryLife70Expiry": "1962-01-01",
+        "life100ComparisonExpiry": "1992-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/El_escándalo",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "fe90abc7dd7571591f23",
+      "title": "En las orillas del Sar",
+      "author": "María Rosalía Rita de Castro",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1885,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Rosalía_de_Castro",
+        "authorPageSha256": "54dfaf9c01e5d37bc5b518f8373522a478daf15fd47d325357fc0bc63e929b37",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://es.wikisource.org/wiki/En_las_orillas_del_Sar"
+        ],
+        "ordinaryLife70Expiry": "1956-01-01",
+        "life100ComparisonExpiry": "1986-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "70984",
+          "url": "https://www.gutenberg.org/ebooks/70984",
+          "catalogTitle": "En las orillas del Sar",
+          "catalogAuthors": "Castro, Rosalía de, 1837-1885",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/En_las_orillas_del_Sar",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "080cc6e51fb3a6f2e055",
+      "title": "El capitán Veneno",
+      "author": "Pedro Antonio de Alarcón y Ariza",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1891,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Pedro_Antonio_de_Alarcón",
+        "authorPageSha256": "243df77af3199f69a5f84d0f38a7c37f07a3cee05db985b3750e5b6583d2e8c7",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://es.wikisource.org/wiki/El_capitán_Veneno"
+        ],
+        "ordinaryLife70Expiry": "1962-01-01",
+        "life100ComparisonExpiry": "1992-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "29731",
+          "url": "https://www.gutenberg.org/ebooks/29731",
+          "catalogTitle": "El Capitán Veneno\nThe Hispanic Series",
+          "catalogAuthors": "Alarcón, Pedro Antonio de, 1833-1891; Burnet, Percy Bentley, 1861-1935 [Editor]",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/El_capitán_Veneno",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "cb316f8163228cc6170f",
+      "title": "La hija del mar",
+      "author": "María Rosalía Rita de Castro",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1885,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Rosalía_de_Castro",
+        "authorPageSha256": "54dfaf9c01e5d37bc5b518f8373522a478daf15fd47d325357fc0bc63e929b37",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://es.wikisource.org/wiki/La_hija_del_mar_(poema)"
+        ],
+        "ordinaryLife70Expiry": "1956-01-01",
+        "life100ComparisonExpiry": "1986-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/La_hija_del_mar_(poema)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "cd04fc735283d71458ee",
+      "title": "Rimas",
+      "author": "Gustavo Adolfo Domínguez Bastida (Gustavo Adolfo Bécquer)",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1870,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Gustavo_Adolfo_Bécquer",
+        "authorPageSha256": "2c43925b0cdbce2d4322eb95652bd140b1c3d366863d42021d3a21b7ab20e70c",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://es.wikisource.org/wiki/Rimas_(Bécquer)"],
+        "ordinaryLife70Expiry": "1941-01-01",
+        "life100ComparisonExpiry": "1971-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/Rimas_(Bécquer)",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "93f208c911d5242dd472",
+      "title": "Fábulas en verso",
+      "author": "Concepción Arenal Ponte",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1893,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Concepción_Arenal",
+        "authorPageSha256": "355aaa93bcf091886771972d48cd9f5b8d11f2369c4c6f709198084867ad6d67",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": false,
+        "titleEvidenceUrls": [
+          "https://www.cervantesvirtual.com/portales/josep_piera/obra/fabulas-en-verso-originales--0/"
+        ],
+        "ordinaryLife70Expiry": "1964-01-01",
+        "life100ComparisonExpiry": "1994-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "biblioteca-virtual-miguel-de-cervantes",
+          "url": "https://www.cervantesvirtual.com/nd/ark:/59851/bmcrr214",
+          "formats": ["PDF"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "1851 edition; provider restrictions require permission assessment.",
+          "verification": {
+            "method": "direct-http",
+            "error": "HTTP Error 403: Forbidden"
+          },
+          "reuseStatus": "CHECK_ITEM_LICENSE_OR_OBTAIN_PERMISSION",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "c117e508772591a2e04d",
+      "title": "Leyendas",
+      "author": "Gustavo Adolfo Domínguez Bastida (Gustavo Adolfo Bécquer)",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1870,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Gustavo_Adolfo_Bécquer",
+        "authorPageSha256": "2c43925b0cdbce2d4322eb95652bd140b1c3d366863d42021d3a21b7ab20e70c",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1941-01-01",
+        "life100ComparisonExpiry": "1971-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "url": "https://www.gutenberg.org/ebooks/53552",
+          "formats": ["EPUB", "HTML"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "id": "53552",
+          "catalogTitle": "Obras escogidas",
+          "notes": "Leyendas is a section within Obras escogidas; verify selected legends and scope. Not a standalone Leyendas EPUB.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "LOCATE_WORK_WITHIN_COLLECTION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "2a7a84e145108f24502b",
+      "title": "La mujer del porvenir",
+      "author": "Concepción Arenal Ponte",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1893,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Concepción_Arenal",
+        "authorPageSha256": "355aaa93bcf091886771972d48cd9f5b8d11f2369c4c6f709198084867ad6d67",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1964-01-01",
+        "life100ComparisonExpiry": "1994-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/La_mujer_del_porvenir",
+          "formats": ["HTML", "EPUB_EXPORT_UNVERIFIED"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "La mujer del porvenir",
+          "notes": "Existing work/version page; validate author, all sections, proofreading status, export and contributor licenses.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "50248297a6a086252b22",
+      "title": "Don Juan Tenorio",
+      "author": "José Zorrilla y Moral",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1893,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:José_Zorrilla",
+        "authorPageSha256": "d49be1a107eb9048b890c41b36b08cb9b54cef2a3297f32acc5893e7be4ef74f",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://es.wikisource.org/wiki/Don_Juan_Tenorio"
+        ],
+        "ordinaryLife70Expiry": "1964-01-01",
+        "life100ComparisonExpiry": "1994-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "5201",
+          "url": "https://www.gutenberg.org/ebooks/5201",
+          "catalogTitle": "Don Juan Tenorio",
+          "catalogAuthors": "Zorrilla, José, 1817-1893; Kline, A. S., 1947- [Translator]; Mayberry, Nancy [Translator]",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        },
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/Don_Juan_Tenorio",
+          "match": "title-link-from-author-bibliography",
+          "reviewStatus": "UNREVIEWED_EXPORT_COMPLETENESS_AND_LICENSE"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "fbc9eefd5e53d1ed54a0",
+      "title": "Inundación castálida",
+      "author": "Juana Inés de Asbaje y Ramírez de Santillana (Sor Juana Inés de la Cruz)",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1695,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Sor_Juana_Inés_de_la_Cruz",
+        "authorPageSha256": "f9e382bf792401ca975ec52f258abd19b417f66cbf0e9fe448c7db8716310f8f",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1766-01-01",
+        "life100ComparisonExpiry": "1796-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "biblioteca-virtual-miguel-de-cervantes",
+          "url": "https://www.cervantesvirtual.com/nd/ark:/59851/bmchm544",
+          "formats": ["HTML"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "Digital text based on 1689 Madrid edition. Provider offers other formats, but no free EPUB was verified; assess reuse terms.",
+          "verification": {
+            "method": "direct-http",
+            "error": "HTTP Error 403: Forbidden"
+          },
+          "reuseStatus": "CHECK_ITEM_LICENSE_OR_OBTAIN_PERMISSION",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "1155398ce6aaa1ba9bde",
+      "title": "El estudiante de Salamanca",
+      "author": "José de Espronceda y Delgado",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1842,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:José_de_Espronceda",
+        "authorPageSha256": "4a3041a31361360455da99c23c7c853fe134db09dfc39715a693fffd1fa71a9e",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1913-01-01",
+        "life100ComparisonExpiry": "1943-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "15781",
+          "url": "https://www.gutenberg.org/ebooks/15781",
+          "catalogTitle": "El Estudiante de Salamanca and Other Selections",
+          "catalogAuthors": "Espronceda, José de, 1808-1842; Northup, George Tyler, 1874-1964 [Editor]",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "bcb3a1bbc85f2c37569c",
+      "title": "Los empeños de una casa",
+      "author": "Juana Inés de Asbaje y Ramírez de Santillana (Sor Juana Inés de la Cruz)",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1695,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Sor_Juana_Inés_de_la_Cruz",
+        "authorPageSha256": "f9e382bf792401ca975ec52f258abd19b417f66cbf0e9fe448c7db8716310f8f",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1766-01-01",
+        "life100ComparisonExpiry": "1796-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/Los_empe%C3%B1os_de_una_casa",
+          "formats": ["HTML", "EPUB_EXPORT_UNVERIFIED"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Los empeños de una casa",
+          "notes": "Existing work/version page; validate author, all sections, proofreading status, export and contributor licenses.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "68fa1f6edc63ff24358d",
+      "title": "El diablo mundo",
+      "author": "José de Espronceda y Delgado",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1842,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:José_de_Espronceda",
+        "authorPageSha256": "4a3041a31361360455da99c23c7c853fe134db09dfc39715a693fffd1fa71a9e",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1913-01-01",
+        "life100ComparisonExpiry": "1943-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "biblioteca-virtual-miguel-de-cervantes",
+          "url": "https://www.cervantesvirtual.com/nd/ark:/59851/bmccc0w7",
+          "formats": ["HTML"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "1848 text with Hartzenbusch annotations; verify exact edition and provider reuse terms.",
+          "verification": {
+            "method": "direct-http",
+            "error": "HTTP Error 403: Forbidden"
+          },
+          "reuseStatus": "CHECK_ITEM_LICENSE_OR_OBTAIN_PERMISSION",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "fba7ab4a54933f8b37e2",
+      "title": "El divino Narciso",
+      "author": "Juana Inés de Asbaje y Ramírez de Santillana (Sor Juana Inés de la Cruz)",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1695,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Sor_Juana_Inés_de_la_Cruz",
+        "authorPageSha256": "f9e382bf792401ca975ec52f258abd19b417f66cbf0e9fe448c7db8716310f8f",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1766-01-01",
+        "life100ComparisonExpiry": "1796-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "biblioteca-virtual-miguel-de-cervantes",
+          "url": "https://www.cervantesvirtual.com/nd/ark:/59851/bmcth8f9",
+          "formats": ["HTML"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "Digital text based on 1972 anthology; check modern editorial content and provider redistribution terms.",
+          "verification": {
+            "method": "direct-http",
+            "error": "HTTP Error 403: Forbidden"
+          },
+          "reuseStatus": "CHECK_ITEM_LICENSE_OR_OBTAIN_PERMISSION",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "57d38d78620ffe2997be",
+      "title": "Cartas marruecas",
+      "author": "José Cadalso y Vázquez de Andrade",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1782,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:José_Cadalso",
+        "authorPageSha256": "f7b0ef1ff9b4b7e5fcc5e9483ef8cdb60320304e07e3068e675e8c28bc8e34f9",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1853-01-01",
+        "life100ComparisonExpiry": "1883-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/Cartas_marruecas",
+          "formats": ["HTML", "EPUB_EXPORT_UNVERIFIED"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Cartas marruecas",
+          "notes": "Existing work/version page; validate author, all sections, proofreading status, export and contributor licenses.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "a33a5a2e5d020f933239",
+      "title": "Sueños y realidades",
+      "author": "Juana Manuela Gorriti",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1892,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Juana_Manuela_Gorriti",
+        "authorPageSha256": "3630bb8f38827c76bd99d5baa0527c5c8f4db529d5e3a0be7a8c3fdade7feb05",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1963-01-01",
+        "life100ComparisonExpiry": "1993-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "biblioteca-digital-sep",
+          "url": "https://bdchamakes.sep.gob.mx/epub-reader/suenosRealidades.html",
+          "formats": ["EPUB"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "Government reading page offers download. ISBN 978-607-643-323-2; inspect modern editorial/license content.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "PROVIDER_TERMS_AND_EDITORIAL_RIGHTS_UNVERIFIED",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "d4df5e6964d39243c2be",
+      "title": "Noches lúgubres",
+      "author": "José Cadalso y Vázquez de Andrade",
+      "authorGender": "man",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1782,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:José_Cadalso",
+        "authorPageSha256": "f7b0ef1ff9b4b7e5fcc5e9483ef8cdb60320304e07e3068e675e8c28bc8e34f9",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1853-01-01",
+        "life100ComparisonExpiry": "1883-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://es.wikisource.org/wiki/Noches_l%C3%BAgubres",
+          "formats": ["HTML", "EPUB_EXPORT_UNVERIFIED"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Noches lúgubres",
+          "notes": "Existing work/version page; validate author, all sections, proofreading status, export and contributor licenses.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "ee210fa0cbfb200c1a08",
+      "title": "Oasis en la vida",
+      "author": "Juana Manuela Gorriti",
+      "authorGender": "woman",
+      "language": "es",
+      "originalTextResearch": {
+        "authorDeathYear": 1892,
+        "authorEvidenceUrl": "https://es.wikisource.org/wiki/Autor:Juana_Manuela_Gorriti",
+        "authorPageSha256": "3630bb8f38827c76bd99d5baa0527c5c8f4db529d5e3a0be7a8c3fdade7feb05",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1963-01-01",
+        "life100ComparisonExpiry": "1993-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "62564",
+          "url": "https://www.gutenberg.org/ebooks/62564",
+          "catalogTitle": "Oasis en la vida",
+          "catalogAuthors": "Gorriti, Juana Manuela, 1818-1892",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    }
+  ]
+}

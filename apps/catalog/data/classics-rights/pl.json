@@ -1,0 +1,2383 @@
+{
+  "version": 1,
+  "researchedAt": "2026-10-29",
+  "scope": "Bibliographic and ordinary-term research; never exact-file publication approval",
+  "books": [
+    {
+      "id": "de9d4b145279bdeddb83",
+      "title": "Pan Tadeusz",
+      "author": "Adam Bernard Mickiewicz",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1855,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/adam-mickiewicz/",
+        "authorPageSha256": "15f533b3a0977e3d2cc92d29bd547f84fb891acf73e181f2eda9867abad4a868",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1926-01-01",
+        "life100ComparisonExpiry": "1956-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "project-gutenberg",
+          "id": "31536",
+          "url": "https://www.gutenberg.org/ebooks/31536",
+          "catalogTitle": "Pan Tadeusz\nCzyli Ostatni Zajazd na Litwie. Historja Szlachecka z r. 1811 i 1812 we Dwunastu Księgach Wierszem",
+          "catalogAuthors": "Mickiewicz, Adam, 1798-1855",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "94ef6c4bd1ee6cb9f2f1",
+      "title": "Nad Niemnem",
+      "author": "Eliza Orzeszkowa",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1910,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/eliza-orzeszkowa/",
+        "authorPageSha256": "0d8948c992976ddcdcaf7fe9fb6aeeb1fe237ef3696fbc5721e123de7c560199",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/nad-niemnem/"
+        ],
+        "ordinaryLife70Expiry": "1981-01-01",
+        "life100ComparisonExpiry": "2011-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "nad-niemnem",
+          "url": "https://wolnelektury.pl/katalog/lektura/nad-niemnem/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/nad-niemnem/",
+          "catalogTitle": "Nad Niemnem",
+          "catalogAuthors": "Eliza Orzeszkowa",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "7776484f569a3801540d",
+      "title": "Dziady",
+      "author": "Adam Bernard Mickiewicz",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1855,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/adam-mickiewicz/",
+        "authorPageSha256": "15f533b3a0977e3d2cc92d29bd547f84fb891acf73e181f2eda9867abad4a868",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/dziady/"
+        ],
+        "ordinaryLife70Expiry": "1926-01-01",
+        "life100ComparisonExpiry": "1956-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "dziady",
+          "url": "https://wolnelektury.pl/katalog/lektura/dziady/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/dziady/",
+          "catalogTitle": "Dziady",
+          "catalogAuthors": "Adam Mickiewicz",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "c7d14b3a503c89694552",
+      "title": "Cham",
+      "author": "Eliza Orzeszkowa",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1910,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/eliza-orzeszkowa/",
+        "authorPageSha256": "0d8948c992976ddcdcaf7fe9fb6aeeb1fe237ef3696fbc5721e123de7c560199",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/orzeszkowa-cham/"
+        ],
+        "ordinaryLife70Expiry": "1981-01-01",
+        "life100ComparisonExpiry": "2011-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "orzeszkowa-cham",
+          "url": "https://wolnelektury.pl/katalog/lektura/orzeszkowa-cham/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/orzeszkowa-cham/",
+          "catalogTitle": "Cham",
+          "catalogAuthors": "Eliza Orzeszkowa",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "a3d3c28fc7102ec752a9",
+      "title": "Konrad Wallenrod",
+      "author": "Adam Bernard Mickiewicz",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1855,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/adam-mickiewicz/",
+        "authorPageSha256": "15f533b3a0977e3d2cc92d29bd547f84fb891acf73e181f2eda9867abad4a868",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/konrad-wallenrod/"
+        ],
+        "ordinaryLife70Expiry": "1926-01-01",
+        "life100ComparisonExpiry": "1956-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "konrad-wallenrod",
+          "url": "https://wolnelektury.pl/katalog/lektura/konrad-wallenrod/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/konrad-wallenrod/",
+          "catalogTitle": "Konrad Wallenrod",
+          "catalogAuthors": "Adam Mickiewicz",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "538d5c6986df3e1713a5",
+      "title": "Marta",
+      "author": "Eliza Orzeszkowa",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1910,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/eliza-orzeszkowa/",
+        "authorPageSha256": "0d8948c992976ddcdcaf7fe9fb6aeeb1fe237ef3696fbc5721e123de7c560199",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/orzeszkowa-marta/"
+        ],
+        "ordinaryLife70Expiry": "1981-01-01",
+        "life100ComparisonExpiry": "2011-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "orzeszkowa-marta",
+          "url": "https://wolnelektury.pl/katalog/lektura/orzeszkowa-marta/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/orzeszkowa-marta/",
+          "catalogTitle": "Marta",
+          "catalogAuthors": "Eliza Orzeszkowa",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "61ee0df17a8e3f2f1151",
+      "title": "Grażyna",
+      "author": "Adam Bernard Mickiewicz",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1855,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/adam-mickiewicz/",
+        "authorPageSha256": "15f533b3a0977e3d2cc92d29bd547f84fb891acf73e181f2eda9867abad4a868",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/grazyna/"
+        ],
+        "ordinaryLife70Expiry": "1926-01-01",
+        "life100ComparisonExpiry": "1956-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "grazyna",
+          "url": "https://wolnelektury.pl/katalog/lektura/grazyna/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/grazyna/",
+          "catalogTitle": "Grażyna",
+          "catalogAuthors": "Adam Mickiewicz",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        },
+        {
+          "provider": "project-gutenberg",
+          "id": "28153",
+          "url": "https://www.gutenberg.org/ebooks/28153",
+          "catalogTitle": "Grażyna: Powieść Litewska",
+          "catalogAuthors": "Mickiewicz, Adam, 1798-1855",
+          "match": "title-prefix-or-contained-and-author",
+          "reviewStatus": "UNREVIEWED_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "84e0704a45b81e08eadc",
+      "title": "Dziurdziowie",
+      "author": "Eliza Orzeszkowa",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1910,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/eliza-orzeszkowa/",
+        "authorPageSha256": "0d8948c992976ddcdcaf7fe9fb6aeeb1fe237ef3696fbc5721e123de7c560199",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/dziurdziowie/"
+        ],
+        "ordinaryLife70Expiry": "1981-01-01",
+        "life100ComparisonExpiry": "2011-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "dziurdziowie",
+          "url": "https://wolnelektury.pl/katalog/lektura/dziurdziowie/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/dziurdziowie/",
+          "catalogTitle": "Dziurdziowie",
+          "catalogAuthors": "Eliza Orzeszkowa",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "0a1be9afb67f1a92cf7a",
+      "title": "Ballady i romanse",
+      "author": "Adam Bernard Mickiewicz",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1855,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/adam-mickiewicz/",
+        "authorPageSha256": "15f533b3a0977e3d2cc92d29bd547f84fb891acf73e181f2eda9867abad4a868",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/ballady-i-romanse/"
+        ],
+        "ordinaryLife70Expiry": "1926-01-01",
+        "life100ComparisonExpiry": "1956-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "ballady-i-romanse",
+          "url": "https://wolnelektury.pl/katalog/lektura/ballady-i-romanse/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/ballady-i-romanse/",
+          "catalogTitle": "Ballady i romanse",
+          "catalogAuthors": "Adam Mickiewicz",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "1b0f959d1d18e91efbfa",
+      "title": "A...B...C...",
+      "author": "Eliza Orzeszkowa",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1910,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/eliza-orzeszkowa/",
+        "authorPageSha256": "0d8948c992976ddcdcaf7fe9fb6aeeb1fe237ef3696fbc5721e123de7c560199",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/orzeszkowa-abc/"
+        ],
+        "ordinaryLife70Expiry": "1981-01-01",
+        "life100ComparisonExpiry": "2011-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "orzeszkowa-abc",
+          "url": "https://wolnelektury.pl/katalog/lektura/orzeszkowa-abc/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/orzeszkowa-abc/",
+          "catalogTitle": "A... B... C...",
+          "catalogAuthors": "Eliza Orzeszkowa",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "c5d70fe0a4114873b975",
+      "title": "Kordian",
+      "author": "Juliusz Słowacki",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1849,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/juliusz-slowacki/",
+        "authorPageSha256": "b9864b2ba041d603f88cc9113eb8c1dfed0217581a87fdeca018f77fd65c754f",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/kordian/"
+        ],
+        "ordinaryLife70Expiry": "1920-01-01",
+        "life100ComparisonExpiry": "1950-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "kordian",
+          "url": "https://wolnelektury.pl/katalog/lektura/kordian/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/kordian/",
+          "catalogTitle": "Kordian",
+          "catalogAuthors": "Juliusz Słowacki",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "937b97bd0dc668a43e13",
+      "title": "Gloria victis",
+      "author": "Eliza Orzeszkowa",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1910,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/eliza-orzeszkowa/",
+        "authorPageSha256": "0d8948c992976ddcdcaf7fe9fb6aeeb1fe237ef3696fbc5721e123de7c560199",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1981-01-01",
+        "life100ComparisonExpiry": "2011-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "gloria-victis-gloria-victis",
+          "url": "https://wolnelektury.pl/katalog/lektura/gloria-victis-gloria-victis/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/gloria-victis-gloria-victis/",
+          "catalogTitle": "Gloria victis",
+          "catalogAuthors": "Eliza Orzeszkowa",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "e1f028e8e2e8064d6487",
+      "title": "Balladyna",
+      "author": "Juliusz Słowacki",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1849,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/juliusz-slowacki/",
+        "authorPageSha256": "b9864b2ba041d603f88cc9113eb8c1dfed0217581a87fdeca018f77fd65c754f",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/balladyna/"
+        ],
+        "ordinaryLife70Expiry": "1920-01-01",
+        "life100ComparisonExpiry": "1950-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "balladyna",
+          "url": "https://wolnelektury.pl/katalog/lektura/balladyna/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/balladyna/",
+          "catalogTitle": "Balladyna",
+          "catalogAuthors": "Juliusz Słowacki",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "75d2fbd41de6c945d33f",
+      "title": "Meir Ezofowicz",
+      "author": "Eliza Orzeszkowa",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1910,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/eliza-orzeszkowa/",
+        "authorPageSha256": "0d8948c992976ddcdcaf7fe9fb6aeeb1fe237ef3696fbc5721e123de7c560199",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/meir-ezofowicz/"
+        ],
+        "ordinaryLife70Expiry": "1981-01-01",
+        "life100ComparisonExpiry": "2011-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "meir-ezofowicz",
+          "url": "https://wolnelektury.pl/katalog/lektura/meir-ezofowicz/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/meir-ezofowicz/",
+          "catalogTitle": "Meir Ezofowicz",
+          "catalogAuthors": "Eliza Orzeszkowa",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "879e6830a59876eaabf7",
+      "title": "Lilla Weneda",
+      "author": "Juliusz Słowacki",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1849,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/juliusz-slowacki/",
+        "authorPageSha256": "b9864b2ba041d603f88cc9113eb8c1dfed0217581a87fdeca018f77fd65c754f",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/slowacki-lilla-weneda/"
+        ],
+        "ordinaryLife70Expiry": "1920-01-01",
+        "life100ComparisonExpiry": "1950-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "slowacki-lilla-weneda",
+          "url": "https://wolnelektury.pl/katalog/lektura/slowacki-lilla-weneda/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/slowacki-lilla-weneda/",
+          "catalogTitle": "Lilla Weneda",
+          "catalogAuthors": "Juliusz Słowacki",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "5d07dc92e7142d2748f5",
+      "title": "Nasza szkapa",
+      "author": "Maria Stanisława Konopnicka",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1910,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/maria-konopnicka/",
+        "authorPageSha256": "49e1095ec26fff5053411bd1e8b4425d128a4ff22773b48cb1020768b1773c65",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/nasza-szkapa/"
+        ],
+        "ordinaryLife70Expiry": "1981-01-01",
+        "life100ComparisonExpiry": "2011-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "nasza-szkapa",
+          "url": "https://wolnelektury.pl/katalog/lektura/nasza-szkapa/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/nasza-szkapa/",
+          "catalogTitle": "Nasza szkapa",
+          "catalogAuthors": "Maria Konopnicka",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "a35d617faf487ed3fb0e",
+      "title": "Beniowski",
+      "author": "Juliusz Słowacki",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1849,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/juliusz-slowacki/",
+        "authorPageSha256": "b9864b2ba041d603f88cc9113eb8c1dfed0217581a87fdeca018f77fd65c754f",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/beniowski/"
+        ],
+        "ordinaryLife70Expiry": "1920-01-01",
+        "life100ComparisonExpiry": "1950-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "beniowski",
+          "url": "https://wolnelektury.pl/katalog/lektura/beniowski/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/beniowski/",
+          "catalogTitle": "Beniowski",
+          "catalogAuthors": "Juliusz Słowacki",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "3ee62d05b021a06acbfd",
+      "title": "Mendel Gdański",
+      "author": "Maria Stanisława Konopnicka",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1910,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/maria-konopnicka/",
+        "authorPageSha256": "49e1095ec26fff5053411bd1e8b4425d128a4ff22773b48cb1020768b1773c65",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/mendel-gdanski/"
+        ],
+        "ordinaryLife70Expiry": "1981-01-01",
+        "life100ComparisonExpiry": "2011-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "mendel-gdanski",
+          "url": "https://wolnelektury.pl/katalog/lektura/mendel-gdanski/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/mendel-gdanski/",
+          "catalogTitle": "Mendel Gdański",
+          "catalogAuthors": "Maria Konopnicka",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "3bf529368cb95d28106f",
+      "title": "Zemsta",
+      "author": "Aleksander Fredro",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1876,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/aleksander-fredro/",
+        "authorPageSha256": "483c2f7531822c62455d204fdeaaaa765f8522f7efb723caaad95cc968b9c8fb",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/zemsta/"
+        ],
+        "ordinaryLife70Expiry": "1947-01-01",
+        "life100ComparisonExpiry": "1977-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "zemsta",
+          "url": "https://wolnelektury.pl/katalog/lektura/zemsta/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/zemsta/",
+          "catalogTitle": "Zemsta",
+          "catalogAuthors": "Aleksander Fredro",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "7c74b4d1a5fec9b85662",
+      "title": "O krasnoludkach i o sierotce Marysi",
+      "author": "Maria Stanisława Konopnicka",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1910,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/maria-konopnicka/",
+        "authorPageSha256": "49e1095ec26fff5053411bd1e8b4425d128a4ff22773b48cb1020768b1773c65",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": false,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/o-krasnoludkach-i-sierotce-marysi.html"
+        ],
+        "ordinaryLife70Expiry": "1981-01-01",
+        "life100ComparisonExpiry": "2011-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://pl.wikisource.org/wiki/O_krasnoludkach_i_o_sierotce_Marysi",
+          "formats": ["HTML", "EPUB_EXPORT_UNVERIFIED"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "O krasnoludkach i o sierotce Marysi",
+          "notes": "Existing work/version page; validate author, all sections, proofreading status, export and contributor licenses.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "527119b945977dbd889e",
+      "title": "Śluby panieńskie",
+      "author": "Aleksander Fredro",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1876,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/aleksander-fredro/",
+        "authorPageSha256": "483c2f7531822c62455d204fdeaaaa765f8522f7efb723caaad95cc968b9c8fb",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/fredro-sluby-panienskie/"
+        ],
+        "ordinaryLife70Expiry": "1947-01-01",
+        "life100ComparisonExpiry": "1977-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "fredro-sluby-panienskie",
+          "url": "https://wolnelektury.pl/katalog/lektura/fredro-sluby-panienskie/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/fredro-sluby-panienskie/",
+          "catalogTitle": "Śluby panieńskie czyli Magnetyzm serca",
+          "catalogAuthors": "Aleksander Fredro",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "62f2a8f9c781843e0300",
+      "title": "Dym",
+      "author": "Maria Stanisława Konopnicka",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1910,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/maria-konopnicka/",
+        "authorPageSha256": "49e1095ec26fff5053411bd1e8b4425d128a4ff22773b48cb1020768b1773c65",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://wolnelektury.pl/katalog/lektura/dym/"],
+        "ordinaryLife70Expiry": "1981-01-01",
+        "life100ComparisonExpiry": "2011-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "dym",
+          "url": "https://wolnelektury.pl/katalog/lektura/dym/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/dym/",
+          "catalogTitle": "Dym",
+          "catalogAuthors": "Maria Konopnicka",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "922ca87b3d9196d2acea",
+      "title": "Pan Jowialski",
+      "author": "Aleksander Fredro",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1876,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/aleksander-fredro/",
+        "authorPageSha256": "483c2f7531822c62455d204fdeaaaa765f8522f7efb723caaad95cc968b9c8fb",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1947-01-01",
+        "life100ComparisonExpiry": "1977-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wikisource",
+          "url": "https://pl.wikisource.org/wiki/Pan_Jowialski",
+          "formats": ["HTML", "EPUB_EXPORT_UNVERIFIED"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "catalogTitle": "Pan Jowialski",
+          "notes": "Existing work/version page; validate author, all sections, proofreading status, export and contributor licenses.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "a9eff762d86c047d7aac",
+      "title": "Na jagody",
+      "author": "Maria Stanisława Konopnicka",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1910,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/maria-konopnicka/",
+        "authorPageSha256": "49e1095ec26fff5053411bd1e8b4425d128a4ff22773b48cb1020768b1773c65",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/na-jagody/"
+        ],
+        "ordinaryLife70Expiry": "1981-01-01",
+        "life100ComparisonExpiry": "2011-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "na-jagody",
+          "url": "https://wolnelektury.pl/katalog/lektura/na-jagody/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/na-jagody/",
+          "catalogTitle": "Na jagody",
+          "catalogAuthors": "Maria Konopnicka",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "bc96cfa2b74b33fcadcf",
+      "title": "Damy i huzary",
+      "author": "Aleksander Fredro",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1876,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/aleksander-fredro/",
+        "authorPageSha256": "483c2f7531822c62455d204fdeaaaa765f8522f7efb723caaad95cc968b9c8fb",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/fredro-damy-i-huzary/"
+        ],
+        "ordinaryLife70Expiry": "1947-01-01",
+        "life100ComparisonExpiry": "1977-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "fredro-damy-i-huzary",
+          "url": "https://wolnelektury.pl/katalog/lektura/fredro-damy-i-huzary/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/fredro-damy-i-huzary/",
+          "catalogTitle": "Damy i huzary",
+          "catalogAuthors": "Aleksander Fredro",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "4efc7f6c967f59e8b607",
+      "title": "Miłosierdzie gminy",
+      "author": "Maria Stanisława Konopnicka",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1910,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/maria-konopnicka/",
+        "authorPageSha256": "49e1095ec26fff5053411bd1e8b4425d128a4ff22773b48cb1020768b1773c65",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/milosierdzie-gminy/"
+        ],
+        "ordinaryLife70Expiry": "1981-01-01",
+        "life100ComparisonExpiry": "2011-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "milosierdzie-gminy",
+          "url": "https://wolnelektury.pl/katalog/lektura/milosierdzie-gminy/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/milosierdzie-gminy/",
+          "catalogTitle": "Miłosierdzie gminy",
+          "catalogAuthors": "Maria Konopnicka",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "28c8cedf4037d46cc59c",
+      "title": "Nie-Boska komedia",
+      "author": "Napoleon Stanisław Adam Feliks Zygmunt Krasiński",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1859,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/zygmunt-krasinski/",
+        "authorPageSha256": "629f494732bdcfdfb18f1e0b7c1ef06858b436cafa12788eb02fa371f0541b6d",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/nie-boska-komedia/"
+        ],
+        "ordinaryLife70Expiry": "1930-01-01",
+        "life100ComparisonExpiry": "1960-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "nie-boska-komedia",
+          "url": "https://wolnelektury.pl/katalog/lektura/nie-boska-komedia/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/nie-boska-komedia/",
+          "catalogTitle": "Nie-Boska komedia",
+          "catalogAuthors": "Zygmunt Krasiński",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "9044387966e8266cab8e",
+      "title": "Urbanowa",
+      "author": "Maria Stanisława Konopnicka",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1910,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/maria-konopnicka/",
+        "authorPageSha256": "49e1095ec26fff5053411bd1e8b4425d128a4ff22773b48cb1020768b1773c65",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/urbanowa/"
+        ],
+        "ordinaryLife70Expiry": "1981-01-01",
+        "life100ComparisonExpiry": "2011-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "urbanowa",
+          "url": "https://wolnelektury.pl/katalog/lektura/urbanowa/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/urbanowa/",
+          "catalogTitle": "Urbanowa",
+          "catalogAuthors": "Maria Konopnicka",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "5d637d9550de66075840",
+      "title": "Irydion",
+      "author": "Napoleon Stanisław Adam Feliks Zygmunt Krasiński",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1859,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/zygmunt-krasinski/",
+        "authorPageSha256": "629f494732bdcfdfb18f1e0b7c1ef06858b436cafa12788eb02fa371f0541b6d",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/krasinski-irydion/"
+        ],
+        "ordinaryLife70Expiry": "1930-01-01",
+        "life100ComparisonExpiry": "1960-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "krasinski-irydion",
+          "url": "https://wolnelektury.pl/katalog/lektura/krasinski-irydion/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/krasinski-irydion/",
+          "catalogTitle": "Irydion",
+          "catalogAuthors": "Zygmunt Krasiński",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "e55aecf0b350cd78a4f2",
+      "title": "Moralność pani Dulskiej",
+      "author": "Maria Gabriela Stefania Korwin-Piotrowska (Gabriela Zapolska)",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1921,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/gabriela-zapolska/",
+        "authorPageSha256": "c13c553701dcbf4a78c330df9918e0c268c41d24a8d2d25edf0f94e8c7f9c434",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/moralnosc-pani-dulskiej/"
+        ],
+        "ordinaryLife70Expiry": "1992-01-01",
+        "life100ComparisonExpiry": "2022-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "moralnosc-pani-dulskiej",
+          "url": "https://wolnelektury.pl/katalog/lektura/moralnosc-pani-dulskiej/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/moralnosc-pani-dulskiej/",
+          "catalogTitle": "Moralność pani Dulskiej",
+          "catalogAuthors": "Gabriela Zapolska",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "19379d212bdd4053c89e",
+      "title": "Quo vadis",
+      "author": "Henryk Adam Aleksander Pius Sienkiewicz",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1916,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/henryk-sienkiewicz/",
+        "authorPageSha256": "89d3c18aefce326d34daa7a1633d2c265cff3c2a662823f744f3b7a2db18bbad",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/quo-vadis/"
+        ],
+        "ordinaryLife70Expiry": "1987-01-01",
+        "life100ComparisonExpiry": "2017-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "quo-vadis",
+          "url": "https://wolnelektury.pl/katalog/lektura/quo-vadis/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/quo-vadis/",
+          "catalogTitle": "Quo vadis",
+          "catalogAuthors": "Henryk Sienkiewicz",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "0ba6c9c524e7b4c6467e",
+      "title": "Kaśka Kariatyda",
+      "author": "Maria Gabriela Stefania Korwin-Piotrowska (Gabriela Zapolska)",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1921,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/gabriela-zapolska/",
+        "authorPageSha256": "c13c553701dcbf4a78c330df9918e0c268c41d24a8d2d25edf0f94e8c7f9c434",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/zapolska-kaska-kariatyda/"
+        ],
+        "ordinaryLife70Expiry": "1992-01-01",
+        "life100ComparisonExpiry": "2022-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "zapolska-kaska-kariatyda",
+          "url": "https://wolnelektury.pl/katalog/lektura/zapolska-kaska-kariatyda/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/zapolska-kaska-kariatyda/",
+          "catalogTitle": "Kaśka Kariatyda",
+          "catalogAuthors": "Gabriela Zapolska",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "819335e91e5cad580a94",
+      "title": "Ogniem i mieczem",
+      "author": "Henryk Adam Aleksander Pius Sienkiewicz",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1916,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/henryk-sienkiewicz/",
+        "authorPageSha256": "89d3c18aefce326d34daa7a1633d2c265cff3c2a662823f744f3b7a2db18bbad",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/ogniem-i-mieczem/"
+        ],
+        "ordinaryLife70Expiry": "1987-01-01",
+        "life100ComparisonExpiry": "2017-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "ogniem-i-mieczem",
+          "url": "https://wolnelektury.pl/katalog/lektura/ogniem-i-mieczem/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/ogniem-i-mieczem/",
+          "catalogTitle": "Ogniem i mieczem",
+          "catalogAuthors": "Henryk Sienkiewicz",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "a8ab540e8f84dd79794f",
+      "title": "Menażeria ludzka",
+      "author": "Maria Gabriela Stefania Korwin-Piotrowska (Gabriela Zapolska)",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1921,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/gabriela-zapolska/",
+        "authorPageSha256": "c13c553701dcbf4a78c330df9918e0c268c41d24a8d2d25edf0f94e8c7f9c434",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/zapolska-menazeria-ludzka/"
+        ],
+        "ordinaryLife70Expiry": "1992-01-01",
+        "life100ComparisonExpiry": "2022-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "zapolska-menazeria-ludzka",
+          "url": "https://wolnelektury.pl/katalog/lektura/zapolska-menazeria-ludzka/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/zapolska-menazeria-ludzka/",
+          "catalogTitle": "Menażeria ludzka",
+          "catalogAuthors": "Gabriela Zapolska",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "3f1364135f6badf8730a",
+      "title": "Potop",
+      "author": "Henryk Adam Aleksander Pius Sienkiewicz",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1916,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/henryk-sienkiewicz/",
+        "authorPageSha256": "89d3c18aefce326d34daa7a1633d2c265cff3c2a662823f744f3b7a2db18bbad",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://wolnelektury.pl/katalog/lektura/potop/"],
+        "ordinaryLife70Expiry": "1987-01-01",
+        "life100ComparisonExpiry": "2017-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "potop",
+          "url": "https://wolnelektury.pl/katalog/lektura/potop/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/potop/",
+          "catalogTitle": "Potop",
+          "catalogAuthors": "Henryk Sienkiewicz",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "c476f366162866ffa033",
+      "title": "Sezonowa miłość",
+      "author": "Maria Gabriela Stefania Korwin-Piotrowska (Gabriela Zapolska)",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1921,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/gabriela-zapolska/",
+        "authorPageSha256": "c13c553701dcbf4a78c330df9918e0c268c41d24a8d2d25edf0f94e8c7f9c434",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/sezonowa-milosc/"
+        ],
+        "ordinaryLife70Expiry": "1992-01-01",
+        "life100ComparisonExpiry": "2022-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "sezonowa-milosc",
+          "url": "https://wolnelektury.pl/katalog/lektura/sezonowa-milosc/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/sezonowa-milosc/",
+          "catalogTitle": "Sezonowa miłość",
+          "catalogAuthors": "Gabriela Zapolska",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "fd1eacecbdc97e25651b",
+      "title": "Pan Wołodyjowski",
+      "author": "Henryk Adam Aleksander Pius Sienkiewicz",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1916,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/henryk-sienkiewicz/",
+        "authorPageSha256": "89d3c18aefce326d34daa7a1633d2c265cff3c2a662823f744f3b7a2db18bbad",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/pan-wolodyjowski/"
+        ],
+        "ordinaryLife70Expiry": "1987-01-01",
+        "life100ComparisonExpiry": "2017-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "pan-wolodyjowski",
+          "url": "https://wolnelektury.pl/katalog/lektura/pan-wolodyjowski/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/pan-wolodyjowski/",
+          "catalogTitle": "Pan Wołodyjowski",
+          "catalogAuthors": "Henryk Sienkiewicz",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "0157ce949ba0e7fc38d9",
+      "title": "Panna Maliczewska",
+      "author": "Maria Gabriela Stefania Korwin-Piotrowska (Gabriela Zapolska)",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1921,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/gabriela-zapolska/",
+        "authorPageSha256": "c13c553701dcbf4a78c330df9918e0c268c41d24a8d2d25edf0f94e8c7f9c434",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/zapolska-panna-maliczewska/"
+        ],
+        "ordinaryLife70Expiry": "1992-01-01",
+        "life100ComparisonExpiry": "2022-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "zapolska-panna-maliczewska",
+          "url": "https://wolnelektury.pl/katalog/lektura/zapolska-panna-maliczewska/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/zapolska-panna-maliczewska/",
+          "catalogTitle": "Panna Maliczewska",
+          "catalogAuthors": "Gabriela Zapolska",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "d0a6acb2d2db103e6ee5",
+      "title": "Krzyżacy",
+      "author": "Henryk Adam Aleksander Pius Sienkiewicz",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1916,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/henryk-sienkiewicz/",
+        "authorPageSha256": "89d3c18aefce326d34daa7a1633d2c265cff3c2a662823f744f3b7a2db18bbad",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/krzyzacy/"
+        ],
+        "ordinaryLife70Expiry": "1987-01-01",
+        "life100ComparisonExpiry": "2017-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "krzyzacy",
+          "url": "https://wolnelektury.pl/katalog/lektura/krzyzacy/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/krzyzacy/",
+          "catalogTitle": "Krzyżacy",
+          "catalogAuthors": "Henryk Sienkiewicz",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "266a0e09b5329b350311",
+      "title": "Poganka",
+      "author": "Narcyza Żmichowska",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1876,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/narcyza-zmichowska/",
+        "authorPageSha256": "66e634b3a9386cb2ef1711e2d8d3989c10efe2dc146a7a50ced413448b70dd36",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/zmichowska-poganka/"
+        ],
+        "ordinaryLife70Expiry": "1947-01-01",
+        "life100ComparisonExpiry": "1977-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "zmichowska-poganka",
+          "url": "https://wolnelektury.pl/katalog/lektura/zmichowska-poganka/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/zmichowska-poganka/",
+          "catalogTitle": "Poganka",
+          "catalogAuthors": "Narcyza Żmichowska",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "c8eb69576597f749c697",
+      "title": "Lalka",
+      "author": "Aleksander Głowacki (Bolesław Prus)",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1912,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/boleslaw-prus/",
+        "authorPageSha256": "cc28f16ce03ceb5d2c2f73a921ebab640bfea0e763327af4284b7a7246650bae",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": ["https://wolnelektury.pl/katalog/lektura/lalka/"],
+        "ordinaryLife70Expiry": "1983-01-01",
+        "life100ComparisonExpiry": "2013-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "lalka",
+          "url": "https://wolnelektury.pl/katalog/lektura/lalka/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/lalka/",
+          "catalogTitle": "Lalka",
+          "catalogAuthors": "Bolesław Prus",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "093610639ccc53403a5c",
+      "title": "Książka pamiątek",
+      "author": "Narcyza Żmichowska",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1876,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/narcyza-zmichowska/",
+        "authorPageSha256": "66e634b3a9386cb2ef1711e2d8d3989c10efe2dc146a7a50ced413448b70dd36",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [],
+        "ordinaryLife70Expiry": "1947-01-01",
+        "life100ComparisonExpiry": "1977-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "textgrid",
+          "url": "https://textgridrep.de/browse/41j6w.0",
+          "formats": ["TEI_XML", "EPUB_EXPORT_UNVERIFIED"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "ELTeC edition, Narcyza Żmichowska, CC BY 4.0 metadata. Follow full-text child; parent is not EPUB bytes.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "licenseEvidenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality.",
+        "Bibliography identifies the work, but no directly checked work page was matched."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "7e56ad5be9640ff464ec",
+      "title": "Faraon",
+      "author": "Aleksander Głowacki (Bolesław Prus)",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1912,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/boleslaw-prus/",
+        "authorPageSha256": "cc28f16ce03ceb5d2c2f73a921ebab640bfea0e763327af4284b7a7246650bae",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/faraon/"
+        ],
+        "ordinaryLife70Expiry": "1983-01-01",
+        "life100ComparisonExpiry": "2013-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "faraon",
+          "url": "https://wolnelektury.pl/katalog/lektura/faraon/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/faraon/",
+          "catalogTitle": "Faraon",
+          "catalogAuthors": "Bolesław Prus",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "d334499cd192c441a765",
+      "title": "Pamiątka po dobrej matce",
+      "author": "Klementyna Hoffmanowa",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1845,
+        "authorEvidenceUrl": "https://pl.wikisource.org/wiki/Autor:Klementyna_Hoffmanowa",
+        "authorPageSha256": "03cd9206eec4dd3243568ac688fe1e1bfb277d25acb9ad35abd518d97d9123e3",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": false,
+        "titleEvidenceUrls": [
+          "https://bibliotekacyfrowa.ujk.edu.pl/dlibra/doccontent?id=303"
+        ],
+        "ordinaryLife70Expiry": "1916-01-01",
+        "life100ComparisonExpiry": "1946-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "mazowiecka-biblioteka-cyfrowa",
+          "url": "https://mbc.cyfrowemazowsze.pl/dlibra/publication/edition/12946",
+          "formats": ["PDF", "DJVU"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "1819 edition, pseudonym Młoda Polka resolved to Hoffmanowa. Item states public domain and unrestricted access; no EPUB.",
+          "verification": {
+            "method": "direct-http",
+            "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1028)>"
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "6febc8d8adcc89c4d349",
+      "title": "Placówka",
+      "author": "Aleksander Głowacki (Bolesław Prus)",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1912,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/boleslaw-prus/",
+        "authorPageSha256": "cc28f16ce03ceb5d2c2f73a921ebab640bfea0e763327af4284b7a7246650bae",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/prus-placowka/"
+        ],
+        "ordinaryLife70Expiry": "1983-01-01",
+        "life100ComparisonExpiry": "2013-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "prus-placowka",
+          "url": "https://wolnelektury.pl/katalog/lektura/prus-placowka/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/prus-placowka/",
+          "catalogTitle": "Placówka",
+          "catalogAuthors": "Bolesław Prus",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "3da8a515a6bced83db4e",
+      "title": "Listy Elżbiety Rzeczyckiej",
+      "author": "Klementyna Hoffmanowa",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1845,
+        "authorEvidenceUrl": "https://pl.wikisource.org/wiki/Autor:Klementyna_Hoffmanowa",
+        "authorPageSha256": "03cd9206eec4dd3243568ac688fe1e1bfb277d25acb9ad35abd518d97d9123e3",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": false,
+        "titleEvidenceUrls": [
+          "https://pbc.biaman.pl/dlibra/publication/70289?language=pl"
+        ],
+        "ordinaryLife70Expiry": "1916-01-01",
+        "life100ComparisonExpiry": "1946-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "podlaska-biblioteka-cyfrowa",
+          "url": "https://pbc.biaman.pl/dlibra/publication/70289?language=pl",
+          "formats": ["DIGITIZED_SCAN"],
+          "match": "verified-title-and-author-source-record",
+          "reviewStatus": "UNREVIEWED_FILE_AND_REUSE",
+          "checkedAt": "2026-10-29",
+          "notes": "1925 edition, 57 scans; item explicitly marked Domena publiczna. No EPUB verified.",
+          "verification": {
+            "method": "direct-http",
+            "status": 200
+          },
+          "reuseStatus": "EXACT_EDITION_REVIEW_PENDING",
+          "completeness": "UNREVIEWED"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "6b0c3110d08506bd0d48",
+      "title": "Kamizelka",
+      "author": "Aleksander Głowacki (Bolesław Prus)",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1912,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/boleslaw-prus/",
+        "authorPageSha256": "cc28f16ce03ceb5d2c2f73a921ebab640bfea0e763327af4284b7a7246650bae",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/kamizelka/"
+        ],
+        "ordinaryLife70Expiry": "1983-01-01",
+        "life100ComparisonExpiry": "2013-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "kamizelka",
+          "url": "https://wolnelektury.pl/katalog/lektura/kamizelka/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/kamizelka/",
+          "catalogTitle": "Kamizelka",
+          "catalogAuthors": "Bolesław Prus",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "0ff08ebb9d6606e2607f",
+      "title": "Panienka z okienka",
+      "author": "Jadwiga Łuszczewska (Deotyma)",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1908,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/deotyma/",
+        "authorPageSha256": "9c3ced273422ccb758390fd4ab9b433f227f0dab06aaaf883bc6078e5fda1172",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/deotyma-panienka-z-okienka/"
+        ],
+        "ordinaryLife70Expiry": "1979-01-01",
+        "life100ComparisonExpiry": "2009-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "deotyma-panienka-z-okienka",
+          "url": "https://wolnelektury.pl/katalog/lektura/deotyma-panienka-z-okienka/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/deotyma-panienka-z-okienka/",
+          "catalogTitle": "Panienka z okienka",
+          "catalogAuthors": "Deotyma",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "90918c0f47c8543df3cc",
+      "title": "Katarynka",
+      "author": "Aleksander Głowacki (Bolesław Prus)",
+      "authorGender": "man",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1912,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/boleslaw-prus/",
+        "authorPageSha256": "cc28f16ce03ceb5d2c2f73a921ebab640bfea0e763327af4284b7a7246650bae",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/katarynka/"
+        ],
+        "ordinaryLife70Expiry": "1983-01-01",
+        "life100ComparisonExpiry": "2013-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "katarynka",
+          "url": "https://wolnelektury.pl/katalog/lektura/katarynka/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/katarynka/",
+          "catalogTitle": "Katarynka",
+          "catalogAuthors": "Bolesław Prus",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    },
+    {
+      "id": "95dd117afeeb6d07fb63",
+      "title": "Branki w jasyrze",
+      "author": "Jadwiga Łuszczewska (Deotyma)",
+      "authorGender": "woman",
+      "language": "pl",
+      "originalTextResearch": {
+        "authorDeathYear": 1908,
+        "authorEvidenceUrl": "https://wolnelektury.pl/katalog/autor/deotyma/",
+        "authorPageSha256": "9c3ced273422ccb758390fd4ab9b433f227f0dab06aaaf883bc6078e5fda1172",
+        "deathYearPresentOnPage": true,
+        "titleMentionedOnAuthorPage": true,
+        "titleEvidenceUrls": [
+          "https://wolnelektury.pl/katalog/lektura/deotyma-branki-w-jasyrze/"
+        ],
+        "ordinaryLife70Expiry": "1979-01-01",
+        "life100ComparisonExpiry": "2009-01-01",
+        "ruleRefs": [
+          "eu-term",
+          "ukraine-term",
+          "mexico-comparison",
+          "us-publication",
+          "berne-translations"
+        ],
+        "territoryAssessment": "ORIGINAL_TEXT_TERM_SCREEN_ONLY; exact-edition territorial approval pending",
+        "worldwideCleared": false
+      },
+      "sourceCandidates": [
+        {
+          "provider": "wolne-lektury",
+          "id": "deotyma-branki-w-jasyrze",
+          "url": "https://wolnelektury.pl/katalog/lektura/deotyma-branki-w-jasyrze/",
+          "metadataUrl": "https://wolnelektury.pl/api/books/deotyma-branki-w-jasyrze/",
+          "catalogTitle": "Branki w jasyrze",
+          "catalogAuthors": "Deotyma",
+          "match": "exact-title-and-author",
+          "reviewStatus": "UNREVIEWED_LICENSE_AND_EDITION"
+        }
+      ],
+      "unresolved": [
+        "Select and hash exact original-language EPUB; inspect translator, artwork, introduction and annotations.",
+        "Confirm first-publication dates, publication rights and applicable national exceptions.",
+        "Complete text/navigation/completeness review; title research does not approve reading quality."
+      ],
+      "publication": null,
+      "publicationPolicy": "PUBLISH_WITH_REVIEW_DEFERRED"
+    }
+  ]
+}

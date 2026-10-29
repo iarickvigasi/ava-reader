@@ -15,19 +15,9 @@ export function CatalogReadingAssets({
       {assets.map((asset) => (
         <section key={asset.id} className="space-y-3">
           {assets.length > 1 && (
-            <>
-              <p className="font-reader text-lg text-copy">
-                {asset.edition.title}
-              </p>
-              <a
-                href={asset.rightsUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="text-sm text-plum underline"
-              >
-                {asset.rightsStatement} ({asset.rightsJurisdiction})
-              </a>
-            </>
+            <p className="font-reader text-lg text-copy">
+              {asset.edition.title}
+            </p>
           )}
           <CatalogReadButton entryId={asset.mainCatalogEntryId} />
         </section>

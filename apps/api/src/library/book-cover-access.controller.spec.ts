@@ -46,11 +46,11 @@ describe('cover ownership at the HTTP boundary', () => {
       }: {
         where: {
           id: string;
-          libraryItems?: { some: { user: { clerkUserId: string } } };
+          libraryItems?: { some: { userId: string } };
         };
       }) =>
         where.id === 'private-book' &&
-        where.libraryItems?.some.user.clerkUserId === 'owner'
+        where.libraryItems?.some.userId === 'owner'
           ? {
               coverBlob: {
                 bytes: Buffer.from('private artwork'),

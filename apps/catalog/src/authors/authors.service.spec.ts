@@ -31,7 +31,7 @@ describe('author reads', () => {
     });
     expect(db.work.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { credits: { some: { authorId: 'author' } } },
+        where: { deletedAt: null, credits: { some: { authorId: 'author' } } },
         take: 21,
       }),
     );

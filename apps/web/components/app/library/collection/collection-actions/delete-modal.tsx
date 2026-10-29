@@ -1,3 +1,4 @@
+import { ModalActions } from "@/components/ui/modal-actions";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -37,16 +38,11 @@ export function DeleteCollectionModal({
 
       {error ? <p className="mt-3 text-sm text-danger">{error}</p> : null}
 
-      <div className="mt-5 flex items-center justify-end gap-2">
-        <Button
-          size="sm"
-          variant="soft"
-          disabled={isPending}
-          onClick={onClose}
-          type="button"
-        >
-          {t("cancel")}
-        </Button>
+      <ModalActions
+        cancelLabel={t("cancel")}
+        onCancel={onClose}
+        pending={isPending}
+      >
         <Button
           size="sm"
           variant="danger"
@@ -56,7 +52,7 @@ export function DeleteCollectionModal({
         >
           {isPending ? t("deleting") : t("confirm")}
         </Button>
-      </div>
+      </ModalActions>
     </div>
   );
 }

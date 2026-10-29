@@ -43,7 +43,7 @@ export function ActionCard({
           >
             {title}
           </span>
-          <span className="mt-1 block text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-muted">
+          <span className="mt-1 block font-ui text-[0.62rem] font-normal uppercase tracking-[0.16em] text-muted">
             {description}
           </span>
         </span>

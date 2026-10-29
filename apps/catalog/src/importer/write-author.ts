@@ -1,4 +1,6 @@
 import { strings, text } from './raw-fields';
+import { mergeMetadata } from './merge-metadata';
+import { writeImportTexts } from './write-import-texts';
 import type { Raw, Tx } from './types';
 
 export async function writeAuthor(
@@ -6,25 +8,25 @@ export async function writeAuthor(
   id: string,
   revision: number,
   raw: Raw,
+  conflicts: string[] = [],
 ) {
-  const displayName = text(raw.name)!;
+  const current = await tx.author.findUnique({ where: { id } });
+  const incoming = { displayName: text(raw.name)!, revision };
   await tx.author.upsert({
     where: { id },
-    create: { id, displayName, revision },
-    update: { displayName, revision },
+    create: { id, ...incoming },
+    update: mergeMetadata(current, incoming, conflicts),
   });
-  const aliases = strings(raw.alternate_names);
-  if (aliases) {
-    await tx.authorAlias.deleteMany({ where: { authorId: id } });
+  const overrides = current?.metadataOverrides ?? [];
+  const aliases = strings(raw.alternate_names) ?? [];
+  const allowed = aliases.filter(
+    (name) => !overrides.includes(`aliases:${name}`),
+  );
+  if (allowed.length !== aliases.length) conflicts.push('aliases');
+  if (allowed.length)
     await tx.authorAlias.createMany({
-      data: aliases.map((name) => ({ authorId: id, name })),
+      data: allowed.map((name) => ({ authorId: id, name })),
+      skipDuplicates: true,
     });
-  }
-  const biography = text(raw.bio);
-  if (biography)
-    await tx.authorText.upsert({
-      where: { authorId_locale: { authorId: id, locale: 'und' } },
-      create: { authorId: id, locale: 'und', biography },
-      update: { biography },
-    });
+  await writeImportTexts(tx, 'author', id, raw, overrides, conflicts);
 }

@@ -7,7 +7,7 @@ function subscribe(listener: () => void) {
   return () => window.removeEventListener("popstate", listener);
 }
 
-export function useCatalogLocation(kind: "books" | "authors") {
+export function useCatalogLocation(kind: "books" | "authors" | "editions") {
   const location = useSyncExternalStore(
     subscribe,
     () => window.location.pathname + window.location.search,

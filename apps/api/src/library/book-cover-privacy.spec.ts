@@ -16,9 +16,18 @@ it('scopes all cover reads to the authenticated owner, regardless of publication
     where: {
       id: 'private-book',
       AND: privateBookAccess('resolved-user'),
-      libraryItems: { some: { user: { clerkUserId: 'other-clerk-id' } } },
+      libraryItems: { some: { userId: 'resolved-user' } },
     },
-    select: { coverBlob: { select: { bytes: true, mimeType: true } } },
+    select: {
+      coverBlob: {
+        select: {
+          bytes: true,
+          mimeType: true,
+          catalogBlobId: true,
+          checksum: true,
+        },
+      },
+    },
   });
 });
 

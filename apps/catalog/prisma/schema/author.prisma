@@ -1,14 +1,15 @@
 model Author {
-  id             String          @id @default(uuid()) @db.Uuid
-  displayName    String
-  revision       Int             @default(1)
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  aliases        AuthorAlias[]
-  texts          AuthorText[]
-  workCredits    WorkCredit[]
-  editionCredits EditionCredit[]
-  sourceMappings SourceMapping[]
+  metadataOverrides String[]        @default([])
+  id                String          @id @default(uuid()) @db.Uuid
+  displayName       String
+  revision          Int             @default(1)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  aliases           AuthorAlias[]
+  texts             AuthorText[]
+  workCredits       WorkCredit[]
+  editionCredits    EditionCredit[]
+  sourceMappings    SourceMapping[]
 }
 
 model AuthorAlias {

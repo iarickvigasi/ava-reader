@@ -17,7 +17,7 @@ describe('bidirectional work pagination', () => {
     );
     expect(findMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { AND: [{ id: { lt: ids[4] } }] },
+        where: { deletedAt: null, AND: [{ id: { lt: ids[4] } }] },
         orderBy: { id: 'desc' },
         take: 3,
       }),

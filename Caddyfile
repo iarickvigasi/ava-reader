@@ -9,6 +9,10 @@ avareader.space {
 		reverse_proxy catalog:4001
 	}
 
+	handle /api/internal/* {
+		respond 404
+	}
+
 	handle /api/* {
 		reverse_proxy api:4000
 	}
@@ -20,6 +24,10 @@ avareader.space {
 
 http://178.105.20.108 {
 	encode gzip zstd
+
+	handle /api/internal/* {
+		respond 404
+	}
 
 	handle /api/* {
 		reverse_proxy api:4000

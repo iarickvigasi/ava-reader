@@ -13,9 +13,10 @@ export async function createLibraryItemTx(
     source: LibrarySource;
     userId: string;
   },
+  bookAccess: Prisma.BookWhereInput = privateBookAccess(input.userId),
 ) {
   const book = await tx.book.findUniqueOrThrow({
-    where: { id: input.bookId, AND: privateBookAccess(input.userId) },
+    where: { id: input.bookId, AND: bookAccess },
     select: { title: true, authors: true },
   });
   const baseSlug = buildBookSlugBase({

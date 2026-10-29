@@ -1,4 +1,4 @@
-/* Modal panels share the day palette; backdrops and night fills retain their styles. */
+/* Shared modal panel and field surfaces; backdrops retain their own styles. */
 @layer utilities {
   :root:not([data-theme="dark"])
     :is(dialog, [aria-modal="true"])
@@ -6,5 +6,25 @@
     --soft-fill: var(--paper);
     --paper-strong: var(--paper);
     background-color: var(--surface-strong);
+  }
+
+  :root[data-theme="dark"]
+    :is(dialog, [aria-modal="true"])
+    :is(
+      input:not(
+        [type="checkbox"],
+        [type="radio"],
+        [type="range"],
+        [type="color"],
+        [type="file"],
+        [type="submit"],
+        [type="button"],
+        [type="reset"],
+        [type="hidden"]
+      ),
+      textarea,
+      select
+    ) {
+    background-color: var(--soft-fill);
   }
 }

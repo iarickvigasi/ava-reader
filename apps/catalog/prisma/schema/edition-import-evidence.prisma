@@ -1,0 +1,13 @@
+model EditionImportEvidence {
+  editionId   String   @db.Uuid
+  checksum    String
+  provider    String
+  sourceUrl   String
+  downloadUrl String
+  filename    String
+  inspectedAt DateTime
+  research    Json?
+  edition     Edition  @relation(fields: [editionId], references: [id], onDelete: Cascade)
+
+  @@id([editionId, checksum])
+}

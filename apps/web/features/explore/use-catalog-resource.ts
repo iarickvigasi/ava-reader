@@ -17,6 +17,11 @@ export function useCatalogResource<T>(path: string | null) {
   const [attempt, setAttempt] = useState(0);
   const online = useNetworkState();
   useEffect(() => {
+    const refresh = () => setAttempt((value) => value + 1);
+    window.addEventListener("ava:catalog-updated", refresh);
+    return () => window.removeEventListener("ava:catalog-updated", refresh);
+  }, []);
+  useEffect(() => {
     if (!path) return;
     const controller = new AbortController();
     let cached: T | null = null;

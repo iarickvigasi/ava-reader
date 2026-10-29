@@ -1,5 +1,6 @@
 import type { Prisma } from '#catalog-client';
 
+// Only public Catalog metadata lives here; Main/private uploads never supply fallback covers.
 export const WORK_COVER_SELECT = {
   coverImageUrl: true,
   editions: {

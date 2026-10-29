@@ -127,6 +127,7 @@ model UserPreferences {
 }
 
 model StoredBlob {
+  catalogBlobId       String?
   id                  String               @id @default(cuid())
   purpose             BlobPurpose
   mimeType            String
@@ -253,6 +254,11 @@ model BookAnalysis {
 
 model CatalogEntry {
   id                   String        @id @default(cuid())
+  importKey            String?       @unique
+  importEvidence       Json?
+  importPublishedAt    DateTime?
+  importSyncPending    Boolean       @default(false)
+  importSyncRevision   Int           @default(0)
   bookId               String        @unique
   status               CatalogStatus @default(DRAFT)
   editorialTitle       String?
@@ -269,31 +275,35 @@ model CatalogEntry {
   libraryItems         LibraryItem[]
 
   @@index([status, isFeatured, sortOrder])
+  @@index([importSyncPending])
 }
 
 model LibraryItem {
-  id                   String            @id @default(cuid())
-  userId               String
-  bookId               String
-  slug                 String
-  source               LibrarySource
-  originCatalogEntryId String?
-  addedAt              DateTime          @default(now())
-  lastOpenedAt         DateTime?
+  catalogLinkVersion    Int               @default(0)
+  catalogLink           Json?
+  catalogLinkMutationId String?
+  id                    String            @id @default(cuid())
+  userId                String
+  bookId                String
+  slug                  String
+  source                LibrarySource
+  originCatalogEntryId  String?
+  addedAt               DateTime          @default(now())
+  lastOpenedAt          DateTime?
   // Explicit reading finish date, independent of position-based progress.
-  finishedAt           DateTime?
-  isArchived           Boolean           @default(false)
-  offlineRequested     Boolean           @default(false)
-  createdAt            DateTime          @default(now())
-  updatedAt            DateTime          @updatedAt
-  user                 User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  book                 Book              @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  originCatalogEntry   CatalogEntry?     @relation(fields: [originCatalogEntryId], references: [id], onDelete: SetNull)
-  progress             ReadingProgress?
-  annotations          Annotation[]
-  aiComments           AiComment[]
-  bookTranslations     BookTranslation[]
-  collectionItems      CollectionItem[]
+  finishedAt            DateTime?
+  isArchived            Boolean           @default(false)
+  offlineRequested      Boolean           @default(false)
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  user                  User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book                  Book              @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  originCatalogEntry    CatalogEntry?     @relation(fields: [originCatalogEntryId], references: [id], onDelete: SetNull)
+  progress              ReadingProgress?
+  annotations           Annotation[]
+  aiComments            AiComment[]
+  bookTranslations      BookTranslation[]
+  collectionItems       CollectionItem[]
 
   @@unique([userId, bookId])
   @@unique([userId, slug])

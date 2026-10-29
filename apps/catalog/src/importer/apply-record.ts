@@ -1,3 +1,5 @@
+import { skippedOutcome } from './skipped-outcome';
+import { importOutcome } from './import-outcome';
 import { randomUUID } from 'node:crypto';
 import type { ImportRecord } from '#catalog-client';
 import { object } from './raw-fields';
@@ -5,7 +7,7 @@ import { checkVersion } from './check-version';
 import { writeAuthor } from './write-author';
 import { writeWork } from './write-work';
 import { writeEdition } from './write-edition';
-import { RecordStatus, type Tx } from './types';
+import { type Tx } from './types';
 
 export async function applyRecord(
   tx: Tx,
@@ -24,17 +26,7 @@ export async function applyRecord(
   if (version.skip) {
     await tx.importRecord.update({
       where: { id: record.id },
-      data: {
-        status:
-          version.incomplete === undefined
-            ? RecordStatus.SKIPPED
-            : version.incomplete
-              ? RecordStatus.UNRESOLVED
-              : RecordStatus.APPLIED,
-        diagnostic: version.incomplete
-          ? 'Published; missing author references'
-          : null,
-      },
+      data: skippedOutcome(record, version.incomplete),
     });
     return;
   }
@@ -42,12 +34,27 @@ export async function applyRecord(
     mapping?.authorId ?? mapping?.workId ?? mapping?.editionId ?? randomUUID();
   const raw = object(record.payload);
   let incomplete = false;
+  const conflicts: string[] = [];
   if (record.kind === 'AUTHOR')
-    await writeAuthor(tx, id, version.revision, raw);
+    await writeAuthor(tx, id, version.revision, raw, conflicts);
   if (record.kind === 'WORK')
-    incomplete = await writeWork(tx, sourceId, id, version.revision, raw);
+    incomplete = await writeWork(
+      tx,
+      sourceId,
+      id,
+      version.revision,
+      raw,
+      conflicts,
+    );
   if (record.kind === 'EDITION')
-    incomplete = await writeEdition(tx, sourceId, id, version.revision, raw);
+    incomplete = await writeEdition(
+      tx,
+      sourceId,
+      id,
+      version.revision,
+      raw,
+      conflicts,
+    );
   const data = {
     sourceRevision: String(record.revision),
     payloadHash: record.payloadHash,
@@ -71,9 +78,6 @@ export async function applyRecord(
   });
   await tx.importRecord.update({
     where: { id: record.id },
-    data: {
-      status: incomplete ? RecordStatus.UNRESOLVED : RecordStatus.APPLIED,
-      diagnostic: incomplete ? 'Published; missing author references' : null,
-    },
+    data: importOutcome(incomplete, conflicts),
   });
 }

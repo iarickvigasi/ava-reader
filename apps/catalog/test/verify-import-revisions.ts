@@ -11,7 +11,7 @@ export async function verifyImportRevisions(ctx: ImportFixture) {
   const id = mapping.workId!;
   assert.equal(
     (await ctx.db.work.findUniqueOrThrow({ where: { id } })).originalTitle,
-    'Newer title',
+    'Fixture work',
   );
   const older = await ctx.file('older', [
     dumpLine(ctx.work, 'work', { title: 'Stale title' }, 2),
@@ -23,7 +23,7 @@ export async function verifyImportRevisions(ctx: ImportFixture) {
   assert.equal((await runImport(ctx.db, clash)).counts.CONFLICT, 1);
   assert.equal(
     (await ctx.db.work.findUniqueOrThrow({ where: { id } })).originalTitle,
-    'Newer title',
+    'Fixture work',
   );
   // Missing fields must preserve accepted relationships and text.
   assert.equal(await ctx.db.workCredit.count({ where: { workId: id } }), 1);
