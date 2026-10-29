@@ -1,4 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
+import { verifiedImportLanguage } from './verified-import-language';
 import { checksumBuffer } from '../../shared/blob-utils';
 import { extractBookMetadata } from '../../shared/metadata-extractor';
 import { normalizeBookLanguage } from '../../shared/book-utils';
@@ -20,7 +21,9 @@ export async function prepareImport(
     ...file,
     originalname: 'source.epub',
   });
-  const language = normalizeBookLanguage(metadata.language);
+  const language = normalizeBookLanguage(
+    verifiedImportLanguage(metadata.language, manifest),
+  );
   if (
     !language ||
     new Intl.Locale(language).language !==

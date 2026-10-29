@@ -58,8 +58,8 @@ Local Docker web builds need `/catalog` with a gateway, or an HTTPS catalog orig
   deployment. An existing volume retains its original password. Keep PostgreSQL private.
 - CATALOG_HOST_PORT and CATALOG_POSTGRES_HOST_PORT select published ports. The root
   CATALOG_DATABASE_URL override must be reachable from inside the catalog container, not localhost.
-- Catalog DB: 512 MiB, 0.5 CPU, max 30 connections. API: 512 MiB, 0.5 CPU; pool max 10,
-  connection and SQL timeouts 5s. These are initial development limits, not capacity measurements.
+- Catalog DB/API: 512 MiB each in development, 1 GiB each in production; 0.5 CPU each.
+  DB max 30 connections; API pool max 10, connection/SQL timeouts 5s. Limits are not capacity measurements.
 - Migrations run before container startup; seeds never do. Rebuild/restart after schema changes.
 - Later move the DB/API to other hosts by transferring the catalog volume via backup/restore or
   replication and changing configured endpoints; no cross-database foreign keys or shared files.
