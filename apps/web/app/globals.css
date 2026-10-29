@@ -4,13 +4,13 @@
 :where(:root) {
   --font-cyrillic-body: "Nunito Sans";
   --font-cyrillic-display: "Source Serif 4";
-}
-
-:root {
   --font-afacad: "Afacad", sans-serif;
   --font-abhaya: "Abhaya Libre", serif;
   --font-inter: "Inter", sans-serif;
   --font-reader-serif: "Noto Serif", serif;
+}
+
+:root {
   --paper: #fff8f5;
   --paper-strong: #fbf2ec;
   --surface: rgba(255, 248, 245, 0.88);

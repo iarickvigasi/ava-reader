@@ -22,21 +22,67 @@ vi.mock("dexie", () => ({
   }),
 }));
 vi.mock("./storage", () => ({ readAvatarBlob: vi.fn() }));
+const readers: FakeReader[] = [];
+class FakeReader {
+  result: string | null = null;
+  onload: (() => void) | null = null;
+  onerror: (() => void) | null = null;
+  abort = vi.fn();
+  readAsDataURL = vi.fn();
+  constructor() {
+    readers.push(this);
+  }
+  finish(value: string) {
+    this.result = value;
+    this.onload?.();
+  }
+}
 afterEach(() => {
-  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
   vi.clearAllMocks();
+  readers.length = 0;
 });
 
-it("updates an already mounted avatar when a missing photo is cached", () => {
-  vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:photo");
-  const revoke = vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
+it("keeps a cached photo usable across metadata refreshes without blob URLs", () => {
+  vi.stubGlobal("FileReader", FakeReader);
+  useAvatarBlobUrl();
+  const cleanup = hooks.effect!();
+  hooks.next!(new Blob(["photo"]));
+  readers[0].finish("data:image/jpeg;base64,photo");
+  expect(hooks.set).toHaveBeenLastCalledWith("data:image/jpeg;base64,photo");
+  hooks.next!(new Blob(["photo"]));
+  expect(hooks.set).toHaveBeenLastCalledWith("data:image/jpeg;base64,photo");
+  readers[1].finish("data:image/jpeg;base64,photo");
+  cleanup();
+  expect(hooks.unsubscribe).toHaveBeenCalledOnce();
+});
+
+it("cancels superseded reads and ignores their late results", () => {
+  vi.stubGlobal("FileReader", FakeReader);
+  useAvatarBlobUrl();
+  const cleanup = hooks.effect!();
+  hooks.next!(new Blob(["old"]));
+  const late = readers[0].onload!;
+  hooks.next!(new Blob(["new"]));
+  expect(readers[0].abort).toHaveBeenCalledOnce();
+  readers[1].finish("data:image/jpeg;base64,new");
+  readers[0].result = "data:image/jpeg;base64,old";
+  late();
+  expect(hooks.set).toHaveBeenLastCalledWith("data:image/jpeg;base64,new");
+  cleanup();
+});
+
+it("clears removed photos and prevents updates after unmount", () => {
+  vi.stubGlobal("FileReader", FakeReader);
   useAvatarBlobUrl();
   const cleanup = hooks.effect!();
   hooks.next!(null);
   expect(hooks.set).toHaveBeenLastCalledWith(null);
   hooks.next!(new Blob(["photo"]));
-  expect(hooks.set).toHaveBeenLastCalledWith("blob:photo");
+  const late = readers[0].onload!;
   cleanup();
-  expect(hooks.unsubscribe).toHaveBeenCalledOnce();
-  expect(revoke).toHaveBeenCalledWith("blob:photo");
+  hooks.set.mockClear();
+  late();
+  expect(hooks.set).not.toHaveBeenCalled();
+  expect(readers[0].abort).toHaveBeenCalledOnce();
 });

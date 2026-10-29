@@ -2,45 +2,54 @@
 
 import { liveQuery } from "dexie";
 import { useEffect, useState } from "react";
-
 import { readAvatarBlob } from "./storage";
 
-// The Dexie-cached avatar photo — checked first, ahead of the network (see
-// UserAvatarFallback). Mirrors buckets/book/use-cover-blob-url.ts, minus the
-// id: there's only ever one "me" row per database, so no keying is needed.
-// `undefined` while the read is unresolved, `null` once confirmed absent,
-// else the object URL.
+// undefined = resolving, null = absent. Data URLs keep cached profile photos
+// independent of object-URL revocation and IndexedDB blob lifetimes on Safari.
 export function useAvatarBlobUrl(): string | null | undefined {
   const [resolved, setResolved] = useState<string | null | undefined>(
     undefined,
   );
-
   useEffect(() => {
-    let objectUrl: string | null = null;
+    let reader: FileReader | null = null;
     let cancelled = false;
+    const stopReading = () => {
+      if (!reader) return;
+      reader.onload = reader.onerror = null;
+      reader.abort();
+      reader = null;
+    };
     const subscription = liveQuery(readAvatarBlob).subscribe({
       next: (blob) => {
-        if (cancelled) {
-          return;
-        }
-        if (objectUrl) URL.revokeObjectURL(objectUrl);
+        if (cancelled) return;
+        stopReading();
         if (!blob) {
           setResolved(null);
           return;
         }
-        objectUrl = URL.createObjectURL(blob);
-        setResolved(objectUrl);
+        const current = new FileReader();
+        reader = current;
+        current.onload = () => {
+          if (!cancelled && reader === current)
+            setResolved(
+              typeof current.result === "string" ? current.result : null,
+            );
+        };
+        current.onerror = () => {
+          if (!cancelled && reader === current) setResolved(null);
+        };
+        current.readAsDataURL(blob);
       },
-      error: () => setResolved(null),
+      error: () => {
+        stopReading();
+        if (!cancelled) setResolved(null);
+      },
     });
     return () => {
-      subscription.unsubscribe();
       cancelled = true;
-      if (objectUrl) {
-        URL.revokeObjectURL(objectUrl);
-      }
+      subscription.unsubscribe();
+      stopReading();
     };
   }, []);
-
   return resolved;
 }
