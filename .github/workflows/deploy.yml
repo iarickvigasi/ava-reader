@@ -24,9 +24,12 @@ jobs:
             set -e
             cd /opt/ava-reader
             mountpoint -q /mnt/HC_Volume_107260972
-            # Bound cleanup by age, retained cache size, and wall time. Never prune volumes.
             cleanup() {
-              timeout 60s docker builder prune --all -f --filter 'until=24h' --keep-storage 5GB || echo 'Warning: build cache cleanup failed or timed out' >&2
+              for cache_builder in default ava-deploy-2560m; do
+                if docker buildx inspect "$cache_builder" >/dev/null 2>&1; then
+                  timeout 60s docker buildx prune --builder "$cache_builder" --all -f --filter 'until=24h' --reserved-space 5GB || echo 'Warning: build cache cleanup failed or timed out' >&2
+                fi
+              done
               timeout 60s docker image prune -f --filter 'until=24h' || echo 'Warning: dangling image cleanup failed or timed out' >&2
             }
             finish() {
@@ -36,7 +39,6 @@ jobs:
               exit "$deploy_status"
             }
             trap finish EXIT
-            # Run before pulls/builds as well as on successful or failed shell exit.
             cleanup
             docker_root="$(docker info --format '{{.DockerRootDir}}')"
             min_free_kib=2097152 # Stop below 2 GiB; actual build headroom is not yet measured.
@@ -63,9 +65,6 @@ jobs:
               exit 1
             fi
             git pull --ff-only origin main
-            # Pass the freshly-pulled commit to the web build so the service
-            # worker cache is versioned by commit (stable + traceable). The
-            # build falls back to a timestamp if this is ever unset.
             export GIT_SHA="$(git rev-parse HEAD)"
             docker compose -f compose.yaml -f compose.prod.yaml pull
             deploy_marker=.git/ava-last-successful-deploy
@@ -85,17 +84,17 @@ jobs:
             printf 'Selected application builds: %s\n' "${build_services:-none}"
             printf '%s\n' "$GIT_SHA" > "$deploy_pending"
             if [ -n "$build_services" ]; then
+              export AVA_DEPLOY_BUILDER=ava-deploy-2560m
+              sh tools/deploy/prepare-builder.sh "$AVA_DEPLOY_BUILDER"
               # Intentional splitting: select-builds.sh emits only fixed service names.
               sh tools/deploy/build-images.sh $build_services
             fi
-            # Only databases start before migrations; application health checks start afterward.
             docker compose -f compose.yaml -f compose.prod.yaml up -d --no-build --wait postgres catalog-postgres
             docker compose -f compose.yaml -f compose.prod.yaml -f compose.migrations.yaml run --rm --no-deps -T api-migrate
             docker compose -f compose.yaml -f compose.prod.yaml -f compose.migrations.yaml run --rm --no-deps -T catalog-migrate
             docker compose -f compose.yaml -f compose.prod.yaml up -d --no-build --wait
             curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 15 https://avareader.space/catalog/api/health
             curl --fail --silent --show-error --max-time 15 "https://avareader.space/catalog/api/works?limit=1" > /dev/null
-            # Advance only after migrations, service health, and public checks succeed.
             printf '%s\n' "$GIT_SHA" > "$deploy_marker.tmp"
             mv "$deploy_marker.tmp" "$deploy_marker"
             rm -f "$deploy_pending"
