@@ -57,7 +57,12 @@ jobs:
               fi
             done
             docker system df
-            git pull origin main
+            if ! git diff --quiet || ! git diff --cached --quiet; then
+              echo 'Production checkout has tracked edits; preserve them before deployment.' >&2
+              git status --short --untracked-files=no
+              exit 1
+            fi
+            git pull --ff-only origin main
             # Pass the freshly-pulled commit to the web build so the service
             # worker cache is versioned by commit (stable + traceable). The
             # build falls back to a timestamp if this is ever unset.

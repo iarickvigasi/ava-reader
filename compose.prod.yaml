@@ -11,6 +11,8 @@ services:
       target: runtime
     command: ["node", "dist/main.js"]
     environment:
+      READING_ASSET_SYNC_SECRET: ${READING_ASSET_SYNC_SECRET:?Set READING_ASSET_SYNC_SECRET on the server}
+      CATALOG_API_BASE_URL: http://catalog:4001
       DATABASE_URL: postgresql://postgres:${AVA_POSTGRES_PASSWORD:?Set AVA_POSTGRES_PASSWORD on the server}@postgres:5432/ava_reader?schema=public
 
   catalog-postgres:
@@ -39,11 +41,14 @@ services:
           create_host_path: false
 
   catalog:
+    # Buffer headroom for public EPUB and reader-package transfers.
+    mem_limit: 1g
     build:
       target: runtime
     command: ["node", "dist/src/main.js"]
     environment:
       CATALOG_WEB_ORIGIN: https://avareader.space
+      READING_ASSET_SYNC_SECRET: ${READING_ASSET_SYNC_SECRET:?Set READING_ASSET_SYNC_SECRET on the server}
   web:
     build:
       args:

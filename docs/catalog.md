@@ -1,9 +1,7 @@
 # Catalog development and operations
 
-Independent NestJS workspace: apps/catalog. Its Prisma client generates into its own ignored
-`generated/client` directory; it never imports the main API client or uses DATABASE_URL.
-
-Importer commands/checkpoints: [import operations](catalog-import.md).
+NestJS workspace: apps/catalog. Its Prisma client lives in ignored `generated/client`; it never
+imports the main API client or uses DATABASE_URL.
 
 ## Local commands
 
@@ -12,11 +10,9 @@ Importer commands/checkpoints: [import operations](catalog-import.md).
 - Database only: `docker compose up -d catalog-postgres` (host port 15433, loopback only).
 - Host API: copy apps/catalog/.env.example to apps/catalog/.env; run from repository root:
   `pnpm --filter catalog db:migrate:deploy`, `pnpm dev:catalog`.
-- Full catalog container: `pnpm catalog:up`.
-- Check: `curl http://localhost:4001/api/health`. Read routes: spec 12.5.
+- Container: `pnpm catalog:up`; health: `curl http://localhost:4001/api/health`. Routes: spec 12.5.
 - Unit checks: `pnpm --filter catalog test`; DB/HTTP checks against a disposable catalog DB:
-  `pnpm --filter catalog test:integration`. Integration seeds fictional demo data and removes its
-  temporary pagination fixtures; never run it against production.
+  `pnpm --filter catalog test:integration` (fictional fixtures only; never target production).
 
 ## Explore integration
 
@@ -35,9 +31,8 @@ Local Docker web builds need `/catalog` with a gateway, or an HTTPS catalog orig
   catalog:4001 on the shared Compose network. Validate and reload Caddy after config changes.
 - For a host gateway, reuse avareader.space DNS/TLS. Import `tools/deploy/catalog.Caddyfile` inside its existing
   Caddy site block, before the reader fallback; validate and reload the host gateway.
-  With another gateway, add the equivalent path rule: `/catalog/api/*` → catalog `/api/*`.
-  Strip only `/catalog`, preserve query strings, and route before the reader/main API handlers.
-  The host snippet targets port 4001; adapt for CATALOG_HOST_PORT or a container/remote gateway.
+  Other gateways: strip only `/catalog` from `/catalog/api/*`, preserve queries, and route before
+  reader/main handlers. Adapt port 4001 for CATALOG_HOST_PORT or a container/remote gateway.
 - `compose.prod.yaml` pins the browser base to `/catalog`; requests stay on the reader origin.
   Keep catalog PostgreSQL private; expose port 4001 only to the gateway via the host firewall.
 - Production catalog DB lives at /mnt/HC_Volume_107260972/ava-catalog/postgres;
@@ -58,13 +53,7 @@ Local Docker web builds need `/catalog` with a gateway, or an HTTPS catalog orig
   deployment. An existing volume retains its original password. Keep PostgreSQL private.
 - CATALOG_HOST_PORT and CATALOG_POSTGRES_HOST_PORT select published ports. The root
   CATALOG_DATABASE_URL override must be reachable from inside the catalog container, not localhost.
-- Catalog DB: 512 MiB, 0.5 CPU, max 30 connections. API: 512 MiB, 0.5 CPU; pool max 10,
-  connection and SQL timeouts 5s. These are initial development limits, not capacity measurements.
-- Migrations run before container startup; seeds never do. Rebuild/restart after schema changes.
-- Later move the DB/API to other hosts by transferring the catalog volume via backup/restore or
-  replication and changing configured endpoints; no cross-database foreign keys or shared files.
-- Production readiness still requires TLS/gateway/rate limits, secrets, off-host backup scheduling,
-  PITR and restore drills, monitoring, and measured sizing. Compose volumes alone are not backups.
-
-Fictional catalog data exists only under `apps/catalog/test/fixtures` for integration tests.
-production migrations run in the separate `catalog-migrate` service before startup.
+- Catalog DB/API: 512 MiB each in development, 1 GiB each in production; 0.5 CPU each.
+  DB max 30 connections; API pool max 10, connection/SQL timeouts 5s. Limits are not capacity measurements.
+- Production needs TLS/rate limits, secrets, off-host backups/PITR, restore drills, monitoring and
+  measured sizing. Compose volumes alone are not backups.
