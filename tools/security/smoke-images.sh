@@ -2,6 +2,8 @@
 set -eu
 export AVA_IMAGE_PREFIX=ava-reader-security AVA_POSTGRES_PASSWORD=security-test-only
 export CATALOG_POSTGRES_PASSWORD=security-test-only READING_ASSET_SYNC_SECRET=security-test-only
+# Dummy SDK credentials are used only for unauthenticated isolated smoke requests.
+export CLERK_SECRET_KEY=sk_test_security_test_only
 export NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_dGVzdC5jbGVyay5hY2NvdW50cy5kZXYk
 project=ava-security-smoke-$$
 smoke_dir=$(mktemp -d)
@@ -33,7 +35,8 @@ compose up -d --no-build --wait
 for service in api catalog web; do
   docker exec -i "$(compose ps -q "$service")" node --input-type=module <tools/security/check-runtime.mjs
 done
-base="http://$(compose port caddy 8080)"
+published_address=$(compose port caddy 8080)
+base="http://localhost:${published_address##*:}"
 curl --fail --silent --show-error --max-time 15 "$base/" >/dev/null
 curl --fail --silent --show-error --max-time 15 "$base/api/health"
 curl --fail --silent --show-error --max-time 15 -H 'Authorization: Bearer ava-audit-marker' \
