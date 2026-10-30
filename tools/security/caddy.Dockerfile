@@ -1,6 +1,7 @@
 FROM golang:1.27.3-alpine@sha256:d200d2dd76b03a99b52651fd1325aff7dcd35422c35c01bac56571b0507f3deb AS build
 ENV GOTOOLCHAIN=local CGO_ENABLED=0 GOMEMLIMIT=768MiB
 WORKDIR /src
+RUN apk add --no-cache patch
 COPY tools/security/caddy/go.mod tools/security/caddy/go.sum ./
 RUN go mod download
 COPY tools/security/caddy/ ./
