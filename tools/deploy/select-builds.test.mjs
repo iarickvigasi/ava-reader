@@ -7,7 +7,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const selector = fileURLToPath(new URL("./select-builds.sh", import.meta.url));
-const all = ["api", "catalog", "web"];
+const all = ["api", "catalog", "web", "caddy", "postgres"];
 
 function fixture(t) {
   const directory = mkdtempSync(join(tmpdir(), "ava-select-builds-"));
@@ -47,6 +47,8 @@ for (const [path, services] of [
   ["apps/api/prisma/example.sql", ["api"]],
   ["apps/catalog/src/importer/example.ts", ["catalog"]],
   ["docs/deployment.md", []],
+  ["tools/security/caddy/go.mod", ["caddy"]],
+  ["tools/security/postgres.Dockerfile", ["postgres"]],
   ["pnpm-lock.yaml", all],
   ["packages/shared/example.ts", all],
   ["compose.prod.yaml", all],

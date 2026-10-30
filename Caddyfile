@@ -2,7 +2,42 @@
 	email iarick.vigasi@gmail.com
 }
 
+(access_log) {
+	log {
+		output file /var/log/caddy/access.log {
+			mode 0640
+			roll_size 10MiB
+			roll_interval 24h
+			roll_keep 7
+			roll_keep_for 7d
+		}
+		format filter {
+			wrap json
+			fields {
+				request>uri regexp `\?.*$` ""
+				request>headers delete
+				resp_headers delete
+			}
+		}
+	}
+}
+
 avareader.space {
+	import access_log
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		X-Frame-Options SAMEORIGIN
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
+	@internal path /api/internal /api/internal/* /catalog/api/internal /catalog/api/internal/*
+	respond @internal 404
+	@catalog_write {
+		path /catalog/*
+		not method GET HEAD OPTIONS
+	}
+	respond @catalog_write 405
 	encode gzip zstd
 
 	handle_path /catalog/* {
@@ -23,17 +58,6 @@ avareader.space {
 }
 
 http://178.105.20.108 {
-	encode gzip zstd
-
-	handle /api/internal/* {
-		respond 404
-	}
-
-	handle /api/* {
-		reverse_proxy api:4000
-	}
-
-	handle {
-		reverse_proxy web:3000
-	}
+	import access_log
+	redir https://avareader.space{uri} permanent
 }

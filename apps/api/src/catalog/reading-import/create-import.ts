@@ -4,7 +4,6 @@ import {
   BookFileFormat,
   BookFileKind,
   ProcessingStatus,
-  type Prisma,
 } from '@prisma/client';
 import {
   storeBookBlobs,
@@ -45,7 +44,7 @@ export async function createImport(
           metadata: {},
           fileMetadata: {},
           metadataBlobId,
-        } as unknown as Prisma.InputJsonValue,
+        },
         status: 'DRAFT',
         createdByUser: adminId ? { connect: { id: adminId } } : undefined,
         curatorNote: adminId ? undefined : 'Imported by server operator',

@@ -5,7 +5,6 @@ import { readManifest } from './read-manifest';
 import { bootstrapCollection } from './bootstrap/bootstrap-collection';
 import { writeManifest } from './write-manifest';
 import type { CatalogDatabase } from '../database/catalog-database';
-import type { readingOptions } from './reading-options';
 jest.mock('../importer/with-import-lock');
 jest.mock('./run-manifest');
 jest.mock('./read-manifest');
@@ -37,7 +36,7 @@ it.each(['inspect', 'apply'])(
       [mode]: true,
       file: 'manifest',
       limit: 12,
-    } as ReturnType<typeof readingOptions>);
+    });
     expect(withImportLock).not.toHaveBeenCalled();
     expect(runManifest).toHaveBeenCalled();
   },
@@ -56,6 +55,6 @@ it('locks bootstrap writes but releases the lock before manifest disk I/O', asyn
     file: 'collection',
     output: 'manifest',
     limit: 12,
-  } as ReturnType<typeof readingOptions>);
+  });
   expect(bootstrapCollection).toHaveBeenCalled();
 });

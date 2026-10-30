@@ -1,0 +1,20 @@
+package json
+
+import (
+	"strings"
+	"testing"
+)
+
+func TestSecurityRejectsExcessiveDepth(t *testing.T) {
+	for _, depth := range []int{10001, 100000} {
+		var value interface{}
+		input := strings.Repeat("[", depth) + "0" + strings.Repeat("]", depth)
+		if err := Unmarshal([]byte(input), &value); err == nil {
+			t.Fatalf("accepted nesting depth %d", depth)
+		}
+	}
+	var ordinary interface{}
+	if err := Unmarshal([]byte(`{"nested":[1,2,3]}`), &ordinary); err != nil {
+		t.Fatal(err)
+	}
+}

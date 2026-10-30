@@ -17,11 +17,7 @@ it('preserves progress totals and refuses incompatible counting flags', () => {
       counted: i === 2,
     })),
   };
-  const result = regroupIndex(
-    index as Prisma.JsonValue,
-    regroupPackage(pkg, groups),
-    groups,
-  );
+  const result = regroupIndex(index, regroupPackage(pkg, groups), groups);
   expect(result).toMatchObject({
     version: 2,
     bodyBlocks: 1,

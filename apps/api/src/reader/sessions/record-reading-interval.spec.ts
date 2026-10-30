@@ -20,7 +20,10 @@ it('merges adjacent credited activity but retains idle gaps', async () => {
           where: { id: string };
           data: { endedAt: Date };
         }) => {
-          Object.assign(rows.find((row) => row.id === where.id)!, data);
+          Object.assign(
+            rows.find((row) => row.id === where.id)!,
+            data,
+          );
         },
       ),
     },

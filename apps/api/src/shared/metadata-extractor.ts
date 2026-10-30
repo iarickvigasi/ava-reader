@@ -108,8 +108,7 @@ async function tryExtractEpubMetadata(buffer: Buffer) {
       container?: {
         rootfiles?: {
           rootfile?:
-            | { ['@_full-path']?: string }
-            | Array<{ ['@_full-path']?: string }>;
+            { ['@_full-path']?: string } | Array<{ ['@_full-path']?: string }>;
         };
       };
     };

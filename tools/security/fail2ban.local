@@ -1,0 +1,9 @@
+[sshd]
+enabled = true
+backend = systemd
+banaction = ufw
+port = 22
+maxretry = 6
+findtime = 10m
+bantime = 24h
+ignoreip = 127.0.0.1/8 ::1

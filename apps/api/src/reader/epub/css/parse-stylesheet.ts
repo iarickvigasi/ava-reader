@@ -23,8 +23,7 @@
  */
 
 export type SimpleSelector =
-  | { kind: 'tag'; tagName: string }
-  | { kind: 'class'; className: string };
+  { kind: 'tag'; tagName: string } | { kind: 'class'; className: string };
 
 export type CssRule = {
   selectors: SimpleSelector[];

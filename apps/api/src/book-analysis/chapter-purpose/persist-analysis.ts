@@ -1,4 +1,4 @@
-import { BookAnalysisKind, Prisma, ProcessingStatus } from '@prisma/client';
+import { BookAnalysisKind, ProcessingStatus } from '@prisma/client';
 import type { PrismaService } from '../../prisma/prisma.service';
 import type {
   ReaderPackage,
@@ -34,7 +34,7 @@ export async function persistChapterPurposeAnalysis(input: {
         kind: BookAnalysisKind.CHAPTER_PURPOSE,
         modelId: input.modelId,
         promptVersion: CHAPTER_PURPOSE_PROMPT_VERSION,
-        result: analysis as unknown as Prisma.InputJsonValue,
+        result: analysis,
         schemaVersion: CHAPTER_PURPOSE_SCHEMA_VERSION,
         readerFileId,
         status: ProcessingStatus.READY,
@@ -44,7 +44,7 @@ export async function persistChapterPurposeAnalysis(input: {
         errorMessage: null,
         modelId: input.modelId,
         promptVersion: CHAPTER_PURPOSE_PROMPT_VERSION,
-        result: analysis as unknown as Prisma.InputJsonValue,
+        result: analysis,
         schemaVersion: CHAPTER_PURPOSE_SCHEMA_VERSION,
         readerFileId,
         status: ProcessingStatus.READY,
@@ -53,7 +53,7 @@ export async function persistChapterPurposeAnalysis(input: {
     prisma.bookFile.update({
       where: { id: input.readerFileId },
       data: {
-        readingProgressIndex: nextIndex as unknown as Prisma.InputJsonValue,
+        readingProgressIndex: nextIndex,
       },
     }),
     prisma.book.update({

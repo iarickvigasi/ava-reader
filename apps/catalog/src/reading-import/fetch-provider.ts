@@ -13,7 +13,7 @@ export async function fetchProvider(
       'READING_IMPORT_USER_AGENT must identify AVA and a contact',
     );
   let target = new URL(url);
-  for (let attempt = 0, redirects = 0; attempt < 3; ) {
+  for (let attempt = 0, redirects = 0; attempt < 3;) {
     if (!allowedProviderHost(target, provider))
       throw new Error('Unapproved provider host or protocol');
     await delay(1000);

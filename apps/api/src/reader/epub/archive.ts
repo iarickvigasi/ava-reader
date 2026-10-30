@@ -27,8 +27,7 @@ export async function readPackagePath(zip: JSZip): Promise<string> {
     container?: {
       rootfiles?: {
         rootfile?:
-          | { ['@_full-path']?: string }
-          | Array<{ ['@_full-path']?: string }>;
+          { ['@_full-path']?: string } | Array<{ ['@_full-path']?: string }>;
       };
     };
   };

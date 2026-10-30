@@ -21,12 +21,10 @@ export async function ingestImport(
     try {
       await createImport(prisma, actorId, manifest, file);
     } catch (error) {
-      if (
-        !(
-          error instanceof Prisma.PrismaClientKnownRequestError &&
-          error.code === 'P2002'
-        )
-      )
+      if (!(
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ))
         throw error;
     }
   }

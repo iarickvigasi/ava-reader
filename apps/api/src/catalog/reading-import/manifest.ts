@@ -38,9 +38,9 @@ const schema = z
         ![...name].some((char) => char.charCodeAt(0) < 32),
     ),
     checksum,
-    metadata: z.record(z.unknown()),
+    metadata: z.record(z.string(), z.unknown()),
     metadataBlobId: z.string().uuid().optional(),
-    fileMetadata: z.record(z.unknown()),
+    fileMetadata: z.record(z.string(), z.unknown()),
     inspectedAt: reviewedDate,
     review: reviewSchema.nullish(),
   })

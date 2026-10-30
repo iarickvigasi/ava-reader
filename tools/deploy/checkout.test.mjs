@@ -5,15 +5,13 @@ import { mkdtempSync, readFileSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-const workflow = readFileSync(
-  new URL("../../.github/workflows/deploy.yml", import.meta.url),
+const deployment = readFileSync(
+  new URL("./deploy.sh", import.meta.url),
   "utf8",
 );
-const checkout = workflow
-  .match(
-    /            if ! git diff --quiet[\s\S]*?            git pull --ff-only origin main/,
-  )[0]
-  .replace(/^ {12}/gm, "");
+const checkout = deployment.match(
+  /if ! git diff --quiet[\s\S]*?git pull --ff-only origin main/,
+)[0];
 function fixture(t) {
   const root = mkdtempSync(join(tmpdir(), "ava-checkout-"));
   t.after(() => rmSync(root, { recursive: true, force: true }));

@@ -1,4 +1,3 @@
-import type { Prisma } from '@prisma/client';
 import type { PrismaService } from '../../prisma/prisma.service';
 import { loadReaderPackage } from '../package/load-reader-package';
 import type { ReadingProgressIndex } from '../reader-types';
@@ -31,7 +30,7 @@ export async function loadReadingProgressIndex(
     .update({
       where: { id: file.id },
       data: {
-        readingProgressIndex: index as unknown as Prisma.InputJsonValue,
+        readingProgressIndex: index,
       },
     })
     .catch(() => {

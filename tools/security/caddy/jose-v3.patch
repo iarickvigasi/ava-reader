@@ -1,0 +1,97 @@
+--- a/cipher/cbc_hmac.go
++++ b/cipher/cbc_hmac.go
+@@ -176,7 +176,9 @@
+ 
+ // Remove padding
+ func unpadBuffer(buffer []byte, blockSize int) ([]byte, error) {
+-	if len(buffer)%blockSize != 0 {
++	// A padded buffer can't be empty because an empty input is padded with
++	// `blockSize` bytes, resulting in a non-empty ciphertext.
++	if len(buffer) == 0 || len(buffer)%blockSize != 0 {
+ 		return nil, errors.New("go-jose/go-jose: invalid padding")
+ 	}
+ 
+--- a/cipher/cbc_hmac_test.go
++++ b/cipher/cbc_hmac_test.go
+@@ -76,6 +76,23 @@
+ 	}
+ }
+ 
++// TestOpenEmptyCiphertextContent tests that decryption of an empty ciphertext errors but
++// does not panic. Empty ciphertext in CBC-HMAC is invalid. If the plaintext was empty,
++// the ciphertext will be padded out to a single block.
++func TestOpenEmptyCiphertextContent(t *testing.T) {
++	key := make([]byte, 32)
++	aead, _ := NewCBCHMAC(key, aes.NewCipher)
++	ctx := aead.(*cbcAEAD)
++	nonce := make([]byte, 16)
++	aad := []byte("aad")
++
++	// Compute a valid auth tag so that we don't hit an early exit on that.
++	tag := ctx.computeAuthTag(aad, nonce, nil /*empty ciphertext*/)
++	if _, err := aead.Open(nil, nonce, tag /* tag || empty ciphertext */, aad); err == nil {
++		t.Error("expected error for empty ciphertext content, got nil")
++	}
++}
++
+ func TestVectorsAESCBC128(t *testing.T) {
+ 	// Source: http://tools.ietf.org/html/draft-ietf-jose-json-web-encryption-29#appendix-A.2
+ 	plaintext := []byte{
+@@ -258,6 +275,13 @@
+ 	}
+ }
+ 
++func TestUnpadEmpty(t *testing.T) {
++	_, err := unpadBuffer(nil, 16)
++	if err == nil || !strings.Contains(err.Error(), "padding") {
++		t.Errorf("expected padding-related error unpadding empty buffer, got %v", err)
++	}
++}
++
+ func TestInvalidKey(t *testing.T) {
+ 	key := make([]byte, 30)
+ 	_, err := NewCBCHMAC(key, aes.NewCipher)
+--- a/json/scanner.go
++++ b/json/scanner.go
+@@ -140,6 +140,10 @@
+ 	parseArrayValue         // parsing array value
+ )
+ 
++// This limits the max nesting depth to prevent stack overflow.
++// This is permitted by https://tools.ietf.org/html/rfc7159#section-9
++const maxNestingDepth = 10000
++
+ // reset prepares the scanner for use.
+ // It must be called before calling s.step.
+ func (s *scanner) reset() {
+@@ -170,8 +174,13 @@
+ }
+ 
+ // pushParseState pushes a new parse state p onto the parse stack.
+-func (s *scanner) pushParseState(p int) {
+-	s.parseState = append(s.parseState, p)
++// an error state is returned if maxNestingDepth was exceeded, otherwise successState is returned.
++func (s *scanner) pushParseState(c byte, newParseState int, successState int) int {
++	s.parseState = append(s.parseState, newParseState)
++	if len(s.parseState) <= maxNestingDepth {
++		return successState
++	}
++	return s.error(c, "exceeded max depth")
+ }
+ 
+ // popParseState pops a parse state (already obtained) off the stack
+@@ -211,12 +220,10 @@
+ 	switch c {
+ 	case '{':
+ 		s.step = stateBeginStringOrEmpty
+-		s.pushParseState(parseObjectKey)
+-		return scanBeginObject
++		return s.pushParseState(c, parseObjectKey, scanBeginObject)
+ 	case '[':
+ 		s.step = stateBeginValueOrEmpty
+-		s.pushParseState(parseArrayValue)
+-		return scanBeginArray
++		return s.pushParseState(c, parseArrayValue, scanBeginArray)
+ 	case '"':
+ 		s.step = stateInString
+ 		return scanBeginLiteral

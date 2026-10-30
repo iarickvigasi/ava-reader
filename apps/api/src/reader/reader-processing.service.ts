@@ -5,7 +5,6 @@ import {
   OnModuleDestroy,
   OnModuleInit,
 } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { buildReaderPackageFromEpub } from './epub/epub-reader-package';
 import { estimatePageCount } from './page-estimate';
@@ -171,8 +170,7 @@ export class ReaderProcessingService implements OnModuleInit, OnModuleDestroy {
               isPrimary: true,
               kind: BookFileKind.DERIVED_READER,
               processingStatus: ProcessingStatus.READY,
-              readingProgressIndex:
-                readingProgressIndex as unknown as Prisma.InputJsonValue,
+              readingProgressIndex: readingProgressIndex,
             },
           });
 
