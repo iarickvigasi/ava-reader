@@ -39,4 +39,6 @@ for service in api catalog web api-migrate catalog-migrate postgres caddy; do
   if ! node tools/security/check-image-audit.mjs "$service" "security-reports/$service.json"; then status=1; fi
   rm -f "$scan_dir/image.tar"
 done
+# Include DB metadata after the first scan has populated the fresh CI cache.
+"$scan_dir/trivy" --version >security-reports/scanner-version.txt
 exit "$status"
