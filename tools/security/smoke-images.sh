@@ -17,6 +17,10 @@ finish() {
   status=$?
   trap - EXIT
   compose logs --no-color >security-reports/smoke.log 2>&1 || true
+  compose ps --all --format json >security-reports/smoke-containers.json || true
+  for container in $(compose ps --all --quiet); do
+    docker inspect --format '{{.Name}} {{json .State}}' "$container" >>security-reports/smoke-health.jsonl || true
+  done
   compose down --volumes --remove-orphans || status=1
   rm -rf "$smoke_dir"
   exit "$status"
@@ -26,6 +30,9 @@ compose up -d --no-build --wait postgres catalog-postgres
 compose run --rm --no-deps -T api-migrate
 compose run --rm --no-deps -T catalog-migrate
 compose up -d --no-build --wait
+for service in api catalog web; do
+  docker exec -i "$(compose ps -q "$service")" node --input-type=module <tools/security/check-runtime.mjs
+done
 base="http://$(compose port caddy 8080)"
 curl --fail --silent --show-error --max-time 15 "$base/" >/dev/null
 curl --fail --silent --show-error --max-time 15 "$base/api/health"
