@@ -16,3 +16,6 @@ Dockerfile
 apps/catalog/generated
 
 /imports/
+
+security-reports/
+tools/security/caddy/vendor/
