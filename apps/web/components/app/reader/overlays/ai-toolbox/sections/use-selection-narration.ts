@@ -10,10 +10,18 @@ export function useSelectionNarration(
   chapters: ReaderChapterPayload[],
 ) {
   const selection = useReaderSelectionContext();
-  const { text, locator, context } = selection;
+  const { text, locator, context, contextOffset } = selection;
   const input = useMemo(
-    () => selectionNarrationInput({ book, chapters, text, locator, context }),
-    [book, chapters, text, locator, context],
+    () =>
+      selectionNarrationInput({
+        book,
+        chapters,
+        text,
+        locator,
+        context,
+        contextOffset,
+      }),
+    [book, chapters, text, locator, context, contextOffset],
   );
   return useTextNarration({
     libraryItemId,

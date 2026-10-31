@@ -1,7 +1,23 @@
 import { NARRATION_LANGUAGE_CODES } from './supported-languages';
 
-// A completed translation has a known output language. Reuse it when its script agrees;
-// foreign-script preserved names still need contextual identification, like source selections.
+const aliases: Record<string, string[]> = {
+  Jpan: ['Hani', 'Hira', 'Kana'],
+  Kore: ['Hang', 'Hani'],
+  Hans: ['Hani'],
+  Hant: ['Hani'],
+};
+const scriptOwners = new Map<string, Set<string>>();
+for (const language of NARRATION_LANGUAGE_CODES) {
+  const script = new Intl.Locale(language).maximize().script;
+  for (const part of script ? (aliases[script] ?? [script]) : []) {
+    const owners = scriptOwners.get(part) ?? new Set<string>();
+    owners.add(language);
+    scriptOwners.set(part, owners);
+  }
+}
+
+// A translated fragment may preserve a foreign quotation or name. Only an exclusive script
+// is sufficient to skip contextual detection; Han, Cyrillic, Arabic and Latin are shared.
 export function translatedNarrationLanguage(input: {
   text: string;
   translationLanguage?: string;
@@ -12,23 +28,13 @@ export function translatedNarrationLanguage(input: {
   if (!letters.length) return null;
   const script = new Intl.Locale(code).maximize().script;
   if (!script) return null;
-  // Latin spelling can preserve a Japanese/French name unchanged in an English translation.
-  if (script === 'Latn') return null;
-  const scripts = (
-    {
-      Jpan: ['Hani', 'Hira', 'Kana'],
-      Kore: ['Hang', 'Hani'],
-      Hans: ['Hani'],
-      Hant: ['Hani'],
-    } as Record<string, string[]>
-  )[script] ?? [script];
+  const exclusive = (aliases[script] ?? [script]).filter(
+    (part) => scriptOwners.get(part)?.size === 1,
+  );
+  if (!exclusive.length) return null;
   const expression = new RegExp(
-    scripts.map((value) => `\\p{Script=${value}}`).join('|'),
+    exclusive.map((value) => `\\p{Script=${value}}`).join('|'),
     'u',
   );
-  return letters.filter((letter) => expression.test(letter)).length /
-    letters.length >=
-    0.8
-    ? code
-    : null;
+  return letters.every((letter) => expression.test(letter)) ? code : null;
 }

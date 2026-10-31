@@ -20,12 +20,26 @@ import { requireOwnedLibraryItem } from '../shared/owned-library-item';
 import { parseBody } from '../ai-comments/parse-body';
 import { synthesizeSpeech } from './synthesize-speech';
 
-export const narrationSchema = z.object({
-  text: z.string().trim().min(1).max(2048),
-  context: z.string().max(8192).optional(),
-  languageHint: z.string().max(128).optional(),
-  translationLanguage: z.string().max(128).optional(),
-});
+export const narrationSchema = z
+  .object({
+    text: z.string().trim().min(1).max(2048),
+    context: z.string().max(8192).optional(),
+    contextOffset: z.number().int().min(0).max(8192).optional(),
+    languageHint: z.string().max(128).optional(),
+    translationLanguage: z.string().max(128).optional(),
+  })
+  .refine(
+    (input) =>
+      input.contextOffset === undefined ||
+      input.context?.slice(
+        input.contextOffset,
+        input.contextOffset + input.text.length,
+      ) === input.text,
+    {
+      message: 'contextOffset must identify the exact selected text.',
+      path: ['contextOffset'],
+    },
+  );
 
 @Controller('library/:libraryItemId/narration')
 @UseGuards(ClerkAuthGuard)
@@ -63,6 +77,7 @@ export class NarrationController {
       input.text,
       language,
       input.context,
+      input.contextOffset,
     );
     response.set({
       'Content-Type': 'audio/wav',

@@ -6,6 +6,7 @@ import { languageCriteria } from './supported-languages';
 export type NarrationLanguageInput = {
   text: string;
   context?: string;
+  contextOffset?: number;
   languageHint?: string;
 };
 export const LANGUAGE_MODEL = 'typesafe/jev-1.14';
@@ -37,6 +38,7 @@ export async function requestLanguageDecision(
       state: {
         selectedFragment: input.text,
         sentenceContext: input.context,
+        selectionOffset: input.contextOffset,
         languageHint: input.languageHint,
       },
       questions: {
@@ -44,6 +46,7 @@ export async function requestLanguageDecision(
           type: 'choice',
           instructions: [
             'Which language should the selected fragment be pronounced in, in this sentence?',
+            'selectionOffset, when supplied, is the zero-based UTF-16 offset of the exact selected occurrence in sentenceContext.',
             'Classify the fragment, not the majority language of its surrounding sentence or book.',
             'A foreign word or quotation can have a different language from the sentence.',
             'Han characters in Japanese prose are Japanese unless context identifies a Chinese quotation.',

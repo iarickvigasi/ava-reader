@@ -3,11 +3,12 @@ import type {
   ReaderChapterPayload,
   ReaderRangeLocator,
 } from "@/lib/api-types";
-import { selectionSentenceContext } from "@/features/reader/selection-sentence-context";
+import { selectionSentenceWindow } from "@/features/reader/selection-sentence-context";
 
 export type NarrationInput = {
   text: string;
   context?: string;
+  contextOffset?: number;
   languageHint?: string;
   translationLanguage?: string;
 };
@@ -19,18 +20,36 @@ export function selectionNarrationInput(input: {
   text: string | null;
   locator: ReaderRangeLocator | null;
   context: string | null;
+  contextOffset?: number | null;
 }): NarrationInput {
   const text = input.text?.trim() ?? "";
   const languageHint = (
     input.locator?.translation?.targetLang ?? input.book.language
   )?.slice(0, 128);
-  const context = input.locator?.translation
-    ? input.context?.replace(/^Selected text language: [^\n]*\n/, "")
+  const prefix =
+    input.context?.match(/^Selected text language: [^\n]*\n/)?.[0] ?? "";
+  const window = input.locator?.translation
+    ? {
+        context: input.context?.slice(prefix.length),
+        contextOffset:
+          input.contextOffset == null
+            ? undefined
+            : input.contextOffset - prefix.length,
+      }
     : containingSentences(input.chapters, input.locator, text);
+  const context = window?.context?.slice(0, MAX_CONTEXT_CHARS);
+  const offset = window?.contextOffset;
+  const contextOffset =
+    offset !== undefined &&
+    offset >= 0 &&
+    context?.slice(offset, offset + text.length) === text
+      ? offset
+      : undefined;
   return {
     text,
     languageHint: languageHint || undefined,
-    context: context?.slice(0, MAX_CONTEXT_CHARS) || undefined,
+    context: context || undefined,
+    ...(contextOffset === undefined ? {} : { contextOffset }),
   };
 }
 
@@ -51,7 +70,7 @@ function containingSentences(
   if (selectedBlocks.some((block) => block.kind === "image")) return undefined;
   const text = selectedBlocks.map((block) => block.text).join("\n");
   const end = text.length - blocks[last].text.length + locator.endOffset;
-  return selectionSentenceContext({
+  return selectionSentenceWindow({
     text,
     selectedText,
     start: locator.startOffset,

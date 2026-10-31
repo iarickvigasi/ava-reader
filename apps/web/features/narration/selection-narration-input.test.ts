@@ -17,7 +17,12 @@ it("captures the whole containing sentence, not the book language as a verdict",
       locator,
       context: null,
     }),
-  ).toEqual({ text: "bonsoir", context: sentence, languageHint: "en" });
+  ).toEqual({
+    text: "bonsoir",
+    context: sentence,
+    contextOffset: sentence.indexOf("bonsoir"),
+    languageHint: "en",
+  });
 });
 
 it("captures Japanese sentence context for a kanji", () => {

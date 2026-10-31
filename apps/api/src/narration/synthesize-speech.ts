@@ -14,6 +14,7 @@ export async function synthesizeSpeech(
   text: string,
   languageCode?: string,
   context?: string,
+  contextOffset?: number,
 ) {
   const apiKey = config.get<string>('OPENROUTER_API_KEY');
   if (!apiKey)
@@ -25,7 +26,9 @@ export async function synthesizeSpeech(
   let stage = 'pronunciation';
   try {
     const spoken =
-      languageCode === 'ja' ? await japanesePronunciation(text, context) : text;
+      languageCode === 'ja'
+        ? await japanesePronunciation(text, context, contextOffset)
+        : text;
     stage = 'speech';
     const response = await fetch(`${base.replace(/\/$/, '')}/audio/speech`, {
       method: 'POST',

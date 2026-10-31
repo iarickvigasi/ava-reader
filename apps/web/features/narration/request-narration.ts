@@ -38,6 +38,7 @@ export async function requestNarration(
       body: JSON.stringify({
         text: input.text,
         context: input.context,
+        contextOffset: input.contextOffset,
         languageHint: input.languageHint,
         translationLanguage: input.translationLanguage,
       }),

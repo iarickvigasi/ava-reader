@@ -50,6 +50,7 @@ it('returns private WAV after ownership succeeds', async () => {
     'hello',
     'en',
     undefined,
+    undefined,
   );
   expect(setHeaders).toHaveBeenCalledWith({
     'Content-Type': 'audio/wav',
@@ -83,14 +84,15 @@ it('uses the known translated output language after ownership without ambiguous 
   await controller.narrate(
     request,
     'book',
-    { text: 'Рюноске Акутаґава', translationLanguage: 'uk' },
+    { text: 'こんにちは', translationLanguage: 'ja' },
     response,
   );
   expect(language).not.toHaveBeenCalled();
   expect(speak).toHaveBeenCalledWith(
     expect.any(ConfigService),
-    'Рюноске Акутаґава',
-    'uk',
+    'こんにちは',
+    'ja',
+    undefined,
     undefined,
   );
 });

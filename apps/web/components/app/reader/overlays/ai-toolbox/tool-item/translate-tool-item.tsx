@@ -1,6 +1,5 @@
 import { TranslateTargetField } from "@/components/app/preferences/translate-target-field";
 import { useMemo } from "react";
-import { languageCode } from "./translation-language";
 import { ReaderTranslationIcon } from "@/components/app/shared/app-icons";
 import { TranslationResult } from "./translation-result";
 import type { SavedComment } from "./saved-comments";
@@ -11,7 +10,6 @@ import { useAiToolBinding } from "./use-ai-tool-binding";
 type TranslateToolItemProps = {
   label: string;
   language: string;
-  sourceLanguage?: string | null;
   onLanguageChange?: (language: string) => void;
   isOpen: boolean;
   onToggle: () => void;
@@ -27,7 +25,6 @@ type TranslateToolItemProps = {
 export function TranslateToolItem({
   label,
   language,
-  sourceLanguage,
   onLanguageChange,
   isOpen,
   onToggle,
@@ -39,11 +36,9 @@ export function TranslateToolItem({
   author,
   saved,
 }: TranslateToolItemProps) {
-  const sameLanguage =
-    !!sourceLanguage && languageCode(sourceLanguage) === languageCode(language);
   const payload = useMemo<AiToolPayload | null>(
     () =>
-      selection && language && !sameLanguage
+      selection && language
         ? {
             kind: "translate",
             text: selection,
@@ -54,7 +49,7 @@ export function TranslateToolItem({
             author,
           }
         : null,
-    [selection, language, locator, context, bookTitle, author, sameLanguage],
+    [selection, language, locator, context, bookTitle, author],
   );
   const { text, isStreaming, error, phase, failureReason, retry } =
     useAiToolBinding({
@@ -85,12 +80,12 @@ export function TranslateToolItem({
           language={language}
           scope={`${locator}:${language}`}
           source={{ text: selection, context, bookTitle, author }}
-          text={sameLanguage ? selection : text}
-          isStreaming={sameLanguage ? false : isStreaming}
-          error={sameLanguage ? null : error}
-          phase={sameLanguage ? null : phase}
+          text={text}
+          isStreaming={isStreaming}
+          error={error}
+          phase={phase}
           failureReason={failureReason}
-          onRetry={sameLanguage ? undefined : retry}
+          onRetry={retry}
         />
       </ToolSection>
     </div>

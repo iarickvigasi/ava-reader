@@ -41,6 +41,7 @@ it('narrates kanji with the reproduced winning score of 0.63 instead of rejectin
     'kanji',
     'ja',
     context,
+    undefined,
   );
   expect(send).toHaveBeenCalledWith(Buffer.from([1, 2]));
 });

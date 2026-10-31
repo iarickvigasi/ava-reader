@@ -30,6 +30,7 @@ it('uses the Decisions endpoint with a fragment-specific bounded choice', async 
   });
   const input = {
     text: '生',
+    contextOffset: 2,
     context: '彼は生の魚を食べた。',
     languageHint: 'ja',
   };
@@ -46,6 +47,7 @@ it('uses the Decisions endpoint with a fragment-specific bounded choice', async 
   expect(body.state).toEqual({
     selectedFragment: input.text,
     sentenceContext: input.context,
+    selectionOffset: input.contextOffset,
     languageHint: 'ja',
   });
   expect(body.questions.language.criteria).not.toHaveProperty('unknown');
@@ -61,6 +63,7 @@ it.each([
   await expect(
     requestLanguageDecision(new ConfigService({ OPENROUTER_API_KEY: 'key' }), {
       text: '生',
+      contextOffset: 2,
     }),
   ).rejects.toThrow();
 });

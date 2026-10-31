@@ -1,13 +1,19 @@
 import { segmentSentences } from "./sentence-segments";
 
+export function selectionSentenceContext(
+  input: Parameters<typeof selectionSentenceWindow>[0],
+): string {
+  return selectionSentenceWindow(input).context;
+}
+
 // DOM offsets may differ after whitespace collapse. Locate the actual fragment first.
-export function selectionSentenceContext(input: {
+export function selectionSentenceWindow(input: {
   text: string;
   selectedText: string;
   start: number;
   end: number;
   maxChars: number;
-}): string {
+}) {
   const { text, maxChars } = input;
   const range = reanchor(text, input.selectedText, input.start, input.end);
   const sentences = segmentSentences(text);
@@ -16,13 +22,31 @@ export function selectionSentenceContext(input: {
   );
   const start = containing?.[0]?.start ?? 0;
   const end = containing?.at(-1)?.end ?? text.length;
-  if (end - start <= maxChars) return text.slice(start, end).trim();
-  const from = Math.max(
-    start,
-    range.start -
-      Math.floor((maxChars - Math.min(maxChars, range.end - range.start)) / 2),
-  );
-  return text.slice(from, Math.min(end, from + maxChars)).trim();
+  const from =
+    end - start <= maxChars
+      ? start
+      : Math.max(
+          start,
+          range.start -
+            Math.floor(
+              (maxChars - Math.min(maxChars, range.end - range.start)) / 2,
+            ),
+        );
+  const raw = text.slice(from, Math.min(end, from + maxChars));
+  const context = raw.trim();
+  const contextOffset =
+    range.start - from - (raw.length - raw.trimStart().length);
+  return {
+    context,
+    contextOffset:
+      contextOffset >= 0 &&
+      context.slice(
+        contextOffset,
+        contextOffset + input.selectedText.trim().length,
+      ) === input.selectedText.trim()
+        ? contextOffset
+        : undefined,
+  };
 }
 
 function reanchor(text: string, selected: string, start: number, end: number) {
