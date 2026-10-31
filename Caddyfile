@@ -32,28 +32,24 @@ avareader.space {
 		-Server
 	}
 	@internal path /api/internal /api/internal/* /catalog/api/internal /catalog/api/internal/*
-	respond @internal 404
 	@catalog_write {
 		path /catalog/*
 		not method GET HEAD OPTIONS
 	}
-	respond @catalog_write 405
 	encode gzip zstd
-
-	handle_path /catalog/* {
-		reverse_proxy catalog:4001
-	}
-
-	handle /api/internal/* {
-		respond 404
-	}
-
-	handle /api/* {
-		reverse_proxy api:4000
-	}
-
-	handle {
-		reverse_proxy web:3000
+	# Preserve this order: reject private/writing requests before proxying.
+	route {
+		respond @internal 404
+		respond @catalog_write 405
+		handle_path /catalog/* {
+			reverse_proxy catalog:4001
+		}
+		handle /api/* {
+			reverse_proxy api:4000
+		}
+		handle {
+			reverse_proxy web:3000
+		}
 	}
 }
 

@@ -41,10 +41,17 @@ curl --fail --silent --show-error --max-time 15 "$base/" >/dev/null
 curl --fail --silent --show-error --max-time 15 "$base/api/health"
 curl --fail --silent --show-error --max-time 15 -H 'Authorization: Bearer ava-audit-marker' \
   -H 'Cookie: audit=ava-audit-marker' "$base/catalog/api/health?audit=ava-audit-marker"
-[ "$(curl -s -o /dev/null -w '%{http_code}' "$base/api/internal/reading-imports")" = 404 ]
-[ "$(curl -s -o /dev/null -w '%{http_code}' "$base/catalog/api/internal/editorial")" = 404 ]
-[ "$(curl -s -X POST -o /dev/null -w '%{http_code}' "$base/catalog/api/reading-assets/blobs")" = 405 ]
-[ "$(curl -s -o /dev/null -w '%{http_code}' "$base/api/me")" = 401 ]
+expect_status() {
+  expected=$1 method=$2 path=$3
+  actual=$(curl --silent --show-error --max-time 15 -X "$method" -o /dev/null -w '%{http_code}' "$base$path")
+  printf '%s %s: HTTP %s (expected %s)\n' "$method" "$path" "$actual" "$expected"
+  [ "$actual" = "$expected" ]
+}
+expect_status 404 GET /api/internal
+expect_status 404 GET /api/internal/reading-imports
+expect_status 404 POST /catalog/api/internal/editorial
+expect_status 405 POST /catalog/api/reading-assets/blobs
+expect_status 401 GET /api/me
 caddy_id=$(compose ps -q caddy)
 docker exec "$caddy_id" cat /var/log/caddy/access.log >security-reports/access-log.jsonl
 node -e 'const fs=require("node:fs");const t=fs.readFileSync("security-reports/access-log.jsonl","utf8");if(!t.trim()||t.includes("ava-audit-marker"))throw Error("Access log missing or leaked credentials/query data");console.log("Security smoke checks passed")'
