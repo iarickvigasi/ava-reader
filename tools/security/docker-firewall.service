@@ -1,0 +1,14 @@
+[Unit]
+Description=AVA Docker ingress firewall (IPv4 and IPv6)
+Requires=docker.service
+After=docker.service ufw.service
+PartOf=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/ava-docker-firewall eth0
+ExecReload=/usr/local/sbin/ava-docker-firewall eth0
+RemainAfterExit=yes
+
+[Install]
+WantedBy=docker.service

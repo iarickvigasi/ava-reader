@@ -2,7 +2,7 @@
 services:
   api-migrate:
     profiles: ["migrate"]
-    image: ava-reader-api-migrate:latest
+    image: ${AVA_IMAGE_PREFIX:-ava-reader}-api-migrate:latest
     build:
       context: .
       dockerfile: apps/api/Dockerfile
@@ -12,7 +12,7 @@ services:
 
   catalog-migrate:
     profiles: ["migrate"]
-    image: ava-reader-catalog-migrate:latest
+    image: ${AVA_IMAGE_PREFIX:-ava-reader}-catalog-migrate:latest
     build:
       context: .
       dockerfile: apps/catalog/Dockerfile

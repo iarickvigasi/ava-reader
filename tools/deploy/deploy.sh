@@ -1,0 +1,79 @@
+#!/bin/sh
+set -e
+cd /opt/ava-reader
+mountpoint -q /mnt/HC_Volume_107260972
+cleanup() {
+  for cache_builder in default ava-deploy-2560m; do
+    if docker buildx inspect "$cache_builder" >/dev/null 2>&1; then
+      timeout 60s docker buildx prune --builder "$cache_builder" --all -f --filter 'until=24h' --reserved-space 5GB || echo 'Warning: build cache cleanup failed or timed out' >&2
+    fi
+  done
+  timeout 60s docker image prune -f --filter 'until=24h' || echo 'Warning: dangling image cleanup failed or timed out' >&2
+}
+finish() {
+  deploy_status=$?
+  trap - EXIT
+  cleanup
+  exit "$deploy_status"
+}
+trap finish EXIT
+cleanup
+docker_root="$(docker info --format '{{.DockerRootDir}}')"
+min_free_kib=2097152  # Stop below 2 GiB; actual build headroom is not yet measured.
+warn_free_kib=5242880 # Warn below 5 GiB.
+min_free_inodes=10000
+for storage_path in . /tmp "$docker_root" /mnt/HC_Volume_107260972; do
+  space_report=$(df -Pk "$storage_path")
+  inode_report=$(df -Pi "$storage_path")
+  printf '%s\n' "$space_report" "$inode_report"
+  free_kib=$(printf '%s\n' "$space_report" | awk 'NR == 2 {print $4}')
+  free_inodes=$(printf '%s\n' "$inode_report" | awk 'NR == 2 {print $4}')
+  if [ "$free_kib" -lt "$min_free_kib" ] || [ "$free_inodes" -lt "$min_free_inodes" ]; then
+    echo "Insufficient storage at $storage_path: need 2 GiB and 10000 free inodes before deployment" >&2
+    exit 1
+  fi
+  if [ "$free_kib" -lt "$warn_free_kib" ]; then
+    echo "Warning: less than 5 GiB free at $storage_path; build disk usage is not yet measured" >&2
+  fi
+done
+docker system df
+if ! git diff --quiet || ! git diff --cached --quiet; then
+  echo 'Production checkout has tracked edits; preserve them before deployment.' >&2
+  git status --short --untracked-files=no
+  exit 1
+fi
+git pull --ff-only origin main
+GIT_SHA="$(git rev-parse HEAD)"
+export GIT_SHA
+docker compose -f compose.yaml -f compose.prod.yaml -f compose.security.yaml pull --ignore-buildable
+deploy_marker=.git/ava-last-successful-deploy
+deploy_pending=.git/ava-deploy-in-progress
+previous_sha=$(cat "$deploy_marker" 2>/dev/null || true)
+if [ -f "$deploy_pending" ]; then previous_sha=; fi
+build_services=$(sh tools/deploy/select-builds.sh "$previous_sha" "$GIT_SHA")
+for service in api catalog web caddy postgres; do
+  for image in "$service" "$service-migrate"; do
+    case "$image" in web-migrate | caddy-migrate | postgres-migrate) continue ;; esac
+    if ! docker image inspect "ava-reader-$image" >/dev/null 2>&1; then
+      case "$build_services" in *"$service"*) ;; *) build_services="$build_services $service" ;; esac
+    fi
+  done
+done
+printf 'Selected application builds: %s\n' "${build_services:-none}"
+printf '%s\n' "$GIT_SHA" >"$deploy_pending"
+if [ -n "$build_services" ]; then
+  export AVA_DEPLOY_BUILDER=ava-deploy-2560m
+  sh tools/deploy/prepare-builder.sh "$AVA_DEPLOY_BUILDER"
+  # Fixed identifiers from select-builds.sh are intentionally split into arguments.
+  # shellcheck disable=SC2086
+  sh tools/deploy/build-images.sh $build_services
+fi
+docker compose -f compose.yaml -f compose.prod.yaml -f compose.security.yaml up -d --no-build --wait postgres catalog-postgres
+docker compose -f compose.yaml -f compose.prod.yaml -f compose.security.yaml -f compose.migrations.yaml run --rm --no-deps -T api-migrate
+docker compose -f compose.yaml -f compose.prod.yaml -f compose.security.yaml -f compose.migrations.yaml run --rm --no-deps -T catalog-migrate
+docker compose -f compose.yaml -f compose.prod.yaml -f compose.security.yaml up -d --no-build --wait
+curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 15 https://avareader.space/catalog/api/health
+curl --fail --silent --show-error --max-time 15 "https://avareader.space/catalog/api/works?limit=1" >/dev/null
+printf '%s\n' "$GIT_SHA" >"$deploy_marker.tmp"
+mv "$deploy_marker.tmp" "$deploy_marker"
+rm -f "$deploy_pending"

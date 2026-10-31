@@ -1,3 +1,16 @@
 packages:
   - apps/*
   - packages/*
+
+overrides:
+  "@ai-sdk/provider-utils>undici": 6.29.1
+  "@nestjs/platform-express>multer": 2.5.0
+
+patchedDependencies:
+  deepmerge@4.3.1: patches/deepmerge@4.3.1.patch
+
+# Angular 19's optional watcher peer must remain on 4.x alongside Nest CLI 12's own 5.x.
+packageExtensions:
+  "@nestjs/schematics@11":
+    dependencies:
+      chokidar: ^4.0.3

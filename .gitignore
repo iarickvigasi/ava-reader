@@ -21,3 +21,6 @@ apps/catalog/generated
 apps/catalog/*.tsbuildinfo
 
 /imports/
+
+/security-reports/
+/tools/security/caddy/vendor/

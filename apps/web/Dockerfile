@@ -1,4 +1,4 @@
-FROM node:22-bookworm-slim AS build
+FROM node:22-alpine@sha256:fe4f6d74e20370acb04ad889077d14d0f64a9c8ea6a42bc60cddf1e844699914 AS build
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -10,12 +10,14 @@ ENV NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 
 WORKDIR /app
 
-RUN corepack enable
-RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+COPY tools/security/remove-node-tools.sh /remove-node-tools.sh
+RUN corepack enable && sh /remove-node-tools.sh --keep-corepack
+RUN apk upgrade --no-cache && apk add --no-cache openssl
 
 # Source edits and the service-worker version must not invalidate dependency installation.
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/web/package.json apps/web/package.json
+COPY patches ./patches
 RUN pnpm install --filter web --frozen-lockfile
 
 COPY apps/web apps/web
@@ -33,14 +35,19 @@ ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY"
 ENV GIT_SHA="$GIT_SHA"
 RUN pnpm --filter web build
 
-FROM node:22-bookworm-slim AS runtime
+FROM node:22-alpine@sha256:fe4f6d74e20370acb04ad889077d14d0f64a9c8ea6a42bc60cddf1e844699914 AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
+COPY tools/security/remove-node-tools.sh /remove-node-tools.sh
+RUN sh /remove-node-tools.sh
+COPY tools/security/create-runtime-user.sh /create-runtime-user.sh
+RUN sh /create-runtime-user.sh
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
-COPY --from=build /app/apps/web/.next/standalone ./
-COPY --from=build /app/apps/web/.next/static ./apps/web/.next/static
+COPY --chown=ava:ava --from=build /app/apps/web/.next/standalone ./
+COPY --chown=ava:ava --from=build /app/apps/web/.next/static ./apps/web/.next/static
 # gen-precache-manifest runs after next build, so copy public from the completed build.
-COPY --from=build /app/apps/web/public ./apps/web/public
+COPY --chown=ava:ava --from=build /app/apps/web/public ./apps/web/public
 EXPOSE 3000
+USER ava
 CMD ["node", "apps/web/server.js"]

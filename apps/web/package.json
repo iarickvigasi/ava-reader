@@ -11,25 +11,25 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@clerk/nextjs": "^7.2.9",
-    "dexie": "^4.4.2",
-    "next": "16.3.8",
-    "next-intl": "^4.11.0",
+    "@clerk/nextjs": "^7.9.22",
+    "dexie": "^4.4.7",
+    "next": "16.4.3",
+    "next-intl": "^4.14.9",
     "parse5": "^8.0.1",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.3.8",
-    "fake-indexeddb": "^6.2.5",
-    "tailwindcss": "^4",
-    "typescript": "^5",
-    "vite": "^7.3.6",
-    "vitest": "^4.1.11"
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^20.19.43",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "16.4.3",
+    "fake-indexeddb": "^6.2.7",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.7",
+    "vitest": "^4.1.12"
   }
 }

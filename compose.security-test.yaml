@@ -1,0 +1,26 @@
+# Ephemeral CI smoke test; never connects to production databases or storage.
+services:
+  postgres:
+    ports: !override []
+    environment:
+      POSTGRES_PASSWORD: security-test-only
+  catalog-postgres:
+    ports: !override []
+    environment:
+      POSTGRES_PASSWORD: security-test-only
+  api:
+    image: ${AVA_IMAGE_PREFIX:-ava-reader-security}-api:latest
+    ports: !override []
+    environment:
+      DATABASE_URL: postgresql://postgres:security-test-only@postgres:5432/ava_reader
+  catalog:
+    image: ${AVA_IMAGE_PREFIX:-ava-reader-security}-catalog:latest
+    ports: !override []
+  web:
+    image: ${AVA_IMAGE_PREFIX:-ava-reader-security}-web:latest
+    ports: !override []
+  caddy:
+    ports: !override ["127.0.0.1::8080"]
+    volumes: !override
+      - ${AVA_TEST_CADDYFILE:?}:/etc/caddy/Caddyfile:ro
+      - ${AVA_TEST_LOGDIR:?}:/var/log/caddy

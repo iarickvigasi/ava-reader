@@ -1,4 +1,3 @@
-import type { CollectionKind } from '@prisma/client';
 import { membershipTestBook } from './membership-test-book';
 
 export function membershipTestCollections() {
@@ -6,7 +5,7 @@ export function membershipTestCollections() {
     (id) => ({
       id,
       userId: id === 'foreign' ? 'another-user' : 'user',
-      kind: (id === 'smart' ? 'SMART' : 'CUSTOM') as CollectionKind,
+      kind: id === 'smart' ? 'SMART' : 'CUSTOM',
       name: id,
       slug: id,
       smartKey: id === 'smart' ? 'imported-library' : null,

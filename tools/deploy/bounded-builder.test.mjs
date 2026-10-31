@@ -53,7 +53,7 @@ case "$*" in *'build catalog '*) exit 7 ;; esac
       7,
     );
     const command =
-      "compose -f compose.yaml -f compose.prod.yaml -f compose.migrations.yaml build";
+      "compose -f compose.yaml -f compose.prod.yaml -f compose.security.yaml -f compose.migrations.yaml build";
     assert.deepEqual(
       readFileSync(log, "utf8").trim().split("\n"),
       ["api", "api-migrate", "catalog"].map(

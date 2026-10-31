@@ -49,7 +49,7 @@ export function planGroups(
     role: string,
     label: EdgeGroup['label'],
   ) {
-    for (let i = from; i < to; ) {
+    for (let i = from; i < to;) {
       if (roles[i] !== role) {
         i++;
         continue;

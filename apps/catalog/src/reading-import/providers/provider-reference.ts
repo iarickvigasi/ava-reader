@@ -1,7 +1,5 @@
 export type EpubProvider =
-  | 'internet-archive'
-  | 'standard-ebooks'
-  | 'wolne-lektury';
+  'internet-archive' | 'standard-ebooks' | 'wolne-lektury';
 export type ProviderInput = {
   provider?: EpubProvider;
   providerId?: string;

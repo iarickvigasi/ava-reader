@@ -17,6 +17,8 @@ for (const [services, expected] of [
   [["api"], ["api", "api-migrate"]],
   [["catalog"], ["catalog", "catalog-migrate"]],
   [["web"], ["web"]],
+  [["caddy"], ["caddy"]],
+  [["postgres"], ["postgres"]],
   [
     ["api", "catalog", "web"],
     ["api", "api-migrate", "catalog", "catalog-migrate", "web"],
@@ -29,7 +31,7 @@ for (const [services, expected] of [
     const log = join(directory, "calls");
     writeFileSync(
       docker,
-      '#!/bin/sh\nprintf "%s\\n" "$*" >> "$TASK_LOG"\n[ "${9}" != "$TASK_FAIL" ]\n',
+      '#!/bin/sh\nprintf "%s\\n" "$*" >> "$TASK_LOG"\n[ "${11}" != "$TASK_FAIL" ]\n',
     );
     chmodSync(docker, 0o755);
     const env = {
@@ -40,7 +42,7 @@ for (const [services, expected] of [
     };
     execFileSync("sh", [script, ...services], { env });
     const command =
-      "compose -f compose.yaml -f compose.prod.yaml -f compose.migrations.yaml build";
+      "compose -f compose.yaml -f compose.prod.yaml -f compose.security.yaml -f compose.migrations.yaml build";
     assert.deepEqual(
       readFileSync(log, "utf8").trim().split("\n"),
       expected.map((service) => `${command} ${service}`),

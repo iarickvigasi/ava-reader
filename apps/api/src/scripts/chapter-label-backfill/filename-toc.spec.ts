@@ -1,7 +1,6 @@
 import { fixture } from './package.fixture';
 import { relabelPackage } from './relabel-package';
 import { relabelIndex } from './relabel-index';
-import type { Prisma } from '@prisma/client';
 
 it.each(['Chapter One', 'Chapter One / DISCOVERING SELF-COMPASSION'])(
   'repairs nested filename TOC labels when the chapter is %s',
@@ -44,10 +43,7 @@ it.each(['Chapter One', 'Chapter One / DISCOVERING SELF-COMPASSION'])(
       ],
       toc: original.toc,
     };
-    const repaired = relabelIndex(
-      index as Prisma.JsonValue,
-      changes,
-    ) as unknown as typeof index;
+    const repaired = relabelIndex(index, changes) as unknown as typeof index;
     expect(repaired.toc).toEqual(readerPackage.toc);
     expect(repaired.chapters[0].blockIds).toEqual(index.chapters[0].blockIds);
   },

@@ -2,7 +2,7 @@
   "name": "ava-reader",
   "version": "0.1.0",
   "private": true,
-  "packageManager": "pnpm@10.30.3",
+  "packageManager": "pnpm@10.34.9",
   "engines": {
     "node": ">=22.0.0"
   },
@@ -34,6 +34,6 @@
     "catalog:import": "docker compose run --rm --build catalog-importer"
   },
   "devDependencies": {
-    "turbo": "^2.5.8"
+    "turbo": "^2.11.10"
   }
 }
