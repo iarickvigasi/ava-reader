@@ -1,7 +1,7 @@
 # Selection narration
 
 - Goal: G08; executor: Codex; branch: `codex/word-narration`.
-- Status: local implementation and reported fixes delivered; PR preparation/review in progress.
+- Status: implementation and independent review complete; [draft PR #16](https://github.com/iarickvigasi/ava-reader/pull/16), CI pending.
 - Initial base: `27d3a415`; latest-main reconciliation tracked in PR review evidence below.
 - Current model: Google Gemini 3.8 Flash TTS through AVA’s existing server OpenRouter key.
 - Acceptance: native pronunciation, slow/clear natural delivery, complete endings with 400 ms pause;

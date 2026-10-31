@@ -2,7 +2,8 @@
 
 Shared task: [G08 / selection narration](../items/2026-10-31-word-narration.md).
 Executor: Codex. Founder requested PR preparation, code review and a report in chat.
-Status: independent review complete; draft PR publication pending.
+Status: independently reviewed; [draft PR #16](https://github.com/iarickvigasi/ava-reader/pull/16).
+At creation GitHub reports mergeable; Security CI is running, not yet a completed check.
 
 Independent reviewers: review_narration (API/audio/security), review_language (context/readings),
 review_tool_languages (tool preference/durable data/cache/prompt). Root reviewed integration/playback.
