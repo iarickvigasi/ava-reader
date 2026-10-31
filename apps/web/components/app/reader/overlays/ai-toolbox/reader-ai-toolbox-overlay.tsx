@@ -1,8 +1,6 @@
-import { useTranslations } from "next-intl";
+import { AiToolboxHeader } from "./ai-toolbox-header";
 import type { ReaderBookPayload, ReaderChapterPayload } from "@/lib/api-types";
 import { useDropLiveSelection } from "../../selection/use-drop-live-selection";
-import { MobileCloseButton } from "../mobile-close-button";
-import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
 import { AiToolsSection } from "./sections/ai-tools-section";
 import { HighlightSection } from "./sections/highlight-section";
@@ -62,18 +60,6 @@ function AiToolboxBackdrop({ onClose }: { onClose: () => void }) {
 function AiToolboxBackgroundLayer() {
   return (
     <div className="absolute inset-0 bg-linear-to-l from-paper-strong/88 via-paper/76 to-paper/0 backdrop-blur-[7px]" />
-  );
-}
-
-function AiToolboxHeader({ onClose }: { onClose: () => void }) {
-  const t = useTranslations("reader.aiToolbox");
-  return (
-    <div className="flex items-start justify-between gap-4">
-      <div className="min-w-0">
-        <PanelTitle>{t("title")}</PanelTitle>
-      </div>
-      <MobileCloseButton ariaLabel={t("closePanel")} onClose={onClose} />
-    </div>
   );
 }
 

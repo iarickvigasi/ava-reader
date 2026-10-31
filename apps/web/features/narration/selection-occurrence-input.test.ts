@@ -41,3 +41,26 @@ it("preserves an ephemeral bilingual offset while removing the language prefix",
   expect(input.context).toBe(sentence);
   expect(input.contextOffset).toBe(start);
 });
+
+it("captures Japanese sentence context for a kanji", () => {
+  const input = selectionNarrationInput({
+    book: { ...book, language: "ja" },
+    chapters: [
+      {
+        chapterId: "one",
+        blocks: [
+          {
+            id: "first",
+            kind: "paragraph",
+            text: "昨日は休んだ。今日は学校へ行きます。明日は帰ります。",
+          },
+        ],
+      },
+    ] as ReaderChapterPayload[],
+    text: "今日",
+    locator: { ...locator, startOffset: 7, endOffset: 9 },
+    context: null,
+  });
+  expect(input.context).toBe("今日は学校へ行きます。");
+  expect(input.languageHint).toBe("ja");
+});
