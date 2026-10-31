@@ -30,7 +30,7 @@ function audit(
   mkdirSync(join(directory, "security-reports"));
   if (marker)
     writeFileSync(
-      join(directory, `security-reports/${service}-patch.verified`),
+      join(directory, `security-reports/${service}-dependencies.verified`),
       "",
     );
   writeFileSync(join(directory, "security-reports/caddy-packages.txt"), graph);

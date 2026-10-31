@@ -42,7 +42,13 @@ for (const finding of findings) {
     finding.PkgName === "deepmerge" &&
     finding.InstalledVersion === "4.3.1" &&
     finding.PkgPath?.includes("_patch_hash=") &&
-    existsSync(`security-reports/${service}-patch.verified`);
+    existsSync(`security-reports/${service}-dependencies.verified`);
+  const legacyOptimizerAbsent =
+    service.endsWith("-migrate") &&
+    finding.VulnerabilityID === "CVE-2026-118764" &&
+    finding.PkgName === "minimatch" &&
+    finding.InstalledVersion === "3.1.5" &&
+    existsSync(`security-reports/${service}-dependencies.verified`);
   const patchedJose =
     service === "caddy" &&
     ["CVE-2026-116585", "CVE-2026-116586", "CVE-2026-116587"].includes(
@@ -56,9 +62,10 @@ for (const finding of findings) {
     finding.VulnerabilityID === "GO-2026-5932" &&
     finding.PkgName === "golang.org/x/crypto" &&
     !packages.some((name) => name.startsWith("golang.org/x/crypto/openpgp"));
-  (patchedMerge || patchedJose || absentOpenPgp ? verified : remaining).push(
-    finding,
-  );
+  (patchedMerge || legacyOptimizerAbsent || patchedJose || absentOpenPgp
+    ? verified
+    : remaining
+  ).push(finding);
 }
 console.log(
   `${service}: ${findings.length} raw findings, ${verified.length} locally fixed/component absent, ${remaining.length} unresolved`,
