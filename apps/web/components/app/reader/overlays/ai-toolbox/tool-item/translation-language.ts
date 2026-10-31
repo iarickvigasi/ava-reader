@@ -10,18 +10,3 @@ export function languageCode(value: string | null): string | null {
     return null;
   }
 }
-
-export function translationTarget(
-  bookLanguage: string | null,
-  readingLanguage: string,
-  translated: boolean,
-): string {
-  if (!translated) return readingLanguage;
-  const code = languageCode(bookLanguage);
-  if (!code || code === languageCode(readingLanguage)) return "";
-  return (
-    new Intl.DisplayNames(["en"], { type: "language" }).of(code) ??
-    bookLanguage ??
-    ""
-  );
-}

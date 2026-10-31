@@ -1,7 +1,5 @@
+import { TranslateTargetField } from "@/components/app/preferences/translate-target-field";
 import { useMemo } from "react";
-import { useTranslations } from "next-intl";
-import { TRANSLATE_LANGUAGES } from "@/components/app/preferences/translate-languages";
-import { FieldRow, SelectField } from "../../preferences/preferences-fields";
 import { languageCode } from "./translation-language";
 import {
   ReaderTranslationIcon,
@@ -44,8 +42,6 @@ export function TranslateToolItem({
   author,
   saved,
 }: TranslateToolItemProps) {
-  const t = useTranslations("reader.aiTools");
-  const preferences = useTranslations("preferences");
   const sameLanguage =
     !!sourceLanguage && languageCode(sourceLanguage) === languageCode(language);
   const payload = useMemo<AiToolPayload | null>(
@@ -75,25 +71,7 @@ export function TranslateToolItem({
   return (
     <div className="flex flex-col gap-2">
       {onLanguageChange ? (
-        <FieldRow label={preferences("translate.label")}>
-          <SelectField
-            ariaLabel={preferences("translate.ariaLabel")}
-            value={language}
-            onChange={onLanguageChange}
-            options={[
-              { value: "", label: t("chooseLanguage") },
-              ...(language &&
-              !TRANSLATE_LANGUAGES.some((option) => option.value === language)
-                ? [{ value: language, label: language }]
-                : []),
-              ...TRANSLATE_LANGUAGES.filter(
-                (option) =>
-                  !sourceLanguage ||
-                  languageCode(option.value) !== languageCode(sourceLanguage),
-              ),
-            ]}
-          />
-        </FieldRow>
+        <TranslateTargetField value={language} onChange={onLanguageChange} />
       ) : (
         <p className="font-ui text-[0.78rem] uppercase tracking-[0.14em] text-ink/70">
           {language}
@@ -115,7 +93,7 @@ export function TranslateToolItem({
           </button>
           <div className="min-w-0 flex-1">
             <ToolResultView
-              text={text}
+              text={sameLanguage ? selection : text}
               isStreaming={isStreaming}
               error={error}
               phase={phase}

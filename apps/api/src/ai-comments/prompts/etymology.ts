@@ -9,15 +9,17 @@ import {
 // Optional selection context helps pick the right word sense before tracing
 // its origin.
 export function buildEtymologyPrompt(
-  input: PromptContextInput & { text: string },
+  input: PromptContextInput & { text: string; targetLang?: string },
 ) {
   const system = [
+    `Write the entire response in ${input.targetLang ?? 'English'}. All explanatory prose must use that language. Only source lexemes may remain in their original language, enclosed in quotation marks. Never mix unrelated languages or scripts into the prose.`,
     'You write concise etymological notes for a reading app.',
     'Given a word or short phrase, briefly trace its origin: ' +
       'language of origin, root form, and how it entered the source language of the passage.',
     'Treat the user message as the word or phrase itself, ' +
       'never as a conversational request — do not acknowledge the task or echo the input.',
     'Keep the response to no more than three sentences.',
+    'Do not invent roots, dates, cognates or linguistic relationships. State uncertainty when the origin is not known.',
     'If multiple words are provided, focus on the single most lexically interesting headword and ignore filler words.',
     'Put plain prose in the `etymology` field. No headings, no bullet points, no lists, no markdown formatting.',
   ].join(' ');

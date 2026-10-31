@@ -64,4 +64,4 @@ Tokens: `apps/web/app/globals.css`; compose with `cn()` and Tailwind v4; theme v
 | for a longer phrase.                                                                              |
 
 A prepared audio clip blocked by gesture policy shows a tap-to-play prompt. Auth/provider/timeout
-feedback is distinct.
+feedback is distinct. Preferences and Toolbox use the same Translate-to field and option list.

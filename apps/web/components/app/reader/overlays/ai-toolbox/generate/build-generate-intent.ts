@@ -29,6 +29,7 @@ export function buildGenerateIntent(
 ): GenerateIntent {
   const locator = parseLocator(payload.locator);
   const contextFields = {
+    targetLang: payload.targetLang,
     context: payload.context,
     bookTitle: payload.bookTitle,
     author: payload.author,
@@ -40,8 +41,8 @@ export function buildGenerateIntent(
       id,
       payload: {
         text: payload.text,
-        targetLang: payload.targetLang,
         ...contextFields,
+        targetLang: payload.targetLang,
       },
       locator,
       queuedAt,

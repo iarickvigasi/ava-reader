@@ -5,6 +5,7 @@
 // around the selection plus book metadata, all optional — requests without
 // them behave exactly as before.
 type SelectionContextFields = {
+  targetLang?: string;
   context?: string;
   bookTitle?: string;
   author?: string;
@@ -12,6 +13,10 @@ type SelectionContextFields = {
 };
 
 export type AiToolPayload =
-  | ({ kind: "translate"; text: string; targetLang: string } & SelectionContextFields)
+  | ({
+      kind: "translate";
+      text: string;
+      targetLang: string;
+    } & SelectionContextFields)
   | ({ kind: "etymology"; text: string } & SelectionContextFields)
   | ({ kind: "explain"; text: string } & SelectionContextFields);

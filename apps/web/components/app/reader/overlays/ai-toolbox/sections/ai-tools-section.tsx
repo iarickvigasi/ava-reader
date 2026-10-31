@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   DEFAULT_TRANSLATE_TARGET_LANG,
   useTranslateTargetLang,
@@ -15,7 +15,6 @@ import { ToolSection } from "../tool-item/tool-section";
 import { TranslateToolItem } from "../tool-item/translate-tool-item";
 import { useToolAccordion } from "./use-tool-accordion";
 import { useToolRequestFields } from "../generate/use-tool-request-fields";
-import { translationTarget } from "../tool-item/translation-language";
 
 type AiToolsSectionProps = {
   libraryItemId: string;
@@ -31,22 +30,10 @@ export function AiToolsSection({
   const t = useTranslations("reader.aiTools");
   const { locator: selectedLocator } = useReaderSelectionContext();
   const { comments } = useAiCommentsContext();
-  const [targetLang] = useTranslateTargetLang();
+  const [targetLang, setLanguage] = useTranslateTargetLang();
 
   const request = useToolRequestFields(book, chapters);
-  const defaultLanguage = translationTarget(
-    book.language,
-    targetLang || DEFAULT_TRANSLATE_TARGET_LANG,
-    !!selectedLocator?.translation,
-  );
-  const [choice, setChoice] = useState<{
-    key: string | undefined;
-    language: string;
-  } | null>(null);
-  const language =
-    choice && choice.key === request.locator
-      ? choice.language
-      : defaultLanguage;
+  const language = targetLang || DEFAULT_TRANSLATE_TARGET_LANG;
   // Keep the whole matched record per tool (body + status + error), not just
   // the body, so the panel can render queued / failed placeholders.
   const savedComments = useMemo(
@@ -58,7 +45,7 @@ export function AiToolsSection({
     savedComments,
   );
 
-  const common = { libraryItemId, ...request };
+  const common = { libraryItemId, targetLang: language, ...request };
 
   return (
     <div className="flex flex-col gap-4">
@@ -68,10 +55,7 @@ export function AiToolsSection({
         label={t("translate")}
         language={language}
         sourceLanguage={selectedLocator?.translation?.targetLang ?? null}
-        onLanguageChange={(language) => {
-          if (openTools.has("translate")) toggle("translate");
-          setChoice({ key: request.locator, language });
-        }}
+        onLanguageChange={setLanguage}
         isOpen={openTools.has("translate")}
         onToggle={() => toggle("translate")}
         saved={savedComments.translate}

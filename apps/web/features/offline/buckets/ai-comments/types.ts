@@ -47,6 +47,7 @@ export type ServerAiComment = {
 // The selection-context fields (spec 5.2) are captured at enqueue time so a
 // replayed request sends exactly what a live one would have.
 type GenerateContextFields = {
+  targetLang?: string;
   context?: string;
   bookTitle?: string;
   author?: string;

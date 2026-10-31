@@ -7,10 +7,7 @@
 
 import { createMutations } from "../shared/mutations-core";
 import { getOrCreateBucket } from "./bucket";
-import {
-  removePendingMutation,
-  upsertPendingMutation,
-} from "./storage";
+import { removePendingMutation, upsertPendingMutation } from "./storage";
 import { flushBucket } from "./sync";
 import type { PendingMutation, StorageBucket } from "./types";
 
@@ -19,14 +16,15 @@ type GenerateMutation = Extract<
   { kind: "generate.translate" | "generate.etymology" | "generate.explain" }
 >;
 
-const { commit, enqueueDelete } = createMutations<PendingMutation, StorageBucket>(
-  {
-    getOrCreateBucket,
-    upsertPendingMutation,
-    removePendingMutation,
-    flushBucket,
-  },
-);
+const { commit, enqueueDelete } = createMutations<
+  PendingMutation,
+  StorageBucket
+>({
+  getOrCreateBucket,
+  upsertPendingMutation,
+  removePendingMutation,
+  flushBucket,
+});
 
 export { enqueueDelete };
 
@@ -36,9 +34,15 @@ export { enqueueDelete };
 // time the toolbox effect re-runs (e.g. reopening a panel offline), so we
 // coalesce on content — not id — to keep a single queued comment.
 function requestSignature(mutation: GenerateMutation): string {
-  const targetLang =
-    mutation.kind === "generate.translate" ? mutation.payload.targetLang : "";
-  return `${mutation.kind} ${mutation.payload.text} ${targetLang}`;
+  return JSON.stringify([
+    mutation.kind,
+    mutation.payload.text,
+    mutation.payload.targetLang ?? null,
+    mutation.payload.locator ?? mutation.locator,
+    mutation.payload.context ?? null,
+    mutation.payload.bookTitle ?? null,
+    mutation.payload.author ?? null,
+  ]);
 }
 
 export function enqueueGenerate(
