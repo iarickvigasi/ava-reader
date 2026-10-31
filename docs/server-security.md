@@ -36,3 +36,8 @@ Its disposable vendor tree backports upstream commits `35883f7999e8` (empty CBC 
 CVE-2026-116585) and `a31af2583622` (JSON depth, CVE-2026-116586) without modifying the module cache.
 The build runs the upstream suite plus excessive-depth regressions before compiling the actual binary.
 Remove these backports when a maintained upstream release includes all three fixes.
+
+Glob and modern minimatch use patched releases. GHSA-g3hv-75wg-m249 describes the
+`optimizationLevel >= 2` / `firstPhasePreProcess` pipeline; legacy minimatch 3.1.5 lacks both.
+Its exact version, source and non-amplifying glob parts are verified inside each migration image.
+Retain the raw advisory alongside this component-absence evidence; other versions/findings fail.

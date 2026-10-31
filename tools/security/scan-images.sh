@@ -16,12 +16,13 @@ for service in api catalog web api-migrate catalog-migrate postgres caddy; do
   case "$service" in
   *-migrate)
     app=${service%-migrate}
-    rm -f "security-reports/$service-patch.verified"
+    rm -f "security-reports/$service-dependencies.verified"
     if docker run --rm --network none --read-only --cap-drop ALL --user node \
       -e AVA_DEEPMERGE_PACKAGE="/app/apps/$app/package.json" \
       --mount "type=bind,src=$PWD/tools/security/deepmerge.test.mjs,dst=/tmp/deepmerge.test.mjs,readonly" \
-      --entrypoint node "$image" --test /tmp/deepmerge.test.mjs >"security-reports/$service-patch-tests.txt"; then
-      touch "security-reports/$service-patch.verified"
+      --mount "type=bind,src=$PWD/tools/security/legacy-minimatch.test.mjs,dst=/tmp/legacy-minimatch.test.mjs,readonly" \
+      --entrypoint node "$image" --test /tmp/deepmerge.test.mjs /tmp/legacy-minimatch.test.mjs >"security-reports/$service-patch-tests.txt"; then
+      touch "security-reports/$service-dependencies.verified"
     else
       status=1
     fi

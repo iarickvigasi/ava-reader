@@ -22,17 +22,30 @@ const locallyPatched = findings.filter(
     finding.module_name === "deepmerge" &&
     finding.findings.every(({ version }) => version === "4.3.1"),
 );
+const componentAbsent = findings.filter(
+  (finding) =>
+    finding.github_advisory_id === "GHSA-g3hv-75wg-m249" &&
+    finding.module_name === "minimatch" &&
+    finding.findings.length &&
+    finding.findings.every(({ version }) => version === "3.1.5"),
+);
 const remaining = findings.filter(
-  (finding) => !locallyPatched.includes(finding),
+  (finding) =>
+    !locallyPatched.includes(finding) && !componentAbsent.includes(finding),
 );
 console.log(
-  `Registry findings: ${findings.length}; locally patched: ${locallyPatched.length}; unpatched: ${remaining.length}`,
+  `Registry findings: ${findings.length}; locally patched: ${locallyPatched.length}; affected optimizer absent: ${componentAbsent.length}; unpatched: ${remaining.length}`,
 );
 for (const finding of remaining)
   console.error(`${finding.module_name}: ${finding.title} (${finding.url})`);
 const regression = spawnSync(
   process.execPath,
-  ["--test", fileURLToPath(new URL("./deepmerge.test.mjs", import.meta.url))],
+  [
+    "--test",
+    ...["deepmerge.test.mjs", "legacy-minimatch.test.mjs"].map((name) =>
+      fileURLToPath(new URL(name, import.meta.url)),
+    ),
+  ],
   { stdio: "inherit" },
 );
 if (locallyPatched.length)

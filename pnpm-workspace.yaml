@@ -3,6 +3,8 @@ packages:
   - packages/*
 
 overrides:
+  "glob@>=9 <14.0.2": 14.0.2
+  "minimatch@>=9 <11.0.1": 11.0.3
   "@ai-sdk/provider-utils>undici": 6.29.1
   "@nestjs/platform-express>multer": 2.5.0
 
