@@ -14,9 +14,11 @@ on top of it. Split by subsystem, like [[2-reader/_overview]].
 ## Sub-specs
 
 - 5.1 highlights — color-coded saved selections, painted in-text and listed in a panel.
-- 5.2 ai-toolbox — on-selection AI tools (translate, explain, etymology) streaming in place.
+- 5.2 ai-toolbox — on-selection AI tools (translate, explain, etymology) streaming in place, plus temporary
+  word/phrase narration funded by AVA.
+- 5.6 selection-narration — temporary pronunciation with contextual fragment-language identification.
 - 5.3 ai-comments — persisted AI annotations anchored to passages, with their panel.
-- 5.4 preferences — reading + language settings and the theme override.
+- 5.4 preferences — reading + language settings and the theme override; Listening placeholders hidden.
 - 5.5 search — find sentences in cached book text and jump to their location.
 
 ## Shared model

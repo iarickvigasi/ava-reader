@@ -479,6 +479,10 @@
       "selection": "Seleção",
       "highlight": "Destaque",
       "selectionReadAloud": "Ler a seleção em voz alta",
+      "narrationLoading": "Preparando narração. Toque para cancelar",
+      "narrationStop": "Parar narração",
+      "narrationLanguageUncertain": "Idioma incerto. Selecione uma frase mais longa em um só idioma e tente novamente.",
+      "narrationFailed": "Não foi possível reproduzir. Verifique a conexão e tente novamente.",
       "selectionCopy": "Copiar a seleção",
       "selectionCopied": "Copiado",
       "selectionCopyFailed": "Não foi possível copiar para a área de transferência"

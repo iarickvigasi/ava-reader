@@ -57,6 +57,7 @@ similar interests found.
 ## Monetization
 
 - **Freemium.** Core reading is free; advanced capabilities are paid tiers.
+- **Selection pronunciation is free to readers**, funded by AVA through its server OpenRouter key.
 - **Bring your own key.** Users supply an OpenRouter or own model key and AI features are free to
   them; otherwise they top up app credits used for any AI work in the app.
 - **Author economics.** When selling books, authors keep the large majority (target 80%+), not the
@@ -80,7 +81,7 @@ book/author pages. See specs/.
 ## Roadmap — next
 
 - **AI chat about a book** (the diary's discussion layer; UI scaffold exists).
-- **Listening / TTS narration** with voice interaction (preferences UI scaffold exists).
+- **Full-book listening / TTS narration** with voice interaction (preferences controls are hidden until implemented).
 - **Connect**: community introduction first, then opt-in reader profiles and reader discovery.
 - **Insights** (reading analytics), reached from Home’s Daily mastery; **Explore** saved books and
   upload linking.

@@ -1,9 +1,7 @@
+import type { ReaderBookPayload, ReaderChapterPayload } from "@/lib/api-types";
+import { NarrationButton } from "./narration-button";
 import { useTranslations } from "next-intl";
-import {
-  CheckIcon,
-  CopyIcon,
-  SpeakerIcon,
-} from "@/components/app/shared/app-icons";
+import { CheckIcon, CopyIcon } from "@/components/app/shared/app-icons";
 import { useReaderSelectionContext } from "../../../selection/reader-selection-context";
 import { SectionLabel } from "../../section-label";
 import { cn } from "@/lib/cn";
@@ -11,7 +9,15 @@ import { SelectionQuote } from "./selection-quote";
 import { useCopySelection } from "./use-copy-selection";
 import { useSelectionExpand } from "./use-selection-expand";
 
-export function SelectionSection() {
+export function SelectionSection({
+  libraryItemId,
+  book,
+  chapters,
+}: {
+  libraryItemId: string;
+  book: ReaderBookPayload;
+  chapters: ReaderChapterPayload[];
+}) {
   const t = useTranslations("reader.aiToolbox");
   const { text } = useReaderSelectionContext();
   const { isCopied, copySelection } = useCopySelection();
@@ -27,13 +33,11 @@ export function SelectionSection() {
           isExpanded ? "items-start" : "items-center",
         )}
       >
-        <button
-          type="button"
-          aria-label={t("selectionReadAloud")}
-          className="inline-flex size-7 shrink-0 items-center justify-center rounded-full text-ink/70 transition hover:bg-paper-strong/70 hover:text-ink"
-        >
-          <SpeakerIcon className="size-4" />
-        </button>
+        <NarrationButton
+          libraryItemId={libraryItemId}
+          book={book}
+          chapters={chapters}
+        />
         <SelectionQuote
           text={displayText}
           isExpanded={isExpanded}

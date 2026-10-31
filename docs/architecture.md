@@ -25,7 +25,9 @@ Monorepo: pnpm workspaces + Turbo (lint/typecheck/test/build), Node ≥22.
 - **apps/catalog** — independent NestJS/Prisma catalog API and PostgreSQL instance (ADRs 10, 13);
   work/edition/author lookup, search, and public source/cover/reader bytes. No main DB/client dependency.
 - **apps/mobile** — placeholder for future cross-platform.
-- **AI** — OpenRouter via the Vercel `ai` SDK, structured output. See adr/2.
+- **AI** — OpenRouter via the Vercel `ai` SDK, structured output. Selection narration uses
+  the OpenRouter Decisions endpoint (Jev 1.14) for contextual fragment-language identification,
+  then server-funded ElevenLabs v4 speech with an explicit language code. See adr/2.
 
 ## Web app (apps/web)
 
@@ -123,6 +125,8 @@ their implementations, with shared fixtures in `testing/`.
   chapter) → reader renders blocks → progress bucket tracks locator → resume on reopen.
 - **Annotate:** select text → selection context → highlights/ai-comments bucket → instant paint →
   flush on reconnect.
+- **Narration:** selection → authenticated ownership-checked POST → private MP3 → ephemeral player;
+  no saved mutation, credit debit or delayed offline replay.
 - **AI tool:** select → ai-comments `generate.*` mutation → POST → streamed structured output →
   stored as a ready AiComment, deduped by sourceHash.
 - **Track:** session start/heartbeat/stop + progress writes (offline) → home shows baseline + local

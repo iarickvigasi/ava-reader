@@ -1,3 +1,4 @@
+import { selectionSentenceContext } from "@/features/reader/selection-sentence-context";
 import type { BilingualChapter } from "@/lib/api-types/bilingual";
 import type { ReaderSelection } from "../../selection/types";
 import { offsetIn } from "./alignment-ranges";
@@ -56,10 +57,15 @@ export function translationSelection(
     },
     context:
       `Selected text language: ${chapter.targetLang}.\n` +
-      chapter.units
-        .slice(firstIndex, lastIndex + 1)
-        .map((unit) => chapter.translations[unit.id] ?? "")
-        .join(" ")
-        .slice(0, 3500),
+      selectionSentenceContext({
+        text: chapter.units
+          .slice(firstIndex, lastIndex + 1)
+          .map((unit) => chapter.translations[unit.id] ?? "")
+          .join(" "),
+        selectedText: selection.text,
+        start,
+        end: firstIndex === lastIndex ? end : Number.MAX_SAFE_INTEGER,
+        maxChars: 8000,
+      }),
   };
 }

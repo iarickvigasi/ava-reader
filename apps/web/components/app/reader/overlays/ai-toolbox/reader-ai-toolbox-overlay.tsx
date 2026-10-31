@@ -88,7 +88,11 @@ function AiToolboxSections({
 }) {
   return (
     <div className="mt-8 flex min-h-0 flex-1 flex-col gap-6 overflow-auto pb-8 pr-1">
-      <SelectionSection />
+      <SelectionSection
+        libraryItemId={libraryItemId}
+        book={book}
+        chapters={chapters}
+      />
       <HighlightSection />
       <AiToolsSection
         libraryItemId={libraryItemId}

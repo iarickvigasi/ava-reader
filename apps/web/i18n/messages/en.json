@@ -479,6 +479,10 @@
       "selection": "Selection",
       "highlight": "Highlight",
       "selectionReadAloud": "Read selection aloud",
+      "narrationLoading": "Preparing narration. Tap to cancel",
+      "narrationStop": "Stop narration",
+      "narrationLanguageUncertain": "Language is unclear. Select a longer phrase in one language and try again.",
+      "narrationFailed": "Could not play narration. Check your connection and try again.",
       "selectionCopy": "Copy selection",
       "selectionCopied": "Copied",
       "selectionCopyFailed": "Couldn't copy to clipboard"

@@ -479,6 +479,10 @@
       "selection": "Auswahl",
       "highlight": "Markierung",
       "selectionReadAloud": "Auswahl vorlesen",
+      "narrationLoading": "Sprachausgabe wird vorbereitet. Zum Abbrechen tippen",
+      "narrationStop": "Sprachausgabe stoppen",
+      "narrationLanguageUncertain": "Sprache unklar. Wähle eine längere Phrase in einer Sprache und versuche es erneut.",
+      "narrationFailed": "Wiedergabe fehlgeschlagen. Verbindung prüfen und erneut versuchen.",
       "selectionCopy": "Auswahl kopieren",
       "selectionCopied": "Kopiert",
       "selectionCopyFailed": "Kopieren in die Zwischenablage fehlgeschlagen"
