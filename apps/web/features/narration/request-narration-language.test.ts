@@ -45,3 +45,24 @@ it("exposes uncertain language distinctly from network failures", async () => {
     }),
   ).rejects.toMatchObject({ name: "NarrationLanguageUncertainError" });
 });
+
+it("keeps a server-side timeout distinct from provider rejection", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(
+      async () =>
+        new Response(JSON.stringify({ code: "NARRATION_TIMEOUT" }), {
+          status: 503,
+          headers: { "Content-Type": "application/json" },
+        }),
+    ),
+  );
+  await expect(
+    requestNarration({
+      libraryItemId: "book",
+      text: "hello",
+      getToken: async () => "token",
+      signal: new AbortController().signal,
+    }),
+  ).rejects.toMatchObject({ name: "TimeoutError" });
+});

@@ -32,3 +32,8 @@ Contextual pronunciation uses pinned `typesafe/jev-1.14` through the Decisions R
 not the chat SDK. [Measured evidence](../../research/2026-10-31-narration-language/README.md) compares
 Jev with Liquid d1.1. Bounded account-scoped caching and uncertainty refusal limit repeat work and
 unsafe guesses; probability guardrails need broader calibration. The existing server key funds both.
+
+Pronunciation follow-up: Flash v2.5 is the default for its 32 supported languages (half the v4
+per-character rate, synthesis speed 0.85, no direction tags); v4 preserves the other language coverage.
+Kuromoji/IPADIC resolves Japanese kanji locally. The lazy dictionary ships in the API dependency;
+there is no additional model call for Japanese readings. Proper-name ambiguity remains a quality limit.

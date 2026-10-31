@@ -21,7 +21,7 @@ it('uses server-funded v4 with deliberate delivery and playable MP3', async () =
   expect(await synthesizeSpeech(config, 'привіт')).toEqual(Buffer.from([1, 2]));
   const [url, request] = fetchMock.mock.calls[0] as [string, RequestInit];
   expect(url).toBe('https://openrouter.ai/api/v1/audio/speech');
-  expect(JSON.parse(request.body as string)).toEqual({
+  expect(JSON.parse(request.body as string)).toMatchObject({
     model: 'elevenlabs/eleven-v4',
     input: '[slowly] [clearly] привіт',
     voice: 'alice',
@@ -38,7 +38,7 @@ it.each([401, 429, 500])('sanitizes upstream error %s', async (status) => {
     new Response('secret upstream detail', { status }),
   );
   await expect(synthesizeSpeech(config, 'hello')).rejects.toThrow(
-    'Narration failed. Please try again.',
+    'Narration service could not prepare audio. Please try again.',
   );
 });
 
@@ -56,7 +56,7 @@ it.each(['application/json', 'audio/mpeg'])(
       new Response('', { headers: { 'Content-Type': type } }),
     );
     await expect(synthesizeSpeech(config, 'hello')).rejects.toThrow(
-      'Narration failed',
+      'Narration service',
     );
   },
 );

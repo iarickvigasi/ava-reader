@@ -45,7 +45,12 @@ it('returns private MP3 after ownership succeeds', async () => {
   speak.mockResolvedValue(Buffer.from([1, 2]));
   language.mockResolvedValue('en');
   await controller.narrate(request, 'book', { text: ' hello ' }, response);
-  expect(speak).toHaveBeenCalledWith(expect.any(ConfigService), 'hello', 'en');
+  expect(speak).toHaveBeenCalledWith(
+    expect.any(ConfigService),
+    'hello',
+    'en',
+    undefined,
+  );
   expect(setHeaders).toHaveBeenCalledWith({
     'Content-Type': 'audio/mpeg',
     'Cache-Control': 'private, no-store',

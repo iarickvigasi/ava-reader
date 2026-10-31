@@ -55,10 +55,13 @@ export async function requestLanguageDecision(
         },
       },
     }),
-    signal: AbortSignal.timeout(2000),
+    signal: AbortSignal.timeout(5000),
   });
   if (!response.ok)
-    throw new ServiceUnavailableException('Language identification failed.');
+    throw new ServiceUnavailableException({
+      message: 'Language identification failed.',
+      upstreamStatus: response.status,
+    });
   const result: unknown = await response.json();
   return z
     .object({ answers: z.object({ language: languageAnswerSchema }) })

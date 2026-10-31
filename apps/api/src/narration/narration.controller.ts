@@ -53,7 +53,12 @@ export class NarrationController {
       input,
       request.auth.clerkUserId,
     );
-    const audio = await synthesizeSpeech(this.config, input.text, language);
+    const audio = await synthesizeSpeech(
+      this.config,
+      input.text,
+      language,
+      input.context,
+    );
     response.set({
       'Content-Type': 'audio/mpeg',
       'Cache-Control': 'private, no-store',

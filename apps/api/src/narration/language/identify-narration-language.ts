@@ -1,8 +1,6 @@
+import { narrationFailure } from '../narration-failure';
 import { createHash } from 'node:crypto';
-import {
-  ServiceUnavailableException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { UnprocessableEntityException } from '@nestjs/common';
 import type { ConfigService } from '@nestjs/config';
 import { cacheLanguageDecision } from './decision-cache';
 import { NARRATION_LANGUAGE_CODES } from './supported-languages';
@@ -36,10 +34,8 @@ export async function identifyNarrationLanguage(
     let answer;
     try {
       answer = await requestLanguageDecision(config, input);
-    } catch {
-      throw new ServiceUnavailableException(
-        'Language identification failed. Please try again.',
-      );
+    } catch (error: unknown) {
+      throw narrationFailure('language', error);
     }
     const selected = answer.probabilities[answer.choice] ?? 0;
     const runnerUp = Math.max(

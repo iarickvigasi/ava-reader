@@ -87,7 +87,7 @@ it("reports autoplay rejection and permits explicit retry", async () => {
   audio.play.mockRejectedValueOnce(error);
   const loader = vi.fn(load);
   await player.toggle(loader);
-  expect(player.snapshot()).toBe("error");
+  expect(player.snapshot()).toBe("ready");
   await player.toggle(loader);
   expect(player.snapshot()).toBe("playing");
   expect(loader).toHaveBeenCalledTimes(1);

@@ -1,3 +1,4 @@
+import { narrationFeedbackKey } from "@/features/narration/narration-error-state";
 import type { ReaderBookPayload, ReaderChapterPayload } from "@/lib/api-types";
 import { useTranslations } from "next-intl";
 import { SpeakerIcon } from "@/components/app/shared/app-icons";
@@ -18,13 +19,16 @@ export function NarrationButton({
     book,
     chapters,
   );
+  const feedback = narrationFeedbackKey(state);
   const active = state === "loading" || state === "playing";
   const label =
     state === "loading"
       ? t("narrationLoading")
       : state === "playing"
         ? t("narrationStop")
-        : t("selectionReadAloud");
+        : state === "ready"
+          ? t("narrationReady")
+          : t("selectionReadAloud");
   return (
     <>
       <button
@@ -57,20 +61,10 @@ export function NarrationButton({
         )}
       </button>
       <span
-        role={state === "error" || state === "uncertain" ? "alert" : "status"}
-        className={
-          state === "error" || state === "uncertain"
-            ? "text-xs text-ink/70"
-            : "sr-only"
-        }
+        role={feedback && state !== "ready" ? "alert" : "status"}
+        className={feedback ? "text-xs text-ink/70" : "sr-only"}
       >
-        {state === "uncertain"
-          ? t("narrationLanguageUncertain")
-          : state === "error"
-            ? t("narrationFailed")
-            : active
-              ? label
-              : ""}
+        {feedback ? t(feedback) : active ? label : ""}
       </span>
     </>
   );

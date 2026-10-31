@@ -22,7 +22,11 @@ export async function requestNarration(
       });
   });
   signal.throwIfAborted();
-  if (!token) throw new Error("Authentication unavailable");
+  if (!token) {
+    const error = new Error("Authentication unavailable");
+    error.name = "NarrationAuthError";
+    throw error;
+  }
   const response = await fetch(
     `${getPublicApiBaseUrl()}/api/library/${encodeURIComponent(input.libraryItemId)}/narration`,
     {
@@ -39,6 +43,23 @@ export async function requestNarration(
       signal,
     },
   );
+  if (response.status === 401) {
+    const error = new Error("Authentication unavailable");
+    error.name = "NarrationAuthError";
+    throw error;
+  }
+  if (response.status === 503) {
+    const detail: unknown = await response.json().catch(() => null);
+    const error = new Error("Narration service unavailable");
+    error.name =
+      detail &&
+      typeof detail === "object" &&
+      "code" in detail &&
+      detail.code === "NARRATION_TIMEOUT"
+        ? "TimeoutError"
+        : "NarrationProviderError";
+    throw error;
+  }
   if (response.status === 422) {
     const body: unknown = await response.json();
     if (

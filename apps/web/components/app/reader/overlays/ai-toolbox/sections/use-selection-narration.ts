@@ -2,7 +2,10 @@ import type { ReaderBookPayload, ReaderChapterPayload } from "@/lib/api-types";
 import { selectionNarrationInput } from "@/features/narration/selection-narration-input";
 import { useAuth } from "@clerk/nextjs";
 import { useEffect, useMemo, useSyncExternalStore } from "react";
-import { SelectionPlayer } from "@/features/narration/selection-player";
+import {
+  SelectionPlayer,
+  type NarrationState,
+} from "@/features/narration/selection-player";
 import { requestNarration } from "@/features/narration/request-narration";
 import { useReaderSelectionContext } from "../../../selection/reader-selection-context";
 
@@ -26,7 +29,7 @@ export function useSelectionNarration(
   const state = useSyncExternalStore(
     player.subscribe,
     player.snapshot,
-    () => "idle",
+    (): NarrationState => "idle",
   );
   const toggle = () => {
     if (!text?.trim()) return;

@@ -1,5 +1,14 @@
+import { narrationErrorState } from "./narration-error-state";
 export type NarrationState =
-  "idle" | "loading" | "playing" | "error" | "uncertain";
+  | "idle"
+  | "loading"
+  | "playing"
+  | "error"
+  | "uncertain"
+  | "ready"
+  | "auth"
+  | "provider"
+  | "timeout";
 
 export class SelectionPlayer {
   private state: NarrationState = "idle";
@@ -57,12 +66,7 @@ export class SelectionPlayer {
         // Keep generated audio for a direct user-gesture retry on Safari.
         if (!(error instanceof Error && error.name === "NotAllowedError"))
           this.dispose();
-        this.update(
-          error instanceof Error &&
-            error.name === "NarrationLanguageUncertainError"
-            ? "uncertain"
-            : "error",
-        );
+        this.update(narrationErrorState(error));
       }
     }
   }

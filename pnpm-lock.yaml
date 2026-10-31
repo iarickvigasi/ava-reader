@@ -48,6 +48,9 @@ importers:
       "@prisma/client":
         specifier: ^7.10.1
         version: 7.10.1(prisma@7.10.1(@types/node@24.19.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(typescript@5.9.3)
+      "@types/kuromoji":
+        specifier: 0.1.3
+        version: 0.1.3
       ai:
         specifier: ^5.0.283
         version: 5.0.283(zod@4.6.7)
@@ -63,6 +66,9 @@ importers:
       jszip:
         specifier: ^3.10.2
         version: 3.10.2
+      kuromoji:
+        specifier: 0.1.2
+        version: 0.1.2
       mime-types:
         specifier: ^3.0.2
         version: 3.0.2
@@ -3290,6 +3296,12 @@ packages:
         integrity: sha512-c9h9dVVMigMPc4bwTvC5dxqtqJZwQPePsWjPlpSOnojbor6pGqdk541lfA7AqFQr5pB1BRdq0juY9db81BwyFw==,
       }
 
+  "@types/doublearray@0.0.32":
+    resolution:
+      {
+        integrity: sha512-HloTru3I3a55runIVqZX1YBQi2L5A4peNQPh33yshzB4ttt1qHCnHPkuhy9Djy/cTx7i5xJvxItKRPCmvnfpGw==,
+      }
+
   "@types/eslint@9.6.1":
     resolution:
       {
@@ -3360,6 +3372,12 @@ packages:
     resolution:
       {
         integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==,
+      }
+
+  "@types/kuromoji@0.1.3":
+    resolution:
+      {
+        integrity: sha512-u+YwX6eJj6Fmm0F5qunsyA+X8HSiyRNNE5ON3itD3tERax4meq9tv+S7bjTMXkPjqbdBGUmH2maGDCuEvpODwg==,
       }
 
   "@types/lodash@4.17.27":
@@ -4120,6 +4138,12 @@ packages:
         integrity: sha512-hsU18Ae8CDTR6Kgu9DYf0EbCr/a5iGL0rytQDobUcdpYOKokk8LEjVphnXkDkgpi0wYVsqrXuP0bZxJaTqdgoA==,
       }
     engines: { node: ">= 0.4" }
+
+  async@2.6.4:
+    resolution:
+      {
+        integrity: sha512-mzo5dfJYwAn29PeiJ0zvwTo04zj8HDJj0Mn8TD7sno7q12prdbnasKJHhkm2c1LgrhlJ0teaea8860oxi51mGA==,
+      }
 
   asynckit@0.4.0:
     resolution:
@@ -4949,6 +4973,12 @@ packages:
         integrity: sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw==,
       }
     engines: { node: ">=12" }
+
+  doublearray@0.0.2:
+    resolution:
+      {
+        integrity: sha512-aw55FtZzT6AmiamEj2kvmR6BuFqvYgKZUkfQ7teqVRNqD5UE0rw8IeW/3gieHNKQ5sPuDKlljWEn4bzv5+1bHw==,
+      }
 
   dunder-proto@1.0.1:
     resolution:
@@ -6693,6 +6723,12 @@ packages:
     resolution:
       {
         integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==,
+      }
+
+  kuromoji@0.1.2:
+    resolution:
+      {
+        integrity: sha512-V0dUf+C2LpcPEXhoHLMAop/bOht16Dyr+mDiIE39yX3vqau7p80De/koFqpiTcL1zzdZlc3xuHZ8u5gjYRfFaQ==,
       }
 
   language-subtag-registry@0.3.23:
@@ -9187,6 +9223,12 @@ packages:
         integrity: sha512-KiGErG2J0G82LSpniV0CtIzjlJ10E04j02VOudJsPyPwNZgGnRKQy7I1R7GMyg/QswnE4l7ohSGrQbQbjXPPDA==,
       }
 
+  zlibjs@0.3.1:
+    resolution:
+      {
+        integrity: sha512-+J9RrgTKOmlxFSDHo0pI1xM6BLVUv+o0ZT9ANtCxGkjIVCCUdx9alUF8Gm+dGLKbkkkidWIHFDZHDMpfITt4+w==,
+      }
+
   zod-validation-error@4.0.2:
     resolution:
       {
@@ -10953,6 +10995,8 @@ snapshots:
 
   "@types/deep-eql@4.0.2": {}
 
+  "@types/doublearray@0.0.32": {}
+
   "@types/eslint@9.6.1":
     dependencies:
       "@types/estree": 1.0.10
@@ -10996,6 +11040,10 @@ snapshots:
   "@types/json-schema@7.0.15": {}
 
   "@types/json5@0.0.29": {}
+
+  "@types/kuromoji@0.1.3":
+    dependencies:
+      "@types/doublearray": 0.0.32
 
   "@types/lodash@4.17.27": {}
 
@@ -11511,6 +11559,10 @@ snapshots:
 
   async-function@1.0.0: {}
 
+  async@2.6.4:
+    dependencies:
+      lodash: 4.18.1
+
   asynckit@0.4.0: {}
 
   available-typed-arrays@1.0.7:
@@ -11950,6 +12002,8 @@ snapshots:
   dotenv@17.4.1: {}
 
   dotenv@17.4.2: {}
+
+  doublearray@0.0.2: {}
 
   dunder-proto@1.0.1:
     dependencies:
@@ -13341,6 +13395,12 @@ snapshots:
   keyv@4.5.4:
     dependencies:
       json-buffer: 3.0.1
+
+  kuromoji@0.1.2:
+    dependencies:
+      async: 2.6.4
+      doublearray: 0.0.2
+      zlibjs: 0.3.1
 
   language-subtag-registry@0.3.23: {}
 
@@ -14896,6 +14956,8 @@ snapshots:
     dependencies:
       grammex: 3.1.13
       graphmatch: 1.1.1
+
+  zlibjs@0.3.1: {}
 
   zod-validation-error@4.0.2(zod@4.6.7):
     dependencies:

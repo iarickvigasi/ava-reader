@@ -62,3 +62,6 @@ Tokens: `apps/web/app/globals.css`; compose with `cn()` and Tailwind v4; theme v
 | with a spinner; playing replaces it with a sound waveform. Tapping either active state stops it.  |
 | Stopped/ended/error restores the speaker; localized errors appear inline. Uncertain language asks |
 | for a longer phrase.                                                                              |
+
+A prepared audio clip blocked by gesture policy shows a tap-to-play prompt. Auth/provider/timeout
+feedback is distinct.
