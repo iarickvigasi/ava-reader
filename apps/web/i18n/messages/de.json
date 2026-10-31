@@ -479,9 +479,11 @@
       "selection": "Auswahl",
       "highlight": "Markierung",
       "selectionReadAloud": "Auswahl vorlesen",
+      "translationReadAloud": "Übersetzung vorlesen",
       "narrationLoading": "Sprachausgabe wird vorbereitet. Zum Abbrechen tippen",
       "narrationStop": "Sprachausgabe stoppen",
       "narrationReady": "Audio ist bereit. Zum Abspielen tippen.",
+      "narrationTooLong": "Dieser Text ist zu lang zum Vorlesen. Wähle einen kürzeren Abschnitt.",
       "narrationAuth": "Melde dich für die Sprachausgabe an.",
       "narrationProvider": "Audio konnte nicht vorbereitet werden. Bitte erneut versuchen.",
       "narrationTimeout": "Sprachausgabe hat zu lange gedauert. Bitte erneut versuchen.",
@@ -513,6 +515,7 @@
       "askAi": "KI fragen",
       "generating": "Wird erstellt…",
       "tryAgain": "Erneut versuchen",
+      "regenerate": "Neu generieren",
       "queued": "Warte auf eine Verbindung… wir schließen das ab, sobald du wieder online bist.",
       "errors": {
         "generic": "Etwas ist schiefgelaufen."

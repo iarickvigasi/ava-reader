@@ -10,6 +10,24 @@ function render(props: Parameters<typeof ToolResultView>[0]) {
 }
 
 describe("ToolResultView", () => {
+  it("offers regeneration only for a completed result", () => {
+    expect(
+      render({
+        text: "Saved answer",
+        isStreaming: false,
+        error: null,
+        onRetry: vi.fn(),
+      }),
+    ).toContain("Regenerate");
+    expect(
+      render({
+        text: "Partial answer",
+        isStreaming: true,
+        error: null,
+        onRetry: vi.fn(),
+      }),
+    ).not.toContain("Regenerate");
+  });
   it("shows the queued placeholder when offline-queued (no body yet)", () => {
     const markup = render({
       text: "",

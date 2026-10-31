@@ -27,7 +27,7 @@ Monorepo: pnpm workspaces + Turbo (lint/typecheck/test/build), Node ≥22.
 - **apps/mobile** — placeholder for future cross-platform.
 - **AI** — OpenRouter via the Vercel `ai` SDK, structured output. Selection narration uses
   the OpenRouter Decisions endpoint (Jev 1.14) for contextual fragment-language identification,
-  then server-funded ElevenLabs Flash/v4 speech with an explicit language code. Japanese readings
+  then server-funded Google Flash TTS speech with language/delivery instructions; PCM wrapped as WAV. Japanese readings
   use a bundled Kuromoji dictionary before speech. All Toolbox tools share the translation preference. See adr/2.
 
 ## Web app (apps/web)

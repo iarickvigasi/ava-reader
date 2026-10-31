@@ -1,4 +1,5 @@
 import { Logger, ServiceUnavailableException } from '@nestjs/common';
+import { narrationErrorName } from './narration-error-name';
 const logger = new Logger('Narration');
 export function narrationFailure(
   stage: string,
@@ -14,7 +15,7 @@ export function narrationFailure(
     )
       status = detail.upstreamStatus;
   }
-  const cause = error instanceof Error ? error.name : 'UnknownError';
+  const cause = narrationErrorName(error);
   // Deliberately exclude selection, credentials and upstream response bodies.
   logger.warn(
     JSON.stringify({

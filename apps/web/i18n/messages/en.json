@@ -479,9 +479,11 @@
       "selection": "Selection",
       "highlight": "Highlight",
       "selectionReadAloud": "Read selection aloud",
+      "translationReadAloud": "Read translation aloud",
       "narrationLoading": "Preparing narration. Tap to cancel",
       "narrationStop": "Stop narration",
       "narrationReady": "Audio is ready. Tap the speaker to play.",
+      "narrationTooLong": "This text is too long to narrate. Select a shorter passage.",
       "narrationAuth": "Sign in to use narration, then try again.",
       "narrationProvider": "The narration service could not prepare audio. Please try again.",
       "narrationTimeout": "Narration took too long. Please try again.",
@@ -513,6 +515,7 @@
       "askAi": "Ask AI",
       "generating": "Generating…",
       "tryAgain": "Try again",
+      "regenerate": "Regenerate",
       "queued": "Waiting for connection… we'll finish this once you're back online.",
       "errors": {
         "generic": "Something went wrong."

@@ -49,49 +49,41 @@ it('uses the kana fast path only for Japanese-script selections', async () => {
     identifyNarrationLanguage(config, { text: 'こんにちは。' }, account()),
   ).resolves.toBe('ja');
   expect(decide).not.toHaveBeenCalled();
-  decide.mockResolvedValue(answer('mixed'));
+  decide.mockResolvedValue({
+    choice: 'ja',
+    probabilities: { ja: 0.55, fr: 0.45 },
+  });
   await expect(
     identifyNarrationLanguage(
       config,
       { text: 'こんにちは bonjour' },
       account(),
     ),
-  ).rejects.toThrow();
+  ).resolves.toBe('ja');
   expect(decide).toHaveBeenCalledTimes(1);
 });
 
-it.each(['unknown', 'mixed', 'invalid'])(
-  'refuses %s instead of forcing the hint',
-  async (code) => {
-    decide.mockResolvedValue(answer(code));
-    await expect(
-      identifyNarrationLanguage(
-        config,
-        { text: 'Gift', languageHint: 'en' },
-        account(),
-      ),
-    ).rejects.toMatchObject({ status: 422 });
-  },
-);
-
-it('rejects weak probabilities and near ties', async () => {
+it('accepts the highest score despite a narrow margin', async () => {
   decide.mockResolvedValue({
     choice: 'fr',
     probabilities: { fr: 0.55, en: 0.45 },
   });
   await expect(
     identifyNarrationLanguage(config, { text: 'chat' }, account()),
-  ).rejects.toMatchObject({ status: 422 });
+  ).resolves.toBe('fr');
 });
 
 it('routes kana plus Han quotations through the contextual model', async () => {
-  decide.mockResolvedValue(answer('mixed'));
+  decide.mockResolvedValue({
+    choice: 'ja',
+    probabilities: { ja: 0.51, zh: 0.49 },
+  });
   await expect(
     identifyNarrationLanguage(
       config,
       { text: '彼は「你好」と言った。' },
       account(),
     ),
-  ).rejects.toMatchObject({ status: 422 });
+  ).resolves.toBe('ja');
   expect(decide).toHaveBeenCalledTimes(1);
 });

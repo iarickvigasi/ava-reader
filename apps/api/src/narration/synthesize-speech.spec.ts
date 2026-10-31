@@ -12,21 +12,25 @@ afterAll(() => {
   global.fetch = originalFetch;
 });
 
-it('uses server-funded v4 with deliberate delivery and playable MP3', async () => {
+it('uses server-funded Google Flash TTS with deliberate delivery and playable WAV', async () => {
   fetchMock.mockResolvedValue(
     new Response(new Uint8Array([1, 2]), {
-      headers: { 'Content-Type': 'audio/mpeg' },
+      headers: { 'Content-Type': 'audio/pcm;rate=24000;channels=1' },
     }),
   );
-  expect(await synthesizeSpeech(config, 'привіт')).toEqual(Buffer.from([1, 2]));
+  const audio = await synthesizeSpeech(config, 'привіт');
+  expect(audio.toString('ascii', 0, 4)).toBe('RIFF');
+  expect(audio.subarray(44, 46)).toEqual(Buffer.from([1, 2]));
+  expect(audio.subarray(46)).toEqual(Buffer.alloc(19_200));
   const [url, request] = fetchMock.mock.calls[0] as [string, RequestInit];
   expect(url).toBe('https://openrouter.ai/api/v1/audio/speech');
-  expect(JSON.parse(request.body as string)).toMatchObject({
-    model: 'elevenlabs/eleven-v4',
-    input: '[slowly] [clearly] привіт',
-    voice: 'alice',
-    response_format: 'mp3',
+  const body = JSON.parse(request.body as string) as { instructions: string };
+  expect(body).toMatchObject({
+    model: 'google/gemini-3.8-flash-tts',
+    input: 'привіт',
+    response_format: 'pcm',
   });
+  expect(body.instructions).toContain('slightly slower');
   expect(request.headers).toHaveProperty(
     'Authorization',
     'Bearer server-only-key',
@@ -61,15 +65,17 @@ it.each(['application/json', 'audio/mpeg'])(
   },
 );
 
-it('passes the detected language through ElevenLabs provider options', async () => {
+it('passes detected Japanese pronunciation through Google delivery instructions', async () => {
   fetchMock.mockResolvedValue(
-    new Response(new Uint8Array([1]), {
-      headers: { 'Content-Type': 'audio/mpeg' },
+    new Response(new Uint8Array([1, 2]), {
+      headers: { 'Content-Type': 'audio/pcm;rate=24000;channels=1' },
     }),
   );
   await synthesizeSpeech(config, '生', 'ja');
   const [, request] = fetchMock.mock.calls[0] as [string, RequestInit];
-  expect(JSON.parse(request.body as string)).toMatchObject({
-    provider: { options: { elevenlabs: { language_code: 'ja' } } },
+  const body = JSON.parse(request.body as string) as { instructions: string };
+  expect(body).toMatchObject({
+    model: 'google/gemini-3.8-flash-tts',
   });
+  expect(body.instructions).toContain('natural Japanese pronunciation');
 });

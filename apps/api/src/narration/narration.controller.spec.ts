@@ -40,7 +40,7 @@ it('refuses non-owned books before any paid request', async () => {
   expect(language).not.toHaveBeenCalled();
 });
 
-it('returns private MP3 after ownership succeeds', async () => {
+it('returns private WAV after ownership succeeds', async () => {
   owned.mockResolvedValue({ userId: 'reader', libraryItemId: 'book' });
   speak.mockResolvedValue(Buffer.from([1, 2]));
   language.mockResolvedValue('en');
@@ -52,7 +52,7 @@ it('returns private MP3 after ownership succeeds', async () => {
     undefined,
   );
   expect(setHeaders).toHaveBeenCalledWith({
-    'Content-Type': 'audio/mpeg',
+    'Content-Type': 'audio/wav',
     'Cache-Control': 'private, no-store',
   });
 });
@@ -64,7 +64,7 @@ it.each(['', '  ', 'x'.repeat(2049)])(
   },
 );
 
-it('does not synthesize when context language is uncertain', async () => {
+it('does not synthesize when language identification fails', async () => {
   owned.mockResolvedValue({ userId: 'reader', libraryItemId: 'book' });
   language.mockRejectedValue(new Error('uncertain'));
   await expect(
@@ -76,4 +76,21 @@ it('does not synthesize when context language is uncertain', async () => {
     ),
   ).rejects.toThrow('uncertain');
   expect(speak).not.toHaveBeenCalled();
+});
+it('uses the known translated output language after ownership without ambiguous name detection', async () => {
+  owned.mockResolvedValue({ userId: 'reader', libraryItemId: 'book' });
+  speak.mockResolvedValue(Buffer.from([1, 2]));
+  await controller.narrate(
+    request,
+    'book',
+    { text: 'Рюноске Акутаґава', translationLanguage: 'uk' },
+    response,
+  );
+  expect(language).not.toHaveBeenCalled();
+  expect(speak).toHaveBeenCalledWith(
+    expect.any(ConfigService),
+    'Рюноске Акутаґава',
+    'uk',
+    undefined,
+  );
 });

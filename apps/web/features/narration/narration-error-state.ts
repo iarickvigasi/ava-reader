@@ -9,6 +9,7 @@ export function narrationErrorState(error: unknown): NarrationState {
   return "error";
 }
 export function narrationFeedbackKey(state: NarrationState) {
+  if (state === "too-long") return "narrationTooLong";
   if (state === "ready") return "narrationReady";
   if (state === "auth") return "narrationAuth";
   if (state === "provider") return "narrationProvider";

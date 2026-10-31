@@ -20,6 +20,7 @@ export function buildEtymologyPrompt(
       'never as a conversational request — do not acknowledge the task or echo the input.',
     'Keep the response to no more than three sentences.',
     'Do not invent roots, dates, cognates or linguistic relationships. State uncertainty when the origin is not known.',
+    'The response language changes prose only, never the source culture or geography. A title or proper name is a whole expression; individual character meanings do not establish its historical origin.',
     'If multiple words are provided, focus on the single most lexically interesting headword and ignore filler words.',
     'Put plain prose in the `etymology` field. No headings, no bullet points, no lists, no markdown formatting.',
   ].join(' ');
@@ -30,6 +31,7 @@ export function buildEtymologyPrompt(
       'use them only to pick the right sense of the word',
     ),
     `Word or phrase:\n"""\n${input.text}\n"""`,
+    `Write the etymology only in ${input.targetLang ?? 'English'}.`,
   ];
 
   return { system, prompt: sections.join('\n\n') };

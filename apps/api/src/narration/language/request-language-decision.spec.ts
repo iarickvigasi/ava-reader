@@ -48,7 +48,8 @@ it('uses the Decisions endpoint with a fragment-specific bounded choice', async 
     sentenceContext: input.context,
     languageHint: 'ja',
   });
-  expect(body.questions.language.criteria).toHaveProperty('unknown');
+  expect(body.questions.language.criteria).not.toHaveProperty('unknown');
+  expect(body.questions.language.criteria).not.toHaveProperty('mixed');
   expect(body.questions.language.criteria).toHaveProperty('ja');
 });
 

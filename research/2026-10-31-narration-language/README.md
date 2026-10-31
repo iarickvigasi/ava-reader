@@ -1,5 +1,8 @@
 # Contextual language decisions — 31 October 2026
 
+Historical benchmark: the founder subsequently requested highest-score narration with no probability
+or margin gate; see [current policy](../../docs/specs/5-reader-panels/5.6-selection-narration.md).
+
 Goal G08; [task](../../docs/09-work/items/2026-10-31-word-narration.md).
 The founder requested quick fragment-language identification from sentence context, including
 Japanese kanji versus Chinese and French embedded in English; Jev means TypeSafe AI’s model.

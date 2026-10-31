@@ -1,33 +1,14 @@
-const FLASH_LANGUAGES = new Set(
-  'en ja zh de hi fr ko pt it es id nl tr fil pl sv bg ro ar cs el fi hr ms sk da ta uk ru hu no vi'.split(
-    ' ',
-  ),
-);
+const languageNames = new Intl.DisplayNames(['en'], { type: 'language' });
 
 export function speechOptions(text: string, language?: string) {
-  const flash = !!language && FLASH_LANGUAGES.has(language);
+  const pronunciation = language
+    ? ` Use natural ${languageNames.of(language)} pronunciation.`
+    : '';
   return {
-    model: flash ? 'elevenlabs/eleven-flash-v2.5' : 'elevenlabs/eleven-v4',
-    input: flash
-      ? text
-      : `[slowly] [clearly] ${text.replace(/\[/g, '(').replace(/\]/g, ')')}`,
-    voice: 'alice',
-    response_format: 'mp3',
-    provider: {
-      options: {
-        elevenlabs: {
-          ...(language ? { language_code: language } : {}),
-          ...(flash
-            ? {
-                voice_settings: {
-                  speed: 0.85,
-                  stability: 0.75,
-                  similarity_boost: 0.75,
-                },
-              }
-            : {}),
-        },
-      },
-    },
+    model: 'google/gemini-3.8-flash-tts',
+    input: text,
+    voice: 'Kore',
+    instructions: `Speak at a slightly slower, natural pace with clear articulation. Enunciate each sound without exaggerated pauses. Finish the final word fully, including its ending consonants and vowels, and let the final sound resolve naturally. Do not rush or cut off the ending. Speak only the supplied text.${pronunciation}`,
+    response_format: 'pcm',
   };
 }

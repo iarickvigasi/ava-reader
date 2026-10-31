@@ -42,6 +42,7 @@ function requestSignature(mutation: GenerateMutation): string {
     mutation.payload.context ?? null,
     mutation.payload.bookTitle ?? null,
     mutation.payload.author ?? null,
+    mutation.payload.regenerationId ?? null,
   ]);
 }
 

@@ -479,9 +479,11 @@
       "selection": "Sélection",
       "highlight": "Surligner",
       "selectionReadAloud": "Lire la sélection à voix haute",
+      "translationReadAloud": "Lire la traduction à voix haute",
       "narrationLoading": "Préparation de la lecture. Appuyez pour annuler",
       "narrationStop": "Arrêter la lecture",
       "narrationReady": "Audio prêt. Appuyez pour écouter.",
+      "narrationTooLong": "Ce texte est trop long pour être lu à voix haute. Sélectionnez un passage plus court.",
       "narrationAuth": "Connectez-vous pour utiliser la lecture.",
       "narrationProvider": "Impossible de préparer l’audio. Réessayez.",
       "narrationTimeout": "La lecture a pris trop de temps. Réessayez.",
@@ -513,6 +515,7 @@
       "askAi": "Demander à l'IA",
       "generating": "Génération…",
       "tryAgain": "Réessayer",
+      "regenerate": "Régénérer",
       "queued": "En attente de connexion… nous terminerons dès que vous serez de nouveau en ligne.",
       "errors": {
         "generic": "Une erreur est survenue."

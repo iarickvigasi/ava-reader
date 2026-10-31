@@ -45,6 +45,11 @@ it("retries a failed request through the durable queue", () => {
   expect(enqueue).not.toHaveBeenCalled();
   view.retry?.();
   expect(enqueue).toHaveBeenCalledOnce();
+  expect(enqueue).toHaveBeenCalledWith(
+    expect.objectContaining({
+      payload: expect.objectContaining({ regenerationId: "request-id" }),
+    }),
+  );
 });
 
 it("keeps an existing pending request and displays the queued placeholder", () => {

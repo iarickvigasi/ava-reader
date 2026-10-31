@@ -1,6 +1,6 @@
 # Reader panels (overview)
 
-> Status: shipped · Updated: 2026-09-02 · ADRs: [[3-offline-first-dexie-buckets]],
+> Status: shipped · Updated: 2026-10-31 · ADRs: [[3-offline-first-dexie-buckets]],
 > [[2-openrouter-and-byo-key]] · Related: [[2-reader/_overview]], [[4-offline/_overview]] · Code:
 > apps/web/components/app/reader/overlays, apps/web/features/offline/buckets/{highlights,ai-comments}
 
@@ -15,8 +15,8 @@ on top of it. Split by subsystem, like [[2-reader/_overview]].
 
 - 5.1 highlights — color-coded saved selections, painted in-text and listed in a panel.
 - 5.2 ai-toolbox — on-selection AI tools (translate, explain, etymology) streaming in place, plus temporary
-  word/phrase narration funded by AVA.
-- 5.6 selection-narration — temporary pronunciation with contextual fragment-language identification.
+  selection/translation narration funded by AVA, literal translations and answer regeneration.
+- 5.6 selection-narration — Google Flash TTS, complete endings with a pause and timeout recovery.
 - 5.3 ai-comments — persisted AI annotations anchored to passages, with their panel.
 - 5.4 preferences — shared Toolbox response-language setting, reading and theme; Listening hidden.
 - 5.5 search — find sentences in cached book text and jump to their location.

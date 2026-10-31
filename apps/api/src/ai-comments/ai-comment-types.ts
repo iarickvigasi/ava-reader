@@ -11,6 +11,7 @@ export type GenerateInput = {
   libraryItemId: string;
   kind: AiCommentKind;
   text: string;
+  regenerationId?: string;
   locator?: string;
   targetLang?: string;
   context?: string;

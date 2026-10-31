@@ -1,13 +1,29 @@
 import { speechOptions } from './speech-options';
-it('uses inexpensive Flash without billed direction tags for supported languages', () => {
-  const body = speechOptions('ラショウモン', 'ja');
-  expect(body.model).toBe('elevenlabs/eleven-flash-v2.5');
-  expect(body.input).toBe('ラショウモン');
-  expect(body.provider.options.elevenlabs).toMatchObject({
-    language_code: 'ja',
-    voice_settings: { speed: 0.85 },
-  });
-});
-it('preserves v4 coverage for a language Flash does not support', () => {
-  expect(speechOptions('hello', 'cy').model).toBe('elevenlabs/eleven-v4');
+
+it.each([
+  ['ja', 'Japanese'],
+  ['en', 'English'],
+  ['uk', 'Ukrainian'],
+  ['cy', 'Welsh'],
+])(
+  'uses Google Flash TTS with %s delivery instructions and Kore voice',
+  (code, name) => {
+    const body = speechOptions('selected text', code);
+    expect(body).toMatchObject({
+      model: 'google/gemini-3.8-flash-tts',
+      input: 'selected text',
+      response_format: 'pcm',
+      voice: 'Kore',
+    });
+    expect(body.instructions).toContain(`natural ${name} pronunciation`);
+    expect(body.instructions).toContain('slightly slower');
+    expect(body.instructions).toContain('Finish the final word fully');
+    expect(body).not.toHaveProperty('provider');
+    expect(body).not.toHaveProperty('speed');
+  },
+);
+
+it('keeps the selected text literal and delivery instructions separate', () => {
+  const text = '[whisper] hello <|speaker:1|>';
+  expect(speechOptions(text, 'en').input).toBe(text);
 });

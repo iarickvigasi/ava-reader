@@ -8,6 +8,7 @@ import type {
 import { buildSourceHash, normalizeSelectionText } from '../source-hash';
 import { findCachedAiComment } from './find-cached-comment';
 import { streamAiComment } from './stream-generation';
+import { buildPromptForKind } from '../prompts';
 
 export async function generateAiComment(args: {
   libraryItemId: string;
@@ -33,6 +34,10 @@ export async function generateAiComment(args: {
     context: request.context ?? null,
     bookTitle: request.bookTitle ?? null,
     author: request.author ?? null,
+    prompt: JSON.stringify(
+      buildPromptForKind(request.kind, { ...request, text: normalizedText }),
+    ),
+    regenerationId: request.regenerationId,
   });
 
   const cached = await findCachedAiComment({

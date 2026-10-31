@@ -1,20 +1,8 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { SelectionPlayer } from "./selection-player";
 
-class FakeAudio {
-  currentTime = 0;
-  onplaying: (() => void) | null = null;
-  onwaiting: (() => void) | null = null;
-  onended: (() => void) | null = null;
-  onpause: (() => void) | null = null;
-  onerror: (() => void) | null = null;
-  play = vi.fn(async () => {
-    this.onplaying?.();
-  });
-  pause = vi.fn(() => this.onpause?.());
-  load = vi.fn();
-  removeAttribute = vi.fn();
-}
+import { FakeAudio } from "./selection-player-test-audio";
+
 let audio: FakeAudio;
 let player: SelectionPlayer;
 beforeEach(() => {

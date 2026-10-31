@@ -41,6 +41,7 @@ export function streamAiComment(args: {
     schema: widenedSchema,
     system: promptParts.system,
     prompt: promptParts.prompt,
+    temperature: 0,
     onFinish: (event) =>
       persistGeneratedComment({
         fieldKey,

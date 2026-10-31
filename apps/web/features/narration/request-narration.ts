@@ -39,6 +39,7 @@ export async function requestNarration(
         text: input.text,
         context: input.context,
         languageHint: input.languageHint,
+        translationLanguage: input.translationLanguage,
       }),
       signal,
     },

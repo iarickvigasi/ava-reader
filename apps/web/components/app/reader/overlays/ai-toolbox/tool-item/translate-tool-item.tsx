@@ -1,12 +1,9 @@
 import { TranslateTargetField } from "@/components/app/preferences/translate-target-field";
 import { useMemo } from "react";
 import { languageCode } from "./translation-language";
-import {
-  ReaderTranslationIcon,
-  SpeakerIcon,
-} from "@/components/app/shared/app-icons";
+import { ReaderTranslationIcon } from "@/components/app/shared/app-icons";
+import { TranslationResult } from "./translation-result";
 import type { SavedComment } from "./saved-comments";
-import { ToolResultView } from "./tool-result-view";
 import { ToolSection } from "./tool-section";
 import type { AiToolPayload } from "../generate/ai-tool-payload";
 import { useAiToolBinding } from "./use-ai-tool-binding";
@@ -83,25 +80,18 @@ export function TranslateToolItem({
         isExpanded={isOpen}
         onToggle={onToggle}
       >
-        <div className="flex items-start gap-3">
-          <button
-            type="button"
-            aria-label="Read translation aloud"
-            className="mt-0.5 inline-flex size-7 shrink-0 items-center justify-center rounded-full text-ink/70 transition hover:bg-paper-strong/70 hover:text-ink"
-          >
-            <SpeakerIcon className="size-4" />
-          </button>
-          <div className="min-w-0 flex-1">
-            <ToolResultView
-              text={sameLanguage ? selection : text}
-              isStreaming={isStreaming}
-              error={error}
-              phase={phase}
-              failureReason={failureReason}
-              onRetry={retry}
-            />
-          </div>
-        </div>
+        <TranslationResult
+          libraryItemId={libraryItemId}
+          language={language}
+          scope={`${locator}:${language}`}
+          source={{ text: selection, context, bookTitle, author }}
+          text={sameLanguage ? selection : text}
+          isStreaming={sameLanguage ? false : isStreaming}
+          error={sameLanguage ? null : error}
+          phase={sameLanguage ? null : phase}
+          failureReason={failureReason}
+          onRetry={sameLanguage ? undefined : retry}
+        />
       </ToolSection>
     </div>
   );

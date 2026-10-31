@@ -43,6 +43,8 @@ export function buildSourceHash(input: {
   context?: string | null;
   bookTitle?: string | null;
   author?: string | null;
+  prompt?: string;
+  regenerationId?: string;
 }): string {
   const normalized = normalizeSelectionText(input.text);
   const targetLang = input.targetLang ?? '';
@@ -57,6 +59,8 @@ export function buildSourceHash(input: {
     context,
     bookTitle,
     author,
+    input.prompt ?? '',
+    input.regenerationId ?? '',
   ].join('|');
   return createHash('sha256').update(payload).digest('hex');
 }

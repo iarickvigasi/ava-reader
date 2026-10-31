@@ -8,9 +8,11 @@ export type NarrationState =
   | "ready"
   | "auth"
   | "provider"
-  | "timeout";
+  | "timeout"
+  | "too-long";
 
 export class SelectionPlayer {
+  private static active: SelectionPlayer | null = null;
   private state: NarrationState = "idle";
   private listeners = new Set<() => void>();
   private request: AbortController | null = null;
@@ -26,6 +28,7 @@ export class SelectionPlayer {
   };
 
   stop = () => {
+    if (SelectionPlayer.active === this) SelectionPlayer.active = null;
     this.request?.abort();
     this.request = null;
     this.audio?.pause();
@@ -49,6 +52,8 @@ export class SelectionPlayer {
   async toggle(load: (signal: AbortSignal) => Promise<Blob>) {
     if (this.state === "loading" || this.state === "playing")
       return this.stop();
+    SelectionPlayer.active?.stop();
+    SelectionPlayer.active = this;
     const request = new AbortController();
     this.request = request;
     this.update("loading");

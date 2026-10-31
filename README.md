@@ -224,7 +224,7 @@ pnpm build
 pnpm --filter api admin:grant you@example.com
 ```
 
-Selection narration uses the API’s existing `OPENROUTER_API_KEY` (ElevenLabs Flash v2.5/v4, MP3).
+Selection narration uses the API’s existing `OPENROUTER_API_KEY` (Google Gemini 3.8 Flash TTS trial, WAV).
 It is free to readers; AVA pays provider usage. Jev 1.14 identifies the selected fragment’s language
 from sentence context before speech generation; Japanese kanji readings are resolved locally.
 No additional provider key is required.

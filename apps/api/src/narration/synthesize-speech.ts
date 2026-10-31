@@ -1,5 +1,6 @@
 import { narrationFailure } from './narration-failure';
 import { speechOptions } from './speech-options';
+import { pcmToWav } from './pcm-to-wav';
 import { japanesePronunciation } from './japanese-pronunciation';
 import {
   ServiceUnavailableException,
@@ -7,7 +8,7 @@ import {
 } from '@nestjs/common';
 import type { ConfigService } from '@nestjs/config';
 
-// V4 has no numeric speed setting; pacing is directed in the script instead.
+// Google delivery/language direction uses OpenRouter's instructions field.
 export async function synthesizeSpeech(
   config: ConfigService,
   text: string,
@@ -39,11 +40,8 @@ export async function synthesizeSpeech(
     if (!response.ok)
       throw new Error(`Speech provider status ${response.status}`);
     const contentType = response.headers.get('content-type') ?? '';
-    if (!contentType.startsWith('audio/'))
-      throw new Error('Invalid speech response');
     const audio = Buffer.from(await response.arrayBuffer());
-    if (!audio.length) throw new Error('Empty speech response');
-    return audio;
+    return pcmToWav(audio, contentType);
   } catch (error: unknown) {
     if (error instanceof UnprocessableEntityException) throw error;
     throw narrationFailure(stage, error, status);

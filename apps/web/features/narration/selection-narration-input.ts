@@ -9,6 +9,7 @@ export type NarrationInput = {
   text: string;
   context?: string;
   languageHint?: string;
+  translationLanguage?: string;
 };
 const MAX_CONTEXT_CHARS = 8192;
 

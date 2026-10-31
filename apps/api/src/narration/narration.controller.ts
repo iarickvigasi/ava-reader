@@ -1,4 +1,5 @@
 import { identifyNarrationLanguage } from './language/identify-narration-language';
+import { translatedNarrationLanguage } from './language/translated-narration-language';
 import {
   Body,
   Controller,
@@ -23,6 +24,7 @@ export const narrationSchema = z.object({
   text: z.string().trim().min(1).max(2048),
   context: z.string().max(8192).optional(),
   languageHint: z.string().max(128).optional(),
+  translationLanguage: z.string().max(128).optional(),
 });
 
 @Controller('library/:libraryItemId/narration')
@@ -48,11 +50,14 @@ export class NarrationController {
       prisma: this.prisma,
       users: this.users,
     });
-    const language = await identifyNarrationLanguage(
-      this.config,
-      input,
-      request.auth.clerkUserId,
-    );
+    const language =
+      translatedNarrationLanguage(input) ??
+      (await identifyNarrationLanguage(
+        this.config,
+        input,
+        request.auth.clerkUserId,
+      ));
+    if (response.destroyed) return;
     const audio = await synthesizeSpeech(
       this.config,
       input.text,
@@ -60,7 +65,7 @@ export class NarrationController {
       input.context,
     );
     response.set({
-      'Content-Type': 'audio/mpeg',
+      'Content-Type': 'audio/wav',
       'Cache-Control': 'private, no-store',
     });
     response.send(audio);
