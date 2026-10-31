@@ -35,17 +35,16 @@ export function selectAiComments(bucket: StorageBucket): AiCommentRecord[] {
   );
 }
 
-export const selectStableAiComments =
-  createStableSelector<AiCommentRecord, StorageBucket>(selectAiComments);
+export const selectStableAiComments = createStableSelector<
+  AiCommentRecord,
+  StorageBucket
+>(selectAiComments);
 
 function generatePlaceholder(
   mutation: Extract<
     PendingMutation,
     {
-      kind:
-        | "generate.translate"
-        | "generate.etymology"
-        | "generate.explain";
+      kind: "generate.translate" | "generate.etymology" | "generate.explain";
     }
   >,
 ): AiCommentRecord {
@@ -55,8 +54,7 @@ function generatePlaceholder(
       : mutation.kind === "generate.etymology"
         ? "ETYMOLOGY"
         : "EXPLAIN";
-  const targetLang =
-    mutation.kind === "generate.translate" ? mutation.payload.targetLang : null;
+  const targetLang = mutation.payload.targetLang ?? null;
   return {
     id: mutation.id,
     kind,

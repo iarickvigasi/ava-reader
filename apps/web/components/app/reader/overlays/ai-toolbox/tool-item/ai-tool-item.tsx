@@ -8,7 +8,10 @@ import { useAiToolBinding } from "./use-ai-tool-binding";
 // The simple-shape tools (etymology, explain) — single-string payload, plain
 // streamed body. Translate has its own component because of the language
 // header and speaker button.
-type SimpleToolKind = Extract<AiToolPayload, { kind: "etymology" | "explain" }>["kind"];
+type SimpleToolKind = Extract<
+  AiToolPayload,
+  { kind: "etymology" | "explain" }
+>["kind"];
 
 type AiToolItemProps = {
   kind: SimpleToolKind;
@@ -18,6 +21,7 @@ type AiToolItemProps = {
   onToggle: () => void;
   libraryItemId: string;
   selection: string;
+  targetLang: string;
   locator: string | undefined;
   context: string | undefined;
   bookTitle: string | undefined;
@@ -33,6 +37,7 @@ export function AiToolItem({
   onToggle,
   libraryItemId,
   selection,
+  targetLang,
   locator,
   context,
   bookTitle,
@@ -42,9 +47,17 @@ export function AiToolItem({
   const payload = useMemo<AiToolPayload | null>(
     () =>
       selection
-        ? { kind, text: selection, locator, context, bookTitle, author }
+        ? {
+            kind,
+            text: selection,
+            targetLang,
+            locator,
+            context,
+            bookTitle,
+            author,
+          }
         : null,
-    [kind, selection, locator, context, bookTitle, author],
+    [kind, selection, targetLang, locator, context, bookTitle, author],
   );
   const { text, isStreaming, error, phase, failureReason, retry } =
     useAiToolBinding({

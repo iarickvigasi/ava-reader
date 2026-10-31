@@ -9,10 +9,6 @@ import { computeAiCommentLocator } from "./compute-ai-comment-locator";
 import { useReaderSelectionContext } from "./reader-selection-context";
 import type { ReaderSelection } from "./types";
 
-// Wires the highlight store into the reader's selection flow. Returns the
-// callbacks the page-box and ReaderArticle should fire on a fresh selection
-// or a click on a painted highlight — both ultimately open the AI Comments
-// panel pre-bound to the matching row.
 export function useHighlightSelectionBridge(activeChapterId: string): {
   onTextSelected: (selection: ReaderSelection) => void;
   onHighlightClick: (highlightId: string) => void;
@@ -23,10 +19,6 @@ export function useHighlightSelectionBridge(activeChapterId: string): {
   const { highlights } = useHighlightsContext();
   const { comments: aiComments } = useAiCommentsContext();
 
-  // Fresh selection: open the AI Comments panel. If the range exactly
-  // matches an existing highlight, pre-bind to its id/color so the swatch
-  // shows the current color and clicks toggle/replace instead of stacking
-  // duplicates.
   const onTextSelected = useCallback(
     ({
       text,
@@ -34,6 +26,7 @@ export function useHighlightSelectionBridge(activeChapterId: string): {
       pointer,
       locator: providedLocator,
       context,
+      contextOffset,
     }: ReaderSelection) => {
       const locator =
         providedLocator === undefined
@@ -55,6 +48,7 @@ export function useHighlightSelectionBridge(activeChapterId: string): {
         locator,
         pointer,
         context,
+        contextOffset,
         highlightId: matched?.id ?? null,
         highlightColor: matched?.color ?? null,
       });
@@ -62,10 +56,6 @@ export function useHighlightSelectionBridge(activeChapterId: string): {
     },
     [activeChapterId, highlights, openPanel, setSelection],
   );
-
-  // Click on an existing highlight inside the article: open the AI Comments
-  // panel pre-bound to that highlight so the user can change/delete the
-  // color, or run AI tools against the same selection.
   const onHighlightClick = useCallback(
     (highlightId: string) => {
       const highlight = highlights.find((row) => row.id === highlightId);
@@ -82,10 +72,6 @@ export function useHighlightSelectionBridge(activeChapterId: string): {
     },
     [highlights, openPanel, setSelection],
   );
-
-  // Click on an existing AI-comment underline inside the article: open the
-  // AI Toolbox pre-bound to that comment's selection, matching the highlight
-  // click flow so the user can run more AI tools against the same fragment.
   const onAiCommentClick = useCallback(
     (aiCommentId: string) => {
       const comment = aiComments.find((row) => row.id === aiCommentId);

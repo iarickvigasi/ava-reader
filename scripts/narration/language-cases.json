@@ -1,0 +1,110 @@
+[
+  {
+    "text": "生",
+    "context": "彼は生の魚を食べた。",
+    "languageHint": "ja",
+    "expected": "ja"
+  },
+  {
+    "text": "今日",
+    "context": "今日は学校へ行きます。",
+    "languageHint": "ja",
+    "expected": "ja"
+  },
+  {
+    "text": "学校",
+    "context": "学校が終わったら家へ帰ります。",
+    "languageHint": "ja",
+    "expected": "ja"
+  },
+  {
+    "text": "学校",
+    "context": "我今天去学校学习。",
+    "languageHint": "zh",
+    "expected": "zh"
+  },
+  {
+    "text": "bonsoir",
+    "context": "She greeted the Parisian host with the French word bonsoir.",
+    "languageHint": "en",
+    "expected": "fr"
+  },
+  {
+    "text": "je ne sais quoi",
+    "context": "Her style had a certain je ne sais quoi, as the French would say.",
+    "languageHint": "en",
+    "expected": "fr"
+  },
+  {
+    "text": "Gift",
+    "context": "Das Gift ist gefährlich.",
+    "languageHint": "de",
+    "expected": "de"
+  },
+  {
+    "text": "gift",
+    "context": "I wrapped the gift for her birthday.",
+    "languageHint": "en",
+    "expected": "en"
+  },
+  {
+    "text": "bonjour",
+    "context": "He said the French greeting bonjour before continuing in English.",
+    "languageHint": "en",
+    "expected": "fr"
+  },
+  {
+    "text": "Доброго ранку",
+    "context": "Вона посміхнулась і сказала: «Доброго ранку». ",
+    "languageHint": "uk",
+    "expected": "uk"
+  },
+  {
+    "text": "日本語",
+    "context": "中国語ではなく日本語で話してください。",
+    "languageHint": "en",
+    "expected": "ja"
+  },
+  {
+    "text": "hello",
+    "context": "She said hello before leaving.",
+    "languageHint": "English",
+    "expected": "en"
+  },
+  {
+    "text": "bonjour",
+    "context": "She murmured bonjour as she entered the room.",
+    "languageHint": "en",
+    "expected": "fr"
+  },
+  {
+    "text": "chat",
+    "context": "Le chat dort sur le canapé.",
+    "languageHint": "en",
+    "expected": "fr"
+  },
+  {
+    "text": "chat",
+    "context": "We had a friendly chat after lunch.",
+    "languageHint": "en",
+    "expected": "en"
+  },
+  {
+    "text": "restaurant",
+    "context": "We ate at a restaurant in London.",
+    "languageHint": "en",
+    "expected": "en"
+  },
+  {
+    "text": "彼は「你好」と言った。",
+    "context": "彼は中国語の挨拶を覚えた。彼は「你好」と言った。",
+    "languageHint": "ja",
+    "expected": "mixed"
+  },
+  {
+    "text": "Hello, bonjour",
+    "context": "He greeted the English and French guests: Hello, bonjour.",
+    "languageHint": "en",
+    "expected": "mixed"
+  }
+]

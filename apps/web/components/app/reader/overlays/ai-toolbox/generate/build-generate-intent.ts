@@ -26,9 +26,12 @@ export function buildGenerateIntent(
   payload: AiToolPayload,
   id: string,
   queuedAt: string,
+  regenerate = false,
 ): GenerateIntent {
   const locator = parseLocator(payload.locator);
   const contextFields = {
+    ...(regenerate ? { regenerationId: id } : {}),
+    targetLang: payload.targetLang,
     context: payload.context,
     bookTitle: payload.bookTitle,
     author: payload.author,
@@ -40,8 +43,8 @@ export function buildGenerateIntent(
       id,
       payload: {
         text: payload.text,
-        targetLang: payload.targetLang,
         ...contextFields,
+        targetLang: payload.targetLang,
       },
       locator,
       queuedAt,

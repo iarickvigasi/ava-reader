@@ -1,20 +1,9 @@
-// Types for the offline-first AI comments bucket. The API enum uses
-// uppercase (TRANSLATE / ETYMOLOGY / EXPLAIN); Dexie + the bucket use the
-// same casing for consistency with what the reader already passes through.
-//
-// Mutation envelope mirrors the highlights pattern: one queued mutation per
-// comment id at any time (coalesce on enqueue).
-
 import type { ReaderRangeLocator } from "@/lib/api-types";
 
 export type AiCommentKind = "TRANSLATE" | "ETYMOLOGY" | "EXPLAIN";
 
 export type AiCommentStatus = "queued" | "streaming" | "ready" | "failed";
 
-// Single comment as the UI consumes it. Mirrors the AiCommentRecord type
-// the in-memory hook used to expose, plus a `status` so the UI can render
-// queued / streaming rows distinctly and, on a permanent failure, an
-// `error` carrying the server's reason so the panel can show it inline.
 export type AiCommentRecord = {
   id: string;
   kind: AiCommentKind;
@@ -24,29 +13,14 @@ export type AiCommentRecord = {
   locator: ReaderRangeLocator | null;
   createdAt: string;
   status: AiCommentStatus;
-  // Populated only when status is "failed" — the server's rejection reason,
-  // surfaced inline in the panel (replaces the old drop toast for generates).
   error: string | null;
 };
 
-// Shape returned by GET /api/library/:libraryItemId/ai-comments. Locator
-// arrives as a parsed object (or null) and `kind` is uppercase.
-export type ServerAiComment = {
-  id: string;
-  kind: AiCommentKind;
-  sourceText: string;
-  body: string;
-  targetLang: string | null;
-  locator: ReaderRangeLocator | null;
-  createdAt: string;
-};
+export type ServerAiComment = Omit<AiCommentRecord, "status" | "error">;
 
-// Discriminated payloads matching the three streaming POST endpoints.
-// Carry everything the sync runner needs to replay the call without
-// holding onto a Locator object (which the API expects as a JSON string).
-// The selection-context fields (spec 5.2) are captured at enqueue time so a
-// replayed request sends exactly what a live one would have.
 type GenerateContextFields = {
+  regenerationId?: string;
+  targetLang?: string;
   context?: string;
   bookTitle?: string;
   author?: string;
@@ -66,20 +40,13 @@ export type GenerateExplainPayload = GenerateContextFields & {
 export type PendingMutation =
   | {
       kind: "delete";
-      // Targets either a server-confirmed comment (id from a prior GET) or
-      // a still-queued local one (id from generateAiCommentId).
       id: string;
       queuedAt: string;
     }
   | {
       kind: "generate.translate";
-      // Stable client-side id for the in-flight / queued comment. Used as
-      // the React key + the Dexie row id until / unless the server returns
-      // a different id and we reconcile.
       id: string;
       payload: GenerateTranslatePayload;
-      // Pre-baked locator object kept for the placeholder Dexie row so the
-      // reader can underline the range immediately without re-parsing.
       locator: ReaderRangeLocator | null;
       queuedAt: string;
     }
@@ -112,8 +79,6 @@ export type AiCommentsState = {
   pending: PendingMutation[];
 };
 
-// Per-book bucket. One in memory; subscribers re-read via
-// `selectStableAiComments` keyed by `version`.
 export type StorageBucket = {
   state: AiCommentsState;
   listeners: Set<Listener>;
@@ -127,8 +92,6 @@ export type StorageBucket = {
   retryDelayMs: number;
   retryHandle: ReturnType<typeof setTimeout> | null;
   hydratedPromise: Promise<void>;
-  // Same fire-and-forget chain as highlights — every persist write is
-  // appended here so tests can await it deterministically.
   pendingPersist: Promise<unknown>;
   flushPromise: Promise<void> | null;
 };

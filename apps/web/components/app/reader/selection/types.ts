@@ -14,4 +14,5 @@ export type ReaderSelection = {
   pointer: SelectionPointer;
   locator?: ReaderRangeLocator | null;
   context?: string;
+  contextOffset?: number;
 };
