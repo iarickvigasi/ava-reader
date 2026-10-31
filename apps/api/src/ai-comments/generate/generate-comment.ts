@@ -1,3 +1,4 @@
+import { AiCommentKind } from '@prisma/client';
 import { BadRequestException } from '@nestjs/common';
 import type { PrismaService } from '../../prisma/prisma.service';
 import type { OpenRouterClient } from '../../shared/openrouter-client';
@@ -8,6 +9,7 @@ import type {
 import { buildSourceHash, normalizeSelectionText } from '../source-hash';
 import { findCachedAiComment } from './find-cached-comment';
 import { streamAiComment } from './stream-generation';
+import { buildPromptForKind } from '../prompts';
 
 export async function generateAiComment(args: {
   libraryItemId: string;
@@ -18,7 +20,9 @@ export async function generateAiComment(args: {
 }): Promise<AiToolGenerationResult> {
   const { request } = args;
   const normalizedText = normalizeSelectionText(request.text);
-  if (normalizedText.length === 0) {
+  const promptText =
+    request.kind === AiCommentKind.TRANSLATE ? request.text : normalizedText;
+  if (promptText.trim().length === 0) {
     throw new BadRequestException(
       'No selection text provided after normalization.',
     );
@@ -33,6 +37,13 @@ export async function generateAiComment(args: {
     context: request.context ?? null,
     bookTitle: request.bookTitle ?? null,
     author: request.author ?? null,
+    prompt: JSON.stringify(
+      buildPromptForKind(request.kind, {
+        ...request,
+        text: promptText,
+      }),
+    ),
+    regenerationId: request.regenerationId,
   });
 
   const cached = await findCachedAiComment({

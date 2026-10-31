@@ -1,3 +1,4 @@
+import { TranslateTargetField } from "@/components/app/preferences/translate-target-field";
 import { useTranslations } from "next-intl";
 import { useInterfaceLang } from "@/components/app/preferences/use-interface-lang";
 import { useReadingGoal } from "@/components/app/preferences/use-reading-goal";
@@ -6,7 +7,6 @@ import {
   useTranslateTargetLang,
 } from "@/components/app/preferences/use-translate-target-lang";
 import { isLocale, locales, localeLabels } from "@/i18n/locales";
-import { TRANSLATE_LANGUAGES } from "@/components/app/preferences/translate-languages";
 import { FieldRow, SelectField } from "./preferences-fields";
 import { ReadingGoalField } from "./reading-goal-field";
 
@@ -33,14 +33,10 @@ export function BilingualSection() {
           }}
         />
       </FieldRow>
-      <FieldRow label={t("translate.label")}>
-        <SelectField
-          ariaLabel={t("translate.ariaLabel")}
-          value={targetLang || DEFAULT_TRANSLATE_TARGET_LANG}
-          options={TRANSLATE_LANGUAGES}
-          onChange={setTargetLang}
-        />
-      </FieldRow>
+      <TranslateTargetField
+        value={targetLang || DEFAULT_TRANSLATE_TARGET_LANG}
+        onChange={setTargetLang}
+      />
       <FieldRow
         label={
           <>

@@ -168,10 +168,7 @@ async function sendGenerate(
   mutation: Extract<
     PendingMutation,
     {
-      kind:
-        | "generate.translate"
-        | "generate.etymology"
-        | "generate.explain";
+      kind: "generate.translate" | "generate.etymology" | "generate.explain";
     }
   >,
   token: string,
@@ -194,10 +191,7 @@ async function sendGenerate(
           : "EXPLAIN",
     sourceText: mutation.payload.text,
     body: "",
-    targetLang:
-      mutation.kind === "generate.translate"
-        ? mutation.payload.targetLang
-        : null,
+    targetLang: mutation.payload.targetLang ?? null,
     locator: mutation.locator,
     createdAt: mutation.queuedAt,
     status: "streaming",

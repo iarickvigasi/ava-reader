@@ -1,8 +1,6 @@
-import { useTranslations } from "next-intl";
+import { AiToolboxHeader } from "./ai-toolbox-header";
 import type { ReaderBookPayload, ReaderChapterPayload } from "@/lib/api-types";
 import { useDropLiveSelection } from "../../selection/use-drop-live-selection";
-import { MobileCloseButton } from "../mobile-close-button";
-import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
 import { AiToolsSection } from "./sections/ai-tools-section";
 import { HighlightSection } from "./sections/highlight-section";
@@ -65,18 +63,6 @@ function AiToolboxBackgroundLayer() {
   );
 }
 
-function AiToolboxHeader({ onClose }: { onClose: () => void }) {
-  const t = useTranslations("reader.aiToolbox");
-  return (
-    <div className="flex items-start justify-between gap-4">
-      <div className="min-w-0">
-        <PanelTitle>{t("title")}</PanelTitle>
-      </div>
-      <MobileCloseButton ariaLabel={t("closePanel")} onClose={onClose} />
-    </div>
-  );
-}
-
 function AiToolboxSections({
   libraryItemId,
   book,
@@ -88,7 +74,11 @@ function AiToolboxSections({
 }) {
   return (
     <div className="mt-8 flex min-h-0 flex-1 flex-col gap-6 overflow-auto pb-8 pr-1">
-      <SelectionSection />
+      <SelectionSection
+        libraryItemId={libraryItemId}
+        book={book}
+        chapters={chapters}
+      />
       <HighlightSection />
       <AiToolsSection
         libraryItemId={libraryItemId}

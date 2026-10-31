@@ -1,0 +1,254 @@
+[
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 0,
+    "expected": "ja",
+    "actual": "ja",
+    "probability": 1,
+    "ms": 642,
+    "usage": {
+      "input_tokens": 1599,
+      "output_tokens": 621,
+      "cost": 6.7158e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 1,
+    "expected": "ja",
+    "actual": "ja",
+    "probability": 1,
+    "ms": 439,
+    "usage": {
+      "input_tokens": 1600,
+      "output_tokens": 621,
+      "cost": 6.72e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 2,
+    "expected": "ja",
+    "actual": "ja",
+    "probability": 1,
+    "ms": 345,
+    "usage": {
+      "input_tokens": 1604,
+      "output_tokens": 621,
+      "cost": 6.7368e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 3,
+    "expected": "zh",
+    "actual": "zh",
+    "probability": 1,
+    "ms": 308,
+    "usage": {
+      "input_tokens": 1598,
+      "output_tokens": 621,
+      "cost": 6.7116e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 4,
+    "expected": "fr",
+    "actual": "fr",
+    "probability": 1,
+    "ms": 323,
+    "usage": {
+      "input_tokens": 1606,
+      "output_tokens": 621,
+      "cost": 6.7452e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 5,
+    "expected": "fr",
+    "actual": "fr",
+    "probability": 0.91,
+    "ms": 311,
+    "usage": {
+      "input_tokens": 1608,
+      "output_tokens": 621,
+      "cost": 6.7536e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 6,
+    "expected": "de",
+    "actual": "de",
+    "probability": 0.96,
+    "ms": 299,
+    "usage": {
+      "input_tokens": 1597,
+      "output_tokens": 621,
+      "cost": 6.7074e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 7,
+    "expected": "en",
+    "actual": "en",
+    "probability": 1,
+    "ms": 263,
+    "usage": {
+      "input_tokens": 1597,
+      "output_tokens": 621,
+      "cost": 6.7074e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 8,
+    "expected": "fr",
+    "actual": "fr",
+    "probability": 0.99,
+    "ms": 279,
+    "usage": {
+      "input_tokens": 1602,
+      "output_tokens": 621,
+      "cost": 6.7284e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 9,
+    "expected": "uk",
+    "actual": "uk",
+    "probability": 1,
+    "ms": 271,
+    "usage": {
+      "input_tokens": 1634,
+      "output_tokens": 621,
+      "cost": 6.8628e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 10,
+    "expected": "ja",
+    "actual": "ja",
+    "probability": 1,
+    "ms": 310,
+    "usage": {
+      "input_tokens": 1610,
+      "output_tokens": 621,
+      "cost": 6.762e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 11,
+    "expected": "en",
+    "actual": "en",
+    "probability": 1,
+    "ms": 292,
+    "usage": {
+      "input_tokens": 1595,
+      "output_tokens": 621,
+      "cost": 6.699e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 12,
+    "expected": "fr",
+    "actual": "fr",
+    "probability": 0.99,
+    "ms": 326,
+    "usage": {
+      "input_tokens": 1601,
+      "output_tokens": 621,
+      "cost": 6.7242e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 13,
+    "expected": "fr",
+    "actual": "fr",
+    "probability": 0.95,
+    "ms": 302,
+    "usage": {
+      "input_tokens": 1598,
+      "output_tokens": 621,
+      "cost": 6.7116e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 14,
+    "expected": "en",
+    "actual": "en",
+    "probability": 1,
+    "ms": 425,
+    "usage": {
+      "input_tokens": 1597,
+      "output_tokens": 621,
+      "cost": 6.7074e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 15,
+    "expected": "en",
+    "actual": "en",
+    "probability": 1,
+    "ms": 307,
+    "usage": {
+      "input_tokens": 1597,
+      "output_tokens": 621,
+      "cost": 6.7074e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 16,
+    "expected": "mixed",
+    "actual": "zh",
+    "probability": 0.51,
+    "ms": 280,
+    "usage": {
+      "input_tokens": 1625,
+      "output_tokens": 621,
+      "cost": 6.825e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 17,
+    "expected": "mixed",
+    "actual": "mixed",
+    "probability": 1,
+    "ms": 288,
+    "usage": {
+      "input_tokens": 1605,
+      "output_tokens": 621,
+      "cost": 6.741e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  }
+]

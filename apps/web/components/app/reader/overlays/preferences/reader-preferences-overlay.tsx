@@ -3,7 +3,6 @@ import { MobileCloseButton } from "../mobile-close-button";
 import { PanelTitle } from "../panel-title";
 import { useCloseOnEscape } from "../use-close-on-escape";
 import { BilingualSection } from "./bilingual-section";
-import { ListeningSection } from "./listening-section";
 import { ReadingSection } from "./reading-section";
 
 type ReaderPreferencesOverlayProps = {
@@ -107,7 +106,6 @@ function PreferencesSections({
         onIncreaseFont={onIncreaseFont}
       />
       <BilingualSection />
-      <ListeningSection />
     </div>
   );
 }

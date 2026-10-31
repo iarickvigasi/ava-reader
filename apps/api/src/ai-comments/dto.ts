@@ -16,6 +16,8 @@ const LOCATOR_MAX_LENGTH = 2048;
 // metadata. Accepted by all three tools — prompts use it for disambiguation
 // and the source hash folds it in so cached answers stay location-specific.
 const baseSchema = z.object({
+  regenerationId: z.string().min(1).max(64).optional(),
+  targetLang: z.string().min(2).max(64).optional(),
   text: z.string().min(1).max(SELECTION_MAX_LENGTH),
   locator: z.string().max(LOCATOR_MAX_LENGTH).optional(),
   context: z.string().max(CONTEXT_MAX_LENGTH).optional(),

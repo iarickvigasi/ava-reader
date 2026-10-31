@@ -1,3 +1,4 @@
+import { NarrationController } from './narration/narration.controller';
 import { ReadingOperatorController } from './catalog/reading-import/reading-operator.controller';
 import { ReadingOperatorGuard } from './catalog/reading-import/reading-operator.guard';
 import { ReadingUnpublishController } from './catalog/reading-import/reading-unpublish.controller';
@@ -46,6 +47,7 @@ import { UsersService } from './users/users.service';
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true })],
   controllers: [
+    NarrationController,
     ReadingDetailsController,
     AppController,
     UsersController,

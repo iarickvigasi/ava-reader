@@ -1,3 +1,4 @@
+import { selectionSentenceWindow } from "@/features/reader/selection-sentence-context";
 import type { BilingualChapter } from "@/lib/api-types/bilingual";
 import type { ReaderSelection } from "../../selection/types";
 import { offsetIn } from "./alignment-ranges";
@@ -35,6 +36,17 @@ export function translationSelection(
     return { ...selection, locator: null };
   const start = offsetIn(firstElement, range.startContainer, range.startOffset);
   const end = offsetIn(lastElement, range.endContainer, range.endOffset);
+  const prefix = `Selected text language: ${chapter.targetLang}.\n`;
+  const window = selectionSentenceWindow({
+    text: chapter.units
+      .slice(firstIndex, lastIndex + 1)
+      .map((unit) => chapter.translations[unit.id] ?? "")
+      .join(" "),
+    selectedText: selection.text,
+    start,
+    end: firstIndex === lastIndex ? end : Number.MAX_SAFE_INTEGER,
+    maxChars: 8000,
+  });
   return {
     ...selection,
     locator: {
@@ -54,12 +66,10 @@ export function translationSelection(
         endOffset: end,
       },
     },
-    context:
-      `Selected text language: ${chapter.targetLang}.\n` +
-      chapter.units
-        .slice(firstIndex, lastIndex + 1)
-        .map((unit) => chapter.translations[unit.id] ?? "")
-        .join(" ")
-        .slice(0, 3500),
+    context: prefix + window.context,
+    contextOffset:
+      window.contextOffset === undefined
+        ? undefined
+        : prefix.length + window.contextOffset,
   };
 }

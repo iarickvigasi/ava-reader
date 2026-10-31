@@ -26,21 +26,6 @@ export function FieldRow({
   );
 }
 
-export function StackedField({
-  children,
-  label,
-}: {
-  children: ReactNode;
-  label: ReactNode;
-}) {
-  return (
-    <div className="space-y-3">
-      <FieldLabel>{label}</FieldLabel>
-      {children}
-    </div>
-  );
-}
-
 export type SelectFieldOption = {
   value: string;
   label: string;
@@ -94,7 +79,9 @@ export function SelectField({
   );
 }
 
-export function NumberField(props: Omit<ComponentPropsWithoutRef<"input">, "type">) {
+export function NumberField(
+  props: Omit<ComponentPropsWithoutRef<"input">, "type">,
+) {
   return (
     <input
       {...props}

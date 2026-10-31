@@ -1,3 +1,4 @@
+import { AiCommentKind } from '@prisma/client';
 import { streamObject } from 'ai';
 import type { z } from 'zod';
 import type { PrismaService } from '../../prisma/prisma.service';
@@ -24,7 +25,10 @@ export function streamAiComment(args: {
   userId: string;
 }): AiToolGenerationResult {
   const promptParts = buildPromptForKind(args.request.kind, {
-    text: args.normalizedText,
+    text:
+      args.request.kind === AiCommentKind.TRANSLATE
+        ? args.request.text
+        : args.normalizedText,
     targetLang: args.request.targetLang,
     context: args.request.context,
     bookTitle: args.request.bookTitle,
@@ -41,6 +45,7 @@ export function streamAiComment(args: {
     schema: widenedSchema,
     system: promptParts.system,
     prompt: promptParts.prompt,
+    temperature: 0,
     onFinish: (event) =>
       persistGeneratedComment({
         fieldKey,

@@ -479,6 +479,16 @@
       "selection": "Seleção",
       "highlight": "Destaque",
       "selectionReadAloud": "Ler a seleção em voz alta",
+      "translationReadAloud": "Ler a tradução em voz alta",
+      "narrationLoading": "Preparando narração. Toque para cancelar",
+      "narrationStop": "Parar narração",
+      "narrationReady": "Áudio pronto. Toque para reproduzir.",
+      "narrationTooLong": "Este texto é longo demais para narrar. Selecione um trecho menor.",
+      "narrationAuth": "Entre para usar a narração.",
+      "narrationProvider": "Não foi possível preparar o áudio. Tente novamente.",
+      "narrationTimeout": "A narração demorou demais. Tente novamente.",
+      "narrationLanguageUncertain": "Idioma incerto. Selecione uma frase mais longa em um só idioma e tente novamente.",
+      "narrationFailed": "Não foi possível reproduzir. Verifique a conexão e tente novamente.",
       "selectionCopy": "Copiar a seleção",
       "selectionCopied": "Copiado",
       "selectionCopyFailed": "Não foi possível copiar para a área de transferência"
@@ -505,6 +515,7 @@
       "askAi": "Perguntar à IA",
       "generating": "Gerando…",
       "tryAgain": "Tentar novamente",
+      "regenerate": "Gerar novamente",
       "queued": "Aguardando conexão… concluiremos assim que você voltar a ficar on-line.",
       "errors": {
         "generic": "Algo deu errado."

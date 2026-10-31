@@ -24,16 +24,20 @@ export function useAiToolBinding({
   saved,
 }: UseAiToolBindingInput) {
   const { enqueueGenerateIntent } = useAiCommentsContext();
-  const start = useCallback(() => {
-    if (!payload) return;
-    enqueueGenerateIntent(
-      buildGenerateIntent(
-        payload,
-        generateAiCommentId(),
-        new Date().toISOString(),
-      ),
-    );
-  }, [payload, enqueueGenerateIntent]);
+  const start = useCallback(
+    (regenerate = false) => {
+      if (!payload) return;
+      enqueueGenerateIntent(
+        buildGenerateIntent(
+          payload,
+          generateAiCommentId(),
+          new Date().toISOString(),
+          regenerate,
+        ),
+      );
+    },
+    [payload, enqueueGenerateIntent],
+  );
 
   useEffect(() => {
     if (isOpen && !saved) start();
@@ -41,6 +45,6 @@ export function useAiToolBinding({
 
   return {
     ...deriveToolView({ text: "", isStreaming: false, error: null }, saved),
-    retry: payload ? start : undefined,
+    retry: payload ? () => start(true) : undefined,
   };
 }

@@ -1,0 +1,338 @@
+[
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 0,
+    "expected": "ja",
+    "actual": "ja",
+    "probability": 1,
+    "ms": 678,
+    "usage": {
+      "input_tokens": 1599,
+      "output_tokens": 621,
+      "cost": 6.7158e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 1,
+    "expected": "ja",
+    "actual": "ja",
+    "probability": 1,
+    "ms": 282,
+    "usage": {
+      "input_tokens": 1600,
+      "output_tokens": 621,
+      "cost": 6.72e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 2,
+    "expected": "ja",
+    "actual": "ja",
+    "probability": 1,
+    "ms": 261,
+    "usage": {
+      "input_tokens": 1604,
+      "output_tokens": 621,
+      "cost": 6.7368e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 3,
+    "expected": "zh",
+    "actual": "zh",
+    "probability": 0.99,
+    "ms": 248,
+    "usage": {
+      "input_tokens": 1598,
+      "output_tokens": 621,
+      "cost": 6.7116e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 4,
+    "expected": "fr",
+    "actual": "fr",
+    "probability": 1,
+    "ms": 291,
+    "usage": {
+      "input_tokens": 1606,
+      "output_tokens": 621,
+      "cost": 6.7452e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 5,
+    "expected": "fr",
+    "actual": "fr",
+    "probability": 0.91,
+    "ms": 267,
+    "usage": {
+      "input_tokens": 1608,
+      "output_tokens": 621,
+      "cost": 6.7536e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 6,
+    "expected": "de",
+    "actual": "de",
+    "probability": 0.97,
+    "ms": 253,
+    "usage": {
+      "input_tokens": 1597,
+      "output_tokens": 621,
+      "cost": 6.7074e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 7,
+    "expected": "en",
+    "actual": "en",
+    "probability": 1,
+    "ms": 279,
+    "usage": {
+      "input_tokens": 1597,
+      "output_tokens": 621,
+      "cost": 6.7074e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 8,
+    "expected": "fr",
+    "actual": "fr",
+    "probability": 0.99,
+    "ms": 293,
+    "usage": {
+      "input_tokens": 1602,
+      "output_tokens": 621,
+      "cost": 6.7284e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 9,
+    "expected": "uk",
+    "actual": "uk",
+    "probability": 1,
+    "ms": 259,
+    "usage": {
+      "input_tokens": 1634,
+      "output_tokens": 621,
+      "cost": 6.8628e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 10,
+    "expected": "ja",
+    "actual": "ja",
+    "probability": 1,
+    "ms": 333,
+    "usage": {
+      "input_tokens": 1610,
+      "output_tokens": 621,
+      "cost": 6.762e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "typesafe/jev-1.14",
+    "index": 11,
+    "expected": "en",
+    "actual": "en",
+    "probability": 1,
+    "ms": 289,
+    "usage": {
+      "input_tokens": 1595,
+      "output_tokens": 621,
+      "cost": 6.699e-5,
+      "servedModel": "typesafe/jev-1.14-20261014"
+    }
+  },
+  {
+    "model": "liquid/d1.1",
+    "index": 0,
+    "expected": "ja",
+    "actual": "ja",
+    "probability": 0.9382596310016033,
+    "ms": 330,
+    "usage": {
+      "input_tokens": 493,
+      "output_tokens": 0,
+      "cost": 9.86e-6,
+      "servedModel": "liquid/d1.1-20261027"
+    }
+  },
+  {
+    "model": "liquid/d1.1",
+    "index": 1,
+    "expected": "ja",
+    "actual": "ja",
+    "probability": 0.9812571606041625,
+    "ms": 303,
+    "usage": {
+      "input_tokens": 492,
+      "output_tokens": 0,
+      "cost": 9.84e-6,
+      "servedModel": "liquid/d1.1-20261027"
+    }
+  },
+  {
+    "model": "liquid/d1.1",
+    "index": 2,
+    "expected": "ja",
+    "actual": "ja",
+    "probability": 0.9733428798040858,
+    "ms": 322,
+    "usage": {
+      "input_tokens": 495,
+      "output_tokens": 0,
+      "cost": 9.9e-6,
+      "servedModel": "liquid/d1.1-20261027"
+    }
+  },
+  {
+    "model": "liquid/d1.1",
+    "index": 3,
+    "expected": "zh",
+    "actual": "zh",
+    "probability": 0.9147194735699218,
+    "ms": 568,
+    "usage": {
+      "input_tokens": 492,
+      "output_tokens": 0,
+      "cost": 9.84e-6,
+      "servedModel": "liquid/d1.1-20261027"
+    }
+  },
+  {
+    "model": "liquid/d1.1",
+    "index": 4,
+    "expected": "fr",
+    "actual": "fr",
+    "probability": 0.975670942651493,
+    "ms": 298,
+    "usage": {
+      "input_tokens": 502,
+      "output_tokens": 0,
+      "cost": 1.004e-5,
+      "servedModel": "liquid/d1.1-20261027"
+    }
+  },
+  {
+    "model": "liquid/d1.1",
+    "index": 5,
+    "expected": "fr",
+    "actual": "fr",
+    "probability": 0.9534925127695859,
+    "ms": 345,
+    "usage": {
+      "input_tokens": 504,
+      "output_tokens": 0,
+      "cost": 1.008e-5,
+      "servedModel": "liquid/d1.1-20261027"
+    }
+  },
+  {
+    "model": "liquid/d1.1",
+    "index": 6,
+    "expected": "de",
+    "actual": "de",
+    "probability": 0.9545540001050294,
+    "ms": 1537,
+    "usage": {
+      "input_tokens": 492,
+      "output_tokens": 0,
+      "cost": 9.84e-6,
+      "servedModel": "liquid/d1.1-20261027"
+    }
+  },
+  {
+    "model": "liquid/d1.1",
+    "index": 7,
+    "expected": "en",
+    "actual": "en",
+    "probability": 0.9361733735543908,
+    "ms": 419,
+    "usage": {
+      "input_tokens": 494,
+      "output_tokens": 0,
+      "cost": 9.88e-6,
+      "servedModel": "liquid/d1.1-20261027"
+    }
+  },
+  {
+    "model": "liquid/d1.1",
+    "index": 8,
+    "expected": "fr",
+    "actual": "fr",
+    "probability": 0.9865762800784436,
+    "ms": 309,
+    "usage": {
+      "input_tokens": 499,
+      "output_tokens": 0,
+      "cost": 9.98e-6,
+      "servedModel": "liquid/d1.1-20261027"
+    }
+  },
+  {
+    "model": "liquid/d1.1",
+    "index": 9,
+    "expected": "uk",
+    "actual": "uk",
+    "probability": 0.9112703415132307,
+    "ms": 293,
+    "usage": {
+      "input_tokens": 511,
+      "output_tokens": 0,
+      "cost": 1.022e-5,
+      "servedModel": "liquid/d1.1-20261027"
+    }
+  },
+  {
+    "model": "liquid/d1.1",
+    "index": 10,
+    "expected": "ja",
+    "actual": "ja",
+    "probability": 0.9440840524036589,
+    "ms": 626,
+    "usage": {
+      "input_tokens": 494,
+      "output_tokens": 0,
+      "cost": 9.88e-6,
+      "servedModel": "liquid/d1.1-20261027"
+    }
+  },
+  {
+    "model": "liquid/d1.1",
+    "index": 11,
+    "expected": "en",
+    "actual": "en",
+    "probability": 0.9236001808121115,
+    "ms": 305,
+    "usage": {
+      "input_tokens": 491,
+      "output_tokens": 0,
+      "cost": 9.82e-6,
+      "servedModel": "liquid/d1.1-20261027"
+    }
+  }
+]

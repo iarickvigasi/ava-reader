@@ -26,6 +26,7 @@ export function selectSavedComments(
 ): Partial<Record<ToolKey, SavedComment>> {
   if (!selectedLocator) return {};
   const result: Partial<Record<ToolKey, SavedComment>> = {};
+  const selected = new Map<ToolKey, AiCommentRecord>();
   for (const comment of comments) {
     const locator = comment.locator;
     if (!locator) continue;
@@ -41,13 +42,11 @@ export function selectSavedComments(
       continue;
     }
     const toolKey = KIND_TO_TOOL[comment.kind];
-    if (
-      toolKey === "translate" &&
-      targetLanguage !== undefined &&
-      comment.targetLang !== targetLanguage
-    )
+    if (targetLanguage !== undefined && comment.targetLang !== targetLanguage)
       continue;
-    if (result[toolKey] === undefined) {
+    const previous = selected.get(toolKey);
+    if (!previous || comment.createdAt >= previous.createdAt) {
+      selected.set(toolKey, comment);
       result[toolKey] = {
         body: comment.body,
         status: comment.status,

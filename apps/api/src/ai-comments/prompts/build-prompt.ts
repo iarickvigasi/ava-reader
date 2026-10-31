@@ -35,6 +35,7 @@ export function buildPromptForKind(
     case AiCommentKind.ETYMOLOGY:
       return buildEtymologyPrompt({
         text: input.text,
+        targetLang: input.targetLang,
         context: input.context,
         bookTitle: input.bookTitle,
         author: input.author,
@@ -42,6 +43,7 @@ export function buildPromptForKind(
     case AiCommentKind.EXPLAIN:
       return buildExplainPrompt({
         text: input.text,
+        targetLang: input.targetLang,
         context: input.context,
         bookTitle: input.bookTitle,
         author: input.author,
