@@ -1,9 +1,9 @@
 "use client";
 
-import type { GridRestorer } from "@/features/explore/restore-virtual-grid";
+import { GridRestorer } from "@/features/explore/grid/types";
 import type { RefObject, FocusEventHandler } from "react";
 import type { CatalogWork } from "@/lib/catalog-types";
-import { useVirtualCatalogGrid } from "@/features/explore/use-virtual-catalog-grid";
+import { useVirtualCatalogGrid } from "@/features/explore/grid/use-virtual-catalog-grid";
 import { EXPLORE_GRID_CLASS_NAME } from "./explore-layout";
 import { BookCardSkeleton } from "@/components/app/shared/books/book-card-skeleton";
 import { CatalogBookCard } from "./catalog-book-card";
@@ -33,14 +33,14 @@ export function CatalogVirtualGrid({
   onFocus: FocusEventHandler<HTMLElement>;
   onBlur: FocusEventHandler<HTMLElement>;
 }) {
-  const grid = useVirtualCatalogGrid(
+  const grid = useVirtualCatalogGrid({
     items,
-    gridRef,
+    ref: gridRef,
     focusedId,
     focusedHref,
     setAnchor,
     restoreRef,
-  );
+  });
   return (
     <section
       ref={gridRef}

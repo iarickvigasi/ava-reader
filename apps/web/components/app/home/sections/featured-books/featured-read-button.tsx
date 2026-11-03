@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useCatalogRead } from "@/features/explore/use-catalog-read";
+import { useCatalogRead } from "@/features/explore/details/use-catalog-read";
 import { LibraryNavigationIcon } from "@/components/app/core/library-navigation-icon";
 import { PendingLabel } from "@/components/app/shared/pending-label";
 import { Button } from "@/components/ui/button";

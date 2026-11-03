@@ -1,8 +1,8 @@
-import type { ReadingDetails } from "@/features/explore/use-reading-details";
+import { ReadingDetails } from "@/features/explore/details/types";
 import { CatalogReadingEstimates } from "./catalog-reading-estimates";
 import { useLocale, useTranslations } from "next-intl";
 import type { CatalogEdition } from "@/lib/catalog-types";
-import { languageName } from "@/features/explore/catalog-display";
+import { languageName } from "@/features/explore/metadata/language-name";
 import { MetadataItem } from "@/components/app/shared/books/metadata-item";
 import { BookAuthors } from "@/components/app/shared/books/book-authors";
 

@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { useScrollLoad } from "@/features/explore/use-scroll-load";
+import { useScrollLoad } from "@/features/explore/feed/use-scroll-load";
 
 export function CatalogFeedPrevious({
   available,

@@ -2,8 +2,8 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { TextInput } from "@/components/ui/text-input";
 import { Button } from "@/components/ui/button";
-import { useCatalogResource } from "@/features/explore/use-catalog-resource";
-import type { EditionChoice } from "@/features/explore/linking/use-edition-work-dialog";
+import { useCatalogResource } from "@/features/explore/data/use-catalog-resource";
+import { EditionChoice } from "@/features/explore/admin/types";
 export function EditionSearch({
   choose,
 }: {

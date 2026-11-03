@@ -1,9 +1,9 @@
 import { EditionSourceInformation } from "./edition-source-information";
 import { useTranslations } from "next-intl";
-import { useExploreReturn } from "@/features/explore/use-explore-return";
-import { catalogHref } from "@/features/explore/explore-return";
-import { editionHeader } from "@/features/explore/edition-header";
-import type { ReadingDetails } from "@/features/explore/use-reading-details";
+import { useExploreReturn } from "@/features/explore/navigation/use-explore-return";
+import { catalogHref } from "@/features/explore/navigation/catalog-href";
+import { editionHeader } from "@/features/explore/metadata/edition-header";
+import { ReadingDetails } from "@/features/explore/details/types";
 import type { CatalogEditionDetail } from "@/lib/catalog-types";
 import { BookCoverPanel } from "@/components/app/shared/books/book-cover-panel";
 import { BookTitle } from "@/components/app/shared/books/book-title";

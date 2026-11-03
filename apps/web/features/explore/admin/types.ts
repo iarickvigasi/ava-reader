@@ -10,3 +10,11 @@ export type EditFieldsProps = {
   data: EditData;
   change: (key: string, value: unknown) => void;
 };
+
+export type EditionChoice = {
+  id: string;
+  title: string;
+  revision: number;
+  workId: string;
+  language: string | null;
+};

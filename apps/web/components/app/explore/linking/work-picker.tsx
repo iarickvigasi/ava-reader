@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { TextInput } from "@/components/ui/text-input";
 import { Button } from "@/components/ui/button";
-import { useCatalogResource } from "@/features/explore/use-catalog-resource";
+import { useCatalogResource } from "@/features/explore/data/use-catalog-resource";
 import type { CatalogPage, CatalogWork } from "@/lib/catalog-types";
 export function WorkPicker({
   choose,

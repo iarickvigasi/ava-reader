@@ -1,10 +1,10 @@
 "use client";
 
-import type { GridRestorer } from "./restore-virtual-grid";
+import type { GridRestorer } from "./grid/types";
 import { useEffect, useState } from "react";
-import { useCatalogFeed } from "./use-catalog-feed";
-import { useCatalogResource } from "./use-catalog-resource";
-import { useExploreQuery } from "./use-explore-query";
+import { useCatalogFeed } from "./feed/use-catalog-feed";
+import { useCatalogResource } from "./data/use-catalog-resource";
+import { useExploreQuery } from "./navigation/use-explore-query";
 
 export function useExplore(
   size: { first: number; next: number } | null,

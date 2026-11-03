@@ -1,12 +1,12 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useCatalogBook } from "@/features/explore/use-catalog-book";
-import { useExploreReturn } from "@/features/explore/use-explore-return";
+import { useCatalogBook } from "@/features/explore/details/use-catalog-book";
+import { useExploreReturn } from "@/features/explore/navigation/use-explore-return";
 import { ScreenContainer } from "@/components/ui/screen-container";
 import { BookBackLink } from "@/components/app/shared/books/book-back-link";
 import { CatalogBookActions } from "./catalog-book-actions";
-import { useReadingDetails } from "@/features/explore/use-reading-details";
+import { useReadingDetails } from "@/features/explore/details/use-reading-details";
 import { CatalogBookSkeleton } from "./catalog-book-skeleton";
 import { CatalogStatus } from "./catalog-status";
 import { CatalogBookHero } from "./catalog-book-hero";

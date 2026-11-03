@@ -1,5 +1,5 @@
 import type { CatalogWork } from "@/lib/catalog-types";
-import { workDescriptionTexts } from "@/features/explore/work-description-texts";
+import { workDescriptionTexts } from "@/features/explore/metadata/work-description-texts";
 import { CatalogDetailsSection } from "./catalog-details-section";
 import { CatalogAdminTools } from "./admin/catalog-admin-tools";
 import { LinkPrivateCopy } from "./linking/link-private-copy";

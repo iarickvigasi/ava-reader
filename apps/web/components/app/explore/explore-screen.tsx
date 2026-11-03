@@ -1,10 +1,10 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useScreenBatch } from "@/features/explore/use-screen-batch";
+import { useScreenBatch } from "@/features/explore/grid/use-screen-batch";
 import { useExplore } from "@/features/explore/use-explore";
 import { ScreenContainer } from "@/components/ui/screen-container";
-import { useCatalogFocus } from "@/features/explore/use-catalog-focus";
+import { useCatalogFocus } from "@/features/explore/grid/use-catalog-focus";
 import { CatalogVirtualGrid } from "./catalog-virtual-grid";
 import { CatalogFeedPrevious } from "./catalog-feed-previous";
 import { ExploreHeader } from "./explore-header";
