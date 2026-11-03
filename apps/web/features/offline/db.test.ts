@@ -24,6 +24,10 @@ describe("offline db", () => {
     const db = getDb();
     await db.open();
     expect(db.verno).toBe(SCHEMA_VERSION);
+    expect(db.tables.map((table) => table.name)).not.toContain("statsSnapshot");
+    expect(db.tables.map((table) => table.name)).not.toContain(
+      "sessionMutations",
+    );
   });
 
   it("returns the same instance across getDb() calls", () => {

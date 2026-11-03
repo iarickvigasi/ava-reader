@@ -5,6 +5,9 @@ import { loadMasteryHistory } from './load-mastery-history';
 function setup(earliest: string | null, segments: unknown[] = []) {
   const findMany = jest.fn();
   const prisma = {
+    user: {
+      findUniqueOrThrow: jest.fn().mockResolvedValue({ readingRevision: 7 }),
+    },
     readingSessionSegment: { findMany, findFirst: jest.fn() },
     readingSession: { findMany: jest.fn() },
     $transaction: jest
@@ -13,6 +16,7 @@ function setup(earliest: string | null, segments: unknown[] = []) {
         segments,
         earliest ? { trackedDay: new Date(earliest) } : null,
         [{ clientSessionId: 'covered-session' }],
+        { readingRevision: 7 },
       ]),
   };
   return { prisma: prisma as unknown as PrismaService, findMany };

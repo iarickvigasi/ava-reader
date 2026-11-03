@@ -9,8 +9,7 @@ export async function deleteLibraryItem(
   id: string,
 ) {
   return prisma.$transaction(async (tx) => {
-    // Serialize deletion with session creation so a concurrent start cannot
-    // reopen a session after its book has disappeared.
+    // Serialize deletion with checkpoints so access and the deletion receipt agree.
     await tx.$executeRaw(
       Prisma.sql`SELECT pg_advisory_xact_lock(hashtextextended(${id}, 0))`,
     );
@@ -29,17 +28,6 @@ export async function deleteLibraryItem(
       create: { id, userId },
       update: {},
     });
-    // Close at the last accounted heartbeat; do not invent additional minutes.
-    const sessions = await tx.readingSession.findMany({
-      where: { userId, libraryItemId: id, endedAt: null },
-      select: { id: true, lastTrackedAt: true, startedAt: true },
-    });
-    for (const session of sessions) {
-      await tx.readingSession.update({
-        where: { id: session.id },
-        data: { endedAt: session.lastTrackedAt ?? session.startedAt },
-      });
-    }
     await tx.libraryItem.deleteMany({ where: { id, userId } });
     return { libraryItemId: id, state: 'deleted' as const };
   });

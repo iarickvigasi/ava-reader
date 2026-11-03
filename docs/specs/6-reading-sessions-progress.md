@@ -1,36 +1,37 @@
 # Reading sessions, progress & stats
 
-> Status: shipped · Updated: 2026-09-25
-> ADRs: [[3-offline-first-dexie-buckets]], [[7-reading-time-intervals]] · Code:
+> Status: implemented · Updated: 2026-11-03
+> ADRs: [[3-offline-first-dexie-buckets]], [[7-reading-time-intervals]], [[15-local-reading-checkpoints]] · Code:
 > apps/web/features/offline/buckets/{sessions,progress}, apps/web/features/offline/stats,
 > apps/web/components/app/home/sections/mastery, apps/api/src/reader/{sessions,progress}
 
 ## Summary
 
-Tracks reading position, time read, and reading streak/goal — fully offline — and composes the stats
-shown on home. Serves the "track time spent/remaining, build a habit" job.
+Tracks position, reading time and daily goals offline; composes home stats to support reading habits.
 
 ## Scope
 
-- In: session start/heartbeat/stop, current locator + completion %, minutes read, daily-goal mastery
+- In: local session checkpoints, current locator + completion %, minutes read, daily-goal mastery
   chart, server-baseline + local-delta stats.
-- Non-goals: reading diary/reflection (future), social comparison.
 
 ## Behaviour
 
-1. Opening a book starts a session; heartbeats accrue while reading; closing stops it.
-2. Sessions are **multi-device**: each client sends a `clientInstanceId` and is tracked as a session
-   participant. Time accrues only while at least one participant is live (none seen for 90s → marked
-   stopped), and a `stop` ends the session only once no live participant remains — so reading one
-   book on a second device neither double-counts the time nor cuts the first device off.
+1. Ready, visible reading starts a local session immediately. Every 30 seconds saves a checkpoint;
+   normal hide/close saves the final remainder. Neither local operation waits for the network.
+2. Independent device sessions add, including overlapping time. A session keeps its client ID across
+   reconnects; replaying the same revision never adds time twice. One tracker owns recording within
+   a browser profile/account. Hidden time and unexplained checkpoint gaps over 90 seconds do not
+   accrue; recovery closes abandoned runs at their last durable checkpoint.
 3. Position writes update the progress bucket (locator, completion %, minutes).
 4. Home shows totals (hours, highlights, volumes) and a per-day minutes-vs-goal chart, all correct
    offline.
+5. Time tracking runs silently. Persistence and sync failures retry automatically without messages
+   or manual retry actions that interrupt reading.
 
 ## Data & sync
 
-sessions bucket (clientSessionId ULID, per-day segments) and progress bucket; both flush
-idempotently. Reading-time and highlight stats add unsynced local deltas to their server baseline.
+Sessions persist cumulative checkpoints keyed by stable clientSessionId; progress syncs independently.
+Reading totals add uncovered local seconds to each snapshot; highlights add pending count changes.
 
 `volumesRead` counts each library item once when **finishedAt is non-null OR completionPercent is
 at least 100**. A manual finish date does not change percentage, reading position, or reading time.
@@ -71,33 +72,27 @@ sync can't rewind a page another device advanced, while a deliberate backward re
 against a same-book write racing inside one request. Resolves the [[2-reader/2.5-resume]] divergence
 question.
 
-A completed offline session replays via `POST .../session` with `clientSessionId` + original
-`startedAt`/`endedAt`. The server records it with those exact timestamps and the real `endedAt −
-startedAt` duration (split into per-UTC-day segments), keyed `@@unique([userId, clientSessionId])` —
-so a retried replay returns the existing row unchanged rather than reopening or re-dating it.
-Timestamps are validated (invalid date or `endedAt < startedAt` → 400); an over-long span is clamped
-to 24h and logged. This path never routes through the live `start` action.
+Checkpoint uploads are the only supported reading-time protocol. The old start, heartbeat, stop,
+and completed-session replay routes are removed. Cache upgrades discard pre-checkpoint local sessions,
+including pending legacy time, and retire the unused session-mutation and stats-snapshot stores.
+Already credited server history remains available. Checkpoints use whole-second prefixes capped at 24h.
 
-Closed unsynced sessions use the same rounded seconds and 24h cap as server replay. Split
-from the whole-second start at midnight in the saved timezone; slices sum to book/overall totals.
-Invalid or reversed local timestamps contribute no time.
+Version 2 sessions persist cumulative contiguous checkpoints before `POST .../session/checkpoint`.
+The payload carries clientSessionId, startedAt, checkpointAt, timeZone, revision and nullable endedAt.
+The server credits only the extension of the saved prefix; repeated/older revisions are no-ops and
+closed sessions never reopen. Local acknowledgment advances only the uploaded revision. Both open
+and closed dirty sessions use the existing account sync runner with bounded requests and retries.
 
-Home reading totals carry all-time client session IDs, exact total seconds, and recent daily
-seconds from one repeatable-read server snapshot. Home composes that snapshot with closed local
-sessions in one reactive Dexie read. A session already in the snapshot adds nothing, even before
-its upload acknowledgment is stored. Successful offline replays remain local contributions until
-the particular snapshot includes them; permanent replay rejection removes the contribution.
-Older acknowledged rows without replay metadata remain server-only. Cached home payloads without
-reading reconciliation metadata retain their server reading totals until refreshed. Reading-hour
-and daily-minute rounding happens after adding seconds. Home metadata never reconciles book-info
-against a different snapshot.
+Home, history and book-info snapshots carry exact total seconds and per-session credited seconds
+from the same transaction. Local rows add their uncovered suffix, even after acknowledgment.
+Snapshot reading revisions reject older totals; coverage lookups are indexed once per composition.
+Daily grouping uses the saved session timezone and rounding follows summation. Home coverage never
+reconciles book-info against a different snapshot. Old caches retain their legacy baseline.
 
-Historical mastery pages use a seven-day exclusive `before` local-date cursor and snapshot session IDs
-for local reconciliation. They remain in page memory only (explicit exception to persisted history);
-the existing home snapshot and local session storage are unchanged.
+Mastery history stays in memory, using seven-day exclusive `before` cursors and snapshot coverage.
 
-New sessions capture the device IANA timezone once, locally and on the server. Heartbeat, stop,
-retry and offline replay preserve it. Shared multi-device sessions keep the first creator's zone.
+New sessions capture the device IANA timezone once, locally and on the server. Checkpoint, close,
+and retry preserve it. Historical shared sessions keep the first creator's zone.
 Credited UTC intervals are merged when adjacent and written with UTC totals in one transaction.
 Home/history split intervals at midnight in each session's saved timezone, including DST. Travel
 changes only today/window, never historical day assignment. UTC totals remain authoritative;
@@ -108,7 +103,10 @@ zone across a device-zone change; the next session captures the new zone.
 
 ## Acceptance criteria
 
-- [ ] Reading offline accrues minutes and shows on home without double-counting after sync.
+- [x] Reading offline accrues minutes and shows on home without double-counting after sync.
+- [x] Online device A records 10 minutes; offline B records 5, reconnects, then reads 3: total 18.
+- [x] Delayed/lost responses, reversed revisions and close during upload cannot lose or duplicate time.
+- [x] Crash recovery retains durable time; hidden/suspended gaps and duplicate tab trackers add none.
 - [ ] Home counts replayed sessions once in both GET/ack orders, after lost responses, reload,
       and stale GET arrivals; IDs older than the mastery window reconcile all-time hours too.
 - [ ] Completion % and resume position survive reload and reconnect.
@@ -125,5 +123,7 @@ zone across a device-zone change; the next session captures the new zone.
 
 ## Open questions
 
-Time-remaining estimate model; merging sessions started independently on two offline devices (the
-participant mechanism above only reconciles clients that reach the same session row).
+Time-remaining estimate model. Missing legacy intervals without durable checkpoints are unrecoverable.
+
+Known gap: highlight counts retire pending deltas at upload acknowledgment, before a cached Home total
+necessarily includes them. The displayed count can temporarily fall back until Home refreshes.

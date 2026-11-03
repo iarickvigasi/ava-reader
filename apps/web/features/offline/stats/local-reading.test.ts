@@ -9,7 +9,11 @@ const interval = {
   endedAt: "2026-09-24T22:50:00Z",
   timeZone: "Europe/Belgrade",
 };
-const session = { ...readingSession, ...interval };
+const session = {
+  ...readingSession,
+  ...interval,
+  lastHeartbeatAt: interval.endedAt,
+};
 const empty = {
   version: 3 as const,
   timeZone: "Europe/Belgrade",
@@ -18,12 +22,16 @@ const empty = {
   days: [],
   totalSeconds: 0,
   clientSessionIds: [],
+  sessionCoverage: [],
 };
 const included = {
   ...empty,
   intervals: [interval],
   totalSeconds: 2400,
   clientSessionIds: [session.clientSessionId],
+  sessionCoverage: [
+    { clientSessionId: session.clientSessionId, durationSeconds: 2400 },
+  ],
 };
 afterEach(() => vi.useRealTimers());
 
@@ -34,8 +42,7 @@ it("keeps Friday minutes through both acknowledgment orders and stale snapshots"
       session,
       {
         ...session,
-        syncedAt: "2026-09-24T23:00:00Z",
-        replayStatus: "acknowledged" as const,
+        acknowledgedRevision: session.revision,
       },
     ]) {
       const home = { ...homeFixture(), readingSnapshot: snapshot };

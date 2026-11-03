@@ -38,11 +38,3 @@ export type ReaderStatusPayload =
       progress: ReaderProgressSummary;
       status: 'FAILED' | 'PROCESSING' | 'UNSUPPORTED';
     };
-
-export type ReaderSessionPayload = {
-  durationSeconds: number;
-  endedAt: string | null;
-  lastTrackedAt: string | null;
-  sessionId: string;
-  startedAt: string;
-};

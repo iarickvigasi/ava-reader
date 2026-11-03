@@ -2,14 +2,19 @@ import { loadReadingSnapshot } from './load-reading-snapshot';
 
 it('reads all-time identities, totals and daily segments in one user-scoped snapshot', async () => {
   const prisma = {
+    user: {
+      findUniqueOrThrow: jest.fn().mockResolvedValue({ readingRevision: 7 }),
+    },
     $transaction: jest.fn((reads: Promise<unknown>[]) => Promise.all(reads)),
     readingSession: {
-      findMany: jest
-        .fn()
-        .mockResolvedValue([
-          { clientSessionId: 'old-offline-session' },
-          { clientSessionId: 'recent-session' },
-        ]),
+      findMany: jest.fn().mockResolvedValue([
+        { clientSessionId: 'old-offline-session' },
+        {
+          clientSessionId: 'recent-session',
+          trackingVersion: 2,
+          durationSeconds: 300,
+        },
+      ]),
     },
     readingSessionSegment: {
       aggregate: jest
@@ -32,7 +37,11 @@ it('reads all-time identities, totals and daily segments in one user-scoped snap
   });
   expect(prisma.readingSession.findMany).toHaveBeenCalledWith({
     where: { userId: 'user-1', clientSessionId: { not: null } },
-    select: { clientSessionId: true },
+    select: {
+      clientSessionId: true,
+      durationSeconds: true,
+      trackingVersion: true,
+    },
   });
   expect(prisma.readingSessionSegment.aggregate).toHaveBeenCalledWith({
     where: { userId: 'user-1' },
@@ -49,6 +58,10 @@ it('reads all-time identities, totals and daily segments in one user-scoped snap
   expect(readingSnapshot).toEqual({
     clientSessionIds: ['old-offline-session', 'recent-session'],
     totalSeconds: 9001,
+    readingRevision: 7,
+    sessionCoverage: [
+      { clientSessionId: 'recent-session', durationSeconds: 300 },
+    ],
     days: [{ key: '2026-04-13', seconds: 1801 }],
   });
 });

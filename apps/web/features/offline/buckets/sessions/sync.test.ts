@@ -1,134 +1,74 @@
 import "fake-indexeddb/auto";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-
-import { DB_NAME, __resetDbForTests, getDb } from "../../db";
-import {
-  closeLocalSession,
-  createLocalSession,
-  listUnsyncedClosedSessions,
-} from "./storage";
+import { afterEach, expect, it, vi } from "vitest";
+import { __resetDbForTests, getDb } from "../../db";
+import { checkpointRow } from "./checkpoint-row-fixture";
+import { needsSessionSync } from "./needs-session-sync";
 import { syncPendingSessions } from "./sync";
 
-beforeEach(() => {
-  __resetDbForTests();
-});
-
 afterEach(async () => {
+  await getDb().delete();
   __resetDbForTests();
   vi.restoreAllMocks();
-  await new Promise<void>((resolve) => {
-    const req = indexedDB.deleteDatabase(DB_NAME);
-    req.onsuccess = () => resolve();
-    req.onerror = () => resolve();
-    req.onblocked = () => resolve();
+  vi.unstubAllGlobals();
+});
+const getToken = async () => "token";
+const pendingRows = () => getDb().sessions.filter(needsSessionSync).toArray();
+
+it("uploads a closed checkpoint and acknowledges the saved revision", async () => {
+  await getDb().sessions.put(checkpointRow());
+  const fetch = vi
+    .fn()
+    .mockResolvedValue(
+      Response.json({ sessionId: "server", revision: 2, durationSeconds: 60 }),
+    );
+  vi.stubGlobal("fetch", fetch);
+  expect(await syncPendingSessions(getToken)).toEqual({ synced: 1 });
+  expect(fetch).toHaveBeenCalledTimes(1);
+  expect(fetch.mock.calls[0][0]).toContain("/reader/session/checkpoint");
+  expect(JSON.parse(fetch.mock.calls[0][1].body as string)).toEqual({
+    clientSessionId: "session",
+    startedAt: "2026-11-03T10:00:00.000Z",
+    checkpointAt: "2026-11-03T10:01:00.000Z",
+    endedAt: "2026-11-03T10:01:00.000Z",
+    timeZone: "UTC",
+    revision: 2,
   });
+  expect((await getDb().sessions.get("session"))?.acknowledgedRevision).toBe(2);
+  expect(await pendingRows()).toHaveLength(0);
 });
 
-const getToken = async () => "token";
-const CLIENT_INSTANCE = "client-a";
+it("leaves a failed checkpoint pending for the next attempt", async () => {
+  await getDb().sessions.put(checkpointRow());
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockResolvedValue(new Response(null, { status: 503 })),
+  );
+  expect(await syncPendingSessions(getToken)).toEqual({ synced: 0 });
+  expect(await pendingRows()).toHaveLength(1);
+});
 
-async function seedCompletedSession(input: {
-  clientSessionId: string;
-  libraryItemId: string;
-  startedAt: string;
-  endedAt: string;
-}) {
-  await createLocalSession({
-    clientSessionId: input.clientSessionId,
-    libraryItemId: input.libraryItemId,
-    startedAt: input.startedAt,
-  });
-  await closeLocalSession({
-    clientSessionId: input.clientSessionId,
-    endedAt: input.endedAt,
-  });
-}
+it("stops retrying a permanently rejected checkpoint", async () => {
+  await getDb().sessions.put(checkpointRow());
+  const fetch = vi.fn().mockResolvedValue(new Response(null, { status: 422 }));
+  vi.stubGlobal("fetch", fetch);
+  await syncPendingSessions(getToken);
+  await syncPendingSessions(getToken);
+  expect(fetch).toHaveBeenCalledTimes(1);
+  expect(await pendingRows()).toHaveLength(0);
+});
 
-describe("syncPendingSessions", () => {
-  it("posts each closed-unsynced session and marks it synced on 2xx", async () => {
-    await seedCompletedSession({
-      clientSessionId: "cs-1",
-      libraryItemId: "lib-1",
-      startedAt: "2026-04-12T10:00:00.000Z",
-      endedAt: "2026-04-12T10:10:00.000Z",
-    });
-
-    const fetchMock = vi.fn(async () => ({
-      ok: true,
-      status: 200,
-      json: async () => ({}),
-    }));
-    vi.stubGlobal("fetch", fetchMock);
-
-    const { synced } = await syncPendingSessions(getToken, CLIENT_INSTANCE);
-    expect(synced).toBe(1);
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    const call = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
-    const body = JSON.parse(call[1].body as string);
-    expect(body.clientSessionId).toBe("cs-1");
-    expect(body.startedAt).toBe("2026-04-12T10:00:00.000Z");
-    expect(body.endedAt).toBe("2026-04-12T10:10:00.000Z");
-
-    const row = await getDb().sessions.get("cs-1");
-    expect(row?.syncedAt).not.toBeNull();
-    expect(await listUnsyncedClosedSessions()).toHaveLength(0);
-  });
-
-  it("stops on a 5xx and leaves the row pending for the next tick", async () => {
-    await seedCompletedSession({
-      clientSessionId: "cs-1",
-      libraryItemId: "lib-1",
-      startedAt: "2026-04-12T10:00:00.000Z",
-      endedAt: "2026-04-12T10:10:00.000Z",
-    });
-    const fetchMock = vi.fn(async () => ({
-      ok: false,
-      status: 503,
-      json: async () => ({}),
-    }));
-    vi.stubGlobal("fetch", fetchMock);
-
-    const { synced } = await syncPendingSessions(getToken, CLIENT_INSTANCE);
-    expect(synced).toBe(0);
-    expect(await listUnsyncedClosedSessions()).toHaveLength(1);
-  });
-
-  it("drops on a 4xx but stops re-trying (marks synced to break the loop)", async () => {
-    await seedCompletedSession({
-      clientSessionId: "cs-1",
-      libraryItemId: "lib-1",
-      startedAt: "2026-04-12T10:00:00.000Z",
-      endedAt: "2026-04-12T10:10:00.000Z",
-    });
-    const fetchMock = vi.fn(async () => ({
-      ok: false,
-      status: 422,
-      json: async () => ({}),
-    }));
-    vi.stubGlobal("fetch", fetchMock);
-
-    await syncPendingSessions(getToken, CLIENT_INSTANCE);
-    expect(await listUnsyncedClosedSessions()).toHaveLength(0);
-  });
-
-  it("drains a queue of multiple sessions in one pass", async () => {
-    for (let i = 0; i < 3; i++) {
-      await seedCompletedSession({
-        clientSessionId: `cs-${i}`,
-        libraryItemId: "lib-1",
-        startedAt: `2026-04-12T1${i}:00:00.000Z`,
-        endedAt: `2026-04-12T1${i}:10:00.000Z`,
-      });
-    }
-    const fetchMock = vi.fn(async () => ({
-      ok: true,
-      status: 200,
-      json: async () => ({}),
-    }));
-    vi.stubGlobal("fetch", fetchMock);
-
-    const { synced } = await syncPendingSessions(getToken, CLIENT_INSTANCE);
-    expect(synced).toBe(3);
-    expect(fetchMock).toHaveBeenCalledTimes(3);
-  });
+it("uploads multiple independent sessions in one pass", async () => {
+  await getDb().sessions.bulkPut(
+    ["a", "b", "c"].map((clientSessionId) =>
+      checkpointRow({ clientSessionId }),
+    ),
+  );
+  const fetch = vi
+    .fn()
+    .mockImplementation(async () =>
+      Response.json({ sessionId: "server", revision: 2, durationSeconds: 60 }),
+    );
+  vi.stubGlobal("fetch", fetch);
+  expect(await syncPendingSessions(getToken)).toEqual({ synced: 3 });
+  expect(fetch).toHaveBeenCalledTimes(3);
 });

@@ -1,3 +1,4 @@
+import type { BookReadingSnapshot } from "./reading-coverage";
 import type { LibraryCardBook } from "./library-catalog";
 
 // Detail-only fields — what the book-info screen needs ON TOP of the card.
@@ -28,6 +29,7 @@ export type LibraryBookInfoDetails = {
   language: string | null;
   lastReadAt: string | null;
   minutesRead: number;
+  readingSnapshot?: BookReadingSnapshot;
   publishedYear: number | null;
   source: "IMPORTED" | "CATALOG";
 };

@@ -1,53 +1,12 @@
-// Pure composition functions: server baseline + local deltas → augmented
-// stats. No Dexie, no React. The hooks layer hydrates them with values
-// produced by `./local-deltas`.
-//
-// Sessions/highlights add pending local changes to the server snapshot.
-// Completion counts use the aggregate reconciliation in completion/counts;
-// the home hook passes that effective total with no additional volume delta.
-
 import type { HomePayload } from "@/lib/api-types";
 
-export type HomeStatsDeltas = {
-  hoursReadingExtraSeconds: number;
-  highlightsNet: number;
-  // Signed change from a raw snapshot. Pass zero for an already-composed
-  // readHome payload; removing a finish date can produce a negative delta.
-  volumesReadDelta: number;
-  // aiComments delta is a future phase 5 hook. For now we always pass 0.
-  aiCommentsNet: number;
-};
-
+// Reading and completion are already reconciled by the Home bucket.
 export function composeHomeStats(
   baseline: HomePayload["stats"],
-  deltas: HomeStatsDeltas,
+  highlightsNet: number,
 ): HomePayload["stats"] {
-  // hoursReading: server already has integer-hours. We add the unsynced
-  // seconds to the *original* second-count by reversing the floor — but
-  // we don't know the residual fractional hour. Cheapest acceptable
-  // approximation: add floor(extraSeconds / 3600) on top. This may
-  // under-count by up to ~59 minutes between server snapshots, which
-  // matches the server's own integer-hour reporting granularity.
-  const extraHours = Math.floor(
-    Math.max(0, deltas.hoursReadingExtraSeconds) / 3600,
-  );
   return {
-    aiComments: Math.max(0, baseline.aiComments + deltas.aiCommentsNet),
-    highlights: Math.max(0, baseline.highlights + deltas.highlightsNet),
-    hoursReading: baseline.hoursReading + extraHours,
-    volumesRead: Math.max(0, baseline.volumesRead + deltas.volumesReadDelta),
+    ...baseline,
+    highlights: Math.max(0, baseline.highlights + highlightsNet),
   };
-}
-
-export { composeMastery } from "./compose-mastery";
-
-// Augments the per-book reading time on book-info. `baselineMinutes` is
-// the server-confirmed minutes-read for the book; we add the user's
-// unsynced reading time for the same book.
-export function composeBookMinutesRead(
-  baselineMinutes: number,
-  unsyncedSecondsForBook: number,
-): number {
-  const extraMinutes = Math.floor(Math.max(0, unsyncedSecondsForBook) / 60);
-  return baselineMinutes + extraMinutes;
 }

@@ -17,7 +17,10 @@ export function createHomeContractFixture() {
     .fn<Promise<unknown[]>, [Prisma.LibraryItemFindManyArgs]>()
     .mockResolvedValue([]);
   const prisma = {
-    user: { findMany: jest.fn().mockResolvedValue([]) },
+    user: {
+      findMany: jest.fn().mockResolvedValue([]),
+      findUniqueOrThrow: jest.fn().mockResolvedValue({ readingRevision: 0 }),
+    },
     $transaction: jest.fn((reads: Promise<unknown>[]) => Promise.all(reads)),
     readingSession: { findMany: jest.fn().mockResolvedValue([]) },
     aiComment: { count: jest.fn().mockResolvedValue(0) },

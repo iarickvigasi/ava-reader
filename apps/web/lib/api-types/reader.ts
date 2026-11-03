@@ -136,14 +136,6 @@ export type ReaderProgressPayload = {
   locator: ReaderLocator | null;
 };
 
-export type ReaderSessionPayload = {
-  durationSeconds: number;
-  endedAt: string | null;
-  lastTrackedAt: string | null;
-  sessionId: string;
-  startedAt: string;
-};
-
 export type ReaderStatusPayload =
   | {
       activeChapterId: string;

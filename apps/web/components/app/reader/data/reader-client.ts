@@ -1,7 +1,4 @@
-import type {
-  ReaderLocator,
-  ReaderProgressPayload,
-} from "@/lib/api-types";
+import type { ReaderLocator, ReaderProgressPayload } from "@/lib/api-types";
 import { loadReaderPayloadFromCache } from "@/features/offline/buckets/book";
 import { type ReaderAuthInput, resolveReaderAuthToken } from "./reader-auth";
 import { fetchReaderPayloadFromNetwork } from "./reader-payload-network";
@@ -15,12 +12,6 @@ import {
 
 // Public re-exports — keeps `../data/reader-client` as the single import
 // surface for the reader controller hooks.
-export {
-  heartbeatReaderSession,
-  startReaderSession,
-  stopReaderSession,
-} from "./reader-session-client";
-export { getOrCreateReaderClientInstanceId } from "./reader-client-instance-id";
 export type { ReaderAuthInput } from "./reader-auth";
 
 // Cache-first chapter loading, online or offline. Parsed content is immutable;

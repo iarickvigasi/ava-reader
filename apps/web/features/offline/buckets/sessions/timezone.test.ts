@@ -1,8 +1,7 @@
 import "fake-indexeddb/auto";
 import { afterEach, expect, it, vi } from "vitest";
-import { beginLocalSession } from "./begin-local-session";
-import { closeLocalSession, markSessionActive } from "./storage";
-import { postSession } from "./post-session";
+import { createReadingTracker } from "./tracker";
+import { postCheckpoint } from "./post-checkpoint";
 import { getDb, __resetDbForTests } from "../../db";
 
 const device = vi.hoisted(() => ({ zone: "Europe/Belgrade" }));
@@ -14,26 +13,37 @@ afterEach(async () => {
   __resetDbForTests();
   vi.unstubAllGlobals();
 });
-it("stores the start zone and preserves it after travel, heartbeat, close and replay", async () => {
-  const identity = beginLocalSession("book");
+it("preserves the start zone through travel, checkpoints, close and upload", async () => {
+  let now = Date.parse("2026-11-03T10:00:00Z");
+  const clock = { wallNow: () => now, monotonicNow: () => now };
+  const tracker = createReadingTracker("book", clock);
+  await tracker.start();
   const db = getDb();
-  // The write was queued before this transaction, so this read waits for it.
-  expect((await db.sessions.get(identity.clientSessionId))?.timeZone).toBe(
-    "Europe/Belgrade",
-  );
+  const [initial] = await db.sessions.toArray();
+  expect(initial.timeZone).toBe("Europe/Belgrade");
   device.zone = "America/Los_Angeles";
-  await markSessionActive(identity.clientSessionId, "2026-09-25T01:00:00Z");
-  await closeLocalSession({
-    clientSessionId: identity.clientSessionId,
-    endedAt: "2026-09-25T01:00:00Z",
-  });
-  const saved = (await db.sessions.get(identity.clientSessionId))!;
-  const fetch = vi.fn().mockResolvedValue(new Response(null, { status: 200 }));
+  now += 30_000;
+  await tracker.checkpoint();
+  now += 5_000;
+  await tracker.stop();
+  const saved = (await db.sessions.get(initial.clientSessionId))!;
+  const fetch = vi.fn().mockResolvedValue(
+    Response.json({
+      sessionId: "server",
+      revision: saved.revision,
+      durationSeconds: 35,
+    }),
+  );
   vi.stubGlobal("fetch", fetch);
-  await postSession("token", "device", saved);
+  await postCheckpoint("token", saved);
   expect(JSON.parse(fetch.mock.calls[0][1].body as string).timeZone).toBe(
     "Europe/Belgrade",
   );
-  expect(beginLocalSession("next-book").timeZone).toBe("America/Los_Angeles");
-  await db.sessions.toArray();
+  const next = createReadingTracker("next-book", clock);
+  await next.start();
+  expect(
+    (await db.sessions.where("libraryItemId").equals("next-book").first())
+      ?.timeZone,
+  ).toBe("America/Los_Angeles");
+  await next.stop();
 });

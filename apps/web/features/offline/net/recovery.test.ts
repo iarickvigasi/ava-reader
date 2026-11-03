@@ -1,11 +1,8 @@
 import "fake-indexeddb/auto";
 import { afterEach, expect, it, vi } from "vitest";
 import { __resetDbForTests, getDb } from "../db";
-import {
-  createLocalSession,
-  closeLocalSession,
-  listUnsyncedClosedSessions,
-} from "../buckets/sessions/storage";
+import { checkpointRow } from "../buckets/sessions/checkpoint-row-fixture";
+import { needsSessionSync } from "../buckets/sessions/needs-session-sync";
 import { syncPendingSessions } from "../buckets/sessions/sync";
 import { revalidateHome } from "../buckets/home/revalidate";
 import { homeFixture } from "../buckets/home/test-fixture";
@@ -33,7 +30,7 @@ afterEach(async () => {
   effects.length = 0;
 });
 
-it("retains failed sessions and refreshes home/replays on confirmed recovery without window online", async () => {
+it("retains failed checkpoints and refreshes home/sync on confirmed recovery without window online", async () => {
   vi.stubGlobal("window", new EventTarget());
   vi.stubGlobal(
     "document",
@@ -44,27 +41,19 @@ it("retains failed sessions and refreshes home/replays on confirmed recovery wit
   __resetDbForTests();
   await getDb().delete();
   __resetDbForTests();
-  await createLocalSession({
-    libraryItemId: "book",
-    clientSessionId: "session",
-    startedAt: "2026-09-25T10:00:00Z",
-  });
-  await closeLocalSession({
-    clientSessionId: "session",
-    endedAt: "2026-09-25T10:01:00Z",
-  });
+  await getDb().sessions.put(checkpointRow());
   const getToken = async () => "token";
   const fetchMock = vi.fn().mockRejectedValue(new TypeError("Failed to fetch"));
   vi.stubGlobal("fetch", fetchMock);
-  await syncPendingSessions(getToken, "device");
+  await syncPendingSessions(getToken);
   await checkNetworkReachability();
   expect(isOnline()).toBe(false);
   expect(isBrowserOnline()).toBe(true);
-  expect(await listUnsyncedClosedSessions()).toHaveLength(1);
+  expect(await getDb().sessions.filter(needsSessionSync).count()).toBe(1);
   let resumed: Promise<unknown> | undefined;
   const run = vi.fn(() => {
     resumed = Promise.all([
-      syncPendingSessions(getToken, "device"),
+      syncPendingSessions(getToken),
       revalidateHome(getToken),
     ]);
   });
@@ -75,13 +64,17 @@ it("retains failed sessions and refreshes home/replays on confirmed recovery wit
     if (url.endsWith("/reachability"))
       return Response.json({ service: "ava-reader-api" });
     if (url.includes("/api/home")) return Response.json(homeFixture());
-    return Response.json({});
+    return Response.json({
+      sessionId: "server",
+      revision: 2,
+      durationSeconds: 60,
+    });
   });
   await checkNetworkReachability();
   await resumed;
   expect(run).toHaveBeenCalledTimes(1);
   expect(isBrowserOnline()).toBe(true);
-  expect(await listUnsyncedClosedSessions()).toHaveLength(0);
+  expect(await getDb().sessions.filter(needsSessionSync).count()).toBe(0);
   expect((await readHome())?.user.displayName).toBe("Reader");
   await checkNetworkReachability();
   expect(run).toHaveBeenCalledTimes(1);
