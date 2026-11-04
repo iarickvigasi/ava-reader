@@ -75,7 +75,7 @@ export function EditorialDialog({
           <Button
             size="sm"
             type="submit"
-            variant={remove ? "danger" : "primary"}
+            variant={remove ? "danger" : "admin"}
             disabled={!state.record || state.pending}
           >
             <PendingLabel pending={state.pending} pendingText={t("saving")}>

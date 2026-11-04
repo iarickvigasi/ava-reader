@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
-type ButtonVariant = "primary" | "soft" | "ghost" | "danger";
+type ButtonVariant = "primary" | "soft" | "ghost" | "danger" | "admin";
 type ButtonSize = "md" | "sm";
 
 // Shape + motion shared by every button. No border — definition comes from the
@@ -22,6 +22,7 @@ const variants: Record<ButtonVariant, string> = {
   soft: "bg-soft-fill text-soft-foreground hover:bg-soft-tone-fill",
   ghost: "bg-transparent text-ink hover:bg-soft-fill",
   danger: "bg-danger text-white hover:opacity-90",
+  admin: "bg-plum/10 text-plum hover:bg-plum/15",
 };
 
 type SharedProps = {

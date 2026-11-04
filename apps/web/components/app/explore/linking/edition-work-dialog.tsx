@@ -47,6 +47,7 @@ export function EditionWorkDialog({
         >
           <Button
             size="sm"
+            variant="admin"
             disabled={!state.work || !state.edition || state.pending}
             onClick={() => void state.save()}
           >
