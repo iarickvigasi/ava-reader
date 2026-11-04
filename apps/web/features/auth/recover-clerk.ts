@@ -1,8 +1,5 @@
-type RecoverableClerk = {
-  loaded: boolean;
-  status?: string;
-  getEntryChunks?: () => Promise<void>;
-};
+import type { RecoverableClerk } from "./clerk-recovery-types";
+import { retryClerkInitialization } from "./retry-clerk-initialization";
 
 // @clerk/nextjs 7 / @clerk/react 6: this is the provider's initialization path.
 // Keep this internal SDK seam isolated and regression-test when upgrading Clerk.
@@ -21,7 +18,7 @@ export function startClerkRecovery(clerk: RecoverableClerk) {
     ) {
       running = true;
       try {
-        await clerk.getEntryChunks?.();
+        await retryClerkInitialization(clerk);
       } catch {
         /* Provider remains unavailable; retry without dropping local data. */
       } finally {

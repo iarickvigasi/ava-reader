@@ -265,6 +265,9 @@ importers:
       "@clerk/nextjs":
         specifier: ^7.9.22
         version: 7.9.22(next@16.4.3(@babel/core@7.29.7)(@opentelemetry/api@1.9.0)(@types/node@20.19.43)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      "@clerk/shared":
+        specifier: 4.43.0
+        version: 4.43.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       dexie:
         specifier: ^4.4.7
         version: 4.4.7

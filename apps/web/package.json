@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^7.9.22",
+    "@clerk/shared": "4.43.0",
     "dexie": "^4.4.7",
     "next": "16.4.3",
     "next-intl": "^4.14.9",

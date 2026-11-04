@@ -53,6 +53,7 @@ it("deduplicates wakes during recovery, backs off, and cleans up", async () => {
   };
   const stop = startClerkRecovery(clerk);
   target.dispatchEvent(new Event("online"));
+  await vi.advanceTimersByTimeAsync(0);
   expect(clerk.getEntryChunks).toHaveBeenCalledOnce();
   finish();
   await vi.advanceTimersByTimeAsync(2_000);
