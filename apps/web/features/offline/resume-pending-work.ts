@@ -1,3 +1,4 @@
+import { withDeadline } from "@/features/auth/with-deadline";
 import { isOnline } from "@/features/offline/net/net-state";
 import { getPublicApiBaseUrl } from "@/lib/api";
 import { getDb, type AvaReaderDB } from "./db";
@@ -17,34 +18,37 @@ type AnnotationBucket = Pick<
   typeof highlights,
   "setBucketAuth" | "flushBucket"
 >;
-let running: Promise<void> | null = null;
+const running = new WeakMap<AvaReaderDB, Promise<void>>();
 
 // Resume persisted queues even when reauthentication lands on home, without
 // requiring the reader to reopen every book containing unsynced annotations.
 export function resumePendingWork(getToken: GetToken) {
-  if (running) return running;
-  running = resumeQueues(getToken).finally(() => {
-    running = null;
-  });
-  return running;
+  const db = getDb();
+  const prior = running.get(db);
+  if (prior) return prior;
+  const work = resumeQueues(db, getToken).finally(() => running.delete(db));
+  running.set(db, work);
+  return work;
 }
 
-async function resumeQueues(getToken: GetToken) {
-  const db = getDb();
-  if (!isOnline() || !(await getToken()) || db !== getDb()) return;
+async function resumeQueues(db: AvaReaderDB, getToken: GetToken) {
+  if (!isOnline() || !(await withDeadline(getToken())) || db !== getDb())
+    return;
   const { highlightScopes, commentScopes } =
     await readPendingAnnotationScopes(db);
   if (db !== getDb()) return;
-  await Promise.allSettled([
-    flushDirtyProgress(getToken),
-    flushPreferences(getToken),
-    flushCollectionMemberships(getToken),
-    flushFinishDates(getToken),
-    flushCatalogLinks(getToken),
-    syncPendingSessions(getToken),
-    ...flushAnnotationScopes(highlights, highlightScopes, getToken),
-    ...flushAnnotationScopes(comments, commentScopes, getToken),
-  ]);
+  await withDeadline(
+    Promise.allSettled([
+      flushDirtyProgress(getToken),
+      flushPreferences(getToken),
+      flushCollectionMemberships(getToken),
+      flushFinishDates(getToken),
+      flushCatalogLinks(getToken),
+      syncPendingSessions(getToken),
+      ...flushAnnotationScopes(highlights, highlightScopes, getToken),
+      ...flushAnnotationScopes(comments, commentScopes, getToken),
+    ]),
+  );
 }
 
 async function readPendingAnnotationScopes(db: AvaReaderDB) {

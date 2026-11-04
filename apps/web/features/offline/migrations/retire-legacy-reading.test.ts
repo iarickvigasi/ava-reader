@@ -71,8 +71,13 @@ it("retires legacy time and unused stores while preserving checkpoints and serve
     "sessionMutations",
   );
   expect(await db.sessions.toArray()).toEqual([
-    checkpoint,
-    { ...checkpoint, clientSessionId: "rejected", dropped: true },
+    { ...checkpoint, syncState: "pending" },
+    {
+      ...checkpoint,
+      clientSessionId: "rejected",
+      dropped: true,
+      syncState: "dropped",
+    },
   ]);
   expect(await db.home.get("me")).toEqual(home);
   expect(await hasPendingChanges()).toBe(true);

@@ -1,5 +1,9 @@
+import type { SESSION_SYNC_STATE } from "./constants";
+
 export type SessionRow = {
   trackingVersion: 2;
+  // Derived transactionally by the table hooks; optional for older stored rows.
+  syncState?: (typeof SESSION_SYNC_STATE)[keyof typeof SESSION_SYNC_STATE];
   revision: number;
   acknowledgedRevision: number;
   // Stable identity across checkpoint retries.

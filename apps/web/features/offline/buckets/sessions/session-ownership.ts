@@ -1,3 +1,5 @@
+import { SESSION_OWNERSHIP_PREFIX } from "./constants";
+
 type Ownership = { exclusive: boolean; release: () => void };
 
 // Locks disappear with a destroyed document, permitting immediate crash recovery.
@@ -10,7 +12,7 @@ export function acquireSessionOwnership(
     return Promise.resolve({ exclusive: false, release: () => undefined });
   return new Promise((resolve, reject) => {
     void navigator.locks
-      .request(`reading-session:${name}`, { signal }, (lock) => {
+      .request(`${SESSION_OWNERSHIP_PREFIX}${name}`, { signal }, (lock) => {
         if (!lock) {
           resolve(null);
           return;

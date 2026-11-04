@@ -13,6 +13,7 @@ export function useReaderScreenLoader() {
   const [result, setResult] = useState<ReaderLoadResult | null>(null);
   const [attempt, setAttempt] = useState(0);
   const hasPayload = result?.kind === "loaded";
+  const authReady = !!(isLoaded && isSignedIn);
   // Auth updates must not restart an already-open reader.
   const authRef = useRef({ getToken, isLoaded, isSignedIn });
   useEffect(
@@ -42,7 +43,7 @@ export function useReaderScreenLoader() {
       );
       return () => controller.abort();
     },
-    [attempt, hasPayload],
+    [attempt, hasPayload, authReady],
   );
 
   useEffect(

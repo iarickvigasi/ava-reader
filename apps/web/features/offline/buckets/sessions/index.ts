@@ -8,3 +8,4 @@ export {
 } from "./constants";
 export { needsSessionSync } from "./needs-session-sync";
 export { watchSessionLease } from "./watch-session-lease";
+export { listPendingSessions } from "./list-pending-sessions";

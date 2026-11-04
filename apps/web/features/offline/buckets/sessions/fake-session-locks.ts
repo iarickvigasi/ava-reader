@@ -1,10 +1,10 @@
 import { vi } from "vitest";
 
 type Job = {
-  callback: (lock: Lock) => Promise<void>;
+  callback: (lock: Lock | null) => Promise<void>;
   resolve: () => void;
   reject: (error: Error) => void;
-  signal: AbortSignal;
+  signal?: AbortSignal;
 };
 
 export function fakeSessionLocks() {
@@ -28,12 +28,16 @@ export function fakeSessionLocks() {
     locks: {
       request: (
         _name: string,
-        options: { signal: AbortSignal },
+        options: { signal?: AbortSignal; ifAvailable?: boolean },
         callback: Job["callback"],
       ) =>
         new Promise<void>((resolve, reject) => {
+          if (options.ifAvailable && active) {
+            void callback(null).then(resolve, reject);
+            return;
+          }
           const job = { callback, resolve, reject, signal: options.signal };
-          options.signal.addEventListener("abort", () => {
+          options.signal?.addEventListener("abort", () => {
             const index = queue.indexOf(job);
             if (index >= 0) {
               queue.splice(index, 1);

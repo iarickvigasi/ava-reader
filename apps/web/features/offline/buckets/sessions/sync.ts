@@ -1,6 +1,6 @@
 import { withDeadline } from "@/features/auth/with-deadline";
 import { getDb, type AvaReaderDB } from "../../db";
-import { needsSessionSync } from "./needs-session-sync";
+import { listPendingSessions } from "./list-pending-sessions";
 import { recoverSessions } from "./recover-sessions";
 import { syncSession } from "./sync-session";
 
@@ -26,13 +26,13 @@ async function uploadPendingCheckpoints(
   await recoverSessions(db);
   if (typeof navigator !== "undefined" && navigator.onLine === false)
     return { synced: 0 };
-  const pending = await db.sessions.filter(needsSessionSync).toArray();
+  const pending = await listPendingSessions(db);
   let synced = 0;
   for (const row of pending) {
     const token = await withDeadline(getToken());
     if (!token || db !== getDb()) break;
     const result = await syncSession(db, token, row);
-    if (db !== getDb() || result === "retry") break;
+    if (db !== getDb()) break;
     if (result === "ok") synced++;
   }
   return { synced };

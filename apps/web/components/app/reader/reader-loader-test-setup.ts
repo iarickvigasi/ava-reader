@@ -9,12 +9,13 @@ const fixtures = vi.hoisted(() => ({
   load: vi.fn<typeof loadReaderScreen>(),
   getToken: vi.fn(async () => "token"),
   notice: vi.fn(),
+  authReady: true,
 }));
 vi.mock("@/features/auth/use-offline-auth", () => ({
   useOfflineAuth: () => ({
     getToken: fixtures.getToken,
-    isLoaded: true,
-    isSignedIn: true,
+    isLoaded: fixtures.authReady,
+    isSignedIn: fixtures.authReady,
   }),
 }));
 vi.mock("@/features/offline/notices/missing-book-bus", () => ({
@@ -45,6 +46,10 @@ export const read = () => result;
 export const setReachable = async (online: boolean) => {
   await act(async () => network.__setNetStateForTests(online));
 };
+export const setAuthReady = async (ready: boolean) => {
+  fixtures.authReady = ready;
+  await act(async () => root?.render(createElement(ReaderLoaderProbe)));
+};
 export const mount = async () => {
   root = createRoot(document.createElement("div"));
   await act(async () => root!.render(createElement(ReaderLoaderProbe)));
@@ -67,6 +72,7 @@ beforeEach(() => {
   window.history.replaceState(null, "", "/app/read/book");
   network.__resetNetStateForTests();
   subscriptions.length = 0;
+  fixtures.authReady = true;
   fixtures.notice.mockReset();
   vi.spyOn(network, "subscribeToNetworkState").mockImplementation(
     (listener) => {

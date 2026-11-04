@@ -238,7 +238,7 @@ export type MetaRow = {
 // Bumped for schema changes and one-time data upgrades within a user's database. The database
 // NAME is per-user (`ava-reader-<userId>`), so different accounts on one browser
 // profile never share an object store — see adr/5.
-export const SCHEMA_VERSION = 8;
+export const SCHEMA_VERSION = 9;
 export const DB_NAME_PREFIX = "ava-reader-";
 // The pre-per-user single database; swept once by purgeOtherUserDbs (adr/5).
 export const LEGACY_DB_NAME = "ava-reader";

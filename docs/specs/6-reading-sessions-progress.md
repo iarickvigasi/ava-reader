@@ -9,11 +9,6 @@
 
 Tracks position, reading time and daily goals offline; composes home stats to support reading habits.
 
-## Scope
-
-- In: local session checkpoints, current locator + completion %, minutes read, daily-goal mastery
-  chart, server-baseline + local-delta stats.
-
 ## Behaviour
 
 1. Ready, visible reading starts a local session immediately. Every 30 seconds saves a checkpoint;
@@ -26,7 +21,8 @@ Tracks position, reading time and daily goals offline; composes home stats to su
 4. Home shows totals (hours, highlights, volumes) and a per-day minutes-vs-goal chart, all correct
    offline.
 5. Time tracking runs silently. Persistence and sync failures retry automatically without messages
-   or manual retry actions that interrupt reading.
+   or manual retry actions that interrupt reading. Final-save retries keep the captured stop time;
+   waiting to persist never accrues hidden time.
 
 ## Data & sync
 
@@ -46,9 +42,8 @@ refresh cannot retire a home adjustment. See [[4.11-completion-counts]] for the 
 and membership composition rules. Older cached home payloads without this metadata keep their
 server total until a fresh response supplies it.
 
-`readHome()` returns the effective completion total. The home stats hook consumes that value
-directly and adds only its other stats deltas, so online and offline rendering never apply a
-completion adjustment twice. Home stats and collection counts subscribe to Dexie changes.
+`readHome()` supplies effective completion totals; hooks add only other deltas. Home stats and
+collection counts subscribe to Dexie changes.
 
 The progress bucket (locator + completion % + server `lastReadAt`) is the offline resume substrate,
 populated three ways: the reader writes it while reading (dirty until the server acks), `GET
@@ -80,6 +75,8 @@ The payload carries clientSessionId, startedAt, checkpointAt, timeZone, revision
 The server credits only the extension of the saved prefix; repeated/older revisions are no-ops and
 closed sessions never reopen. Local acknowledgment advances only the uploaded revision. Both open
 and closed dirty sessions use the existing account sync runner with bounded requests and retries.
+A retryable row does not block independent sessions. An indexed pending state avoids rescanning
+acknowledged history; checkpoint/ack races update that index atomically with the row.
 
 Home, history and book-info snapshots carry exact total seconds and per-session credited seconds
 from the same transaction. Local rows add their uncovered suffix, even after acknowledgment.
@@ -88,7 +85,6 @@ Daily grouping uses the saved session timezone and rounding follows summation. H
 reconciles book-info against a different snapshot. Old caches retain their legacy baseline.
 
 Mastery history stays in memory, using seven-day exclusive `before` cursors and snapshot coverage.
-
 New sessions capture the device IANA timezone once, locally and on the server. Checkpoint, close,
 and retry preserve it. Historical shared sessions keep the first creator's zone.
 Credited UTC intervals are merged when adjacent and written with UTC totals in one transaction.
@@ -124,6 +120,9 @@ zone across a device-zone change; the next session captures the new zone.
 ## Open questions
 
 Time-remaining estimate model. Missing legacy intervals without durable checkpoints are unrecoverable.
+
+Known gap: all-time coverage grows with history. Age-based pruning would break lost-acknowledgment
+and stale-snapshot reconciliation; bounding this needs a versioned replacement protocol.
 
 Known gap: highlight counts retire pending deltas at upload acknowledgment, before a cached Home total
 necessarily includes them. The displayed count can temporarily fall back until Home refreshes.

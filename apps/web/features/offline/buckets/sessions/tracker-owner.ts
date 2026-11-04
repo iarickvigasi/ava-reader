@@ -58,5 +58,5 @@ export function createTrackerOwner(libraryItemId: string, clock: ReadingClock) {
     return started;
   }
 
-  return { record, release, cancelPending: () => acquisition?.abort() };
+  return { record, cancelPending: () => acquisition?.abort() };
 }

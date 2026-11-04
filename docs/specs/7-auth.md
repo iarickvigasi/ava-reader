@@ -28,6 +28,7 @@ books and pending offline changes; losing an online session never removes local 
    configured vendor URL. The temporary URL override is restored on success or failure. Keep UI
    loading for sign-in and CAPTCHA; recovery never clears storage or reloads the page.
    Token acquisition and history requests have deadlines; pending locks release on failure.
+   Queue-resume locks belong to the account database; a stalled account never blocks another.
    Previously requested history retries after recovery without moving the viewed week.
 5. Server tokens are short-lived and refreshed silently by Clerk. Intended production policy:
    365-day maximum session lifetime, inactivity timeout disabled. This is Clerk configuration,

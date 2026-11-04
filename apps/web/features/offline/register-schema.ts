@@ -1,4 +1,6 @@
 import type Dexie from "dexie";
+import { registerSessionSyncIndex } from "./buckets/sessions/register-session-sync-index";
+import { indexPendingSessions } from "./migrations/index-pending-sessions";
 import { migrateLegacyCovers } from "./buckets/book/covers/migrate";
 import { migrateRetiredCollections } from "./migrations/retired-collections";
 import { retireLegacyReading } from "./migrations/retire-legacy-reading";
@@ -66,4 +68,8 @@ export function registerOfflineSchema(db: Dexie): void {
       statsSnapshot: null,
     })
     .upgrade(retireLegacyReading);
+  db.version(9)
+    .stores({ sessions: "clientSessionId, libraryItemId, state, syncState" })
+    .upgrade(indexPendingSessions);
+  registerSessionSyncIndex(db.table("sessions"));
 }

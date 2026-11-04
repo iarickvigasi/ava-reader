@@ -1,5 +1,5 @@
 import { getDb } from "@/features/offline/db";
-import { needsSessionSync } from "@/features/offline/buckets/sessions";
+import { listPendingSessions } from "@/features/offline/buckets/sessions";
 
 export async function hasPendingChanges() {
   const db = getDb();
@@ -11,7 +11,7 @@ export async function hasPendingChanges() {
     db.finishDateMutations.count(),
     db.preferences.filter((row) => row.dirtyFields.length > 0).count(),
     db.progress.filter((row) => row.dirty).count(),
-    db.sessions.filter(needsSessionSync).count(),
+    listPendingSessions(db).then((rows) => rows.length),
   ]);
   return counts.some(Boolean);
 }

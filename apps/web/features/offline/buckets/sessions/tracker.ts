@@ -1,3 +1,4 @@
+import { retryFinalCheckpoint } from "./retry-final-checkpoint";
 import { measureReadingTick } from "./measure-reading-tick";
 import { createTrackerOwner } from "./tracker-owner";
 import type { ReadingClock, ReadingMoment } from "./types";
@@ -29,10 +30,15 @@ export function createReadingTracker(
       monotonicNow: clock.monotonicNow(),
     };
     pending = pending
-      .then(() => persist(stop, requestedGeneration, moment))
+      .then(() =>
+        stop
+          ? retryFinalCheckpoint(() =>
+              persist(stop, requestedGeneration, moment),
+            )
+          : persist(stop, requestedGeneration, moment),
+      )
       .catch(() => {
-        // Retry from the previous durable moment on the next checkpoint.
-        if (stop) owner.release();
+        // Open checkpoints retry from the previous durable moment on the next tick.
       });
     return pending;
   }
