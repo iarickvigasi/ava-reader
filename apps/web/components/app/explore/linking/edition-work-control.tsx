@@ -16,6 +16,7 @@ export function EditionWorkControl({
   return (
     <>
       <ActionCard
+        variant="admin"
         icon={LibraryBoldIcon}
         title={t(kind === "works" ? "attachEdition" : "changeWork")}
         description={t("linkDescription")}

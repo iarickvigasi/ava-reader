@@ -19,6 +19,7 @@ export function PublicationActions({
       {entry.status !== "PUBLISHED" && (
         <Button
           size="sm"
+          variant="admin"
           type="submit"
           name="action"
           value="defer"
@@ -31,6 +32,7 @@ export function PublicationActions({
       {published && (
         <Button
           size="sm"
+          variant="admin"
           type="submit"
           name="action"
           value="unpublish"
@@ -42,6 +44,7 @@ export function PublicationActions({
       )}
       <Button
         size="sm"
+        variant="admin"
         type="submit"
         name="action"
         value="publish"

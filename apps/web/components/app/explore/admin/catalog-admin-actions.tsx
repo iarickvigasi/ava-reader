@@ -23,6 +23,7 @@ export function CatalogAdminActions({
   return (
     <div data-catalog-actions className="space-y-4">
       <ActionCard
+        variant="admin"
         icon={EditBoldIcon}
         title={
           kind === "authors"

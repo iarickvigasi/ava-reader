@@ -26,6 +26,7 @@ export function CatalogPublicationControl({
     <div className="space-y-4">
       {!copies.length && (
         <ActionCard
+          variant="admin"
           icon={UploadBoldIcon}
           title={t("publish")}
           disabled
@@ -50,6 +51,7 @@ export function CatalogPublicationControl({
         return (
           <ActionCard
             key={entry.id}
+            variant="admin"
             icon={UploadBoldIcon}
             title={t(published ? "unpublish" : "publish")}
             description={
