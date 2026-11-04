@@ -25,6 +25,7 @@ import { useResetPageScroll } from "./use-reset-page-scroll";
 import { useInterfaceLang } from "@/components/app/preferences/use-interface-lang";
 import { useCurrentUserCached } from "@/features/offline/buckets/me";
 import type { CurrentUserPayload } from "@/lib/api-types";
+import { CatalogAdminVisibilityProvider } from "@/features/explore/admin/catalog-admin-visibility-context";
 
 type AppShellProps = {
   children: ReactNode;
@@ -54,32 +55,36 @@ export function AppShell({
   // Global sync, migration, and offline islands run on every app route.
   // Only the page chrome differs between the reader and other screens.
   return (
-    <OfflineModalProvider>
-      <NetworkMonitor />
-      <ServiceWorkerRegistrar />
-      <SignedOutRedirectRunner />
-      <AuthStatusNotice />
-      <AccountSyncRunner />
-      <RoutePrecacheRunner />
-      <BackgroundPrimer />
-      <DownloadedChapterLabelMigration />
-      <LegacyLocalStorageCleanupRunner />
-      <PreferencesSyncRunner />
-      <ProgressSyncRunner />
-      <AppToast />
-      <MissingBookOfflineModal />
-      {isReaderRoute ? (
-        <ReaderUiProvider>
-          <ReaderShell navigation={<AppNavigation currentUser={currentUser} />}>
-            {children}
-          </ReaderShell>
-        </ReaderUiProvider>
-      ) : (
-        <div className="min-h-screen">
-          <AppNavigation currentUser={currentUser} />
-          <div className="pb-24 md:pb-10">{children}</div>
-        </div>
-      )}
-    </OfflineModalProvider>
+    <CatalogAdminVisibilityProvider>
+      <OfflineModalProvider>
+        <NetworkMonitor />
+        <ServiceWorkerRegistrar />
+        <SignedOutRedirectRunner />
+        <AuthStatusNotice />
+        <AccountSyncRunner />
+        <RoutePrecacheRunner />
+        <BackgroundPrimer />
+        <DownloadedChapterLabelMigration />
+        <LegacyLocalStorageCleanupRunner />
+        <PreferencesSyncRunner />
+        <ProgressSyncRunner />
+        <AppToast />
+        <MissingBookOfflineModal />
+        {isReaderRoute ? (
+          <ReaderUiProvider>
+            <ReaderShell
+              navigation={<AppNavigation currentUser={currentUser} />}
+            >
+              {children}
+            </ReaderShell>
+          </ReaderUiProvider>
+        ) : (
+          <div className="min-h-screen">
+            <AppNavigation currentUser={currentUser} />
+            <div className="pb-24 md:pb-10">{children}</div>
+          </div>
+        )}
+      </OfflineModalProvider>
+    </CatalogAdminVisibilityProvider>
   );
 }

@@ -3,6 +3,7 @@ import { expect, it, vi } from "vitest";
 import { withIntl } from "@/lib/test-utils/intl";
 import { CatalogEditionScreen } from "./catalog-edition-screen";
 import { useIsCatalogAdmin } from "@/features/explore/admin/use-is-catalog-admin";
+import { CatalogAdminVisibilityProvider } from "@/features/explore/admin/catalog-admin-visibility-context";
 vi.mock("@/features/explore/admin/use-edition-review-evidence", () => ({
   useEditionReviewEvidence: () => null,
 }));
@@ -52,7 +53,13 @@ it.each([false, true])(
   "shows public edition info and gates controls for admin=%s",
   (admin) => {
     vi.mocked(useIsCatalogAdmin).mockReturnValue(admin);
-    const html = renderToStaticMarkup(withIntl(<CatalogEditionScreen />));
+    const html = renderToStaticMarkup(
+      withIntl(
+        <CatalogAdminVisibilityProvider>
+          <CatalogEditionScreen />
+        </CatalogAdminVisibilityProvider>,
+      ),
+    );
     expect(html).toContain("Bram Stoker");
     expect(html).toContain("About work");
     expect(html).toContain("edition-cover.jpg");

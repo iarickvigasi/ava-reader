@@ -996,6 +996,8 @@
     "telegram": "Link do Telegram",
     "telegramHelp": "Este link aparecerá na página inicial para que os leitores possam entrar em contato com você como desenvolvedor do AVA. Deixe em branco para ocultar seu contato.",
     "accountHelp": "Para alterar sua foto ou os dados da conta, use Gerenciar conta no menu do avatar.",
+    "hideAdminControls": "Ocultar controles de administração",
+    "showAdminControls": "Mostrar controles de administração",
     "close": "Fechar",
     "save": "Salvar",
     "pending": "Salvo neste dispositivo. Aguardando sincronização.",

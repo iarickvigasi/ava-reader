@@ -996,6 +996,8 @@
     "telegram": "Telegram-Link",
     "telegramHelp": "Dieser Link wird auf der Startseite angezeigt, damit Leser dich als AVA-Entwickler kontaktieren können. Lass das Feld leer, um deinen Kontakt auszublenden.",
     "accountHelp": "Dein Foto und deine Kontodaten kannst du über Konto verwalten im Avatar-Menü ändern.",
+    "hideAdminControls": "Admin-Steuerelemente ausblenden",
+    "showAdminControls": "Admin-Steuerelemente anzeigen",
     "close": "Schließen",
     "save": "Speichern",
     "pending": "Auf diesem Gerät gespeichert. Synchronisierung steht aus.",

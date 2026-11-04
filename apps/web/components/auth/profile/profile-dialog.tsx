@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { TextInput } from "@/components/ui/text-input";
 import type { CurrentUserPayload } from "@/lib/api-types/user";
 import { useProfileEditor } from "@/features/auth/use-profile-editor";
+import { ProfileAdminVisibilityControl } from "./profile-admin-visibility-control";
 
 export function ProfileDialog({
   user,
@@ -57,6 +58,7 @@ export function ProfileDialog({
           </div>
         )}
         <p className="text-sm text-muted">{t("accountHelp")}</p>
+        <ProfileAdminVisibilityControl />
         {editor.status && (
           <p
             role="status"

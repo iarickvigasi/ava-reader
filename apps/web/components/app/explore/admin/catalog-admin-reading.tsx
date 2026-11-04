@@ -1,7 +1,7 @@
 "use client";
 import type { CatalogReadingAsset } from "@/lib/catalog-types";
 import { CatalogReadingAssets } from "../catalog-reading-assets";
-import { useIsCatalogAdmin } from "@/features/explore/admin/use-is-catalog-admin";
+import { useShowCatalogAdmin } from "@/features/explore/admin/catalog-admin-visibility-context";
 import { AdminReadingCopies } from "./admin-reading-copies";
 
 export function CatalogAdminReading({
@@ -13,7 +13,7 @@ export function CatalogAdminReading({
   editionId?: string;
   assets?: CatalogReadingAsset[];
 }) {
-  const admin = useIsCatalogAdmin();
+  const admin = useShowCatalogAdmin();
   const copies = editionId
     ? assets?.filter((asset) => asset.edition.id === editionId)
     : assets;

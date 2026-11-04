@@ -1,4 +1,4 @@
-import { useIsCatalogAdmin } from "@/features/explore/admin/use-is-catalog-admin";
+import { useShowCatalogAdmin } from "@/features/explore/admin/catalog-admin-visibility-context";
 import type { CatalogEditionDetail } from "@/lib/catalog-types";
 import { workDescriptionTexts } from "@/features/explore/work-description-texts";
 import { CatalogDetailsSection } from "./catalog-details-section";
@@ -10,7 +10,7 @@ export function CatalogEditionActions({
   edition: CatalogEditionDetail;
   description?: string | null;
 }) {
-  const admin = useIsCatalogAdmin();
+  const admin = useShowCatalogAdmin();
   const texts = workDescriptionTexts([], description, edition.language);
   if (!admin && !texts.length) return null;
   return (

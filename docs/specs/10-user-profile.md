@@ -1,6 +1,6 @@
 # AVA profile and developer contacts
 
-> Status: shipped · Updated: 2026-10-05 · ADRs: [[8-role-memberships]] · Code: apps/api/src/users,
+> Status: shipped · Updated: 2026-11-04 · ADRs: [[8-role-memberships]] · Code: apps/api/src/users,
 > apps/web/components/auth/profile, apps/web/features/offline/buckets/me
 
 ## Summary
@@ -23,6 +23,12 @@ may publish a Telegram contact link. Connect behaviour lives in [[11-connect]].
   both roles retains admin tools and developer contact editing/listing. Revoking DEVELOPER hides the
   contact and disables Telegram editing but preserves the stored link. Revoking ADMIN leaves
   developer membership intact; repeated grants/revokes are harmless.
+- Only ADMIN users can hide or show editorial controls from Edit profile. The change takes effect
+  immediately, including with invalid profile inputs, and the Show action remains available while
+  controls are hidden. Save, Close, and failed profile saves do not change this choice.
+- Editorial visibility is temporary within the current app shell. It survives navigation and
+  reopening the editor, then resets to visible on reload, shell exit, or an account-owner change.
+  It does not edit roles, profile data, saved preferences, or server authorization.
 - Contacts contain only ID, display name, avatar URL and Telegram URL, ordered by creation then ID.
 - Show all configured developers; omit missing names/links and hide an empty section.
 - Chips open Telegram separately; unavailable avatars show initials. Names are not translated.
@@ -43,6 +49,8 @@ roles. Cached permissions never authorize server writes. Roles are refreshed on 
 - [x] Non-developers cannot set Telegram or roles; invalid links fail validation.
 - [x] Eligible developer contacts are available on Home in all six UI languages.
 - [x] Missing photos, old caches, rejected edits and account switches are handled safely.
+- [x] Admins can hide and restore editorial controls independently of profile edits in all six
+      languages. Readers and users with only DEVELOPER membership have no visibility action.
 
 ## Developer avatar caching
 
