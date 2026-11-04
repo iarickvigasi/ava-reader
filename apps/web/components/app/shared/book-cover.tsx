@@ -14,7 +14,7 @@ import { useBookCoverSrc } from "./use-book-cover-src";
 // than into the artwork. (The older `object-cover` had no bars but cropped the
 // top and bottom off any cover taller than its box.)
 //
-// The fallback fills the frame until the image has fully decoded, then
+// The fallback fills the frame until the image has loaded, then
 // unmounts. A cached cover neither flashes it nor shifts the layout: the ref
 // callback measures during commit, before the browser paints.
 //
@@ -81,6 +81,7 @@ export function BookCover({
         onLoad={(event) => measure(event.currentTarget)}
         ref={handleRef}
         src={effectiveSrc}
+        style={{ visibility: artwork ? "visible" : "hidden" }}
       />
     </div>
   );
