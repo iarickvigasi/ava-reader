@@ -5,7 +5,11 @@ import { BookCover } from "./book-cover";
 describe("BookCover", () => {
   it("contains the image inside the frame instead of cropping it to fill", () => {
     const markup = renderToStaticMarkup(
-      <BookCover alt="Matrescence cover" src="/covers/a.jpg" title="Matrescence" />,
+      <BookCover
+        alt="Matrescence cover"
+        src="/covers/a.jpg"
+        title="Matrescence"
+      />,
     );
 
     expect(markup).toContain("object-contain");
@@ -25,13 +29,14 @@ describe("BookCover", () => {
     expect(audiobook).toContain("aspect-square");
   });
 
-  it("shows the placeholder behind the image until it has decoded", () => {
+  it("keeps the image hidden behind the placeholder until artwork is ready", () => {
     const markup = renderToStaticMarkup(
       <BookCover alt="cover" src="/covers/a.jpg" title="Matrescence" />,
     );
 
     expect(markup).toContain("Matrescence");
     expect(markup).toContain("absolute inset-0");
+    expect(markup).toMatch(/<img[^>]*visibility:hidden/);
   });
 
   it("keeps the frame ratio when falling back to the placeholder", () => {

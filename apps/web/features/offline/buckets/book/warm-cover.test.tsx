@@ -28,6 +28,7 @@ describe("warm reader covers", () => {
       <BookCover libraryItemId="book-a" src="/cover-a" title="A" alt="A" />,
     );
     expect(markup).toContain('src="blob:cover-a"');
+    expect(markup).toMatch(/<img[^>]*visibility:visible/);
     expect(markup).not.toContain("absolute inset-0");
     expect(markup).toContain("aspect-ratio:0.666");
   });
