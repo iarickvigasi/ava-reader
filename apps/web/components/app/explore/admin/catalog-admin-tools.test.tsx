@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, expect, it, vi } from "vitest";
 import { CatalogAdminTools } from "./catalog-admin-tools";
 import { useIsCatalogAdmin } from "@/features/explore/admin/use-is-catalog-admin";
+import { CatalogAdminVisibilityProvider } from "@/features/explore/admin/catalog-admin-visibility-context";
 vi.mock("@/features/explore/admin/use-is-catalog-admin", () => ({
   useIsCatalogAdmin: vi.fn(),
 }));
@@ -27,7 +28,9 @@ it("keeps editorial actions out of the ordinary user view", () => {
   expect(
     renderToStaticMarkup(
       <NextIntlClientProvider locale="en" messages={en}>
-        <CatalogAdminTools kind="works" id="work" />
+        <CatalogAdminVisibilityProvider>
+          <CatalogAdminTools kind="works" id="work" />
+        </CatalogAdminVisibilityProvider>
       </NextIntlClientProvider>,
     ),
   ).toBe("");
@@ -36,7 +39,9 @@ it("adds Publish, Edit, and Delete to the shared book UI for admins", () => {
   vi.mocked(useIsCatalogAdmin).mockReturnValue(true);
   const html = renderToStaticMarkup(
     <NextIntlClientProvider locale="en" messages={en}>
-      <CatalogAdminTools kind="works" id="work" />
+      <CatalogAdminVisibilityProvider>
+        <CatalogAdminTools kind="works" id="work" />
+      </CatalogAdminVisibilityProvider>
     </NextIntlClientProvider>,
   );
   expect(html).toContain("Publish");
@@ -47,7 +52,9 @@ it("adds Publish, Edit, and Delete to the shared book UI for admins", () => {
   expect(html).toContain("existing readers keep their copies");
   const author = renderToStaticMarkup(
     <NextIntlClientProvider locale="en" messages={en}>
-      <CatalogAdminTools kind="authors" id="author" />
+      <CatalogAdminVisibilityProvider>
+        <CatalogAdminTools kind="authors" id="author" />
+      </CatalogAdminVisibilityProvider>
     </NextIntlClientProvider>,
   );
   expect(author).toContain("Edit author");
@@ -58,7 +65,9 @@ it("localizes admin action titles and descriptions in Ukrainian", () => {
   vi.mocked(useIsCatalogAdmin).mockReturnValue(true);
   const html = renderToStaticMarkup(
     <NextIntlClientProvider locale="uk" messages={uk}>
-      <CatalogAdminTools kind="works" id="work" />
+      <CatalogAdminVisibilityProvider>
+        <CatalogAdminTools kind="works" id="work" />
+      </CatalogAdminVisibilityProvider>
     </NextIntlClientProvider>,
   );
   expect(html).toContain("Редагувати книгу");

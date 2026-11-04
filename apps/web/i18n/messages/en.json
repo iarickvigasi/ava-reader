@@ -996,6 +996,8 @@
     "telegram": "Telegram link",
     "telegramHelp": "This link will appear on the home page so readers can contact you as an AVA developer. Leave it empty to hide your contact chip.",
     "accountHelp": "To change your photo or account details, use Manage account in the avatar menu.",
+    "hideAdminControls": "Hide admin controls",
+    "showAdminControls": "Show admin controls",
     "close": "Close",
     "save": "Save",
     "pending": "Saved on this device. Waiting to sync.",
