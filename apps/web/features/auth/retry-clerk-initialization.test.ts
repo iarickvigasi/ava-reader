@@ -81,6 +81,7 @@ it("does not substitute URLs for unrelated initialization failures", async () =>
       loaded: false,
       options: { publishableKey },
       getClerkUIEntryChunk: loader,
+      getEntryChunks: vi.fn(),
     }),
   ).rejects.toBe(error);
   expect(loader).toHaveBeenCalledOnce();

@@ -28,6 +28,7 @@ it("lets Clerk choose a configured proxy and UI version", async () => {
     loaded: false,
     options,
     getClerkUIEntryChunk: loader,
+    getEntryChunks: vi.fn(),
   });
 });
 
@@ -54,6 +55,7 @@ it("preserves an explicit relative URL, query and fragment", async () => {
     loaded: false,
     options,
     getClerkUIEntryChunk: loader,
+    getEntryChunks: vi.fn(),
   });
   expect(options.__internal_clerkUIUrl).toBe(original);
 });

@@ -6,11 +6,10 @@ const RECOVERY_QUERY = "ava_clerk_retry";
 
 export async function retryClerkInitialization(clerk: RecoverableClerk) {
   await recoverUiScript(clerk);
-  await clerk.getEntryChunks?.();
+  await clerk.getEntryChunks();
 }
 
 async function recoverUiScript(clerk: RecoverableClerk) {
-  if (!clerk.options || !clerk.getClerkUIEntryChunk) return;
   try {
     await clerk.getClerkUIEntryChunk();
   } catch (error) {
@@ -20,7 +19,7 @@ async function recoverUiScript(clerk: RecoverableClerk) {
 }
 
 async function retryFreshUiScript(clerk: RecoverableClerk) {
-  const options = clerk.options!;
+  const options = clerk.options;
   const publishableKey = clerk.publishableKey ?? options.publishableKey;
   if (!publishableKey)
     throw new Error("Clerk recovery requires a publishable key");
@@ -33,7 +32,7 @@ async function retryFreshUiScript(clerk: RecoverableClerk) {
   url.searchParams.set(RECOVERY_QUERY, String(Date.now()));
   options.__internal_clerkUIUrl = url.href;
   try {
-    await clerk.getClerkUIEntryChunk!();
+    await clerk.getClerkUIEntryChunk();
   } finally {
     if (original === undefined) delete options.__internal_clerkUIUrl;
     else options.__internal_clerkUIUrl = original;

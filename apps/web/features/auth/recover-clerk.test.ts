@@ -16,6 +16,8 @@ it("retries failed script initialization on reconnect without remounting", async
   vi.stubGlobal("navigator", network);
   const clerk = {
     loaded: false,
+    options: { publishableKey: "pk_test_fixture" },
+    getClerkUIEntryChunk: vi.fn(async () => {}),
     status: "error",
     getEntryChunks: vi.fn(async () => {
       clerk.loaded = true;
@@ -43,6 +45,8 @@ it("deduplicates wakes during recovery, backs off, and cleans up", async () => {
   let finish!: () => void;
   const clerk = {
     loaded: false,
+    options: { publishableKey: "pk_test_fixture" },
+    getClerkUIEntryChunk: vi.fn(async () => {}),
     status: "error",
     getEntryChunks: vi.fn(
       () =>

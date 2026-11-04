@@ -1,6 +1,6 @@
 # Reading sessions, progress & stats
 
-> Status: implemented · Updated: 2026-11-03
+> Status: implemented · Updated: 2026-11-04
 > ADRs: [[3-offline-first-dexie-buckets]], [[7-reading-time-intervals]], [[15-local-reading-checkpoints]] · Code:
 > apps/web/features/offline/buckets/{sessions,progress}, apps/web/features/offline/stats,
 > apps/web/components/app/home/sections/mastery, apps/api/src/reader/{sessions,progress}
@@ -61,8 +61,11 @@ the preferences/offline-intent flush): on reconnect / tab-visible / mount it PAT
 up to the server (single-flight, online-guarded), sending the row's **read time** (`readAt` =
 `lastLocalUpdateAt`, the offline read moment — not the flush time); then clears the flag via a
 compare-and-clear fence, adopting whatever position the server returns (a newer local write
-mid-PATCH stays dirty for the next pass). This makes offline reading sync up **without reopening the
-book**; before it, a dirty row only flushed through the open reader.
+mid-PATCH stays dirty, even at the same locator). The fence includes the submitted local write's
+timestamp; serialized writes advance it even within one millisecond. Live and background uploads
+share transport and acknowledgment, preserving the saved read time through authentication waits.
+Requests and response bodies have deadlines. Flush locks belong to the account database; dirty
+work retries with capped backoff while online and visible, without reopening the book.
 
 **Conflict resolution — most-recent-reading wins.** Every progress write (reader live PATCH + sync
 runner) carries the client `readAt`; `PATCH .../reader/progress` ignores a write older than the
@@ -71,11 +74,6 @@ sync can't rewind a page another device advanced, while a deliberate backward re
 (it's more recent). Decided by client wall-clock (skew caveat); the JS compare isn't fully atomic
 against a same-book write racing inside one request. Resolves the [[2-reader/2.5-resume]] divergence
 question.
-
-Checkpoint uploads are the only supported reading-time protocol. The old start, heartbeat, stop,
-and completed-session replay routes are removed. Cache upgrades discard pre-checkpoint local sessions,
-including pending legacy time, and retire the unused session-mutation and stats-snapshot stores.
-Already credited server history remains available. Checkpoints use whole-second prefixes capped at 24h.
 
 Version 2 sessions persist cumulative contiguous checkpoints before `POST .../session/checkpoint`.
 The payload carries clientSessionId, startedAt, checkpointAt, timeZone, revision and nullable endedAt.
@@ -110,6 +108,8 @@ zone across a device-zone change; the next session captures the new zone.
 - [ ] Home counts replayed sessions once in both GET/ack orders, after lost responses, reload,
       and stale GET arrivals; IDs older than the mastery window reconcile all-time hours too.
 - [ ] Completion % and resume position survive reload and reconnect.
+- [x] Newer same-position writes survive old acknowledgments; uploads retain the saved read time.
+- [x] Hung requests release; accounts flush independently; visible online queues retry automatically.
 - [ ] A stale offline progress sync never rewinds a position advanced on another device
       (most-recent-reading wins); a genuine later read does win.
 - [x] At 00:58 Sep 25 in Belgrade, today is Friday; 00:10–00:50 credits Friday 40 minutes.
