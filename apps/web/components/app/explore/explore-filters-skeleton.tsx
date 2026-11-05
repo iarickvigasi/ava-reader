@@ -1,4 +1,4 @@
-import { CATALOG_FILTERS } from "@/features/explore/catalog-filters";
+import { CATALOG_FILTERS } from "@/features/explore/metadata/catalog-filters";
 
 export function ExploreFiltersSkeleton() {
   return (

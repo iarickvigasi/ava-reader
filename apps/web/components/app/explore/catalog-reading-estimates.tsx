@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import type { ReadingDetails } from "@/features/explore/use-reading-details";
+import { ReadingDetails } from "@/features/explore/details/types";
 import { estimatedReadingHours } from "@/lib/estimated-reading-hours";
 import { useBookInfoFormatters } from "@/components/app/library/book-info/formatters";
 import { MetadataItem } from "@/components/app/shared/books/metadata-item";

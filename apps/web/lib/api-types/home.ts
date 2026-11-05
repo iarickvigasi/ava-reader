@@ -1,3 +1,4 @@
+import type { ReadingCoverage } from "./reading-coverage";
 import type { ReadingDaySource } from "@/lib/api-types/reading-day-source";
 import type { CompletionItem, LibraryCardBook } from "./library";
 import type { BookFileFormat } from "./shared";
@@ -21,10 +22,10 @@ export type DeveloperContact = {
 
 export type HomePayload = {
   developers?: DeveloperContact[];
-  readingSnapshot?: ReadingDaySource & {
-    clientSessionIds: string[];
-    totalSeconds: number;
-  };
+  readingSnapshot?: ReadingDaySource &
+    ReadingCoverage & {
+      totalSeconds: number;
+    };
   completionItems?: CompletionItem[];
   collections: {
     items: Array<{

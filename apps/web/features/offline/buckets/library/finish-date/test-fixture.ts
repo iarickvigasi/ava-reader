@@ -20,12 +20,14 @@ const progress: ProgressRow = {
 const session: SessionRow = {
   libraryItemId: book.libraryItemId,
   clientSessionId: "session-1",
-  serverSessionId: "server-session-1",
+  trackingVersion: 2,
+  revision: 1,
+  acknowledgedRevision: 1,
+  timeZone: "UTC",
   startedAt: "2026-09-12T10:00:00.000Z",
   endedAt: "2026-09-12T10:30:00.000Z",
   lastHeartbeatAt: "2026-09-12T10:30:00.000Z",
   state: "closed",
-  syncedAt: "2026-09-12T10:30:00.000Z",
 };
 
 export async function seedFinishDateFixture(baseline: string | null = null) {
@@ -47,13 +49,27 @@ export async function readingState() {
 }
 
 export function acknowledgment(value: string | null) {
-  return Response.json({ libraryItemId: book.libraryItemId, finishedAt: value });
+  return Response.json({
+    libraryItemId: book.libraryItemId,
+    finishedAt: value,
+  });
 }
 
 export function deferredResponse() {
   let respond!: (response: Response) => void;
   let announce!: () => void;
-  const response = new Promise<Response>((resolve) => { respond = resolve; });
-  const started = new Promise<void>((resolve) => { announce = resolve; });
-  return { respond, started, fetch: () => { announce(); return response; } };
+  const response = new Promise<Response>((resolve) => {
+    respond = resolve;
+  });
+  const started = new Promise<void>((resolve) => {
+    announce = resolve;
+  });
+  return {
+    respond,
+    started,
+    fetch: () => {
+      announce();
+      return response;
+    },
+  };
 }

@@ -7,11 +7,8 @@ const clock = vi.hoisted(() => ({ todayKey: "2026-04-13" }));
 vi.mock("../buckets/home/hooks", () => ({
   useHomeWithCache: (home: unknown) => home,
 }));
-vi.mock("./use-delta-bundle", () => ({
-  useDeltaBundle: () => ({
-    todayKey: clock.todayKey,
-    sessions: { byUtcDaySeconds: new Map([["2026-04-13", 1800]]) },
-  }),
+vi.mock("./use-reading-calendar", () => ({
+  useReadingCalendar: () => `UTC|${clock.todayKey}`,
 }));
 vi.mock("@/components/app/preferences/use-reading-goal", () => ({
   useReadingGoal: () => [30],

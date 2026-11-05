@@ -2,11 +2,11 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, expect, it, vi } from "vitest";
 import { withIntl } from "@/lib/test-utils/intl";
 import type { CatalogWork } from "@/lib/catalog-types";
-import { useCatalogBook } from "@/features/explore/use-catalog-book";
+import { useCatalogBook } from "@/features/explore/details/use-catalog-book";
 import { CatalogBookScreen } from "./catalog-book-screen";
 import { BookDescription } from "@/components/app/shared/books/book-description";
 
-vi.mock("@/features/explore/use-catalog-book", () => ({
+vi.mock("@/features/explore/details/use-catalog-book", () => ({
   useCatalogBook: vi.fn(),
 }));
 vi.mock("./catalog-book-hero", () => ({ CatalogBookHero: () => null }));
@@ -82,7 +82,7 @@ it("shows a skeleton while the work loads", () => {
   expect(html).not.toContain("Loading books");
 });
 
-vi.mock("@/features/explore/use-reading-details", () => ({
+vi.mock("@/features/explore/details/use-reading-details", () => ({
   useReadingDetails: () => null,
 }));
 vi.mock("./admin/catalog-admin-tools", () => ({

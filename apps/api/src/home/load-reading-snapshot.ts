@@ -1,8 +1,6 @@
-import { loadZonedReading } from './load-zoned-reading';
 import type { PrismaService } from '../prisma/prisma.service';
-import { daysAgo, startOfDay } from '../shared/date-utils';
-
-const HOME_ACTIVITY_DAYS = 7;
+import { loadUtcReadingSnapshot } from './load-utc-reading-snapshot';
+import { loadZonedReading } from './load-zoned-reading';
 
 export async function loadReadingSnapshot(
   prisma: PrismaService,
@@ -19,38 +17,13 @@ export async function loadReadingSnapshot(
       })),
     };
   }
-  // IDs and aggregates must see the same committed sessions, including a replay
-  // committed while this GET is running. ReadCommitted is not sufficient.
-  const [recentReadingSessions, total, sessions] = await prisma.$transaction(
-    [
-      prisma.readingSessionSegment.findMany({
-        where: {
-          userId,
-          trackedDay: { gte: startOfDay(daysAgo(HOME_ACTIVITY_DAYS - 1)) },
-        },
-        orderBy: { trackedDay: 'asc' },
-        select: { durationSeconds: true, trackedDay: true },
-      }),
-      prisma.readingSessionSegment.aggregate({
-        where: { userId },
-        _sum: { durationSeconds: true },
-      }),
-      // All-time coverage: an old offline session can be replayed today.
-      prisma.readingSession.findMany({
-        where: { userId, clientSessionId: { not: null } },
-        select: { clientSessionId: true },
-      }),
-    ],
-    { isolationLevel: 'RepeatableRead' },
-  );
+  const snapshot = await loadUtcReadingSnapshot(prisma, userId);
   return {
-    recentReadingSessions,
+    recentReadingSessions: snapshot.recentReadingSessions,
     readingSnapshot: {
-      clientSessionIds: sessions.flatMap((row) =>
-        row.clientSessionId ? [row.clientSessionId] : [],
-      ),
-      totalSeconds: total._sum.durationSeconds ?? 0,
-      days: recentReadingSessions.map((row) => ({
+      ...snapshot.coverage,
+      totalSeconds: snapshot.totalSeconds,
+      days: snapshot.recentReadingSessions.map((row) => ({
         key: row.trackedDay.toISOString().slice(0, 10),
         seconds: row.durationSeconds,
       })),

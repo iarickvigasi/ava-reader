@@ -3,13 +3,13 @@ import { CatalogAdminTools } from "./admin/catalog-admin-tools";
 
 import { BookBackLink } from "@/components/app/shared/books/book-back-link";
 import { Button } from "@/components/ui/button";
-import { useExploreReturn } from "@/features/explore/use-explore-return";
+import { useExploreReturn } from "@/features/explore/navigation/use-explore-return";
 import { CatalogBiography } from "./catalog-biography";
 import { CatalogAuthorSkeleton } from "./catalog-author-skeleton";
 import { BookCardSkeleton } from "@/components/app/shared/books/book-card-skeleton";
 import { useLocale, useTranslations } from "next-intl";
-import { useCatalogAuthor } from "@/features/explore/use-catalog-author";
-import { catalogText } from "@/features/explore/catalog-display";
+import { useCatalogAuthor } from "@/features/explore/details/use-catalog-author";
+import { catalogText } from "@/features/explore/metadata/catalog-text";
 import { ScreenContainer } from "@/components/ui/screen-container";
 import { BookTitle } from "@/components/app/shared/books/book-title";
 import { CatalogBookCard } from "./catalog-book-card";

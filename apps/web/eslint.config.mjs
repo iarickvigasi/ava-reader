@@ -11,7 +11,7 @@ const eslintConfig = defineConfig([
     files: [
       "components/app/library/book-info/book-info-loader.tsx",
       "components/app/library/collection/use-collection-loader.ts",
-      "features/explore/use-catalog-read.ts",
+      "features/explore/details/use-catalog-read.ts",
     ],
     rules: { "react-hooks/set-state-in-effect": "off" },
   },

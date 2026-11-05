@@ -1,5 +1,5 @@
-import { useExploreReturn } from "@/features/explore/use-explore-return";
-import { catalogHref } from "@/features/explore/explore-return";
+import { useExploreReturn } from "@/features/explore/navigation/use-explore-return";
+import { catalogHref } from "@/features/explore/navigation/catalog-href";
 import { TextActionLink } from "@/components/ui/text-action-link";
 import { useTranslations } from "next-intl";
 import type { CatalogWork } from "@/lib/catalog-types";

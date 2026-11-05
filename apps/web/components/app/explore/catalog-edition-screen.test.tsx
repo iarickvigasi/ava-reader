@@ -12,10 +12,10 @@ vi.mock("@/features/explore/admin/use-admin-copies", () => ({
 vi.mock("./catalog-reading-estimates", () => ({
   CatalogReadingEstimates: () => null,
 }));
-vi.mock("@/features/explore/use-catalog-location", () => ({
+vi.mock("@/features/explore/navigation/use-catalog-location", () => ({
   useCatalogLocation: () => "edition",
 }));
-vi.mock("@/features/explore/use-catalog-resource", () => ({
+vi.mock("@/features/explore/data/use-catalog-resource", () => ({
   useCatalogResource: () => ({
     data: {
       id: "edition",
@@ -65,7 +65,7 @@ it.each([false, true])(
   },
 );
 
-vi.mock("@/features/explore/use-reading-details", () => ({
+vi.mock("@/features/explore/details/use-reading-details", () => ({
   useReadingDetails: () => null,
 }));
 

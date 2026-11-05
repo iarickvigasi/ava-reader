@@ -20,11 +20,6 @@ export function preservedCacheRecords(collectionId: string) {
     highlights: { libraryItemId: "lib-1", id: "highlight", text: "annotation" },
     aiComments: { libraryItemId: "lib-1", id: "comment", body: "comment" },
     progress: { libraryItemId: "lib-1", completionPercent: 12, dirty: true },
-    sessions: {
-      clientSessionId: "session",
-      libraryItemId: "lib-1",
-      state: "stopped",
-    },
     collectionMembershipMutations: {
       libraryItemId: "lib-1",
       revision: "pending",
@@ -38,12 +33,6 @@ export function preservedCacheRecords(collectionId: string) {
       finishedAt: null,
       revision: "pending",
       queuedAt: "now",
-    },
-    sessionMutations: {
-      mutationId: "session",
-      scopeId: "lib-1",
-      queuedAt: "now",
-      data: "pending",
     },
     meta: { key: "library:booksCount", value: 2, updatedAt: "before" },
   };

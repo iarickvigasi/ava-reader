@@ -1,6 +1,9 @@
 import type Dexie from "dexie";
+import { registerSessionSyncIndex } from "./buckets/sessions/register-session-sync-index";
+import { indexPendingSessions } from "./migrations/index-pending-sessions";
 import { migrateLegacyCovers } from "./buckets/book/covers/migrate";
 import { migrateRetiredCollections } from "./migrations/retired-collections";
+import { retireLegacyReading } from "./migrations/retire-legacy-reading";
 
 export function registerOfflineSchema(db: Dexie): void {
   // v1 — initial schema. Indexes:
@@ -56,4 +59,17 @@ export function registerOfflineSchema(db: Dexie): void {
     .stores({ bookCovers: "libraryItemId" })
     .upgrade(migrateLegacyCovers);
   db.version(6).stores({}).upgrade(migrateRetiredCollections);
+  // Checkpoint semantics require old clients to stop writing session rows.
+  db.version(7).stores({});
+  db.version(8)
+    .stores({
+      sessions: "clientSessionId, libraryItemId, state",
+      sessionMutations: null,
+      statsSnapshot: null,
+    })
+    .upgrade(retireLegacyReading);
+  db.version(9)
+    .stores({ sessions: "clientSessionId, libraryItemId, state, syncState" })
+    .upgrade(indexPendingSessions);
+  registerSessionSyncIndex(db.table("sessions"));
 }

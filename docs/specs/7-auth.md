@@ -1,6 +1,6 @@
 # Authentication
 
-> Status: active · Updated: 2026-10-22 · ADRs: [[1-clerk-authentication]],
+> Status: active · Updated: 2026-11-04 · ADRs: [[1-clerk-authentication]],
 > [[5-per-user-offline-database]], [[6-durable-offline-authentication]] · Code:
 > apps/web/features/auth, apps/web/components/auth, apps/web/proxy.ts,
 > apps/web/features/offline/lifecycle/offline-identity-reconciler.tsx
@@ -24,7 +24,11 @@ books and pending offline changes; losing an online session never removes local 
    states; authenticated recovery or a device-account change resets it. Sign-in-required status
    remains visible with its sign-in action, even after reconnecting was dismissed.
 4. Failed Clerk initialization retries with capped backoff, on reconnect and visible-tab resume.
+   A Clerk UI script-load failure gets one fresh-URL retry per recovery pass, using the SDK's
+   configured vendor URL. The temporary URL override is restored on success or failure. Keep UI
+   loading for sign-in and CAPTCHA; recovery never clears storage or reloads the page.
    Token acquisition and history requests have deadlines; pending locks release on failure.
+   Queue-resume locks belong to the account database; a stalled account never blocks another.
    Previously requested history retries after recovery without moving the viewed week.
 5. Server tokens are short-lived and refreshed silently by Clerk. Intended production policy:
    365-day maximum session lifetime, inactivity timeout disabled. This is Clerk configuration,
@@ -61,6 +65,8 @@ Authentication failures retain mutation queues; permanent domain failures retain
 - [ ] Reconnecting auto-hides after six seconds or manual dismissal without stopping recovery.
 - [ ] Dismissal survives rerenders/navigation; recovery allows a new notice and expiry shows sign-in.
 - [ ] API access without valid authentication remains denied.
+- [x] A failed UI script URL recovers with a fresh URL; pending progress then uploads normally.
+- [x] Fresh-URL failure restores provider options; unrelated errors never take this fallback.
 
 - [ ] Expired Google attempts restart online; reconnecting alone never launches Google.
 - [ ] Offline sign-in opens cached reading, respects explicit sign-out, and makes no auth requests.

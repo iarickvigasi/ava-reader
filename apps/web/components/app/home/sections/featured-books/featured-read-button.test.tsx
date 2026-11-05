@@ -1,10 +1,10 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it, vi } from "vitest";
 import { withIntl } from "@/lib/test-utils/intl";
-import { useCatalogRead } from "@/features/explore/use-catalog-read";
+import { useCatalogRead } from "@/features/explore/details/use-catalog-read";
 import { FeaturedReadButton } from "./featured-read-button";
 
-vi.mock("@/features/explore/use-catalog-read", () => ({
+vi.mock("@/features/explore/details/use-catalog-read", () => ({
   useCatalogRead: vi.fn(),
 }));
 

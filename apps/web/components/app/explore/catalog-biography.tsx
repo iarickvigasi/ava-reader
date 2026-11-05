@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { biographyContent } from "@/features/explore/biography-content";
+import { biographyContent } from "@/features/explore/metadata/biography-content";
 
 export function CatalogBiography({ biography }: { biography: string }) {
   const t = useTranslations("explore");

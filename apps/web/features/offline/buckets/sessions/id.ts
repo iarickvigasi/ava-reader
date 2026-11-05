@@ -1,7 +1,6 @@
 // Client-generated session id. Used as the stable key for the offline
 // session row AND sent to the server as `clientSessionId` — when the same
-// id reaches the server twice (start + offline-replay), the server upserts
-// instead of duplicating the row.
+// id reaches the server again, only the new checkpoint's extension is credited.
 //
 // We use crypto.randomUUID where available and fall back to a
 // timestamp+random hybrid for very old runtimes. Collision risk is

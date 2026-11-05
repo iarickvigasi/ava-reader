@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { CATALOG_FILTERS } from "@/features/explore/catalog-filters";
+import { CATALOG_FILTERS } from "@/features/explore/metadata/catalog-filters";
 import { FilterPill } from "@/components/app/shared/filter-pill";
 
 export function CategoryPills({

@@ -1,6 +1,6 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { useTranslations } from "next-intl";
-import { CATALOG_FILTERS } from "@/features/explore/catalog-filters";
+import { CATALOG_FILTERS } from "@/features/explore/metadata/catalog-filters";
 
 export function CategoryFields({
   values,

@@ -1,10 +1,11 @@
-import type { ReadingDetails } from "@/features/explore/use-reading-details";
+import { ReadingDetails } from "@/features/explore/details/types";
 import { CatalogReadingEstimates } from "./catalog-reading-estimates";
 import { CatalogBookReading } from "./catalog-book-reading";
 import { useLocale, useTranslations } from "next-intl";
 import type { CatalogWork, CatalogEdition } from "@/lib/catalog-types";
-import { catalogTitle, languageName } from "@/features/explore/catalog-display";
-import { catalogCover } from "@/features/explore/catalog-cover";
+import { languageName } from "@/features/explore/metadata/language-name";
+import { catalogTitle } from "@/features/explore/metadata/catalog-title";
+import { catalogCover } from "@/features/explore/metadata/catalog-cover";
 import { BookCoverPanel } from "@/components/app/shared/books/book-cover-panel";
 import { BookTitle } from "@/components/app/shared/books/book-title";
 import { BookAuthors } from "@/components/app/shared/books/book-authors";

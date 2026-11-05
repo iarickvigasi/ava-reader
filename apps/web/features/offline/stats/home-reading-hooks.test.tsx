@@ -14,15 +14,11 @@ vi.mock("../buckets/home/hooks", () => ({
     },
   }),
 }));
-vi.mock("./use-delta-bundle", () => ({
-  useDeltaBundle: () => ({
-    todayKey: "2026-04-13",
-    highlightsNet: 0,
-    sessions: {
-      totalSeconds: 3600,
-      byUtcDaySeconds: new Map([["2026-04-13", 1800]]),
-    },
-  }),
+vi.mock("./use-highlight-count-delta", () => ({
+  useHighlightCountDelta: () => 0,
+}));
+vi.mock("./use-reading-calendar", () => ({
+  useReadingCalendar: () => "UTC|2026-04-13",
 }));
 vi.mock("@/components/app/preferences/use-reading-goal", () => ({
   useReadingGoal: () => [60],

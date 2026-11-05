@@ -2,6 +2,9 @@ import { loadZonedReading } from './load-zoned-reading';
 
 function database() {
   return {
+    user: {
+      findUniqueOrThrow: jest.fn().mockResolvedValue({ readingRevision: 7 }),
+    },
     $transaction: jest.fn((reads: Promise<unknown>[]) => Promise.all(reads)),
     readingSessionSegment: {
       findMany: jest.fn().mockResolvedValue([
@@ -57,7 +60,11 @@ it('reads identities, intervals and totals in one owner-scoped repeatable snapsh
   );
   expect(db.readingSession.findMany).toHaveBeenCalledWith({
     where: { userId: 'owner', clientSessionId: { not: null } },
-    select: { clientSessionId: true },
+    select: {
+      clientSessionId: true,
+      durationSeconds: true,
+      trackingVersion: true,
+    },
   });
 });
 it('stops at the earliest local day without an extra empty history week', async () => {

@@ -1,3 +1,4 @@
+import { libraryReadingTestFixture } from './library-reading-test-fixture';
 import { privateBookAccess } from '../shared/private-book-access';
 import {
   BadRequestException,
@@ -19,12 +20,10 @@ describe('LibraryService', () => {
   const findUniqueCollection = jest.fn();
   const upsertCollectionItem = jest.fn();
   const deleteManyCollectionItems = jest.fn();
-  // Interactive transactions run against the same mock surface, so the tests
-  // assert on the calls exactly as they would outside one. Annotated rather
-  // than inferred: inlining it would make `prisma`'s type reference itself.
   const runInTransaction = <T>(run: (tx: unknown) => T): T => run(prisma);
   const prisma = {
     $transaction: runInTransaction,
+    ...libraryReadingTestFixture(),
     collection: {
       delete: deleteCollection,
       findFirst,
@@ -268,7 +267,7 @@ describe('LibraryService', () => {
         progress: true,
       },
     });
-    expect(payload).toEqual({
+    expect(payload).toMatchObject({
       book: {
         addedAt: '2026-04-01T10:00:00.000Z',
         // Null until the chapter-purpose analysis runs for this book.

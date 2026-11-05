@@ -532,7 +532,7 @@
     },
     "progress": {
       "percentComplete": "{percent}% завершено",
-      "pageOfInChapter": "Сторінка {current} з {total} у розділі"
+      "pageOfInChapter": "Сторінка {current} / {total} у розділі"
     },
     "toc": {
       "loading": "Завантаження",

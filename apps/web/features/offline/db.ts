@@ -168,16 +168,6 @@ export type ProgressRow = {
   dirty: boolean;
 };
 
-// Roll-up shown on the stats / insights page. We keep it as a single row keyed
-// by user id ("me") to make the offline read cheap; the server stays the
-// source of truth and overwrites this snapshot on every successful sync.
-export type StatsSnapshotRow = {
-  id: "me";
-  // Untyped at the offline layer — the stats UI consumes this shape directly.
-  payload: unknown;
-  fetchedAt: string;
-};
-
 // ----- Preferences (phase 6) -------------------------------------------------
 
 export type PreferencesRow = {
@@ -224,23 +214,12 @@ export type HighlightMutationRow = MutationRow<
 };
 
 export type AiCommentMutationKind =
-  | "delete"
-  | "generate.translate"
-  | "generate.explain"
-  | "generate.etymology";
+  "delete" | "generate.translate" | "generate.explain" | "generate.etymology";
 export type AiCommentMutationRow = MutationRow<
   AiCommentMutationKind,
   Record<string, unknown>
 > & {
   commentId: string;
-};
-
-export type SessionMutationKind = "start" | "heartbeat" | "stop";
-export type SessionMutationRow = MutationRow<
-  SessionMutationKind,
-  Record<string, unknown>
-> & {
-  clientSessionId: string;
 };
 
 export type PreferenceMutationRow = MutationRow<
@@ -259,7 +238,7 @@ export type MetaRow = {
 // Bumped for schema changes and one-time data upgrades within a user's database. The database
 // NAME is per-user (`ava-reader-<userId>`), so different accounts on one browser
 // profile never share an object store — see adr/5.
-export const SCHEMA_VERSION = 6;
+export const SCHEMA_VERSION = 9;
 export const DB_NAME_PREFIX = "ava-reader-";
 // The pre-per-user single database; swept once by purgeOtherUserDbs (adr/5).
 export const LEGACY_DB_NAME = "ava-reader";
@@ -298,12 +277,10 @@ export class AvaReaderDB extends GuardedDatabase {
 
   sessions!: Table<SessionRow, string>;
   progress!: Table<ProgressRow, string>;
-  statsSnapshot!: Table<StatsSnapshotRow, "me">;
   preferences!: Table<PreferencesRow, "me">;
 
   highlightMutations!: Table<HighlightMutationRow, string>;
   aiCommentMutations!: Table<AiCommentMutationRow, string>;
-  sessionMutations!: Table<SessionMutationRow, string>;
   preferenceMutations!: Table<PreferenceMutationRow, string>;
 
   meta!: Table<MetaRow, string>;

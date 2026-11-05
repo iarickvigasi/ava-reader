@@ -25,9 +25,6 @@ vi.mock("./buckets/library", () => ({
   flushCatalogLinks: mocks.links,
 }));
 vi.mock("./buckets/sessions", () => ({ syncPendingSessions: mocks.sessions }));
-vi.mock("@/components/app/reader/data/reader-client-instance-id", () => ({
-  getOrCreateReaderClientInstanceId: () => "tab",
-}));
 vi.mock("./buckets/progress", () => ({
   flushDirtyProgress: vi.fn(async () => {}),
 }));
@@ -58,6 +55,6 @@ it("resumes every queued book without reopening it and deduplicates concurrent t
     token,
   );
   expect(mocks.highlights.flushBucket).toHaveBeenCalledOnce();
-  expect(mocks.sessions).toHaveBeenCalledExactlyOnceWith(token, "tab");
+  expect(mocks.sessions).toHaveBeenCalledExactlyOnceWith(token);
   expect(mocks.links).toHaveBeenCalledExactlyOnceWith(token);
 });

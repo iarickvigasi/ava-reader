@@ -1,15 +1,10 @@
-// The book-info page's cache: the detail fields the library/collection
-// payloads don't carry, layered onto the row they already wrote. Cached so the
-// page works offline once the user has visited it online at least once.
-
 import type { LibraryBookInfo } from "@/lib/api-types/library";
-
-import { getDb, type AvaReaderDB } from "../../../db";
+import { getDb, type AvaReaderDB, type LibraryItemRow } from "../../../db";
 import { overlayBookCollections } from "../membership/selectors";
+import { composeBookInfo } from "./compose-book-info";
+import type { BookInfoDetails, BookInfoOverlays } from "./types";
 
-// Reads back a full LibraryBookInfo from Dexie. Returns null when either the
-// row is missing or details have never been fetched — the page falls back to
-// its instructional "open online to download" UX in that case.
+// Detail fields are available offline after the book-info page has been cached.
 export async function readBookInfoBySlug(
   slug: string,
 ): Promise<LibraryBookInfo | null> {
@@ -26,47 +21,34 @@ export async function readBookInfoBySlug(
   );
 }
 
-async function readBookInfoSnapshot(
-  db: AvaReaderDB,
-  slug: string,
-): Promise<LibraryBookInfo | null> {
+async function readBookInfoSnapshot(db: AvaReaderDB, slug: string) {
   const row = await db.libraryItems.where("slug").equals(slug).first();
-  if (!row || !row.details) {
-    return null;
-  }
-  const finishDate = await db.finishDateMutations.get(row.libraryItemId);
+  if (!row?.details) return null;
+  const overlays = await loadBookInfoOverlays(db, row, row.details);
+  return composeBookInfo(row, row.details, overlays);
+}
+
+async function loadBookInfoOverlays(
+  db: AvaReaderDB,
+  row: LibraryItemRow,
+  details: BookInfoDetails,
+): Promise<BookInfoOverlays> {
+  const [finishDate, membership, collections] = await Promise.all([
+    db.finishDateMutations.get(row.libraryItemId),
+    db.collectionMembershipMutations.get(row.libraryItemId),
+    db.collections.toArray(),
+  ]);
   return {
-    libraryItemId: row.libraryItemId,
-    slug: row.slug,
-    title: row.title,
-    authors: row.authors,
-    coverImageUrl: row.coverImageUrl,
-    completionPercent: row.completionPercent,
-    primaryFormat: row.primaryFormat,
-    addedAt: row.details.addedAt,
-    // Rows persisted before this field existed read back as undefined; null
-    // keeps reading time on the whole-book fallback rather than crashing.
-    approximateBodyPageCount: row.details.approximateBodyPageCount ?? null,
-    approximatePageCount: row.details.approximatePageCount,
-    chapterLabel: row.details.chapterLabel,
     collections: overlayBookCollections(
-      row.details.collections,
-      await db.collectionMembershipMutations.get(row.libraryItemId),
-      await db.collections.toArray(),
+      details.collections,
+      membership,
+      collections,
     ),
-    description: row.details.description,
-    genres: row.details.genres,
     // A queued clear (null) must win just as a queued date does.
     finishedAt: finishDate
       ? finishDate.finishedAt
       : row.finishedAt !== undefined
         ? row.finishedAt
-        : (row.details.finishedAt ?? null),
-    language: row.details.language,
-    lastReadAt: row.details.lastReadAt,
-    minutesRead: row.details.minutesRead,
-    publishedYear: row.details.publishedYear,
-    source: row.details.source,
-    hasReadableEdition: row.hasReadableEdition,
+        : (details.finishedAt ?? null),
   };
 }

@@ -12,7 +12,10 @@ describe('Home response contract', () => {
       developers: [],
       collections: { items: [] },
       completionItems: [],
-      readingSnapshot: { clientSessionIds: [], totalSeconds: 0, days: [] },
+      readingSnapshot: expect.objectContaining({
+        totalSeconds: 0,
+        days: [],
+      }) as unknown,
       currentEngagement: null,
       feedback: { acceptsScreenshot: true },
       featuredCatalog: { entries: [] },

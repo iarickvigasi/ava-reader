@@ -1,7 +1,7 @@
 "use client";
 
 import type { CatalogText } from "@/lib/catalog-types";
-import { useCatalogDescription } from "@/features/explore/use-catalog-description";
+import { useCatalogDescription } from "@/features/explore/metadata/use-catalog-description";
 import { BookDescription } from "@/components/app/shared/books/book-description";
 import { FilterPill } from "@/components/app/shared/filter-pill";
 

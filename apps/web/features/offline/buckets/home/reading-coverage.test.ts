@@ -50,20 +50,22 @@ it("rounds combined seconds once and does not mutate the persisted baseline", as
   expect((await getDb().home.get("me"))?.payload).toEqual(home);
 });
 
-it("keeps legacy server totals until reconciliation metadata arrives", async () => {
+it("keeps saved server totals when this device has no local recordings", async () => {
   const home = readingHome(true);
   delete home.readingSnapshot;
+  await getDb().sessions.clear();
+  await getDb().home.clear();
   await applyHome(home);
   expect((await readHome())?.stats.hoursReading).toBe(1);
   await applyHome(readingHome(true));
   expect((await readHome())?.stats.hoursReading).toBe(1);
 });
 
-it("does not resurrect historical synced rows with no replay outcome", async () => {
+it("retains acknowledged checkpoints until the snapshot covers them", async () => {
   await getDb().sessions.update(readingSession.clientSessionId, {
-    syncedAt: "2026-04-13T01:00:00Z",
+    acknowledgedRevision: readingSession.revision,
   });
-  expect((await readHome())?.stats.hoursReading).toBe(0);
+  expect((await readHome())?.stats.hoursReading).toBe(1);
 });
 
 it("reacts to session writes without a timer or online event", async () => {
@@ -80,8 +82,7 @@ it("reacts to session writes without a timer or online event", async () => {
     expect(await initial).toBe(1);
     const changed = observed();
     await getDb().sessions.update(readingSession.clientSessionId, {
-      replayStatus: "dropped",
-      syncedAt: "2026-04-13T01:00:00Z",
+      dropped: true,
     });
     expect(await changed).toBe(0);
   } finally {

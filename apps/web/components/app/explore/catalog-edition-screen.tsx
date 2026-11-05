@@ -1,10 +1,10 @@
 "use client";
-import { useExploreReturn } from "@/features/explore/use-explore-return";
-import { catalogHref } from "@/features/explore/explore-return";
-import { useReadingDetails } from "@/features/explore/use-reading-details";
+import { useExploreReturn } from "@/features/explore/navigation/use-explore-return";
+import { catalogHref } from "@/features/explore/navigation/catalog-href";
+import { useReadingDetails } from "@/features/explore/details/use-reading-details";
 import { useTranslations } from "next-intl";
-import { useCatalogLocation } from "@/features/explore/use-catalog-location";
-import { useCatalogResource } from "@/features/explore/use-catalog-resource";
+import { useCatalogLocation } from "@/features/explore/navigation/use-catalog-location";
+import { useCatalogResource } from "@/features/explore/data/use-catalog-resource";
 import type { CatalogEditionDetail } from "@/lib/catalog-types";
 import { ScreenContainer } from "@/components/ui/screen-container";
 import { BookBackLink } from "@/components/app/shared/books/book-back-link";

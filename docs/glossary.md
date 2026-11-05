@@ -71,5 +71,5 @@ Catalog and infrastructure terms: [catalog glossary](glossary-catalog.md).
 - **Library Item** — a user's copy of a Book (User↔Book join); scope for progress, highlights,
   sessions.
 - **Collection** — user reading list (CUSTOM or SMART).
-- **Session** — a tracked reading interval (start/heartbeat/stop) feeding reading stats.
+- **Session** — one locally recorded foreground reading run, synchronized by cumulative checkpoints.
 - **Progress** — current locator + completion % + minutes read, per library item.

@@ -1,7 +1,7 @@
 "use client";
 
-import { useExploreReturn } from "@/features/explore/use-explore-return";
-import { catalogHref } from "@/features/explore/explore-return";
+import { useExploreReturn } from "@/features/explore/navigation/use-explore-return";
+import { catalogHref } from "@/features/explore/navigation/catalog-href";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 

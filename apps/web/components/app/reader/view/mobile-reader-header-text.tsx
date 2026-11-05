@@ -1,5 +1,4 @@
-import { useHeaderRotation } from "@/features/reader/use-header-rotation";
-import { MobileReaderHeaderRow } from "./mobile-reader-header-row";
+import { useHeaderWidths } from "@/features/reader/use-header-widths";
 
 export function MobileReaderHeaderText({
   title,
@@ -10,21 +9,57 @@ export function MobileReaderHeaderText({
   author?: string;
   chapter: string;
 }) {
-  const state = useHeaderRotation();
-  const book = [title, author].filter(Boolean).join(", ");
+  const { rowRef, measureRef, widths } = useHeaderWidths({
+    title,
+    author,
+    chapter,
+  });
+  const label = [title, author, chapter].filter(Boolean).join(" – ");
   return (
     <span
+      ref={rowRef}
       aria-hidden="true"
-      className="block w-full min-w-0 truncate"
-      title={state.chapter ? `${title}, ${chapter}` : book}
+      title={label}
+      className="relative flex w-full min-w-0 items-baseline gap-1"
     >
-      <MobileReaderHeaderRow
-        title={title}
-        author={author}
-        chapter={chapter}
-        showChapter={state.chapter}
-        fading={state.fading}
-      />
+      <span
+        ref={measureRef}
+        className="invisible absolute flex w-max gap-1 whitespace-nowrap"
+      >
+        <span data-field="title">{title}</span>
+        {author && <span data-field="author">, {author}</span>}
+        {chapter && (
+          <>
+            <span>–</span>
+            <span data-field="chapter">{chapter}</span>
+          </>
+        )}
+      </span>
+      <span
+        className="min-w-0 shrink-0 truncate"
+        style={{ maxWidth: widths.title }}
+      >
+        {title}
+      </span>
+      {author && (
+        <span
+          className="min-w-0 shrink-0 truncate"
+          style={{ maxWidth: widths.author }}
+        >
+          , {author}
+        </span>
+      )}
+      {chapter && (
+        <>
+          <span className="shrink-0">–</span>
+          <span
+            className="min-w-0 truncate"
+            style={{ maxWidth: widths.chapter }}
+          >
+            {chapter}
+          </span>
+        </>
+      )}
     </span>
   );
 }

@@ -62,8 +62,8 @@ Monorepo: pnpm workspaces + Turbo (lint/typecheck/test/build), Node ≥22.
 
 - **db.ts** — one Dexie instance **per user** (`ava-reader-<userId>`; adr/5), versioned schema.
   Tables: libraryItems, bookCovers, collections, collectionMembership, books, bookChapters, highlights,
-  aiComments, translations, sessions, progress, statsSnapshot, preferences, me, home, meta + per-domain mutation
-  queues (highlightMutations, aiCommentMutations, sessionMutations, preferenceMutations,
+  aiComments, translations, sessions, progress, preferences, me, home, meta + per-domain mutation
+  queues (highlightMutations, aiCommentMutations, preferenceMutations,
   collectionMembershipMutations). Bump
   `.version(n)` for any structural change.
 - **buckets/** — one folder per domain (fixed file set: types, storage, bucket, selectors,
@@ -76,8 +76,8 @@ Monorepo: pnpm workspaces + Turbo (lint/typecheck/test/build), Node ≥22.
   idempotent upserts keyed by client ULID; permanent 4xx → DropEvent toast.
 - **bookCovers** stores immutable ArrayBuffers, length/hash, MIME/source, and verification state
   separately from library metadata (ADR 9); book-bucket storage owns migration and validation.
-- **stats/** — composes server baseline + unsynced local session/progress deltas (no double-count on
-  sync).
+- **stats/** — composes snapshot totals with uncovered checkpoint seconds using indexed coverage;
+  highlights subscribe to pending count changes. Book totals use seconds without calendar splitting.
 - **sw/** — service worker caches the app shell; a root identity reconciler (lifecycle/) wipes all
   offline substrates on explicit sign-out / account-switch (adr/5, adr/6); expiry preserves data.
   features/auth owns same-account bounded token access and provider recovery; net-state tracks connectivity;
@@ -111,7 +111,7 @@ their implementations, with shared fixtures in `testing/`.
   publishes a Book. Public bytes live in Catalog PublicBlob; main StoredBlob descriptors have
   catalogBlobId and empty bytes. Private StoredBlob bytes stay local. See ADR 13.
 - **LibraryItem** — User↔Book join (source IMPORTED | CATALOG); the scope for ReadingProgress
-  (unique, locator + completion % + minutes), ReadingSession (clientSessionId ULID, Participant +
+  (unique, locator + completion % + minutes), ReadingSession (clientSessionId, checkpoint revision +
   per-day UTC Segment + credited UTC Interval + saved session timezone; adr/7), Annotation
   (highlight: excerpt, color, locator), AiComment (kind TRANSLATE | ETYMOLOGY | EXPLAIN;
   dedup by (user, sourceHash)).
@@ -130,8 +130,8 @@ their implementations, with shared fixtures in `testing/`.
   no saved mutation, credit debit or delayed offline replay.
 - **AI tool:** select → ai-comments `generate.*` mutation → POST → streamed structured output →
   stored as a ready AiComment, deduped by sourceHash.
-- **Track:** session start/heartbeat/stop + progress writes (offline) → home shows baseline + local
-  deltas.
+- **Track:** local session checkpoints + progress writes → synchronize saved revisions → compose
+  snapshot totals with uncovered local seconds (ADR 15). Independent devices contribute additively.
 
 ## Engineering discipline
 

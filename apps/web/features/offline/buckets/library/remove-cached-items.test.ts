@@ -86,19 +86,16 @@ async function seed(id: string) {
   await db.finishDateMutations.put({ libraryItemId: id } as never);
   await db.sessions.put({
     clientSessionId: id,
+    trackingVersion: 2,
+    revision: 1,
+    acknowledgedRevision: 0,
+    timeZone: "UTC",
     libraryItemId: id,
     startedAt: "2026-09-23T10:00:00Z",
     endedAt: "2026-09-23T11:00:00Z",
     lastHeartbeatAt: "2026-09-23T11:00:00Z",
     state: "closed",
-    syncedAt: null,
-    serverSessionId: null,
   });
-  await db.sessionMutations.put({
-    mutationId: id,
-    scopeId: id,
-    clientSessionId: id,
-  } as never);
 }
 
 it("cascades a remote deletion including pre-existing orphans, but retains sessions and books outside previews", async () => {
@@ -137,7 +134,6 @@ it("cascades a remote deletion including pre-existing orphans, but retains sessi
     (await db.aiCommentMutations.toArray()).map((row) => row.scopeId),
   ).toEqual(["lib-1"]);
   expect(await db.sessions.count()).toBe(3);
-  expect(await db.sessionMutations.count()).toBe(3);
 });
 
 it("never infers deletion from an older server's previews", async () => {

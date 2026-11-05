@@ -5,7 +5,7 @@ import { PendingLabel } from "@/components/app/shared/pending-label";
 import { EditorialModalShell } from "../admin/editorial-modal-shell";
 import { WorkPicker } from "./work-picker";
 import { EditionSearch } from "./edition-search";
-import { useEditionWorkDialog } from "@/features/explore/linking/use-edition-work-dialog";
+import { useEditionWorkDialog } from "@/features/explore/admin/use-edition-work-dialog";
 export function EditionWorkDialog({
   kind,
   id,

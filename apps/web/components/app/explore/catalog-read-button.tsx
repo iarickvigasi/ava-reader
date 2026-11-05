@@ -4,7 +4,7 @@ import {
 } from "@/components/app/shared/books/read-listen-actions";
 import { StackBooksIcon } from "@/components/app/shared/app-icons";
 import { useTranslations } from "next-intl";
-import { useCatalogRead } from "@/features/explore/use-catalog-read";
+import { useCatalogRead } from "@/features/explore/details/use-catalog-read";
 import { Button } from "@/components/ui/button";
 import { PendingLabel } from "@/components/app/shared/pending-label";
 
